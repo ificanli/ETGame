@@ -258,7 +258,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.6.1"
+        "cn.etetet.yiuiframework": "0.6.2"
       }
     },
     "cn.etetet.yiuieffect": {
@@ -266,7 +266,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.6.1"
+        "cn.etetet.yiuiframework": "0.6.2"
       }
     },
     "cn.etetet.yiuiframework": {
@@ -283,8 +283,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.6.1",
-        "cn.etetet.yiuiloopscrollrectasync": "0.6.1"
+        "cn.etetet.yiuiframework": "0.6.2",
+        "cn.etetet.yiuiloopscrollrectasync": "0.6.2"
       }
     },
     "cn.etetet.yiuiinvoke": {
@@ -298,7 +298,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.6.1"
+        "cn.etetet.yiuiframework": "0.6.2"
       }
     },
     "cn.etetet.yiuiloopscrollrectasync": {
@@ -306,7 +306,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.6.1"
+        "cn.etetet.yiuiframework": "0.6.2"
       }
     },
     "cn.etetet.yiuireddot": {
@@ -314,8 +314,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.6.1",
-        "cn.etetet.yiuiloopscrollrectasync": "0.6.1"
+        "cn.etetet.yiuiframework": "0.6.2",
+        "cn.etetet.yiuiloopscrollrectasync": "0.6.2"
       }
     },
     "cn.etetet.yiuitips": {
@@ -323,7 +323,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.6.1"
+        "cn.etetet.yiuiframework": "0.6.2"
       }
     },
     "cn.etetet.yiuiyooassets": {
@@ -331,7 +331,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.6.1"
+        "cn.etetet.yiuiframework": "0.6.2"
       }
     },
     "cn.etetet.yooassets": {

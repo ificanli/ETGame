@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "cn.etetet.yiui3ddisplay": "0.6.2",
+    "cn.etetet.yiuieffect": "0.6.2",
+    "cn.etetet.yiuiframework": "0.6.2",
+    "cn.etetet.yiuigm": "0.6.2",
+    "cn.etetet.yiuilocalization": "0.6.2",
+    "cn.etetet.yiuiloopscrollrectasync": "0.6.2",
+    "cn.etetet.yiuireddot": "0.6.2",
+    "cn.etetet.yiuitips": "0.6.2",
+    "cn.etetet.yiuiyooassets": "0.6.2",
     "com.unity.ai.navigation": "1.1.5",
     "com.unity.ide.rider": "3.0.31",
     "com.unity.ide.visualstudio": "2.0.22",
