@@ -5,7 +5,7 @@ using YIUIFramework;
 
 namespace ET.Client
 {
-    [Event(SceneType.StateSync)]
+    [Event(SceneType.WOW)]
     public class EntryEvent3_InitClient : AEvent<Scene, EntryEvent3>
     {
         protected override async ETTask Run(Scene root, EntryEvent3 args)

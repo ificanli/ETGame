@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 namespace ET.Client
 {
-    [Event(SceneType.StateSync)]
+    [Event(SceneType.WOW)]
     public class SceneChangeStart_AddComponent: AEvent<Scene, SceneChangeStart>
     {
         protected override async ETTask Run(Scene root, SceneChangeStart args)

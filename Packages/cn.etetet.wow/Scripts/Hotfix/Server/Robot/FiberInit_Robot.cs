@@ -14,7 +14,7 @@
             root.AddComponent<CurrentScenesComponent>();
             root.AddComponent<ObjectWait>();
             
-            root.SceneType = SceneType.StateSync;
+            root.SceneType = SceneType.WOW;
 
             await EventSystem.Instance.PublishAsync(root, new AppStartInitFinish());
             await LoginHelper.Login(root, "127.0.0.1:10101", root.Name, "");
