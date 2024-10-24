@@ -175,36 +175,6 @@
         "cn.etetet.excel": "2.0.0"
       }
     },
-    "cn.etetet.statesync": {
-      "version": "file:cn.etetet.statesync",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "cn.etetet.packagemanager": "1.0.0",
-        "cn.etetet.actorlocation": "2.0.1",
-        "cn.etetet.core": "2.0.8",
-        "cn.etetet.loader": "2.0.7",
-        "cn.etetet.demores": "0.0.2",
-        "cn.etetet.mathematics": "0.0.2",
-        "cn.etetet.router": "2.0.1",
-        "cn.etetet.console": "2.0.0",
-        "cn.etetet.unit": "2.0.0",
-        "cn.etetet.http": "2.0.0",
-        "cn.etetet.recast": "2.0.0",
-        "cn.etetet.numeric": "2.0.0",
-        "cn.etetet.move": "2.0.0",
-        "cn.etetet.watcher": "2.0.0",
-        "cn.etetet.aoi": "2.0.0",
-        "cn.etetet.ui": "2.0.0",
-        "cn.etetet.referencecollector": "2.0.0",
-        "cn.etetet.login": "2.0.1",
-        "cn.etetet.netinner": "2.0.1",
-        "cn.etetet.hybridclr": "6.7.1",
-        "cn.etetet.excel": "2.0.0",
-        "cn.etetet.proto": "2.0.1",
-        "cn.etetet.ai": "2.0.1"
-      }
-    },
     "cn.etetet.ui": {
       "version": "file:cn.etetet.ui",
       "depth": 0,
@@ -234,7 +204,6 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.statesync": "2.0.10",
         "cn.etetet.packagemanager": "1.0.2",
         "cn.etetet.yiuiframework": "0.6.1",
         "cn.etetet.yiuiyooassets": "0.6.1",
