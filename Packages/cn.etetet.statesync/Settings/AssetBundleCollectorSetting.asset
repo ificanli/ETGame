@@ -139,7 +139,7 @@ MonoBehaviour:
         FilterRuleName: YIUIFilterRule
         AssetTags: 
         UserData: 
-      - CollectPath: Packages/cn.etetet.yiuistatesync/Assets/GameRes/YIUI
+      - CollectPath: Packages/cn.etetet.wow/Assets/GameRes/YIUI
         CollectorGUID: 38aff9b4b3f3ca0459417ed8f1416685
         CollectorType: 0
         AddressRuleName: AddressByFileName
