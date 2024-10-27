@@ -68,11 +68,11 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.demores/Scenes
-        CollectorGUID: e528ff0fe84cd9a4587b007cc977279a
+      - CollectPath: Packages/cn.etetet.wow/Scenes
+        CollectorGUID: 705c614c75b8db94d9df71cac86fe209
         CollectorType: 0
         AddressRuleName: AddressByFileName
-        PackRuleName: PackSeparately
+        PackRuleName: PackDirectory
         FilterRuleName: CollectScene
         AssetTags: 
         UserData: 

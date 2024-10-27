@@ -41,12 +41,6 @@
         "cn.etetet.memorypack": "1.10.0"
       }
     },
-    "cn.etetet.demores": {
-      "version": "file:cn.etetet.demores",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "cn.etetet.excel": {
       "version": "file:cn.etetet.excel",
       "depth": 0,
