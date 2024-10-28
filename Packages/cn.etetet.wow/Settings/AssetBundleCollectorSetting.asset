@@ -68,21 +68,21 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.wow/Scenes
-        CollectorGUID: 705c614c75b8db94d9df71cac86fe209
+      - CollectPath: Packages/cn.etetet.wow/Bundles/Scenes
+        CollectorGUID: 22804885a77c3ce4dbc6faadfa0208df
         CollectorType: 0
         AddressRuleName: AddressByFileName
-        PackRuleName: PackDirectory
+        PackRuleName: PackSeparately
         FilterRuleName: CollectScene
         AssetTags: 
         UserData: 
-    - GroupName: Unit
+    - GroupName: Units
       GroupDesc: 
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.demores/Bundles/Unit
-        CollectorGUID: 2f805b95f651fcc47a8ad0cc32706c38
+      - CollectPath: Packages/cn.etetet.wow/Bundles/Units
+        CollectorGUID: b05774c2320997a4d849e31bbab2ac8b
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackSeparately
