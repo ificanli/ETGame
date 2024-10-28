@@ -10,15 +10,22 @@ namespace ET.Client
         {
             try
             {
+                CurrentScenesComponent currentScenesComponent = root.GetComponent<CurrentScenesComponent>();
+                
+                await YIUIMgrComponent.Inst.Root.OpenPanelAsync<LoadingPanelComponent>();
                 Scene currentScene = root.CurrentScene();
 
+                currentScenesComponent.Progress = 0;
+                
                 ResourcesLoaderComponent resourcesLoaderComponent = currentScene.GetComponent<ResourcesLoaderComponent>();
             
                 // 加载场景资源
-                await resourcesLoaderComponent.LoadSceneAsync($"Packages/cn.etetet.wow/Bundles/Scenes/{currentScene.Name}.unity", LoadSceneMode.Single);
+                await resourcesLoaderComponent.LoadSceneAsync($"Packages/cn.etetet.wow/Bundles/Scenes/{currentScene.Name}.unity", LoadSceneMode.Single,
+                    (progress) =>
+                    {
+                        currentScenesComponent.Progress = progress * 0.99f;
+                    });
                 // 切换到map场景
-
-                //await SceneManager.LoadSceneAsync(currentScene.Name);
 
                 currentScene.AddComponent<OperaComponent>();
             }

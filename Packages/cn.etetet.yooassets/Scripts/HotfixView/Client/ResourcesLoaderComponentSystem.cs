@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using YooAsset;
@@ -87,10 +88,10 @@ namespace ET.Client
             return dictionary;
         }
 
-        public static async ETTask LoadSceneAsync(this ResourcesLoaderComponent self, string location, LoadSceneMode loadSceneMode)
+        public static async ETTask LoadSceneAsync(this ResourcesLoaderComponent self, string location, LoadSceneMode loadSceneMode, Action<float> action = null)
         {
             using CoroutineLock coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.ResourcesLoader, location.GetHashCode());
-
+           
             HandleBase handler;
             if (self.handlers.TryGetValue(location, out handler))
             {
@@ -99,8 +100,31 @@ namespace ET.Client
 
             handler = self.package.LoadSceneAsync(location);
 
-            await handler.Task;
             self.handlers.Add(location, handler);
+            
+            await ETTaskHelper.WaitAll(new[] { WaitLoadFinish(handler), LoadProgressCallback(handler) });
+            
+            return;
+
+            async ETTask WaitLoadFinish(HandleBase handleBase)
+            {
+                await handleBase.Task;    
+            }
+            
+            async ETTask LoadProgressCallback(HandleBase handleBase)
+            {
+                TimerComponent timerComponent = self.Root().GetComponent<TimerComponent>();
+                while (true)
+                {
+                    await timerComponent.WaitAsync(500);
+                    float progress = handleBase.Progress;
+                    action?.Invoke(progress);
+                    if (progress >= 1)
+                    {
+                        return;
+                    }
+                }
+            }
         }
     }
 }
