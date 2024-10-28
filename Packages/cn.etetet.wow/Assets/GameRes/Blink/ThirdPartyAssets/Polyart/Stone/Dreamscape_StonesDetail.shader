@@ -11,7 +11,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 		_TilingNormal("Tiling Normal", 2D) = "bump" {}
 		_TilingNormalIntensity("Tiling Normal Intensity", Range( 0 , 2)) = 1
 		[Header(MAIN)]_AlbedoTint("Albedo Tint", Color) = (1,1,1,0)
-		_AlbedoTexture("Albedo Texture", 2D) = "white" {}
+		_MainTexture("Albedo Texture", 2D) = "white" {}
 		_NormalTexture("Normal Texture", 2D) = "bump" {}
 		_NormalIntensity("Normal Intensity", Range( 0 , 2)) = 1
 		_SmoothnessTexture("Smoothness Texture", 2D) = "white" {}
@@ -300,7 +300,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -345,7 +345,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 			#endif
 
 			sampler2D _TilingAlbedo;
-			sampler2D _AlbedoTexture;
+			sampler2D _MainTexture;
 			sampler2D _TilingNormal;
 			sampler2D _NormalTexture;
 			sampler2D _EmissiveTexture;
@@ -611,8 +611,8 @@ Shader "Polyart/Dreamscape Stones Detail"
 				float2 temp_cast_0 = (_Tiling).xx;
 				float4 triplanar71 = TriplanarSampling71( _TilingAlbedo, WorldPosition, WorldNormal, 1.0, temp_cast_0, 1.0, 0 );
 				float4 vTilingColor41 = triplanar71;
-				float2 uv_AlbedoTexture = IN.ase_texcoord8.xy * _AlbedoTexture_ST.xy + _AlbedoTexture_ST.zw;
-				float4 vColor12 = ( _AlbedoTint * tex2D( _AlbedoTexture, uv_AlbedoTexture ) );
+				float2 uv_MainTexture = IN.ase_texcoord8.xy * _MainTexture_ST.xy + _MainTexture_ST.zw;
+				float4 vColor12 = ( _AlbedoTint * tex2D( _MainTexture, uv_MainTexture ) );
 				float4 lerpResult57 = lerp( vTilingColor41 , vColor12 , _DetailColorIntensity);
 				
 				float2 temp_cast_3 = (_Tiling).xx;
@@ -953,7 +953,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -1278,7 +1278,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -1575,7 +1575,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -1620,7 +1620,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 			#endif
 
 			sampler2D _TilingAlbedo;
-			sampler2D _AlbedoTexture;
+			sampler2D _MainTexture;
 			sampler2D _EmissiveTexture;
 
 
@@ -1813,8 +1813,8 @@ Shader "Polyart/Dreamscape Stones Detail"
 				float3 ase_worldNormal = IN.ase_texcoord4.xyz;
 				float4 triplanar71 = TriplanarSampling71( _TilingAlbedo, WorldPosition, ase_worldNormal, 1.0, temp_cast_0, 1.0, 0 );
 				float4 vTilingColor41 = triplanar71;
-				float2 uv_AlbedoTexture = IN.ase_texcoord5.xy * _AlbedoTexture_ST.xy + _AlbedoTexture_ST.zw;
-				float4 vColor12 = ( _AlbedoTint * tex2D( _AlbedoTexture, uv_AlbedoTexture ) );
+				float2 uv_MainTexture = IN.ase_texcoord5.xy * _MainTexture_ST.xy + _MainTexture_ST.zw;
+				float4 vColor12 = ( _AlbedoTint * tex2D( _MainTexture, uv_MainTexture ) );
 				float4 lerpResult57 = lerp( vTilingColor41 , vColor12 , _DetailColorIntensity);
 				
 				float2 uv_EmissiveTexture = IN.ase_texcoord5.xy * _EmissiveTexture_ST.xy + _EmissiveTexture_ST.zw;
@@ -1908,7 +1908,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -1953,7 +1953,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 			#endif
 
 			sampler2D _TilingAlbedo;
-			sampler2D _AlbedoTexture;
+			sampler2D _MainTexture;
 
 
 			//#include "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/Varyings.hlsl"
@@ -2130,8 +2130,8 @@ Shader "Polyart/Dreamscape Stones Detail"
 				float3 ase_worldNormal = IN.ase_texcoord2.xyz;
 				float4 triplanar71 = TriplanarSampling71( _TilingAlbedo, WorldPosition, ase_worldNormal, 1.0, temp_cast_0, 1.0, 0 );
 				float4 vTilingColor41 = triplanar71;
-				float2 uv_AlbedoTexture = IN.ase_texcoord3.xy * _AlbedoTexture_ST.xy + _AlbedoTexture_ST.zw;
-				float4 vColor12 = ( _AlbedoTint * tex2D( _AlbedoTexture, uv_AlbedoTexture ) );
+				float2 uv_MainTexture = IN.ase_texcoord3.xy * _MainTexture_ST.xy + _MainTexture_ST.zw;
+				float4 vColor12 = ( _AlbedoTint * tex2D( _MainTexture, uv_MainTexture ) );
 				float4 lerpResult57 = lerp( vTilingColor41 , vColor12 , _DetailColorIntensity);
 				
 
@@ -2233,7 +2233,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -2642,7 +2642,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -2687,7 +2687,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 			#endif
 
 			sampler2D _TilingAlbedo;
-			sampler2D _AlbedoTexture;
+			sampler2D _MainTexture;
 			sampler2D _TilingNormal;
 			sampler2D _NormalTexture;
 			sampler2D _EmissiveTexture;
@@ -2943,8 +2943,8 @@ Shader "Polyart/Dreamscape Stones Detail"
 				float2 temp_cast_0 = (_Tiling).xx;
 				float4 triplanar71 = TriplanarSampling71( _TilingAlbedo, WorldPosition, WorldNormal, 1.0, temp_cast_0, 1.0, 0 );
 				float4 vTilingColor41 = triplanar71;
-				float2 uv_AlbedoTexture = IN.ase_texcoord8.xy * _AlbedoTexture_ST.xy + _AlbedoTexture_ST.zw;
-				float4 vColor12 = ( _AlbedoTint * tex2D( _AlbedoTexture, uv_AlbedoTexture ) );
+				float2 uv_MainTexture = IN.ase_texcoord8.xy * _MainTexture_ST.xy + _MainTexture_ST.zw;
+				float4 vColor12 = ( _AlbedoTint * tex2D( _MainTexture, uv_MainTexture ) );
 				float4 lerpResult57 = lerp( vTilingColor41 , vColor12 , _DetailColorIntensity);
 				
 				float2 temp_cast_3 = (_Tiling).xx;
@@ -3134,7 +3134,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -3392,7 +3392,7 @@ Shader "Polyart/Dreamscape Stones Detail"
 
 			CBUFFER_START(UnityPerMaterial)
 			float4 _AlbedoTint;
-			float4 _AlbedoTexture_ST;
+			float4 _MainTexture_ST;
 			float4 _NormalTexture_ST;
 			float4 _EmissiveTexture_ST;
 			float4 _EmissiveTint;
@@ -3610,7 +3610,7 @@ Node;AmplifyShaderEditor.TexturePropertyNode;20;-1549.519,571.3214;Inherit;True;
 Node;AmplifyShaderEditor.CommentaryNode;51;-1514.76,-948.0509;Inherit;False;1119.636;285;Comment;3;52;55;53;;1,1,1,1;0;0
 Node;AmplifyShaderEditor.CommentaryNode;44;-1515.36,-1262.112;Inherit;False;1272.636;288;Comment;5;45;49;46;48;72;;1,1,1,1;0;0
 Node;AmplifyShaderEditor.CommentaryNode;30;-1603.472,927.7177;Inherit;False;1546.638;392.0339;;6;31;29;28;27;26;69;Emissive;1,1,1,1;0;0
-Node;AmplifyShaderEditor.TexturePropertyNode;1;-1501.494,-162.2611;Inherit;True;Property;_AlbedoTexture;Albedo Texture;5;0;Create;True;0;0;0;False;0;False;None;None;False;white;Auto;Texture2D;-1;0;2;SAMPLER2D;0;SAMPLERSTATE;1
+Node;AmplifyShaderEditor.TexturePropertyNode;1;-1501.494,-162.2611;Inherit;True;Property;_MainTexture;Albedo Texture;5;0;Create;True;0;0;0;False;0;False;None;None;False;white;Auto;Texture2D;-1;0;2;SAMPLER2D;0;SAMPLERSTATE;1
 Node;AmplifyShaderEditor.TexturePropertyNode;26;-1552.472,977.7177;Inherit;True;Property;_EmissiveTexture;Emissive Texture;10;0;Create;True;0;0;0;False;0;False;None;None;False;black;Auto;Texture2D;-1;0;2;SAMPLER2D;0;SAMPLERSTATE;1
 Node;AmplifyShaderEditor.CommentaryNode;6;-1551.494,-395.261;Inherit;False;1117;458.0442;;1;3;Color;1,1,1,1;0;0
 Node;AmplifyShaderEditor.TexturePropertyNode;46;-1465.36,-1212.112;Inherit;True;Property;_TilingNormal;Tiling Normal;2;0;Create;True;0;0;0;False;0;False;None;None;False;bump;Auto;Texture2D;-1;0;2;SAMPLER2D;0;SAMPLERSTATE;1
