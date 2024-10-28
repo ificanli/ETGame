@@ -18,8 +18,14 @@ namespace ET.Client
             go.transform.position = unit.Position;
             unit.AddComponent<GameObjectComponent>().GameObject = go;
             unit.AddComponent<AnimatorComponent>();
-
+            
             unit.Position = new float3(127, 51.3f, -155);
+
+            if (scene.Root().GetComponent<PlayerComponent>().MyId == unit.Id)
+            {
+                unit.AddComponent<CinemachineComponent>();
+            }
+            
             await ETTask.CompletedTask;
         }
     }

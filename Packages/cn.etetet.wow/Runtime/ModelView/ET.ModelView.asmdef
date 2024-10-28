@@ -2,11 +2,11 @@
     "name": "ET.ModelView",
     "rootNamespace": "ET",
     "references": [
+        "Cinemachine",
         "ET.Core",
         "ET.Init",
         "ET.Loader",
         "ET.Model",
-        "ET.ReferenceCollector",
         "ET.SourceGeneratorAttribute",
         "ET.UI",
         "ET.YIUIFramework",

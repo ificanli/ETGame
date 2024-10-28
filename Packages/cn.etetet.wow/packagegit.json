@@ -1,4 +1,44 @@
 {
     "Id": 100,
-    "Name": "WOW"
+    "Name": "WOW",
+
+    "ScriptsReferences": {
+        "ModelView": [
+            "Cinemachine",
+            "ET.Core",
+            "Unity.Mathematics",
+            "ET.Loader",
+            "ET.Model",
+            "ET.UI",
+            "ET.Init"
+        ],
+        "Model": [
+            "ET.Core",
+            "Unity.Mathematics",
+            "ET.MemoryPack",
+            "ET.Recast"
+        ],
+        "HotfixView": [
+            "Cinemachine",
+            "ET.Core",
+            "Unity.Mathematics",
+            "ET.Loader",
+            "ET.MemoryPack",
+            "ET.Model",
+            "ET.Hotfix",
+            "ET.ModelView",
+            "ET.YooAssets",
+            "ET.UI",
+            "ET.ReferenceCollector",
+            "ET.Init"
+        ],
+        "Hotfix": [
+            "ET.Core",
+            "Unity.Mathematics",
+            "ET.Loader",
+            "ET.MemoryPack",
+            "ET.Model",
+            "ET.Recast"
+        ]
+    }
 }

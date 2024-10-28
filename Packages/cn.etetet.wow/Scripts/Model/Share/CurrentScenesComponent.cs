@@ -19,7 +19,7 @@
             }
             set
             {
-                EventSystem.Instance.Publish(this.Scene, new ChangeSceneProgress() {Progress = value});
+                EventSystem.Instance.Publish(this.Root(), new ChangeSceneProgress() {Progress = value});
                 this.progress = value;
             }
         }

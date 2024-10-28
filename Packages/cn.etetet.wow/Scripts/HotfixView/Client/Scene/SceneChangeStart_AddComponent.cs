@@ -23,7 +23,7 @@ namespace ET.Client
                 await resourcesLoaderComponent.LoadSceneAsync($"Packages/cn.etetet.wow/Bundles/Scenes/{currentScene.Name}.unity", LoadSceneMode.Single,
                     (progress) =>
                     {
-                        currentScenesComponent.Progress = progress * 0.99f;
+                        currentScenesComponent.Progress = (int)progress * 99f;
                     });
                 // 切换到map场景
 

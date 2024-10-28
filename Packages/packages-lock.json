@@ -169,14 +169,6 @@
         "cn.etetet.excel": "2.0.0"
       }
     },
-    "cn.etetet.ui": {
-      "version": "file:cn.etetet.ui",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "cn.etetet.core": "2.0.0"
-      }
-    },
     "cn.etetet.unit": {
       "version": "file:cn.etetet.unit",
       "depth": 0,
@@ -338,6 +330,15 @@
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.cinemachine": {
+      "version": "2.9.7",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.31"
       },
       "url": "https://packages.unity.com"
     },

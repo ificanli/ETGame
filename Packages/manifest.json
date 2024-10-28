@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.cinemachine": "2.9.7",
     "cn.etetet.yiui3ddisplay": "0.6.2",
     "cn.etetet.yiuieffect": "0.6.2",
     "cn.etetet.yiuiframework": "0.6.2",

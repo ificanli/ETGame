@@ -2,6 +2,7 @@
     "name": "ET.HotfixView",
     "rootNamespace": "ET",
     "references": [
+        "Cinemachine",
         "ET.Core",
         "ET.Hotfix",
         "ET.Init",
