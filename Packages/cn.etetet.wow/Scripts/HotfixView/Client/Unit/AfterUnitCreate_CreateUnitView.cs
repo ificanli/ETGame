@@ -19,8 +19,6 @@ namespace ET.Client
             unit.AddComponent<GameObjectComponent>().GameObject = go;
             unit.AddComponent<AnimatorComponent>();
             
-            unit.Position = new float3(127, 51.3f, -155);
-
             if (scene.Root().GetComponent<PlayerComponent>().MyId == unit.Id)
             {
                 unit.AddComponent<CinemachineComponent>();

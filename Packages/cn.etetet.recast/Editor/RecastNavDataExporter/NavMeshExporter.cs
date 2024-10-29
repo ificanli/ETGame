@@ -1,4 +1,4 @@
-﻿/******************************************/
+﻿﻿/******************************************/
 /*                                        */
 /*     Copyright (c) 2018 monitor1394     */
 /*     https://github.com/monitor1394     */
@@ -32,21 +32,21 @@ public class ExportScene : EditorWindow
     private static int counter = 0;
     private static int progressUpdateInterval = 10000;
 
-    [MenuItem("ExportScene/ExportSceneToObj")]
+    [MenuItem("ET/Recast/ExportSceneToObj")]
     [MenuItem("GameObject/ExportScene/ExportSceneToObj")]
     public static void Export()
     {
         ExportSceneToObj(false);
     }
 
-    [MenuItem("ExportScene/ExportSceneToObj(AutoCut)")]
+    [MenuItem("ET/Recast/ExportSceneToObj(AutoCut)")]
     [MenuItem("GameObject/ExportScene/ExportSceneToObj(AutoCut)")]
     public static void ExportAutoCut()
     {
         ExportSceneToObj(true);
     }
 
-    [MenuItem("ExportScene/ExportSelectedObj")]
+    [MenuItem("ET/Recast/ExportSelectedObj")]
     [MenuItem("GameObject/ExportScene/ExportSelectedObj", priority = 44)]
     public static void ExportObj()
     {
@@ -221,8 +221,6 @@ public class ExportScene : EditorWindow
         writer.Write(sb.ToString());
     }
 
-    enum SaveResolution { Full, Half, Quarter, Eighth, Sixteenth }
-    
     private static void ExportTerrianToObj(TerrainData terrain, Vector3 terrainPos,
         ref StreamWriter writer, ref int vertexOffset, bool autoCut)
     {
@@ -265,12 +263,15 @@ public class ExportScene : EditorWindow
 
         int[] tPolys = new int[(w - 1) * (h - 1) * 6];
 
+        Vector3 terrainPos1 = new Vector3(-terrainPos.x, terrainPos.y, terrainPos.z);
         for (int y = 0; y < h; y++)
         {
             for (int x = 0; x < w; x++)
             {
-                Vector3 pos = new Vector3(x, tData[x, y], y);
-                tVertices[y * w + x] = Vector3.Scale(meshScale, pos) + terrainPos;
+                Vector3 pos = new Vector3(-(startY + y), tData[startX + x, startY + y], (startX + x));
+                Vector3 scalePos = Vector3.Scale(meshScale, pos);
+                Vector3 p = scalePos + terrainPos1;
+                tVertices[y * w + x] = p;
                 tUV[y * w + x] = Vector2.Scale(new Vector2(x, y), uvScale);
             }
         }
