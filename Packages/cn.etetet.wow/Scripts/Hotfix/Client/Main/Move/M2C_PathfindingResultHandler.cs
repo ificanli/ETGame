@@ -9,7 +9,7 @@
 
 			float speed = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Speed);
 
-			await unit.GetComponent<MoveComponent>().MoveToAsync(message.Points, speed);
+			await unit.GetComponent<MoveComponent>().MoveToAsync(message.Points, speed, 0);
 		}
 	}
 }

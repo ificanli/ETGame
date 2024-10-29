@@ -30,7 +30,8 @@ namespace ET.Client
             M2C_CreateMyUnit m2CCreateMyUnit = waitCreateMyUnit.Message;
             Unit unit = UnitFactory.Create(currentScene, m2CCreateMyUnit.Unit);
             unitComponent.Add(unit);
-            EventSystem.Instance.Publish(root, new AfterMyUnitCreate() {Unit = unit});
+            
+            EventSystem.Instance.Publish(currentScene, new AfterMyUnitCreate() {Unit = unit});
         }
     }
 }

@@ -165,7 +165,10 @@ namespace ET
                 if (self.N >= self.Targets.Count - 1)
                 {
                     unit.Position = self.NextTarget;
-                    unit.Rotation = self.To;
+                    if (self.TurnTime > 0)
+                    {
+                        unit.Rotation = self.To;
+                    }
 
                     self.MoveFinish(ret);
                     return;
@@ -224,7 +227,7 @@ namespace ET
 
                 return;
             }
-            
+            /*
             if (self.TurnTime == 0) // turn time == 0 立即转向
             {
                 float3 faceV = self.GetFaceV();
@@ -239,6 +242,7 @@ namespace ET
                     unit.Rotation = self.To;
                 }
             }
+            */
         }
 
         private static float3 GetFaceV(this MoveComponent self)

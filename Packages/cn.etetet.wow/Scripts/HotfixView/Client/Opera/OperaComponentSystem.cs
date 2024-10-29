@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace ET.Client
 {
@@ -14,7 +15,7 @@ namespace ET.Client
         [EntitySystem]
         private static void Update(this OperaComponent self)
         {
-            if (Input.GetMouseButtonDown(1))
+            if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
@@ -26,30 +27,9 @@ namespace ET.Client
                 }
             }
             
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 CodeLoader.Instance.Reload();
-            }
-            
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                self.Test1().NoContext();
-            }
-                
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                self.Test2().NoContext();
-            }
-            
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                self.TestCancelAfter().WithContext(new ETCancellationToken());
-            }
-
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                C2M_TransferMap c2MTransferMap = C2M_TransferMap.Create();
-                self.Root().GetComponent<ClientSenderComponent>().Call(c2MTransferMap).NoContext();
             }
         }
         

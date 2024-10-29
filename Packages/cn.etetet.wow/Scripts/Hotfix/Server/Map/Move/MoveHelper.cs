@@ -6,7 +6,7 @@ namespace ET.Server
     public static partial class MoveHelper
     {
         // 可以多次调用，多次调用的话会取消上一次的协程
-        public static async ETTask FindPathMoveToAsync(this Unit unit, float3 target)
+        public static async ETTask FindPathMoveToAsync(this Unit unit, float3 target, int turnTime = 0)
         {
             float speed = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Speed);
             if (speed < 0.01)
@@ -30,7 +30,7 @@ namespace ET.Server
 
             MoveComponent moveComponent = unit.GetComponent<MoveComponent>();
             
-            bool ret = await moveComponent.MoveToAsync(m2CPathfindingResult.Points, speed);
+            bool ret = await moveComponent.MoveToAsync(m2CPathfindingResult.Points, speed, turnTime);
             if (ret) // 如果返回false，说明被其它移动取消了，这时候不需要通知客户端stop
             {
                 unit.SendStop(0);

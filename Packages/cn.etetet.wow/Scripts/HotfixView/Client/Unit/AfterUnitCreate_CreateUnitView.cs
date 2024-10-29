@@ -22,6 +22,7 @@ namespace ET.Client
             if (scene.Root().GetComponent<PlayerComponent>().MyId == unit.Id)
             {
                 unit.AddComponent<CinemachineComponent>();
+                unit.AddComponent<PlayerControlComponent>();
             }
             
             await ETTask.CompletedTask;

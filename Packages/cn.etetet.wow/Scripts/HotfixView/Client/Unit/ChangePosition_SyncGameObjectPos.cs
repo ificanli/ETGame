@@ -15,7 +15,20 @@ namespace ET.Client
             }
 
             Transform transform = gameObjectComponent.Transform;
-            transform.position = unit.Position;
+
+            Vector3 unitPos = unit.Position;
+            
+            Ray ray = new(new Vector3(unitPos.x, unitPos.y + 100, unitPos.z), Vector3.down);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                transform.position = hit.point;    
+            }
+            else
+            {
+                transform.position = unit.Position;
+            }
+            
             await ETTask.CompletedTask;
         }
     }

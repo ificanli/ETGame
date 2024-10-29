@@ -10,7 +10,8 @@
             "ET.Loader",
             "ET.Model",
             "ET.UI",
-            "ET.Init"
+            "ET.Init",
+            "Unity.InputSystem"
         ],
         "Model": [
             "ET.Core",
@@ -30,7 +31,8 @@
             "ET.YooAssets",
             "ET.UI",
             "ET.ReferenceCollector",
-            "ET.Init"
+            "ET.Init",
+            "Unity.InputSystem"
         ],
         "Hotfix": [
             "ET.Core",
