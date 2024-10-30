@@ -20,7 +20,7 @@ namespace ET
             DtMeshSetReader reader = new();
             using MemoryStream ms = new(buffer);
             using BinaryReader br = new(ms);
-            self.navMesh = reader.Read32Bit(br, 6); // cpp recast导出来的要用Read32Bit读取，DotRecast导出来的还没试过
+            self.navMesh = reader.Read(br, 6); // cpp recast导出来的要用Read32Bit读取，DotRecast导出来的还没试过
             
             if (self.navMesh == null)
             {

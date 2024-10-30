@@ -21,7 +21,7 @@ namespace ET.Client
             // 贴地
             Ray ray = new(new Vector3(unitPos.x, unitPos.y + 100, unitPos.z), Vector3.down);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, 200, LayerMask.GetMask("Map")))
             {
                 transform.position = hit.point;    
             }
