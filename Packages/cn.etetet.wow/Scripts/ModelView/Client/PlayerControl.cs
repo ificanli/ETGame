@@ -26,13 +26,22 @@ namespace ET
     ""name"": ""PlayerControl"",
     ""maps"": [
         {
-            ""name"": ""Normal"",
+            ""name"": ""Player"",
             ""id"": ""baedb305-61ba-4e62-8284-b7b8447157f6"",
             ""actions"": [
                 {
                     ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""9f7d9142-7086-458a-96af-5f79c12fafaa"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""acfd1329-4e07-496d-898c-8d575effb5e9"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -94,6 +103,17 @@ namespace ET
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""082a029c-2cd6-476f-888d-cc923d54fe83"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PlayerControl"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -106,9 +126,10 @@ namespace ET
         }
     ]
 }");
-            // Normal
-            m_Normal = asset.FindActionMap("Normal", throwIfNotFound: true);
-            m_Normal_Move = m_Normal.FindAction("Move", throwIfNotFound: true);
+            // Player
+            m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+            m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+            m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -167,51 +188,59 @@ namespace ET
             return asset.FindBinding(bindingMask, out action);
         }
 
-        // Normal
-        private readonly InputActionMap m_Normal;
-        private List<INormalActions> m_NormalActionsCallbackInterfaces = new List<INormalActions>();
-        private readonly InputAction m_Normal_Move;
-        public struct NormalActions
+        // Player
+        private readonly InputActionMap m_Player;
+        private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
+        private readonly InputAction m_Player_Move;
+        private readonly InputAction m_Player_Look;
+        public struct PlayerActions
         {
             private @PlayerControl m_Wrapper;
-            public NormalActions(@PlayerControl wrapper) { m_Wrapper = wrapper; }
-            public InputAction @Move => m_Wrapper.m_Normal_Move;
-            public InputActionMap Get() { return m_Wrapper.m_Normal; }
+            public PlayerActions(@PlayerControl wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Move => m_Wrapper.m_Player_Move;
+            public InputAction @Look => m_Wrapper.m_Player_Look;
+            public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
             public bool enabled => Get().enabled;
-            public static implicit operator InputActionMap(NormalActions set) { return set.Get(); }
-            public void AddCallbacks(INormalActions instance)
+            public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+            public void AddCallbacks(IPlayerActions instance)
             {
-                if (instance == null || m_Wrapper.m_NormalActionsCallbackInterfaces.Contains(instance)) return;
-                m_Wrapper.m_NormalActionsCallbackInterfaces.Add(instance);
+                if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
+                @Look.started += instance.OnLook;
+                @Look.performed += instance.OnLook;
+                @Look.canceled += instance.OnLook;
             }
 
-            private void UnregisterCallbacks(INormalActions instance)
+            private void UnregisterCallbacks(IPlayerActions instance)
             {
                 @Move.started -= instance.OnMove;
                 @Move.performed -= instance.OnMove;
                 @Move.canceled -= instance.OnMove;
+                @Look.started -= instance.OnLook;
+                @Look.performed -= instance.OnLook;
+                @Look.canceled -= instance.OnLook;
             }
 
-            public void RemoveCallbacks(INormalActions instance)
+            public void RemoveCallbacks(IPlayerActions instance)
             {
-                if (m_Wrapper.m_NormalActionsCallbackInterfaces.Remove(instance))
+                if (m_Wrapper.m_PlayerActionsCallbackInterfaces.Remove(instance))
                     UnregisterCallbacks(instance);
             }
 
-            public void SetCallbacks(INormalActions instance)
+            public void SetCallbacks(IPlayerActions instance)
             {
-                foreach (var item in m_Wrapper.m_NormalActionsCallbackInterfaces)
+                foreach (var item in m_Wrapper.m_PlayerActionsCallbackInterfaces)
                     UnregisterCallbacks(item);
-                m_Wrapper.m_NormalActionsCallbackInterfaces.Clear();
+                m_Wrapper.m_PlayerActionsCallbackInterfaces.Clear();
                 AddCallbacks(instance);
             }
         }
-        public NormalActions @Normal => new NormalActions(this);
+        public PlayerActions @Player => new PlayerActions(this);
         private int m_PlayerControlSchemeIndex = -1;
         public InputControlScheme PlayerControlScheme
         {
@@ -221,9 +250,10 @@ namespace ET
                 return asset.controlSchemes[m_PlayerControlSchemeIndex];
             }
         }
-        public interface INormalActions
+        public interface IPlayerActions
         {
             void OnMove(InputAction.CallbackContext context);
+            void OnLook(InputAction.CallbackContext context);
         }
     }
 }

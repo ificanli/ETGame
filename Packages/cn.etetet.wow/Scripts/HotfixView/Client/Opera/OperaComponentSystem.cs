@@ -32,7 +32,7 @@ namespace ET.Client
                 CodeLoader.Instance.Reload();
             }
         }
-        
+        /*
         private static async ETTask Test1(this OperaComponent self)
         {
             Log.Debug($"Croutine 1 start1 ");
@@ -73,5 +73,6 @@ namespace ET.Client
             }
             Log.Debug($"TestCancelAfter end");
         }
+        */
     }
 }

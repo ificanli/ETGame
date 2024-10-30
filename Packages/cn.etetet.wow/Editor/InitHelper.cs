@@ -5,7 +5,7 @@ namespace ET
 {
     public static class InitHelper
     {
-        [MenuItem("ET/StateSync/Init")]
+        [MenuItem("ET/WOW/Init")]
         public static void Init()
         {
             HybridCLREditor.Init();
