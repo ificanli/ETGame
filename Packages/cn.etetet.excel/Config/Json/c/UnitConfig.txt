@@ -1,5 +1,15 @@
 {"dict": [
-[1001, {"_t":"UnitConfig","_id":1001,"Type":5001,"Name":"米克尔","Position":[127000,51300,-155000],"Height":178}],
-[1002, {"_t":"UnitConfig","_id":1002,"Type":5002,"Name":"野猪","Position":[127000,51300,-155000],"Height":50}],
-[1003, {"_t":"UnitConfig","_id":1003,"Type":5003,"Name":"熊","Position":[127000,51300,-155000],"Height":200}],
+[1001, {"_t":"UnitConfig","_id":1001,"Type":5001,"Name":"Character_HumanMale","KV":[0]}],
+[1002, {"_t":"UnitConfig","_id":1002,"Type":5002,"Name":"TrainingDummy","KV":[0]}],
+[1003, {"_t":"UnitConfig","_id":1003,"Type":5002,"Name":"TrainingDummy","KV":[0]}],
+[1004, {"_t":"UnitConfig","_id":1004,"Type":5002,"Name":"Boar","KV":[0]}],
+[1005, {"_t":"UnitConfig","_id":1005,"Type":5002,"Name":"Boar","KV":[0]}],
+[1006, {"_t":"UnitConfig","_id":1006,"Type":5002,"Name":"Boar","KV":[0]}],
+[1007, {"_t":"UnitConfig","_id":1007,"Type":5002,"Name":"Boar","KV":[0]}],
+[1008, {"_t":"UnitConfig","_id":1008,"Type":5002,"Name":"Boar","KV":[0]}],
+[1009, {"_t":"UnitConfig","_id":1009,"Type":5002,"Name":"Bear","KV":[0]}],
+[1010, {"_t":"UnitConfig","_id":1010,"Type":5002,"Name":"Bear","KV":[0]}],
+[1011, {"_t":"UnitConfig","_id":1011,"Type":5002,"Name":"Bear","KV":[0]}],
+[1012, {"_t":"UnitConfig","_id":1012,"Type":5002,"Name":"Bear","KV":[0]}],
+[1013, {"_t":"UnitConfig","_id":1013,"Type":5002,"Name":"Bear","KV":[0]}],
 ]}

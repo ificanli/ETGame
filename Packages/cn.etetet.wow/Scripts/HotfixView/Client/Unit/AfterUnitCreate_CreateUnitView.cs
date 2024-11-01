@@ -10,7 +10,7 @@ namespace ET.Client
         {
             Unit unit = args.Unit;
             // Unit View层
-            string assetsName = $"Packages/cn.etetet.wow/Bundles/Units/Character_HumanMale.prefab";
+            string assetsName = $"Packages/cn.etetet.wow/Bundles/Units/{unit.Config().Name}.prefab";
             GameObject bundleGameObject = await scene.GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(assetsName);
 
             GlobalComponent globalComponent = scene.Root().GetComponent<GlobalComponent>();

@@ -7,28 +7,28 @@ using System.ComponentModel;
 namespace ET
 {
     [Config]
-    public partial class UnitConfigCategory : Singleton<UnitConfigCategory>, IMerge
+    public partial class NumericConfigCategory : Singleton<NumericConfigCategory>, IMerge
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
-        private Dictionary<int, UnitConfig> dict = new();
+        private Dictionary<int, NumericConfig> dict = new();
 		
         public void Merge(object o)
         {
-            UnitConfigCategory s = o as UnitConfigCategory;
+            NumericConfigCategory s = o as NumericConfigCategory;
             foreach (var kv in s.dict)
             {
                 this.dict.Add(kv.Key, kv.Value);
             }
         }
 		
-        public UnitConfig Get(int id)
+        public NumericConfig Get(int id)
         {
-            this.dict.TryGetValue(id, out UnitConfig item);
+            this.dict.TryGetValue(id, out NumericConfig item);
 
             if (item == null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (UnitConfig)}，配置id: {id}");
+                throw new Exception($"配置找不到，配置表名: {nameof (NumericConfig)}，配置id: {id}");
             }
 
             return item;
@@ -39,12 +39,12 @@ namespace ET
             return this.dict.ContainsKey(id);
         }
 
-        public Dictionary<int, UnitConfig> GetAll()
+        public Dictionary<int, NumericConfig> GetAll()
         {
             return this.dict;
         }
 
-        public UnitConfig GetOne()
+        public NumericConfig GetOne()
         {
             if (this.dict == null || this.dict.Count <= 0)
             {
@@ -57,16 +57,12 @@ namespace ET
         }
     }
 
-	public partial class UnitConfig: ProtoObject, IConfig
+	public partial class NumericConfig: ProtoObject, IConfig
 	{
 		/// <summary>Id</summary>
 		public int Id { get; set; }
-		/// <summary>Type</summary>
-		public int Type { get; set; }
 		/// <summary>名字</summary>
 		public string Name { get; set; }
-		/// <summary>KV</summary>
-		public int[] KV { get; set; }
 
 	}
 }

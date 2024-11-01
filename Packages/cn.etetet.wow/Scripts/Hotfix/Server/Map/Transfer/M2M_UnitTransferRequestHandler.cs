@@ -22,8 +22,6 @@ namespace ET.Server
 
             unit.AddComponent<MoveComponent>();
             unit.AddComponent<PathfindingComponent, string>(scene.Name);
-            UnitConfig unitConfig = unit.Config();
-            unit.Position = new float3(unitConfig.Position[0], unitConfig.Position[1], unitConfig.Position[2]) / 1000f;
 
             unit.AddComponent<MailBoxComponent, int>(MailBoxType.OrderedMessage);
 

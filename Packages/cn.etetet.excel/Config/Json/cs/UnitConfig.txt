@@ -1,5 +1,15 @@
 {"dict": [
-[1001, {"_t":"UnitConfig","_id":1001,"Type":5001,"Name":"米克尔","Position":[127000,51300,-155000],"Height":178,"Weight":68}],
-[1002, {"_t":"UnitConfig","_id":1002,"Type":5002,"Name":"野猪","Position":[127000,51300,-155000],"Height":50,"Weight":30}],
-[1003, {"_t":"UnitConfig","_id":1003,"Type":5003,"Name":"熊","Position":[127000,51300,-155000],"Height":200,"Weight":68}],
+[1001, {"_t":"UnitConfig","_id":1001,"Type":5001,"Name":"Character_HumanMale","Position":[127000,51300,-155000],"KV":[0],"Speed":6000,"Radius":6800,"AOI":15000,"Height":1780,"Weight":68000,"AI":0}],
+[1002, {"_t":"UnitConfig","_id":1002,"Type":5002,"Name":"TrainingDummy","Position":[56000,30000,-138000],"KV":[0],"Speed":0,"Radius":3000,"AOI":0,"Height":500,"Weight":30000,"AI":1}],
+[1003, {"_t":"UnitConfig","_id":1003,"Type":5002,"Name":"TrainingDummy","Position":[58740,29090,-148001],"KV":[0],"Speed":0,"Radius":3000,"AOI":0,"Height":500,"Weight":30000,"AI":1}],
+[1004, {"_t":"UnitConfig","_id":1004,"Type":5002,"Name":"Boar","Position":[21600,26800,-58702],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1005, {"_t":"UnitConfig","_id":1005,"Type":5002,"Name":"Boar","Position":[56000,25180,-23633],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1006, {"_t":"UnitConfig","_id":1006,"Type":5002,"Name":"Boar","Position":[36310,25180,-23634],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1007, {"_t":"UnitConfig","_id":1007,"Type":5002,"Name":"Boar","Position":[67170,25180,-40495],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1008, {"_t":"UnitConfig","_id":1008,"Type":5002,"Name":"Boar","Position":[59600,25800,-87866],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1009, {"_t":"UnitConfig","_id":1009,"Type":5002,"Name":"Bear","Position":[58740,28100,-141407],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1010, {"_t":"UnitConfig","_id":1010,"Type":5002,"Name":"Bear","Position":[58740,28100,-130408],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1011, {"_t":"UnitConfig","_id":1011,"Type":5002,"Name":"Bear","Position":[67480,28850,-130409],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1012, {"_t":"UnitConfig","_id":1012,"Type":5002,"Name":"Bear","Position":[67480,27510,-34791],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
+[1013, {"_t":"UnitConfig","_id":1013,"Type":5002,"Name":"Bear","Position":[67480,25900,-93811],"KV":[0],"Speed":4000,"Radius":3000,"AOI":4000,"Height":500,"Weight":30000,"AI":1}],
 ]}

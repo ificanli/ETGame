@@ -13,10 +13,21 @@ namespace ET.Server
             root.AddComponent<CoroutineLockComponent>();
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
-            root.AddComponent<UnitComponent>();
+            UnitComponent unitComponent = root.AddComponent<UnitComponent>();
             root.AddComponent<AOIManagerComponent>();
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<MessageLocationSenderComponent>();
+
+            foreach ((int _, UnitConfig unitConfig) in UnitConfigCategory.Instance.GetAll())
+            {
+                if (unitConfig.Type == UnitType.Player)
+                {
+                    continue;
+                }
+
+                Unit unit = UnitFactory.Create(root, IdGenerater.Instance.GenerateId(), unitConfig.Id);
+                unitComponent.Add(unit);
+            }
 
             await ETTask.CompletedTask;
         }
