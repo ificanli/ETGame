@@ -65,8 +65,8 @@ namespace ET
 		public int Type { get; set; }
 		/// <summary>名字</summary>
 		public string Name { get; set; }
-		/// <summary>位置</summary>
-		public int Position { get; set; }
+		/// <summary>初始位置</summary>
+		public int[] Position { get; set; }
 		/// <summary>身高</summary>
 		public int Height { get; set; }
 
