@@ -65,8 +65,6 @@ namespace ET
 		public int Type { get; set; }
 		/// <summary>名字</summary>
 		public string Name { get; set; }
-		/// <summary>KV</summary>
-		public int[] KV { get; set; }
 
 	}
 }

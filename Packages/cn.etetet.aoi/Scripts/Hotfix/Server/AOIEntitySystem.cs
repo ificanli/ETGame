@@ -8,10 +8,12 @@ namespace ET.Server
     public static partial class AOIEntitySystem2
     {
         [EntitySystem]
-        private static void Awake(this AOIEntity self, int distance, float3 pos)
+        private static void Awake(this AOIEntity self)
         {
-            self.ViewDistance = distance;
-            self.Scene().GetComponent<AOIManagerComponent>().Add(self, pos.x, pos.z);
+            Unit unit = self.GetParent<Unit>();
+            NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            self.ViewDistance = numericComponent.GetAsInt(NumericType.AOI);
+            self.Scene().GetComponent<AOIManagerComponent>().Add(self, unit.Position.x, unit.Position.z);
         }
 
         [EntitySystem]

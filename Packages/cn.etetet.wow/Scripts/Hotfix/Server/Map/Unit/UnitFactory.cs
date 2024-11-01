@@ -13,11 +13,15 @@ namespace ET.Server
             UnitConfig unitConfig = unit.Config();
             unit.Position = new float3(unitConfig.Position[0], unitConfig.Position[1], unitConfig.Position[2]) / 1000f;
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
-            numericComponent.Set(NumericType.Speed, unitConfig.Speed / 1000f); // 速度是6米每秒
-            numericComponent.Set(NumericType.AOI, unitConfig.AOI / 1000); // 视野15米
+
+            for (int i = 0; i < unitConfig.KV.Length; i += 2)
+            {
+                numericComponent.Set(unitConfig.KV[i], unitConfig.KV[i + 1]);
+            }
+            
             unit.AddComponent<MoveComponent>();
             // 加入aoi
-            unit.AddComponent<AOIEntity, int, float3>(numericComponent.GetAsInt(NumericType.AOI), unit.Position);
+            unit.AddComponent<AOIEntity>();
             
             switch (unitConfig.Type)
             {

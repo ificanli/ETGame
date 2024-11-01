@@ -22,7 +22,7 @@
 	    public const int MaxHpFinalAdd = MaxHp * 10 + 4;
 	    public const int MaxHpFinalPct = MaxHp * 10 + 5;
 
-	    public const int AOI = 1003;
+	    public const int AOI = 1006;
 	    public const int AOIBase = AOI * 10 + 1;
 	    public const int AOIAdd = AOI * 10 + 2;
 	    public const int AOIPct = AOI * 10 + 3;

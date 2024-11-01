@@ -69,18 +69,6 @@ namespace ET
 		public int[] Position { get; set; }
 		/// <summary>KV</summary>
 		public int[] KV { get; set; }
-		/// <summary>速度</summary>
-		public int Speed { get; set; }
-		/// <summary>半径</summary>
-		public int Radius { get; set; }
-		/// <summary>视野距离</summary>
-		public int AOI { get; set; }
-		/// <summary>身高</summary>
-		public int Height { get; set; }
-		/// <summary>体重</summary>
-		public int Weight { get; set; }
-		/// <summary>AI</summary>
-		public int AI { get; set; }
 
 	}
 }

@@ -9,7 +9,7 @@ namespace ET
     {
         public static float GetAsFloat(this NumericComponent self, int numericType)
         {
-            return (float)self.GetByKey(numericType) / 10000;
+            return (float)self.GetByKey(numericType) / 1000;
         }
 
         public static int GetAsInt(this NumericComponent self, int numericType)
