@@ -16,19 +16,10 @@ namespace ET.Client
 
             Transform transform = gameObjectComponent.Transform;
 
-            Vector3 unitPos = unit.Position;
+            transform.position = unit.Position;
             
             // 贴地
-            Ray ray = new(new Vector3(unitPos.x, unitPos.y + 100, unitPos.z), Vector3.down);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 200, LayerMask.GetMask("Map")))
-            {
-                transform.position = hit.point;    
-            }
-            else
-            {
-                transform.position = unit.Position;
-            }
+            GameObjectPosHelper.OnTerrain(transform);
 
             // 摄像机跟随
             CinemachineComponent cinemachineComponent = unit.GetComponent<CinemachineComponent>();
