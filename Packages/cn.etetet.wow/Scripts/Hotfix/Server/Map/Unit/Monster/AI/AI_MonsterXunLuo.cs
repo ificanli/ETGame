@@ -19,6 +19,8 @@ namespace ET.Server
 
             UnitConfig unitConfig = unit.Config();
             float3 birthPos = new float3(unitConfig.Position[0], unitConfig.Position[1], unitConfig.Position[2]) / 1000f;
+
+            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
             while (true)
             {
@@ -27,9 +29,17 @@ namespace ET.Server
                 
                 // 走过去
                 await unit.FindPathMoveToAsync(randomPos);
+                if (cancellationToken.IsCancel())
+                {
+                    return;
+                }
                 
                 // 等待一段时间
                 await root.GetComponent<TimerComponent>().WaitAsync(4000);
+                if (cancellationToken.IsCancel())
+                {
+                    return;
+                }
             }
         }
     }

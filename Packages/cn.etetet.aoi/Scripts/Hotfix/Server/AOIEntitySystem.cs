@@ -19,7 +19,12 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this AOIEntity self)
         {
-            self.Scene().GetComponent<AOIManagerComponent>()?.Remove(self);
+            Scene scene = self.Scene();
+            if (scene.IsDisposed)
+            {
+                return;
+            }
+            scene.GetComponent<AOIManagerComponent>()?.Remove(self);
             self.ViewDistance = 0;
             self.SeeUnits.Clear();
             self.SeePlayers.Clear();
