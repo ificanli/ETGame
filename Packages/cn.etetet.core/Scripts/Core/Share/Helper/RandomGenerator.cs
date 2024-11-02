@@ -11,7 +11,7 @@ namespace ET
         [ThreadStatic]
         private static Random random;
 
-        private static Random GetRandom()
+        public static Random GetRandom()
         {
             return random ??= new Random(Guid.NewGuid().GetHashCode() ^ Environment.TickCount);
         }

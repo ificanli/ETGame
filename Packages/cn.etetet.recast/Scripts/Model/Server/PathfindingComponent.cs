@@ -5,6 +5,21 @@ using DotRecast.Detour;
 
 namespace ET
 {
+    [EnableClass]
+    public class RecastRandom: IRcRand
+    {
+        public float Next()
+        {
+            int random = RandomGenerator.GetRandom().Next();
+            float f;
+            unsafe
+            {
+                f = *(float*)&random;
+            }
+            return f;
+        }
+    }
+    
     /// <summary>
     /// 同一块地图可能有多种寻路数据，玩家可以随时切换，怪物也可能跟玩家的寻路不一样，寻路组件应该挂在Unit上
     /// </summary>
@@ -28,5 +43,7 @@ namespace ET
         public List<StraightPathItem> straightPath = new();
 
         public DtNavMeshQuery query;
+
+        public RecastRandom NavmeshRandom { get; } = new();
     }
 }

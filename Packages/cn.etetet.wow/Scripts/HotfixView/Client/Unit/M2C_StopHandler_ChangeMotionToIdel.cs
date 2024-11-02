@@ -15,7 +15,10 @@ namespace ET.Client
 			}
 
 			Animator animator = unit.GetComponent<GameObjectComponent>().GameObject.GetComponent<Animator>();
-			animator.SetFloat("VerticalSpeed", 0);
+			if (animator != null)
+			{
+				animator.SetFloat("VerticalSpeed", 0);
+			}
 			await ETTask.CompletedTask;
 		}
 	}

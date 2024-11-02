@@ -61,12 +61,6 @@ namespace ET.Client
             
             Vector3 rotV = Quaternion.Euler(eulerAngles) * new float3(v.x, 0, v.y);
             
-            
-            // 动作
-            Animator animator = unit.GetComponent<GameObjectComponent>().GameObject.GetComponent<Animator>();
-            animator.SetFloat("VerticalSpeed", v.magnitude);
-            
-            
             C2M_PathfindingResult c2MPathfindingResult = C2M_PathfindingResult.Create();
             c2MPathfindingResult.Position = unit.Position + new float3(rotV);
             

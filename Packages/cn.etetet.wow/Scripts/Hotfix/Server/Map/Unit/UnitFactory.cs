@@ -31,7 +31,13 @@ namespace ET.Server
                 }
                 case UnitType.Monster:
                 {
-                    //unit.AddComponent<AIComponent, int>(unitConfig.AI);
+                    unit.AddComponent<PathfindingComponent, string>(scene.Name);
+                    
+                    int ai = numericComponent.GetAsInt(NumericType.AI);
+                    if (ai != 0)
+                    {
+                        unit.AddComponent<AIComponent, int>(ai);
+                    }
                     break;
                 }
             }

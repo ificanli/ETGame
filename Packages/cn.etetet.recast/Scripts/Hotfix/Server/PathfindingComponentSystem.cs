@@ -15,12 +15,7 @@ namespace ET
         private static void Awake(this PathfindingComponent self, string name)
         {
             self.Name = name;
-            byte[] buffer = NavmeshComponent.Instance.Get(name);
-            
-            DtMeshSetReader reader = new();
-            using MemoryStream ms = new(buffer);
-            using BinaryReader br = new(ms);
-            self.navMesh = reader.Read(br, 6); // cpp recast导出来的要用Read32Bit读取，DotRecast导出来的还没试过
+            self.navMesh = NavmeshComponent.Instance.Get(name);
             
             if (self.navMesh == null)
             {
@@ -82,6 +77,58 @@ namespace ET
                 RcVec3f pos = self.straightPath[i].pos;
                 result.Add(new float3(-pos.x, pos.y, pos.z));
             }
+        }
+        
+        public static float3 FindRandomPointAroundCircle(this PathfindingComponent self, float3 center, float radius)
+        {
+            if (self.navMesh == null)
+            {
+                throw new Exception($"pathfinding ptr is zero: {self.Scene().Name}");
+            }
+
+            RcVec3f centerPos = new(-center.x, center.y, center.z);
+            
+            self.query.FindNearestPoly(centerPos, self.extents, self.filter, out long startRef, out RcVec3f startPos, out _);
+            
+            DtStatus dtStatus = self.query.FindRandomPointAroundCircle(startRef, startPos, radius, self.filter, self.NavmeshRandom, out _, out RcVec3f endPt);
+            if (!dtStatus.Succeeded())
+            {
+                //throw new Exception($"FindRandomPointAroundCircle error: {self.Scene().Name} {dtStatus.Value}");
+                startPos = centerPos;
+            }
+
+            return new float3(-endPt.x, endPt.y, endPt.z);
+        }
+        
+        public static float3 FindRandomPointWithRaduis(this PathfindingComponent self, float3 pos, float minRadius, float maxRadius)
+        {
+            if (self.navMesh == null)
+            {
+                throw new Exception($"pathfinding ptr is zero: {self.Scene().Name}");
+            }
+            
+            int degrees = RandomGenerator.RandomNumber(0, 360);
+            float r = RandomGenerator.RandomNumber((int) (minRadius * 1000), (int) (maxRadius * 1000)) / 1000f;
+
+            float x = r * math.cos(math.radians(degrees));
+            float z = r * math.sin(math.radians(degrees));
+
+            float3 findpos = new(pos.x + x, pos.y, pos.z + z);
+
+            return self.RecastFindNearestPoint(findpos);
+        }
+
+        public static float3 RecastFindNearestPoint(this PathfindingComponent self, float3 pos)
+        {
+            if (self.navMesh == null)
+            {
+                throw new Exception($"pathfinding ptr is zero: {self.Scene().Name}");
+            }
+
+            RcVec3f startPos = new(-pos.x, pos.y, pos.z);
+            self.query.FindNearestPoly(startPos, self.extents, self.filter, out long startRef, out RcVec3f startPt, out _);
+            
+            return new float3(-startPt[0], startPt[1], startPt[2]);
         }
     }
 }
