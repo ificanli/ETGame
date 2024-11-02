@@ -5,16 +5,11 @@
     {
         public override void Handle(MailBoxInvoker args)
         {
-            HandleAsync(args).NoContext();
-        }
-        
-        private static async ETTask HandleAsync(MailBoxInvoker args)
-        {
             MailBoxComponent mailBoxComponent = args.MailBoxComponent;
             
             MessageObject messageObject = args.MessageObject;
             
-            await MessageDispatcher.Instance.Handle(mailBoxComponent.Parent, args.FromAddress, messageObject);
+            MessageDispatcher.Instance.Handle(mailBoxComponent.Parent, args.FromAddress, messageObject);
         }
     }
 }

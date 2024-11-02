@@ -78,7 +78,7 @@ namespace ET
             this.messageHandlers[type].Add(handler);
         }
 
-        public async ETTask Handle(Entity entity, Address fromAddress, MessageObject message)
+        public async ETTask HandleAsync(Entity entity, Address fromAddress, MessageObject message)
         {
             List<MessageDispatcherInfo> list;
             if (!this.messageHandlers.TryGetValue(message.GetType(), out list))
@@ -94,6 +94,25 @@ namespace ET
                     continue;
                 }
                 await actorMessageDispatcherInfo.IMHandler.Handle(entity, fromAddress, message);   
+            }
+        }
+        
+        public void Handle(Entity entity, Address fromAddress, MessageObject message)
+        {
+            List<MessageDispatcherInfo> list;
+            if (!this.messageHandlers.TryGetValue(message.GetType(), out list))
+            {
+                throw new Exception($"not found message handler: {message} {entity.GetType().FullName}");
+            }
+
+            int sceneType = entity.IScene.SceneType;
+            foreach (MessageDispatcherInfo actorMessageDispatcherInfo in list)
+            {
+                if (!SceneTypeSingleton.IsSame(actorMessageDispatcherInfo.SceneType, sceneType))
+                {
+                    continue;
+                }
+                actorMessageDispatcherInfo.IMHandler.Handle(entity, fromAddress, message).NoContext();   
             }
         }
     }

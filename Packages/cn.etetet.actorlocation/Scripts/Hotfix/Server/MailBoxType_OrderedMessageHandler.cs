@@ -32,7 +32,7 @@
                     }
                     return;
                 }
-                await MessageDispatcher.Instance.Handle(mailBoxComponent.Parent, args.FromAddress, messageObject);
+                await MessageDispatcher.Instance.HandleAsync(mailBoxComponent.Parent, args.FromAddress, messageObject);
             }
         }
     }
