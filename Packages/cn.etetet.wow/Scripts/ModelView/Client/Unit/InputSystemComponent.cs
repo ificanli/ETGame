@@ -3,9 +3,9 @@
 namespace ET.Client
 {
     [ComponentOf(typeof(Unit))]
-    public partial class PlayerControlComponent: Entity, IAwake, IUpdate
+    public partial class InputSystemComponent: Entity, IAwake, IUpdate
     {
-        public PlayerControl PlayerControl;
+        public InputSystem InputSystem;
         public long PressTime;
 
         public EntityRef<CinemachineComponent> CinemachineComponent;

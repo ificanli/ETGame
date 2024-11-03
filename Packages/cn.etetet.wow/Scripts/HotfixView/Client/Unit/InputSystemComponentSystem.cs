@@ -4,35 +4,35 @@ using UnityEngine.InputSystem;
 
 namespace ET.Client
 {
-    [EntitySystemOf(typeof(PlayerControlComponent))]
-    public static partial class PlayerControlComponentSystem
+    [EntitySystemOf(typeof(InputSystemComponent))]
+    public static partial class InputSystemComponentSystem
     {
         [EntitySystem]
-        private static void Awake(this PlayerControlComponent self)
+        private static void Awake(this InputSystemComponent self)
         {
             self.CinemachineComponent = self.GetParent<Unit>().GetComponent<CinemachineComponent>();
             
-            self.PlayerControl = new PlayerControl();
-            self.PlayerControl.Player.Enable();
+            self.InputSystem = new InputSystem();
+            self.InputSystem.Player.Enable();
 
-            self.PlayerControl.Player.Look.performed += self.OnLookChange;
+            self.InputSystem.Player.Look.performed += self.OnLookChange;
         }
         
         [EntitySystem]
-        private static void Update(this PlayerControlComponent self)
+        private static void Update(this InputSystemComponent self)
         {
-            if (self.PlayerControl.Player.Move.IsPressed())
+            if (self.InputSystem.Player.Move.IsPressed())
             {
                 if (TimeInfo.Instance.FrameTime - self.PressTime > 100)
                 {
                     self.PressTime = TimeInfo.Instance.FrameTime;
-                    Vector2 v = self.PlayerControl.Player.Move.ReadValue<Vector2>();
+                    Vector2 v = self.InputSystem.Player.Move.ReadValue<Vector2>();
                     self.Move(v);    
                 }
             }
         }
 
-        private static void OnLookChange(this PlayerControlComponent self, InputAction.CallbackContext context)
+        private static void OnLookChange(this InputSystemComponent self, InputAction.CallbackContext context)
         {
             if (!Mouse.current.rightButton.isPressed)
             {
@@ -44,7 +44,7 @@ namespace ET.Client
             cinemachineComponent.RotationFollow(v);
         }
         
-        private static void Move(this PlayerControlComponent self, Vector2 v)
+        private static void Move(this InputSystemComponent self, Vector2 v)
         {
             if (v.magnitude < 0.001f)
             {

@@ -25,13 +25,6 @@ namespace ET.Server
                 return;
             }
             scene.GetComponent<AOIManagerComponent>()?.Remove(self);
-            self.ViewDistance = 0;
-            self.SeeUnits.Clear();
-            self.SeePlayers.Clear();
-            self.BeSeePlayers.Clear();
-            self.BeSeeUnits.Clear();
-            self.SubEnterCells.Clear();
-            self.SubLeaveCells.Clear();
         }
     }
 
