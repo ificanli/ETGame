@@ -31,7 +31,18 @@ namespace ET.Client
             {
                 CodeLoader.Instance.Reload();
             }
+            
+            if (Keyboard.current.gKey.wasPressedThisFrame)
+            {
+                self.Test().NoContext();
+            }
         }
+
+        private static async ETTask Test(this OperaComponent self)
+        {
+            await self.Root().GetComponent<ClientSenderComponent>().Call(C2M_TestRobotCase.Create());
+        }
+        
         /*
         private static async ETTask Test1(this OperaComponent self)
         {

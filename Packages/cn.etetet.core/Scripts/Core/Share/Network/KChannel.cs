@@ -46,13 +46,13 @@ namespace ET
 			switch (this.Service.ServiceType)
 			{
 				case ServiceType.Inner:
-					this.kcp.SetNoDelay(1, 10, 2, 1);
+					this.kcp.SetNoDelay(1, 1, 2, 1);
 					this.kcp.SetWindowSize(1024, 1024);
 					this.kcp.SetMtu(1400); // 默认1400
 					this.kcp.SetMinrto(30);
 					break;
 				case ServiceType.Outer:
-					this.kcp.SetNoDelay(1, 10, 2, 1);
+					this.kcp.SetNoDelay(1, 1, 2, 1);
 					this.kcp.SetWindowSize(256, 256);
 					this.kcp.SetMtu(470);
 					this.kcp.SetMinrto(30);
