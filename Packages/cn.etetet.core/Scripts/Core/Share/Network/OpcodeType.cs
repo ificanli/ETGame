@@ -30,7 +30,7 @@ namespace ET
                 ushort opcode = messageAttribute.Opcode;
                 if (opcode != 0)
                 {
-                    this.typeOpcode.Add(type, opcode);
+                    this.typeOpcode.Add(type, opcode);    
                 }
 
                 // 检查request response
@@ -57,7 +57,12 @@ namespace ET
         
         public ushort GetOpcode(Type type)
         {
-            return this.typeOpcode.GetValueByKey(type);
+            ushort opcode = this.typeOpcode.GetValueByKey(type);
+            if (opcode == 0)
+            {
+                throw new Exception($"OpcodeType not found opcode: {type.FullName}");
+            }
+            return opcode;
         }
 
         public Type GetType(ushort opcode)

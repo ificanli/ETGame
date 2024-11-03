@@ -1,6 +1,4 @@
-﻿using ET.Server;
-
-namespace ET.Client
+﻿namespace ET.Client
 {
     public static partial class SceneChangeHelper
     {

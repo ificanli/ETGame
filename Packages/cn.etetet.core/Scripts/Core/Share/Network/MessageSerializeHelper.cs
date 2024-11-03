@@ -32,7 +32,6 @@ namespace ET
         public static ushort MessageToStream(MemoryBuffer stream, MessageObject message, int headOffset = 0)
         {
             ushort opcode = OpcodeType.Instance.GetOpcode(message.GetType());
-            
             stream.Seek(headOffset + Packet.OpcodeLength, SeekOrigin.Begin);
             stream.SetLength(headOffset + Packet.OpcodeLength);
             
@@ -88,6 +87,7 @@ namespace ET
                     actorId.Fiber = BitConverter.ToInt32(buffer, Packet.ActorIdIndex + 4);
                     actorId.InstanceId = BitConverter.ToInt64(buffer, Packet.ActorIdIndex + 8);
                     ushort opcode = BitConverter.ToUInt16(buffer, Packet.ActorIdLength);
+                    
                     Type type = OpcodeType.Instance.GetType(opcode);
                     message = Deserialize(type, memoryStream);
                     break;

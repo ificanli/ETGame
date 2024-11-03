@@ -6,8 +6,11 @@ namespace ET
 {
     public class Options: Singleton<Options>
     {
-        [Option("SceneName", Required = false, Default = "Server", HelpText = "define in SceneType class")]
+        [Option("SceneName", Required = false, Default = "", HelpText = "define in SceneType class")]
         public string SceneName { get; set; }
+        
+        [Option("WatcherStartSceneName", Required = false, Default = "", HelpText = "define in SceneType class")]
+        public string WatcherStartSceneName { get; set; }
 
         [Option("StartConfig", Required = false, Default = "StartConfig/Localhost")]
         public string StartConfig { get; set; }

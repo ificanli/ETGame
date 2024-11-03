@@ -35,6 +35,7 @@ namespace ET.Server
                     int rpcId = actorLocationRequest.RpcId; // 这里要保存客户端的rpcId
                     long instanceId = session.InstanceId;
                     IResponse iResponse = await root.GetComponent<MessageLocationSenderComponent>().Get(LocationType.Unit).Call(unitId, actorLocationRequest);
+                    
                     iResponse.RpcId = rpcId;
                     // session可能已经断开了，所以这里需要判断
                     if (session.InstanceId == instanceId)

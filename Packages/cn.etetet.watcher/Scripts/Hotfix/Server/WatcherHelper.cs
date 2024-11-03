@@ -37,19 +37,19 @@ namespace ET.Server
             return true;
         }
         
-        public static System.Diagnostics.Process StartProcess(int processId, int createScenes = 0)
+        public static Process StartProcess(int processId)
         {
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(processId);
             const string exe = "dotnet";
-            string arguments = $"App.dll" + 
+            string arguments = $"Bin/ET.App.dll" + 
                     $" --Process={startProcessConfig.Id}" +
-                    $" --SceneName=Server" +  
+                    $" --SceneName={Options.Instance.WatcherStartSceneName}" +  
                     $" --StartConfig={Options.Instance.StartConfig}" +
                     $" --Develop={Options.Instance.Develop}" +
                     $" --LogLevel={Options.Instance.LogLevel}" +
                     $" --Console={Options.Instance.Console}";
             Log.Debug($"{exe} {arguments}");
-            System.Diagnostics.Process process = ProcessHelper.Run(exe, arguments);
+            Process process = ProcessHelper.Run(exe, arguments);
             return process;
         }
     }

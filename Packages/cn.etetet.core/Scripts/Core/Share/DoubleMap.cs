@@ -51,7 +51,7 @@ namespace ET
 		{
 			if (key == null || value == null || kv.ContainsKey(key) || vk.ContainsKey(value))
 			{
-				return;
+				throw new Exception($"kv error or existed: {key} {value}");
 			}
 			kv.Add(key, value);
 			vk.Add(value, key);
@@ -59,20 +59,20 @@ namespace ET
 
 		public V GetValueByKey(K key)
 		{
-			if (key != null && kv.ContainsKey(key))
+			if (key != null && this.kv.TryGetValue(key, out V byKey))
 			{
-				return kv[key];
+				return byKey;
 			}
-			return default(V);
+			return default;
 		}
 
 		public K GetKeyByValue(V value)
 		{
-			if (value != null && vk.ContainsKey(value))
+			if (value != null && this.vk.TryGetValue(value, value: out K byValue))
 			{
-				return vk[value];
+				return byValue;
 			}
-			return default(K);
+			return default;
 		}
 
 		public Dictionary<K, V> GetAll()
@@ -87,12 +87,11 @@ namespace ET
 				return;
 			}
 			V value;
-			if (!kv.TryGetValue(key, out value))
+			if (!this.kv.Remove(key, out value))
 			{
 				return;
 			}
 
-			kv.Remove(key);
 			vk.Remove(value);
 		}
 
