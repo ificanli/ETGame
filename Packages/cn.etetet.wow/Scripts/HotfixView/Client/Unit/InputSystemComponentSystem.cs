@@ -58,7 +58,7 @@ namespace ET.Client
             }
             
             Unit unit = self.GetParent<Unit>();
-            v = v.normalized;
+            v = v.normalized * 2;
             
             CinemachineComponent cinemachineComponent = self.CinemachineComponent;
             Vector3 eulerAngles = cinemachineComponent.Follow.rotation.eulerAngles;
