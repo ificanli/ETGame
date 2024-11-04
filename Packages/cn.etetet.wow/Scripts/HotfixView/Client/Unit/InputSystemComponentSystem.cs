@@ -15,7 +15,8 @@ namespace ET.Client
             self.InputSystem = new InputSystem();
             self.InputSystem.Player.Enable();
 
-            self.InputSystem.Player.Look.performed += self.OnLookChange;
+            self.InputSystem.Player.Look.performed += self.Look;
+            self.InputSystem.Player.Jump.performed += self.Jump;
         }
         
         [EntitySystem]
@@ -32,7 +33,7 @@ namespace ET.Client
             }
         }
 
-        private static void OnLookChange(this InputSystemComponent self, InputAction.CallbackContext context)
+        private static void Look(this InputSystemComponent self, InputAction.CallbackContext context)
         {
             if (!Mouse.current.rightButton.isPressed)
             {
@@ -46,6 +47,11 @@ namespace ET.Client
         
         private static void Move(this InputSystemComponent self, Vector2 v)
         {
+            if (self.IsJumping)
+            {
+                return;
+            }
+            
             if (v.magnitude < 0.001f)
             {
                 return;
@@ -65,6 +71,11 @@ namespace ET.Client
             c2MPathfindingResult.Position = unit.Position + new float3(rotV);
             
             self.Root().GetComponent<ClientSenderComponent>().Send(c2MPathfindingResult);
+        }
+
+        private static void Jump(this InputSystemComponent self, InputAction.CallbackContext context)
+        {
+            
         }
     }
 }

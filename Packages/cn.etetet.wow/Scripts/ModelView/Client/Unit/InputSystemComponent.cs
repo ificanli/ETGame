@@ -9,5 +9,7 @@ namespace ET.Client
         public long PressTime;
 
         public EntityRef<CinemachineComponent> CinemachineComponent;
+
+        public bool IsJumping;
     }
 }
