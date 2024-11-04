@@ -1,4 +1,3 @@
-#if DOTNET
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,4 +47,3 @@ namespace ET
         }
     }
 }
-#endif
