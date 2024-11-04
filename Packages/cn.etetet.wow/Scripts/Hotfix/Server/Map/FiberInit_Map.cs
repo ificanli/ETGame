@@ -17,6 +17,9 @@ namespace ET.Server
             root.AddComponent<AOIManagerComponent>();
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<MessageLocationSenderComponent>();
+            
+            // 加载场景寻路数据
+            await NavmeshComponent.Instance.Load(root.Name);
 
             foreach ((int _, UnitConfig unitConfig) in UnitConfigCategory.Instance.GetAll())
             {

@@ -17,6 +17,8 @@ namespace ET.Client
 			{
 				animator.SetFloat("VerticalSpeed", speed);
 			}
+
+			await ETTask.CompletedTask;
 		}
 	}
 }

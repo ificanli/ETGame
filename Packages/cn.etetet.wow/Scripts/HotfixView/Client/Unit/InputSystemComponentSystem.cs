@@ -66,11 +66,10 @@ namespace ET.Client
             eulerAngles.z = 0;
             
             Vector3 rotV = Quaternion.Euler(eulerAngles) * new float3(v.x, 0, v.y);
+
+            float3 targetPos = new float3(rotV) + unit.Position;
             
-            C2M_PathfindingResult c2MPathfindingResult = C2M_PathfindingResult.Create();
-            c2MPathfindingResult.Position = unit.Position + new float3(rotV);
-            
-            self.Root().GetComponent<ClientSenderComponent>().Send(c2MPathfindingResult);
+            unit.MoveToAsync(targetPos).NoContext();
         }
 
         private static void Jump(this InputSystemComponent self, InputAction.CallbackContext context)

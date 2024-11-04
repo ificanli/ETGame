@@ -14,6 +14,9 @@
             await WaitUnitCreateFinish(root, currentScene);
             
             EventSystem.Instance.Publish(root, new SceneChangeFinish());
+
+            // 加载场景寻路数据
+            await NavmeshComponent.Instance.Load(sceneName);
             
             // 通知等待场景切换的协程
             root.GetComponent<ObjectWait>().Notify(new Wait_SceneChangeFinish());
