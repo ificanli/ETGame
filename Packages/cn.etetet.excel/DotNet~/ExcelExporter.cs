@@ -16,6 +16,9 @@ using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace ET
 {
+
+    
+    
     public enum ConfigType
     {
         c = 0,
@@ -225,16 +228,6 @@ namespace ET
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-            }
-            finally
-            {
-                tables.Clear();
-                foreach (var kv in packages)
-                {
-                    kv.Value.Dispose();
-                }
-
-                packages.Clear();
             }
         }
 

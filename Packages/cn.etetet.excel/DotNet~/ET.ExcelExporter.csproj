@@ -46,6 +46,10 @@
       <Compile Include="..\Scripts\Model\Share\**\*.cs">
           <Link>Config\%(RecursiveDir)%(FileName)%(Extension)</Link>
       </Compile>
+
+        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\DotNet~\ExcelExporter\**\*.cs">
+            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
     </ItemGroup>
     
     <ItemGroup>
