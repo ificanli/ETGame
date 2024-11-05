@@ -14,7 +14,7 @@ namespace ET
             StringBuilder sb = new();
             sb.Append("namespace ET\n");
             sb.Append("{\n");
-            sb.Append("\tpublic partial class NumericType\n");
+            sb.Append("\tpublic static partial class NumericType\n");
             sb.Append("\t{\n");
             ExcelWorksheet workbookWorksheet = excelPackage.Workbook.Worksheets[0];
             for (int i = 6; i <= workbookWorksheet.Dimension.End.Row; ++i)

@@ -1,7 +1,7 @@
 ﻿namespace ET.Server
 {
-    [EffectHandler(0)]
-    public class EffectHandler_NumericChange: IEffectHandler
+    [EffectHandler(EffectType.NumericChange)]
+    public class EffectHandler_NumericChange: HandlerObject, IEffectHandler
     {
         public void Run(Effect effect)
         {

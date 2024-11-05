@@ -1,6 +1,6 @@
 namespace ET
 {
-	public partial class NumericType
+	public static partial class NumericType
 	{
 		public const int Speed = 1000;
 		public const int SpeedBase = 10001;
