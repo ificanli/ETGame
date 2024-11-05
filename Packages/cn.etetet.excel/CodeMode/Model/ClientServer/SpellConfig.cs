@@ -65,6 +65,10 @@ namespace ET
 		public int[] TargetSelector { get; set; }
 		/// <summary>吟唱时间</summary>
 		public int Chanting { get; set; }
+		/// <summary>持续时间</summary>
+		public int LastTime { get; set; }
+		/// <summary>命中时间</summary>
+		public int HitTime { get; set; }
 		/// <summary>效果</summary>
 		public int[] Effects { get; set; }
 		/// <summary>Buffs</summary>
