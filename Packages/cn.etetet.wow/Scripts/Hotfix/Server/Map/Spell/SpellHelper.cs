@@ -15,7 +15,11 @@
             {
                 spellComponent.Current = spell;
             }
+            
+            // 选择目标
+            SelectTarget(unit, spell);
 
+            // 执行Effect
             TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             SpellConfig spellConfig = spell.GetConfig();
             
@@ -29,11 +33,29 @@
 
                 EffectConfig effectConfig = EffectConfigCategory.Instance.Get(spellConfig.Effects[i + 1]);
                 // 分发效果
-                EffectDispatcher.Instance.Run(new Effect(effectConfig, spell, EffectTimeType.SpellHit));
+                EventSystem.Instance.Invoke(effectConfig.Type, new Effect(effectConfig, spell, EffectTimeType.SpellHit));
+            }
+        }
+
+        private static void SelectTarget(Unit unit, Spell spell)
+        {
+            SpellTargetComponent spellTargetComponent = spell.AddComponent<SpellTargetComponent>();
+            SpellConfig spellConfig = spell.GetConfig();
+            switch (spellConfig.TargetSelector[0])
+            {
+                case SpellTargetType.Select:
+                {
+                    break;
+                }
+                case SpellTargetType.Caster:
+                {
+                    spellTargetComponent.Units.Add(unit);
+                    break;
+                }
             }
         }
         
-        public static void InterruptSpell(Unit unit)
+        public static void Interrupt(Unit unit)
         {
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             spellComponent.CancellationToken?.Cancel();

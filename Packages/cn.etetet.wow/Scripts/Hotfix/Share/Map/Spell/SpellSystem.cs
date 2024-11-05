@@ -13,5 +13,10 @@
         {
             return SpellConfigCategory.Instance.Get(self.ConfigId);
         } 
+        
+        public static Unit GetCaster(this Spell self)
+        {
+            return self.Parent.GetParent<Unit>();
+        } 
     }
 }

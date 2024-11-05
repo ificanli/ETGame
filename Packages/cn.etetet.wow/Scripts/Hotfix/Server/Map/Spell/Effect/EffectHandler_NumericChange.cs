@@ -1,11 +1,27 @@
 ﻿namespace ET.Server
 {
-    [EffectHandler(EffectType.NumericChange)]
-    public class EffectHandler_NumericChange: HandlerObject, IEffectHandler
+    [Invoke(EffectType.NumericChange)]
+    public class EffectHandler_NumericChange: AInvokeHandler<Effect>
     {
-        public void Run(Effect effect)
+        public override void Handle(Effect effect)
         {
-            throw new System.NotImplementedException();
+            switch (effect.EffectTimeType)
+            {
+                case EffectTimeType.SpellHit:
+                {
+                    Spell spell = effect.Owner as Spell;
+                    int damage = effect.Config.Params[0];
+                    
+                    break;
+                }
+                    
+                case EffectTimeType.BuffAdd:
+                    break;
+                case EffectTimeType.BuffRemove:
+                    break;
+                case EffectTimeType.BuffTick:
+                    break;
+            }
         }
     }
 }
