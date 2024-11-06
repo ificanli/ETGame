@@ -65,18 +65,20 @@ namespace ET
 		public int[] TargetSelector { get; set; }
 		/// <summary>吟唱时间</summary>
 		public int Chanting { get; set; }
-		/// <summary>持续时间</summary>
-		public int LastTime { get; set; }
 		/// <summary>命中时间</summary>
 		public int HitTime { get; set; }
-		/// <summary>效果</summary>
-		public int[] Effects { get; set; }
+		/// <summary>持续时间</summary>
+		public int Duration { get; set; }
+		/// <summary>客户端效果</summary>
+		public int[] ClientEffects { get; set; }
 		/// <summary>Buffs</summary>
 		public int[] Buffs { get; set; }
 		/// <summary>CD（毫秒）</summary>
 		public int CD { get; set; }
 		/// <summary>打断情况</summary>
 		public int[] Interrupt { get; set; }
+		/// <summary>广播客户端类型</summary>
+		public int NoticeClientType { get; set; }
 
 	}
 }

@@ -1,0 +1,3 @@
+{"dict": [
+[10000, {"_t":"BuffConfig","_id":10000,"Duration":2000,"ClientEffects":[0],"TickTime":0,"OtherEffects":[0],"MaxStack":0,"OverLayRuleType":0,"RemoveConditions":[0],"NoticeClientType":0}],
+]}

@@ -387,6 +387,12 @@ namespace ET
                     ExportEnumClass(worksheet);
                     continue;
                 }
+                
+                if (sheetName.StartsWith("#constdefine_"))
+                {
+                    ExportConstDefine(worksheet);
+                    continue;
+                }
 
                 ExportSheetClass(worksheet, table);
             }
@@ -675,8 +681,50 @@ namespace ET
                 sw.WriteLine("}");
             }
         }
-        
 
+        static void ExportConstDefine(ExcelWorksheet workbookWorksheet)
+        {
+            string cs = workbookWorksheet.Cells[1, 1].Text.Trim();
+            List<ConfigType> listTypes = new List<ConfigType>() { ConfigType.cs , ConfigType.c, ConfigType.s };
+            if (cs == "c")
+            {
+                listTypes.Remove(ConfigType.s);
+            }
+            else if (cs == "s")
+            {
+                listTypes.Remove(ConfigType.c);
+            }
+            
+            string className = workbookWorksheet.Name.Replace("#constdefine_", "");
+
+            foreach (var configType in listTypes)
+            {
+                string dir = GetClassDir(configType);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                
+                StringBuilder sb = new();
+                sb.Append("namespace ET\n");
+                sb.Append("{\n");
+                sb.Append($"\tpublic static partial class {className}\n");
+                sb.Append("\t{\n");
+                for (int i = 6; i <= workbookWorksheet.Dimension.End.Row; ++i)
+                {
+                    string Name = workbookWorksheet.Cells[i, 4].Text.Trim();
+                    string Id = workbookWorksheet.Cells[i, 3].Text.Trim();
+
+                    sb.Append($"\t\tpublic const int {Name} = {Id};\n");
+                }
+
+                sb.Append("\t}\n");
+                sb.Append("}");
+
+                File.WriteAllText(Path.Combine(dir, $"{className}.cs"), sb.ToString());
+            }
+        }
+        
         #endregion
 
         #region 导出json

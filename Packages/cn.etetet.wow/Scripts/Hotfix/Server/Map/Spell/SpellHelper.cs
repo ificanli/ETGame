@@ -23,7 +23,7 @@
             SpellConfig spellConfig = spell.GetConfig();
             
             // 选择目标
-            SelectTarget(caster, spell);
+            SpellTargetComponent spellTargetComponent = SelectTarget(caster, spell);
 
             // 等到命中
             TimerComponent timerComponent = caster.Scene().GetComponent<TimerComponent>();
@@ -32,24 +32,39 @@
             {
                 return;
             }
-            
-            // 命中效果
-            for(int i = 0; i < spellConfig.Effects.Length; ++i)
+
+            foreach (Unit unit in spellTargetComponent.Units)
             {
-                EffectConfig effectConfig = EffectConfigCategory.Instance.Get(spellConfig.Effects[i]);
-                // 分发效果
-                EventSystem.Instance.Invoke(effectConfig.Type, new Effect(effectConfig, spell, EffectTimeType.SpellHit));
-            }
-            // 命中Buff
-            for(int i = 0; i < spellConfig.Buffs.Length; ++i)
-            {
-                // 加上Buff
+                if (unit == null)
+                {
+                    continue;
+                }
+                
+                // 命中效果
+                for(int i = 0; i < spellConfig.ServerEffects.Length; i += 2)
+                {
+                    if (spellConfig.ServerEffects[i] != 2)
+                    {
+                        continue;
+                    }
+                    
+                    EffectConfig effectConfig = EffectConfigCategory.Instance.Get(spellConfig.ServerEffects[i + 1]);
+                    // 分发效果
+                    EventSystem.Instance.Invoke(effectConfig.Type, new Effect(effectConfig, spell, EffectTimeType.SpellHit));
+                }
+                
+                // 命中Buff
+                for(int i = 0; i < spellConfig.Buffs.Length; ++i)
+                {
+                    BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
+                    buffComponent.CreateBuff(spellConfig.Buffs[i]);
+                }
             }
             
-            await timerComponent.WaitTillAsync(startTime + spellConfig.LastTime);
+            await timerComponent.WaitTillAsync(startTime + spellConfig.Duration);
         }
 
-        private static void SelectTarget(Unit unit, Spell spell)
+        private static SpellTargetComponent SelectTarget(Unit unit, Spell spell)
         {
             SpellTargetComponent spellTargetComponent = spell.AddComponent<SpellTargetComponent>();
             SpellConfig spellConfig = spell.GetConfig();
@@ -65,6 +80,8 @@
                     break;
                 }
             }
+
+            return spellTargetComponent;
         }
         
         public static void Interrupt(Unit unit)

@@ -1,4 +1,4 @@
 {"dict": [
-[10000, {"_t":"SpellConfig","_id":10000,"TargetSelector":[1,1000],"Chanting":0,"LastTime":100,"HitTime":100,"Effects":[2],"Buffs":[0],"CD":1500,"Interrupt":[1,3]}],
-[10001, {"_t":"SpellConfig","_id":10001,"TargetSelector":[1,40000],"Chanting":2000,"LastTime":2000,"HitTime":2000,"Effects":[1],"Buffs":[0,1],"CD":1500,"Interrupt":[1,3]}],
+[10000, {"_t":"SpellConfig","_id":10000,"TargetSelector":[1,1000],"Chanting":0,"HitTime":100,"Duration":100,"ServerEffects":[0],"Buffs":[0],"CD":1500,"Interrupt":[1,3],"NoticeClientType":0}],
+[10001, {"_t":"SpellConfig","_id":10001,"TargetSelector":[1,40000],"Chanting":2000,"HitTime":2000,"Duration":2000,"ServerEffects":[0],"Buffs":[0,1],"CD":1500,"Interrupt":[1,3],"NoticeClientType":0}],
 ]}
