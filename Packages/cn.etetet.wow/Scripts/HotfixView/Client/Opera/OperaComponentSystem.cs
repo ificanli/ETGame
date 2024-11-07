@@ -15,18 +15,6 @@ namespace ET.Client
         [EntitySystem]
         private static void Update(this OperaComponent self)
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame)
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit, 1000, self.mapMask))
-                {
-                    C2M_PathfindingResult c2MPathfindingResult = C2M_PathfindingResult.Create();
-                    c2MPathfindingResult.Position = hit.point;
-                    self.Root().GetComponent<ClientSenderComponent>().Send(c2MPathfindingResult);
-                }
-            }
-            
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 CodeLoader.Instance.Reload();

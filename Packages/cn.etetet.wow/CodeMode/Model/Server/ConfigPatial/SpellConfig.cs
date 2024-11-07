@@ -1,7 +1,12 @@
+using MemoryPack;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace ET
 {
     public partial class SpellConfig
     {
+        [BsonIgnore]
+        [MemoryPackIgnore]
         public MultiMap<int, int> ServerEffectsMap { get; } = new();
 
         public override void EndInit()

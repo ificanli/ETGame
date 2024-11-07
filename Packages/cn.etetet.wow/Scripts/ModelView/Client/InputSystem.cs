@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace ET
+namespace ET.Client
 {
     public partial class @InputSystem: IInputActionCollection2, IDisposable
     {
@@ -55,6 +55,33 @@ namespace ET
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""6564d5a9-daa3-4194-98c4-070114912864"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangeTarget"",
+                    ""type"": ""Button"",
+                    ""id"": ""b7ba0cc8-3652-4338-90cd-108d6cc4cae3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectTarget"",
+                    ""type"": ""Button"",
+                    ""id"": ""88fb32c7-2c7f-4149-92e7-d558752a1d0c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -134,6 +161,39 @@ namespace ET
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a88e129c-f769-4488-aded-45e9cee55473"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PlayerControl"",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""28221524-df4d-4df4-86f0-ac56b96e83aa"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PlayerControl"",
+                    ""action"": ""ChangeTarget"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f69c6cfe-2346-4b86-a4be-a81f029039ae"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PlayerControl"",
+                    ""action"": ""SelectTarget"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -151,6 +211,9 @@ namespace ET
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
             m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+            m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
+            m_Player_ChangeTarget = m_Player.FindAction("ChangeTarget", throwIfNotFound: true);
+            m_Player_SelectTarget = m_Player.FindAction("SelectTarget", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -215,6 +278,9 @@ namespace ET
         private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_Look;
         private readonly InputAction m_Player_Jump;
+        private readonly InputAction m_Player_Attack;
+        private readonly InputAction m_Player_ChangeTarget;
+        private readonly InputAction m_Player_SelectTarget;
         public struct PlayerActions
         {
             private @InputSystem m_Wrapper;
@@ -222,6 +288,9 @@ namespace ET
             public InputAction @Move => m_Wrapper.m_Player_Move;
             public InputAction @Look => m_Wrapper.m_Player_Look;
             public InputAction @Jump => m_Wrapper.m_Player_Jump;
+            public InputAction @Attack => m_Wrapper.m_Player_Attack;
+            public InputAction @ChangeTarget => m_Wrapper.m_Player_ChangeTarget;
+            public InputAction @SelectTarget => m_Wrapper.m_Player_SelectTarget;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -240,6 +309,15 @@ namespace ET
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
+                @Attack.started += instance.OnAttack;
+                @Attack.performed += instance.OnAttack;
+                @Attack.canceled += instance.OnAttack;
+                @ChangeTarget.started += instance.OnChangeTarget;
+                @ChangeTarget.performed += instance.OnChangeTarget;
+                @ChangeTarget.canceled += instance.OnChangeTarget;
+                @SelectTarget.started += instance.OnSelectTarget;
+                @SelectTarget.performed += instance.OnSelectTarget;
+                @SelectTarget.canceled += instance.OnSelectTarget;
             }
 
             private void UnregisterCallbacks(IPlayerActions instance)
@@ -253,6 +331,15 @@ namespace ET
                 @Jump.started -= instance.OnJump;
                 @Jump.performed -= instance.OnJump;
                 @Jump.canceled -= instance.OnJump;
+                @Attack.started -= instance.OnAttack;
+                @Attack.performed -= instance.OnAttack;
+                @Attack.canceled -= instance.OnAttack;
+                @ChangeTarget.started -= instance.OnChangeTarget;
+                @ChangeTarget.performed -= instance.OnChangeTarget;
+                @ChangeTarget.canceled -= instance.OnChangeTarget;
+                @SelectTarget.started -= instance.OnSelectTarget;
+                @SelectTarget.performed -= instance.OnSelectTarget;
+                @SelectTarget.canceled -= instance.OnSelectTarget;
             }
 
             public void RemoveCallbacks(IPlayerActions instance)
@@ -284,6 +371,9 @@ namespace ET
             void OnMove(InputAction.CallbackContext context);
             void OnLook(InputAction.CallbackContext context);
             void OnJump(InputAction.CallbackContext context);
+            void OnAttack(InputAction.CallbackContext context);
+            void OnChangeTarget(InputAction.CallbackContext context);
+            void OnSelectTarget(InputAction.CallbackContext context);
         }
     }
 }

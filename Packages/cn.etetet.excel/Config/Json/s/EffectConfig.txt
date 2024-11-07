@@ -1,6 +1,6 @@
 {"dict": [
 [1, {"_t":"EffectConfig","_id":1,"Type":1,"Params":[10]}],
 [2, {"_t":"EffectConfig","_id":2,"Type":2,"Params":[100001,100002]}],
-[3, {"_t":"EffectConfig","_id":3,"Type":0,"Params":[0]}],
+[3, {"_t":"EffectConfig","_id":3,"Type":0,"Params":[]}],
 [4, {"_t":"EffectConfig","_id":4,"Type":3,"Params":[10003,10]}],
 ]}

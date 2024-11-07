@@ -17,6 +17,9 @@ namespace ET.Client
 
             self.InputSystem.Player.Look.performed += self.Look;
             self.InputSystem.Player.Jump.performed += self.Jump;
+            self.InputSystem.Player.SelectTarget.performed += self.SelectTarget;
+            self.InputSystem.Player.ChangeTarget.performed += self.ChangeTarget;
+            self.InputSystem.Player.Attack.performed += self.Attack;
         }
         
         [EntitySystem]
@@ -71,8 +74,40 @@ namespace ET.Client
             
             unit.MoveToAsync(targetPos).NoContext();
         }
+        
+        // 鼠标左键点击目标，设置主角的目标
+        private static void SelectTarget(this InputSystemComponent self, InputAction.CallbackContext context)
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+            const float maxDistance = 100.0f;
+            RaycastHit hit;
+            if (!Physics.Raycast(ray, out hit, maxDistance))
+            {
+                return;
+            }
+            GameObject clickedObject = hit.collider.gameObject;
+            if (clickedObject.layer != LayerMask.NameToLayer("Unit"))
+            {
+                return;
+            }
+            
+            Unit targetUnit = (Unit)clickedObject.GetComponent<GameObjectEntityRef>().EntityRef.Entity;
+            Unit myUnit = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
+            myUnit.GetComponent<TargetComponent>().Target = targetUnit;
+        }
+        
+        private static void ChangeTarget(this InputSystemComponent self, InputAction.CallbackContext context)
+        {
+            
+        }
 
         private static void Jump(this InputSystemComponent self, InputAction.CallbackContext context)
+        {
+            
+        }
+        
+        private static void Attack(this InputSystemComponent self, InputAction.CallbackContext context)
         {
             
         }

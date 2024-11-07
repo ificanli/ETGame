@@ -2,6 +2,8 @@ namespace ET
 {
     public partial class SpellConfig
     {
+        [BsonIgnore]
+        [MemoryPackIgnore]
         public MultiMap<int, int> ClientEffectsMap = new();
         
         public override void EndInit()

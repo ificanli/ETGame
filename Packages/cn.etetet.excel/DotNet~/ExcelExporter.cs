@@ -828,7 +828,7 @@ namespace ET
                 case "int32[]":
                 case "long[]":
                     if (string.IsNullOrEmpty(value))
-                        return "[0]";
+                        return "[]";
 
                     return $"[{value}]";
                 case "string[]":
