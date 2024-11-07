@@ -181,3 +181,43 @@ message G2C_Benchmark // ISessionResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+message C2M_SpellCast // ILocationMessage
+{
+	int32 RpcId = 1;
+	int32 SpellConfigId = 2;
+}
+
+message M2C_SpellAdd // IMessage
+{
+	int64 UnitId = 1;
+	int64 SpellId = 2;
+	int32 SpellConfigId = 2;
+}
+
+message M2C_SpellHit // IMessage
+{
+	int64 UnitId = 1;
+	int64 SpellId = 2;
+	repeated int64 TargetUnitId = 3;
+	Unity.Mathematics.float3 TargetPosition = 4;
+}
+
+message M2C_SpellFinish // IMessage
+{
+	int64 UnitId = 1;
+	int64 SpellId = 2;
+}
+
+message M2C_BuffAdd // IMessage
+{
+	int64 UnitId = 1;
+	int64 BuffId = 2;
+	int32 BuffConfigId = 3;
+}
+
+message M2C_BuffRemove // IMessage
+{
+	int64 UnitId = 1;
+	int64 BuffId = 2;
+}

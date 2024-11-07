@@ -109,7 +109,7 @@ namespace ET.Client
         
         private static void Attack(this InputSystemComponent self, InputAction.CallbackContext context)
         {
-            
+            SpellHelper.Cast(self.Scene(), 1);
         }
     }
 }
