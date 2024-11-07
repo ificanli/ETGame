@@ -846,6 +846,12 @@ namespace ET
         [MemoryPackOrder(1)]
         public int SpellConfigId { get; set; }
 
+        [MemoryPackOrder(2)]
+        public long TargetUnitId { get; set; }
+
+        [MemoryPackOrder(3)]
+        public Unity.Mathematics.float3 TargetPosition { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -855,6 +861,8 @@ namespace ET
 
             this.RpcId = default;
             this.SpellConfigId = default;
+            this.TargetUnitId = default;
+            this.TargetPosition = default;
 
             ObjectPool.Recycle(this);
         }

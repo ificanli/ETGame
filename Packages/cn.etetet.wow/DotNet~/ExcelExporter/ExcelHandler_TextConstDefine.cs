@@ -4,7 +4,7 @@ using OfficeOpenXml;
 
 namespace ET
 {
-    public class ExcelHandler_TextConst: IExcelHandler
+    public class ExcelHandler_TextConstDefine: IExcelHandler
     {
         public void Run()
         {
@@ -13,7 +13,7 @@ namespace ET
             StringBuilder sb = new();
             sb.Append("namespace ET\n");
             sb.Append("{\n");
-            sb.Append("\tpublic static partial class TextConst\n");
+            sb.Append("\tpublic static partial class TextConstDefine\n");
             sb.Append("\t{\n");
             ExcelWorksheet workbookWorksheet = excelPackage.Workbook.Worksheets[0];
             for (int i = 6; i <= workbookWorksheet.Dimension.End.Row; ++i)
@@ -29,7 +29,7 @@ namespace ET
             sb.Append("\t}\n");
             sb.Append("}");
             
-            File.WriteAllText("Packages/cn.etetet.wow/Scripts/Model/Share/TextConst.cs", sb.ToString());
+            File.WriteAllText("Packages/cn.etetet.wow/Scripts/Model/Share/TextConstDefine.cs", sb.ToString());
         }
     }
 }

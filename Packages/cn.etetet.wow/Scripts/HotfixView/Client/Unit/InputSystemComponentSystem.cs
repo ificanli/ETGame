@@ -1,6 +1,7 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 namespace ET.Client
 {
@@ -16,10 +17,13 @@ namespace ET.Client
             self.InputSystem.Player.Enable();
 
             self.InputSystem.Player.Look.performed += self.Look;
-            self.InputSystem.Player.Jump.performed += self.Jump;
-            self.InputSystem.Player.SelectTarget.performed += self.SelectTarget;
-            self.InputSystem.Player.ChangeTarget.performed += self.ChangeTarget;
-            self.InputSystem.Player.Attack.performed += self.Attack;
+            self.InputSystem.Player.Jump.started += self.Jump;
+            self.InputSystem.Player.SelectTarget.canceled += self.SelectTarget;
+            self.InputSystem.Player.ChangeTarget.canceled += self.ChangeTarget;
+            self.InputSystem.Player.Spell.started += (contex)=>
+            {
+                self.Spell(contex).NoContext();
+            };
         }
         
         [EntitySystem]
@@ -107,9 +111,47 @@ namespace ET.Client
             
         }
         
-        private static void Attack(this InputSystemComponent self, InputAction.CallbackContext context)
+        private static async ETTask Spell(this InputSystemComponent self, InputAction.CallbackContext context)
         {
-            SpellHelper.Cast(self.Scene(), 1);
+            if (context.control is not KeyControl keyControl)
+            {
+                return;
+            }
+
+            int spellId = keyControl.keyCode - Key.Digit1 + 10000;
+            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellId);
+            
+            C2M_SpellCast c2MSpellCast = C2M_SpellCast.Create();
+            
+            // 这里根据技能目标选择方式，等待目标选择
+            switch (spellConfig.TargetSelector[0])
+            {
+                case SpellTargetType.Select:
+                {
+                    // 没有技能指示器
+                    Unit unit = self.GetParent<Unit>();
+                    // 等待玩家选择目标
+                    Unit target = unit.GetComponent<TargetComponent>().Target;
+                    if (target == null)
+                    {
+                        return;
+                    }
+                    c2MSpellCast.TargetUnitId = target.Id;
+                    break;
+                }
+                case SpellTargetType.Position:
+                case SpellTargetType.FrontSector:
+                case SpellTargetType.Rectangle:
+                {
+                    // 创建技能指示器
+                    
+                    
+                    // await 技能按键松开返回鼠标一个位置，表现层技能指示器不一样
+                    break;
+                }
+            }
+            
+            await SpellHelper.Cast(self.Scene(), c2MSpellCast);
         }
     }
 }

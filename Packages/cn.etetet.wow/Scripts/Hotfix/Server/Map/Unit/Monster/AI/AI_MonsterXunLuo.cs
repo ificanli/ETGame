@@ -13,7 +13,6 @@ namespace ET.Server
         {
             Scene root = aiComponent.Root();
             Unit unit = aiComponent.GetParent<Unit>();
-            Log.Debug("开始巡逻");
 
             PathfindingComponent pathfindingComponent = unit.GetComponent<PathfindingComponent>();
 

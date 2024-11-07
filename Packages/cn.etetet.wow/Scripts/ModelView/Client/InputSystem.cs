@@ -57,7 +57,7 @@ namespace ET.Client
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Attack"",
+                    ""name"": ""Spell"",
                     ""type"": ""Button"",
                     ""id"": ""6564d5a9-daa3-4194-98c4-070114912864"",
                     ""expectedControlType"": ""Button"",
@@ -89,7 +89,7 @@ namespace ET.Client
                     ""name"": ""2D Vector"",
                     ""id"": ""6d784a7f-bc04-455a-8e31-31acef6d13b3"",
                     ""path"": ""2DVector"",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold(duration=0.2,pressPoint=0.1)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Move"",
@@ -169,7 +169,40 @@ namespace ET.Client
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""PlayerControl"",
-                    ""action"": ""Attack"",
+                    ""action"": ""Spell"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2f40e3c1-04e6-4876-8fc2-7f626bd0fce3"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PlayerControl"",
+                    ""action"": ""Spell"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4f072b5-de2f-4477-9f15-f3b25e23643e"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PlayerControl"",
+                    ""action"": ""Spell"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0eee132c-5699-4419-bb5b-0551fd8ad711"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PlayerControl"",
+                    ""action"": ""Spell"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -211,7 +244,7 @@ namespace ET.Client
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
             m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
-            m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
+            m_Player_Spell = m_Player.FindAction("Spell", throwIfNotFound: true);
             m_Player_ChangeTarget = m_Player.FindAction("ChangeTarget", throwIfNotFound: true);
             m_Player_SelectTarget = m_Player.FindAction("SelectTarget", throwIfNotFound: true);
         }
@@ -278,7 +311,7 @@ namespace ET.Client
         private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_Look;
         private readonly InputAction m_Player_Jump;
-        private readonly InputAction m_Player_Attack;
+        private readonly InputAction m_Player_Spell;
         private readonly InputAction m_Player_ChangeTarget;
         private readonly InputAction m_Player_SelectTarget;
         public struct PlayerActions
@@ -288,7 +321,7 @@ namespace ET.Client
             public InputAction @Move => m_Wrapper.m_Player_Move;
             public InputAction @Look => m_Wrapper.m_Player_Look;
             public InputAction @Jump => m_Wrapper.m_Player_Jump;
-            public InputAction @Attack => m_Wrapper.m_Player_Attack;
+            public InputAction @Spell => m_Wrapper.m_Player_Spell;
             public InputAction @ChangeTarget => m_Wrapper.m_Player_ChangeTarget;
             public InputAction @SelectTarget => m_Wrapper.m_Player_SelectTarget;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -309,9 +342,9 @@ namespace ET.Client
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
-                @Attack.started += instance.OnAttack;
-                @Attack.performed += instance.OnAttack;
-                @Attack.canceled += instance.OnAttack;
+                @Spell.started += instance.OnSpell;
+                @Spell.performed += instance.OnSpell;
+                @Spell.canceled += instance.OnSpell;
                 @ChangeTarget.started += instance.OnChangeTarget;
                 @ChangeTarget.performed += instance.OnChangeTarget;
                 @ChangeTarget.canceled += instance.OnChangeTarget;
@@ -331,9 +364,9 @@ namespace ET.Client
                 @Jump.started -= instance.OnJump;
                 @Jump.performed -= instance.OnJump;
                 @Jump.canceled -= instance.OnJump;
-                @Attack.started -= instance.OnAttack;
-                @Attack.performed -= instance.OnAttack;
-                @Attack.canceled -= instance.OnAttack;
+                @Spell.started -= instance.OnSpell;
+                @Spell.performed -= instance.OnSpell;
+                @Spell.canceled -= instance.OnSpell;
                 @ChangeTarget.started -= instance.OnChangeTarget;
                 @ChangeTarget.performed -= instance.OnChangeTarget;
                 @ChangeTarget.canceled -= instance.OnChangeTarget;
@@ -371,7 +404,7 @@ namespace ET.Client
             void OnMove(InputAction.CallbackContext context);
             void OnLook(InputAction.CallbackContext context);
             void OnJump(InputAction.CallbackContext context);
-            void OnAttack(InputAction.CallbackContext context);
+            void OnSpell(InputAction.CallbackContext context);
             void OnChangeTarget(InputAction.CallbackContext context);
             void OnSelectTarget(InputAction.CallbackContext context);
         }

@@ -33,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Attack",
+                    "name": "Spell",
                     "type": "Button",
                     "id": "6564d5a9-daa3-4194-98c4-070114912864",
                     "expectedControlType": "Button",
@@ -65,7 +65,7 @@
                     "name": "2D Vector",
                     "id": "6d784a7f-bc04-455a-8e31-31acef6d13b3",
                     "path": "2DVector",
-                    "interactions": "",
+                    "interactions": "Hold(duration=0.2,pressPoint=0.1)",
                     "processors": "",
                     "groups": "",
                     "action": "Move",
@@ -145,7 +145,40 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "PlayerControl",
-                    "action": "Attack",
+                    "action": "Spell",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2f40e3c1-04e6-4876-8fc2-7f626bd0fce3",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PlayerControl",
+                    "action": "Spell",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f4f072b5-de2f-4477-9f15-f3b25e23643e",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PlayerControl",
+                    "action": "Spell",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0eee132c-5699-4419-bb5b-0551fd8ad711",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PlayerControl",
+                    "action": "Spell",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
