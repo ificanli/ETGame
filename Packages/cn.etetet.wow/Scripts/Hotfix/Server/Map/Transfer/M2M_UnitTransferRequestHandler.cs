@@ -22,7 +22,7 @@ namespace ET.Server
 
             unit.AddComponent<MoveComponent>();
             unit.AddComponent<PathfindingComponent, string>(scene.Name);
-
+            unit.AddComponent<SpellComponent>();
             unit.AddComponent<MailBoxComponent, int>(MailBoxType.OrderedMessage);
 
             // 通知客户端开始切场景

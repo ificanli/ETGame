@@ -118,10 +118,13 @@ namespace ET.Client
                 return;
             }
 
-            int spellId = keyControl.keyCode - Key.Digit1 + 10000;
-            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellId);
+            int spellConfigId = keyControl.keyCode - Key.Digit1 + 10000;
+            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
             
             C2M_SpellCast c2MSpellCast = C2M_SpellCast.Create();
+            c2MSpellCast.SpellConfigId = spellConfigId;
+            
+            Unit unit = self.GetParent<Unit>();
             
             // 这里根据技能目标选择方式，等待目标选择
             switch (spellConfig.TargetSelector[0])
@@ -129,11 +132,19 @@ namespace ET.Client
                 case SpellTargetType.Select:
                 {
                     // 没有技能指示器
-                    Unit unit = self.GetParent<Unit>();
+                    
                     // 等待玩家选择目标
                     Unit target = unit.GetComponent<TargetComponent>().Target;
                     if (target == null)
                     {
+                        TextHelper.OutputText(TextConstDefine.SpellCast_NotSelectTarget);
+                        return;
+                    }
+
+                    float distance = math.distance(unit.Position, target.Position);
+                    if (distance > spellConfig.TargetSelector[1] / 1000f)
+                    {
+                        TextHelper.OutputText(TextConstDefine.SpellCast_TargetTooFar);
                         return;
                     }
                     c2MSpellCast.TargetUnitId = target.Id;
@@ -151,7 +162,7 @@ namespace ET.Client
                 }
             }
             
-            await SpellHelper.Cast(self.Scene(), c2MSpellCast);
+            await SpellHelper.Cast(unit, c2MSpellCast);
         }
     }
 }

@@ -31,6 +31,7 @@ namespace ET.Server
                 }
                 case UnitType.Monster:
                 {
+                    unit.AddComponent<SpellComponent>();
                     unit.AddComponent<PathfindingComponent, string>(scene.Name);
                     
                     int ai = numericComponent.GetAsInt(NumericType.AI);

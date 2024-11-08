@@ -1,3 +1,5 @@
 {"dict": [
 [10000, {"_t":"TextConfig","_id":10000,"Name":"SpellCast_DistanceNotEnought","CN":"技能施放距离不够","EN":"技能施放距离不够"}],
+[10001, {"_t":"TextConfig","_id":10001,"Name":"SpellCast_NotSelectTarget","CN":"没有选择目标","EN":""}],
+[10002, {"_t":"TextConfig","_id":10002,"Name":"SpellCast_TargetTooFar","CN":"目标距离太远","EN":""}],
 ]}

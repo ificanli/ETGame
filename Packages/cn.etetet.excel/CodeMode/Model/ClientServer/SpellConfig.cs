@@ -70,9 +70,7 @@ namespace ET
 		/// <summary>持续时间</summary>
 		public int Duration { get; set; }
 		/// <summary>服务器效果</summary>
-		public int[] ServerEffects { get; set; }
-		/// <summary>客户端效果</summary>
-		public int[] ClientEffects { get; set; }
+		public int[] Effects { get; set; }
 		/// <summary>Buffs</summary>
 		public int[] Buffs { get; set; }
 		/// <summary>CD（毫秒）</summary>

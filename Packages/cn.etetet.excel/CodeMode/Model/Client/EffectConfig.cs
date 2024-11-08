@@ -65,6 +65,8 @@ namespace ET
 		public int Type { get; set; }
 		/// <summary>参数</summary>
 		public int[] Params { get; set; }
+		/// <summary>参数</summary>
+		public string[] ParamsString { get; set; }
 
 	}
 }

@@ -7,19 +7,16 @@ namespace ET
     {
         [BsonIgnore]
         [MemoryPackIgnore]
-        public MultiMap<int, int> ServerEffectsMap { get; } = new();
-
+        public MultiMap<int, int> EffectsMap = new();
+        
         public override void EndInit()
         {
             base.EndInit();
 
-            for (int i = 0; i < this.ServerEffects.Length; i += 2)
+            for (int i = 0; i < this.Effects.Length; i += 2)
             {
-                this.ServerEffectsMap.Add(this.ServerEffects[i], this.ServerEffects[i + 1]);
+                this.EffectsMap.Add(this.Effects[i], this.Effects[i + 1]);
             }
-            
-            this.ServerEffects = null;
         }
     }
 }
-

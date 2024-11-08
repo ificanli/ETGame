@@ -4,5 +4,9 @@ namespace ET
 	{
 		public const int SpellCast_DistanceNotEnought = 10000;
 
+		public const int SpellCast_NotSelectTarget = 10001;
+
+		public const int SpellCast_TargetTooFar = 10002;
+
 	}
 }

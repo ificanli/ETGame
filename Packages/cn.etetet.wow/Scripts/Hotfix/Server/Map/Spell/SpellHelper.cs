@@ -24,6 +24,10 @@
             
             // 选择目标
             SpellTargetComponent spellTargetComponent = SelectTarget(caster, spell);
+            
+            
+            SpellEffectHelper.RunEffects(spell, EffectTimeType.SpellStart);
+            
 
             // 等到命中
             TimerComponent timerComponent = caster.Scene().GetComponent<TimerComponent>();
@@ -39,19 +43,8 @@
                 {
                     continue;
                 }
-                
-                // 命中效果
-                for(int i = 0; i < spellConfig.ServerEffects.Length; i += 2)
-                {
-                    if (spellConfig.ServerEffects[i] != 2)
-                    {
-                        continue;
-                    }
-                    
-                    EffectConfig effectConfig = EffectConfigCategory.Instance.Get(spellConfig.ServerEffects[i + 1]);
-                    // 分发效果
-                    EventSystem.Instance.Invoke(effectConfig.Type, new Effect(effectConfig, spell, EffectTimeType.SpellHit));
-                }
+
+                SpellEffectHelper.RunEffects(spell, EffectTimeType.SpellHit);
                 
                 // 命中Buff
                 for(int i = 0; i < spellConfig.Buffs.Length; ++i)
