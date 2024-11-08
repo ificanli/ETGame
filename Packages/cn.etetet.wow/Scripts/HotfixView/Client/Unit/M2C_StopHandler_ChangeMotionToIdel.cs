@@ -14,10 +14,10 @@ namespace ET.Client
 				return;
 			}
 
-			Animator animator = unit.GetComponent<GameObjectComponent>().GameObject.GetComponent<Animator>();
+			AnimatorComponent animator = unit.GetComponent<AnimatorComponent>();
 			if (animator != null)
 			{
-				animator.SetFloat("VerticalSpeed", 0);
+				animator.SetFloatValue(MotionType.MoveSpeed.ToString(), 0);
 			}
 			await ETTask.CompletedTask;
 		}

@@ -12,10 +12,10 @@ namespace ET.Client
 			float speed = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Speed);
 			
 			// 动作
-			Animator animator = unit.GetComponent<GameObjectComponent>().GameObject.GetComponent<Animator>();
+			AnimatorComponent animator = unit.GetComponent<AnimatorComponent>();
 			if (animator != null)
 			{
-				animator.SetFloat("VerticalSpeed", speed);
+				animator.SetFloatValue(MotionType.MoveSpeed.ToString(), speed);
 			}
 
 			await ETTask.CompletedTask;

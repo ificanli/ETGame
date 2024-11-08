@@ -593,57 +593,9 @@ namespace ET
         
         
         // 导出枚举数据
-        static void ExportEnumClass(ExcelWorksheet worksheet)
+        static void ExportEnumClass(ExcelWorksheet workbookWorksheet)
         {
-            const int row = 2;
-            List<string> listEnums = new List<string>();
-            
-            for (int col = 3; col <= worksheet.Dimension.End.Column; ++col)
-            {
-                string fieldName = worksheet.Cells[row + 2, col].Text.Trim();
-                if (fieldName == "")
-                {
-                    continue;
-                }
-
-                string fieldCS = worksheet.Cells[row, col].Text.Trim().ToLower();
-                if (fieldCS.Contains('#'))
-                {
-                    continue;
-                }
-                
-                if (fieldCS == "")
-                {
-                    fieldCS = "cs";
-                }
-
-                string fieldType = worksheet.Cells[row + 3, col].Text.Trim();
-
-                if (fieldType.ToLower() == "enum")
-                {
-                    for (int i = 0; i < 999999; i++)
-                    {
-                        string name = worksheet.Cells[row + 4 + i, col].Text.Trim();
-                        if(string.IsNullOrEmpty(name)) break;
-                        
-                        string desc = worksheet.Cells[row + 4 + i, col - 1].Text.Trim();
-                        string val = worksheet.Cells[row + 4 + i, col + 1].Text.Trim();
-
-                        if (string.IsNullOrEmpty(val)) 
-                            val = ",";
-                        else
-                        {
-                            val = $" = {val},";
-                        }
-                        
-                        listEnums.Add($"        /// <summary>{desc}</summary>\n        {name}{val}\n");
-                    }
-                }
-            }
-            
-            
-            string cs = worksheet.Cells[1, 1].Text.Trim();
-            
+            string cs = workbookWorksheet.Cells[1, 1].Text.Trim();
             List<ConfigType> listTypes = new List<ConfigType>() { ConfigType.cs , ConfigType.c, ConfigType.s };
             if (cs == "c")
             {
@@ -653,6 +605,8 @@ namespace ET
             {
                 listTypes.Remove(ConfigType.c);
             }
+            
+            string className = workbookWorksheet.Name.Replace("#enum", "");
 
             foreach (var configType in listTypes)
             {
@@ -661,24 +615,24 @@ namespace ET
                 {
                     Directory.CreateDirectory(dir);
                 }
-    
-                string ename = worksheet.Name.Substring(6); // #enum_ 6个字符
-                string exportPath = Path.Combine(dir, $"{ename}.cs");
-    
-                using FileStream txt = new FileStream(exportPath, FileMode.Create);
-                using StreamWriter sw = new StreamWriter(txt);
-    
-                //生成枚举
-                sw.WriteLine("namespace ET");
-                sw.WriteLine("{");
-                sw.WriteLine($"    public enum {ename}");
-                sw.WriteLine("    {");
-                for(int i = 0 ; i < listEnums.Count ; i++)
+                
+                StringBuilder sb = new();
+                sb.Append("namespace ET\n");
+                sb.Append("{\n");
+                sb.Append($"\tpublic enum {className}\n");
+                sb.Append("\t{\n");
+                for (int i = 6; i <= workbookWorksheet.Dimension.End.Row; ++i)
                 {
-                    sw.WriteLine(listEnums[i]);
+                    string Name = workbookWorksheet.Cells[i, 4].Text.Trim();
+                    string Id = workbookWorksheet.Cells[i, 3].Text.Trim();
+
+                    sb.Append($"\t\t{Name} = {Id},\n");
                 }
-                sw.WriteLine("    }");
-                sw.WriteLine("}");
+
+                sb.Append("\t}\n");
+                sb.Append("}");
+
+                File.WriteAllText(Path.Combine(dir, $"{className}.cs"), sb.ToString());
             }
         }
 
