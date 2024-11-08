@@ -205,7 +205,7 @@ message M2C_SpellHit // IMessage
 	Unity.Mathematics.float3 TargetPosition = 4;
 }
 
-message M2C_SpellFinish // IMessage
+message M2C_SpellRemove // IMessage
 {
 	int64 UnitId = 1;
 	int64 SpellId = 2;

@@ -31,6 +31,7 @@
             M2C_CreateMyUnit m2CCreateMyUnit = waitCreateMyUnit.Message;
             Unit unit = UnitFactory.Create(currentScene, m2CCreateMyUnit.Unit);
             unit.AddComponent<TargetComponent>();
+            unit.AddComponent<SpellComponent>();
             unitComponent.Add(unit);
             
             EventSystem.Instance.Publish(currentScene, new AfterMyUnitCreate() {Unit = unit});

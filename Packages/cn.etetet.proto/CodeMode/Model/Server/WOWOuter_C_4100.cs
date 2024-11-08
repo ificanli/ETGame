@@ -939,12 +939,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_SpellFinish)]
-    public partial class M2C_SpellFinish : MessageObject, IMessage
+    [Message(WOWOuter.M2C_SpellRemove)]
+    public partial class M2C_SpellRemove : MessageObject, IMessage
     {
-        public static M2C_SpellFinish Create(bool isFromPool = false)
+        public static M2C_SpellRemove Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<M2C_SpellFinish>(isFromPool);
+            return ObjectPool.Fetch<M2C_SpellRemove>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -1061,7 +1061,7 @@ namespace ET
         public const ushort C2M_SpellCast = 4128;
         public const ushort M2C_SpellAdd = 4129;
         public const ushort M2C_SpellHit = 4130;
-        public const ushort M2C_SpellFinish = 4131;
+        public const ushort M2C_SpellRemove = 4131;
         public const ushort M2C_BuffAdd = 4132;
         public const ushort M2C_BuffRemove = 4133;
     }

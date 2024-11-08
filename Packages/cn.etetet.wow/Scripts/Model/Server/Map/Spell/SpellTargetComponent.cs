@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.Mathematics;
 
 namespace ET.Server
 {
@@ -6,5 +7,6 @@ namespace ET.Server
     public class SpellTargetComponent: Entity, IAwake
     {
         public List<EntityRef<Unit>> Units { get; } = new();
+        public float3 Position { get; set; }
     }
 }

@@ -63,8 +63,8 @@ namespace ET
 		public int Id { get; set; }
 		/// <summary>持续时间</summary>
 		public int Duration { get; set; }
-		/// <summary>客户端起始效果</summary>
-		public int[] ClientEffects { get; set; }
+		/// <summary>服务器起始效果</summary>
+		public int[] Effects { get; set; }
 		/// <summary>Tick间隔时间</summary>
 		public int TickTime { get; set; }
 		/// <summary>其它效果</summary>

@@ -7,7 +7,7 @@
         {
             switch (effect.EffectTimeType)
             {
-                case EffectTimeType.SpellHit:
+                case EffectTimeType.ServerSpellHit:
                 {
                     Spell spell = effect.Owner as Spell;
                     int damage = effect.Config.Params[0];
@@ -15,11 +15,11 @@
                     break;
                 }
                     
-                case EffectTimeType.BuffAdd:
+                case EffectTimeType.ServerBuffAdd:
                     break;
-                case EffectTimeType.BuffRemove:
+                case EffectTimeType.ServerBuffRemove:
                     break;
-                case EffectTimeType.BuffTick:
+                case EffectTimeType.ServerBuffTick:
                     break;
             }
         }
