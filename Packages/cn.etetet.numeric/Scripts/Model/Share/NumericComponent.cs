@@ -7,6 +7,8 @@ namespace ET
     [FriendOf(typeof (NumericComponent))]
     public static class NumericComponentSystem
     {
+        public const int Max = 10000;
+        
         public static float GetAsFloat(this NumericComponent self, int numericType)
         {
             return (float)self.GetByKey(numericType) / 1000;
@@ -52,7 +54,7 @@ namespace ET
 
             self.NumericDic[numericType] = value;
 
-            if (numericType >= NumericType.Max)
+            if (numericType >= Max)
             {
                 self.Update(numericType, isPublicEvent);
                 return;
@@ -74,7 +76,7 @@ namespace ET
 
         public static void Update(this NumericComponent self, int numericType, bool isPublicEvent)
         {
-            int final = (int)numericType / 10;
+            int final = numericType / 10;
             int bas = final * 10 + 1;
             int add = final * 10 + 2;
             int pct = final * 10 + 3;

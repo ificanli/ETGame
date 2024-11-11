@@ -5,6 +5,13 @@
     {
         protected override async ETTask Run(Unit unit, C2M_SpellCast message)
         {
+            TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
+            Unit target = unit.GetParent<UnitComponent>().Get(message.TargetUnitId);
+            if (target != null)
+            {
+                targetComponent.Unit = target;
+                targetComponent.Position = message.TargetPosition;
+            }
             await SpellHelper.Cast(unit, message.SpellConfigId);
         }
     }

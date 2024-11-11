@@ -9,8 +9,9 @@
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             spellComponent.CancellationToken = cancellationToken;
-            
-            Spell spell = spellComponent.CreateSpell(spellConfigId);
+
+            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
+            Spell spell = spellComponent.CreateSpell(spellConfig);
             if (parent == null)
             {
                 // 打断老技能，这里先简单处理，技能打断有一套规则
@@ -27,17 +28,16 @@
                 spell.ParentSpell = parent;
             }
             
-            SpellConfig spellConfig = spell.GetConfig();
-            
-            
-            SpellEffectHelper.RunEffects(spell, EffectTimeType.ServerSpellStart);
-            
             
             // 发送SpellStart消息
             M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
             m2CSpellAdd.UnitId = unit.Id;
             m2CSpellAdd.SpellId = spell.Id;
             MapMessageHelper.Broadcast(unit, m2CSpellAdd);
+            
+            
+            
+            EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellAdd);
             
             
             // 等到命中
@@ -61,23 +61,7 @@
             MapMessageHelper.Broadcast(unit, m2CSpellHit);
             
             // 对目标分发hitEffect
-            foreach (Unit target in spellTargetComponent.Units)
-            {
-                if (target == null)
-                {
-                    continue;
-                }
-
-                SpellEffectHelper.RunEffects(spell, EffectTimeType.ServerSpellHit);
-                
-                // 命中Buff
-                for(int i = 0; i < spellConfig.Buffs.Length; ++i)
-                {
-                    BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
-                    Buff buff = buffComponent.CreateBuff(spellConfig.Buffs[i]);
-                    buff.Caster = unit;
-                }
-            }
+            EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellHit);
             
             await timerComponent.WaitTillAsync(startTime + spellConfig.Duration);
             
@@ -90,14 +74,16 @@
         private static SpellTargetComponent SelectTarget(Unit unit, Spell spell)
         {
             SpellTargetComponent spellTargetComponent = spell.AddComponent<SpellTargetComponent>();
-            SpellConfig spellConfig = spell.GetConfig();
-            switch (spellConfig.TargetSelector[0])
+            SpellConfig spellConfig = spell.Config;
+            switch (spellConfig.TargetSelector)
             {
-                case SpellTargetType.Select:
+                case TargetSelectorSingle:
                 {
+                    TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
+                    spellTargetComponent.Units.Add(targetComponent.Unit);
                     break;
                 }
-                case SpellTargetType.Caster:
+                case TargetSelectorCaster:
                 {
                     spellTargetComponent.Units.Add(unit);
                     break;

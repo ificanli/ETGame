@@ -4,9 +4,9 @@
     public static partial class BuffSystem
     {
         [EntitySystem]
-        private static void Awake(this Buff self, int configId)
+        private static void Awake(this Buff self, BuffConfig config)
         {
-            self.ConfigId = configId;
+            self.Config = config;
         }
     }
 }

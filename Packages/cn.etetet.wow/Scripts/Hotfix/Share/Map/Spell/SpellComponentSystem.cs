@@ -8,9 +8,9 @@
             
         }
 
-        public static Spell CreateSpell(this SpellComponent self, int configId)
+        public static Spell CreateSpell(this SpellComponent self, SpellConfig config)
         {
-            Spell spell = self.AddChild<Spell, int>(configId);
+            Spell spell = self.AddChild<Spell, SpellConfig>(config);
             return spell;
         }
         

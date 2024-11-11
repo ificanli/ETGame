@@ -2,14 +2,12 @@
 {
     public struct Effect
     {
-        public EffectConfig Config { get; }
-        public Entity Owner { get; }
-        public int EffectTimeType { get; }
+        public Entity Source { get; set; }
+        public EffectTimeType EffectTimeType { get; }
         
-        public Effect(EffectConfig config, Entity owner, int effectTimeType)
+        public Effect(Entity source, EffectTimeType effectTimeType)
         {
-            Config = config;
-            Owner = owner;
+            this.Source = source;
             EffectTimeType = effectTimeType;
         }
     }

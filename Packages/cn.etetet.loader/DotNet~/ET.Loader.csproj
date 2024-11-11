@@ -45,4 +45,9 @@
     <ItemGroup>
       <ProjectReference Include="..\..\cn.etetet.core\DotNet~\ET.Core.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="..\..\cn.etetet.wow\Scripts\Loader\Server\">
+        <Link>cn.etetet.wow\Scripts\Loader\Server</Link>
+      </Folder>
+    </ItemGroup>
 </Project>

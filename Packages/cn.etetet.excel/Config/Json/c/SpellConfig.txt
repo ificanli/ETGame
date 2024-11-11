@@ -1,4 +1,0 @@
-{"dict": [
-[10000, {"_t":"SpellConfig","_id":10000,"TargetSelector":[1,1000],"Chanting":0,"HitTime":100,"Duration":100,"Effects":[2,1000001],"Buffs":[],"CD":1500,"Interrupt":[1,3],"NoticeClientType":0}],
-[10001, {"_t":"SpellConfig","_id":10001,"TargetSelector":[1,40000],"Chanting":2000,"HitTime":2000,"Duration":2000,"Effects":[],"Buffs":[0,1],"CD":1500,"Interrupt":[1,3],"NoticeClientType":0}],
-]}

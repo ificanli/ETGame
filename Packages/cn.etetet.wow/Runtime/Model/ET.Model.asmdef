@@ -3,6 +3,7 @@
     "rootNamespace": "ET",
     "references": [
         "ET.Core",
+        "ET.Loader",
         "ET.MemoryPack",
         "ET.Recast",
         "ET.SourceGeneratorAttribute",

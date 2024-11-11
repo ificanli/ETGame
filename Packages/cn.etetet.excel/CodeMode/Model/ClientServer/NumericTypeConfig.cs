@@ -66,7 +66,7 @@ namespace ET
 		/// <summary>是否存数据库</summary>
 		public int NeedSaveDB { get; set; }
 		/// <summary>广播给客户端类型</summary>
-		public int NoticeClientType { get; set; }
+		public int NoticeType { get; set; }
 		/// <summary>对应的最大值属性</summary>
 		public int MaxNumericType { get; set; }
 		/// <summary>影响的属性id</summary>

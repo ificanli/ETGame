@@ -6,11 +6,12 @@
         {
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-            Spell spell = spellComponent.CreateSpell(c2MSpellCast.SpellConfigId);
+            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(c2MSpellCast.SpellConfigId);
+            Spell spell = spellComponent.CreateSpell(spellConfig);
             spellComponent.Current = spell;
             
             // Start Effect分发， 表现层可以播放前摇动作
-            SpellEffectHelper.RunEffects(spell, EffectTimeType.ClientSpellStart);
+            EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellAdd);
             
             unit.Root().GetComponent<ClientSenderComponent>().Send(c2MSpellCast);
             

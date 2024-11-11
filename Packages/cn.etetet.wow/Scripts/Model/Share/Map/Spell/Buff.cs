@@ -1,9 +1,9 @@
 ﻿namespace ET
 {
     [ChildOf(typeof(BuffComponent))]
-    public class Buff: Entity, IAwake<int>
+    public class Buff: Entity, IAwake<BuffConfig>
     {
-        public int ConfigId { get; set; } //配置表id
+        public BuffConfig Config { get; set; }
         
         public EntityRef<Unit> Caster { get; set; }
     }

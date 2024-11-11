@@ -1,5 +1,0 @@
-{"dict": [
-[1000001, {"_t":"EffectConfig","_id":1000001,"Type":1,"ParamsString":[],"Params":[10]}],
-[1000002, {"_t":"EffectConfig","_id":1000002,"Type":2,"ParamsString":[],"Params":[100001,100002]}],
-[1000003, {"_t":"EffectConfig","_id":1000003,"Type":3,"ParamsString":[],"Params":[10003,10]}],
-]}

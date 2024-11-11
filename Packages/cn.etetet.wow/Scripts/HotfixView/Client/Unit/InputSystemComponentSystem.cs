@@ -98,7 +98,7 @@ namespace ET.Client
             
             Unit targetUnit = (Unit)clickedObject.GetComponent<GameObjectEntityRef>().EntityRef.Entity;
             Unit myUnit = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
-            myUnit.GetComponent<TargetComponent>().Target = targetUnit;
+            myUnit.GetComponent<TargetComponent>().Unit = targetUnit;
         }
         
         private static void ChangeTarget(this InputSystemComponent self, InputAction.CallbackContext context)
@@ -127,14 +127,14 @@ namespace ET.Client
             Unit unit = self.GetParent<Unit>();
             
             // 这里根据技能目标选择方式，等待目标选择
-            switch (spellConfig.TargetSelector[0])
+            switch (spellConfig.TargetSelector)
             {
-                case SpellTargetType.Select:
+                case TargetSelectorSingle targetSelectorSingle:
                 {
                     // 没有技能指示器
                     
                     // 等待玩家选择目标
-                    Unit target = unit.GetComponent<TargetComponent>().Target;
+                    Unit target = unit.GetComponent<TargetComponent>().Unit;
                     if (target == null)
                     {
                         TextHelper.OutputText(TextConstDefine.SpellCast_NotSelectTarget);
@@ -142,7 +142,7 @@ namespace ET.Client
                     }
 
                     float distance = math.distance(unit.Position, target.Position);
-                    if (distance > spellConfig.TargetSelector[1] / 1000f)
+                    if (distance > targetSelectorSingle.MaxDistance)
                     {
                         TextHelper.OutputText(TextConstDefine.SpellCast_TargetTooFar);
                         return;
@@ -150,9 +150,9 @@ namespace ET.Client
                     c2MSpellCast.TargetUnitId = target.Id;
                     break;
                 }
-                case SpellTargetType.Position:
-                case SpellTargetType.FrontSector:
-                case SpellTargetType.Rectangle:
+                case TargetSelectorPosition:
+                case TargetSelectorSector:
+                case TargetSelectorRectangle:
                 {
                     // 创建技能指示器
                     
