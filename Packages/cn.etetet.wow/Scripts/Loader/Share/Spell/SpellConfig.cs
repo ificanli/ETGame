@@ -5,53 +5,43 @@ using MongoDB.Bson.Serialization.Options;
 
 namespace ET
 {
-    public partial class SpellConfigCategory : Singleton<SpellConfigCategory>
+    public struct SpellConfigLoader
+    {
+        public int Id;
+    }
+    
+    public partial class SpellConfigCategory : Singleton<SpellConfigCategory>, ISingletonAwake
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private Dictionary<int, SpellConfig> dict = new();
-		
-        public void Merge(object o)
+        
+        public void Awake()
         {
-            SpellConfigCategory s = o as SpellConfigCategory;
-            foreach (var kv in s.dict)
-            {
-                this.dict.Add(kv.Key, kv.Value);
-            }
         }
 		
         public SpellConfig Get(int id)
         {
             this.dict.TryGetValue(id, out SpellConfig item);
 
-            if (item == null)
+            if (item != null)
             {
-                throw new Exception($"配置找不到，配置表名: {nameof (SpellConfig)}，配置id: {id}");
+                return item;
             }
 
+            item = EventSystem.Instance.Invoke<SpellConfigLoader, SpellConfig>(new SpellConfigLoader() {Id = id});
+            if (item == null)
+            {
+                throw new Exception($"not found spell config: {id}");
+            }
+
+            this.dict.Add(id, item);
             return item;
         }
 		
         public bool Contain(int id)
         {
             return this.dict.ContainsKey(id);
-        }
-
-        public Dictionary<int, SpellConfig> GetAll()
-        {
-            return this.dict;
-        }
-
-        public SpellConfig GetOne()
-        {
-            if (this.dict == null || this.dict.Count <= 0)
-            {
-                return null;
-            }
-            
-            var enumerator = this.dict.Values.GetEnumerator();
-            enumerator.MoveNext();
-            return enumerator.Current; 
         }
     }
     
@@ -72,7 +62,7 @@ namespace ET
 
         /// <summary>吟唱时间</summary>
         public int Chanting;
-
+        
         /// <summary>命中时间</summary>
         public int HitTime;
 
@@ -86,6 +76,7 @@ namespace ET
         public List<SpellFlags> Flags;
 
         /// <summary>广播客户端类型</summary>
+
         public NoticeType NoticeType;
 
         /// <summary>效果</summary>

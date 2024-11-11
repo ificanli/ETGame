@@ -22,6 +22,7 @@ namespace ET.Server
             unit.AddComponent<MoveComponent>();
             // 加入aoi
             unit.AddComponent<AOIEntity>();
+            unit.AddComponent<TargetComponent>();
             
             switch (unitConfig.Type)
             {

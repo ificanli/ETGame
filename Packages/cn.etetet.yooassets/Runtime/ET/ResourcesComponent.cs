@@ -148,6 +148,18 @@ namespace ET
             handle.Release();
             return t;
         }
+        
+        /// <summary>
+        /// 主要用来加载dll config aotdll，因为这时候纤程还没创建，无法使用ResourcesLoaderComponent。
+        /// 游戏中的资源应该使用ResourcesLoaderComponent来加载
+        /// </summary>
+        public T LoadAssetSync<T>(string location) where T : UnityEngine.Object
+        {
+            AssetHandle handle = YooAssets.LoadAssetSync<T>(location);
+            T t = (T)handle.AssetObject;
+            handle.Release();
+            return t;
+        }
 
         /// <summary>
         /// 主要用来加载dll config aotdll，因为这时候纤程还没创建，无法使用ResourcesLoaderComponent。

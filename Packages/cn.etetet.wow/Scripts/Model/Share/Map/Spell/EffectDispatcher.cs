@@ -63,7 +63,7 @@ namespace ET
 
         public void Awake()
         {
-            HashSet<Type> types = CodeTypes.Instance.GetTypes(typeof (MessageHandlerAttribute));
+            HashSet<Type> types = CodeTypes.Instance.GetTypes(typeof (EffectHandlerAttribute));
             
             foreach (Type type in types)
             {
@@ -78,7 +78,7 @@ namespace ET
             IEffectHandler effectHandler = obj as IEffectHandler;
             if (effectHandler == null)
             {
-                throw new Exception($"message handler not inherit IMActorHandler abstract class: {obj.GetType().FullName}");
+                throw new Exception($"effect handler not inherit IMActorHandler abstract class: {obj.GetType().FullName}");
             }
                 
             object[] attrs = type.GetCustomAttributes(typeof(EffectHandlerAttribute), true);

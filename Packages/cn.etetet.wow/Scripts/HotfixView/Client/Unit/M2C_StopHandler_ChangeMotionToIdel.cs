@@ -17,7 +17,7 @@ namespace ET.Client
 			AnimatorComponent animator = unit.GetComponent<AnimatorComponent>();
 			if (animator != null)
 			{
-				animator.SetFloatValue(MotionType.MoveSpeed.ToString(), 0);
+				animator.SetFloat(MotionType.MoveSpeed.ToString(), 0);
 			}
 			await ETTask.CompletedTask;
 		}

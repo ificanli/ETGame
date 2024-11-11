@@ -54,6 +54,7 @@ namespace ET
             CodeTypes.Instance.CodeProcess();
             
             await World.Instance.AddSingleton<ConfigLoader>().LoadAsync();
+            World.Instance.AddSingleton<SpellConfigCategory>();
             
             await FiberManager.Instance.Create(SchedulerType.Main, SceneType.Main, 0, SceneType.Main, "");
         }

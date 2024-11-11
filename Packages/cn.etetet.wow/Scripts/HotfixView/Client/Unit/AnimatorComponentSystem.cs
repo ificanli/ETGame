@@ -147,7 +147,7 @@ namespace ET.Client
 			self.Animator.speed = self.stopSpeed;
 		}
 
-		public static void SetBoolValue(this AnimatorComponent self, string name, bool state)
+		public static void SetBool(this AnimatorComponent self, string name, bool state)
 		{
 			if (!self.HasParameter(name))
 			{
@@ -157,7 +157,7 @@ namespace ET.Client
 			self.Animator.SetBool(name, state);
 		}
 
-		public static void SetFloatValue(this AnimatorComponent self, string name, float state)
+		public static void SetFloat(this AnimatorComponent self, string name, float state)
 		{
 			if (!self.HasParameter(name))
 			{
@@ -167,7 +167,7 @@ namespace ET.Client
 			self.Animator.SetFloat(name, state);
 		}
 
-		public static void SetIntValue(this AnimatorComponent self, string name, int value)
+		public static void SetInt(this AnimatorComponent self, string name, int value)
 		{
 			if (!self.HasParameter(name))
 			{
