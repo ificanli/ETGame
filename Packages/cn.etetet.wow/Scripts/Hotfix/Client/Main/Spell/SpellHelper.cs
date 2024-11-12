@@ -25,14 +25,13 @@
             }
             
             
-            
             // 等待spellhit
             Wait_M2C_SpellHit waitM2CSpellHit = await objectWait.Wait<Wait_M2C_SpellHit>().TimeoutAsync(10000);
             if (cancellationToken.IsCancel())
             {
                 return;
             }
-            
+            EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellHit);
             
             // 等待spellremove
             Wait_M2C_SpellRemove waitM2CSpellRemove = await objectWait.Wait<Wait_M2C_SpellRemove>().TimeoutAsync(10000);
@@ -40,6 +39,7 @@
             {
                 return;
             }
+            EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellRemove);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace ET.Server
             // 加入aoi
             unit.AddComponent<AOIEntity>();
             unit.AddComponent<TargetComponent>();
+            unit.AddComponent<BuffComponent>();
             
             switch (unitConfig.Type)
             {
@@ -33,6 +34,7 @@ namespace ET.Server
                 case UnitType.Monster:
                 {
                     unit.AddComponent<SpellComponent>();
+                    
                     unit.AddComponent<PathfindingComponent, string>(scene.Name);
                     
                     int ai = numericComponent.GetAsInt(NumericType.AI);
