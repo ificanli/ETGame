@@ -32,6 +32,8 @@
         <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Loader\Server\**\*.cs">
             <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
+
+        <Compile Remove="..\..\cn.etetet.wow\Scripts\Loader\Share\Spell\Effects\**" />
     </ItemGroup>
     
     <ItemGroup>
@@ -46,8 +48,8 @@
       <ProjectReference Include="..\..\cn.etetet.core\DotNet~\ET.Core.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="..\..\cn.etetet.wow\Scripts\Loader\Server\">
-        <Link>cn.etetet.wow\Scripts\Loader\Server</Link>
+      <Folder Include="..\..\cn.etetet.wow\Scripts\">
+        <Link>cn.etetet.wow\Scripts</Link>
       </Folder>
     </ItemGroup>
 </Project>
