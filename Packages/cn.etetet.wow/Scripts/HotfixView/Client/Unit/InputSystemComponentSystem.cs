@@ -165,7 +165,7 @@ namespace ET.Client
                 }
             }
             
-            await SpellHelper.Cast(unit, c2MSpellCast);
+            SpellHelper.Cast(unit, c2MSpellCast);
         }
     }
 }

@@ -12,7 +12,8 @@
                 targetComponent.Unit = target;
                 targetComponent.Position = message.TargetPosition;
             }
-            await SpellHelper.Cast(unit, message.SpellId, message.SpellConfigId);
+            
+            await SpellHelper.Cast(unit, message.SpellConfigId);
         }
     }
 }
