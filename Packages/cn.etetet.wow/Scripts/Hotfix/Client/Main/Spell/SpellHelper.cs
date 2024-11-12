@@ -18,7 +18,7 @@
 
             ObjectWait objectWait = unit.GetComponent<ObjectWait>();
             // 等待spelladd
-            Wait_M2C_SpellAdd waitM2CSpellAdd = await objectWait.Wait<Wait_M2C_SpellAdd>().TimeoutAsync(unit.Root(), 10000);
+            Wait_M2C_SpellAdd waitM2CSpellAdd = await objectWait.Wait<Wait_M2C_SpellAdd>().TimeoutAsync(10000);
             if (cancellationToken.IsCancel())
             {
                 return;
@@ -27,7 +27,7 @@
             
             
             // 等待spellhit
-            Wait_M2C_SpellHit waitM2CSpellHit = await objectWait.Wait<Wait_M2C_SpellHit>().TimeoutAsync(unit.Root(), 10000);
+            Wait_M2C_SpellHit waitM2CSpellHit = await objectWait.Wait<Wait_M2C_SpellHit>().TimeoutAsync(10000);
             if (cancellationToken.IsCancel())
             {
                 return;
@@ -35,7 +35,7 @@
             
             
             // 等待spellremove
-            Wait_M2C_SpellRemove waitM2CSpellRemove = await objectWait.Wait<Wait_M2C_SpellRemove>().TimeoutAsync(unit.Root(), 10000);
+            Wait_M2C_SpellRemove waitM2CSpellRemove = await objectWait.Wait<Wait_M2C_SpellRemove>().TimeoutAsync(10000);
             if (cancellationToken.IsCancel())
             {
                 return;

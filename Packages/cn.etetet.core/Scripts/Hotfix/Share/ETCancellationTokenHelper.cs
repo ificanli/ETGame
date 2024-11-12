@@ -4,7 +4,7 @@ namespace ET
 {
     public static class ETCancellationTokenHelper
     {
-        private static async ETTask TimeoutAsync(this ETCancellationToken self, Scene root, long afterTimeCancel)
+        private static async ETTask TimeoutAsync(this ETCancellationToken self, long afterTimeCancel)
         {
             if (afterTimeCancel <= 0)
             {
@@ -17,7 +17,7 @@ namespace ET
             }
 
             // 这里用了Fiber.Instance是因为我知道有什么后果, 你们千万不能乱用这个Fiber.Instance
-            await root.GetComponent<TimerComponent>().WaitAsync(afterTimeCancel);
+            await Fiber.Instance.Root.GetComponent<TimerComponent>().WaitAsync(afterTimeCancel);
             if (self.IsCancel())
             {
                 return;
@@ -58,29 +58,29 @@ namespace ET
             return await task.NewContext(addCancelToken);
         }
         
-        public static async ETTask TimeoutAsync(this ETTask task, Scene root, ETCancellationToken cancellationToken, long afterTimeCancel)
+        public static async ETTask TimeoutAsync(this ETTask task, ETCancellationToken cancellationToken, long afterTimeCancel)
         {
-            cancellationToken.TimeoutAsync(root, afterTimeCancel).NoContext();
+            cancellationToken.TimeoutAsync(afterTimeCancel).NoContext();
             await AddCancel(task, cancellationToken);
         }
         
-        public static async ETTask<T> TimeoutAsync<T>(this ETTask<T> task, Scene root, ETCancellationToken cancellationToken, long afterTimeCancel)
+        public static async ETTask<T> TimeoutAsync<T>(this ETTask<T> task, ETCancellationToken cancellationToken, long afterTimeCancel)
         {
-            cancellationToken.TimeoutAsync(root, afterTimeCancel).NoContext();
+            cancellationToken.TimeoutAsync(afterTimeCancel).NoContext();
             return await AddCancel(task, cancellationToken);
         }
         
-        public static async ETTask TimeoutAsync(this ETTask task, Scene root, long afterTimeCancel)
+        public static async ETTask TimeoutAsync(this ETTask task, long afterTimeCancel)
         {
             ETCancellationToken cancellationToken = new();
-            cancellationToken.TimeoutAsync(root, afterTimeCancel).NoContext();
+            cancellationToken.TimeoutAsync(afterTimeCancel).NoContext();
             await AddCancel(task, cancellationToken);
         }
         
-        public static async ETTask<T> TimeoutAsync<T>(this ETTask<T> task, Scene root, long afterTimeCancel)
+        public static async ETTask<T> TimeoutAsync<T>(this ETTask<T> task, long afterTimeCancel)
         {
             ETCancellationToken cancellationToken = new();
-            cancellationToken.TimeoutAsync(root, afterTimeCancel).NoContext();
+            cancellationToken.TimeoutAsync(afterTimeCancel).NoContext();
             return await AddCancel(task, cancellationToken);
         }
     }

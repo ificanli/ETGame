@@ -10,6 +10,7 @@ namespace ET
         private readonly ConcurrentQueue<int> addIds = new();
         private readonly FiberManager fiberManager;
         private readonly ThreadSynchronizationContext threadSynchronizationContext = new();
+        private Fiber firstFiber;
 
         public MainThreadScheduler(FiberManager fiberManager)
         {
@@ -50,10 +51,10 @@ namespace ET
                 Fiber.Instance = fiber;
                 SynchronizationContext.SetSynchronizationContext(fiber.ThreadSynchronizationContext);
                 fiber.Update();
-                
                 this.idQueue.Enqueue(id);
             }
             
+            Fiber.Instance = this.firstFiber;
             // Fiber调度完成，要还原成默认的上下文，否则unity的回调会找不到正确的上下文
             SynchronizationContext.SetSynchronizationContext(this.threadSynchronizationContext);
         }
@@ -82,7 +83,6 @@ namespace ET
                 Fiber.Instance = fiber;
                 SynchronizationContext.SetSynchronizationContext(fiber.ThreadSynchronizationContext);
                 fiber.LateUpdate();
-                
                 this.idQueue.Enqueue(id);
             }
 
@@ -92,6 +92,7 @@ namespace ET
                 this.idQueue.Enqueue(result);
             }
             
+            Fiber.Instance = this.firstFiber;
             // Fiber调度完成，要还原成默认的上下文，否则unity的回调会找不到正确的上下文
             SynchronizationContext.SetSynchronizationContext(this.threadSynchronizationContext);
         }
@@ -100,6 +101,7 @@ namespace ET
         public void Add(int fiberId = 0)
         {
             this.addIds.Enqueue(fiberId);
+            this.firstFiber ??= this.fiberManager.Get(fiberId);
         }
     }
 }
