@@ -6,8 +6,8 @@
         protected override async ETTask Run(Scene root, M2C_SpellRemove message)
         {
             Unit unit = UnitHelper.GetMyUnitFromClientScene(root);
-            unit.GetComponent<ObjectWait>().Notify(new Wait_M2C_SpellRemove() {Message = message});
-
+            Spell spell = unit.GetComponent<SpellComponent>().GetChild<Spell>(message.SpellId);
+            spell.GetComponent<ObjectWait>().Notify(new Wait_M2C_SpellRemove() {Message = message});
             await ETTask.CompletedTask;
         }
     }

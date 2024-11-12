@@ -3,15 +3,22 @@
     [FriendOf(typeof(SpellComponent))]
     public static class SpellHelper
     {
-        public static async ETTask Cast(Unit unit, int spellConfigId, Spell parent = null)
+        public static async ETTask Cast(Unit unit, long spellId, int spellConfigId, Spell parent = null)
         {
             long startTime = TimeInfo.Instance.FrameTime;
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+            
+            // 客户端发过来的Id重复，直接忽略
+            if (spellComponent.GetChild<Spell>(spellId) != null)
+            {
+                return;
+            }
+            
             spellComponent.CancellationToken = cancellationToken;
 
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
-            Spell spell = spellComponent.CreateSpell(spellConfig);
+            Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
             if (parent == null)
             {
                 // 打断老技能，这里先简单处理，技能打断有一套规则

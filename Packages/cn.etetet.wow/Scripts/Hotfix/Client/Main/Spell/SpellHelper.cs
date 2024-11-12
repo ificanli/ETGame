@@ -1,4 +1,6 @@
-﻿namespace ET.Client
+﻿using ET.Server;
+
+namespace ET.Client
 {
     public static class SpellHelper
     {
@@ -7,22 +9,30 @@
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(c2MSpellCast.SpellConfigId);
-            Spell spell = spellComponent.CreateSpell(spellConfig);
+            using Spell spell = spellComponent.CreateSpell(spellConfig, IdGenerater.Instance.GenerateId());
+            spell.AddComponent<ObjectWait>();
             spell.Caster = unit;
-            spellComponent.Current = spell;
             
             // Client Spell Add Effect分发， 表现层可以播放前摇动作
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellAdd);
-            
+
+            c2MSpellCast.SpellId = spell.Id;
             unit.Root().GetComponent<ClientSenderComponent>().Send(c2MSpellCast);
 
-            ObjectWait objectWait = unit.GetComponent<ObjectWait>();
+            ObjectWait objectWait = spell.GetComponent<ObjectWait>();
             // 等待spelladd
             Wait_M2C_SpellAdd waitM2CSpellAdd = await objectWait.Wait<Wait_M2C_SpellAdd>().TimeoutAsync(10000);
             if (cancellationToken.IsCancel())
             {
                 return;
             }
+            
+            if (spellComponent.Current.Entity == null)
+            {
+                spellComponent.Current = spell;
+            }
+
+            
             
             
             // 等待spellhit
@@ -31,7 +41,19 @@
             {
                 return;
             }
+            
+            UnitComponent unitComponent = unit.GetParent<UnitComponent>();
+            SpellTargetComponent spellTargetComponent = spell.AddComponent<SpellTargetComponent>();
+            foreach (long targetId in waitM2CSpellHit.Message.TargetUnitId)
+            {
+                spellTargetComponent.Units.Add(unitComponent.Get(targetId));
+            }
+            spellTargetComponent.Position = waitM2CSpellHit.Message.TargetPosition;
+            
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellHit);
+            
+            
+            
             
             // 等待spellremove
             Wait_M2C_SpellRemove waitM2CSpellRemove = await objectWait.Wait<Wait_M2C_SpellRemove>().TimeoutAsync(10000);
