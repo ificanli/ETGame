@@ -49,6 +49,9 @@ namespace ET
             LogMsg logMsg = World.Instance.AddSingleton<LogMsg>();
             logMsg.AddIgnore(LoginOuter.C2G_Ping);
             logMsg.AddIgnore(LoginOuter.G2C_Ping);
+            logMsg.AddIgnore(WOWOuter.C2M_PathfindingResult);
+            logMsg.AddIgnore(WOWOuter.M2C_PathfindingResult);
+            logMsg.AddIgnore(WOWOuter.M2C_Stop);
             
             // 创建需要reload的code singleton
             CodeTypes.Instance.CodeProcess();

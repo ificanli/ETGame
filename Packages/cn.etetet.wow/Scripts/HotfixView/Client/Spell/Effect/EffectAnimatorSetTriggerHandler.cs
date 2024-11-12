@@ -14,6 +14,20 @@
                     caster.GetComponent<AnimatorComponent>().SetTrigger(effectConfig.MotionType.ToString());
                     break;
                 }
+                case EffectTimeType.ClientSpellHit:
+                {
+                    Spell spell = effect.Source as Spell;
+                    SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
+                    foreach (Unit unit in spellTargetComponent.Units)
+                    {
+                        if (unit == null)
+                        {
+                            continue;
+                        }
+                        unit.GetComponent<AnimatorComponent>().SetTrigger(effectConfig.MotionType.ToString());
+                    }
+                    break;
+                }
             }
         }
     }
