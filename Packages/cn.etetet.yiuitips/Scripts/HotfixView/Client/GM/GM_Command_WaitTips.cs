@@ -91,7 +91,7 @@ namespace ET.Client
                 {
                     ConfirmCallBack = () => { Debug.LogError($"回调测试, 确定按钮"); }, 
                     CancelCallBack = () => { Debug.LogError($"回调测试, 取消按钮"); }
-                }).TimeoutAsync(timeout);
+                }).TimeoutAsync(null, timeout);
             Log.Error($"等待弹窗测试等待完毕 继续执行 超时测试: {result}");
         }
     }
@@ -134,7 +134,7 @@ namespace ET.Client
                 {
                     ConfirmCallBack = () => { Debug.LogError($"回调测试, 确定按钮"); }, 
                     CancelCallBack = () => { Debug.LogError($"回调测试, 取消按钮"); }
-                }).TimeoutAsync(timeout);
+                }).TimeoutAsync(null, timeout);
             Log.Error($"等待弹窗测试等待完毕 继续执行 取消超时测试: {result}");
         }
     }

@@ -9,8 +9,6 @@
             "Unity.Mathematics",
             "ET.Loader",
             "ET.Model",
-            "ET.UI",
-            "ET.Init",
             "Unity.InputSystem"
         ],
         "Model": [
@@ -30,9 +28,7 @@
             "ET.Hotfix",
             "ET.ModelView",
             "ET.YooAssets",
-            "ET.UI",
             "ET.ReferenceCollector",
-            "ET.Init",
             "Unity.InputSystem"
         ],
         "Hotfix": [

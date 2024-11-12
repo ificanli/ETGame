@@ -51,10 +51,5 @@
     <ItemGroup>
         <CompilerVisibleProperty Include="DotNetAssembly" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="..\..\Scripts\Hotfix\Client\Main\Spell\Effect\">
-        <Link>cn.etetet.wow\Scripts\Hotfix\Client\Main\Spell\Effect</Link>
-      </Folder>
-    </ItemGroup>
 
 </Project>

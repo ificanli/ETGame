@@ -82,7 +82,7 @@ namespace ET
 
         public static async ETTask<IResponse> Call(this Session self, IRequest request, int timeout)
         {
-            return await self.Call(request).TimeoutAsync(timeout);
+            return await self.Call(request).TimeoutAsync(self.Root(), timeout);
         }
 
         public static void Send(this Session self, IMessage message)

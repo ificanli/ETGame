@@ -8,33 +8,41 @@ namespace ET
     [CustomEditor(typeof(GlobalConfig))]
     public class GlobalConfigEditor : Editor
     {
+        private CodeMode codeMode;
+        
         private void OnEnable()
         {
             GlobalConfig globalConfig = (GlobalConfig)this.target;
+            this.codeMode = globalConfig.CodeMode;
             //globalConfig.BuildType = EditorUserBuildSettings.development ? BuildType.Debug : BuildType.Release;
             EditorResHelper.SaveAssets(globalConfig);
         }
 
         public override void OnInspectorGUI()
         {
-            GlobalConfig globalConfig = (GlobalConfig)this.target;
-            CodeMode codeMode = (CodeMode)EditorGUILayout.EnumPopup("CodeMode", globalConfig.CodeMode);
-            if (codeMode != globalConfig.CodeMode)
-            {
-                globalConfig.CodeMode = codeMode;
-                
-                EditorResHelper.SaveAssets(globalConfig);
-                
-                CodeModeChangeHelper.ChangeToCodeMode(codeMode.ToString());
-                
-                AssetDatabase.Refresh();
-                ReGenerateProjectFilesHelper.Run();
-            }
+            base.OnInspectorGUI();
             
+            GlobalConfig globalConfig = (GlobalConfig)this.target;
+            if (globalConfig.CodeMode != this.codeMode)
+            {
+                this.codeMode = globalConfig.CodeMode;
+                CodeModeChangeHelper.ChangeToCodeMode(codeMode.ToString());
+                ReGenerateProjectFilesHelper.Run();
+                AssetDatabase.Refresh();
+            }
+            /*
             string sceneName = EditorGUILayout.TextField($"SceneName", globalConfig.SceneName);
             if (sceneName != globalConfig.SceneName)
             {
                 globalConfig.SceneName = sceneName;
+                EditorResHelper.SaveAssets(globalConfig);
+                AssetDatabase.Refresh();
+            }
+            
+            bool enbaleDll = EditorGUILayout.Toggle($"EnableDll", globalConfig.EnableDll);
+            if (enbaleDll != globalConfig.EnableDll)
+            {
+                globalConfig.EnableDll = enbaleDll;
                 EditorResHelper.SaveAssets(globalConfig);
                 AssetDatabase.Refresh();
             }
@@ -46,7 +54,7 @@ namespace ET
                 EditorResHelper.SaveAssets(globalConfig);
                 AssetDatabase.Refresh();
             }
-            
+            */
         }
     }
 }

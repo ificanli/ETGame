@@ -7,7 +7,7 @@
         {
             switch (effect.EffectTimeType)
             {
-                case EffectTimeType.ServerSpellAdd:
+                case EffectTimeType.ClientSpellAdd:
                 {
                     Spell spell = effect.Source as Spell;
                     Unit caster = spell.Caster;

@@ -183,7 +183,6 @@ namespace ET.Client
 			{
 				return;
 			}
-
 			self.Animator.SetTrigger(name);
 		}
 

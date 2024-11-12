@@ -22,6 +22,8 @@ namespace ET
 
         public string SceneName;
 
+        public bool EnableDll;
+
         public string Address;
     }
 }

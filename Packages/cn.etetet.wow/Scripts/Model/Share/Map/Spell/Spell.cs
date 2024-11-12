@@ -7,7 +7,7 @@ namespace ET
     {
         public SpellConfig Config { get; set; } //配置表id
 
-        public EntityRef<Unit> Caster { get; }
+        public EntityRef<Unit> Caster { get; set; }
 
         public EntityRef<Spell> ParentSpell { get; set; }
     }

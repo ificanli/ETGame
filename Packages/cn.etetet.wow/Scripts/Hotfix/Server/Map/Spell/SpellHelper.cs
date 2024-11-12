@@ -18,7 +18,8 @@
                 Spell preSpell = spellComponent.Current;
                 if (preSpell != null)
                 {
-                    spellComponent.CancellationToken.Cancel();
+                    spellComponent.CancellationToken?.Cancel();
+                    spellComponent.CancellationToken = null;
                 }
 
                 spellComponent.Current = spell;

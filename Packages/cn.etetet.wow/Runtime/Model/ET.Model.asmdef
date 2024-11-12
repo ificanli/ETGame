@@ -21,5 +21,8 @@
         "IS_COMPILING || UNITY_EDITOR"
     ],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": false,
+    "optionalUnityReferences": [],
+    "additionalReferences": [],
+    "compilerOptions": ""
 }
