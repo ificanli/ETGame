@@ -211,6 +211,12 @@ message M2C_SpellRemove // IMessage
 	int64 SpellId = 2;
 }
 
+message M2C_SpellInterrupt // IMessage
+{
+	int64 UnitId = 1;
+	int64 SpellId = 2;
+}
+
 message M2C_BuffAdd // IMessage
 {
 	int64 UnitId = 1;

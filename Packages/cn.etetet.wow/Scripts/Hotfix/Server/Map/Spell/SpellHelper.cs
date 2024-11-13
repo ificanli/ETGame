@@ -26,65 +26,56 @@ namespace ET.Server
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
             Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
 
-            try
+            
+            if (parent == null)
             {
-                if (parent == null)
+                // 打断老技能，这里先简单处理，技能打断有一套规则
+                Spell preSpell = spellComponent.Current;
+                if (preSpell != null)
                 {
-                    // 打断老技能，这里先简单处理，技能打断有一套规则
-                    Spell preSpell = spellComponent.Current;
-                    if (preSpell != null)
-                    {
-                        spellComponent.CancellationToken?.Cancel();
-                        spellComponent.CancellationToken = null;
-                    }
-
-                    spellComponent.Current = spell;
-                }
-                else
-                {
-                    spell.ParentSpell = parent;
+                    Interrupt(unit, preSpell.Id);
                 }
 
-                EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellAdd);
-
-
-                // 等到命中
-                TimerComponent timerComponent = unit.Scene().GetComponent<TimerComponent>();
-                await timerComponent.WaitTillAsync(startTime + spellConfig.HitTime);
-                if (cancellationToken.IsCancel())
-                {
-                    return;
-                }
-
-                // 选择目标
-                SpellTargetComponent spellTargetComponent = SelectTarget(unit, spell);
-
-                // 发送SpellHit消息
-                M2C_SpellHit m2CSpellHit = M2C_SpellHit.Create();
-                m2CSpellHit.UnitId = unit.Id;
-                m2CSpellHit.SpellId = spell.Id;
-                m2CSpellHit.TargetPosition = spellTargetComponent.Position;
-                foreach (Unit target in spellTargetComponent.Units)
-                {
-                    m2CSpellHit.TargetUnitId.Add(target.Id);
-                }
-
-                MapMessageHelper.Broadcast(unit, m2CSpellHit);
-
-                // 对目标分发hitEffect
-                EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellHit);
-
-                await timerComponent.WaitTillAsync(startTime + spellConfig.Duration);
-
-                // 发送SpellRemove消息
-                M2C_SpellRemove m2CSpellRemove = M2C_SpellRemove.Create();
-                m2CSpellRemove.SpellId = spell.Id;
-                MapMessageHelper.Broadcast(unit, m2CSpellHit);
+                spellComponent.Current = spell;
             }
-            finally
+            else
             {
-                spellComponent.RemoveSpell(spell.Id);
+                spell.ParentSpell = parent;
             }
+
+            EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellAdd);
+
+
+            // 等到命中
+            TimerComponent timerComponent = unit.Scene().GetComponent<TimerComponent>();
+            await timerComponent.WaitTillAsync(startTime + spellConfig.HitTime);
+            if (cancellationToken.IsCancel())
+            {
+                return;
+            }
+
+            // 选择目标
+            SpellTargetComponent spellTargetComponent = SelectTarget(unit, spell);
+
+            // 发送SpellHit消息
+            M2C_SpellHit m2CSpellHit = M2C_SpellHit.Create();
+            m2CSpellHit.UnitId = unit.Id;
+            m2CSpellHit.SpellId = spell.Id;
+            m2CSpellHit.TargetPosition = spellTargetComponent.Position;
+            foreach (Unit target in spellTargetComponent.Units)
+            {
+                m2CSpellHit.TargetUnitId.Add(target.Id);
+            }
+
+            MapMessageHelper.Broadcast(unit, m2CSpellHit);
+
+            // 对目标分发hitEffect
+            EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellHit);
+
+            await timerComponent.WaitTillAsync(startTime + spellConfig.Duration);
+
+            // 发送SpellRemove消息
+            Remove(unit, spell.Id);
         }
 
         private static SpellTargetComponent SelectTarget(Unit unit, Spell spell)
@@ -109,10 +100,23 @@ namespace ET.Server
             return spellTargetComponent;
         }
         
-        public static void Interrupt(Unit unit)
+        public static void Interrupt(Unit unit, long spellId)
         {
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             spellComponent.CancellationToken?.Cancel();
+            spellComponent.CancellationToken = default;
+            
+            Remove(unit, spellId);
+        }
+
+        public static void Remove(Unit unit, long spellId)
+        {
+            M2C_SpellRemove spellRemove = M2C_SpellRemove.Create();
+            spellRemove.UnitId = unit.Id;
+            spellRemove.SpellId = spellId;
+            
+            unit.GetComponent<SpellComponent>().RemoveChild(spellId);
+            MapMessageHelper.Broadcast(unit, spellRemove);
         }
     }
 }
