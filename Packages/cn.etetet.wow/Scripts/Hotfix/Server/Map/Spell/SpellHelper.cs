@@ -12,6 +12,7 @@ namespace ET.Server
             M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
             m2CSpellAdd.UnitId = unit.Id;
             m2CSpellAdd.SpellId = spellId;
+            m2CSpellAdd.SpellConfigId = spellConfigId;
             MapMessageHelper.Broadcast(unit, m2CSpellAdd);
             
             
@@ -60,6 +61,7 @@ namespace ET.Server
 
                 // 发送SpellHit消息
                 M2C_SpellHit m2CSpellHit = M2C_SpellHit.Create();
+                m2CSpellHit.UnitId = unit.Id;
                 m2CSpellHit.SpellId = spell.Id;
                 m2CSpellHit.TargetPosition = spellTargetComponent.Position;
                 foreach (Unit target in spellTargetComponent.Units)

@@ -11,6 +11,10 @@ namespace ET.Client
         public override SpellConfig Handle(SpellConfigLoader args)
         {
             SpellScriptableObject spellScriptableObject = ResourcesComponent.Instance.LoadAssetSync<SpellScriptableObject>(args.Id.ToString());
+            if (spellScriptableObject == null)
+            {
+                throw new Exception($"not found spell config: {args.Id}");
+            }
             return spellScriptableObject.SpellConfig;
         }
     }

@@ -8,7 +8,10 @@
             Scene currentScene = root.GetComponent<CurrentScenesComponent>().Scene;
             Unit unit = currentScene.GetComponent<UnitComponent>().Get(message.UnitId);
 
-            await SpellHelper.Start(unit, message.SpellId, message.SpellConfigId);
+            SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+            spellComponent.CancellationToken = new ETCancellationToken();
+            SpellHelper.Start(unit, message.SpellId, message.SpellConfigId).WithContext(spellComponent.CancellationToken);
+            await ETTask.CompletedTask;
         }
     }
 }
