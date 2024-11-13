@@ -22,10 +22,7 @@ namespace ET.Client
             self.InputSystem.Player.ChangeTarget.canceled += self.ChangeTarget;
             self.InputSystem.Player.Spell.started += (contex)=>
             {
-                SpellComponent spellComponent = self.GetParent<Unit>().GetComponent<SpellComponent>();
-                spellComponent.CancellationToken?.Cancel();
-                spellComponent.CancellationToken = new ETCancellationToken();
-                self.Spell(contex).WithContext(spellComponent.CancellationToken);
+                self.Spell(contex).WithContext(new ETCancellationToken());
             };
         }
         

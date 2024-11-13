@@ -142,7 +142,7 @@ namespace ET.Server
             spellRemove.UnitId = unit.Id;
             spellRemove.SpellId = spellId;
             
-            unit.GetComponent<SpellComponent>().RemoveChild(spellId);
+            unit.GetComponent<SpellComponent>().RemoveSpell(spellId);
             MapMessageHelper.Broadcast(unit, spellRemove);
         }
     }

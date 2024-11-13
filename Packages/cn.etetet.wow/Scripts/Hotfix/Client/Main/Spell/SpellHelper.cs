@@ -57,6 +57,7 @@ namespace ET.Client
                 return;
             }
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellRemove);
+            spellComponent.RemoveSpell(spell.Id);
         }
     }
 }
