@@ -28,7 +28,7 @@ namespace ET
             {
                 return;
             }
-            fiber.Log.Debug(msg.ToString());
+            fiber.Log.Debug($"{fiber.Root.Name,-10}: {msg}");
         }
     }
 }

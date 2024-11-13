@@ -10,7 +10,7 @@ namespace ET
         [BsonIgnore]
         public Fiber Fiber { get; set; }
         
-        public string Name { get; }
+        public string Name { get; set; }
         
         public int SceneType
         {

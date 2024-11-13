@@ -12,11 +12,22 @@ namespace ET.Client
         public static async ETTask Start(Unit unit, long spellId, int spellConfigId)
         {
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            if (cancellationToken.IsCancel())
+            {
+                return;
+            }
             
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+            spellComponent.CancellationToken = cancellationToken;
+            
+            if (unit.IsMyUnit())
+            {
+                spellComponent.UpdateCD(spellConfigId);
+            }
+
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
             
-            using Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
+            Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
             spell.Caster = unit;
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellAdd);
             

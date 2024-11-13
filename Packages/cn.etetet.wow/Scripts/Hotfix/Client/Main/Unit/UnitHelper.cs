@@ -14,5 +14,14 @@
             PlayerComponent playerComponent = currentScene.Root().GetComponent<PlayerComponent>();
             return currentScene.GetComponent<UnitComponent>().Get(playerComponent.MyId);
         }
+        
+        public static bool IsMyUnit(this Unit self)
+        {
+            if (self.Root().GetComponent<PlayerComponent>().MyId == self.Id)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

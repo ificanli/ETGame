@@ -12,8 +12,10 @@
                 targetComponent.Unit = target;
                 targetComponent.Position = message.TargetPosition;
             }
-            
-            await SpellHelper.Cast(unit, message.SpellConfigId);
+
+            ETCancellationToken cancellationToken = new ETCancellationToken();
+            SpellHelper.Cast(unit, message.SpellConfigId).WithContext(cancellationToken);
+            await ETTask.CompletedTask;
         }
     }
 }

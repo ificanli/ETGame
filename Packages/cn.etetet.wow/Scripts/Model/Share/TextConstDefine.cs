@@ -8,5 +8,7 @@ namespace ET
 
 		public const int SpellCast_TargetTooFar = 10002;
 
+		public const int SpellCast_SpellInCD = 10003;
+
 	}
 }

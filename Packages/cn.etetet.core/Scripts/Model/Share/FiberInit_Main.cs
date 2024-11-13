@@ -9,6 +9,7 @@
             
             int sceneType = SceneTypeSingleton.Instance.GetSceneType(Options.Instance.SceneName);
             root.SceneType = sceneType;
+            root.Name = Options.Instance.SceneName;
             
             await EventSystem.Instance.PublishAsync(root, new EntryEvent1());
             await EventSystem.Instance.PublishAsync(root, new EntryEvent2());

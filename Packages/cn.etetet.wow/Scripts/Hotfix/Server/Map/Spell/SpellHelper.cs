@@ -7,25 +7,29 @@ namespace ET.Server
     {
         public static async ETTask Cast(Unit unit, int spellConfigId, Spell parent = null)
         {
+            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            if (cancellationToken.IsCancel())
+            {
+                return;
+            }
+            
+            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
+
+            // 检查技能是否能施放
+            if (!Check(unit, spellConfig))
+            {
+                return;
+            }
+            
             // 发送SpellStart消息
             long spellId = IdGenerater.Instance.GenerateId();
-            M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
-            m2CSpellAdd.UnitId = unit.Id;
-            m2CSpellAdd.SpellId = spellId;
-            m2CSpellAdd.SpellConfigId = spellConfigId;
-            MapMessageHelper.Broadcast(unit, m2CSpellAdd);
-            
             
             long startTime = TimeInfo.Instance.FrameTime;
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             
-            
-            spellComponent.CancellationToken = cancellationToken;
-
-            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
             Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
-
+            spellComponent.UpdateCD(spellConfigId);
             
             if (parent == null)
             {
@@ -42,6 +46,14 @@ namespace ET.Server
             {
                 spell.ParentSpell = parent;
             }
+            
+            M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
+            m2CSpellAdd.UnitId = unit.Id;
+            m2CSpellAdd.SpellId = spellId;
+            m2CSpellAdd.SpellConfigId = spellConfigId;
+            MapMessageHelper.Broadcast(unit, m2CSpellAdd);
+            
+            spellComponent.CancellationToken = cancellationToken;
 
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellAdd);
 
@@ -73,9 +85,24 @@ namespace ET.Server
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellHit);
 
             await timerComponent.WaitTillAsync(startTime + spellConfig.Duration);
+            if (cancellationToken.IsCancel())
+            {
+                return;
+            }
 
             // 发送SpellRemove消息
             Remove(unit, spell.Id);
+        }
+
+        private static bool Check(Unit unit, SpellConfig spellConfig)
+        {
+            SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+            if (!spellComponent.CheckCD(spellConfig.Id))
+            {
+                ErrorHelper.MapError(unit, TextConstDefine.SpellCast_SpellInCD);
+                return false;
+            }
+            return true;
         }
 
         private static SpellTargetComponent SelectTarget(Unit unit, Spell spell)

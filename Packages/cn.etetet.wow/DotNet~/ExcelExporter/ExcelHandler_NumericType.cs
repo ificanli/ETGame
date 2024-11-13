@@ -39,7 +39,7 @@ namespace ET
             sb.Append("\t}\n");
             sb.Append("}");
             
-            File.WriteAllText("Packages/cn.etetet.wow/Scripts/Loader/Share/NumericType.cs", sb.ToString());
+            File.WriteAllText("Packages/cn.etetet.wow/Scripts/Model/Share/NumericType.cs", sb.ToString());
         }
     }
 }
