@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Sirenix.OdinInspector;
 
 namespace ET
 {
@@ -8,8 +7,8 @@ namespace ET
     {
 #if UNITY
         [UnityEngine.SerializeReference]
+        [Sirenix.OdinInspector.PropertyOrder(100)]
 #endif
-        [PropertyOrder(100)]
         public List<BTNode> Children = new();
     }
 }
