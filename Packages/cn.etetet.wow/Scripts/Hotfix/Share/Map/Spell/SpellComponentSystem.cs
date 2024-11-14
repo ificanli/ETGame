@@ -15,6 +15,11 @@
             return spell;
         }
 
+        public static Spell GetSpell(this SpellComponent self, long spellId)
+        {
+            return self.GetChild<Spell>(spellId);
+        }
+
         public static void RemoveSpell(this SpellComponent self, long spellId)
         {
             self.RemoveChild(spellId);

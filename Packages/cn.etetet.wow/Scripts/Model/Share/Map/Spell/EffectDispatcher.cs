@@ -112,7 +112,7 @@ namespace ET
                 throw new Exception($"not found effect handler: {effectConfig.GetType().FullName}");
             }
 
-            int sceneType = effect.Source.Scene().SceneType;
+            int sceneType = effect.Scene().SceneType;
             
             foreach (EffectDispatcherInfo effectDispatcherInfo in list)
             {

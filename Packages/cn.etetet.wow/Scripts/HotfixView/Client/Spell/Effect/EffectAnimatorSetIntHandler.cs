@@ -9,14 +9,14 @@
             {
                 case EffectTimeType.ClientSpellAdd:
                 {
-                    Spell spell = effect.Source as Spell;
+                    Spell spell = effect.GetParent<Spell>();
                     Unit caster = spell.Caster;
                     caster.GetComponent<AnimatorComponent>().SetInt(effectConfig.MotionType.ToString(), effectConfig.Value);
                     break;
                 }
                 case EffectTimeType.ClientSpellHit:
                 {
-                    Spell spell = effect.Source as Spell;
+                    Spell spell = effect.GetParent<Spell>();
                     SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
                     foreach (Unit unit in spellTargetComponent.Units)
                     {

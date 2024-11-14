@@ -21,14 +21,17 @@ namespace ET.Server
             MapMessageHelper.SendToClient(unit, removeUnits);
         }
         
-        public static void Broadcast(Unit unit, IMessage message)
+        public static void Broadcast(Unit unit, IMessage message, bool withSelf = true)
         {
             (message as MessageObject).IsFromPool = false;
             Dictionary<long, EntityRef<AOIEntity>> dict = unit.GetBeSeePlayers();
-            // 网络底层做了优化，同一个消息不会多次序列化
             MessageLocationSenderOneType oneTypeMessageLocationType = unit.Root().GetComponent<MessageLocationSenderComponent>().Get(LocationType.GateSession);
             foreach (AOIEntity u in dict.Values)
             {
+                if (!withSelf && u.Id == unit.Id)
+                {
+                    continue;
+                }
                 oneTypeMessageLocationType.Send(u.Unit.Id, message);
             }
         }
@@ -44,6 +47,24 @@ namespace ET.Server
         public static void Send(Scene root, ActorId actorId, IMessage message)
         {
             root.GetComponent<MessageSender>().Send(actorId, message);
+        }
+
+        public static void NoticeClient(Unit unit, IMessage message, NoticeType noticeType)
+        {
+            switch (noticeType)
+            {
+                case NoticeType.Broadcast:
+                    Broadcast(unit, message);
+                    break;
+                case NoticeType.Self:
+                    SendToClient(unit, message);
+                    break;
+                case NoticeType.NoNotice:
+                    break;
+                case NoticeType.BroadcastWithoutSelf:
+                    Broadcast(unit, message, false);
+                    break;
+            }
         }
     }
 }

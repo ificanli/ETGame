@@ -32,7 +32,7 @@ namespace ET.Client
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellAdd);
             
             ObjectWait objectWait = spell.AddComponent<ObjectWait>();
-            // 等待spellhit
+            // 等待spell hit消息
             Wait_M2C_SpellHit waitM2CSpellHit = await objectWait.Wait<Wait_M2C_SpellHit>().TimeoutAsync(10000);
             if (cancellationToken.IsCancel())
             {
@@ -50,7 +50,7 @@ namespace ET.Client
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ClientSpellHit);
             
             
-            // 等待spellremove
+            // 等待spell remove消息
             Wait_M2C_SpellRemove waitM2CSpellRemove = await objectWait.Wait<Wait_M2C_SpellRemove>().TimeoutAsync(10000);
             if (cancellationToken.IsCancel())
             {

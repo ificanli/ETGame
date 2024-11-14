@@ -9,14 +9,14 @@
             {
                 case EffectTimeType.ServerSpellAdd:
                 {
-                    Spell spell = effect.Source as Spell;
+                    Spell spell = effect.GetParent<Spell>();
                     Unit caster = spell.Caster;
                     caster.GetComponent<BuffComponent>().CreateBuff(effectConfig.BuffConfig);
                     break;
                 }
                 case EffectTimeType.ServerSpellHit:
                 {
-                    Spell spell = effect.Source as Spell;
+                    Spell spell = effect.GetParent<Spell>();
                     SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
                     foreach (Unit unit in spellTargetComponent.Units)
                     {

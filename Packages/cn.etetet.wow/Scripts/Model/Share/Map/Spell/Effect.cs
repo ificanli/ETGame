@@ -1,14 +1,10 @@
 ﻿namespace ET
 {
-    public struct Effect
+    [ChildOf]
+    public class Effect: Entity, IAwake
     {
-        public Entity Source { get; set; }
-        public EffectTimeType EffectTimeType { get; }
+        public EffectTimeType EffectTimeType { get; set; }
         
-        public Effect(Entity source, EffectTimeType effectTimeType)
-        {
-            this.Source = source;
-            EffectTimeType = effectTimeType;
-        }
+        public EffectConfig EffectConfig { get; set; }
     }
 }

@@ -1,32 +1,32 @@
-﻿namespace ET
+﻿using System.Collections.Generic;
+
+namespace ET
 {
     public static partial class EffectHelper
     {
         public static void RunSpellEffects(Spell spell, EffectTimeType effectTimeType)
         {
-            SpellConfig spellConfig = spell.Config;
-
-            foreach (EffectConfig effectConfig in spellConfig.Effects)
+            foreach (EffectConfig effectConfig in spell.Config.Effects)
             {
                 if (effectConfig.EffectTimeType != effectTimeType)
                 {
                     continue;
                 }
-                EffectDispatcher.Instance.Handle(new Effect(spell,  effectTimeType), effectConfig);
+                using Effect effect = spell.AddChild<Effect>();
+                EffectDispatcher.Instance.Handle(effect, effectConfig);
             }
         }
         
         public static void RunBuffEffects(Buff buff, EffectTimeType effectTimeType)
         {
-            BuffConfig buffConfig = buff.Config;
-
-            foreach (EffectConfig effectConfig in buffConfig.Effects)
+            foreach (EffectConfig effectConfig in buff.Config.Effects)
             {
                 if (effectConfig.EffectTimeType != effectTimeType)
                 {
                     continue;
                 }
-                EffectDispatcher.Instance.Handle(new Effect(buff,  effectTimeType), effectConfig);
+                using Effect effect = buff.AddChild<Effect>();
+                EffectDispatcher.Instance.Handle(effect, effectConfig);
             }
         }
     }

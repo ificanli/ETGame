@@ -29,8 +29,13 @@ namespace ET.Server
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             
             Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
-            spellComponent.UpdateCD(spellConfigId);
-            
+
+            // 子技能没有CD
+            if (parent == null)
+            {
+                spellComponent.UpdateCD(spellConfigId);
+            }
+
             if (parent == null)
             {
                 // 打断老技能，这里先简单处理，技能打断有一套规则
@@ -47,16 +52,18 @@ namespace ET.Server
                 spell.ParentSpell = parent;
             }
             
+            
+            spellComponent.CancellationToken = cancellationToken;
+            
             M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
             m2CSpellAdd.UnitId = unit.Id;
             m2CSpellAdd.SpellId = spellId;
             m2CSpellAdd.SpellConfigId = spellConfigId;
-            MapMessageHelper.Broadcast(unit, m2CSpellAdd);
+            MapMessageHelper.NoticeClient(unit, m2CSpellAdd, spellConfig.NoticeType);
             
-            spellComponent.CancellationToken = cancellationToken;
-
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellAdd);
 
+#region SpellHit
 
             // 等到命中
             TimerComponent timerComponent = unit.Scene().GetComponent<TimerComponent>();
@@ -78,11 +85,16 @@ namespace ET.Server
             {
                 m2CSpellHit.TargetUnitId.Add(target.Id);
             }
-
-            MapMessageHelper.Broadcast(unit, m2CSpellHit);
+            MapMessageHelper.NoticeClient(unit, m2CSpellHit, spellConfig.NoticeType);
 
             // 对目标分发hitEffect
             EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellHit);
+
+#endregion
+            
+
+
+#region SpellRemove
 
             await timerComponent.WaitTillAsync(startTime + spellConfig.Duration);
             if (cancellationToken.IsCancel())
@@ -92,6 +104,8 @@ namespace ET.Server
 
             // 发送SpellRemove消息
             Remove(unit, spell.Id);
+            
+#endregion
         }
 
         private static bool Check(Unit unit, SpellConfig spellConfig)
@@ -141,9 +155,12 @@ namespace ET.Server
             M2C_SpellRemove spellRemove = M2C_SpellRemove.Create();
             spellRemove.UnitId = unit.Id;
             spellRemove.SpellId = spellId;
+            SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+            Spell spell = spellComponent.GetSpell(spellId);
             
-            unit.GetComponent<SpellComponent>().RemoveSpell(spellId);
-            MapMessageHelper.Broadcast(unit, spellRemove);
+            MapMessageHelper.NoticeClient(unit, spellRemove, spell.Config.NoticeType);
+            
+            spellComponent.RemoveSpell(spellId);
         }
     }
 }
