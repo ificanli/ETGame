@@ -4,7 +4,7 @@ namespace ET
 {
     public static partial class EffectHelper
     {
-        public static void RunSpellEffects(Spell spell, EffectTimeType effectTimeType)
+        public static bool RunSpellEffects(Spell spell, EffectTimeType effectTimeType)
         {
             foreach (EffectConfig effectConfig in spell.Config.Effects)
             {
@@ -13,11 +13,12 @@ namespace ET
                     continue;
                 }
                 using Effect effect = spell.AddChild<Effect>();
-                EffectDispatcher.Instance.Handle(effect, effectConfig);
+                return BTDispatcher.Instance.Handle(effect, effectConfig.Node);
             }
+            return true;
         }
         
-        public static void RunBuffEffects(Buff buff, EffectTimeType effectTimeType)
+        public static bool RunBuffEffects(Buff buff, EffectTimeType effectTimeType)
         {
             foreach (EffectConfig effectConfig in buff.Config.Effects)
             {
@@ -26,8 +27,9 @@ namespace ET
                     continue;
                 }
                 using Effect effect = buff.AddChild<Effect>();
-                EffectDispatcher.Instance.Handle(effect, effectConfig);
+                return BTDispatcher.Instance.Handle(effect, effectConfig.Node);
             }
+            return true;
         }
     }
 }

@@ -1,9 +1,8 @@
 ﻿namespace ET.Server
 {
-    [EffectHandler(SceneType.Map)]
-    public class EffectNumericChangeHandler: AEffectHandler<EffectNumericChange>
+    public class BTNumericChangeHandler: ABTHandler<BTNumericChange>
     {
-        protected override void Run(Effect effect, EffectNumericChange effectConfig)
+        protected override bool Run(Effect effect, BTNumericChange btConfig)
         {
             switch (effect.EffectTimeType)
             {
@@ -14,8 +13,8 @@
                     foreach (Unit unit in spellTargetComponent.Units)
                     {
                         NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
-                        long value = numericComponent.GetAsLong(effectConfig.NumericType);
-                        numericComponent.Set(effectConfig.NumericType, value + effectConfig.Value);
+                        long value = numericComponent.GetAsLong(btConfig.NumericType);
+                        numericComponent.Set(btConfig.NumericType, value + btConfig.Value);
                     }
                     break;
                 }
@@ -24,16 +23,17 @@
                     Buff buff = effect.GetParent<Buff>();
                     Unit unit = buff.Parent.GetParent<Unit>();
                     NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
-                    long value = numericComponent.GetAsLong(effectConfig.NumericType);
-                    numericComponent.Set(effectConfig.NumericType, value + effectConfig.Value);
+                    long value = numericComponent.GetAsLong(btConfig.NumericType);
+                    numericComponent.Set(btConfig.NumericType, value + btConfig.Value);
                     // buff删除的时候会还原数值
                     BuffChangeNumericRecordComponent buffChangeNumericRecordComponent = 
                             buff.GetComponent<BuffChangeNumericRecordComponent>() ??
                             buff.AddComponent<BuffChangeNumericRecordComponent>();
-                    buffChangeNumericRecordComponent.Add(effectConfig.NumericType, effectConfig.Value);
+                    buffChangeNumericRecordComponent.Add(btConfig.NumericType, btConfig.Value);
                     break;
                 }
             }
+            return true;
         }
     }
 }

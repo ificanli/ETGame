@@ -1,7 +1,6 @@
 ﻿namespace ET
 {
-    
-    public class EffectAddBuff: EffectConfig
+    public class BTAddBuff: BTNode
     {
         public BuffConfig BuffConfig;
     }

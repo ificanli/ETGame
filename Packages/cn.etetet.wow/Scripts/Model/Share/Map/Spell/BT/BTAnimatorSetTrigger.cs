@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class EffectAnimatorSetTrigger: EffectConfig
+    public class BTAnimatorSetTrigger: BTNode
     {
         public MotionType MotionType;
     }

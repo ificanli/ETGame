@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class EffectNumericChange : EffectConfig
+    public class BTNumericChange : BTNode
     {
         public NumericType NumericType;
         public int Value;

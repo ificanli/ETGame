@@ -1,9 +1,8 @@
 ﻿namespace ET.Client
 {
-    [EffectHandler(SceneType.Current)]
-    public class EffectAnimatorSetIntHandler: AEffectHandler<EffectAnimatorSetInt>
+    public class IbtAnimatorSetIntHandler: ABTHandler<BTAnimatorSetInt>
     {
-        protected override void Run(Effect effect, EffectAnimatorSetInt effectConfig)
+        protected override bool Run(Effect effect, BTAnimatorSetInt node)
         {
             switch (effect.EffectTimeType)
             {
@@ -11,7 +10,7 @@
                 {
                     Spell spell = effect.GetParent<Spell>();
                     Unit caster = spell.Caster;
-                    caster.GetComponent<AnimatorComponent>().SetInt(effectConfig.MotionType.ToString(), effectConfig.Value);
+                    caster.GetComponent<AnimatorComponent>().SetInt(node.MotionType.ToString(), node.Value);
                     break;
                 }
                 case EffectTimeType.ClientSpellHit:
@@ -24,11 +23,12 @@
                         {
                             continue;
                         }
-                        unit.GetComponent<AnimatorComponent>().SetTrigger(effectConfig.MotionType.ToString());
+                        unit.GetComponent<AnimatorComponent>().SetTrigger(node.MotionType.ToString());
                     }
                     break;
                 }
             }
+            return true;
         }
     }
 }

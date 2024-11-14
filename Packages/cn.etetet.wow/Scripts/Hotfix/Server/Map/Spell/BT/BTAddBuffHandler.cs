@@ -1,9 +1,8 @@
 ﻿namespace ET.Server
 {
-    [EffectHandler(SceneType.Map)]
-    public class EffectAddBuffHandler: AEffectHandler<EffectAddBuff>
+    public class BTAddBuffHandler: ABTHandler<BTAddBuff>
     {
-        protected override void Run(Effect effect, EffectAddBuff effectConfig)
+        protected override bool Run(Effect effect, BTAddBuff btConfig)
         {
             switch (effect.EffectTimeType)
             {
@@ -11,7 +10,7 @@
                 {
                     Spell spell = effect.GetParent<Spell>();
                     Unit caster = spell.Caster;
-                    caster.GetComponent<BuffComponent>().CreateBuff(effectConfig.BuffConfig);
+                    caster.GetComponent<BuffComponent>().CreateBuff(btConfig.BuffConfig);
                     break;
                 }
                 case EffectTimeType.ServerSpellHit:
@@ -20,11 +19,12 @@
                     SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
                     foreach (Unit unit in spellTargetComponent.Units)
                     {
-                        unit.GetComponent<BuffComponent>().CreateBuff(effectConfig.BuffConfig);
+                        unit.GetComponent<BuffComponent>().CreateBuff(btConfig.BuffConfig);
                     }
                     break;
                 }
             }
+            return true;
         }
     }
 }

@@ -24,9 +24,6 @@ namespace ET
         public NoticeType NoticeType;
         
         /// <summary>效果</summary>
-#if UNITY
-        [UnityEngine.SerializeReference]
-#endif
         public List<EffectConfig> Effects = new();
     }
 }
