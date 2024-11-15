@@ -1,4 +1,6 @@
-﻿namespace ET
+﻿using UnityEngine.Serialization;
+
+namespace ET
 {
     [System.Serializable]
     [EnableClass]
@@ -6,9 +8,10 @@
     {
         
 #if UNITY
+        [FormerlySerializedAs("EffectTimeType")]
         [Sirenix.OdinInspector.HideLabel]
 #endif
-        public EffectTimeType EffectTimeType;
+        public BTTimeType btTimeType;
 
 #if UNITY
         [UnityEngine.SerializeReference]

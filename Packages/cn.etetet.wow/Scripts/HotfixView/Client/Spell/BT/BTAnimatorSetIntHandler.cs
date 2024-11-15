@@ -1,33 +1,11 @@
 ﻿namespace ET.Client
 {
-    public class IbtAnimatorSetIntHandler: ABTHandler<BTAnimatorSetInt>
+    public class BTAnimatorSetIntHandler: ABTHandler<BTAnimatorSetInt>
     {
-        protected override bool Run(Effect effect, BTAnimatorSetInt node)
+        protected override bool Run(BTAnimatorSetInt node, BTEnv env)
         {
-            switch (effect.EffectTimeType)
-            {
-                case EffectTimeType.ClientSpellAdd:
-                {
-                    Spell spell = effect.GetParent<Spell>();
-                    Unit caster = spell.Caster;
-                    caster.GetComponent<AnimatorComponent>().SetInt(node.MotionType.ToString(), node.Value);
-                    break;
-                }
-                case EffectTimeType.ClientSpellHit:
-                {
-                    Spell spell = effect.GetParent<Spell>();
-                    SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
-                    foreach (Unit unit in spellTargetComponent.Units)
-                    {
-                        if (unit == null)
-                        {
-                            continue;
-                        }
-                        unit.GetComponent<AnimatorComponent>().SetTrigger(node.MotionType.ToString());
-                    }
-                    break;
-                }
-            }
+            Unit unit = env.Get<Unit>(node.Unit);
+            unit.GetComponent<AnimatorComponent>().SetInt(node.MotionType.ToString(), node.Value);
             return true;
         }
     }

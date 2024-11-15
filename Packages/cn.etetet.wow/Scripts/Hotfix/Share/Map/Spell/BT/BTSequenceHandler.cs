@@ -2,16 +2,16 @@
 {
     public class BTSequenceHandler: ABTHandler<BTSequence>
     {
-        protected override bool Run(Effect effect, BTSequence node)
+        protected override bool Run(BTSequence node, BTEnv env)
         {
             foreach (BTNode subNode in node.Children) 
             {
-                if (BTDispatcher.Instance.Handle(effect, subNode))
+                if (!BTDispatcher.Instance.Handle(subNode, env))
                 {
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
         }
     }
 }

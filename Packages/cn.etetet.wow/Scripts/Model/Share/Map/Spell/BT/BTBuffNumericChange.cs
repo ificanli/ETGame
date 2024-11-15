@@ -1,9 +1,10 @@
 ﻿namespace ET
 {
-    public class BTNumericChange : BTNode
+    public class BTBuffNumericChange : BTNode
     {
+        [BTInput(typeof(Buff))]
+        public string Buff;
         
-        public string Unit;
         public NumericType NumericType;
         public int Value;
     }

@@ -4,29 +4,25 @@ namespace ET.Client
 {
     public class BTCreateEffectHandler: ABTHandler<BTCreateEffect>
     {
-        protected override bool Run(Effect effect, BTCreateEffect node)
+        protected override bool Run(BTCreateEffect node, BTEnv env)
         {
-            switch (effect.EffectTimeType)
+            Unit unit = env.Get<Unit>(node.Unit);
+            
+            EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, false);
+            
+            GameObject gameObject = EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, false);
+            if (node.Duration > 0)
             {
-                case EffectTimeType.ClientSpellAdd:
-                {
-                    Unit unit = effect.Parent.Parent.GetParent<Unit>();
-                    EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, false);
-                    break;
-                }
-                case EffectTimeType.ClientSpellHit:
-                {
-                    Spell spell = effect.GetParent<Spell>();
-                    SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
-                    foreach (Unit unit in spellTargetComponent.Units)
-                    {
-                        EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, false);
-                    }
-                    break;
-                }
+                Timeout(unit, gameObject, node.Duration).NoContext();
             }
-
+            
             return true;
+        }
+
+        public static async ETTask Timeout(Unit unit, GameObject gameObject, int time)
+        {
+            await unit.Root().GetComponent<TimerComponent>().WaitAsync(time);
+            UnityEngine.Object.Destroy(gameObject);
         }
     }
 }

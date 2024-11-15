@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using UnityEngine;
 
 namespace ET
@@ -30,9 +31,10 @@ namespace ET
     
     [EnableClass]
     [System.Serializable]
-    public class BindPointComponent : MonoBehaviour
+    public class BindPointComponent : SerializedMonoBehaviour
     {
         [ShowInInspector]
+        [OdinSerialize]
         public Dictionary<BindPoint, Transform> BindPoints = new(new BindPointComparer());
     }
 }

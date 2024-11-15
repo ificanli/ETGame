@@ -61,7 +61,7 @@ namespace ET.Server
             m2CSpellAdd.SpellConfigId = spellConfigId;
             MapMessageHelper.NoticeClient(unit, m2CSpellAdd, spellConfig.NoticeType);
             
-            EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellAdd);
+            EffectHelper.RunSpellEffects(spell, BTTimeType.ServerSpellAdd);
 
 #region SpellHit
 
@@ -88,7 +88,7 @@ namespace ET.Server
             MapMessageHelper.NoticeClient(unit, m2CSpellHit, spellConfig.NoticeType);
 
             // 对目标分发hitEffect
-            EffectHelper.RunSpellEffects(spell, EffectTimeType.ServerSpellHit);
+            EffectHelper.RunSpellEffects(spell, BTTimeType.ServerSpellHit);
 
 #endregion
             
