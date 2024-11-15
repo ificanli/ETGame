@@ -13,6 +13,7 @@ namespace ET
                     continue;
                 }
                 using Effect effect = spell.AddChild<Effect>();
+                effect.EffectTimeType = effectTimeType;
                 return BTDispatcher.Instance.Handle(effect, effectConfig.Node);
             }
             return true;
@@ -27,6 +28,7 @@ namespace ET
                     continue;
                 }
                 using Effect effect = buff.AddChild<Effect>();
+                effect.EffectTimeType = effectTimeType;
                 return BTDispatcher.Instance.Handle(effect, effectConfig.Node);
             }
             return true;

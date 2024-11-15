@@ -62,11 +62,9 @@ namespace ET
             {
                 throw new Exception($"bt handler not inherit IMActorHandler abstract class: {obj.GetType().FullName}");
             }
-                
-            object[] attrs = type.GetCustomAttributes(typeof(BTHandlerAttribute), true);
 
-            Type effectType = ibtHandler.GetNodeType();
-            this.btHandlers.TryAdd(type, ibtHandler);
+            Type nodeType = ibtHandler.GetNodeType();
+            this.btHandlers.TryAdd(nodeType, ibtHandler);
         }
         
         
