@@ -10,7 +10,7 @@ namespace ET
         public BindPoint BindPoint;
 
         public GameObject Effect;
-        
-        public int Duration;
+
+        public int Duration = 5000;
     }
 }
