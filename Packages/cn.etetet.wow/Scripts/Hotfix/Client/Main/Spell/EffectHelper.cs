@@ -4,33 +4,33 @@ namespace ET
 {
     public static partial class EffectHelper
     {
-        public static bool RunSpellEffects(Spell spell, BTTimeType btTimeType)
+        public static bool RunBT<T>(Spell spell) where T: BTNode
         {
-            foreach (EffectConfig effectConfig in spell.Config.Effects)
+            foreach (BTNode node in spell.Config.Effects)
             {
-                if (effectConfig.btTimeType != btTimeType)
+                if (node is not T)
                 {
                     continue;
                 }
 
-                using BTEnv env = BTEnv.Create(btTimeType);
+                using BTEnv env = BTEnv.Create();
                 env.Add(BTEvnKey.Spell, spell);
-                return BTDispatcher.Instance.Handle(effectConfig.Node, env);
+                return BTDispatcher.Instance.Handle(node, env);
             }
             return true;
         }
         
-        public static bool RunBuffEffects(Buff buff, BTTimeType btTimeType)
+        public static bool RunBT<T>(Buff buff) where T: BTNode
         {
-            foreach (EffectConfig effectConfig in buff.Config.Effects)
+            foreach (BTNode node in buff.Config.Effects)
             {
-                if (effectConfig.btTimeType != btTimeType)
+                if (node is not T)
                 {
                     continue;
                 }
-                using BTEnv env = BTEnv.Create(btTimeType);
+                using BTEnv env = BTEnv.Create();
                 env.Add(BTEvnKey.Buff, buff);
-                return BTDispatcher.Instance.Handle(effectConfig.Node, env);
+                return BTDispatcher.Instance.Handle(node, env);
             }
             return true;
         }

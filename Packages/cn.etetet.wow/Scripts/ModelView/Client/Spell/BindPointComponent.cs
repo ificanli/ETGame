@@ -18,6 +18,7 @@ namespace ET
         RightHand,
         Buff,
         HP,
+        Hitted,
     }
     
     [EnableClass]

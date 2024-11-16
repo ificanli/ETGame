@@ -23,7 +23,6 @@ namespace ET
         /// <summary>广播客户端类型</summary>
         public NoticeType NoticeType;
         
-        /// <summary>效果</summary>
-        public List<EffectConfig> Effects = new();
+        public List<BTNode> Effects = new();
     }
 }

@@ -79,7 +79,10 @@ namespace ET
 
         public NoticeType NoticeType;
 
-        /// <summary>效果</summary>
-        public List<EffectConfig> Effects = new();
+#if UNITY
+        [UnityEngine.Header("Effect")]
+        [UnityEngine.SerializeReference]
+#endif
+        public List<BTNode> Effects = new();
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using UnityEngine;
 
 namespace ET.Client
 {
@@ -25,7 +26,7 @@ namespace ET.Client
             CinemachineComponent cinemachineComponent = unit.GetComponent<CinemachineComponent>();
             if (cinemachineComponent != null)
             {
-                cinemachineComponent.Follow.position = gameObjectComponent.GameObject.Get<GameObject>("Follow").transform.position;
+                cinemachineComponent.Follow.position = cinemachineComponent.Head.position;
             }
             
             await ETTask.CompletedTask;

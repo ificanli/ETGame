@@ -29,7 +29,7 @@ namespace ET.Client
             
             Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
             spell.Caster = unit;
-            EffectHelper.RunSpellEffects(spell, BTTimeType.ClientSpellAdd);
+            EffectHelper.RunBT<BTRootClientSpellAdd>(spell);
             
             ObjectWait objectWait = spell.AddComponent<ObjectWait>();
             // 等待spell hit消息
@@ -47,7 +47,7 @@ namespace ET.Client
             }
             spellTargetComponent.Position = waitM2CSpellHit.Message.TargetPosition;
             
-            EffectHelper.RunSpellEffects(spell, BTTimeType.ClientSpellHit);
+            EffectHelper.RunBT<BTRootClientSpellHit>(spell);
             
             
             // 等待spell remove消息
@@ -56,7 +56,7 @@ namespace ET.Client
             {
                 return;
             }
-            EffectHelper.RunSpellEffects(spell, BTTimeType.ClientSpellRemove);
+            EffectHelper.RunBT<BTRootClientSpellRemove>(spell);
             spellComponent.RemoveSpell(spell.Id);
         }
     }

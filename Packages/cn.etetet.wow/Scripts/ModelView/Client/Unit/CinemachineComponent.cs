@@ -9,5 +9,7 @@ namespace ET.Client
         public Cinemachine.CinemachineVirtualCamera VirtualCamera;
 
         public Transform Follow { get; set; }
+
+        public Transform Head { get; set; }
     }
 }

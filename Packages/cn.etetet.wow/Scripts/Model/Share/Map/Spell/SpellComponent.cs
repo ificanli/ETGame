@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ET
 {
     [ComponentOf(typeof(Unit))]
     public class SpellComponent: Entity, IAwake
     {
+        [BsonIgnore]
         public EntityRef<Spell> Current { get; set; }
 
         public ETCancellationToken CancellationToken { get; set; }
@@ -12,5 +14,8 @@ namespace ET
         public long CDTime { get; set; }
 
         public Dictionary<int, long> SpellCD = new();
+        
+        [BsonIgnore]
+        public MultiMap<int, EntityRef<Spell>> flagSpells = new();
     }
 }

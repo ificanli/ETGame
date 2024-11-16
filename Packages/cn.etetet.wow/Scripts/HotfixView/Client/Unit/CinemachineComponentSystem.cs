@@ -17,11 +17,12 @@ namespace ET.Client
             self.VirtualCamera = cinemachineVirtualCamera;
             
             // 创建跟踪的GameObject
-            GameObject headbone = gameObjectComponent.GameObject.Get<GameObject>("Follow");
+            Transform headbone = gameObjectComponent.GameObject.GetComponent<BindPointComponent>().BindPoints[BindPoint.Head];
+            self.Head = headbone;
             self.Follow = new GameObject("CameraFollow").transform;
             Transform followTransform = self.Follow;
             followTransform.SetParent(GameObject.Find("Global/Unit").transform, true);
-            followTransform.position = headbone.transform.position;
+            followTransform.position = self.Head.position;
             followTransform.rotation = gameObjectComponent.GameObject.transform.rotation;
             
             cinemachineVirtualCamera.LookAt = followTransform;

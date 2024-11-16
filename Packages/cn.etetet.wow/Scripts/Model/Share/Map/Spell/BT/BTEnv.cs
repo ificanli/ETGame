@@ -44,10 +44,9 @@ namespace ET
     
     public class BTEnv: DisposeObject, IPool
     {
-        public static BTEnv Create(BTTimeType timeType, bool isFromPool = true)
+        public static BTEnv Create(bool isFromPool = true)
         {
             BTEnv env = ObjectPool.Fetch<BTEnv>(isFromPool);
-            env.TimeType = timeType;
             return env;
         }
         
@@ -56,8 +55,6 @@ namespace ET
         private readonly Dictionary<string, object> dict = new();
 
         private readonly HashSet<DisposeObject> disposers = new();
-        
-        public BTTimeType TimeType { get; private set; }
 
         public override void Dispose()
         {
