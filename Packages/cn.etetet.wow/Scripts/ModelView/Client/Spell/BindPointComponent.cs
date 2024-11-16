@@ -19,6 +19,8 @@ namespace ET
         Buff,
         HP,
         Hitted,
+        JointR,
+        JointL,
     }
     
     [EnableClass]
