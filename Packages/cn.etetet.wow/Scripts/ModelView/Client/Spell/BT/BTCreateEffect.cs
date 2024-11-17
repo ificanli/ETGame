@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using MongoDB.Bson.Serialization.Attributes;
 
 namespace ET
 {
@@ -9,7 +9,10 @@ namespace ET
         
         public BindPoint BindPoint;
 
-        public GameObject Effect;
+#if UNITY
+        [BsonIgnore]
+        public UnityEngine.GameObject Effect;
+#endif
 
         public int Duration = 5000;
     }
