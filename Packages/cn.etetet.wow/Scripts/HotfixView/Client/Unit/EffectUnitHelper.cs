@@ -8,7 +8,19 @@ namespace ET.Client
         {
             GameObjectComponent gameObjectComponent = unit.GetComponent<GameObjectComponent>();
             BindPointComponent bindPointComponent = gameObjectComponent.GameObject.GetComponent<BindPointComponent>();
-            return UnityEngine.Object.Instantiate(gameObject, bindPointComponent.BindPoints[bindPoint], worldPositionStays);
+
+            Transform bindPointTransform = bindPointComponent.BindPoints[bindPoint];
+
+            GameObject effect;
+            if (worldPositionStays)
+            {
+                effect = UnityEngine.Object.Instantiate(gameObject, bindPointTransform.position, gameObjectComponent.GameObject.transform.rotation);
+            }
+            else
+            {
+                effect = UnityEngine.Object.Instantiate(gameObject, bindPointTransform, false);
+            }
+            return effect;
         }
     }
 }

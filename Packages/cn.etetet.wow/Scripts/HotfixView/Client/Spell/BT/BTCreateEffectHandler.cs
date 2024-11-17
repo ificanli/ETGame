@@ -8,7 +8,7 @@ namespace ET.Client
         {
             Unit unit = env.Get<Unit>(node.Unit);
             
-            GameObject gameObject = EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, false);
+            GameObject gameObject = EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, true);
             if (node.Duration > 0)
             {
                 UnityEngine.Object.Destroy(gameObject, node.Duration / 1000f);
