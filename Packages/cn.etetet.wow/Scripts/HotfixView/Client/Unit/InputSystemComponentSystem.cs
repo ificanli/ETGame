@@ -141,8 +141,10 @@ namespace ET.Client
                         return;
                     }
 
+                    float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
+                    float targetRadius = target.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
                     float distance = math.distance(unit.Position, target.Position);
-                    if (distance > targetSelectorSingle.MaxDistance)
+                    if (distance > targetSelectorSingle.MaxDistance + unitRadius + targetRadius)
                     {
                         TextHelper.OutputText(TextConstDefine.SpellCast_TargetTooFar);
                         return;
