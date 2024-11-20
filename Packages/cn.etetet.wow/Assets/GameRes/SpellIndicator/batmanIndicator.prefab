@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 438584}
   - component: {fileID: 3312066}
   - component: {fileID: 2357334}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: batmanIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}

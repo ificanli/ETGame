@@ -22,7 +22,7 @@ namespace ET.Client
             self.InputSystem.Player.ChangeTarget.canceled += self.ChangeTarget;
             self.InputSystem.Player.Spell.started += (contex)=>
             {
-                self.Spell(contex).WithContext(new ETCancellationToken());
+                self.CastSpell(contex).WithContext(new ETCancellationToken());
             };
         }
         
@@ -86,15 +86,11 @@ namespace ET.Client
             Ray ray = Camera.main.ScreenPointToRay(mousePosition);
             const float maxDistance = 100.0f;
             RaycastHit hit;
-            if (!Physics.Raycast(ray, out hit, maxDistance))
+            if (!Physics.Raycast(ray, out hit, maxDistance, LayerMask.NameToLayer("Unit")))
             {
                 return;
             }
             GameObject clickedObject = hit.collider.gameObject;
-            if (clickedObject.layer != LayerMask.NameToLayer("Unit"))
-            {
-                return;
-            }
             
             Unit targetUnit = (Unit)clickedObject.GetComponent<GameObjectEntityRef>().EntityRef.Entity;
             Unit myUnit = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
@@ -111,7 +107,7 @@ namespace ET.Client
             
         }
         
-        private static async ETTask Spell(this InputSystemComponent self, InputAction.CallbackContext context)
+        private static async ETTask CastSpell(this InputSystemComponent self, InputAction.CallbackContext context)
         {
             if (context.control is not KeyControl keyControl)
             {
@@ -152,12 +148,38 @@ namespace ET.Client
                     c2MSpellCast.TargetUnitId = target.Id;
                     break;
                 }
-                case TargetSelectorPosition:
-                case TargetSelectorSector:
-                case TargetSelectorRectangle:
+                case TargetSelectorPosition targetSelectorPosition:
                 {
                     // 创建技能指示器
+                    SpellIndicatorComponent spellIndicatorComponent = unit.GetComponent<SpellIndicatorComponent>();
+                    //c2MSpellCast.TargetPosition = await spellIndicatorComponent.WaitSpellIndicator(targetSelectorPosition.SpellIndicator, 1f);
                     
+                    // await 技能按键松开返回鼠标一个位置，表现层技能指示器不一样
+                    break;
+                }
+                case TargetSelectorSector targetSelectorSector:
+                {
+                    // 创建技能指示器
+                    SpellIndicatorComponent spellIndicatorComponent = unit.GetComponent<SpellIndicatorComponent>();
+                    //c2MSpellCast.TargetPosition = await spellIndicatorComponent.WaitSpellIndicator(targetSelectorSector);
+                    
+                    // await 技能按键松开返回鼠标一个位置，表现层技能指示器不一样
+                    break;
+                }
+                case TargetSelectorRectangle targetSelectorRectangle:
+                {
+                    // 创建技能指示器
+                    SpellIndicatorComponent spellIndicatorComponent = unit.GetComponent<SpellIndicatorComponent>();
+                    //c2MSpellCast.TargetPosition = await spellIndicatorComponent.WaitSpellIndicator(targetSelectorRectangle);
+                    // await 技能按键松开返回鼠标一个位置，表现层技能指示器不一样
+                    break;
+                }
+                
+                case TargetSelectorCircle targetSelectorCircle:
+                {
+                    // 创建技能指示器
+                    SpellIndicatorComponent spellIndicatorComponent = unit.GetComponent<SpellIndicatorComponent>();
+                    c2MSpellCast.TargetPosition = await spellIndicatorComponent.WaitSpellIndicator(targetSelectorCircle);
                     
                     // await 技能按键松开返回鼠标一个位置，表现层技能指示器不一样
                     break;

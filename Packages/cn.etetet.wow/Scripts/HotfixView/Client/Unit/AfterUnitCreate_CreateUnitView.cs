@@ -25,6 +25,7 @@ namespace ET.Client
             {
                 unit.AddComponent<CinemachineComponent>();
                 unit.AddComponent<InputSystemComponent>();
+                unit.AddComponent<SpellIndicatorComponent>();
             }
             
             await ETTask.CompletedTask;

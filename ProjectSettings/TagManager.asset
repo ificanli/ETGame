@@ -15,7 +15,7 @@ TagManager:
   - 
   - Unit
   - Map
-  - Hidden
+  - Effect
   - 
   - 
   - 
@@ -41,4 +41,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Map
+    uniqueID: 2527116821
+    locked: 0
+  - name: Effect
+    uniqueID: 57775255
     locked: 0

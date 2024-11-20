@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 456528}
   - component: {fileID: 19885786}
   - component: {fileID: 19982402}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ring01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4905,7 +4905,7 @@ GameObject:
   - component: {fileID: 480574}
   - component: {fileID: 19840090}
   - component: {fileID: 19968620}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ring02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9799,7 +9799,7 @@ GameObject:
   - component: {fileID: 458592}
   - component: {fileID: 19861404}
   - component: {fileID: 19984880}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: indicate_role
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 437826}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: indicate_angle90
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 3377846}
   - component: {fileID: 6459448}
   - component: {fileID: 2379574}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: indicate_angle90
   m_TagString: Untagged
   m_Icon: {fileID: 0}
