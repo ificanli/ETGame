@@ -7,7 +7,7 @@ namespace ET
     [FriendOf(typeof (NumericComponent))]
     public static class NumericComponentSystem
     {
-        public const int Max = 10000;
+        private const int Max = 10000;
         
         public static float GetAsFloat(this NumericComponent self, int numericType)
         {
@@ -26,17 +26,17 @@ namespace ET
 
         public static void Set(this NumericComponent self, int nt, float value)
         {
-            self[nt] = (long)(value * 10000);
+            self.Insert(nt, (long)(value * 1000));
         }
 
         public static void Set(this NumericComponent self, int nt, int value)
         {
-            self[nt] = value;
+            self.Insert(nt, value);
         }
 
         public static void Set(this NumericComponent self, int nt, long value)
         {
-            self[nt] = value;
+            self.Insert(nt, value);
         }
 
         public static void SetNoEvent(this NumericComponent self, int numericType, long value)
@@ -58,6 +58,17 @@ namespace ET
             {
                 self.Update(numericType, isPublicEvent);
                 return;
+            }
+
+            // 如果有最大值，需要限制最大值
+            NumericTypeConfig numericTypeConfig = NumericTypeConfigCategory.Instance.Get(numericType);
+            if (numericTypeConfig.MaxNumericType > 0)
+            {
+                long max = self.GetByKey(numericTypeConfig.MaxNumericType);
+                if (value > max)
+                {
+                    value = max;
+                }
             }
 
             if (isPublicEvent)
@@ -103,18 +114,6 @@ namespace ET
     public class NumericComponent: Entity, IAwake, ITransfer
     {
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
-        public Dictionary<int, long> NumericDic = new Dictionary<int, long>();
-
-        public long this[int numericType]
-        {
-            get
-            {
-                return this.GetByKey(numericType);
-            }
-            set
-            {
-                this.Insert(numericType, value);
-            }
-        }
+        public Dictionary<int, long> NumericDic = new();
     }
 }

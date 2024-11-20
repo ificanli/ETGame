@@ -24,12 +24,17 @@
         
         public static void Set(this NumericComponent self, NumericType nt, int value)
         {
-            self[(int)nt] = value;
+            self.Set((int)nt, value);
         }
 
         public static void Set(this NumericComponent self, NumericType nt, long value)
         {
-            self[(int)nt] = value;
+            self.Set((int)nt, value);
+        }
+        
+        public static void Set(this NumericComponent self, NumericType nt, float value)
+        {
+            self.Set((int)nt, value);
         }
 
         public static void SetNoEvent(this NumericComponent self, NumericType numericType, long value)
