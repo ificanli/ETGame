@@ -235,3 +235,10 @@ message M2C_Error // IMessage
 	int32 Error = 1;
 	repeated string Values = 2;
 }
+
+message M2C_NumericChange // IMessage
+{
+	int64 UnitId = 1;
+	int32 NumericType = 2;
+	int64 Value = 3;
+}

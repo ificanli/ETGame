@@ -16,7 +16,7 @@ namespace ET.Server
 
             for (int i = 0; i < unitConfig.KV.Length; i += 2)
             {
-                numericComponent.Set(unitConfig.KV[i], unitConfig.KV[i + 1]);
+                numericComponent.SetNoEvent(unitConfig.KV[i], unitConfig.KV[i + 1]);
             }
             
             unit.AddComponent<MoveComponent>();

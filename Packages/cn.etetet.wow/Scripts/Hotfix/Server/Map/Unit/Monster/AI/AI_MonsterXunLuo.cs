@@ -18,7 +18,8 @@ namespace ET.Server
 
             UnitConfig unitConfig = unit.Config();
             float3 birthPos = new float3(unitConfig.Position[0], unitConfig.Position[1], unitConfig.Position[2]) / 1000f;
-            float aoi = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.AOI);
+            NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            float aoi = numericComponent.GetAsFloat(NumericType.AOI);
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
@@ -36,7 +37,7 @@ namespace ET.Server
                 }
                 
                 // 等待一段时间
-                await root.GetComponent<TimerComponent>().WaitAsync(4000);
+                await root.GetComponent<TimerComponent>().WaitAsync(RandomGenerator.RandomNumber(1000, 4000));
                 if (cancellationToken.IsCancel())
                 {
                     return;

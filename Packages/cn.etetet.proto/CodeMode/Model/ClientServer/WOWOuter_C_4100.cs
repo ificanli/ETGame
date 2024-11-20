@@ -1087,6 +1087,39 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_NumericChange)]
+    public partial class M2C_NumericChange : MessageObject, IMessage
+    {
+        public static M2C_NumericChange Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_NumericChange>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int NumericType { get; set; }
+
+        [MemoryPackOrder(2)]
+        public long Value { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.NumericType = default;
+            this.Value = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWOuter
     {
         public const ushort RouterSync = 4101;
@@ -1124,5 +1157,6 @@ namespace ET
         public const ushort M2C_BuffAdd = 4133;
         public const ushort M2C_BuffRemove = 4134;
         public const ushort M2C_Error = 4135;
+        public const ushort M2C_NumericChange = 4136;
     }
 }
