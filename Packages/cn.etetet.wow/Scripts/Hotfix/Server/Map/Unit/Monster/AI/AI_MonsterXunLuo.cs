@@ -17,8 +17,9 @@ namespace ET.Server
             PathfindingComponent pathfindingComponent = unit.GetComponent<PathfindingComponent>();
 
             UnitConfig unitConfig = unit.Config();
-            float3 birthPos = new float3(unitConfig.Position[0], unitConfig.Position[1], unitConfig.Position[2]) / 1000f;
+            
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            float3 birthPos = new(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
             float aoi = numericComponent.GetAsFloat(NumericType.AOI);
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();

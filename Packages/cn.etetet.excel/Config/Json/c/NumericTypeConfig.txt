@@ -9,4 +9,7 @@
 [1007, {"_t":"NumericTypeConfig","_id":1007,"Name":"Height"}],
 [1008, {"_t":"NumericTypeConfig","_id":1008,"Name":"Weight"}],
 [1009, {"_t":"NumericTypeConfig","_id":1009,"Name":"AI"}],
+[1010, {"_t":"NumericTypeConfig","_id":1010,"Name":"X"}],
+[1011, {"_t":"NumericTypeConfig","_id":1011,"Name":"Y"}],
+[1012, {"_t":"NumericTypeConfig","_id":1012,"Name":"Z"}],
 ]}

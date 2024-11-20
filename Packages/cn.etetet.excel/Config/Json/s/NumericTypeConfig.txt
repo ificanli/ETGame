@@ -9,4 +9,7 @@
 [1007, {"_t":"NumericTypeConfig","_id":1007,"Name":"Height","NeedSaveDB":1,"NoticeType":2,"MaxNumericType":0,"AffectNumericType":[],"AffectValue":[]}],
 [1008, {"_t":"NumericTypeConfig","_id":1008,"Name":"Weight","NeedSaveDB":1,"NoticeType":2,"MaxNumericType":0,"AffectNumericType":[],"AffectValue":[]}],
 [1009, {"_t":"NumericTypeConfig","_id":1009,"Name":"AI","NeedSaveDB":1,"NoticeType":0,"MaxNumericType":0,"AffectNumericType":[],"AffectValue":[]}],
+[1010, {"_t":"NumericTypeConfig","_id":1010,"Name":"X","NeedSaveDB":0,"NoticeType":0,"MaxNumericType":0,"AffectNumericType":[],"AffectValue":[]}],
+[1011, {"_t":"NumericTypeConfig","_id":1011,"Name":"Y","NeedSaveDB":0,"NoticeType":0,"MaxNumericType":0,"AffectNumericType":[],"AffectValue":[]}],
+[1012, {"_t":"NumericTypeConfig","_id":1012,"Name":"Z","NeedSaveDB":0,"NoticeType":0,"MaxNumericType":0,"AffectNumericType":[],"AffectValue":[]}],
 ]}

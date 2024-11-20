@@ -11,13 +11,14 @@ namespace ET.Server
             
             Unit unit = unitComponent.AddChildWithId<Unit, int>(id, configId);
             UnitConfig unitConfig = unit.Config();
-            unit.Position = new float3(unitConfig.Position[0], unitConfig.Position[1], unitConfig.Position[2]) / 1000f;
+            
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
-
             for (int i = 0; i < unitConfig.KV.Length; i += 2)
             {
                 numericComponent.SetNoEvent(unitConfig.KV[i], unitConfig.KV[i + 1]);
             }
+            
+            unit.Position = new float3(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
             
             unit.AddComponent<MoveComponent>();
             // 加入aoi
