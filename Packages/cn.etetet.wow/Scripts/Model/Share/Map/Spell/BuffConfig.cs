@@ -23,6 +23,9 @@ namespace ET
         /// <summary>广播客户端类型</summary>
         public NoticeType NoticeType;
         
-        public List<BTNode> Effects = new();
+#if UNITY
+        [UnityEngine.SerializeReference]
+#endif
+        public List<EffectNode> Effects = new();
     }
 }

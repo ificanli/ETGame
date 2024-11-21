@@ -52,14 +52,18 @@ namespace ET
         /// <summary>Id</summary>
         public int Id;
 
+#if UNITY
+        [UnityEngine.SerializeReference]
+#endif
+        public BTNode PreCondition;
+        
         /// <summary>目标选择</summary>
 #if UNITY
-        [UnityEngine.Header("目标选择")]
         [UnityEngine.Tooltip("目标选择")]
         [UnityEngine.SerializeReference]
 #endif
         public TargetSelector TargetSelector;
-
+        
         /// <summary>吟唱时间</summary>
         public int Chanting;
         
@@ -80,9 +84,8 @@ namespace ET
         public NoticeType NoticeType;
 
 #if UNITY
-        [UnityEngine.Header("Effect")]
         [UnityEngine.SerializeReference]
 #endif
-        public List<BTNode> Effects = new();
+        public List<EffectNode> Effects = new();
     }
 }

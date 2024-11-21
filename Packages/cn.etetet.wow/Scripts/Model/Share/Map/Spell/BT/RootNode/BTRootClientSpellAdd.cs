@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class BTRootClientSpellAdd: BTNode
+    public class BTRootClientSpellAdd: EffectNode
     {
         [BTOutput(typeof(Spell))]
 #if UNITY

@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class BTRootServerBuffRemove: BTNode
+    public class BTRootServerBuffRemove: EffectNode
     {
         [BTOutput(typeof(Buff))]
 #if UNITY

@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class BTRootServerBuffTick: BTNode
+    public class BTRootServerBuffTick: EffectNode
     {
         [BTOutput(typeof(Buff))]
 #if UNITY

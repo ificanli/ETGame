@@ -21,7 +21,7 @@ namespace ET
             {
                 string Name = workbookWorksheet.Cells[i, 4].Text.Trim();
                 string Id = workbookWorksheet.Cells[i, 3].Text.Trim();
-                string GenSecondAttr = workbookWorksheet.Cells[i, 5].Text.Trim();
+                string GenSecondAttr = workbookWorksheet.Cells[i, 6].Text.Trim();
 
                 sb.Append($"\t\t{Name} = {Id},\n");
 

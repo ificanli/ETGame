@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class BTRootServerSpellRemove: BTNode
+    public class BTRootServerSpellRemove: EffectNode
     {
         [BTOutput(typeof(Spell))]
 #if UNITY
