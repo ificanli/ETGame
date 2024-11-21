@@ -2,6 +2,12 @@
 
 namespace ET.Client
 {
+    public struct OnSpellTrigger
+    {
+        public Unit Unit;
+        public int SpellConfigId;
+    }
+    
     [ComponentOf(typeof(Unit))]
     public partial class InputSystemComponent: Entity, IAwake, IUpdate
     {

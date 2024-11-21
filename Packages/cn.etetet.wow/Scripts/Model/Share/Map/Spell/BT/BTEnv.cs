@@ -40,6 +40,8 @@ namespace ET
         public const string Spell = "Spell";
         public const string Buff = "Buff";
         public const string Unit = "Unit";
+        public const string Units = "Units";
+        public const string Pos = "Pos";
     }
     
     public class BTEnv: DisposeObject, IPool
