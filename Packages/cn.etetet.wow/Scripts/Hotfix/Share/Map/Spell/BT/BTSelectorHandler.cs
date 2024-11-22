@@ -2,16 +2,17 @@
 {
     public class BTSelectorHandler: ABTHandler<BTSelector>
     {
-        protected override bool Run(BTSelector node, BTEnv env)
+        protected override int Run(BTSelector node, BTEnv env)
         {
-            foreach (BTNode subNode in node.Children) 
+            foreach (BTNode subNode in node.Children)
             {
-                if (BTDispatcher.Instance.Handle(subNode, env))
+                int ret = BTDispatcher.Instance.Handle(subNode, env);
+                if (ret == 0)
                 {
-                    return true;
+                    return ret;
                 }
             }
-            return false;
+            return -1;
         }
     }
 }

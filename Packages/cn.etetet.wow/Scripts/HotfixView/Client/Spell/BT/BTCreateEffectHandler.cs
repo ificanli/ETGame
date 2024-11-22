@@ -4,7 +4,7 @@ namespace ET.Client
 {
     public class BTCreateEffectHandler: ABTHandler<BTCreateEffect>
     {
-        protected override bool Run(BTCreateEffect node, BTEnv env)
+        protected override int Run(BTCreateEffect node, BTEnv env)
         {
             Unit unit = env.Get<Unit>(node.Unit);
             
@@ -13,7 +13,7 @@ namespace ET.Client
             {
                 UnityEngine.Object.Destroy(gameObject, node.Duration / 1000f);
             }
-            return true;
+            return 0;
         }
     }
 }

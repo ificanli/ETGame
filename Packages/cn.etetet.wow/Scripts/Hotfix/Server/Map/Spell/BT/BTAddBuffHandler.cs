@@ -2,11 +2,11 @@
 {
     public class BTAddBuffHandler: ABTHandler<BTAddBuff>
     {
-        protected override bool Run(BTAddBuff node, BTEnv env)
+        protected override int Run(BTAddBuff node, BTEnv env)
         {
             Unit unit = env.Get<Unit>(node.Unit);
             unit.GetComponent<BuffComponent>().CreateBuff(node.BuffConfig);
-            return true;
+            return 0;
         }
     }
 }

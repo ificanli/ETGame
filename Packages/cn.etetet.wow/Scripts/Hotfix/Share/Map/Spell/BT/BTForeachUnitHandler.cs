@@ -4,7 +4,7 @@ namespace ET
 {
     public class BTForeachUnitHandler: ABTHandler<BTForeachUnit>
     {
-        protected override bool Run(BTForeachUnit node, BTEnv env)
+        protected override int Run(BTForeachUnit node, BTEnv env)
         {
             List<EntityRef<Unit>> units = env.Get<List<EntityRef<Unit>>>(node.Units);
 
@@ -21,7 +21,7 @@ namespace ET
                     BTDispatcher.Instance.Handle(subNode, env);
                 }
             }
-            return true;
+            return 0;
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿namespace ET
+﻿using System;
+
+namespace ET
 {
     public enum SpellFlags
     {
-        MoveInterrupt, // 移动
-        ChangeRotationInterrupt, // 改变朝向
-        StuneInterrupt, // 眩晕
-        RideInterrupt, // 骑行
+        MoveInterrupt = 1, // 移动
+        ChangeRotationInterrupt = 2, // 改变朝向
+        StuneInterrupt = 3, // 眩晕
+        RideInterrupt = 4, // 骑行
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
+using Sirenix.Serialization;
 
 namespace ET
 {
@@ -51,15 +52,19 @@ namespace ET
     {
         /// <summary>Id</summary>
         public int Id;
+        
+//#if UNITY
+//        [UnityEngine.SerializeReference]
+//#endif
+        public List<CostNode> Cost = new();
 
 #if UNITY
         [UnityEngine.SerializeReference]
 #endif
-        public BTNode PreCondition;
+        public BTNode PreCheck;
         
         /// <summary>目标选择</summary>
 #if UNITY
-        [UnityEngine.Tooltip("目标选择")]
         [UnityEngine.SerializeReference]
 #endif
         public TargetSelector TargetSelector;
@@ -76,8 +81,7 @@ namespace ET
         /// <summary>CD（毫秒）</summary>
         public int CD;
 
-        /// <summary>打断情况</summary>
-        public List<SpellFlags> Flags;
+        public HashSet<SpellFlags> Flags = new();
 
         /// <summary>广播客户端类型</summary>
 

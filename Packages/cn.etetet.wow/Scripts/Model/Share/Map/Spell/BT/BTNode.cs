@@ -11,10 +11,4 @@ namespace ET
 #endif
         public List<BTNode> Children = new();
     }
-    
-    [System.Serializable]
-    public abstract class EffectNode: BTNode
-    {
-        
-    }
 }

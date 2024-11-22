@@ -4,7 +4,7 @@ namespace ET
 {
     public static partial class EffectHelper
     {
-        public static bool RunBT<T>(Spell spell) where T: BTNode
+        public static int RunBT<T>(Spell spell) where T: BTNode
         {
             foreach (BTNode node in spell.Config.Effects)
             {
@@ -17,10 +17,10 @@ namespace ET
                 env.Add(BTEvnKey.Spell, spell);
                 return BTDispatcher.Instance.Handle(node, env);
             }
-            return true;
+            return 0;
         }
         
-        public static bool RunBT<T>(Buff buff) where T: BTNode
+        public static int RunBT<T>(Buff buff) where T: BTNode
         {
             foreach (BTNode node in buff.Config.Effects)
             {
@@ -32,7 +32,7 @@ namespace ET
                 env.Add(BTEvnKey.Buff, buff);
                 return BTDispatcher.Instance.Handle(node, env);
             }
-            return true;
+            return 0;
         }
     }
 }

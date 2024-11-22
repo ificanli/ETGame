@@ -9,21 +9,20 @@ namespace ET
     
     public interface IBTHandler
     {
-        bool Handle(BTNode node, BTEnv env);
+        int Handle(BTNode node, BTEnv env);
         Type GetNodeType();
     }
     
     [BTHandler]
     public abstract class ABTHandler<Node>: HandlerObject, IBTHandler where Node : BTNode
     {
-        protected abstract bool Run(Node node, BTEnv env);
+        protected abstract int Run(Node node, BTEnv env);
 
-        public bool Handle(BTNode node, BTEnv env)
+        public int Handle(BTNode node, BTEnv env)
         {
             if (node is not Node c)
             {
-                Log.Error($"AEffectHandler EffectConfig类型转换错误: {node.GetType().FullName} to {typeof (Node).Name}");
-                return false;
+                throw new Exception($"AEffectHandler EffectConfig类型转换错误: {node.GetType().FullName} to {typeof (Node).Name}");
             }
 
             return this.Run(c, env);
@@ -68,7 +67,7 @@ namespace ET
         }
         
         
-        public bool Handle(BTNode node, BTEnv env)
+        public int Handle(BTNode node, BTEnv env)
         {
             if (!this.btHandlers.TryGetValue(node.GetType(), out IBTHandler ibtHandler))
             {

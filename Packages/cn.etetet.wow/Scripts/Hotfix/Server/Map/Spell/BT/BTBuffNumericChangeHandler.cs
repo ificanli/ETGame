@@ -2,7 +2,7 @@
 {
     public class BTBuffNumericChangeHandler: ABTHandler<BTBuffNumericChange>
     {
-        protected override bool Run(BTBuffNumericChange node, BTEnv env)
+        protected override int Run(BTBuffNumericChange node, BTEnv env)
         {
             Buff buff = env.Get<Buff>(node.Buff);
             Unit unit = buff.Parent.GetParent<Unit>();
@@ -16,7 +16,7 @@
                     buff.AddComponent<BuffChangeNumericRecordComponent>();
             buffChangeNumericRecordComponent.Add(node.NumericType, node.Value);
             
-            return true;
+            return 0;
         }
     }
 }
