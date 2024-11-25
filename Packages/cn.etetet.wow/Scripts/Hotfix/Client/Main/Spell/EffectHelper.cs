@@ -14,7 +14,7 @@ namespace ET
                 }
 
                 using BTEnv env = BTEnv.Create();
-                env.Add(BTEvnKey.Spell, spell);
+                env.AddEntity(BTEvnKey.Spell, spell);
                 return BTDispatcher.Instance.Handle(node, env);
             }
             return 0;
@@ -29,7 +29,7 @@ namespace ET
                     continue;
                 }
                 using BTEnv env = BTEnv.Create();
-                env.Add(BTEvnKey.Buff, buff);
+                env.AddEntity(BTEvnKey.Buff, buff);
                 return BTDispatcher.Instance.Handle(node, env);
             }
             return 0;

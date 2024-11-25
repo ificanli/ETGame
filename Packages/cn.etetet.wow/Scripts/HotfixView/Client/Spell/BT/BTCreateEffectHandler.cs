@@ -6,7 +6,7 @@ namespace ET.Client
     {
         protected override int Run(BTCreateEffect node, BTEnv env)
         {
-            Unit unit = env.Get<Unit>(node.Unit);
+            Unit unit = env.GetEntity<Unit>(node.Unit);
             
             GameObject gameObject = EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, true);
             if (node.Duration > 0)

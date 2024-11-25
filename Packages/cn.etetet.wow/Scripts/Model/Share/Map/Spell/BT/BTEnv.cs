@@ -1,29 +1,26 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace ET
 {
-    public interface IValue<T>
+    public abstract class IValue<T>: DisposeObject
     {
-        T Value
+        public T Value
         {
             get;
+            protected set;
         }
     }
     
-    public class ValueTypeWrap<T>: DisposeObject, IValue<T>, IPool
+    [EnableClass]
+    public class ValueTypeWrap<T>: IValue<T>, IPool
     {
         public static ValueTypeWrap<T> Create(T value, bool isFromPool = true)
         {
             ValueTypeWrap<T> vw = ObjectPool.Fetch<ValueTypeWrap<T>>(isFromPool);
             vw.Value = value;
             return vw;
-        }
-        
-        public T Value
-        {
-            get;
-            private set;
         }
 
         public bool IsFromPool { get; set; }
@@ -56,20 +53,17 @@ namespace ET
         
         private readonly Dictionary<string, object> dict = new();
 
-        private readonly HashSet<DisposeObject> disposers = new();
-
         public override void Dispose()
         {
             this.dict.Clear();
 
-            foreach (DisposeObject disposer in this.disposers)
+            foreach (var kv in dict)
             {
-                disposer.Dispose();
+                if (kv.Value is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
             }
-
-            this.disposers.Clear();
-            
-            ObjectPool.Recycle(this);
         }
 
         public void CopyTo(BTEnv env)
@@ -78,14 +72,19 @@ namespace ET
             {
                 env.dict.Add(keyValuePair.Key, keyValuePair.Value);
             }
-
-            foreach (DisposeObject disposer in this.disposers)
+        }
+        
+        public T GetCollection<T>(string key) where T: IEnumerable
+        {
+            if (!this.dict.TryGetValue(key, out object value))
             {
-                env.disposers.Add(disposer);
+                return default;
             }
+            
+            return (T)value;
         }
 
-        public T Get<T>(string key)
+        public T GetValue<T>(string key) where T : struct
         {
             if (!this.dict.TryGetValue(key, out object value))
             {
@@ -94,12 +93,25 @@ namespace ET
 
             try
             {
-                if (typeof (T).IsClass)
-                {
-                    return (T) value;
-                }
-
                 IValue<T> iValue = (IValue<T>) value;
+                return iValue.Value;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new Exception($"不能把{value.GetType()}转换为{typeof (T)}", e);
+            }
+        }
+        
+        public T GetEntity<T>(string key) where T: Entity
+        {
+            if (!this.dict.TryGetValue(key, out object value))
+            {
+                return default;
+            }
+
+            try
+            {
+                IValue<EntityRef<T>> iValue = (ValueTypeWrap<EntityRef<T>>) value;
                 return iValue.Value;
             }
             catch (InvalidCastException e)
@@ -113,17 +125,22 @@ namespace ET
             return this.dict.ContainsKey(key);
         }
 
-        public void Add<T>(string key, T value)
+        public void AddCollection<T>(string key, T list) where T: IEnumerable
         {
-            if (typeof (T).IsClass)
-            {
-                this.dict[key] = value;
-                return;
-            }
+            this.dict[key] = list;
+        }
 
+        public void AddEntity<T>(string key, T value) where T: Entity
+        {
+            EntityRef<T> entityRef = value;
+            ValueTypeWrap<EntityRef<T>> wrap = ValueTypeWrap<EntityRef<T>>.Create(entityRef);
+            this.dict[key] = wrap;
+        }
+        
+        public void AddValue<T>(string key, T value) where T: struct
+        {
             ValueTypeWrap<T> wrap = ValueTypeWrap<T>.Create(value);
             this.dict[key] = wrap;
-            this.disposers.Add(wrap);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace ET
     {
         protected override int Run(BTForeachUnit node, BTEnv env)
         {
-            List<EntityRef<Unit>> units = env.Get<List<EntityRef<Unit>>>(node.Units);
+            List<EntityRef<Unit>> units = env.GetCollection<List<EntityRef<Unit>>>(node.Units);
 
             foreach (Unit unit in units)
             {
@@ -15,7 +15,7 @@ namespace ET
                     continue;
                 }
                 
-                env.Add(node.Unit, unit);
+                env.AddEntity(node.Unit, unit);
                 foreach (BTNode subNode in node.Children)
                 {
                     BTDispatcher.Instance.Handle(subNode, env);

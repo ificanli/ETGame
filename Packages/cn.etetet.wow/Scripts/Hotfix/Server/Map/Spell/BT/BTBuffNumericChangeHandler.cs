@@ -4,7 +4,7 @@
     {
         protected override int Run(BTBuffNumericChange node, BTEnv env)
         {
-            Buff buff = env.Get<Buff>(node.Buff);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.Parent.GetParent<Unit>();
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
             long value = numericComponent.GetAsLong(node.NumericType);

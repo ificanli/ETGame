@@ -7,7 +7,7 @@ namespace ET.Server
     {
         protected override int Run(TargetSelectorCircle node, BTEnv env)
         {
-            Spell spell = env.Get<Spell>(node.Spell);
+            Spell spell = env.GetEntity<Spell>(node.Spell);
 
             List<Unit> units = new List<Unit>();
 
@@ -28,7 +28,7 @@ namespace ET.Server
                 // 执行过滤条件判断
                 if (node.Children.Count > 0)
                 {
-                    env.Add(node.Unit, unit);
+                    env.AddEntity(node.Unit, unit);
                     bool filter = false;
                     foreach (BTNode child in node.Children)
                     {
@@ -51,7 +51,7 @@ namespace ET.Server
                 units.Add(aoiEntity.Unit);
             }
 
-            env.Add(node.Units, units);
+            env.AddCollection(node.Units, units);
             return 0;
         }
     }

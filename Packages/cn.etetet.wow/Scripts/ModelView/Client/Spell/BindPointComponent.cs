@@ -7,23 +7,6 @@ using UnityEngine;
 namespace ET
 {
     [EnableClass]
-    public enum BindPoint
-    {
-        None,
-        Attack,
-        Base,
-        Head,
-        Bullet,
-        LeftHand,
-        RightHand,
-        Buff,
-        HP,
-        Hitted,
-        JointR,
-        JointL,
-    }
-    
-    [EnableClass]
     public class BindPointComparer : IEqualityComparer<BindPoint>
     {
         public bool Equals(BindPoint x, BindPoint y) => x == y;

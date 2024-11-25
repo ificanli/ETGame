@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace ET
+namespace ET.Client
 {
     public class BTCreateEffect: BTNode
     {

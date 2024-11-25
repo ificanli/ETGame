@@ -7,7 +7,7 @@ namespace ET.Server
     {
         protected override int Run(TargetSelectorSingle node, BTEnv env)
         {
-            Spell spell = env.Get<Spell>(node.Spell);
+            Spell spell = env.GetEntity<Spell>(node.Spell);
 
             Unit unit = spell.Caster;
             
@@ -21,7 +21,7 @@ namespace ET.Server
 
             if (node.Children.Count > 0)
             {
-                env.Add(node.Unit, targetComponent.Unit);
+                env.AddEntity(node.Unit, targetComponent.Unit.Entity);
                 foreach (BTNode child in node.Children)
                 {
                     int ret = BTDispatcher.Instance.Handle(child, env);
