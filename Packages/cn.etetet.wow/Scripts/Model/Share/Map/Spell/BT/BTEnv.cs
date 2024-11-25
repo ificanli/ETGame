@@ -84,7 +84,7 @@ namespace ET
             return (T)value;
         }
 
-        public T GetValue<T>(string key) where T : struct
+        public T GetStruct<T>(string key) where T : struct
         {
             if (!this.dict.TryGetValue(key, out object value))
             {
@@ -137,7 +137,7 @@ namespace ET
             this.dict[key] = wrap;
         }
         
-        public void AddValue<T>(string key, T value) where T: struct
+        public void AddStruct<T>(string key, T value) where T: struct
         {
             ValueTypeWrap<T> wrap = ValueTypeWrap<T>.Create(value);
             this.dict[key] = wrap;
