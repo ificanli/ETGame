@@ -3,12 +3,12 @@
 namespace ET
 {
     [ChildOf(typeof(SpellComponent))]
-    public class Spell: Entity, IAwake<SpellConfig>
+    public class Spell: Entity, IAwake<int>
     {
-        public SpellConfig Config { get; set; } //配置表id
+        public int ConfigId { get; set; } //配置表id
 
-        public EntityRef<Unit> Caster { get; set; }
+        public long Caster { get; set; }
 
-        public EntityRef<Spell> ParentSpell { get; set; }
+        public long ParentSpell { get; set; }
     }
 }

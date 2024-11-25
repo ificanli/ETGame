@@ -25,10 +25,8 @@ namespace ET.Client
                 spellComponent.UpdateCD(spellConfigId);
             }
 
-            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
-            
-            Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
-            spell.Caster = unit;
+            Spell spell = spellComponent.CreateSpell(spellConfigId, spellId);
+            spell.Caster = unit.Id;
             EffectHelper.RunBT<EffectClientSpellAdd>(spell);
             
             ObjectWait objectWait = spell.AddComponent<ObjectWait>();

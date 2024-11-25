@@ -1,10 +1,56 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 
 namespace ET
 {
+    public struct BuffConfigLoader
+    {
+        public int Id;
+    }
+    
+    public partial class BuffConfigCategory : Singleton<BuffConfigCategory>, ISingletonAwake
+    {
+        [BsonElement]
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
+        private Dictionary<int, BuffConfig> dict = new();
+        
+        public void Awake()
+        {
+        }
+		
+        public BuffConfig Get(int id)
+        {
+            this.dict.TryGetValue(id, out BuffConfig item);
+
+            if (item != null)
+            {
+                return item;
+            }
+
+            item = EventSystem.Instance.Invoke<BuffConfigLoader, BuffConfig>(new BuffConfigLoader() {Id = id});
+            if (item == null)
+            {
+                throw new Exception($"not found spell config: {id}");
+            }
+
+            this.dict.Add(id, item);
+            return item;
+        }
+		
+        public bool Contain(int id)
+        {
+            return this.dict.ContainsKey(id);
+        }
+    }
+    
+    
     [System.Serializable]
     public partial class BuffConfig: ProtoObject
     {
+        public int Id;
+        
         /// <summary>持续时间</summary>
         public int Duration;
 

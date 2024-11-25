@@ -27,7 +27,7 @@ namespace ET.Server
             {
                 return;
             }
-            Unit caster = spell.Caster;
+            Unit caster = spell.GetCaster();
             float distance = math.distance(caster.Position, target.Position);
 
             float time = distance / (node.Speed / 1000f);

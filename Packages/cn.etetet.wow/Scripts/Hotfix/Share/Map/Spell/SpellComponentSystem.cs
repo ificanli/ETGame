@@ -9,11 +9,11 @@
 
         }
         
-        public static Spell CreateSpell(this SpellComponent self, SpellConfig config, long id, long parentSpellId = 0)
+        public static Spell CreateSpell(this SpellComponent self, int configId, long parentSpellId = 0)
         {
-            Spell spell = self.AddChildWithId<Spell, SpellConfig>(id, config);
+            Spell spell = self.AddChild<Spell, int>(configId);
 
-            foreach (SpellFlags spellFlags in config.Flags)
+            foreach (SpellFlags spellFlags in spell.GetConfig().Flags)
             {
                 self.flagSpells.Add((int)spellFlags, spell);
             }
@@ -33,7 +33,7 @@
             {
                 return;
             }
-            foreach (SpellFlags flag in spell.Config.Flags)
+            foreach (SpellFlags flag in spell.GetConfig().Flags)
             {
                 self.flagSpells.Remove((int)flag, spell);
             }

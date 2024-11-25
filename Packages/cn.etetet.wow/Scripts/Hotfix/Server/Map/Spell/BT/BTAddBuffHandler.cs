@@ -5,7 +5,8 @@
         protected override int Run(BTAddBuff node, BTEnv env)
         {
             Unit unit = env.GetEntity<Unit>(node.Unit);
-            unit.GetComponent<BuffComponent>().CreateBuff(node.BuffConfig);
+            
+            Buff buff = BuffHelper.CreateBuff(unit, node.ConfigId);
             return 0;
         }
     }

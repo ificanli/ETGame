@@ -11,7 +11,7 @@ namespace ET.Server
 
             List<Unit> units = new List<Unit>();
 
-            Unit caster = spell.Caster;
+            Unit caster = spell.GetCaster();
 
             Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
 

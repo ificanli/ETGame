@@ -9,7 +9,7 @@ namespace ET.Server
         {
             Spell spell = env.GetEntity<Spell>(node.Spell);
 
-            Unit unit = spell.Caster;
+            Unit unit = spell.GetCaster();
             
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             

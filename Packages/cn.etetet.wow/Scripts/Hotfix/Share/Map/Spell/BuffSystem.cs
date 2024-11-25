@@ -4,9 +4,19 @@
     public static partial class BuffSystem
     {
         [EntitySystem]
-        private static void Awake(this Buff self, BuffConfig config)
+        private static void Awake(this Buff self, int configId)
         {
-            self.Config = config;
+            self.ConfigId = configId;
         }
+        
+        public static BuffConfig GetConfig(this Buff self)
+        {
+            return BuffConfigCategory.Instance.Get(self.ConfigId);
+        } 
+        
+        public static Unit GetOwner(this Buff self)
+        {
+            return self.Parent.GetParent<Unit>();
+        } 
     }
 }

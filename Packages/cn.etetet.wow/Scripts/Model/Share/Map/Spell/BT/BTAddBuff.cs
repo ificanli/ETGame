@@ -8,6 +8,6 @@
         [BTInput(typeof(Unit))]
         public string Unit;
         
-        public BuffConfig BuffConfig;
+        public int ConfigId;
     }
 }

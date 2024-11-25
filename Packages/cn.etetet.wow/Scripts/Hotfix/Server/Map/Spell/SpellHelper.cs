@@ -22,13 +22,11 @@ namespace ET.Server
             }
             
             // 发送SpellStart消息
-            long spellId = IdGenerater.Instance.GenerateId();
-            
             long startTime = TimeInfo.Instance.FrameTime;
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             
-            Spell spell = spellComponent.CreateSpell(spellConfig, spellId);
+            Spell spell = spellComponent.CreateSpell(spellConfigId);
 
             // 子技能没有CD
             if (parent == null)
@@ -49,7 +47,7 @@ namespace ET.Server
             }
             else
             {
-                spell.ParentSpell = parent;
+                spell.ParentSpell = parent.Id;
             }
             
             
@@ -57,7 +55,7 @@ namespace ET.Server
             
             M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
             m2CSpellAdd.UnitId = unit.Id;
-            m2CSpellAdd.SpellId = spellId;
+            m2CSpellAdd.SpellId = spell.Id;
             m2CSpellAdd.SpellConfigId = spellConfigId;
             MapMessageHelper.NoticeClient(unit, m2CSpellAdd, spellConfig.NoticeType);
             
@@ -122,7 +120,7 @@ namespace ET.Server
         private static SpellTargetComponent SelectTarget(Unit unit, Spell spell)
         {
             SpellTargetComponent spellTargetComponent = spell.AddComponent<SpellTargetComponent>();
-            SpellConfig spellConfig = spell.Config;
+            SpellConfig spellConfig = spell.GetConfig();
             switch (spellConfig.TargetSelector)
             {
                 case TargetSelectorSingle:
@@ -158,7 +156,7 @@ namespace ET.Server
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             Spell spell = spellComponent.GetSpell(spellId);
             
-            MapMessageHelper.NoticeClient(unit, spellRemove, spell.Config.NoticeType);
+            MapMessageHelper.NoticeClient(unit, spellRemove, spell.GetConfig().NoticeType);
             
             spellComponent.RemoveSpell(spellId);
         }

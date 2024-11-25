@@ -16,23 +16,23 @@ namespace ET
         {
             foreach (Buff buff in self.Children.Values)
             {
-                foreach (BuffFlags flag in buff.Config.Flags)
+                foreach (BuffFlags flag in buff.GetConfig().Flags)
                 {
                     self.flagBuffs.Add((int)flag, buff);
                 }
             }
         }
 
-        public static Buff CreateBuff(this BuffComponent self, BuffConfig buffConfig)
+        public static Buff CreateBuff(this BuffComponent self, int buffConfigId)
         {
-            Buff buff = self.AddChild<Buff, BuffConfig>(buffConfig);
+            Buff buff = self.AddChild<Buff, int>(buffConfigId);
             return buff;
         }
 
         public static void RemoveBuff(this BuffComponent self, long buffId)
         {
             Buff buff = self.GetChild<Buff>(buffId);
-            foreach (BuffFlags flag in buff.Config.Flags)
+            foreach (BuffFlags flag in buff.GetConfig().Flags)
             {
                 self.flagBuffs.Remove((int)flag, buff);
             }

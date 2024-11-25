@@ -6,7 +6,7 @@ namespace ET
     {
         public static int RunBT<T>(Spell spell) where T: BTNode
         {
-            foreach (BTNode node in spell.Config.Effects)
+            foreach (BTNode node in spell.GetConfig().Effects)
             {
                 if (node is not T)
                 {
@@ -22,7 +22,7 @@ namespace ET
         
         public static int RunBT<T>(Buff buff) where T: BTNode
         {
-            foreach (BTNode node in buff.Config.Effects)
+            foreach (BTNode node in buff.GetConfig().Effects)
             {
                 if (node is not T)
                 {
