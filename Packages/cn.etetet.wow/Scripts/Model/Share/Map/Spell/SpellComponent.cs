@@ -16,6 +16,6 @@ namespace ET
         public Dictionary<int, long> SpellCD = new();
         
         [BsonIgnore]
-        public MultiMap<int, EntityRef<Spell>> flagSpells = new();
+        public MultiMapSet<int, EntityRef<Spell>> flagSpells = new();
     }
 }

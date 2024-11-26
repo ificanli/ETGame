@@ -26,9 +26,8 @@ namespace ET.Client
             }
 
             Spell spell = spellComponent.CreateSpell(spellConfigId, spellId);
-            spell.Caster = unit.Id;
             EffectHelper.RunBT<EffectClientSpellAdd>(spell);
-            
+
             ObjectWait objectWait = spell.AddComponent<ObjectWait>();
             // 等待spell hit消息
             Wait_M2C_SpellHit waitM2CSpellHit = await objectWait.Wait<Wait_M2C_SpellHit>().TimeoutAsync(10000);

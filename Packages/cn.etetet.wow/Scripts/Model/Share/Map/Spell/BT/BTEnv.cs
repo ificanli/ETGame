@@ -37,6 +37,8 @@ namespace ET
         public const string Spell = "Spell";
         public const string Buff = "Buff";
         public const string Unit = "Unit";
+        public const string Attacker = "Attacker";
+        public const string Target = "Target";
         public const string Units = "Units";
         public const string Pos = "Pos";
     }
@@ -47,6 +49,10 @@ namespace ET
         {
             BTEnv env = ObjectPool.Fetch<BTEnv>(isFromPool);
             return env;
+        }
+
+        private BTEnv()
+        {
         }
         
         public bool IsFromPool { get; set; }

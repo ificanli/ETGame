@@ -3,7 +3,7 @@ using Unity.Mathematics;
 
 namespace ET.Client
 {
-    public class TSTargetSelectorCircleHandler : TargetSelectHandler<TargetSelectorCircle>
+    public class TargetSelectorCircleHandler : TargetSelectHandler<TargetSelectorCircle>
     {
         protected override async ETTask<int> Run(TargetSelectorCircle node, Unit unit, SpellConfig spellConfig)
         {

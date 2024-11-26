@@ -4,35 +4,54 @@ namespace ET
 {
     public static partial class EffectHelper
     {
-        public static int RunBT<T>(Spell spell) where T: BTNode
+        public static T GetEffect<T>(this SpellConfig config) where T: EffectNode
         {
-            foreach (BTNode node in spell.GetConfig().Effects)
+            List<EffectNode> effectNodes = config.Effects;
+            foreach (EffectNode effectNode in effectNodes)
             {
-                if (node is not T)
+                if (effectNode is T t)
                 {
-                    continue;
+                    return t;
                 }
-
-                using BTEnv env = BTEnv.Create();
-                env.AddEntity(BTEvnKey.Spell, spell);
-                return BTDispatcher.Instance.Handle(node, env);
             }
-            return 0;
+            return null;
         }
         
-        public static int RunBT<T>(Buff buff) where T: BTNode
+        public static T GetEffect<T>(this BuffConfig config) where T: EffectNode
         {
-            foreach (BTNode node in buff.GetConfig().Effects)
+            List<EffectNode> effectNodes = config.Effects;
+            foreach (EffectNode effectNode in effectNodes)
             {
-                if (node is not T)
+                if (effectNode is T t)
                 {
-                    continue;
+                    return t;
                 }
-                using BTEnv env = BTEnv.Create();
-                env.AddEntity(BTEvnKey.Buff, buff);
-                return BTDispatcher.Instance.Handle(node, env);
             }
-            return 0;
+            return null;
+        }
+        
+        public static int RunBT<T>(Spell spell) where T: EffectNode
+        {
+            EffectNode node = GetEffect<T>(spell.GetConfig());
+            if (node == null)
+            {
+                return 0;
+            }
+            using BTEnv env = BTEnv.Create();
+            env.AddEntity(BTEvnKey.Spell, spell);
+            return BTDispatcher.Instance.Handle(node, env);
+        }
+        
+        public static int RunBT<T>(Buff buff) where T: EffectNode
+        {
+            EffectNode node = GetEffect<T>(buff.GetConfig());
+            if (node == null)
+            {
+                return 0;
+            }
+            using BTEnv env = BTEnv.Create();
+            env.AddEntity(BTEvnKey.Buff, buff);
+            return BTDispatcher.Instance.Handle(node, env);
         }
     }
 }

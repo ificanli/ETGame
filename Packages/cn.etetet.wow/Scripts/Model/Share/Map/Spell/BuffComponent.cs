@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using System;
+using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace ET
 {
@@ -6,6 +8,12 @@ namespace ET
     public class BuffComponent: Entity, IAwake, ITransfer, IDeserialize
     {
         [BsonIgnore]
-        public MultiMap<int, EntityRef<Buff>> flagBuffs = new();
+        public MultiMapSet<int, EntityRef<Buff>> flagBuffs = new();
+
+        // key是EffectNode Type
+        public MultiMapSet<Type, EntityRef<Buff>> effectBuffs = new();
+        
+        // key是BuffConfig Id
+        public MultiMapSet<int, EntityRef<Buff>> configIdBuffs = new();
     }
 }

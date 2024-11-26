@@ -5,14 +5,8 @@ namespace ET.Server
     [FriendOf(typeof(SpellComponent))]
     public static class SpellHelper
     {
-        public static async ETTask Cast(Unit unit, int spellConfigId, long parentSpellId = 0)
+        public static async ETTask Cast(Unit unit, int spellConfigId, bool isSubSpell = false)
         {
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-            if (cancellationToken.IsCancel())
-            {
-                return;
-            }
-            
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
             // 检查技能是否能施放
@@ -25,16 +19,13 @@ namespace ET.Server
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             
-            Spell spell = spellComponent.CreateSpell(spellConfigId, parentSpellId);
+            Spell spell = spellComponent.CreateSpell(spellConfigId);
 
-            // 子技能没有CD
-            if (parentSpellId == 0)
+            // 子技能没有CD,子技能不设置Current
+            if (!isSubSpell)
             {
                 spellComponent.UpdateCD(spellConfigId);
-            }
-
-            if (parentSpellId == 0)
-            {
+                
                 // 打断老技能，这里先简单处理，技能打断有一套规则
                 Spell preSpell = spellComponent.Current;
                 if (preSpell != null)
@@ -44,13 +35,6 @@ namespace ET.Server
 
                 spellComponent.Current = spell;
             }
-            else
-            {
-                spell.ParentSpell = parentSpellId;
-            }
-            
-            
-            spellComponent.CancellationToken = cancellationToken;
             
             M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
             m2CSpellAdd.UnitId = unit.Id;
@@ -60,19 +44,34 @@ namespace ET.Server
             
             EffectHelper.RunBT<EffectServerBuffAdd>(spell);
 
-#region SpellHit
-
-            // 等到命中
-            TimerComponent timerComponent = unit.Scene().GetComponent<TimerComponent>();
-            await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
-            if (cancellationToken.IsCancel())
+            
+            // 选择目标
             {
-                return;
+                using BTEnv env = BTEnv.Create();
+                env.AddEntity(BTEvnKey.Spell, spell);
+                int ret = BTDispatcher.Instance.Handle(spellConfig.TargetSelector, env);
+                if (ret != 0)
+                {
+                    return;
+                }
             }
 
-            // 选择目标
-            SpellTargetComponent spellTargetComponent = SelectTarget(unit, spell);
+            TimerComponent timerComponent = unit.Scene().GetComponent<TimerComponent>();
+#region SpellHit
 
+            if (spellConfig.HitTime > 0)
+            {
+                ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+                spellComponent.CancellationToken = cancellationToken;
+                // 等到命中
+                await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
+                if (cancellationToken.IsCancel())
+                {
+                    return;
+                }
+            }
+
+            SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
             // 发送SpellHit消息
             M2C_SpellHit m2CSpellHit = M2C_SpellHit.Create();
             m2CSpellHit.UnitId = unit.Id;
@@ -83,7 +82,7 @@ namespace ET.Server
                 m2CSpellHit.TargetUnitId.Add(target.Id);
             }
             MapMessageHelper.NoticeClient(unit, m2CSpellHit, spellConfig.NoticeType);
-
+    
             // 对目标分发hitEffect
             EffectHelper.RunBT<EffectServerSpellHit>(spell);
 
@@ -93,13 +92,19 @@ namespace ET.Server
 
 #region SpellRemove
 
-            await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.Duration);
-            if (cancellationToken.IsCancel())
+            if (spellConfig.Duration > 0)
             {
-                return;
+                ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+                spellComponent.CancellationToken = cancellationToken;
+                
+                await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.Duration);
+                if (cancellationToken.IsCancel())
+                {
+                    return;
+                }
             }
 
-            // 发送SpellRemove消息
+// 发送SpellRemove消息
             Remove(unit, spell.Id);
             
 #endregion
