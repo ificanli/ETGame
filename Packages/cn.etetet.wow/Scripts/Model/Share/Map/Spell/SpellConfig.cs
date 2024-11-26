@@ -52,6 +52,8 @@ namespace ET
     {
         /// <summary>Id</summary>
         public int Id;
+
+        public string Desc;
         
 //#if UNITY
 //        [UnityEngine.SerializeReference]

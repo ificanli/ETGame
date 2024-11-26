@@ -51,6 +51,8 @@ namespace ET
     {
         public int Id;
         
+        public string Desc;
+        
         /// <summary>持续时间</summary>
         public int Duration;
 
@@ -60,11 +62,13 @@ namespace ET
         /// <summary>最大层数</summary>
         public int MaxStack = 1;
 
+        public int Stack = 1;
+
         /// <summary>叠加规则类型</summary>
-        public int OverLayRuleType;
+        public OverLayRuleType OverLayRuleType;
 
         /// <summary>移除条件</summary>
-        public List<BuffFlags> Flags;
+        public HashSet<BuffFlags> Flags = new();
 
         /// <summary>广播客户端类型</summary>
         public NoticeType NoticeType;
@@ -73,5 +77,13 @@ namespace ET
         [UnityEngine.SerializeReference]
 #endif
         public List<EffectNode> Effects = new();
+    }
+    
+    public enum OverLayRuleType
+    {
+        None,
+        AddStack,
+        AddTime,
+        Replace,
     }
 }

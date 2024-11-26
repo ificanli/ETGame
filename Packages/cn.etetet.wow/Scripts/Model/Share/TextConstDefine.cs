@@ -10,5 +10,9 @@ namespace ET
 
 		public const int SpellCast_SpellInCD = 10003;
 
+		public const int SpellCast_MPNotEnought = 10004;
+
+		public const int SpellCast_HPNotEnought = 10005;
+
 	}
 }

@@ -12,6 +12,7 @@
         public static Spell CreateSpell(this SpellComponent self, int configId, long parentSpellId = 0)
         {
             Spell spell = self.AddChild<Spell, int>(configId);
+            spell.ParentSpell = parentSpellId;
 
             foreach (SpellFlags spellFlags in spell.GetConfig().Flags)
             {
@@ -40,7 +41,7 @@
             self.RemoveChild(spellId);
         }
 
-        public static bool CheckCD(this SpellComponent self, int spellConfigId)
+        public static bool CheckCD(this SpellComponent self, SpellConfig spellConfig)
         {
             long timeNow = TimeInfo.Instance.FrameTime;
             if (self.CDTime + 2000 > timeNow)
@@ -48,8 +49,7 @@
                 return false;
             }
 
-            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
-            if (self.SpellCD.TryGetValue(spellConfigId, out long cdTime))
+            if (self.SpellCD.TryGetValue(spellConfig.Id, out long cdTime))
             {
                 if (cdTime + spellConfig.CD > timeNow)
                 {

@@ -8,6 +8,8 @@ namespace ET
         public int ConfigId { get; set; } //配置表id
 
         public long Caster { get; set; }
+        
+        public long Source { get; set; }
 
         public long ParentSpell { get; set; }
     }

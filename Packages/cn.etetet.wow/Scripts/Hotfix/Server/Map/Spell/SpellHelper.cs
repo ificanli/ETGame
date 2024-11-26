@@ -5,7 +5,7 @@ namespace ET.Server
     [FriendOf(typeof(SpellComponent))]
     public static class SpellHelper
     {
-        public static async ETTask Cast(Unit unit, int spellConfigId, Spell parent = null)
+        public static async ETTask Cast(Unit unit, int spellConfigId, long parentSpellId = 0)
         {
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             if (cancellationToken.IsCancel())
@@ -16,8 +16,10 @@ namespace ET.Server
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
             // 检查技能是否能施放
-            if (!Check(unit, spellConfig))
+            int checkRet = Check(unit, spellConfig);
+            if (checkRet != 0)
             {
+                ErrorHelper.MapError(unit, checkRet);
                 return;
             }
             
@@ -26,15 +28,15 @@ namespace ET.Server
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             
-            Spell spell = spellComponent.CreateSpell(spellConfigId);
+            Spell spell = spellComponent.CreateSpell(spellConfigId, parentSpellId);
 
             // 子技能没有CD
-            if (parent == null)
+            if (parentSpellId == 0)
             {
                 spellComponent.UpdateCD(spellConfigId);
             }
 
-            if (parent == null)
+            if (parentSpellId == 0)
             {
                 // 打断老技能，这里先简单处理，技能打断有一套规则
                 Spell preSpell = spellComponent.Current;
@@ -47,7 +49,7 @@ namespace ET.Server
             }
             else
             {
-                spell.ParentSpell = parent.Id;
+                spell.ParentSpell = parentSpellId;
             }
             
             
@@ -106,15 +108,21 @@ namespace ET.Server
 #endregion
         }
 
-        private static bool Check(Unit unit, SpellConfig spellConfig)
+        private static int Check(Unit unit, SpellConfig spellConfig)
         {
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-            if (!spellComponent.CheckCD(spellConfig.Id))
+            if (!spellComponent.CheckCD(spellConfig))
             {
-                ErrorHelper.MapError(unit, TextConstDefine.SpellCast_SpellInCD);
-                return false;
+                return TextConstDefine.SpellCast_SpellInCD;
             }
-            return true;
+
+            int costCheckRet = CostDispatcher.Instance.Handle(unit, spellConfig);
+            if (costCheckRet != 0)
+            {
+                return costCheckRet;
+            }
+            
+            return 0;
         }
 
         private static SpellTargetComponent SelectTarget(Unit unit, Spell spell)

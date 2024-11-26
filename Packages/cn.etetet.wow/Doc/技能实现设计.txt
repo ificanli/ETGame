@@ -1,18 +1,25 @@
+技能机制分析
+
 寒冰箭
-1. Client SpellHit创建一个特效，改特效飞向目标的BindPoint
-2. Server SpellHit加上一个Buff，Buff改变目标SpeedPct -50
+1. Server SpellAdd 给自己加上一个读条buff，读条buff结束的时候立即让自己施放一个子技能，spellhit时间为0
+1. Client SpellHit创建一个特效，该特效飞向目标的BindPoint
+2. Server SpellHit加上一个减速Buff，Buff改变目标SpeedPct -50
 3. Server SpellHit给目标加上一个Buff，时间距离除以速度
 4. Buff到期删除的时候让Caster立即施放一个技能，对Buff的Owner产生一个立即伤害
-也就是说伤害的延迟是通过一个临时Buff来实现的，很多延迟技能都可以这样操作
+也就是说伤害的延迟是通过一个临时Buff来实现，很多延迟技能都可以这样操作
 
 
 暴风雪
-1. 父目标是一个Pos
+1. 父技能目标是一个Pos
 2. Server SpellAdd 创建一个Buff，5层
 3. Client BuffAdd播放引导动作
 4. Buff每次tick施放一个技能，目标是父技能的目标Pos然后TargetSelectCircle
 5. 子技能每次消耗一层该Buff，子技能每次判断蓝是否足够，如果技能释放失败则删除Buff
-6. 施放5次后Buff删除
+6. 施放5次后Buff stack为0，然后buff删除
 7. Buff删除的时候打断父技能
 8. Client Buff Remove停止播放引导动作
 9. 暴风雪技能移动会打断，加上的Buff也是移动即删除
+
+为什么暴风雪是一个buff呢，原因是术士的dot技能跟暴风雪一样受到急速属性影响，急速属性都会减少dot的tick的时间，那么其实暴风雪也是buff tick
+
+为什么寒冰箭的读条是一个buff呢，跟暴风雪buff一样，暴风雪引导buff被攻击的时候会减少时间，寒冰箭读条buff被攻击的时候会增加buff时间。这种机制如果不使用buff来实现，会很蛋疼
