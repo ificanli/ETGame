@@ -54,7 +54,7 @@ namespace ET
         public string Desc;
         
         /// <summary>持续时间</summary>
-        public int Duration;
+        public int Duration = 10000;
 
         /// <summary>Tick间隔时间</summary>
         public int TickTime;

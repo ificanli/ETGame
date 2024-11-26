@@ -13,6 +13,7 @@
         {
             Spell spell = self.AddChild<Spell, int>(configId);
             spell.ParentSpell = parentSpellId;
+            spell.CreateTime = TimeInfo.Instance.FrameTime;
 
             foreach (SpellFlags spellFlags in spell.GetConfig().Flags)
             {

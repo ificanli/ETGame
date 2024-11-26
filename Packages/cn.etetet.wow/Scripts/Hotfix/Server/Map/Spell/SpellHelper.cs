@@ -22,9 +22,6 @@ namespace ET.Server
                 ErrorHelper.MapError(unit, checkRet);
                 return;
             }
-            
-            // 发送SpellStart消息
-            long startTime = TimeInfo.Instance.FrameTime;
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             
@@ -67,7 +64,7 @@ namespace ET.Server
 
             // 等到命中
             TimerComponent timerComponent = unit.Scene().GetComponent<TimerComponent>();
-            await timerComponent.WaitTillAsync(startTime + spellConfig.HitTime);
+            await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
             if (cancellationToken.IsCancel())
             {
                 return;
@@ -96,7 +93,7 @@ namespace ET.Server
 
 #region SpellRemove
 
-            await timerComponent.WaitTillAsync(startTime + spellConfig.Duration);
+            await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.Duration);
             if (cancellationToken.IsCancel())
             {
                 return;
@@ -116,6 +113,7 @@ namespace ET.Server
                 return TextConstDefine.SpellCast_SpellInCD;
             }
 
+            // 检查消耗的东西是否足够
             int costCheckRet = CostDispatcher.Instance.Handle(unit, spellConfig);
             if (costCheckRet != 0)
             {

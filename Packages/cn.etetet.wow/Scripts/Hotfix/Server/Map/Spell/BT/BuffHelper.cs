@@ -5,49 +5,59 @@
         public static Buff CreateBuff(Unit unit, int buffConfigId)
         {
             Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffConfigId);
+            BuffConfig buffConfig = buff.GetConfig();
+            
             M2C_BuffAdd m2CBuffAdd = M2C_BuffAdd.Create();
             m2CBuffAdd.BuffId = buff.Id;
             m2CBuffAdd.BuffConfigId = buffConfigId;
             m2CBuffAdd.UnitId = unit.Id;
-
-            BuffConfig buffConfig = buff.GetConfig();
+            m2CBuffAdd.CreateTime = buff.CreateTime;
+            m2CBuffAdd.TickTime = buff.TickTime;
+            m2CBuffAdd.ExpireTime = buff.ExpireTime;
+            m2CBuffAdd.Stack = buff.Stack;
+            
             MapMessageHelper.NoticeClient(unit, m2CBuffAdd, buffConfig.NoticeType);
 
             EffectHelper.RunBT<EffectServerBuffAdd>(buff);
             
+            TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
+            
+            if (buffConfig.TickTime > 0)
+            {
+                WaitTick(buff, timerComponent).NoContext();
+            }
+            
             if (buffConfig.Duration > 0)
             {
-                RunBuff(buff).NoContext();
+                WaitTimeout(buff, timerComponent).NoContext();
             }
             
             return buff;
         }
 
-        public static async ETTask RunBuff(Buff buff)
+        private static async ETTask WaitTick(Buff buff, TimerComponent timerComponent)
         {
             BuffConfig buffConfig = buff.GetConfig();
-            TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
 
-            long timeoutTime = buff.CreateTime + buffConfig.Duration;
-            if (buffConfig.TickTime > 0)
+            int i = 0;
+            while (true)
             {
-                long nextTick = buff.CreateTime + buffConfig.TickTime;
-                while (true)
+                ++i;
+                long nextTick = buff.CreateTime + buffConfig.TickTime * i;
+                
+                await timerComponent.WaitTillAsync(nextTick);
+                if (buff.IsDisposed)
                 {
-                    await timerComponent.WaitTillAsync(nextTick);
-                    if (buff.IsDisposed)
-                    {
-                        return;
-                    }
-                    if (nextTick > timeoutTime)
-                    {
-                        break;
-                    }
-                    EffectHelper.RunBT<EffectServerBuffTick>(buff);
+                    return;
                 }
+
+                EffectHelper.RunBT<EffectServerBuffTick>(buff);
             }
-            
-            await timerComponent.WaitTillAsync(timeoutTime);
+        }
+
+        private static async ETTask WaitTimeout(Buff buff, TimerComponent timerComponent)
+        {
+            await timerComponent.WaitTillAsync(buff.CreateTime + buff.GetConfig().Duration);
             if (buff.IsDisposed)
             {
                 return;

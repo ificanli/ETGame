@@ -12,5 +12,7 @@ namespace ET
         public long Source { get; set; }
 
         public long ParentSpell { get; set; }
+        
+        public long CreateTime { get; set; }
     }
 }
