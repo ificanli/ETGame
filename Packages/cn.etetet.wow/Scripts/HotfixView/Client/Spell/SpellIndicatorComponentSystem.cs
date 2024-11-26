@@ -47,11 +47,10 @@ namespace ET.Client
             }
         }
 
-        public static async ETTask<Vector3> WaitSpellIndicator(this SpellIndicatorComponent self, TargetSelectorCircle targetSelectorCircle)
+        public static async ETTask<Vector3> WaitPos(this SpellIndicatorComponent self, GameObject go, float radius, int maxDistance)
         {
             self.Task = ETTask<Vector3>.Create();
 
-            GameObject go = targetSelectorCircle.SpellIndicator;
             if (!self.Cache.TryGetValue(go.GetInstanceID(), out GameObject gameObject))
             {
                 gameObject = UnityEngine.Object.Instantiate(go, GameObject.Find("/Global/Unit").transform);
@@ -59,11 +58,21 @@ namespace ET.Client
             }
 
             gameObject.SetActive(true);
-            gameObject.transform.localScale *= targetSelectorCircle.Radius / 1000f;
+            gameObject.transform.localScale *= radius / 1000f;
             self.Current = gameObject.transform;
-            self.MaxDistance = targetSelectorCircle.MaxDistance;
+            self.MaxDistance = maxDistance;
             
             return await self.Task;
+        }
+
+        public static async ETTask<Vector3> WaitSpellIndicator(this SpellIndicatorComponent self, TargetSelectorCircle targetSelectorCircle)
+        {
+            return await self.WaitPos(targetSelectorCircle.SpellIndicator, targetSelectorCircle.Radius, targetSelectorCircle.MaxDistance);
+        }
+        
+        public static async ETTask<Vector3> WaitSpellIndicator(this SpellIndicatorComponent self, TargetSelectorPosition targetSelectorPosition)
+        {
+            return await self.WaitPos(targetSelectorPosition.SpellIndicator, 1f, targetSelectorPosition.MaxDistance);
         }
     }
 }

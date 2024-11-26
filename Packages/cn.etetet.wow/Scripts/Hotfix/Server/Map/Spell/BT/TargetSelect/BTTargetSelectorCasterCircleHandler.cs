@@ -3,9 +3,9 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
-    public class BTTargetSelectorCircleHandler : ABTHandler<TargetSelectorCircle>
+    public class BTTargetSelectorCasterCircleHandler: ABTHandler<TargetSelectorCasterCircle>
     {
-        protected override int Run(TargetSelectorCircle node, BTEnv env)
+        protected override int Run(TargetSelectorCasterCircle node, BTEnv env)
         {
             Spell spell = env.GetEntity<Spell>(node.Spell);
 
@@ -15,7 +15,7 @@ namespace ET.Server
 
             Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
 
-            float3 pos = caster.GetComponent<TargetComponent>().Position;
+            float3 pos = caster.Position;
 
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
@@ -52,6 +52,7 @@ namespace ET.Server
             }
 
             env.AddCollection(node.Units, units);
+            
             return 0;
         }
     }
