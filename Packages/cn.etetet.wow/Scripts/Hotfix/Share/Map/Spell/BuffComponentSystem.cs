@@ -109,6 +109,18 @@ namespace ET
             return set;
         }
         
+        public static void RemoveBuffFlag(this BuffComponent self, BuffFlags flag)
+        {
+            if (!self.flagBuffs.Remove((int)flag, out var set))
+            {
+                return;
+            }
+            foreach (Buff buff in set)
+            {
+                self.RemoveBuff(buff);
+            }
+        }
+        
         public static HashSet<EntityRef<Buff>> GetByEffectType<T>(this BuffComponent self) where T: EffectNode
         {
             self.effectBuffs.TryGetValue(typeof(T), out var set);

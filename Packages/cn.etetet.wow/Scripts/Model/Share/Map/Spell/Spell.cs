@@ -14,5 +14,7 @@ namespace ET
         public long ParentSpell { get; set; }
         
         public long CreateTime { get; set; }
+        
+        public long ExpireTime { get; set; }
     }
 }

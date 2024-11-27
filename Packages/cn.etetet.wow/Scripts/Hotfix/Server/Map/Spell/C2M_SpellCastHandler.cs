@@ -13,7 +13,7 @@
                 targetComponent.Position = message.TargetPosition;
             }
 
-            ETCancellationToken cancellationToken = new ETCancellationToken();
+            ETCancellationToken cancellationToken = new();
             SpellHelper.Cast(unit, message.SpellConfigId).WithContext(cancellationToken);
             await ETTask.CompletedTask;
         }

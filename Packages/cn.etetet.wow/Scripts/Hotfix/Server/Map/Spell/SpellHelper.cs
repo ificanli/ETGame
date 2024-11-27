@@ -9,23 +9,37 @@ namespace ET.Server
         {
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
-            // 检查技能是否能施放
-            int checkRet = Check(unit, spellConfig);
-            if (checkRet != 0)
-            {
-                ErrorHelper.MapError(unit, checkRet);
-                return;
-            }
-
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-            
-            Spell spell = spellComponent.CreateSpell(spellConfigId);
 
+#region Spell Add
+            // check
+            {
+                if (!spellComponent.CheckCD(spellConfig))
+                {
+                    ErrorHelper.MapError(unit, TextConstDefine.SpellCast_SpellInCD);
+                    return;
+                }
+
+                // 检查消耗的东西是否足够
+                int costCheckRet = CostDispatcher.Instance.Handle(unit, spellConfig);
+                if (costCheckRet != 0)
+                {
+                    ErrorHelper.MapError(unit, costCheckRet);
+                    return ;
+                }
+            }
+#endregion
+
+#region Spell Add
+
+            // add
+            Spell spell = spellComponent.CreateSpell(spellConfigId);
+            
             // 子技能没有CD,子技能不设置Current
             if (!isSubSpell)
             {
                 spellComponent.UpdateCD(spellConfigId);
-                
+
                 // 打断老技能，这里先简单处理，技能打断有一套规则
                 Spell preSpell = spellComponent.Current;
                 if (preSpell != null)
@@ -35,120 +49,86 @@ namespace ET.Server
 
                 spellComponent.Current = spell;
             }
-            
+
             M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
             m2CSpellAdd.UnitId = unit.Id;
             m2CSpellAdd.SpellId = spell.Id;
             m2CSpellAdd.SpellConfigId = spellConfigId;
             MapMessageHelper.NoticeClient(unit, m2CSpellAdd, spellConfig.NoticeType);
-            
-            EffectHelper.RunBT<EffectServerBuffAdd>(spell);
 
+            EffectHelper.RunBT<EffectServerBuffAdd>(spell);
             
+#endregion
+            
+#region Spell Target Select
             // 选择目标
             {
                 using BTEnv env = BTEnv.Create();
                 env.AddEntity(BTEvnKey.Spell, spell);
-                int ret = BTDispatcher.Instance.Handle(spellConfig.TargetSelector, env);
+                int ret = BTDispatcher.Instance.Handle(spell.GetConfig().TargetSelector, env);
                 if (ret != 0)
                 {
                     return;
                 }
             }
+#endregion
 
-            TimerComponent timerComponent = unit.Scene().GetComponent<TimerComponent>();
-#region SpellHit
-
-            if (spellConfig.HitTime > 0)
+#region Spell Hit
+            // hit
             {
-                ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-                spellComponent.CancellationToken = cancellationToken;
-                // 等到命中
-                await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
-                if (cancellationToken.IsCancel())
+                if (spellConfig.HitTime > 0)
                 {
-                    return;
+                    TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
+                    ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+                    spellComponent.CancellationToken = cancellationToken;
+                    // 等到命中
+                    await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
+                    if (cancellationToken.IsCancel())
+                    {
+                        return;
+                    }
                 }
-            }
 
-            SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
-            // 发送SpellHit消息
-            M2C_SpellHit m2CSpellHit = M2C_SpellHit.Create();
-            m2CSpellHit.UnitId = unit.Id;
-            m2CSpellHit.SpellId = spell.Id;
-            m2CSpellHit.TargetPosition = spellTargetComponent.Position;
-            foreach (Unit target in spellTargetComponent.Units)
-            {
-                m2CSpellHit.TargetUnitId.Add(target.Id);
-            }
-            MapMessageHelper.NoticeClient(unit, m2CSpellHit, spellConfig.NoticeType);
+                SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
+            
+                // 发送SpellHit消息, 命中，暴击等等在这里已经计算完成，SpellHit消息中应该带有命中，暴击等信息
+                M2C_SpellHit m2CSpellHit = M2C_SpellHit.Create();
+                m2CSpellHit.UnitId = unit.Id;
+                m2CSpellHit.SpellId = spell.Id;
+                m2CSpellHit.TargetPosition = spellTargetComponent.Position;
+                foreach (Unit target in spellTargetComponent.Units)
+                {
+                    m2CSpellHit.TargetUnitId.Add(target.Id);
+                }
+                MapMessageHelper.NoticeClient(unit, m2CSpellHit, spellConfig.NoticeType);
     
-            // 对目标分发hitEffect
-            EffectHelper.RunBT<EffectServerSpellHit>(spell);
-
+                // 对目标分发hitEffect
+                EffectHelper.RunBT<EffectServerSpellHit>(spell);
+            }
 #endregion
-            
 
-
-#region SpellRemove
-
-            if (spellConfig.Duration > 0)
+#region Spell Finish
+            // finish
             {
-                ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-                spellComponent.CancellationToken = cancellationToken;
+                if (spell.ExpireTime > 0)
+                {
+                    TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
+                    ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+                    spellComponent.CancellationToken = cancellationToken;
                 
-                await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.Duration);
-                if (cancellationToken.IsCancel())
-                {
-                    return;
+                    await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.Duration);
+                    if (cancellationToken.IsCancel())
+                    {
+                        return;
+                    }
                 }
-            }
 
-// 发送SpellRemove消息
-            Remove(unit, spell.Id);
-            
+                // 发送SpellRemove消息
+                Remove(unit, spell.Id);
+            }
 #endregion
         }
-
-        private static int Check(Unit unit, SpellConfig spellConfig)
-        {
-            SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-            if (!spellComponent.CheckCD(spellConfig))
-            {
-                return TextConstDefine.SpellCast_SpellInCD;
-            }
-
-            // 检查消耗的东西是否足够
-            int costCheckRet = CostDispatcher.Instance.Handle(unit, spellConfig);
-            if (costCheckRet != 0)
-            {
-                return costCheckRet;
-            }
-            
-            return 0;
-        }
-
-        private static SpellTargetComponent SelectTarget(Unit unit, Spell spell)
-        {
-            SpellTargetComponent spellTargetComponent = spell.AddComponent<SpellTargetComponent>();
-            SpellConfig spellConfig = spell.GetConfig();
-            switch (spellConfig.TargetSelector)
-            {
-                case TargetSelectorSingle:
-                {
-                    TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
-                    spellTargetComponent.Units.Add(targetComponent.Unit);
-                    break;
-                }
-                case TargetSelectorCaster:
-                {
-                    spellTargetComponent.Units.Add(unit);
-                    break;
-                }
-            }
-
-            return spellTargetComponent;
-        }
+        
         
         public static void Interrupt(Unit unit, long spellId)
         {

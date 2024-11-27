@@ -71,9 +71,6 @@ namespace ET
 #endif
         public TargetSelector TargetSelector;
         
-        /// <summary>吟唱时间</summary>
-        public int Chanting;
-        
         /// <summary>命中时间</summary>
         public int HitTime;
 

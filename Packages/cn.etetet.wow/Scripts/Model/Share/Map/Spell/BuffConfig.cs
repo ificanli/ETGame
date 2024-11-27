@@ -77,18 +77,6 @@ namespace ET
         [UnityEngine.SerializeReference]
 #endif
         public List<EffectNode> Effects = new();
-        
-        public T GetEffect<T>() where T: EffectNode
-        {
-            foreach (EffectNode effectNode in this.Effects)
-            {
-                if (effectNode is T t)
-                {
-                    return t;
-                }
-            }
-            return default;
-        }
     }
     
     public enum OverLayRuleType

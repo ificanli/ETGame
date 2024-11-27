@@ -11,11 +11,13 @@
         
         public static Spell CreateSpell(this SpellComponent self, int configId, long parentSpellId = 0)
         {
+            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(configId);
             Spell spell = self.AddChild<Spell, int>(configId);
             spell.ParentSpell = parentSpellId;
             spell.CreateTime = TimeInfo.Instance.FrameTime;
+            spell.ExpireTime = spell.CreateTime + spellConfig.Duration;
 
-            foreach (SpellFlags spellFlags in spell.GetConfig().Flags)
+            foreach (SpellFlags spellFlags in spellConfig.Flags)
             {
                 self.flagSpells.Add((int)spellFlags, spell);
             }
