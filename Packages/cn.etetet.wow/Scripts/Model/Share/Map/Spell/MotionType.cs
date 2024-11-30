@@ -11,5 +11,7 @@
         MeleeAttack3,
         GetHit,
         Dead,
+        SpellDirected,
+        SpellOmni,
     }
 }
