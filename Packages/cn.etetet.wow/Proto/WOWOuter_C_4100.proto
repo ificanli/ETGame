@@ -186,8 +186,7 @@ message C2M_SpellCast // ILocationMessage
 {
 	int32 RpcId = 1;
 	int32 SpellConfigId = 2;	
-	int64 TargetUnitId = 3;
-	Unity.Mathematics.float3 TargetPosition = 4;
+	Unity.Mathematics.float3 TargetPosition = 3;
 }
 
 message M2C_SpellAdd // IMessage
@@ -254,4 +253,10 @@ message M2C_NumericChange // IMessage
 	int64 UnitId = 1;
 	int32 NumericType = 2;
 	int64 Value = 3;
+}
+
+message C2M_SelectTarget // ILocationMessage
+{
+	int32 RpcId = 1;
+	int64 TargetUnitId = 2;
 }

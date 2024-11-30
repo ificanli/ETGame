@@ -847,9 +847,6 @@ namespace ET
         public int SpellConfigId { get; set; }
 
         [MemoryPackOrder(2)]
-        public long TargetUnitId { get; set; }
-
-        [MemoryPackOrder(3)]
         public Unity.Mathematics.float3 TargetPosition { get; set; }
 
         public override void Dispose()
@@ -861,7 +858,6 @@ namespace ET
 
             this.RpcId = default;
             this.SpellConfigId = default;
-            this.TargetUnitId = default;
             this.TargetPosition = default;
 
             ObjectPool.Recycle(this);
@@ -1177,6 +1173,35 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWOuter.C2M_SelectTarget)]
+    public partial class C2M_SelectTarget : MessageObject, ILocationMessage
+    {
+        public static C2M_SelectTarget Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_SelectTarget>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long TargetUnitId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.TargetUnitId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWOuter
     {
         public const ushort RouterSync = 4101;
@@ -1216,5 +1241,6 @@ namespace ET
         public const ushort M2C_BuffRemove = 4135;
         public const ushort M2C_Error = 4136;
         public const ushort M2C_NumericChange = 4137;
+        public const ushort C2M_SelectTarget = 4138;
     }
 }

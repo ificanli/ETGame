@@ -89,9 +89,17 @@ namespace ET.Client
             }
             GameObject clickedObject = hit.collider.gameObject;
             
-            Unit targetUnit = (Unit)clickedObject.GetComponent<GameObjectEntityRef>().EntityRef.Entity;
-            Unit myUnit = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
+            Unit targetUnit = clickedObject.GetComponent<GameObjectEntityRef>()?.EntityRef.Entity as Unit;
+            if (targetUnit == null)
+            {
+                return;
+            }
+            Unit myUnit = self.GetParent<Unit>();
             myUnit.GetComponent<TargetComponent>().Unit = targetUnit;
+            
+            C2M_SelectTarget c2MSelectTarget = C2M_SelectTarget.Create();
+            c2MSelectTarget.TargetUnitId = targetUnit.Id;
+            self.Root().GetComponent<ClientSenderComponent>().Send(c2MSelectTarget);
         }
         
         private static void ChangeTarget(this InputSystemComponent self, InputAction.CallbackContext context)
@@ -111,7 +119,7 @@ namespace ET.Client
                 return;
             }
 
-            int spellConfigId = keyControl.keyCode - Key.Digit1 + 10000;
+            int spellConfigId = (keyControl.keyCode - Key.Digit1) * 10 + 100000;
             
             EventSystem.Instance.Publish(self.Scene(), new OnSpellTrigger() {Unit = self.GetParent<Unit>(), SpellConfigId = spellConfigId});
         }
