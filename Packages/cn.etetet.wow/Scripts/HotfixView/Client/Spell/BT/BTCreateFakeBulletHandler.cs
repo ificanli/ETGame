@@ -11,7 +11,7 @@ namespace ET.Client
 
             GameObject targetGameObject = target.GetComponent<GameObjectComponent>().GameObject;
             
-            GameObject gameObject = EffectUnitHelper.Create(caster, node.CasterBindPoint, node.Effect, true);
+            GameObject gameObject = EffectUnitHelper.Create(caster, node.CasterBindPoint, node.Effect, true, 0);
 
             Transform bindPoint = targetGameObject.GetComponent<BindPointComponent>().BindPoints[node.TargetBindPoint];
 

@@ -41,6 +41,7 @@ namespace ET
         public const string Target = "Target";
         public const string Units = "Units";
         public const string Pos = "Pos";
+        public const string BuffRemoveType = "BuffRemoveType";
     }
     
     public class BTEnv: DisposeObject, IPool

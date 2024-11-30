@@ -9,11 +9,10 @@
 
         }
         
-        public static Spell CreateSpell(this SpellComponent self, int configId, long parentSpellId = 0)
+        public static Spell CreateSpell(this SpellComponent self, long spellId, int configId)
         {
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(configId);
-            Spell spell = self.AddChild<Spell, int>(configId);
-            spell.ParentSpell = parentSpellId;
+            Spell spell = self.AddChildWithId<Spell, int>(spellId, configId);
             spell.CreateTime = TimeInfo.Instance.FrameTime;
             spell.ExpireTime = spell.CreateTime + spellConfig.Duration;
 

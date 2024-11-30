@@ -1,12 +1,12 @@
 ﻿namespace ET
 {
-    public class BTGetSpellTargetPosHandler: ABTHandler<BTGetSpellTargetPos>
+    public class BTGetSpellTargetUnitsHandler: ABTHandler<BTGetSpellTargetUnits>
     {
-        protected override int Run(BTGetSpellTargetPos node, BTEnv env)
+        protected override int Run(BTGetSpellTargetUnits node, BTEnv env)
         {
             Spell spell = env.GetEntity<Spell>(node.Spell);
             SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
-            env.AddStruct(node.Pos, spellTargetComponent.Position);
+            env.AddCollection(node.Units, spellTargetComponent.Units);
             return 0;
         }
     }

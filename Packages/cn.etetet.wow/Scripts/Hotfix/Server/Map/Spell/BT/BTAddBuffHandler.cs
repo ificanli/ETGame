@@ -5,8 +5,8 @@
         protected override int Run(BTAddBuff node, BTEnv env)
         {
             Unit unit = env.GetEntity<Unit>(node.Unit);
-            
-            Buff buff = BuffHelper.CreateBuff(unit, node.ConfigId);
+            Spell spell = env.GetEntity<Spell>(node.Spell);
+            Buff buff = BuffHelper.CreateBuff(unit, spell.Main.Entity, node.ConfigId);
             return 0;
         }
     }

@@ -46,6 +46,13 @@ namespace ET
         }
     }
     
+    public enum CastTimeType
+    {
+        Attack, // 普通攻击
+        Cast,   // 读条
+        Channeling, // 吟唱
+    }
+    
     
     [Serializable]
     public partial class SpellConfig: ProtoObject
@@ -70,7 +77,7 @@ namespace ET
         [UnityEngine.SerializeReference]
 #endif
         public TargetSelector TargetSelector;
-        
+
         /// <summary>命中时间</summary>
         public int HitTime;
 

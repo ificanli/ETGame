@@ -2,10 +2,11 @@
 {
     public static class BuffHelper
     {
-        public static Buff CreateBuff(Unit unit, int buffConfigId)
+        public static Buff CreateBuff(Unit unit, Spell spell, int buffConfigId)
         {
             Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffConfigId);
             BuffConfig buffConfig = buff.GetConfig();
+            buff.AddComponent<SpellMainComponent>().Spell = spell;
             
             M2C_BuffAdd m2CBuffAdd = M2C_BuffAdd.Create();
             m2CBuffAdd.BuffId = buff.Id;
@@ -62,31 +63,38 @@
             {
                 return;
             }
-            RemoveBuff(buff);
+            RemoveBuff(buff, BuffRemoveType.Time);
         }
 
-        public static void RemoveBuff(Buff buff)
+        public static void RemoveBuff(Buff buff, BuffRemoveType removeType)
         {
             Unit unit = buff.Parent.GetParent<Unit>();
+            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
             
-            RemoveBuff(unit, buff.Id);
+            M2C_BuffRemove m2CBuffRemove = M2C_BuffRemove.Create();
+            m2CBuffRemove.UnitId = unit.Id;
+            m2CBuffRemove.BuffId = buff.Id;
+
+
+            buff.AddComponent<BuffRemoveTypeComponent>().BuffRemoveType = removeType;
+            EffectHelper.RunBT<EffectServerBuffRemove>(buff);
+            
+            buffComponent.RemoveBuff(buff);
+            
+            MapMessageHelper.NoticeClient(unit, m2CBuffRemove, buff.GetConfig().NoticeType);
         }
         
-        public static void RemoveBuff(Unit unit, long id)
+        public static void RemoveBuff(Unit unit, long id, BuffRemoveType removeType)
         {
             BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
             Buff buff = buffComponent.GetChild<Buff>(id);
             
-            M2C_BuffRemove m2CBuffRemove = M2C_BuffRemove.Create();
-            m2CBuffRemove.UnitId = unit.Id;
-            m2CBuffRemove.BuffId = id;
+            if (buff == null)
+            {
+                return;
+            }
             
-            
-            EffectHelper.RunBT<EffectServerBuffRemove>(buff);
-            
-            buffComponent.RemoveBuff(id);
-            
-            MapMessageHelper.NoticeClient(unit, m2CBuffRemove, buff.GetConfig().NoticeType);
+            RemoveBuff(buff, removeType);
         }
     }
 }

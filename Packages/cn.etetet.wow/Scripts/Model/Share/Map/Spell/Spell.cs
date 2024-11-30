@@ -2,6 +2,11 @@
 
 namespace ET
 {
+    public struct CastTimeBuffTimeout: IWaitType
+    {
+        public int Error { get; set; }
+    }
+    
     [ChildOf(typeof(SpellComponent))]
     public class Spell: Entity, IAwake<int>
     {
@@ -10,11 +15,11 @@ namespace ET
         public long Caster { get; set; }
         
         public long Source { get; set; }
-
-        public long ParentSpell { get; set; }
         
         public long CreateTime { get; set; }
         
         public long ExpireTime { get; set; }
+
+        public EntityRef<Spell> Main { get; set; }
     }
 }

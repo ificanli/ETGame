@@ -5,7 +5,7 @@ namespace ET.Server
     [FriendOf(typeof(SpellComponent))]
     public static class SpellHelper
     {
-        public static async ETTask Cast(Unit unit, int spellConfigId, bool isSubSpell = false)
+        public static async ETTask Cast(Unit unit, int spellConfigId, Spell mainSpell = null)
         {
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
@@ -33,20 +33,22 @@ namespace ET.Server
 #region Spell Add
 
             // add
-            Spell spell = spellComponent.CreateSpell(spellConfigId);
-            
+            Spell spell = spellComponent.CreateSpell(IdGenerater.Instance.GenerateId(), spellConfigId);
+            spell.Main = mainSpell ?? spell;
+
             // 子技能没有CD,子技能不设置Current
-            if (!isSubSpell)
+            if (!spell.IsSubSpell())
             {
                 spellComponent.UpdateCD(spellConfigId);
 
                 // 打断老技能，这里先简单处理，技能打断有一套规则
-                Spell preSpell = spellComponent.Current;
-                if (preSpell != null)
-                {
-                    Interrupt(unit, preSpell.Id);
-                }
+                //Spell preSpell = spellComponent.Current;
+                //if (preSpell != null)
+                //{
+                //    Interrupt(unit, preSpell.Id);
+                //}
 
+                // 设置当前技能
                 spellComponent.Current = spell;
             }
 
@@ -78,9 +80,9 @@ namespace ET.Server
             {
                 if (spellConfig.HitTime > 0)
                 {
-                    TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
                     ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
                     spellComponent.CancellationToken = cancellationToken;
+                    TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
                     // 等到命中
                     await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
                     if (cancellationToken.IsCancel())
@@ -128,7 +130,11 @@ namespace ET.Server
             }
 #endregion
         }
-        
+
+        public static bool IsSubSpell(this Spell spell)
+        {
+            return spell.Main.Entity.Id == spell.Id;
+        }
         
         public static void Interrupt(Unit unit, long spellId)
         {

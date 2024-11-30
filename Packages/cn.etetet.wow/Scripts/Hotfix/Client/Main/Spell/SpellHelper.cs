@@ -25,7 +25,7 @@ namespace ET.Client
                 spellComponent.UpdateCD(spellConfigId);
             }
 
-            Spell spell = spellComponent.CreateSpell(spellConfigId, spellId);
+            Spell spell = spellComponent.CreateSpell(spellId, spellConfigId);
             EffectHelper.RunBT<EffectClientSpellAdd>(spell);
 
             ObjectWait objectWait = spell.AddComponent<ObjectWait>();
