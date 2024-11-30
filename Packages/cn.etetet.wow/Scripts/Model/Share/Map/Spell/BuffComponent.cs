@@ -7,7 +7,7 @@ namespace ET
     public enum BuffRemoveType
     {
         None = 0,
-        Time = 1,
+        Timeout = 1,
         Stack = 2,
     }
     

@@ -2,11 +2,23 @@
 {
     public static class BuffHelper
     {
-        public static Buff CreateBuff(Unit unit, Spell spell, int buffConfigId)
+        [Invoke(TimerInvokeType.BuffTimeoutTimer)]
+        public class BuffTimeoutTimer: ATimer<Buff>
+        {
+            protected override void Run(Buff self)
+            {
+                if (self.IsDisposed)
+                {
+                    return;
+                }
+                BuffHelper.RemoveBuff(self, BuffRemoveType.Timeout);
+            }
+        }
+        
+        public static Buff CreateBuff(Unit unit, int buffConfigId)
         {
             Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffConfigId);
             BuffConfig buffConfig = buff.GetConfig();
-            buff.AddComponent<SpellMainComponent>().Spell = spell;
             
             M2C_BuffAdd m2CBuffAdd = M2C_BuffAdd.Create();
             m2CBuffAdd.BuffId = buff.Id;
@@ -30,7 +42,7 @@
             
             if (buffConfig.Duration > 0)
             {
-                WaitTimeout(buff, timerComponent).NoContext();
+                buff.TimeoutTimer = timerComponent.NewOnceTimer(buff.ExpireTime, TimerInvokeType.BuffTimeoutTimer, buff);
             }
             
             return buff;
@@ -44,6 +56,7 @@
             while (true)
             {
                 ++i;
+                // 新版本的buff tick会立刻受到急速属性影响，这里每次tick完成都要重新计算
                 long nextTick = buff.CreateTime + buffConfig.TickTime * i;
                 
                 await timerComponent.WaitTillAsync(nextTick);
@@ -55,15 +68,60 @@
                 EffectHelper.RunBT<EffectServerBuffTick>(buff);
             }
         }
-
-        private static async ETTask WaitTimeout(Buff buff, TimerComponent timerComponent)
+        
+        public static void UpdateExpireTime(Buff buff, long expireTime)
         {
-            await timerComponent.WaitTillAsync(buff.CreateTime + buff.GetConfig().Duration);
-            if (buff.IsDisposed)
+            buff.ExpireTime = expireTime;
+            long timeoutTimer = buff.TimeoutTimer;
+            TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
+            timerComponent.Remove(ref timeoutTimer);
+
+            if (buff.ExpireTime > 0)
             {
+                buff.TimeoutTimer = timerComponent.NewOnceTimer(buff.ExpireTime, TimerInvokeType.BuffTimeoutTimer, buff);
+            }
+
+            Unit unit = buff.Parent.GetParent<Unit>();
+            M2C_BuffUpdate m2CBuffUpdate = M2C_BuffUpdate.Create();
+            m2CBuffUpdate.BuffId = buff.Id;
+            m2CBuffUpdate.UnitId = unit.Id;
+            m2CBuffUpdate.Stack = -1;
+            m2CBuffUpdate.ExpireTime = expireTime;
+            m2CBuffUpdate.TickTime = -1;
+            MapMessageHelper.NoticeClient(unit, m2CBuffUpdate, buff.GetConfig().NoticeType);
+        }
+        
+        public static void UpdateTickTime(Buff buff, int tickTime)
+        {
+            buff.TickTime = tickTime;
+            
+            Unit unit = buff.Parent.GetParent<Unit>();
+            M2C_BuffUpdate m2CBuffUpdate = M2C_BuffUpdate.Create();
+            m2CBuffUpdate.BuffId = buff.Id;
+            m2CBuffUpdate.UnitId = unit.Id;
+            m2CBuffUpdate.Stack = -1;
+            m2CBuffUpdate.ExpireTime = -1;
+            m2CBuffUpdate.TickTime = tickTime;
+            MapMessageHelper.NoticeClient(unit, m2CBuffUpdate, buff.GetConfig().NoticeType);
+        }
+        
+        public static void UpdateStack(Buff buff, int stack)
+        {
+            buff.Stack = stack;
+            
+            if (buff.Stack <= 0)
+            {
+                RemoveBuff(buff, BuffRemoveType.Stack);
                 return;
             }
-            RemoveBuff(buff, BuffRemoveType.Time);
+            Unit unit = buff.Parent.GetParent<Unit>();
+            M2C_BuffUpdate m2CBuffUpdate = M2C_BuffUpdate.Create();
+            m2CBuffUpdate.BuffId = buff.Id;
+            m2CBuffUpdate.UnitId = unit.Id;
+            m2CBuffUpdate.Stack = buff.Stack;
+            m2CBuffUpdate.ExpireTime = -1;
+            m2CBuffUpdate.TickTime = -1;
+            MapMessageHelper.NoticeClient(unit, m2CBuffUpdate, buff.GetConfig().NoticeType);
         }
 
         public static void RemoveBuff(Buff buff, BuffRemoveType removeType)

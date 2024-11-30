@@ -1046,6 +1046,47 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(WOWOuter.M2C_BuffUpdate)]
+    public partial class M2C_BuffUpdate : MessageObject, IMessage
+    {
+        public static M2C_BuffUpdate Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_BuffUpdate>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long BuffId { get; set; }
+
+        [MemoryPackOrder(4)]
+        public long TickTime { get; set; }
+
+        [MemoryPackOrder(5)]
+        public long ExpireTime { get; set; }
+
+        [MemoryPackOrder(6)]
+        public int Stack { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.BuffId = default;
+            this.TickTime = default;
+            this.ExpireTime = default;
+            this.Stack = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(WOWOuter.M2C_BuffRemove)]
     public partial class M2C_BuffRemove : MessageObject, IMessage
     {
@@ -1171,8 +1212,9 @@ namespace ET
         public const ushort M2C_SpellRemove = 4131;
         public const ushort M2C_SpellInterrupt = 4132;
         public const ushort M2C_BuffAdd = 4133;
-        public const ushort M2C_BuffRemove = 4134;
-        public const ushort M2C_Error = 4135;
-        public const ushort M2C_NumericChange = 4136;
+        public const ushort M2C_BuffUpdate = 4134;
+        public const ushort M2C_BuffRemove = 4135;
+        public const ushort M2C_Error = 4136;
+        public const ushort M2C_NumericChange = 4137;
     }
 }
