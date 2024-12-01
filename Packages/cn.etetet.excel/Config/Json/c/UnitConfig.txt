@@ -1,5 +1,5 @@
 {"dict": [
-[1001, {"_t":"UnitConfig","_id":1001,"Type":5001,"Name":"Character_HumanMale"}],
+[1001, {"_t":"UnitConfig","_id":1001,"Type":5001,"Name":"Mage"}],
 [1002, {"_t":"UnitConfig","_id":1002,"Type":5002,"Name":"TrainingDummy"}],
 [1003, {"_t":"UnitConfig","_id":1003,"Type":5002,"Name":"TrainingDummy"}],
 [1004, {"_t":"UnitConfig","_id":1004,"Type":5002,"Name":"Boar"}],

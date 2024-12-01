@@ -13,7 +13,7 @@ namespace ET
         Type GetNodeType();
     }
     
-    [BTHandler]
+    [TargetSelectHandler]
     public abstract class TargetSelectHandler<Node>: HandlerObject, ITargetSelectHandler where Node : TargetSelector
     {
         protected abstract ETTask<int> Run(Node node, Unit unit, SpellConfig spellConfig);

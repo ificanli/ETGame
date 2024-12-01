@@ -13,7 +13,7 @@ namespace ET
         Type GetNodeType();
     }
     
-    [BTHandler]
+    [CostHandler]
     public abstract class CostHandler<Node>: HandlerObject, ICostHandler where Node : CostNode
     {
         protected abstract int Run(Node node, Unit unit, SpellConfig spellConfig);
