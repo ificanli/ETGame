@@ -19,7 +19,5 @@ namespace ET
         public long CreateTime { get; set; }
         
         public long ExpireTime { get; set; }
-
-        public EntityRef<Spell> Main { get; set; }
     }
 }

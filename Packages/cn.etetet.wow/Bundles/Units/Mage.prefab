@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mage
       objectReference: {fileID: 0}
+    - target: {fileID: 100310, guid: 11a31d2865662a04aa8d8014fa817df6, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 11a31d2865662a04aa8d8014fa817df6, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.8

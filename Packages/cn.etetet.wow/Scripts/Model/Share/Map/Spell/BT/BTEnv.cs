@@ -52,10 +52,6 @@ namespace ET
             return env;
         }
 
-        private BTEnv()
-        {
-        }
-        
         public bool IsFromPool { get; set; }
         
         private readonly Dictionary<string, object> dict = new();

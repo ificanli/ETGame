@@ -36,7 +36,7 @@ MonoBehaviour:
     - line: '|   targetDevice: 2'
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
-    - line: '|   companyName: test'
+    - line: '|   companyName: "\u5E7F\u5DDE\u4E00\u8E22\u4E92\u8054\u7F51\u79D1\u6280\u6709\u9650\u516C\u53F8"'
     - line: '|   productName: ET'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
@@ -556,6 +556,15 @@ MonoBehaviour:
     - line: '|   - m_BuildTarget: iOSSupport'
     - line: '|     m_APIs: 10000000'
     - line: '|     m_Automatic: 1'
+    - line: '|   - m_BuildTarget: WindowsStandaloneSupport'
+    - line: '|     m_APIs: 02000000'
+    - line: '|     m_Automatic: 1'
+    - line: '|   - m_BuildTarget: MacStandaloneSupport'
+    - line: '|     m_APIs: 10000000'
+    - line: '|     m_Automatic: 1'
+    - line: '|   - m_BuildTarget: LinuxStandaloneSupport'
+    - line: '|     m_APIs: 1100000015000000'
+    - line: '|     m_Automatic: 1'
     - line: '|   m_BuildTargetVRSettings:'
     - line: '|   - m_BuildTarget: Android'
     - line: '|     m_Enabled: 0'
@@ -910,6 +919,7 @@ MonoBehaviour:
     - line: '|     PS4: DOTWEEN;TextMeshPro'
     - line: '|     PS5: DOTWEEN;TextMeshPro'
     - line: '|     QNX: DOTWEEN;TextMeshPro'
+    - line: '|     ReservedCFE: TextMeshPro'
     - line: '|     Server: UNITY;ENABLE_VIEW'
     - line: '|     Stadia: DOTWEEN;TextMeshPro'
     - line: '|     Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED'
@@ -1068,7 +1078,7 @@ MonoBehaviour:
     - rid: 1675342395977498624
       type: {class: WindowsPlatformSettings, ns: UnityEditor.WindowsStandalone, asm: UnityEditor.WindowsStandalone.Extensions}
       data:
-        m_Development: 0
+        m_Development: 1
         m_ConnectProfiler: 0
         m_BuildWithDeepProfilingSupport: 0
         m_AllowDebugging: 0

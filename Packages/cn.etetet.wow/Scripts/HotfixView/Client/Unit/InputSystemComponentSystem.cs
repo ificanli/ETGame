@@ -81,19 +81,26 @@ namespace ET.Client
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Ray ray = Camera.main.ScreenPointToRay(mousePosition);
-            const float maxDistance = 100.0f;
+            const float maxDistance = 1000.0f;
             RaycastHit hit;
-            if (!Physics.Raycast(ray, out hit, maxDistance, LayerMask.NameToLayer("Unit")))
+            int layerMask = 1 << LayerMask.NameToLayer("Unit");
+            if (!Physics.Raycast(ray, out hit, maxDistance, layerMask))
             {
                 return;
             }
             GameObject clickedObject = hit.collider.gameObject;
-            
-            Unit targetUnit = clickedObject.GetComponent<GameObjectEntityRef>()?.EntityRef.Entity as Unit;
-            if (targetUnit == null)
+
+            GameObjectEntityRef gameObjectEntityRef = clickedObject.GetComponent<GameObjectEntityRef>();
+            if (gameObjectEntityRef is null)
             {
                 return;
             }
+
+            if (gameObjectEntityRef.EntityRef.Entity is not Unit targetUnit)
+            {
+                return;
+            }
+            
             Unit myUnit = self.GetParent<Unit>();
             myUnit.GetComponent<TargetComponent>().Unit = targetUnit;
             

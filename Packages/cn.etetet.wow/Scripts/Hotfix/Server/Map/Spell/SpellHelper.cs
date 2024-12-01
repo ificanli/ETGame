@@ -5,13 +5,13 @@ namespace ET.Server
     [FriendOf(typeof(SpellComponent))]
     public static class SpellHelper
     {
-        public static async ETTask Cast(Unit unit, int spellConfigId, Spell mainSpell = null)
+        public static async ETTask Cast(Unit unit, int spellConfigId)
         {
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
 
-#region Spell Add
+#region Spell Check
             // check
             {
                 if (!spellComponent.CheckCD(spellConfig))
@@ -29,24 +29,17 @@ namespace ET.Server
                 }
             }
 #endregion
-
+            
 #region Spell Add
 
             // add
-            Spell spell = spellComponent.CreateSpell(IdGenerater.Instance.GenerateId(), spellConfigId);
-            spell.Main = mainSpell ?? spell;
+            Spell spell = spellComponent.CreateSpell(IdGenerater.Instance.GenerateId(), spellConfig.Id);
+            spell.Caster = unit.Id;
 
             // 子技能没有CD,子技能不设置Current
             if (!spell.IsSubSpell())
             {
-                spellComponent.UpdateCD(spellConfigId);
-
-                // 打断老技能，这里先简单处理，技能打断有一套规则
-                //Spell preSpell = spellComponent.Current;
-                //if (preSpell != null)
-                //{
-                //    Interrupt(unit, preSpell.Id);
-                //}
+                spellComponent.UpdateCD(spellConfig.Id);
 
                 // 设置当前技能
                 spellComponent.Current = spell;
@@ -55,85 +48,92 @@ namespace ET.Server
             M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
             m2CSpellAdd.UnitId = unit.Id;
             m2CSpellAdd.SpellId = spell.Id;
-            m2CSpellAdd.SpellConfigId = spellConfigId;
+            m2CSpellAdd.SpellConfigId = spellConfig.Id;
             MapMessageHelper.NoticeClient(unit, m2CSpellAdd, spellConfig.NoticeType);
 
             EffectHelper.RunBT<EffectServerBuffAdd>(spell);
             
 #endregion
-            
+
+            try
+            {
 #region Spell Target Select
-            // 选择目标
-            {
-                using BTEnv env = BTEnv.Create();
-                env.AddEntity(BTEvnKey.Spell, spell);
-                int ret = BTDispatcher.Instance.Handle(spell.GetConfig().TargetSelector, env);
-                if (ret != 0)
+                // 选择目标
                 {
-                    return;
-                }
-            }
-#endregion
-
-#region Spell Hit
-            // hit
-            {
-                if (spellConfig.HitTime > 0)
-                {
-                    ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-                    spellComponent.CancellationToken = cancellationToken;
-                    TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
-                    // 等到命中
-                    await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
-                    if (cancellationToken.IsCancel())
+                    using BTEnv env = BTEnv.Create();
+                    env.AddEntity(BTEvnKey.Spell, spell);
+                    int ret = BTDispatcher.Instance.Handle(spell.GetConfig().TargetSelector, env);
+                    if (ret != 0)
                     {
+                        ErrorHelper.MapError(unit, ret);
                         return;
                     }
                 }
-
-                SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
+#endregion
             
-                // 发送SpellHit消息, 命中，暴击等等在这里已经计算完成，SpellHit消息中应该带有命中，暴击等信息
-                M2C_SpellHit m2CSpellHit = M2C_SpellHit.Create();
-                m2CSpellHit.UnitId = unit.Id;
-                m2CSpellHit.SpellId = spell.Id;
-                m2CSpellHit.TargetPosition = spellTargetComponent.Position;
-                foreach (Unit target in spellTargetComponent.Units)
+#region Spell Hit
+                // hit
                 {
-                    m2CSpellHit.TargetUnitId.Add(target.Id);
-                }
-                MapMessageHelper.NoticeClient(unit, m2CSpellHit, spellConfig.NoticeType);
-    
-                // 对目标分发hitEffect
-                EffectHelper.RunBT<EffectServerSpellHit>(spell);
-            }
-#endregion
-
-#region Spell Finish
-            // finish
-            {
-                if (spell.ExpireTime > 0)
-                {
-                    TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
-                    ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-                    spellComponent.CancellationToken = cancellationToken;
-                
-                    await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.Duration);
-                    if (cancellationToken.IsCancel())
+                    if (spellConfig.HitTime > 0)
                     {
-                        return;
+                        ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+                        spellComponent.CancellationToken = cancellationToken;
+                        TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
+                        // 等到命中
+                        await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
+                        if (cancellationToken.IsCancel())
+                        {
+                            return;
+                        }
+                    }
+
+                    SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
+            
+                    // 发送SpellHit消息, 命中，暴击等等在这里已经计算完成，SpellHit消息中应该带有命中，暴击等信息
+                    M2C_SpellHit m2CSpellHit = M2C_SpellHit.Create();
+                    m2CSpellHit.UnitId = unit.Id;
+                    m2CSpellHit.SpellId = spell.Id;
+                    m2CSpellHit.TargetPosition = spellTargetComponent.Position;
+                    foreach (Unit target in spellTargetComponent.Units)
+                    {
+                        m2CSpellHit.TargetUnitId.Add(target.Id);
+                    }
+                    MapMessageHelper.NoticeClient(unit, m2CSpellHit, spellConfig.NoticeType);
+    
+                    // 对目标分发hitEffect
+                    EffectHelper.RunBT<EffectServerSpellHit>(spell);
+                }
+#endregion  
+                
+#region Spell Finish
+                // finish
+                {
+                    if (spell.ExpireTime > 0)
+                    {
+                        TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
+                        ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+                        spellComponent.CancellationToken = cancellationToken;
+                
+                        await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.Duration);
+                        if (cancellationToken.IsCancel())
+                        {
+                            return;
+                        }
                     }
                 }
-
+#endregion
+            }
+            finally
+            {
                 // 发送SpellRemove消息
                 Remove(unit, spell.Id);
             }
-#endregion
         }
+       
 
         public static bool IsSubSpell(this Spell spell)
         {
-            return spell.Main.Entity.Id == spell.Id;
+            return spell.ConfigId % 10 == 0;
         }
         
         public static void Interrupt(Unit unit, long spellId)
@@ -152,6 +152,7 @@ namespace ET.Server
             spellRemove.SpellId = spellId;
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             Spell spell = spellComponent.GetSpell(spellId);
+            spellComponent.CancellationToken = null;
             
             MapMessageHelper.NoticeClient(unit, spellRemove, spell.GetConfig().NoticeType);
             
