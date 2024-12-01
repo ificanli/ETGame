@@ -1,0 +1,260 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c9619ee4f188a34f85cb7d889ed7d1a, type: 3}
+  m_Name: 100021
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: SpellConfig
+      Entry: 7
+      Data: 0|ET.SpellConfig, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 100021
+    - Name: Desc
+      Entry: 1
+      Data: "\u5BD2\u51B0\u7BAD\u5B50\u6280\u80FD"
+    - Name: Cost
+      Entry: 7
+      Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: PreCheck
+      Entry: 6
+      Data: 
+    - Name: TargetSelector
+      Entry: 7
+      Data: 2|ET.TargetSelectorSingle, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Spell
+      Entry: 1
+      Data: Spell
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: MaxDistance
+      Entry: 4
+      Data: 40000
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: HitTime
+      Entry: 3
+      Data: 0
+    - Name: Duration
+      Entry: 3
+      Data: 0
+    - Name: CD
+      Entry: 3
+      Data: 0
+    - Name: Flags
+      Entry: 7
+      Data: 4|System.Collections.Generic.HashSet`1[[ET.SpellFlags, ET.Model]], System.Core
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: NoticeType
+      Entry: 3
+      Data: 0
+    - Name: Effects
+      Entry: 7
+      Data: 5|System.Collections.Generic.List`1[[ET.EffectNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 6|ET.EffectClientSpellHit, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 7|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 8|ET.BTGetSpellTargetUnits, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 9|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Spell
+      Entry: 1
+      Data: Spell
+    - Name: Units
+      Entry: 1
+      Data: Units
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 10|ET.BTForeachUnit, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 12|ET.BTFakeBulletDelay, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 14|ET.BTNumericChange, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 15|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: NumericType
+      Entry: 3
+      Data: 1001
+    - Name: Value
+      Entry: 3
+      Data: -20
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 16|ET.BTAddBuff, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 17|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: ConfigId
+      Entry: 3
+      Data: 200022
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Spell
+      Entry: 1
+      Data: Spell
+    - Name: Target
+      Entry: 1
+      Data: Unit
+    - Name: Speed
+      Entry: 3
+      Data: 6000
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Units
+      Entry: 1
+      Data: Units
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Spell
+      Entry: 1
+      Data: Spell
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
