@@ -34,4 +34,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
+    <Target Name="CustomAfterBuild" AfterTargets="Build">
+        <Copy SourceFiles="$(TargetDir)/$(TargetName).dll" DestinationFiles="$(ProjectDir)/../../$(TargetName).dll" ContinueOnError="false" xmlns="" />
+    </Target>
 </Project>
