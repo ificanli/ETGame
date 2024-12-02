@@ -81,7 +81,7 @@ namespace ET
         {
             if (!this.dict.TryGetValue(key, out object value))
             {
-                return default;
+                throw new Exception($"btenv not found key: {key} {typeof(T).FullName}");
             }
             
             return (T)value;
@@ -91,7 +91,7 @@ namespace ET
         {
             if (!this.dict.TryGetValue(key, out object value))
             {
-                return default;
+                throw new Exception($"btenv not found key: {key} {typeof(T).FullName}");
             }
 
             try
@@ -109,7 +109,7 @@ namespace ET
         {
             if (!this.dict.TryGetValue(key, out object value))
             {
-                return default;
+                throw new Exception($"btenv not found key: {key} {typeof(T).FullName}");
             }
 
             try

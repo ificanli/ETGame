@@ -24,7 +24,7 @@ namespace ET.Client
             
             if (duration > 0)
             {
-                UnityEngine.Object.Destroy(gameObject, duration / 1000f);
+                UnityEngine.Object.Destroy(effect, duration / 1000f);
             }
             
             return effect;
@@ -37,7 +37,7 @@ namespace ET.Client
             
             if (duration > 0)
             {
-                UnityEngine.Object.Destroy(gameObject, duration / 1000f);
+                UnityEngine.Object.Destroy(effect, duration / 1000f);
             }
             return effect;
         }
