@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class BTGetBuffCaster: BTNode
+    public class BTGetBuffOwner: BTNode
     {
 #if UNITY
         [Sirenix.OdinInspector.BoxGroup("输入参数")]

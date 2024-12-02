@@ -1,8 +1,8 @@
 ﻿namespace ET.Server
 {
-    public class BTGetBuffCasterHandler: ABTHandler<BTGetBuffCaster>
+    public class BTGetBuffOwnerHandler: ABTHandler<BTGetBuffOwner>
     {
-        protected override int Run(BTGetBuffCaster node, BTEnv env)
+        protected override int Run(BTGetBuffOwner node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
             env.AddEntity(node.Unit, buff.GetOwner());

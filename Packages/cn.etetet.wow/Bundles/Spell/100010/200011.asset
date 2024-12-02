@@ -71,7 +71,7 @@ MonoBehaviour:
       Data: 2|System.Collections.Generic.List`1[[ET.EffectNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 3
     - Name: 
       Entry: 7
       Data: 3|ET.EffectServerBuffTick, ET.Model
@@ -83,7 +83,7 @@ MonoBehaviour:
       Data: 2
     - Name: 
       Entry: 7
-      Data: 5|ET.BTGetBuffCaster, ET.Model
+      Data: 5|ET.BTGetBuffOwner, ET.Model
     - Name: Children
       Entry: 7
       Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -126,6 +126,150 @@ MonoBehaviour:
     - Name: SpellConfigId
       Entry: 3
       Data: 100011
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 9|ET.EffectClientBuffAdd, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 11|ET.BTGetBuffOwner, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 13|ET.BTAnimatorSetBool, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: MotionType
+      Entry: 3
+      Data: 10
+    - Name: Value
+      Entry: 5
+      Data: true
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 15|ET.EffectClientBuffRemove, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 17|ET.BTGetBuffOwner, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 19|ET.BTAnimatorSetBool, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 20|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: MotionType
+      Entry: 3
+      Data: 10
+    - Name: Value
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 

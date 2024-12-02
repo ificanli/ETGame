@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ET
 {
-    public class MultiMapSet<T, K>: SortedDictionary<T, HashSet<K>>
+    public class MultiMapSet<T, K>: Dictionary<T, HashSet<K>>
     {
         private readonly HashSet<K> Empty = new HashSet<K>();
 		

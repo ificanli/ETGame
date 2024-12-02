@@ -15,9 +15,9 @@
             }
         }
         
-        public static Buff CreateBuff(Unit unit, int buffConfigId)
+        public static Buff CreateBuff(Unit unit, long buffId, int buffConfigId)
         {
-            Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffConfigId);
+            Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffId, buffConfigId);
             BuffConfig buffConfig = buff.GetConfig();
             
             M2C_BuffAdd m2CBuffAdd = M2C_BuffAdd.Create();
@@ -132,7 +132,7 @@
             M2C_BuffRemove m2CBuffRemove = M2C_BuffRemove.Create();
             m2CBuffRemove.UnitId = unit.Id;
             m2CBuffRemove.BuffId = buff.Id;
-
+            m2CBuffRemove.RemoveType = (int)removeType;
 
             buff.AddComponent<BuffRemoveTypeComponent>().BuffRemoveType = removeType;
             EffectHelper.RunBT<EffectServerBuffRemove>(buff);

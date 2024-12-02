@@ -29,7 +29,8 @@ namespace ET.Client
 					unit.MoveToAsync(unitInfo.MoveInfo.Points).NoContext();
 				}
 	        }
-	        
+
+	        unit.AddComponent<BuffComponent>();
 	        unit.AddComponent<ObjectWait>();
 	        unit.AddComponent<XunLuoPathComponent>();
 	        

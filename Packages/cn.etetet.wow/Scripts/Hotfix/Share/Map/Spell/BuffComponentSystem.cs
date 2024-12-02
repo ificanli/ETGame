@@ -27,9 +27,9 @@ namespace ET
             }
         }
 
-        public static Buff CreateBuff(this BuffComponent self, int buffConfigId)
+        public static Buff CreateBuff(this BuffComponent self, long buffId, int buffConfigId)
         {
-            Buff buff = self.AddChild<Buff, int>(buffConfigId);
+            Buff buff = self.AddChildWithId<Buff, int>(buffId, buffConfigId);
             
             buff.CreateTime = TimeInfo.Instance.FrameTime;
             BuffConfig buffConfig = buff.GetConfig();

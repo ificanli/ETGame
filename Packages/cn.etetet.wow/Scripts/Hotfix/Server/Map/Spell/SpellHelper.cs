@@ -60,6 +60,7 @@ namespace ET.Server
 #region Spell Target Select
                 // 选择目标
                 {
+                    spell.AddComponent<SpellTargetComponent>();
                     using BTEnv env = BTEnv.Create();
                     env.AddEntity(BTEvnKey.Spell, spell);
                     int ret = BTDispatcher.Instance.Handle(spell.GetConfig().TargetSelector, env);

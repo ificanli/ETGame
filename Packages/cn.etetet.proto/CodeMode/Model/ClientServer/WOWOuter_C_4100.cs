@@ -1014,7 +1014,7 @@ namespace ET
         public long CreateTime { get; set; }
 
         [MemoryPackOrder(4)]
-        public long TickTime { get; set; }
+        public int TickTime { get; set; }
 
         [MemoryPackOrder(5)]
         public long ExpireTime { get; set; }
@@ -1097,6 +1097,9 @@ namespace ET
         [MemoryPackOrder(1)]
         public long BuffId { get; set; }
 
+        [MemoryPackOrder(2)]
+        public int RemoveType { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1106,6 +1109,7 @@ namespace ET
 
             this.UnitId = default;
             this.BuffId = default;
+            this.RemoveType = default;
 
             ObjectPool.Recycle(this);
         }
