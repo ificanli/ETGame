@@ -23,7 +23,7 @@ namespace ET.Server
 
             foreach ((int _, UnitConfig unitConfig) in UnitConfigCategory.Instance.GetAll())
             {
-                if (unitConfig.Type == UnitType.Player)
+                if ((UnitType)unitConfig.Type == UnitType.Player)
                 {
                     continue;
                 }

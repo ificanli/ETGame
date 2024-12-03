@@ -14,9 +14,9 @@ namespace ET
             return UnitConfigCategory.Instance.Get(self.ConfigId);
         }
         
-        public static int Type(this Unit self)
+        public static UnitType Type(this Unit self)
         {
-            return self.Config().Type;
+            return (UnitType)self.Config().Type;
         }
     }
 }

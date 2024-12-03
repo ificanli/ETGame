@@ -26,7 +26,7 @@ namespace ET.Server
             unit.AddComponent<TargetComponent>();
             unit.AddComponent<BuffComponent>();
             
-            switch (unitConfig.Type)
+            switch ((UnitType)unitConfig.Type)
             {
                 case UnitType.Player:
                 {

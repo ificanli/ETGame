@@ -1,10 +1,13 @@
-﻿namespace ET
+﻿using System;
+
+namespace ET
 {
-    public static partial class UnitType
+    [Flags]
+    public enum UnitType
     {
-        public const int Player = PackageType.Unit * 1000 + 1;
-        public const int Monster = PackageType.Unit * 1000 + 2;
-        public const int NPC = PackageType.Unit * 1000 + 3;
-        public const int FakeBullet = PackageType.Unit * 1000 + 4;
+        Player = 1,
+        Monster = 1 << 1,
+        NPC = 1 << 2,
+        FakeBullet = 1 << 3
     }
 }
