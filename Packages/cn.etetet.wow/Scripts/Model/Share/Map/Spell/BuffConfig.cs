@@ -48,6 +48,9 @@ namespace ET
     
     [System.Serializable]
     public partial class BuffConfig: ProtoObject
+#if UNITY
+            ,UnityEngine.ISerializationCallbackReceiver
+#endif
     {
         public int Id;
         
@@ -77,6 +80,39 @@ namespace ET
         [UnityEngine.SerializeReference]
 #endif
         public List<EffectNode> Effects = new();
+        
+        
+#if UNITY
+        [NonSerialized]
+        [UnityEngine.HideInInspector]
+#endif
+        public Dictionary<Type, EffectNode> effectDict;
+
+        public void OnBeforeSerialize()
+        {
+            this.effectDict ??= new Dictionary<Type, EffectNode>();
+            this.effectDict.Clear();
+            foreach (EffectNode effectNode in this.Effects)
+            {
+                this.effectDict.Add(effectNode.GetType(), effectNode);
+            }
+        }
+        
+        public void OnAfterDeserialize()
+        {
+            this.effectDict ??= new Dictionary<Type, EffectNode>();
+            this.effectDict.Clear();
+            foreach (EffectNode effectNode in this.Effects)
+            {
+                this.effectDict.Add(effectNode.GetType(), effectNode);
+            }
+        }
+        
+        public T GetEffect<T>() where T : EffectNode
+        {
+            this.effectDict.TryGetValue(typeof(T), out EffectNode effectNode);
+            return effectNode as T;
+        }
     }
     
     public enum OverLayRuleType

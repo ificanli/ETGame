@@ -4,35 +4,9 @@ namespace ET
 {
     public static partial class EffectHelper
     {
-        public static T GetEffect<T>(this SpellConfig config) where T: EffectNode
-        {
-            List<EffectNode> effectNodes = config.Effects;
-            foreach (EffectNode effectNode in effectNodes)
-            {
-                if (effectNode is T t)
-                {
-                    return t;
-                }
-            }
-            return null;
-        }
-        
-        public static T GetEffect<T>(this BuffConfig config) where T: EffectNode
-        {
-            List<EffectNode> effectNodes = config.Effects;
-            foreach (EffectNode effectNode in effectNodes)
-            {
-                if (effectNode is T t)
-                {
-                    return t;
-                }
-            }
-            return null;
-        }
-        
         public static int RunBT<T>(Spell spell) where T: EffectNode
         {
-            EffectNode node = GetEffect<T>(spell.GetConfig());
+            EffectNode node = spell.GetConfig().GetEffect<T>();
             if (node == null)
             {
                 return 0;
@@ -44,7 +18,7 @@ namespace ET
         
         public static int RunBT<T>(Buff buff) where T: EffectNode
         {
-            EffectNode node = GetEffect<T>(buff.GetConfig());
+            EffectNode node = buff.GetConfig().GetEffect<T>();
             if (node == null)
             {
                 return 0;
