@@ -8,6 +8,6 @@
 #endif
         public string Buff;
         
-        public BuffRemoveType BuffRemoveType;
+        public BuffFlags BuffRemoveType;
     }
 }

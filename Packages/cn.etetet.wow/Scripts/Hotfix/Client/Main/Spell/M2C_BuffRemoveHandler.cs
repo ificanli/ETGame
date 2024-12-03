@@ -8,7 +8,7 @@
             Scene currentScene = root.GetComponent<CurrentScenesComponent>().Scene;
             Unit unit = currentScene.GetComponent<UnitComponent>().Get(message.UnitId);
 
-            BuffHelper.RemoveBuff(unit, message.BuffId, (BuffRemoveType)message.RemoveType);
+            BuffHelper.RemoveBuff(unit, message.BuffId, (BuffFlags)message.RemoveType);
             await ETTask.CompletedTask;
         }
     }

@@ -13,5 +13,7 @@
         Dead,
         SpellDirected,
         SpellOmni,
+        SpellDirectedTrigger,
+        SpellOmniTrigger,
     }
 }

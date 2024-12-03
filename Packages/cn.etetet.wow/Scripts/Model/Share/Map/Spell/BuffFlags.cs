@@ -10,5 +10,6 @@
         DamageRemove,
         SpellRemoveRemove,
         RideRemove,
+        StackRemove,
     }
 }

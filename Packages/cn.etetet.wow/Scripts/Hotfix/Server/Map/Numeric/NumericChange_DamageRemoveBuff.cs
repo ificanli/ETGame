@@ -12,8 +12,7 @@ namespace ET.Server
                 return;
             }
 
-            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
-            buffComponent.RemoveBuffFlag(BuffFlags.DamageRemove);
+            BuffHelper.RemoveBuffFlag(unit, BuffFlags.DamageRemove);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace ET.Server
+﻿using System.Collections.Generic;
+
+namespace ET.Server
 {
     public static class BuffHelper
     {
@@ -11,7 +13,7 @@
                 {
                     return;
                 }
-                BuffHelper.RemoveBuff(self, BuffRemoveType.Timeout);
+                BuffHelper.RemoveBuff(self, BuffFlags.TimeoutRemove);
             }
         }
         
@@ -64,7 +66,6 @@
                 {
                     return;
                 }
-
                 EffectHelper.RunBT<EffectServerBuffTick>(buff);
             }
         }
@@ -111,7 +112,7 @@
             
             if (buff.Stack <= 0)
             {
-                RemoveBuff(buff, BuffRemoveType.Stack);
+                RemoveBuff(buff, BuffFlags.StackRemove);
                 return;
             }
             Unit unit = buff.Parent.GetParent<Unit>();
@@ -124,7 +125,7 @@
             MapMessageHelper.NoticeClient(unit, m2CBuffUpdate, buff.GetConfig().NoticeType);
         }
 
-        public static void RemoveBuff(Buff buff, BuffRemoveType removeType)
+        public static void RemoveBuff(Buff buff, BuffFlags removeType)
         {
             Unit unit = buff.Parent.GetParent<Unit>();
             BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
@@ -142,7 +143,7 @@
             MapMessageHelper.NoticeClient(unit, m2CBuffRemove, buff.GetConfig().NoticeType);
         }
         
-        public static void RemoveBuff(Unit unit, long id, BuffRemoveType removeType)
+        public static void RemoveBuff(Unit unit, long id, BuffFlags removeType)
         {
             BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
             Buff buff = buffComponent.GetChild<Buff>(id);
@@ -153,6 +154,24 @@
             }
             
             RemoveBuff(buff, removeType);
+        }
+        
+        public static void RemoveBuffFlag(Unit unit, BuffFlags flag)
+        {
+            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
+            if (buffComponent == null)
+            {
+                return;
+            }
+            HashSet<EntityRef<Buff>> buffs = buffComponent.GetByFlag(flag);
+            if (buffs == null)
+            {
+                return;
+            }
+            foreach (EntityRef<Buff> buff in buffs)
+            {
+                RemoveBuff(buff, flag);
+            }
         }
     }
 }

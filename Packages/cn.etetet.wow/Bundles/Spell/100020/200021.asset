@@ -80,7 +80,7 @@ MonoBehaviour:
       Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 3
+      Data: 2
     - Name: 
       Entry: 7
       Data: 5|ET.BTBuffRemoveTypeCase, ET.Model
@@ -101,40 +101,16 @@ MonoBehaviour:
       Data: Buff
     - Name: BuffRemoveType
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 7|ET.BTGetBuffCaster, ET.Model
+      Data: 7|ET.BTCreateSpell, ET.Model
     - Name: Children
       Entry: 7
       Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 9|ET.BTCreateSpell, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -167,10 +143,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 11|ET.EffectServerBuffHitted, ET.Model
+      Data: 9|ET.EffectServerBuffHitted, ET.Model
     - Name: Children
       Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0

@@ -26,7 +26,7 @@
         {
         }
         
-        public static void RemoveBuff(Unit unit, long id, BuffRemoveType removeType)
+        public static void RemoveBuff(Unit unit, long id, BuffFlags removeType)
         {
             BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
             Buff buff = buffComponent.GetChild<Buff>(id);

@@ -14,10 +14,13 @@ namespace ET.Server
 #region Spell Check
             // check
             {
-                if (!spellComponent.CheckCD(spellConfig))
+                if (spellConfigId % 10 == 0)
                 {
-                    ErrorHelper.MapError(unit, TextConstDefine.SpellCast_SpellInCD);
-                    return;
+                    if (!spellComponent.CheckCD(spellConfig))
+                    {
+                        ErrorHelper.MapError(unit, TextConstDefine.SpellCast_SpellInCD);
+                        return;
+                    }
                 }
 
                 // 检查消耗的东西是否足够
@@ -25,7 +28,7 @@ namespace ET.Server
                 if (costCheckRet != 0)
                 {
                     ErrorHelper.MapError(unit, costCheckRet);
-                    return ;
+                    return;
                 }
             }
 #endregion
