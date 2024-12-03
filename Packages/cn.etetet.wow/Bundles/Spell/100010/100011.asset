@@ -75,10 +75,10 @@ MonoBehaviour:
       Data: 
     - Name: Radius
       Entry: 3
-      Data: 3000
+      Data: 6000
     - Name: MaxDistance
       Entry: 3
-      Data: 10000
+      Data: 40000
     - Name: 
       Entry: 8
       Data: 

@@ -31,7 +31,7 @@ namespace ET
         {
             Buff buff = self.AddChildWithId<Buff, int>(buffId, buffConfigId);
             
-            buff.CreateTime = TimeInfo.Instance.FrameTime;
+            buff.CreateTime = TimeInfo.Instance.ServerFrameTime();
             BuffConfig buffConfig = buff.GetConfig();
             
             buff.Stack = buffConfig.Stack;
@@ -54,7 +54,8 @@ namespace ET
             }
             if (buffConfig.Duration > 0)
             {
-                buff.ExpireTime = buff.CreateTime + buffConfig.Duration;
+                // 这里加1是为了保证tick time能tick完最后一次
+                buff.ExpireTime = buff.CreateTime + buffConfig.Duration + 1;
             }
 
             return buff;
