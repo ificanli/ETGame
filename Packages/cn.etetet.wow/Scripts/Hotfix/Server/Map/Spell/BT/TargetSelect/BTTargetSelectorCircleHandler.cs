@@ -25,6 +25,11 @@ namespace ET.Server
                     continue;
                 }
 
+                if (!aoiEntity.Unit.Type().IsSame(node.UnitType))
+                {
+                    continue;
+                }
+
                 // 执行过滤条件判断
                 if (node.Children.Count > 0)
                 {

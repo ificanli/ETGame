@@ -11,5 +11,7 @@
         public string Unit = BTEvnKey.Unit;
         
         public float MaxDistance;
+        
+        public UnitType UnitType;
     }
 }

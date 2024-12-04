@@ -18,5 +18,7 @@ namespace ET
         public string Units = BTEvnKey.Units;
        
         public int Radius;
+        
+        public UnitType UnitType;
     }
 }

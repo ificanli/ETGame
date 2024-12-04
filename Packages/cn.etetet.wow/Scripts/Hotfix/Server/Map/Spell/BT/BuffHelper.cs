@@ -157,7 +157,8 @@ namespace ET.Server
                 return;
             }
 
-            int maxStack = buff.GetConfig().MaxStack;
+            BuffConfig buffConfig = buff.GetConfig();
+            int maxStack = buffConfig.MaxStack;
             if (stack > maxStack)
             {
                 stack = maxStack;
@@ -182,7 +183,7 @@ namespace ET.Server
             m2CBuffUpdate.Stack = buff.Stack;
             m2CBuffUpdate.ExpireTime = -1;
             m2CBuffUpdate.TickTime = -1;
-            MapMessageHelper.NoticeClient(unit, m2CBuffUpdate, buff.GetConfig().NoticeType);
+            MapMessageHelper.NoticeClient(unit, m2CBuffUpdate, buffConfig.NoticeType);
         }
 
         public static void RemoveBuff(Buff buff, BuffFlags removeType)

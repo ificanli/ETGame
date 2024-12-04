@@ -24,5 +24,7 @@ namespace ET
        
         public int Radius;
         public int MaxDistance;
+
+        public UnitType UnitType;
     }
 }

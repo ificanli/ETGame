@@ -19,6 +19,11 @@ namespace ET.Server
                 return TextConstDefine.SpellCast_NotSelectTarget;
             }
 
+            if (!node.UnitType.IsSame(target.Type()))
+            {
+                return TextConstDefine.SpellCast_NotSelectTarget;
+            }
+
             if (node.Children.Count > 0)
             {
                 env.AddEntity(node.Unit, targetComponent.Unit.Entity);

@@ -75,7 +75,7 @@ MonoBehaviour:
       Data: 
     - Name: TargetSelector
       Entry: 7
-      Data: 4|ET.TargetSelectorCircle, ET.Model
+      Data: 4|ET.TargetSelectorPosition, ET.Model
     - Name: Children
       Entry: 7
       Data: 5|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -91,21 +91,15 @@ MonoBehaviour:
     - Name: Spell
       Entry: 1
       Data: Spell
-    - Name: Unit
+    - Name: Pos
       Entry: 1
-      Data: Unit
-    - Name: Units
-      Entry: 1
-      Data: Units
+      Data: Pos
     - Name: SpellIndicator
       Entry: 10
       Data: 0
-    - Name: Radius
-      Entry: 3
-      Data: 6000
     - Name: MaxDistance
       Entry: 3
-      Data: 40000
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
