@@ -11,5 +11,6 @@
         SpellRemoveRemove,
         RideRemove,
         StackRemove,
+        SameConfigIdReplaceRemove
     }
 }

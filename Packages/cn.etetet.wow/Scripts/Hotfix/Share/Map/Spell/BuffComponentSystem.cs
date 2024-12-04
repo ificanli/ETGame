@@ -110,6 +110,12 @@ namespace ET
             return set;
         }
         
+        public static HashSet<EntityRef<Buff>> GetByConfigId(this BuffComponent self, int configId)
+        {
+            self.configIdBuffs.TryGetValue(configId, out var set);
+            return set;
+        }
+        
         public static void RemoveBuffFlag(this BuffComponent self, BuffFlags flag)
         {
             if (!self.flagBuffs.Remove((int)flag, out var set))

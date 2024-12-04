@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ET.Server
 {
@@ -19,8 +21,50 @@ namespace ET.Server
         
         public static Buff CreateBuff(Unit unit, long buffId, int buffConfigId)
         {
+            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
+            BuffConfig buffConfig = BuffConfigCategory.Instance.Get(buffConfigId);
+
+            // 处理叠加规则
+            if (buffConfig.OverLayRuleType != OverLayRuleType.None)
+            {
+                var oldBuffs = buffComponent.GetByConfigId(buffConfigId);
+                if (oldBuffs != null && oldBuffs.Count > 0)
+                {
+                    switch (buffConfig.OverLayRuleType)
+                    {
+                        case OverLayRuleType.AddStack:
+                        {
+                            Buff oldBuff = oldBuffs.First();
+                            UpdateStack(oldBuff, oldBuff.Stack + buffConfig.Stack);
+                            return oldBuff;
+                        }
+                        case OverLayRuleType.AddTime:
+                        {
+                            Buff oldBuff = oldBuffs.First();
+                            long expireTime = TimeInfo.Instance.ServerNow() + buffConfig.Duration;
+                            if (expireTime < oldBuff.ExpireTime)
+                            {
+                                return oldBuff;
+                            }
+
+                            UpdateExpireTime(oldBuff, expireTime);
+                            return oldBuff;
+                        }
+                        case OverLayRuleType.Replace:
+                        {
+                            Buff oldBuff = oldBuffs.First();
+                            RemoveBuff(oldBuff, BuffFlags.SameConfigIdReplaceRemove);
+                            break;
+                        }
+                        case OverLayRuleType.None:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+
             Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffId, buffConfigId);
-            BuffConfig buffConfig = buff.GetConfig();
             
             M2C_BuffAdd m2CBuffAdd = M2C_BuffAdd.Create();
             m2CBuffAdd.BuffId = buff.Id;
@@ -108,9 +152,25 @@ namespace ET.Server
         
         public static void UpdateStack(Buff buff, int stack)
         {
+            if (buff.Stack == stack)
+            {
+                return;
+            }
+
+            int maxStack = buff.GetConfig().MaxStack;
+            if (stack > maxStack)
+            {
+                stack = maxStack;
+            }
+            
+            if (stack < 0)
+            {
+                stack = 0;
+            }
+            
             buff.Stack = stack;
             
-            if (buff.Stack <= 0)
+            if (buff.Stack == 0)
             {
                 RemoveBuff(buff, BuffFlags.StackRemove);
                 return;
