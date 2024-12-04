@@ -30,7 +30,7 @@ namespace ET.Client
                 gameObject.position += v.normalized * node.Speed / 1000f * Time.deltaTime;
                 
                 v = bindPoint.position - gameObject.position;
-                if (v.magnitude < 0.1f)
+                if (v.magnitude < 0.3f)
                 {
                     break;
                 }
@@ -39,7 +39,7 @@ namespace ET.Client
                 
                 await timerComponent.WaitAsync(1);
             }
-            UnityEngine.Object.Destroy(gameObject);
+            UnityEngine.Object.Destroy(gameObject.gameObject);
         }
     }
 }

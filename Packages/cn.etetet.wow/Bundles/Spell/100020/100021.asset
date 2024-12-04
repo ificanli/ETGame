@@ -15,7 +15,8 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects: []
+    ReferencedUnityObjects:
+    - {fileID: 1293614521383796473, guid: 91fa21dbcb7f39d4ea27060df83b4fe1, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -95,13 +96,13 @@ MonoBehaviour:
       Data: 
     - Name: NoticeType
       Entry: 3
-      Data: 0
+      Data: 2
     - Name: Effects
       Entry: 7
       Data: 5|System.Collections.Generic.List`1[[ET.EffectNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 6|ET.EffectClientSpellHit, ET.Model
@@ -110,13 +111,145 @@ MonoBehaviour:
       Data: 7|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 3
     - Name: 
       Entry: 7
-      Data: 8|ET.BTGetSpellTargetUnits, ET.Model
+      Data: 8|ET.BTGetSpellCaster, ET.Model
     - Name: Children
       Entry: 7
       Data: 9|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Spell
+      Entry: 1
+      Data: Spell
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 10|ET.BTGetSpellTargetUnits, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Spell
+      Entry: 1
+      Data: Spell
+    - Name: Units
+      Entry: 1
+      Data: Targets
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 12|ET.BTForeachUnit, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 14|ET.Client.BTCreateFakeBullet, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 15|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Caster
+      Entry: 1
+      Data: Unit
+    - Name: Target
+      Entry: 1
+      Data: Target
+    - Name: CasterBindPoint
+      Entry: 3
+      Data: 1
+    - Name: TargetBindPoint
+      Entry: 3
+      Data: 9
+    - Name: Speed
+      Entry: 3
+      Data: 30000
+    - Name: Effect
+      Entry: 10
+      Data: 0
+    - Name: Duration
+      Entry: 3
+      Data: 50000
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Units
+      Entry: 1
+      Data: Targets
+    - Name: Unit
+      Entry: 1
+      Data: Target
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Spell
+      Entry: 1
+      Data: Spell
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 16|ET.EffectServerSpellHit, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 17|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 18|ET.BTGetSpellTargetUnits, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 19|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -137,28 +270,28 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 10|ET.BTForeachUnit, ET.Model
+      Data: 20|ET.BTForeachUnit, ET.Model
     - Name: Children
       Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 21|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 12|ET.BTFakeBulletDelay, ET.Model
+      Data: 22|ET.BTFakeBulletDelay, ET.Model
     - Name: Children
       Entry: 7
-      Data: 13|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 23|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 14|ET.BTNumericChange, ET.Model
+      Data: 24|ET.BTNumericChange, ET.Model
     - Name: Children
       Entry: 7
-      Data: 15|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 25|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -182,10 +315,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 16|ET.BTAddBuff, ET.Model
+      Data: 26|ET.BTAddBuff, ET.Model
     - Name: Children
       Entry: 7
-      Data: 17|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 27|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -218,7 +351,7 @@ MonoBehaviour:
       Data: Unit
     - Name: Speed
       Entry: 3
-      Data: 6000
+      Data: 30000
     - Name: 
       Entry: 8
       Data: 

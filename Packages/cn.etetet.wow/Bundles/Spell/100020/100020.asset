@@ -134,7 +134,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 7
-      Data: 8|ET.EffectServerSpellAdd, ET.Model
+      Data: 8|ET.EffectServerSpellHit, ET.Model
     - Name: Children
       Entry: 7
       Data: 9|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib

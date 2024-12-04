@@ -11,9 +11,9 @@
         MeleeAttack3,
         GetHit,
         Dead,
-        SpellDirected,
-        SpellOmni,
-        SpellDirectedTrigger,
-        SpellOmniTrigger,
+        SpellCastDirected,
+        ReadySpellDirected,
+        SpellCastOmni,
+        ReadySpellOmni,
     }
 }

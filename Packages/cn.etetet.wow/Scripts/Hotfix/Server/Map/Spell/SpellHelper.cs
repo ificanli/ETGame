@@ -10,7 +10,7 @@ namespace ET.Server
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-
+            
 #region Spell Check
             // check
             {
@@ -34,7 +34,6 @@ namespace ET.Server
 #endregion
             
 #region Spell Add
-
             // add
             Spell spell = spellComponent.CreateSpell(IdGenerater.Instance.GenerateId(), spellConfig.Id);
             spell.Caster = unit.Id;
@@ -47,13 +46,12 @@ namespace ET.Server
                 // 设置当前技能
                 spellComponent.Current = spell;
             }
-
+            
             M2C_SpellAdd m2CSpellAdd = M2C_SpellAdd.Create();
             m2CSpellAdd.UnitId = unit.Id;
             m2CSpellAdd.SpellId = spell.Id;
             m2CSpellAdd.SpellConfigId = spellConfig.Id;
             MapMessageHelper.NoticeClient(unit, m2CSpellAdd, spellConfig.NoticeType);
-
             EffectHelper.RunBT<EffectServerBuffAdd>(spell);
             
 #endregion

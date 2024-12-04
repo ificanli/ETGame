@@ -135,7 +135,8 @@ namespace ET.Server
             m2CBuffRemove.BuffId = buff.Id;
             m2CBuffRemove.RemoveType = (int)removeType;
 
-            buff.AddComponent<BuffRemoveTypeComponent>().BuffRemoveType = removeType;
+            BuffRemoveTypeComponent buffRemoveTypeComponent = buff.GetComponent<BuffRemoveTypeComponent>() ?? buff.AddComponent<BuffRemoveTypeComponent>();
+            buffRemoveTypeComponent.BuffRemoveType = removeType;
             EffectHelper.RunBT<EffectServerBuffRemove>(buff);
             
             buffComponent.RemoveBuff(buff);
