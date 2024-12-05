@@ -99,7 +99,10 @@ MonoBehaviour:
       Data: 0
     - Name: MaxDistance
       Entry: 3
-      Data: 0
+      Data: 40000
+    - Name: Radius
+      Entry: 3
+      Data: 6000
     - Name: 
       Entry: 8
       Data: 

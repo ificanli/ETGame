@@ -47,7 +47,7 @@ namespace ET.Client
             }
         }
 
-        public static async ETTask<Vector3> WaitPos(this SpellIndicatorComponent self, GameObject go, float radius, int maxDistance)
+        public static async ETTask<Vector3> WaitPos(this SpellIndicatorComponent self, GameObject go, int radius, int maxDistance)
         {
             self.Task = ETTask<Vector3>.Create();
 
@@ -72,7 +72,7 @@ namespace ET.Client
         
         public static async ETTask<Vector3> WaitSpellIndicator(this SpellIndicatorComponent self, TargetSelectorPosition targetSelectorPosition)
         {
-            return await self.WaitPos(targetSelectorPosition.SpellIndicator, 1f, targetSelectorPosition.MaxDistance);
+            return await self.WaitPos(targetSelectorPosition.SpellIndicator, targetSelectorPosition.Radius, targetSelectorPosition.MaxDistance);
         }
     }
 }
