@@ -14,7 +14,6 @@
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(configId);
             Spell spell = self.AddChildWithId<Spell, int>(spellId, configId);
             spell.CreateTime = TimeInfo.Instance.FrameTime;
-            spell.ExpireTime = spell.CreateTime + spellConfig.Duration;
 
             foreach (SpellFlags spellFlags in spellConfig.Flags)
             {

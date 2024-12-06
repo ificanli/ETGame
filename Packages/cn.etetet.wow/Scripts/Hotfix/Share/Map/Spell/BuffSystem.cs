@@ -14,6 +14,11 @@
             return BuffConfigCategory.Instance.Get(self.ConfigId);
         } 
         
+        public static SpellConfig GetSpellConfig(this Buff self)
+        {
+            return SpellConfigCategory.Instance.Get(self.ConfigId / 10 * 10 - 100000);
+        } 
+        
         public static Unit GetOwner(this Buff self)
         {
             return self.Parent.GetParent<Unit>();

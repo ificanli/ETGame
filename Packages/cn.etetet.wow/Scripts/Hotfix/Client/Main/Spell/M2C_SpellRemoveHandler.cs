@@ -8,7 +8,7 @@
             Scene currentScene = root.GetComponent<CurrentScenesComponent>().Scene;
             Unit unit = currentScene.GetComponent<UnitComponent>().Get(message.UnitId);
             Spell spell = unit.GetComponent<SpellComponent>().GetChild<Spell>(message.SpellId);
-            spell.GetComponent<ObjectWait>().Notify(new Wait_M2C_SpellRemove() {Message = message});
+            spell.CancellationToken?.Cancel();
             await ETTask.CompletedTask;
         }
     }

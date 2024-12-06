@@ -83,9 +83,6 @@ namespace ET
         /// <summary>命中时间</summary>
         public int HitTime;
 
-        /// <summary>持续时间</summary>
-        public int Duration;
-
         /// <summary>CD（毫秒）</summary>
         public int CD;
 

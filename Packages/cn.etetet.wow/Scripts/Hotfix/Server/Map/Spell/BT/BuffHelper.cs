@@ -91,6 +91,20 @@ namespace ET.Server
                 buff.TimeoutTimer = timerComponent.NewOnceTimer(buff.ExpireTime, TimerInvokeType.BuffTimeoutTimer, buff);
             }
             
+            if (buffConfig.Flags.Contains(BuffFlags.CurrentSpellRemoveRemove) || buffConfig.Flags.Contains(BuffFlags.Channeling))
+            {
+                SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+                Spell current = spellComponent.Current;
+                current.AddComponent<SpellBuffComponent>().Buffs.Add(buff.Id);
+                
+                if (buffConfig.Flags.Contains(BuffFlags.Channeling))
+                {
+                    current.SpellStatus = SpellStatus.Channeling;
+                }
+            }
+
+
+            
             return buff;
         }
 
@@ -203,6 +217,17 @@ namespace ET.Server
             buffComponent.RemoveBuff(buff);
             
             MapMessageHelper.NoticeClient(unit, m2CBuffRemove, buff.GetConfig().NoticeType);
+            
+            if (buff.GetConfig().Flags.Contains(BuffFlags.Channeling))
+            {
+                if (removeType == BuffFlags.TimeoutRemove)
+                {
+                    SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+                    Spell current = spellComponent.Current;
+                    current.GetComponent<SpellBuffComponent>().Buffs.Remove(buff.Id);
+                    current.GetComponent<ObjectWait>().Notify(new WaitSpellChanneling());
+                }
+            }
         }
         
         public static void RemoveBuff(Unit unit, long id, BuffFlags removeType)

@@ -8,8 +8,6 @@ namespace ET
     {
         [BsonIgnore]
         public EntityRef<Spell> Current { get; set; }
-
-        public ETCancellationToken CancellationToken { get; set; }
         
         public long CDTime { get; set; }
 

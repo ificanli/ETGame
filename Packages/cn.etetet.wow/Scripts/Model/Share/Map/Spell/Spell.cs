@@ -2,11 +2,19 @@
 
 namespace ET
 {
-    public struct CastTimeBuffTimeout: IWaitType
+    public enum SpellStatus
+    {
+        Create = 0,
+        Casting = 1,
+        Channeling = 2,
+        Finished = 3,
+    }
+    
+    public struct WaitSpellChanneling: IWaitType
     {
         public int Error { get; set; }
     }
-    
+
     [ChildOf(typeof(SpellComponent))]
     public class Spell: Entity, IAwake<int>
     {
@@ -18,6 +26,8 @@ namespace ET
         
         public long CreateTime { get; set; }
         
-        public long ExpireTime { get; set; }
+        public SpellStatus SpellStatus { get; set; }
+
+        public ETCancellationToken CancellationToken { get; set; }
     }
 }

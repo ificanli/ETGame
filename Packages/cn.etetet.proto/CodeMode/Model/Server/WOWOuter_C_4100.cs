@@ -949,34 +949,8 @@ namespace ET
         [MemoryPackOrder(1)]
         public long SpellId { get; set; }
 
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.UnitId = default;
-            this.SpellId = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(WOWOuter.M2C_SpellInterrupt)]
-    public partial class M2C_SpellInterrupt : MessageObject, IMessage
-    {
-        public static M2C_SpellInterrupt Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<M2C_SpellInterrupt>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public long UnitId { get; set; }
-
-        [MemoryPackOrder(1)]
-        public long SpellId { get; set; }
+        [MemoryPackOrder(2)]
+        public int RemoveType { get; set; }
 
         public override void Dispose()
         {
@@ -987,6 +961,7 @@ namespace ET
 
             this.UnitId = default;
             this.SpellId = default;
+            this.RemoveType = default;
 
             ObjectPool.Recycle(this);
         }
@@ -1239,12 +1214,11 @@ namespace ET
         public const ushort M2C_SpellAdd = 4129;
         public const ushort M2C_SpellHit = 4130;
         public const ushort M2C_SpellRemove = 4131;
-        public const ushort M2C_SpellInterrupt = 4132;
-        public const ushort M2C_BuffAdd = 4133;
-        public const ushort M2C_BuffUpdate = 4134;
-        public const ushort M2C_BuffRemove = 4135;
-        public const ushort M2C_Error = 4136;
-        public const ushort M2C_NumericChange = 4137;
-        public const ushort C2M_SelectTarget = 4138;
+        public const ushort M2C_BuffAdd = 4132;
+        public const ushort M2C_BuffUpdate = 4133;
+        public const ushort M2C_BuffRemove = 4134;
+        public const ushort M2C_Error = 4135;
+        public const ushort M2C_NumericChange = 4136;
+        public const ushort C2M_SelectTarget = 4137;
     }
 }

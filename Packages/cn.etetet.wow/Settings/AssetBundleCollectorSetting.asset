@@ -56,7 +56,7 @@ MonoBehaviour:
       ActiveRuleName: EnableGroup
       Collectors:
       - CollectPath: Packages/cn.etetet.yiuilubangen/Assets/Config/Bin/Client
-        CollectorGUID: 8bd8fd4f77638294ab5178fb4b1c72fa
+        CollectorGUID: e5db450139680d147bdbcdc0adb42965
         CollectorType: 0
         AddressRuleName: AddressByFolderAndFileName
         PackRuleName: PackDirectory

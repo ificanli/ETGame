@@ -5,8 +5,15 @@ namespace ET.Server
     [FriendOf(typeof(SpellComponent))]
     public static class SpellHelper
     {
+        public static bool IsRootSpell(this SpellConfig spellConfig)
+        {
+            return spellConfig.Id % 10 == 0;
+        }
+        
         public static async ETTask Cast(Unit unit, int spellConfigId)
         {
+            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
@@ -14,7 +21,7 @@ namespace ET.Server
 #region Spell Check
             // check
             {
-                if (spellConfigId % 10 == 0)
+                if (spellConfig.IsRootSpell())
                 {
                     if (!spellComponent.CheckCD(spellConfig))
                     {
@@ -36,14 +43,21 @@ namespace ET.Server
 #region Spell Add
             // add
             Spell spell = spellComponent.CreateSpell(IdGenerater.Instance.GenerateId(), spellConfig.Id);
+            spell.SpellStatus = SpellStatus.Create;
             spell.Caster = unit.Id;
+            spell.CancellationToken = cancellationToken;
 
             // 子技能没有CD,子技能不设置Current
-            if (!spell.IsSubSpell())
+            if (spellConfig.IsRootSpell())
             {
                 spellComponent.UpdateCD(spellConfig.Id);
 
-                // 设置当前技能
+                // 这里简单做一下打断当前技能, 设置新的当前技能
+                Spell currentSpell = spellComponent.Current;
+                if (currentSpell != null)
+                {
+                    Interrupt(unit, currentSpell);
+                }
                 spellComponent.Current = spell;
             }
             
@@ -76,10 +90,10 @@ namespace ET.Server
 #region Spell Hit
                 // hit
                 {
+                    spell.SpellStatus = SpellStatus.Casting;
                     if (spellConfig.HitTime > 0)
                     {
-                        ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-                        spellComponent.CancellationToken = cancellationToken;
+                        
                         TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
                         // 等到命中
                         await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.HitTime);
@@ -110,53 +124,41 @@ namespace ET.Server
 #region Spell Finish
                 // finish
                 {
-                    if (spell.ExpireTime > 0)
+                    // 如果技能在吟唱或者读条，等待结束
+                    if (spell.SpellStatus == SpellStatus.Channeling)
                     {
-                        TimerComponent timerComponent = spell.Scene().GetComponent<TimerComponent>();
-                        ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-                        spellComponent.CancellationToken = cancellationToken;
-                
-                        await timerComponent.WaitTillAsync(spell.CreateTime + spellConfig.Duration);
+                        ObjectWait objectWait = spell.GetComponent<ObjectWait>() ?? spell.AddComponent<ObjectWait>();
+                        await objectWait.Wait<WaitSpellChanneling>();
                         if (cancellationToken.IsCancel())
                         {
                             return;
                         }
                     }
+
+                    spell.SpellStatus = SpellStatus.Finished;
                 }
 #endregion
             }
             finally
             {
-                // 发送SpellRemove消息
                 Remove(unit, spell.Id);
             }
         }
        
-
-        public static bool IsSubSpell(this Spell spell)
+        public static void Interrupt(Unit unit, Spell spell)
         {
-            return spell.ConfigId % 10 == 0;
-        }
-        
-        public static void Interrupt(Unit unit, long spellId)
-        {
-            SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-            spellComponent.CancellationToken?.Cancel();
-            spellComponent.CancellationToken = default;
+            spell.CancellationToken.Cancel();
             
-            Remove(unit, spellId);
+            M2C_SpellRemove m2CSpellRemove = M2C_SpellRemove.Create();
+            m2CSpellRemove.UnitId = unit.Id;
+            m2CSpellRemove.SpellId = spell.Id;
+            m2CSpellRemove.RemoveType = (int)SpellFlags.NewSpellInterrupt;
+            MapMessageHelper.NoticeClient(unit, m2CSpellRemove, spell.GetConfig().NoticeType);
         }
 
         public static void Remove(Unit unit, long spellId)
         {
-            M2C_SpellRemove spellRemove = M2C_SpellRemove.Create();
-            spellRemove.UnitId = unit.Id;
-            spellRemove.SpellId = spellId;
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-            Spell spell = spellComponent.GetSpell(spellId);
-            spellComponent.CancellationToken = null;
-            
-            MapMessageHelper.NoticeClient(unit, spellRemove, spell.GetConfig().NoticeType);
             
             spellComponent.RemoveSpell(spellId);
         }
