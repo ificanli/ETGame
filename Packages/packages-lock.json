@@ -105,7 +105,6 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.excel": "2.0.0",
         "cn.etetet.proto": "2.0.1",
         "cn.etetet.sourcegenerator": "0.0.5"
       }
@@ -151,7 +150,6 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.http": "2.0.0",
         "cn.etetet.startconfig": "2.0.1"
       }
     },
@@ -165,9 +163,7 @@
       "version": "file:cn.etetet.startconfig",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {
-        "cn.etetet.excel": "2.0.0"
-      }
+      "dependencies": {}
     },
     "cn.etetet.unit": {
       "version": "file:cn.etetet.unit",
@@ -261,18 +257,6 @@
     },
     "cn.etetet.yiuilubangen": {
       "version": "file:cn.etetet.yiuilubangen",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "cn.etetet.yiuinumeric": {
-      "version": "file:cn.etetet.yiuinumeric",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
-    "cn.etetet.yiuinumericconfig": {
-      "version": "file:cn.etetet.yiuinumericconfig",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}

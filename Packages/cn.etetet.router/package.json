@@ -1,9 +1,9 @@
-﻿{
+{
   "name": "cn.etetet.router",
   "displayName": "ET.Router",
   "version": "2.0.1",
   "unity": "2022.3",
-  "description": "et的软路由，可以防网络攻击",
+  "description": "et\u7684\u8f6f\u8def\u7531\uff0c\u53ef\u4ee5\u9632\u7f51\u7edc\u653b\u51fb",
   "author": {
     "name": "tanghai",
     "url": "https://github.com/egametang/ET"
@@ -14,7 +14,6 @@
   },
   "relatedPackages": {},
   "dependencies": {
-    "cn.etetet.http": "2.0.0",
     "cn.etetet.startconfig": "2.0.1"
   },
   "publishConfig": {

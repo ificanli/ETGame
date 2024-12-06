@@ -1,9 +1,9 @@
-﻿{
+{
   "name": "cn.etetet.startconfig",
   "displayName": "ET.StartConfig",
   "version": "2.0.1",
   "unity": "2022.3",
-  "description": "服务器起服配置",
+  "description": "\u670d\u52a1\u5668\u8d77\u670d\u914d\u7f6e",
   "author": {
     "name": "tanghai",
     "url": "https://github.com/egametang/ET"
@@ -15,8 +15,5 @@
   "relatedPackages": {},
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
-  },
-  "dependencies": {
-    "cn.etetet.excel": "2.0.0"
   }
 }
