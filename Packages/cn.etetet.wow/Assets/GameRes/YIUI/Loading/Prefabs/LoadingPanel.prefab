@@ -1045,7 +1045,7 @@ MonoBehaviour:
   ResName: LoadingPanel
   UICodeType: 0
   WindowOption: 0
-  PanelLayer: 3
+  PanelLayer: 0
   PanelOption: 4
   PanelStackOption: 2
   ViewWindowType: 0

@@ -31,7 +31,7 @@ namespace ET.Client
             self.u_UIWindow = self.UIBase.GetComponent<YIUIWindowComponent>();
             self.u_UIPanel = self.UIBase.GetComponent<YIUIPanelComponent>();
             self.UIWindow.WindowOption = EWindowOption.None;
-            self.UIPanel.Layer = EPanelLayer.Panel;
+            self.UIPanel.Layer = EPanelLayer.Top;
             self.UIPanel.PanelOption = EPanelOption.TimeCache;
             self.UIPanel.StackOption = EPanelStackOption.VisibleTween;
             self.UIPanel.Priority = 0;

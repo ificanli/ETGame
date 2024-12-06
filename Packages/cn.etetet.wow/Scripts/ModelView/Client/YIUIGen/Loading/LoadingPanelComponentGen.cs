@@ -9,7 +9,7 @@ namespace ET.Client
     /// <summary>
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
-    [YIUI(EUICodeType.Panel, EPanelLayer.Panel)]
+    [YIUI(EUICodeType.Panel, EPanelLayer.Top)]
     [ComponentOf(typeof(YIUIChild))]
     public partial class LoadingPanelComponent : Entity, IDestroy, IAwake, IYIUIBind, IYIUIInitialize, IYIUIOpen
     {
