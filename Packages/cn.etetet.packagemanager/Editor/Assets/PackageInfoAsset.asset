@@ -19,8 +19,6 @@ MonoBehaviour:
     Version: 
   - Name: cn.etetet.yooassets
     Version: 2.1.4
-  - Name: cn.etetet.yiuiinvoke
-    Version: 3.0.0
   - Name: cn.etetet.yiui
     Version: 
   - Name: cn.etetet.wow
@@ -31,8 +29,6 @@ MonoBehaviour:
     Version: 2.0.0
   - Name: cn.etetet.startconfig
     Version: 2.0.1
-  - Name: cn.etetet.sourcegenerator
-    Version: 0.0.7
   - Name: cn.etetet.router
     Version: 2.0.1
   - Name: cn.etetet.referencecollector
@@ -159,6 +155,8 @@ MonoBehaviour:
     Version: 0.7.2
   - Name: cn.etetet.yiuilocalization
     Version: 0.7.2
+  - Name: cn.etetet.yiuiinvoke
+    Version: 3.0.0
   - Name: cn.etetet.yiuigm
     Version: 0.7.2
   - Name: cn.etetet.yiuiframework
@@ -167,6 +165,8 @@ MonoBehaviour:
     Version: 0.7.2
   - Name: cn.etetet.yiui3ddisplay
     Version: 0.7.2
+  - Name: cn.etetet.sourcegenerator
+    Version: 0.0.7
   BanPackageInfo: []
-  LastUpdateTime: 1733452185
+  LastUpdateTime: 1733464204
   UpdateInterval: 3600

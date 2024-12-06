@@ -189,18 +189,7 @@
       "version": "file:cn.etetet.wow",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {
-        "cn.etetet.packagemanager": "1.0.2",
-        "cn.etetet.yiuiframework": "0.6.1",
-        "cn.etetet.yiuiyooassets": "0.6.1",
-        "cn.etetet.yiuiloopscrollrectasync": "0.6.1",
-        "cn.etetet.yiuigm": "0.6.1",
-        "cn.etetet.yiuireddot": "0.6.1",
-        "cn.etetet.yiuitips": "0.6.1",
-        "cn.etetet.yiuilocalization": "0.6.1",
-        "cn.etetet.yiui3ddisplay": "0.6.1",
-        "cn.etetet.yiuieffect": "0.6.1"
-      }
+      "dependencies": {}
     },
     "cn.etetet.yiui": {
       "version": "file:cn.etetet.yiui",
