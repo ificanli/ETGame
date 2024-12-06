@@ -265,6 +265,18 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "cn.etetet.yiuinumeric": {
+      "version": "file:cn.etetet.yiuinumeric",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "cn.etetet.yiuinumericconfig": {
+      "version": "file:cn.etetet.yiuinumericconfig",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "cn.etetet.yiuireddot": {
       "version": "file:cn.etetet.yiuireddot",
       "depth": 0,

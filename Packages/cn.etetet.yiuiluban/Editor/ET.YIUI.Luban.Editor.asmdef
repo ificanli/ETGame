@@ -1,7 +1,9 @@
 {
     "name": "ET.YIUI.Luban.Editor",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "ET.Core"
+    ],
     "includePlatforms": [
         "Editor"
     ],

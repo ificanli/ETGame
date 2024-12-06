@@ -19,6 +19,10 @@ namespace YIUI.Luban.Editor
             if (!CreateLubanConf()) return;
 
             RunLubanGen();
+
+            Process process = ET.ProcessHelper.DotNet("./Packages/cn.etetet.excel/DotNet~/Exe/ET.ExcelExporter.dll", "./", true);
+
+            UnityEngine.Debug.Log(process.StandardOutput.ReadToEnd());
         }
 
         public static void LubanGen()

@@ -8,7 +8,7 @@ namespace ET
     {
         public void Run()
         {
-            ExcelPackage excelPackage = ExcelExporter.GetPackage(Path.GetFullPath("Packages/cn.etetet.wow/Excel/TextConfig.xlsx"));
+            ExcelPackage excelPackage = ExcelExporter.GetPackage(Path.GetFullPath("Packages/cn.etetet.wow/Assets/Editor/Luban/Datas/Text.xlsx"));
 
             StringBuilder sb = new();
             sb.Append("namespace ET\n");
@@ -16,10 +16,10 @@ namespace ET
             sb.Append("\tpublic static partial class TextConstDefine\n");
             sb.Append("\t{\n");
             ExcelWorksheet workbookWorksheet = excelPackage.Workbook.Worksheets[0];
-            for (int i = 6; i <= workbookWorksheet.Dimension.End.Row; ++i)
+            for (int i = 4; i <= workbookWorksheet.Dimension.End.Row; ++i)
             {
-                string Name = workbookWorksheet.Cells[i, 4].Text.Trim();
-                string Id = workbookWorksheet.Cells[i, 3].Text.Trim();
+                string Name = workbookWorksheet.Cells[i, 3].Text.Trim();
+                string Id = workbookWorksheet.Cells[i, 2].Text.Trim();
 
                 sb.Append($"\t\tpublic const int {Name} = {Id};\n");
 

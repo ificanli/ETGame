@@ -9,7 +9,7 @@ namespace ET
     {
         public void Run()
         {
-            ExcelPackage excelPackage = ExcelExporter.GetPackage(Path.GetFullPath("Packages/cn.etetet.wow/Excel/NumericTypeConfig.xlsx"));
+            ExcelPackage excelPackage = ExcelExporter.GetPackage(Path.GetFullPath("Packages/cn.etetet.wow/Assets/Editor/Luban/Datas/NumericType.xlsx"));
 
             StringBuilder sb = new();
             sb.Append("namespace ET\n");
@@ -19,9 +19,9 @@ namespace ET
             ExcelWorksheet workbookWorksheet = excelPackage.Workbook.Worksheets[0];
             for (int i = 6; i <= workbookWorksheet.Dimension.End.Row; ++i)
             {
-                string Name = workbookWorksheet.Cells[i, 4].Text.Trim();
-                string Id = workbookWorksheet.Cells[i, 3].Text.Trim();
-                string GenSecondAttr = workbookWorksheet.Cells[i, 6].Text.Trim();
+                string Name = workbookWorksheet.Cells[i, 3].Text.Trim();
+                string Id = workbookWorksheet.Cells[i, 2].Text.Trim();
+                string GenSecondAttr = workbookWorksheet.Cells[i, 5].Text.Trim();
 
                 sb.Append($"\t\t{Name} = {Id},\n");
 
