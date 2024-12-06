@@ -61,7 +61,7 @@
         0.8,
         0.8
     },
-    "BanDotweenAnim": false,
+    "BanDotweenAnim": true,
     "OpenGMViewKey": 27,
     "OpenGMViewFirstType": false,
     "I2UseRuntimeModule": false,
