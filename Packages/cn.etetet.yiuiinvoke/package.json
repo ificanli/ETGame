@@ -1,7 +1,7 @@
-﻿{
+{
   "name": "cn.etetet.yiuiinvoke",
   "displayName": "ET.YIUI.Invoke",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "unity": "2022.3",
   "category": "UI/YIUI|Extend/Event",
   "description": "独立功能不依赖YIUI 框架 >>> 文档: https://lib9kmxvq7k.feishu.cn/wiki/TpyYwbWIUizhfKkcubocTZgInse",
@@ -17,5 +17,6 @@
   "dependencies": {},
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
-  }
+  },
+  "_fingerprint": "49e50c76afc90d66970c61212001364fbbb02a38"
 }

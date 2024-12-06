@@ -43,7 +43,7 @@ MonoBehaviour:
       Data: 
     - Name: LastUpdateTime
       Entry: 3
-      Data: 0
+      Data: 1733452307
     - Name: UpdateInterval
       Entry: 3
       Data: 3600

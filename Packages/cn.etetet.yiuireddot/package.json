@@ -1,7 +1,7 @@
-﻿{
+{
   "name": "cn.etetet.yiuireddot",
   "displayName": "ET.YIUI.RedDot",
-  "version": "0.6.2",
+  "version": "0.7.2",
   "unity": "2022.3",
   "category": "UI/YIUI",
   "description": "YIUI 红点 >>> 文档: https://lib9kmxvq7k.feishu.cn/wiki/ES7Gwz4EAiVGKSkotY5cRbTznuh",
@@ -15,10 +15,11 @@
   },
   "relatedPackages": {},
   "dependencies": {
-    "cn.etetet.yiuiframework": "0.6.2",
-    "cn.etetet.yiuiloopscrollrectasync": "0.6.2"
+    "cn.etetet.yiuiframework": "0.7.2",
+    "cn.etetet.yiuiloopscrollrectasync": "0.7.2"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
-  }
+  },
+  "_fingerprint": "72c166069a19d09854cad9f15b7d2649a21ff612"
 }

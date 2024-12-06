@@ -20,7 +20,7 @@ MonoBehaviour:
   - Name: cn.etetet.yooassets
     Version: 2.1.4
   - Name: cn.etetet.yiuiinvoke
-    Version: 1.0.0
+    Version: 3.0.0
   - Name: cn.etetet.yiui
     Version: 
   - Name: cn.etetet.wow
@@ -32,7 +32,7 @@ MonoBehaviour:
   - Name: cn.etetet.startconfig
     Version: 2.0.1
   - Name: cn.etetet.sourcegenerator
-    Version: 0.0.5
+    Version: 0.0.7
   - Name: cn.etetet.router
     Version: 2.0.1
   - Name: cn.etetet.referencecollector
@@ -129,18 +129,18 @@ MonoBehaviour:
     Version: 1.0.0
   - Name: com.unity.modules.ai
     Version: 1.0.0
+  - Name: com.unity.modules.accessibility
+    Version: 1.0.0
   - Name: com.unity.ugui
     Version: 3.0.0-exp.4
   - Name: com.unity.timeline
     Version: 1.8.7
-  - Name: com.unity.textmeshpro
-    Version: 4.0.0-pre.2
   - Name: com.unity.render-pipelines.universal
-    Version: 14.0.9
+    Version: 17.0.3
+  - Name: com.unity.multiplayer.center
+    Version: 1.0.0
   - Name: com.unity.inputsystem
     Version: 1.11.2
-  - Name: com.unity.ide.vscode
-    Version: 1.2.5
   - Name: com.unity.ide.visualstudio
     Version: 2.0.22
   - Name: com.unity.ide.rider
@@ -148,25 +148,25 @@ MonoBehaviour:
   - Name: com.unity.cinemachine
     Version: 3.1.2
   - Name: com.unity.ai.navigation
-    Version: 2.0.4
+    Version: 2.0.5
   - Name: cn.etetet.yiuiyooassets
-    Version: 0.6.2
+    Version: 0.7.2
   - Name: cn.etetet.yiuitips
-    Version: 0.6.2
+    Version: 0.7.2
   - Name: cn.etetet.yiuireddot
-    Version: 0.6.2
+    Version: 0.7.2
   - Name: cn.etetet.yiuiloopscrollrectasync
-    Version: 0.6.2
+    Version: 0.7.2
   - Name: cn.etetet.yiuilocalization
-    Version: 0.6.2
+    Version: 0.7.2
   - Name: cn.etetet.yiuigm
-    Version: 0.6.2
+    Version: 0.7.2
   - Name: cn.etetet.yiuiframework
-    Version: 0.6.2
+    Version: 0.7.2
   - Name: cn.etetet.yiuieffect
-    Version: 0.6.2
+    Version: 0.7.2
   - Name: cn.etetet.yiui3ddisplay
-    Version: 0.6.2
+    Version: 0.7.2
   BanPackageInfo: []
-  LastUpdateTime: 1731407558
+  LastUpdateTime: 1733452185
   UpdateInterval: 3600

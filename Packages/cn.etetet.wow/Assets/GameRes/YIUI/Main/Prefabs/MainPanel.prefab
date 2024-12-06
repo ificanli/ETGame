@@ -184,7 +184,7 @@ MonoBehaviour:
       Data: 
     - Name: m_PackagesName
       Entry: 1
-      Data: yiuistatesync
+      Data: wow
     - Name: IsSplitData
       Entry: 5
       Data: false
@@ -245,9 +245,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: PanelSplitEditorShowData
-      Entry: 9
-      Data: 1
   ComponentTable: {fileID: 0}
   DataTable: {fileID: 0}
   EventTable: {fileID: 0}
