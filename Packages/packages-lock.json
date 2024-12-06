@@ -253,6 +253,18 @@
         "cn.etetet.yiuiframework": "0.7.2"
       }
     },
+    "cn.etetet.yiuiluban": {
+      "version": "file:cn.etetet.yiuiluban",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "cn.etetet.yiuilubangen": {
+      "version": "file:cn.etetet.yiuilubangen",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "cn.etetet.yiuireddot": {
       "version": "file:cn.etetet.yiuireddot",
       "depth": 0,

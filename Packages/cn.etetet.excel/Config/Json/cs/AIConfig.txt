@@ -1,3 +1,0 @@
-{"dict": [
-[301, {"_t":"AIConfig","_id":301,"AIConfigId":3,"Order":1,"Name":"AI_MonsterXunLuo","NodeParams":[]}],
-]}

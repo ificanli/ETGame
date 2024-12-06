@@ -1,0 +1,119 @@
+[
+  {
+    "Id": 1000,
+    "Name": "Speed",
+    "NeedSaveDB": 1,
+    "NoticeType": 2,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1001,
+    "Name": "HP",
+    "NeedSaveDB": 1,
+    "NoticeType": 2,
+    "MaxNumericType": 1002,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1002,
+    "Name": "MaxHP",
+    "NeedSaveDB": 1,
+    "NoticeType": 2,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1003,
+    "Name": "MP",
+    "NeedSaveDB": 1,
+    "NoticeType": 2,
+    "MaxNumericType": 1004,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1004,
+    "Name": "MaxMP",
+    "NeedSaveDB": 1,
+    "NoticeType": 2,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1005,
+    "Name": "Radius",
+    "NeedSaveDB": 1,
+    "NoticeType": 2,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1006,
+    "Name": "AOI",
+    "NeedSaveDB": 1,
+    "NoticeType": 1,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1007,
+    "Name": "Height",
+    "NeedSaveDB": 1,
+    "NoticeType": 2,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1008,
+    "Name": "Weight",
+    "NeedSaveDB": 1,
+    "NoticeType": 2,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1009,
+    "Name": "AI",
+    "NeedSaveDB": 1,
+    "NoticeType": 0,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1010,
+    "Name": "X",
+    "NeedSaveDB": 0,
+    "NoticeType": 0,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1011,
+    "Name": "Y",
+    "NeedSaveDB": 0,
+    "NoticeType": 0,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  },
+  {
+    "Id": 1012,
+    "Name": "Z",
+    "NeedSaveDB": 0,
+    "NoticeType": 0,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
+  }
+]
