@@ -6,7 +6,7 @@ namespace ET
 {
     public class ETCancellationToken
     {
-        private HashSet<Action> actions = new();
+        private HashSetComponent<Action> actions = HashSetComponent<Action>.Create();
 
         public void Add(Action callback)
         {
@@ -36,7 +36,8 @@ namespace ET
 
         private void Invoke()
         {
-            HashSet<Action> runActions = this.actions;
+            using HashSetComponent<Action> runActions = this.actions;
+            
             this.actions = null;
             try
             {
