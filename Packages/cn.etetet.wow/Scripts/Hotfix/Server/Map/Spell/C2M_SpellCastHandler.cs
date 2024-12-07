@@ -6,7 +6,7 @@
         protected override async ETTask Run(Unit unit, C2M_SpellCast message)
         {
             ETCancellationToken cancellationToken = new();
-            SpellHelper.Cast(unit, message.SpellConfigId, null);
+            SpellHelper.Cast(unit, message.SpellConfigId);
             await ETTask.CompletedTask;
         }
     }

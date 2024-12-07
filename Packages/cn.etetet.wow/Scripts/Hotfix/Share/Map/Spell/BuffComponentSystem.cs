@@ -95,7 +95,6 @@ namespace ET
             }
 
             self.configIdBuffs.Remove(buffConfig.Id, buff);
-            
             self.RemoveChild(buff.Id);
         }
         

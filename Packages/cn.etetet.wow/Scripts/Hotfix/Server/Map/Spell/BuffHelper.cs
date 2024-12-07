@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace ET.Server
 {
+    [FriendOf(typeof(BuffComponent))]
     public static class BuffHelper
     {
         [Invoke(TimerInvokeType.BuffTimeoutTimer)]
@@ -40,6 +41,7 @@ namespace ET.Server
             // 处理叠加规则
             if (buffConfig.OverLayRuleType != OverLayRuleType.None)
             {
+                buffComponent.configIdBuffs.Remove(buff.ConfigId, buff);
                 var oldBuffs = buffComponent.GetByConfigId(buffConfig.Id);
                 if (oldBuffs != null && oldBuffs.Count > 0)
                 {
@@ -59,7 +61,6 @@ namespace ET.Server
                             {
                                 return oldBuff;
                             }
-
                             UpdateExpireTime(oldBuff, expireTime);
                             return oldBuff;
                         }
@@ -67,10 +68,14 @@ namespace ET.Server
                         {
                             Buff oldBuff = oldBuffs.First();
                             RemoveBuff(oldBuff, BuffFlags.SameConfigIdReplaceRemove);
+                            buffComponent.configIdBuffs.Add(buff.ConfigId, buff);
                             break;
                         }
                         case OverLayRuleType.None:
+                        {
+                            buffComponent.configIdBuffs.Add(buff.ConfigId, buff);
                             break;
+                        }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -80,19 +85,17 @@ namespace ET.Server
             
             if (parent != null)
             {
-                Buff rootBuff;
                 BuffParentComponent buffParentComponent = parent.GetComponent<BuffParentComponent>();
-                if (buffParentComponent == null)
-                {
-                    rootBuff = parent;
-                }
-                else
-                {
-                    rootBuff = buffParentComponent.RootBuff;
-                }
+                Buff rootBuff = buffParentComponent.RootBuff;
                 BuffParentComponent c = buff.AddComponent<BuffParentComponent>();
                 c.ParentBuff = parent;
                 c.RootBuff = rootBuff;
+            }
+            else
+            {
+                BuffParentComponent c = buff.AddComponent<BuffParentComponent>();
+                c.ParentBuff = buff;
+                c.RootBuff = buff;
             }
             
             TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();

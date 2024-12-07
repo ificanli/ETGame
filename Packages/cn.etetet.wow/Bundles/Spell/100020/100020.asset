@@ -88,14 +88,11 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: Buff
-      Entry: 6
-      Data: 
+      Entry: 1
+      Data: Buff
     - Name: Unit
       Entry: 1
       Data: Unit
-    - Name: TargetSelectorSingle+Buff
-      Entry: 6
-      Data: 
     - Name: MaxDistance
       Entry: 4
       Data: 40000

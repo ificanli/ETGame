@@ -5,7 +5,7 @@ namespace ET.Server
     [FriendOf(typeof(SpellComponent))]
     public static class SpellHelper
     {
-        public static int Cast(Unit unit, int spellConfigId, Buff parent)
+        public static int Cast(Unit unit, int spellConfigId, Buff parent = null)
         {
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
@@ -14,10 +14,14 @@ namespace ET.Server
 #region Check
             // check
             {
-                if (!spellComponent.CheckCD(spellConfig))
+                // 子技能不检查CD
+                if (parent == null)
                 {
-                    ErrorHelper.MapError(unit, TextConstDefine.SpellCast_SpellInCD);
-                    return TextConstDefine.SpellCast_SpellInCD;
+                    if (!spellComponent.CheckCD(spellConfig))
+                    {
+                        ErrorHelper.MapError(unit, TextConstDefine.SpellCast_SpellInCD);
+                        return TextConstDefine.SpellCast_SpellInCD;
+                    }
                 }
 
                 // 检查消耗的东西是否足够
@@ -41,21 +45,24 @@ namespace ET.Server
             return castRet;
         }
 
-        private static int SpellCasting(Unit unit, Buff buff, SpellConfig spellConfig, Buff parent = null)
+        private static int SpellCasting(Unit unit, Buff buff, SpellConfig spellConfig, Buff parent)
         {
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
             buff.Caster = unit.Id;
 
-            spellComponent.UpdateCD(spellConfig.Id);
-
-            // 这里简单做一下打断当前技能, 设置新的当前技能
-            Buff currentBuff = spellComponent.Current;
-            if (currentBuff != null)
+            if (parent == null)
             {
-                BuffHelper.RemoveBuff(currentBuff, BuffFlags.NewSpellInterrupt);
-            }
+                spellComponent.UpdateCD(spellConfig.Id);
 
-            spellComponent.Current = buff;
+                // 这里简单做一下打断当前技能, 设置新的当前技能
+                Buff currentBuff = spellComponent.Current;
+                if (currentBuff != null)
+                {
+                    BuffHelper.RemoveBuff(currentBuff, BuffFlags.NewSpellInterrupt);
+                }
+
+                spellComponent.Current = buff;
+            }
 
             // 选择目标
             {
@@ -69,8 +76,7 @@ namespace ET.Server
                     return ret;
                 }
             }
-
-            BuffHelper.InitBuff(buff, buff);
+            BuffHelper.InitBuff(buff, parent);
             
             if (buff.ExpireTime < TimeInfo.Instance.ServerNow())
             {

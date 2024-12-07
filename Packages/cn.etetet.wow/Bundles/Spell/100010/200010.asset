@@ -117,6 +117,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
     - Name: SpellConfigId
       Entry: 3
       Data: 100011

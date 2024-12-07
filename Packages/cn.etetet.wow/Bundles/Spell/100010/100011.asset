@@ -61,8 +61,8 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: Buff
-      Entry: 6
-      Data: 
+      Entry: 1
+      Data: Buff
     - Name: Unit
       Entry: 1
       Data: Unit
