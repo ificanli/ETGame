@@ -45,7 +45,7 @@ namespace ET.Server
                 return TextConstDefine.SpellCast_TargetTooFar;
             }
             
-            buff.GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit);
+            buff.GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit.Entity.Id);
             
             return 0;
         }

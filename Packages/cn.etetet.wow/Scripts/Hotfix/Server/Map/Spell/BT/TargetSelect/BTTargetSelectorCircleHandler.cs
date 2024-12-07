@@ -9,14 +9,15 @@ namespace ET.Server
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
 
-            List<EntityRef<Unit>> units = new ();
-
+            SpellTargetComponent spellTargetComponent = buff.GetComponent<SpellTargetComponent>();
+        
             Unit caster = buff.GetCaster();
 
             Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
 
             float3 pos = caster.GetComponent<TargetComponent>().Position;
-
+            spellTargetComponent.Position = pos;
+            
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
                 Unit unit = aoiEntity.Unit;
@@ -53,10 +54,10 @@ namespace ET.Server
                     }
                 }
 
-                units.Add(aoiEntity.Unit);
+                spellTargetComponent.Units.Add(aoiEntity.Unit.Id);
             }
-
-            env.AddCollection(node.Units, units);
+            
+            env.AddCollection(node.Units, spellTargetComponent.Units);
             return 0;
         }
     }

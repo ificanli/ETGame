@@ -206,6 +206,12 @@ message M2C_SpellRemove // IMessage
 	int32 RemoveType = 3;
 }
 
+message SpellTarget
+{
+	repeated int64 TargetUnitId = 3;
+	Unity.Mathematics.float3 TargetPosition = 4;
+}
+
 message M2C_BuffAdd // IMessage
 {
 	int64 UnitId = 1;
@@ -216,6 +222,7 @@ message M2C_BuffAdd // IMessage
 	int64 ExpireTime = 6;
 	int64 CasterId = 7;
 	int32 Stack = 8;
+	SpellTarget SpellTarget = 9;
 }
 
 message M2C_BuffUpdate // IMessage

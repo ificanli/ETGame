@@ -36,6 +36,7 @@ namespace ET
     {
         public const string Buff = "Buff";
         public const string Unit = "Unit";
+        public const string Caster = "Caster";
         public const string Attacker = "Attacker";
         public const string Target = "Target";
         public const string Units = "Units";
@@ -45,11 +46,14 @@ namespace ET
     
     public class BTEnv: DisposeObject, IPool
     {
-        public static BTEnv Create(bool isFromPool = true)
+        public static BTEnv Create(Scene scene, bool isFromPool = true)
         {
             BTEnv env = ObjectPool.Fetch<BTEnv>(isFromPool);
+            env.Scene = scene;
             return env;
         }
+
+        public Scene Scene { get; set; }
 
         public bool IsFromPool { get; set; }
         
@@ -58,6 +62,7 @@ namespace ET
         public override void Dispose()
         {
             this.dict.Clear();
+            this.Scene = null;
 
             foreach (var kv in dict)
             {

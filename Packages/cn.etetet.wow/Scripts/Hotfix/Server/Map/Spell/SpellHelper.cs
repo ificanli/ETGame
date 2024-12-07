@@ -67,7 +67,7 @@ namespace ET.Server
             // 选择目标
             {
                 buff.AddComponent<SpellTargetComponent>();
-                using BTEnv env = BTEnv.Create();
+                using BTEnv env = BTEnv.Create(buff.Scene());
                 env.AddEntity(BTEvnKey.Buff, buff);
                 int ret = BTDispatcher.Instance.Handle(spellConfig.TargetSelector, env);
                 if (ret != 0)

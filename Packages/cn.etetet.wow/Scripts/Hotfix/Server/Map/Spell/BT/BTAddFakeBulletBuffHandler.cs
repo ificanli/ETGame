@@ -16,7 +16,7 @@ namespace ET.Server
             
             Buff bulletBuff = BuffHelper.InitBuff(newBuff, parentBuff);
 
-            if (node.OutputBuff != "")
+            if (!string.IsNullOrEmpty(node.OutputBuff))
             {
                 env.AddEntity(node.OutputBuff, bulletBuff);
             }

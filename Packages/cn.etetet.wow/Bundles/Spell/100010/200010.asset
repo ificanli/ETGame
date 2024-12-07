@@ -50,7 +50,10 @@ MonoBehaviour:
       Data: 1|System.Collections.Generic.HashSet`1[[ET.BuffFlags, ET.Model]], System.Core
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 3
+      Data: 5
     - Name: 
       Entry: 13
       Data: 
@@ -74,37 +77,13 @@ MonoBehaviour:
       Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 5|ET.BTGetBuffOwner, ET.Model
+      Data: 5|ET.BTCreateSpell, ET.Model
     - Name: Children
       Entry: 7
       Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 7|ET.BTCreateSpell, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -135,48 +114,30 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 9|ET.EffectClientBuffAdd, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 11|ET.BTGetBuffOwner, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 13|ET.BTAnimatorSetBool, ET.Model
+      Data: 7|ET.EffectClientBuffAdd, ET.Model
     - Name: Children
       Entry: 7
-      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 9|ET.BTAnimatorSetBool, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -207,48 +168,30 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 15|ET.EffectClientBuffRemove, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 17|ET.BTGetBuffOwner, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 19|ET.BTAnimatorSetBool, ET.Model
+      Data: 11|ET.EffectClientBuffRemove, ET.Model
     - Name: Children
       Entry: 7
-      Data: 20|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 13|ET.BTAnimatorSetBool, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -279,6 +222,12 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
     - Name: 
       Entry: 8
       Data: 

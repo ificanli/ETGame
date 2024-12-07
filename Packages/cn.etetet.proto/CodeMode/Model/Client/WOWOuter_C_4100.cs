@@ -939,6 +939,35 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(WOWOuter.SpellTarget)]
+    public partial class SpellTarget : MessageObject
+    {
+        public static SpellTarget Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<SpellTarget>(isFromPool);
+        }
+
+        [MemoryPackOrder(2)]
+        public List<long> TargetUnitId { get; set; } = new();
+
+        [MemoryPackOrder(3)]
+        public Unity.Mathematics.float3 TargetPosition { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.TargetUnitId.Clear();
+            this.TargetPosition = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(WOWOuter.M2C_BuffAdd)]
     public partial class M2C_BuffAdd : MessageObject, IMessage
     {
@@ -971,6 +1000,9 @@ namespace ET
         [MemoryPackOrder(7)]
         public int Stack { get; set; }
 
+        [MemoryPackOrder(8)]
+        public SpellTarget SpellTarget { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -986,6 +1018,7 @@ namespace ET
             this.ExpireTime = default;
             this.CasterId = default;
             this.Stack = default;
+            this.SpellTarget = default;
 
             ObjectPool.Recycle(this);
         }
@@ -1188,11 +1221,12 @@ namespace ET
         public const ushort C2M_SpellCast = 4128;
         public const ushort M2C_SpellAdd = 4129;
         public const ushort M2C_SpellRemove = 4130;
-        public const ushort M2C_BuffAdd = 4131;
-        public const ushort M2C_BuffUpdate = 4132;
-        public const ushort M2C_BuffRemove = 4133;
-        public const ushort M2C_Error = 4134;
-        public const ushort M2C_NumericChange = 4135;
-        public const ushort C2M_SelectTarget = 4136;
+        public const ushort SpellTarget = 4131;
+        public const ushort M2C_BuffAdd = 4132;
+        public const ushort M2C_BuffUpdate = 4133;
+        public const ushort M2C_BuffRemove = 4134;
+        public const ushort M2C_Error = 4135;
+        public const ushort M2C_NumericChange = 4136;
+        public const ushort C2M_SelectTarget = 4137;
     }
 }

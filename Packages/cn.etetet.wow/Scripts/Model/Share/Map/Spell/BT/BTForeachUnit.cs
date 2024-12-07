@@ -4,7 +4,7 @@ namespace ET
 {
     public class BTForeachUnit: BTNode
     {
-        [BTInput(typeof(List<EntityRef<Unit>>))]
+        [BTInput(typeof(List<long>))]
 #if UNITY
         [Sirenix.OdinInspector.BoxGroup("输入参数")]
 #endif

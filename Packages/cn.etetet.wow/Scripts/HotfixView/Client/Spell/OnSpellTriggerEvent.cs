@@ -17,7 +17,9 @@ namespace ET.Client
             
             // 这里根据技能目标选择方式，等待客户端目标选择
             await TargetSelectDispatcher.Instance.Handle(spellConfig.TargetSelector, unit, spellConfig);
-            
+
+            TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
+            c2MSpellCast.TargetPosition = targetComponent.Position;
             SpellHelper.Cast(unit, c2MSpellCast);
         }
     }

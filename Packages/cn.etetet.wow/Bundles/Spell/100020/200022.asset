@@ -111,6 +111,12 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
     - Name: 
       Entry: 8
       Data: 

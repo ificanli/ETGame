@@ -9,6 +9,12 @@
             buff.TickTime = buffAdd.TickTime;
             buff.CreateTime = buffAdd.CreateTime;
             buff.Stack = buffAdd.Stack;
+            if (buffAdd.SpellTarget != null)
+            {
+                SpellTargetComponent spellTargetComponent = buff.AddComponent<SpellTargetComponent>();
+                spellTargetComponent.Units.AddRange(buffAdd.SpellTarget.TargetUnitId);
+                spellTargetComponent.Position = buffAdd.SpellTarget.TargetPosition;
+            }
             
             EffectHelper.RunBT<EffectClientBuffAdd>(buff);
 

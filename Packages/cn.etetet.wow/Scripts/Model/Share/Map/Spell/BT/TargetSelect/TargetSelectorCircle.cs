@@ -15,7 +15,7 @@ namespace ET
 #if UNITY
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
 #endif
-        [BTOutput(typeof(List<EntityRef<Unit>>))]
+        [BTOutput(typeof(List<long>))]
         public string Units = BTEvnKey.Units;
         
 #if UNITY

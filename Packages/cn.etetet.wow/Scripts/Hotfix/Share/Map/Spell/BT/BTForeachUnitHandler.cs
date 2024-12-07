@@ -6,10 +6,11 @@ namespace ET
     {
         protected override int Run(BTForeachUnit node, BTEnv env)
         {
-            List<EntityRef<Unit>> units = env.GetCollection<List<EntityRef<Unit>>>(node.Units);
-
-            foreach (Unit unit in units)
+            List<long> units = env.GetCollection<List<long>>(node.Units);
+            UnitComponent unitComponent = env.Scene.GetComponent<UnitComponent>();
+            foreach (long unitId in units)
             {
+                Unit unit = unitComponent.Get(unitId);
                 if (unit == null)
                 {
                     continue;

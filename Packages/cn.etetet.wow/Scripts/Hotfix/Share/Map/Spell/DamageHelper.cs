@@ -13,7 +13,7 @@
             numericComponent.Set(NumericType.HP, value);
 
             var buffs = target.GetComponent<BuffComponent>().GetByEffectType<EffectServerBuffHitted>();
-            using BTEnv env = BTEnv.Create();
+            using BTEnv env = BTEnv.Create(attacker.Scene());
             env.AddEntity(BTEvnKey.Attacker, attacker);
             env.AddEntity(BTEvnKey.Target, target);
             foreach (Buff buff in buffs)

@@ -89,7 +89,10 @@ namespace ET.Server
                 Buff rootBuff = buffParentComponent.RootBuff;
                 BuffParentComponent c = buff.AddComponent<BuffParentComponent>();
                 c.ParentBuff = parent;
-                c.RootBuff = rootBuff;
+                if (rootBuff != null)
+                {
+                    c.RootBuff = rootBuff;
+                }
             }
             else
             {
@@ -130,6 +133,17 @@ namespace ET.Server
             m2CBuffAdd.TickTime = buff.TickTime;
             m2CBuffAdd.ExpireTime = buff.ExpireTime;
             m2CBuffAdd.Stack = buff.Stack;
+            m2CBuffAdd.CasterId = buff.Caster;
+            SpellTargetComponent spellTargetComponent = buff.GetComponent<SpellTargetComponent>();
+            if (spellTargetComponent != null)
+            {
+                m2CBuffAdd.SpellTarget = SpellTarget.Create();
+                foreach (long targetId in spellTargetComponent.Units)
+                {
+                    m2CBuffAdd.SpellTarget.TargetUnitId.Add(targetId);
+                }
+                m2CBuffAdd.SpellTarget.TargetPosition = spellTargetComponent.Position;
+            }
             
             MapMessageHelper.NoticeClient(unit, m2CBuffAdd, buffConfig.NoticeType);
 
@@ -274,7 +288,7 @@ namespace ET.Server
             {
                 return;
             }
-            foreach (EntityRef<Buff> buff in buffs)
+            foreach (EntityRef<Buff> buff in buffs.ToArray())
             {
                 RemoveBuff(buff, flag);
             }

@@ -10,7 +10,7 @@ namespace ET
 #endif
         public string Buff;
 
-        [BTOutput(typeof(List<EntityRef<Unit>>))]
+        [BTOutput(typeof(List<long>))]
 #if UNITY
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
 #endif
