@@ -4,11 +4,11 @@
     {
         protected override int Run(TargetSelectorCaster node, BTEnv env)
         {
-            Spell spell = env.GetEntity<Spell>(node.Spell);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
 
-            Unit unit = spell.GetCaster();
+            Unit unit = buff.GetCaster();
             
-            spell.GetComponent<SpellTargetComponent>().Units.Add(unit);
+            buff.GetComponent<SpellTargetComponent>().Units.Add(unit);
             
             return 0;
         }

@@ -55,9 +55,6 @@ namespace ET
     
     [Serializable]
     public partial class SpellConfig: ProtoObject
-#if UNITY
-            ,UnityEngine.ISerializationCallbackReceiver
-#endif
     {
         /// <summary>Id</summary>
         public int Id;
@@ -80,54 +77,9 @@ namespace ET
 #endif
         public TargetSelector TargetSelector;
 
-        /// <summary>命中时间</summary>
-        public int HitTime;
-
         /// <summary>CD（毫秒）</summary>
         public int CD;
 
-        public HashSet<SpellFlags> Flags = new();
-
-        /// <summary>广播客户端类型</summary>
-
-        public NoticeType NoticeType;
-
-#if UNITY
-        [UnityEngine.SerializeReference]
-#endif
-        public List<EffectNode> Effects = new();
-
-
-#if UNITY
-        [NonSerialized]
-        [UnityEngine.HideInInspector]
-#endif
-        public Dictionary<Type, EffectNode> effectDict;
-
-        public void OnBeforeSerialize()
-        {
-            this.effectDict ??= new Dictionary<Type, EffectNode>();
-            this.effectDict.Clear();
-            foreach (EffectNode effectNode in this.Effects)
-            {
-                this.effectDict.Add(effectNode.GetType(), effectNode);
-            }
-        }
-        
-        public void OnAfterDeserialize()
-        {
-            this.effectDict ??= new Dictionary<Type, EffectNode>();
-            this.effectDict.Clear();
-            foreach (EffectNode effectNode in this.Effects)
-            {
-                this.effectDict.Add(effectNode.GetType(), effectNode);
-            }
-        }
-        
-        public T GetEffect<T>() where T : EffectNode
-        {
-            this.effectDict.TryGetValue(typeof(T), out EffectNode effectNode);
-            return effectNode as T;
-        }
+        public int BuffId;
     }
 }

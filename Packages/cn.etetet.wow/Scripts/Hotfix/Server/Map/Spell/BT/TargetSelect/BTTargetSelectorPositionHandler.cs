@@ -7,9 +7,9 @@ namespace ET.Server
     {
         protected override int Run(TargetSelectorPosition node, BTEnv env)
         {
-            Spell spell = env.GetEntity<Spell>(node.Spell);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
 
-            float3 pos = spell.GetCaster().GetComponent<TargetComponent>().Position;
+            float3 pos = buff.GetCaster().GetComponent<TargetComponent>().Position;
 
             env.AddStruct(node.Pos, pos);
             return 0;

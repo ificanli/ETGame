@@ -18,16 +18,29 @@ namespace ET.Server
                 BuffHelper.RemoveBuff(self, BuffFlags.TimeoutRemove);
             }
         }
-        
-        public static Buff CreateBuff(Unit unit, long buffId, int buffConfigId)
+
+        public static Buff CreateBuffWithoutInit(Unit unit, long casterId, long buffId, int buffConfigId)
         {
-            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
-            BuffConfig buffConfig = BuffConfigCategory.Instance.Get(buffConfigId);
+            Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffId, buffConfigId, casterId);
+            return buff;
+        }
+
+        public static Buff CreateBuff(Unit unit, long casterId, long buffId, int buffConfigId, Buff parent)
+        {
+            Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffId, buffConfigId, casterId);
+            return InitBuff(buff, parent);
+        }
+        
+        public static Buff InitBuff(Buff buff, Buff parent)
+        {
+            Unit unit = buff.Parent.GetParent<Unit>();
+            BuffComponent buffComponent = buff.GetParent<BuffComponent>();
+            BuffConfig buffConfig = buff.GetConfig();
 
             // 处理叠加规则
             if (buffConfig.OverLayRuleType != OverLayRuleType.None)
             {
-                var oldBuffs = buffComponent.GetByConfigId(buffConfigId);
+                var oldBuffs = buffComponent.GetByConfigId(buffConfig.Id);
                 if (oldBuffs != null && oldBuffs.Count > 0)
                 {
                     switch (buffConfig.OverLayRuleType)
@@ -64,11 +77,51 @@ namespace ET.Server
                 }
             }
 
-            Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffId, buffConfigId);
+            
+            if (parent != null)
+            {
+                Buff rootBuff;
+                BuffParentComponent buffParentComponent = parent.GetComponent<BuffParentComponent>();
+                if (buffParentComponent == null)
+                {
+                    rootBuff = parent;
+                }
+                else
+                {
+                    rootBuff = buffParentComponent.RootBuff;
+                }
+                BuffParentComponent c = buff.AddComponent<BuffParentComponent>();
+                c.ParentBuff = parent;
+                c.RootBuff = rootBuff;
+            }
+            
+            TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
+            
+            if (buff.TickTime > 0)
+            {
+                WaitTick(buff, timerComponent).NoContext();
+            }
+            
+            if (buff.ExpireTime > 0)
+            {
+                if (buff.TickTime > 0)
+                {
+                    buff.ExpireTime += 1;
+                }
+                buff.TimeoutTimer = timerComponent.NewOnceTimer(buff.ExpireTime, TimerInvokeType.BuffTimeoutTimer, buff);
+            }
+            
+            if (buffConfig.Flags.Contains(BuffFlags.ParentRemoveRemove))
+            {
+                BuffChildrenComponent buffChildrenComponent =
+                        parent.GetComponent<BuffChildrenComponent>() ?? buff.AddComponent<BuffChildrenComponent>();
+                buffChildrenComponent.Buffs.Add(buff);
+            }
+            
             
             M2C_BuffAdd m2CBuffAdd = M2C_BuffAdd.Create();
             m2CBuffAdd.BuffId = buff.Id;
-            m2CBuffAdd.BuffConfigId = buffConfigId;
+            m2CBuffAdd.BuffConfigId = buffConfig.Id;
             m2CBuffAdd.UnitId = unit.Id;
             m2CBuffAdd.CreateTime = buff.CreateTime;
             m2CBuffAdd.TickTime = buff.TickTime;
@@ -78,32 +131,6 @@ namespace ET.Server
             MapMessageHelper.NoticeClient(unit, m2CBuffAdd, buffConfig.NoticeType);
 
             EffectHelper.RunBT<EffectServerBuffAdd>(buff);
-            
-            TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
-            
-            if (buffConfig.TickTime > 0)
-            {
-                WaitTick(buff, timerComponent).NoContext();
-            }
-            
-            if (buffConfig.Duration > 0)
-            {
-                buff.TimeoutTimer = timerComponent.NewOnceTimer(buff.ExpireTime, TimerInvokeType.BuffTimeoutTimer, buff);
-            }
-            
-            if (buffConfig.Flags.Contains(BuffFlags.CurrentSpellRemoveRemove) || buffConfig.Flags.Contains(BuffFlags.Channeling))
-            {
-                SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-                Spell current = spellComponent.Current;
-                current.AddComponent<SpellBuffComponent>().Buffs.Add(buff.Id);
-                
-                if (buffConfig.Flags.Contains(BuffFlags.Channeling))
-                {
-                    current.SpellStatus = SpellStatus.Channeling;
-                }
-            }
-
-
             
             return buff;
         }
@@ -217,17 +244,6 @@ namespace ET.Server
             buffComponent.RemoveBuff(buff);
             
             MapMessageHelper.NoticeClient(unit, m2CBuffRemove, buff.GetConfig().NoticeType);
-            
-            if (buff.GetConfig().Flags.Contains(BuffFlags.Channeling))
-            {
-                if (removeType == BuffFlags.TimeoutRemove)
-                {
-                    SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
-                    Spell current = spellComponent.Current;
-                    current.GetComponent<SpellBuffComponent>().Buffs.Remove(buff.Id);
-                    current.GetComponent<ObjectWait>().Notify(new WaitSpellChanneling());
-                }
-            }
         }
         
         public static void RemoveBuff(Unit unit, long id, BuffFlags removeType)

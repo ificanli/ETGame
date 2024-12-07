@@ -194,12 +194,7 @@ message M2C_SpellAdd // IMessage
 	int64 UnitId = 1;
 	int64 SpellId = 2;
 	int32 SpellConfigId = 3;
-}
 
-message M2C_SpellHit // IMessage
-{
-	int64 UnitId = 1;
-	int64 SpellId = 2;
 	repeated int64 TargetUnitId = 3;
 	Unity.Mathematics.float3 TargetPosition = 4;
 }
@@ -219,7 +214,8 @@ message M2C_BuffAdd // IMessage
 	int64 CreateTime = 4;
 	int32 TickTime = 5;
 	int64 ExpireTime = 6;
-	int32 Stack = 7;
+	int64 CasterId = 7;
+	int32 Stack = 8;
 }
 
 message M2C_BuffUpdate // IMessage

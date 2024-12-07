@@ -4,8 +4,8 @@
     {
         protected override int Run(BTGetSpellTargetUnits node, BTEnv env)
         {
-            Spell spell = env.GetEntity<Spell>(node.Spell);
-            SpellTargetComponent spellTargetComponent = spell.GetComponent<SpellTargetComponent>();
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            SpellTargetComponent spellTargetComponent = buff.GetComponent<SpellTargetComponent>();
             env.AddCollection(node.Units, spellTargetComponent.Units);
             return 0;
         }

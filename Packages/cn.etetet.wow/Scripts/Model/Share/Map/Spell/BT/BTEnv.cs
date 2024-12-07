@@ -34,7 +34,6 @@ namespace ET
     
     public static class BTEvnKey
     {
-        public const string Spell = "Spell";
         public const string Buff = "Buff";
         public const string Unit = "Unit";
         public const string Attacker = "Attacker";

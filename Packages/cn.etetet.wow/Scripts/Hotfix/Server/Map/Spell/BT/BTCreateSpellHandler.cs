@@ -5,7 +5,7 @@
         protected override int Run(BTCreateSpell node, BTEnv env)
         {
             Unit unit = env.GetEntity<Unit>(node.Unit);
-            SpellHelper.Cast(unit, node.SpellConfigId).WithContext(new ETCancellationToken());
+            SpellHelper.Cast(unit, node.SpellConfigId, null);
             return 0;
         }
     }

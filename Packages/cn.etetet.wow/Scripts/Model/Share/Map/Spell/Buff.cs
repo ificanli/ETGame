@@ -9,8 +9,7 @@
     public class Buff: Entity, IAwake<int>
     {
         public int ConfigId { get; set; }
-        public long Caster;
-        public long Source;
+        public long Caster { get; set; }
         public long CreateTime { get; set; }
         public int TickTime { get; set; }
         public long ExpireTime { get; set; }

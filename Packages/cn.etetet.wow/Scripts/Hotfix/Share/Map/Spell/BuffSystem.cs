@@ -19,9 +19,19 @@
             return SpellConfigCategory.Instance.Get(self.ConfigId / 10 * 10 - 100000);
         } 
         
+        public static Unit GetCaster(this Buff self)
+        {
+            return self.Scene().GetComponent<UnitComponent>().Get(self.Caster);
+        } 
+        
         public static Unit GetOwner(this Buff self)
         {
             return self.Parent.GetParent<Unit>();
+        } 
+        
+        public static bool IsExpired(this Buff self)
+        {
+            return self.ExpireTime <= TimeInfo.Instance.ServerNow() + 1;
         } 
     }
 }

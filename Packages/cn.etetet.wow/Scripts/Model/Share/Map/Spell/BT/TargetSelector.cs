@@ -9,8 +9,8 @@ namespace ET
         [Sirenix.OdinInspector.ReadOnly]
         [Sirenix.OdinInspector.BoxGroup("输入参数")]
 #endif
-        [BTInput(typeof(Spell))]
-        public string Spell = BTEvnKey.Spell;
+        [BTInput(typeof(Buff))]
+        public string Buff = BTEvnKey.Buff;
     }
     
 

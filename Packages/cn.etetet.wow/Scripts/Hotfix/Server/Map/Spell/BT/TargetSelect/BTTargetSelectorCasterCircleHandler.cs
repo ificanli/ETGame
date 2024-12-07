@@ -7,11 +7,11 @@ namespace ET.Server
     {
         protected override int Run(TargetSelectorCasterCircle node, BTEnv env)
         {
-            Spell spell = env.GetEntity<Spell>(node.Spell);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
 
             List<EntityRef<Unit>> units = new ();
 
-            Unit caster = spell.GetCaster();
+            Unit caster = buff.GetCaster();
 
             Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
 

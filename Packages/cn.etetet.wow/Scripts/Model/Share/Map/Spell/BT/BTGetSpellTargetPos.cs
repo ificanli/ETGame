@@ -5,11 +5,11 @@ namespace ET
 {
     public class BTGetSpellTargetPos: BTNode
     {
-        [BTInput(typeof(Spell))]
+        [BTInput(typeof(Buff))]
 #if UNITY
         [Sirenix.OdinInspector.BoxGroup("输入参数")]
 #endif
-        public string Spell;
+        public string Buff;
 
         [BTOutput(typeof(float3))]
 #if UNITY

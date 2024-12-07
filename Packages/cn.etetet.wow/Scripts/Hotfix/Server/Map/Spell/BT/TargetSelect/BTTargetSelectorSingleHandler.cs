@@ -7,9 +7,9 @@ namespace ET.Server
     {
         protected override int Run(TargetSelectorSingle node, BTEnv env)
         {
-            Spell spell = env.GetEntity<Spell>(node.Spell);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
 
-            Unit unit = spell.GetCaster();
+            Unit unit = buff.GetCaster();
             
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             
@@ -45,7 +45,7 @@ namespace ET.Server
                 return TextConstDefine.SpellCast_TargetTooFar;
             }
             
-            spell.GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit);
+            buff.GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit);
             
             return 0;
         }

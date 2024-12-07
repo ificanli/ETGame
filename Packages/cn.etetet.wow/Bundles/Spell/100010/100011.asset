@@ -15,8 +15,7 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 2144152144740425326, guid: c7efcaa73a7c8874ca1b6795b80df662, type: 3}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -30,7 +29,7 @@ MonoBehaviour:
       Data: 100011
     - Name: Desc
       Entry: 1
-      Data: "\u66B4\u98CE\u96EA\u6BCF\u6CE2\u96EA"
+      Data: "\u66B4\u98CE\u96EA\u6BCF\u6CE2\u96EA\u6280\u80FD"
     - Name: Cost
       Entry: 7
       Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
@@ -61,9 +60,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
+    - Name: Buff
+      Entry: 6
+      Data: 
     - Name: Unit
       Entry: 1
       Data: Unit
@@ -85,237 +84,12 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: HitTime
-      Entry: 3
-      Data: 500
-    - Name: Duration
-      Entry: 3
-      Data: 500
     - Name: CD
       Entry: 3
       Data: 0
-    - Name: Flags
-      Entry: 7
-      Data: 4|System.Collections.Generic.HashSet`1[[ET.SpellFlags, ET.Model]], System.Core
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
+    - Name: BuffId
       Entry: 3
-      Data: 1
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: NoticeType
-      Entry: 3
-      Data: 2
-    - Name: Effects
-      Entry: 7
-      Data: 5|System.Collections.Generic.List`1[[ET.EffectNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 6|ET.EffectClientSpellAdd, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 7|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 8|ET.BTGetSpellCaster, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 9|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 10|ET.BTGetUnitTargetPos, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Pos
-      Entry: 1
-      Data: Pos
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 12|ET.Client.BTCreateEffectOnPos, ET.ModelView
-    - Name: Children
-      Entry: 7
-      Data: 13|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Pos
-      Entry: 1
-      Data: Pos
-    - Name: Effect
-      Entry: 10
-      Data: 0
-    - Name: Duration
-      Entry: 3
-      Data: 2000
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 14|ET.EffectServerSpellHit, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 15|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 16|ET.BTGetSpellTargetUnits, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 17|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
-    - Name: Units
-      Entry: 1
-      Data: Units
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 18|ET.BTForeachUnit, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 19|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 20|ET.BTNumericChange, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 21|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: NumericType
-      Entry: 3
-      Data: 1001
-    - Name: Value
-      Entry: 3
-      Data: -20
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Units
-      Entry: 1
-      Data: Units
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 200011
     - Name: 
       Entry: 8
       Data: 

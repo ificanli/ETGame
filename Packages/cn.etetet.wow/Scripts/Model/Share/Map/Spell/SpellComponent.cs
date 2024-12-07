@@ -7,13 +7,10 @@ namespace ET
     public class SpellComponent: Entity, IAwake
     {
         [BsonIgnore]
-        public EntityRef<Spell> Current { get; set; }
+        public EntityRef<Buff> Current { get; set; }
         
         public long CDTime { get; set; }
 
         public Dictionary<int, long> SpellCD = new();
-        
-        [BsonIgnore]
-        public MultiMapSet<int, EntityRef<Spell>> flagSpells = new();
     }
 }

@@ -27,15 +27,13 @@ namespace ET
             }
         }
 
-        public static Buff CreateBuff(this BuffComponent self, long buffId, int buffConfigId)
+        public static Buff CreateBuff(this BuffComponent self, long buffId, int buffConfigId, long casterId)
         {
             Buff buff = self.AddChildWithId<Buff, int>(buffId, buffConfigId);
-            
+            buff.Caster = casterId;
             buff.CreateTime = TimeInfo.Instance.ServerFrameTime();
             BuffConfig buffConfig = buff.GetConfig();
-            
             buff.Stack = buffConfig.Stack;
-
             foreach (BuffFlags buffFlag in buffConfig.Flags)
             {
                 self.flagBuffs.Add((int)buffFlag, buff);
@@ -54,8 +52,11 @@ namespace ET
             }
             if (buffConfig.Duration > 0)
             {
-                // 这里加1是为了保证tick time能tick完最后一次
-                buff.ExpireTime = buff.CreateTime + buffConfig.Duration + 1;
+                buff.ExpireTime = TimeInfo.Instance.ServerNow() + buffConfig.Duration;
+                if (buff.TickTime > 0)
+                {
+                    buff.ExpireTime += 1;
+                }
             }
 
             return buff;

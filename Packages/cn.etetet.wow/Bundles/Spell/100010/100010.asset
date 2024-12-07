@@ -52,9 +52,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
+    - Name: Buff
+      Entry: 6
+      Data: 
     - Name: NumericType
       Entry: 3
       Data: 1003
@@ -88,9 +88,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
+    - Name: Buff
+      Entry: 6
+      Data: 
     - Name: Pos
       Entry: 1
       Data: Pos
@@ -106,111 +106,12 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: HitTime
-      Entry: 3
-      Data: 0
-    - Name: Duration
-      Entry: 3
-      Data: 0
     - Name: CD
       Entry: 3
       Data: 5000
-    - Name: Flags
-      Entry: 7
-      Data: 6|System.Collections.Generic.HashSet`1[[ET.SpellFlags, ET.Model]], System.Core
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: NoticeType
+    - Name: BuffId
       Entry: 3
-      Data: 2
-    - Name: Effects
-      Entry: 7
-      Data: 7|System.Collections.Generic.List`1[[ET.EffectNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 8|ET.EffectServerSpellHit, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 9|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 10|ET.BTGetSpellCaster, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 12|ET.BTAddBuff, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 13|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: ConfigId
-      Entry: 3
-      Data: 200011
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Spell
-      Entry: 1
-      Data: Spell
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 200010
     - Name: 
       Entry: 8
       Data: 

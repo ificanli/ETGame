@@ -4,7 +4,7 @@
     {
         public static Buff CreateBuff(Unit unit, M2C_BuffAdd buffAdd)
         {
-            Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffAdd.BuffId, buffAdd.BuffConfigId);
+            Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffAdd.BuffId, buffAdd.BuffConfigId, buffAdd.CasterId);
             buff.ExpireTime = buffAdd.ExpireTime;
             buff.TickTime = buffAdd.TickTime;
             buff.CreateTime = buffAdd.CreateTime;
