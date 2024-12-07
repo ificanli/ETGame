@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
+using Sirenix.OdinInspector;
 
 namespace ET
 {
@@ -52,28 +53,31 @@ namespace ET
             ,UnityEngine.ISerializationCallbackReceiver
 #endif
     {
+        [LabelText("ID")]
         public int Id;
         
+        [LabelText("描述")]
         public string Desc;
         
-        /// <summary>持续时间</summary>
+        [LabelText("持续时间")]
         public int Duration = 10000;
 
-        /// <summary>Tick间隔时间</summary>
+        [LabelText("Tick间隔时间")]
         public int TickTime;
 
-        /// <summary>最大层数</summary>
+        [LabelText("最大层数")]
         public int MaxStack = 1;
 
+        [LabelText("堆栈")]
         public int Stack = 1;
 
-        /// <summary>叠加规则类型</summary>
+        [LabelText("叠加规则类型")]
         public OverLayRuleType OverLayRuleType;
 
-        /// <summary>移除条件</summary>
+        [LabelText("移除条件")]
         public HashSet<BuffFlags> Flags = new();
 
-        /// <summary>广播客户端类型</summary>
+        [LabelText("广播客户端类型")]
         public NoticeType NoticeType;
         
 #if UNITY
