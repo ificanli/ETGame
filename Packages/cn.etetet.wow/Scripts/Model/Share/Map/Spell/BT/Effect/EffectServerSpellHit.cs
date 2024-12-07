@@ -1,12 +1,14 @@
-﻿namespace ET
+﻿using Sirenix.OdinInspector;
+
+namespace ET
 {
+    [LabelText("技能效果 (服务器)")]
+    [HideReferenceObjectPicker]
     public class EffectServerSpellHit: EffectNode
     {
         [BTOutput(typeof(Spell))]
-#if UNITY
-        [Sirenix.OdinInspector.ReadOnly]
-        [Sirenix.OdinInspector.BoxGroup("输出参数")]
-#endif
+        [ReadOnly]
+        [BoxGroup("输出参数")]
         public string Spell = BTEvnKey.Spell;
     }
 }

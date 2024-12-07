@@ -11,9 +11,10 @@ namespace ET.Client
     [EnableClass]
     public class BuffScriptableObject : SerializedScriptableObject
     {
+        [Title("Buff 配置", TitleAlignment = TitleAlignments.Centered)]
         [NonSerialized, OdinSerialize]
-        public BuffConfig BuffConfig;
+        [HideLabel]
+        [HideReferenceObjectPicker]
+        public BuffConfig BuffConfig = new();
     }
 }
-
-

@@ -1,16 +1,17 @@
-﻿namespace ET
+﻿using Sirenix.OdinInspector;
+
+namespace ET
 {
-    // Buff被攻击的时候触发
+    [LabelText("Buff被攻击时触发 (服务器)")]
+    [HideReferenceObjectPicker]
     public class EffectServerBuffHitted: EffectNode
     {
         [BTOutput(typeof(Buff))]
-#if UNITY
-        [Sirenix.OdinInspector.ReadOnly]
-        [Sirenix.OdinInspector.BoxGroup("输出参数")]
-#endif
+        [ReadOnly]
+        [BoxGroup("输出参数")]
         public string Buff = BTEvnKey.Buff;
         
-        // 攻击者
+        [LabelText("攻击者")]
         public string Unit = BTEvnKey.Unit;
     }
 }

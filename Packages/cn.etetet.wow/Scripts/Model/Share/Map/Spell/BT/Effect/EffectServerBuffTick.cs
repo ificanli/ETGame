@@ -1,12 +1,14 @@
-﻿namespace ET
+﻿using Sirenix.OdinInspector;
+
+namespace ET
 {
+    [LabelText("效果Buff每帧 (服务器)")]
+    [HideReferenceObjectPicker]
     public class EffectServerBuffTick: EffectNode
     {
         [BTOutput(typeof(Buff))]
-#if UNITY
-        [Sirenix.OdinInspector.ReadOnly]
-        [Sirenix.OdinInspector.BoxGroup("输出参数")]
-#endif
+        [ReadOnly]
+        [BoxGroup("输出参数")]
         public string Buff = BTEvnKey.Buff;
     }
 }
