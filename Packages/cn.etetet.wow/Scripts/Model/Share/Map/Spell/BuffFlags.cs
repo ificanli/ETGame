@@ -4,6 +4,9 @@ namespace ET
 {
     public enum BuffFlags
     {
+        [LabelText("无")]
+        None = 0,
+
         [LabelText("超时")]
         TimeoutRemove = 1,
 

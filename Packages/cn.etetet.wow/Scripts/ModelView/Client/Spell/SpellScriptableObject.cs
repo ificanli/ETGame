@@ -11,9 +11,10 @@ namespace ET.Client
     [EnableClass]
     public class SpellScriptableObject : SerializedScriptableObject
     {
+        [Title("技能 配置", TitleAlignment = TitleAlignments.Centered)]
         [NonSerialized, OdinSerialize]
-        public SpellConfig SpellConfig;
+        [HideLabel]
+        [HideReferenceObjectPicker]
+        public SpellConfig SpellConfig = new();
     }
 }
-
-
