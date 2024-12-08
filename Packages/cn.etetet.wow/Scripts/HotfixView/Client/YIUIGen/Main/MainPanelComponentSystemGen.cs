@@ -38,6 +38,7 @@ namespace ET.Client
             self.UIPanel.CachePanelTime = 10;
 
             self.u_UIPlayerInfo = self.UIBase.CDETable.FindUIOwner<ET.Client.PlayerInfoComponent>("PlayerInfo");
+            self.u_UICastFrame = self.UIBase.CDETable.FindUIOwner<ET.Client.CastSliderComponent>("CastFrame");
 
         }
     }

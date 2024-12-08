@@ -24,6 +24,8 @@ namespace ET.Client
         public YIUIPanelComponent UIPanel => u_UIPanel;
         public EntityRef<ET.Client.PlayerInfoComponent> u_UIPlayerInfo;
         public ET.Client.PlayerInfoComponent UIPlayerInfo => u_UIPlayerInfo;
+        public EntityRef<ET.Client.CastSliderComponent> u_UICastFrame;
+        public ET.Client.CastSliderComponent UICastFrame => u_UICastFrame;
 
     }
 }

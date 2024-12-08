@@ -50,7 +50,10 @@ MonoBehaviour:
       Data: 1|System.Collections.Generic.HashSet`1[[ET.BuffFlags, ET.Model]], System.Core
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 3
+      Data: 5
     - Name: 
       Entry: 13
       Data: 
@@ -209,7 +212,7 @@ MonoBehaviour:
       Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 15|ET.BTAnimatorSetBool, ET.Model
@@ -238,6 +241,36 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 17|ET.BTShowCastSlider, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: IsIncrease
+      Entry: 5
+      Data: true
+    - Name: ShowDisplayName
+      Entry: 1
+      Data: BBB
+    - Name: IconName
+      Entry: 1
+      Data: Spell_Frost_FrostBolt02
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -257,19 +290,19 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 17|ET.EffectClientBuffRemove, ET.Model
+      Data: 19|ET.EffectClientBuffRemove, ET.Model
     - Name: Children
       Entry: 7
-      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 20|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 19|ET.BTAnimatorSetTrigger, ET.Model
+      Data: 21|ET.BTAnimatorSetTrigger, ET.Model
     - Name: Children
       Entry: 7
-      Data: 20|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 22|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -290,10 +323,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 21|ET.BTAnimatorSetBool, ET.Model
+      Data: 23|ET.BTAnimatorSetBool, ET.Model
     - Name: Children
       Entry: 7
-      Data: 22|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 24|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
