@@ -650,7 +650,7 @@ GameObject:
   - component: {fileID: 3192166447302501044}
   - component: {fileID: 364953675674964696}
   - component: {fileID: 662164325382122639}
-  - component: {fileID: 1850931710824944535}
+  - component: {fileID: 3351267984759005420}
   m_Layer: 5
   m_Name: Class Circle
   m_TagString: Untagged
@@ -904,7 +904,7 @@ MonoBehaviour:
   m_BooleanLogic: 0
   m_TransitionMode: 0
   m_TransitionTime: 0.5
---- !u!114 &1850931710824944535
+--- !u!114 &3351267984759005420
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -913,7 +913,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2803569501434031468}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1bc0d09ab654b1e86dae8222b40392d, type: 3}
+  m_Script: {fileID: 11500000, guid: 765743c7e60343ce9116c8a438ecffef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   serializationData:
@@ -921,7 +921,7 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 4352423813013357400}
-    - {fileID: 1850931710824944535}
+    - {fileID: 3351267984759005420}
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -1053,7 +1053,8 @@ MonoBehaviour:
   m_DataTable: {fileID: 4352423813013357400}
   m_Image: {fileID: 364953675674964696}
   m_SetNativeSize: 0
-  m_ChangeEnabled: 0
+  m_ChangeEnabled: 1
+  m_Format: ClassIcon2_{0}
 --- !u!1 &3668875489530074241
 GameObject:
   m_ObjectHideFlags: 0
@@ -1611,6 +1612,7 @@ GameObject:
   - component: {fileID: 5693449121309480566}
   - component: {fileID: 5693449121309480568}
   - component: {fileID: 5693449121309480569}
+  - component: {fileID: 2484468238127625822}
   m_Layer: 5
   m_Name: Portrait
   m_TagString: Untagged
@@ -1666,8 +1668,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7365534676048121148, guid: 1d14289818867fb4ba6668801ecc9598,
-    type: 3}
+  m_Sprite: {fileID: 21300000, guid: b479a9d0a94b5d443a32b1d9528b00c7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1677,6 +1678,156 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2484468238127625822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5693449121309480567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1bc0d09ab654b1e86dae8222b40392d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects:
+    - {fileID: 4352423813013357400}
+    - {fileID: 2484468238127625822}
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: m_DataSelectDic
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[YIUIFramework.UIDataSelect,
+        ET.YIUIFramework]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: $k
+      Entry: 1
+      Data: u_DataIcon
+    - Name: $v
+      Entry: 7
+      Data: 2|YIUIFramework.UIDataSelect, ET.YIUIFramework
+    - Name: m_Data
+      Entry: 7
+      Data: 3|YIUIFramework.UIData, ET.YIUIFramework
+    - Name: m_Name
+      Entry: 1
+      Data: u_DataIcon
+    - Name: m_DataGuid
+      Entry: 3
+      Data: 2065235937
+    - Name: m_DataValue
+      Entry: 7
+      Data: 4|YIUIFramework.UIDataValueString, ET.YIUIFramework
+    - Name: m_Value
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: OnDataRemoveAction
+      Entry: 7
+      Data: 5|System.Action`1[[YIUIFramework.UIData, ET.YIUIFramework]], mscorlib
+    - Name: target
+      Entry: 10
+      Data: 0
+    - Name: declaringType
+      Entry: 7
+      Data: 6|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: YIUIFramework.UIBindDataTable, ET.YIUIFramework
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: methodName
+      Entry: 1
+      Data: OnRemoveData
+    - Name: delegateType
+      Entry: 7
+      Data: 7|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: System.Action`1[[YIUIFramework.UIData, ET.YIUIFramework]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: signature
+      Entry: 7
+      Data: 8|System.Type[], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 9|System.RuntimeType, mscorlib
+    - Name: 
+      Entry: 1
+      Data: YIUIFramework.UIData, ET.YIUIFramework
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: m_Binds
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[YIUIFramework.UIDataBind, ET.YIUIFramework]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 1
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  m_DataTable: {fileID: 4352423813013357400}
+  m_Image: {fileID: 5693449121309480569}
+  m_SetNativeSize: 0
+  m_ChangeEnabled: 1
 --- !u!1 &5693449121568806258
 GameObject:
   m_ObjectHideFlags: 0
@@ -2917,11 +3068,11 @@ RectTransform:
   - {fileID: 5693449122430261808}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 68.4, y: -61.1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 200}
-  m_Pivot: {x: 0, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5234028287213861174
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3117,9 +3268,10 @@ MonoBehaviour:
     - {fileID: 6070524257161689175}
     - {fileID: 4518843495745780935}
     - {fileID: 1079400219720740313}
+    - {fileID: 2484468238127625822}
     - {fileID: 2004286101679632534}
     - {fileID: 4678778681453171454}
-    - {fileID: 1850931710824944535}
+    - {fileID: 3351267984759005420}
     - {fileID: 662164325382122639}
     - {fileID: 958350715808843766}
     - {fileID: 7614246285141847817}
@@ -3619,7 +3771,10 @@ MonoBehaviour:
         mscorlib
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 10
+      Data: 4
     - Name: 
       Entry: 13
       Data: 
@@ -3698,7 +3853,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 10
-      Data: 4
+      Data: 5
     - Name: 
       Entry: 13
       Data: 
@@ -3777,7 +3932,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 10
-      Data: 5
+      Data: 6
     - Name: 
       Entry: 13
       Data: 
@@ -3856,7 +4011,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 10
-      Data: 6
+      Data: 7
     - Name: 
       Entry: 13
       Data: 
@@ -3935,7 +4090,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 10
-      Data: 7
+      Data: 8
     - Name: 
       Entry: 13
       Data: 
@@ -4014,13 +4169,13 @@ MonoBehaviour:
       Data: 3
     - Name: 
       Entry: 10
-      Data: 8
-    - Name: 
-      Entry: 10
       Data: 9
     - Name: 
       Entry: 10
       Data: 10
+    - Name: 
+      Entry: 10
+      Data: 11
     - Name: 
       Entry: 13
       Data: 
@@ -5136,7 +5291,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6369958075591084370
 RectTransform:
   m_ObjectHideFlags: 0

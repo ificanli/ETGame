@@ -20,6 +20,8 @@ namespace ET
             Id = _buf.ReadInt();
             Type = _buf.ReadInt();
             Name = _buf.ReadString();
+            HeadIcon = _buf.ReadString();
+            ClassType = (EClassType)_buf.ReadInt();
 
             EndInit();
         }
@@ -32,6 +34,8 @@ namespace ET
         public readonly int Id;
         public readonly int Type;
         public readonly string Name;
+        public readonly string HeadIcon;
+        public readonly EClassType ClassType;
     
         public const int __ID__ = -568528378;
         public override int GetTypeId() => __ID__;
@@ -47,6 +51,8 @@ namespace ET
             + "Id:" + Id + ","
             + "Type:" + Type + ","
             + "Name:" + Name + ","
+            + "headIcon:" + HeadIcon + ","
+            + "classType:" + ClassType + ","
             + "}";
         }
 

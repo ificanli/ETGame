@@ -57,6 +57,10 @@ namespace ET.Client
         {
             self.m_UnitConfig = UnitConfigCategory.Instance.Get(self.Unit.ConfigId);
             self.u_DataName.SetValue(self.m_UnitConfig.Name);
+            self.u_DataIcon.SetValue(self.m_UnitConfig.HeadIcon);
+            var classType = self.m_UnitConfig.ClassType;
+            self.u_DataShowClass.SetValue(classType != EClassType.None);
+            self.u_DataClass.SetValue(classType.ToString());
 
             self.UpdateHP();
             self.UpdateMP();
@@ -90,6 +94,29 @@ namespace ET.Client
         private static async ETTask OnEventClickInfoInvoke(this UnitInfoComponent self)
         {
             await ETTask.CompletedTask;
+            if (self.Unit == null)
+            {
+                return;
+            }
+
+            var player = UnitHelper.GetMyUnitFromClientScene(self.Fiber().Root);
+            if (player == null)
+            {
+                return;
+            }
+
+            var targetComponent = player.GetComponent<TargetComponent>();
+
+            if (self.Unit == targetComponent.Target)
+            {
+                return;
+            }
+
+            targetComponent.Unit = self.Unit;
+
+            C2M_SelectTarget c2MSelectTarget = C2M_SelectTarget.Create();
+            c2MSelectTarget.TargetUnitId = self.Unit.Id;
+            player.Root().GetComponent<ClientSenderComponent>().Send(c2MSelectTarget);
         }
 
         #endregion YIUIEvent结束

@@ -3,6 +3,7 @@
     "Id": 1001,
     "Type": 1,
     "Name": "Mage",
+    "class_type": 5,
     "KV": [
       1010,
       56000,
@@ -36,6 +37,7 @@
     "Id": 1002,
     "Type": 2,
     "Name": "TrainingDummy",
+    "class_type": 1,
     "KV": [
       1010,
       56000,
@@ -69,6 +71,7 @@
     "Id": 1003,
     "Type": 2,
     "Name": "TrainingDummy",
+    "class_type": 2,
     "KV": [
       1010,
       58740,
@@ -102,6 +105,7 @@
     "Id": 1004,
     "Type": 2,
     "Name": "Boar",
+    "class_type": 3,
     "KV": [
       1010,
       21600,
@@ -135,6 +139,7 @@
     "Id": 1005,
     "Type": 2,
     "Name": "Boar",
+    "class_type": 4,
     "KV": [
       1010,
       56000,
@@ -168,6 +173,7 @@
     "Id": 1006,
     "Type": 2,
     "Name": "Boar",
+    "class_type": 5,
     "KV": [
       1010,
       36310,
@@ -201,6 +207,7 @@
     "Id": 1007,
     "Type": 2,
     "Name": "Boar",
+    "class_type": 6,
     "KV": [
       1010,
       67170,
@@ -234,6 +241,7 @@
     "Id": 1008,
     "Type": 2,
     "Name": "Boar",
+    "class_type": 7,
     "KV": [
       1010,
       59600,
@@ -267,6 +275,7 @@
     "Id": 1009,
     "Type": 2,
     "Name": "Bear",
+    "class_type": 8,
     "KV": [
       1010,
       58740,
@@ -300,6 +309,7 @@
     "Id": 1010,
     "Type": 2,
     "Name": "Bear",
+    "class_type": 9,
     "KV": [
       1010,
       58740,
@@ -333,6 +343,7 @@
     "Id": 1011,
     "Type": 2,
     "Name": "Bear",
+    "class_type": 10,
     "KV": [
       1010,
       67480,
@@ -366,6 +377,7 @@
     "Id": 1012,
     "Type": 2,
     "Name": "Bear",
+    "class_type": 11,
     "KV": [
       1010,
       67480,
@@ -399,6 +411,7 @@
     "Id": 1013,
     "Type": 2,
     "Name": "Bear",
+    "class_type": 12,
     "KV": [
       1010,
       67480,

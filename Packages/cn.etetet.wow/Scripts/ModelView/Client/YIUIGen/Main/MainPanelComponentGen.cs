@@ -22,6 +22,8 @@ namespace ET.Client
         public YIUIWindowComponent UIWindow => u_UIWindow;
         public EntityRef<YIUIPanelComponent> u_UIPanel;
         public YIUIPanelComponent UIPanel => u_UIPanel;
+        public EntityRef<ET.Client.TargetTargetInfoComponent> u_UITargetTargetInfo;
+        public ET.Client.TargetTargetInfoComponent UITargetTargetInfo => u_UITargetTargetInfo;
         public EntityRef<ET.Client.TargetInfoComponent> u_UITargetInfo;
         public ET.Client.TargetInfoComponent UITargetInfo => u_UITargetInfo;
         public EntityRef<ET.Client.PlayerInfoComponent> u_UIPlayerInfo;

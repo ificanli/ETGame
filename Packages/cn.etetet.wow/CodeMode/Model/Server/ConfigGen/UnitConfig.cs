@@ -20,6 +20,7 @@ namespace ET
             Id = _buf.ReadInt();
             Type = _buf.ReadInt();
             Name = _buf.ReadString();
+            ClassType = (EClassType)_buf.ReadInt();
             {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);KV = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); KV[__index0] = __e0;}}
 
             EndInit();
@@ -33,6 +34,7 @@ namespace ET
         public readonly int Id;
         public readonly int Type;
         public readonly string Name;
+        public readonly EClassType ClassType;
         public readonly int[] KV;
     
         public const int __ID__ = -568528378;
@@ -49,6 +51,7 @@ namespace ET
             + "Id:" + Id + ","
             + "Type:" + Type + ","
             + "Name:" + Name + ","
+            + "classType:" + ClassType + ","
             + "KV:" + Luban.StringUtil.CollectionToString(KV) + ","
             + "}";
         }
