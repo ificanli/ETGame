@@ -7,31 +7,31 @@ namespace ET.Client
 {
     /// <summary>
     /// Author  Lsy
-    /// Date    2024.12.7
+    /// Date    2024.12.8
     /// Desc
     /// </summary>
-    [FriendOf(typeof(PlayerInfoComponent))]
+    [FriendOf(typeof(TargetInfoComponent))]
     [FriendOf(typeof(UnitInfoComponent))]
-    public static partial class PlayerInfoComponentSystem
+    public static partial class TargetInfoComponentSystem
     {
         [EntitySystem]
-        private static void YIUIInitialize(this PlayerInfoComponent self)
+        private static void YIUIInitialize(this TargetInfoComponent self)
         {
-            self.UpdateInfo();
-            self.UIUnitInfo.u_EventClickInfo.Add(self, PlayerInfoComponent.OnEventClickInfoInvoke);
+            self.UIBase.SetActive(false);
+            self.UIUnitInfo.u_EventClickInfo.Add(self, TargetInfoComponent.OnEventClickInfoInvoke);
         }
 
         [EntitySystem]
-        private static void Destroy(this PlayerInfoComponent self)
+        private static void Destroy(this TargetInfoComponent self)
         {
         }
 
-        private static void UpdateInfo(this PlayerInfoComponent self)
+        private static void UpdateInfo(this TargetInfoComponent self)
         {
             self.m_Unit = UnitHelper.GetMyUnitFromClientScene(self.Fiber().Root);
             if (self.Unit == null)
             {
-                Log.Error($"没有找到玩家实体");
+                Log.Error($"没有找到目标实体");
                 return;
             }
 
@@ -41,11 +41,11 @@ namespace ET.Client
 
         #region YIUIEvent开始
 
-        [YIUIInvoke(PlayerInfoComponent.OnEventClickInfoInvoke)]
-        private static async ETTask OnEventClickInfoInvoke(this PlayerInfoComponent self)
+        [YIUIInvoke(TargetInfoComponent.OnEventClickInfoInvoke)]
+        private static async ETTask OnEventClickInfoInvoke(this TargetInfoComponent self)
         {
             await ETTask.CompletedTask;
-            Log.Info($"点击了自己的头像 {self.m_UnitConfig.Name}");
+            Log.Info($"点击了目标的头像 {self.m_UnitConfig.Name}");
         }
 
         #endregion YIUIEvent结束

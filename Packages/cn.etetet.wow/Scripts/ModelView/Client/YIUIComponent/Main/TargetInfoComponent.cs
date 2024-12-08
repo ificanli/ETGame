@@ -7,10 +7,10 @@ namespace ET.Client
 {
     /// <summary>
     /// Author  Lsy
-    /// Date    2024.12.7
+    /// Date    2024.12.8
     /// Desc
     /// </summary>
-    public partial class PlayerInfoComponent : Entity
+    public partial class TargetInfoComponent : Entity
     {
         public EntityRef<Unit> m_Unit;
         public Unit            Unit => m_Unit;

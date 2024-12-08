@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4352423813013357400}
   - component: {fileID: 9179415547881269976}
   m_Layer: 5
-  m_Name: PlayerInfo
+  m_Name: TargetInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,11 +36,11 @@ RectTransform:
   - {fileID: 3635676325894175453}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 68.4, y: -61.1}
-  m_SizeDelta: {x: 84.3101, y: 93.2021}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 47.14337, y: -70.29999}
+  m_SizeDelta: {x: 326.1162, y: 102.1246}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5234028287213861174
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -154,7 +154,7 @@ MonoBehaviour:
   DataTable: {fileID: 4352423813013357400}
   EventTable: {fileID: 9179415547881269976}
   PkgName: Main
-  ResName: PlayerInfo
+  ResName: TargetInfo
   UICodeType: 2
   WindowOption: 0
   PanelLayer: 3
@@ -459,12 +459,12 @@ PrefabInstance:
         type: 3}
       propertyPath: 'serializationData.ReferencedUnityObjects.Array.data[2]'
       value: 
-      objectReference: {fileID: 6483048027944805846}
+      objectReference: {fileID: 134030574761664387}
     - target: {fileID: 3571206527059498332, guid: 277bb39aee6d0cf448998ffc180bc178,
         type: 3}
       propertyPath: 'serializationData.ReferencedUnityObjects.Array.data[3]'
       value: 
-      objectReference: {fileID: 134030574761664387}
+      objectReference: {fileID: 6483048027944805846}
     - target: {fileID: 4089869478118180046, guid: 277bb39aee6d0cf448998ffc180bc178,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -486,12 +486,12 @@ PrefabInstance:
         type: 3}
       propertyPath: 'serializationData.ReferencedUnityObjects.Array.data[9]'
       value: 
-      objectReference: {fileID: 6483048027944805846}
+      objectReference: {fileID: 134030574761664387}
     - target: {fileID: 4352423813013357400, guid: 277bb39aee6d0cf448998ffc180bc178,
         type: 3}
       propertyPath: 'serializationData.ReferencedUnityObjects.Array.data[10]'
       value: 
-      objectReference: {fileID: 134030574761664387}
+      objectReference: {fileID: 6483048027944805846}
     - target: {fileID: 4518843495745780935, guid: 277bb39aee6d0cf448998ffc180bc178,
         type: 3}
       propertyPath: serializationData.Prefab
@@ -645,12 +645,12 @@ PrefabInstance:
         type: 3}
       propertyPath: 'serializationData.ReferencedUnityObjects.Array.data[2]'
       value: 
-      objectReference: {fileID: 6483048027944805846}
+      objectReference: {fileID: 134030574761664387}
     - target: {fileID: 6751856360974923714, guid: 277bb39aee6d0cf448998ffc180bc178,
         type: 3}
       propertyPath: 'serializationData.ReferencedUnityObjects.Array.data[3]'
       value: 
-      objectReference: {fileID: 134030574761664387}
+      objectReference: {fileID: 6483048027944805846}
     - target: {fileID: 7142915178310409964, guid: 277bb39aee6d0cf448998ffc180bc178,
         type: 3}
       propertyPath: m_Name
@@ -677,12 +677,12 @@ PrefabInstance:
         type: 3}
       propertyPath: 'serializationData.ReferencedUnityObjects.Array.data[2]'
       value: 
-      objectReference: {fileID: 6483048027944805846}
+      objectReference: {fileID: 134030574761664387}
     - target: {fileID: 7614246285141847817, guid: 277bb39aee6d0cf448998ffc180bc178,
         type: 3}
       propertyPath: 'serializationData.ReferencedUnityObjects.Array.data[3]'
       value: 
-      objectReference: {fileID: 134030574761664387}
+      objectReference: {fileID: 6483048027944805846}
     - target: {fileID: 8933307393587041823, guid: 277bb39aee6d0cf448998ffc180bc178,
         type: 3}
       propertyPath: serializationData.Prefab

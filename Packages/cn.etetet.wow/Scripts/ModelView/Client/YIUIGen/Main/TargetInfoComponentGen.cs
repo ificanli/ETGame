@@ -11,10 +11,10 @@ namespace ET.Client
     /// </summary>
     [YIUI(EUICodeType.Common)]
     [ComponentOf(typeof(YIUIChild))]
-    public partial class PlayerInfoComponent : Entity, IDestroy, IAwake, IYIUIBind, IYIUIInitialize
+    public partial class TargetInfoComponent : Entity, IDestroy, IAwake, IYIUIBind, IYIUIInitialize
     {
         public const string PkgName = "Main";
-        public const string ResName = "PlayerInfo";
+        public const string ResName = "TargetInfo";
 
         public EntityRef<YIUIChild> u_UIBase;
         public YIUIChild UIBase => u_UIBase;
@@ -22,7 +22,7 @@ namespace ET.Client
         public ET.Client.UnitInfoComponent UIUnitInfo => u_UIUnitInfo;
         public UITaskEventP0 u_EventClickInfo;
         public UITaskEventHandleP0 u_EventClickInfoHandle;
-        public const string OnEventClickInfoInvoke = "PlayerInfoComponent.OnEventClickInfoInvoke";
+        public const string OnEventClickInfoInvoke = "TargetInfoComponent.OnEventClickInfoInvoke";
 
     }
 }
