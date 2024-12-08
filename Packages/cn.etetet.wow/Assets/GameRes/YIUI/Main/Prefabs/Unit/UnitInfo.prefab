@@ -250,7 +250,7 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 4352423813013357400}
-    - {fileID: 6751856360974923714}
+    - {fileID: 958350715808843766}
     - {fileID: 7614246285141847817}
     - {fileID: 3571206527059498332}
     SerializedBytesString: 
@@ -1350,7 +1350,7 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 4352423813013357400}
-    - {fileID: 6751856360974923714}
+    - {fileID: 958350715808843766}
     - {fileID: 7614246285141847817}
     - {fileID: 3571206527059498332}
     SerializedBytesString: 
@@ -2025,7 +2025,7 @@ MonoBehaviour:
       Data: 
   m_DataTable: {fileID: 4352423813013357400}
   m_Slider: {fileID: 5693449121912972215}
-  m_TweenSpeed: 2
+  m_TweenSpeed: 0
   m_TweenType: 2
 --- !u!1 &5693449122544576353
 GameObject:
@@ -2586,7 +2586,7 @@ MonoBehaviour:
       Data: 
   m_DataTable: {fileID: 4352423813013357400}
   m_Slider: {fileID: 5693449123330438465}
-  m_TweenSpeed: 2
+  m_TweenSpeed: 0
   m_TweenType: 2
 --- !u!1 &6249485261433105104
 GameObject:
@@ -2893,7 +2893,7 @@ GameObject:
   - component: {fileID: 4352423813013357400}
   - component: {fileID: 9179415547881269976}
   - component: {fileID: 7966937558484619625}
-  - component: {fileID: 6751856360974923714}
+  - component: {fileID: 958350715808843766}
   m_Layer: 5
   m_Name: UnitInfo
   m_TagString: Untagged
@@ -3121,7 +3121,7 @@ MonoBehaviour:
     - {fileID: 4678778681453171454}
     - {fileID: 1850931710824944535}
     - {fileID: 662164325382122639}
-    - {fileID: 6751856360974923714}
+    - {fileID: 958350715808843766}
     - {fileID: 7614246285141847817}
     - {fileID: 3571206527059498332}
     SerializedBytesString: 
@@ -4203,16 +4203,16 @@ Animation:
   m_GameObject: {fileID: 7142915178310409964}
   m_Enabled: 1
   serializedVersion: 4
-  m_Animation: {fileID: 7400000, guid: 072843cf7f2b8e24097d4570e806e287, type: 2}
+  m_Animation: {fileID: 0}
   m_Animations:
-  - {fileID: 7400000, guid: 7af0b6c52d47d98479b3f4180e5e38b5, type: 2}
   - {fileID: 7400000, guid: 072843cf7f2b8e24097d4570e806e287, type: 2}
+  - {fileID: 7400000, guid: 7af0b6c52d47d98479b3f4180e5e38b5, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
   m_UpdateMode: 0
   m_CullingType: 0
---- !u!114 &6751856360974923714
+--- !u!114 &958350715808843766
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4229,7 +4229,7 @@ MonoBehaviour:
     SerializedBytes: 
     ReferencedUnityObjects:
     - {fileID: 4352423813013357400}
-    - {fileID: 6751856360974923714}
+    - {fileID: 958350715808843766}
     - {fileID: 7614246285141847817}
     - {fileID: 3571206527059498332}
     SerializedBytesString: 
@@ -4369,8 +4369,8 @@ MonoBehaviour:
   m_DataTable: {fileID: 4352423813013357400}
   m_Animation: {fileID: 7966937558484619625}
   m_AllClipName:
-  - UnitInfoRight
   - UnitInfoLeft
+  - UnitInfoRight
 --- !u!1 &7290715425724220226
 GameObject:
   m_ObjectHideFlags: 0

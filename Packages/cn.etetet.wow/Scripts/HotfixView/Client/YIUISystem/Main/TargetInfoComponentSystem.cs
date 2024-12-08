@@ -17,8 +17,21 @@ namespace ET.Client
         [EntitySystem]
         private static void YIUIInitialize(this TargetInfoComponent self)
         {
-            self.UIBase.SetActive(false);
+            self.SetActive(false, true);
             self.UIUnitInfo.u_EventClickInfo.Add(self, TargetInfoComponent.OnEventClickInfoInvoke);
+            var playerUnit = UnitHelper.GetMyUnitFromClientScene(self.Fiber().Root);
+            if (playerUnit == null)
+            {
+                Log.Error($"没有找到玩家实体");
+                return;
+            }
+
+            self.m_TargetComponent = playerUnit.GetComponent<TargetComponent>();
+            if (self.TargetComponent == null)
+            {
+                Log.Error($"没有找到目标组件");
+                return;
+            }
         }
 
         [EntitySystem]
@@ -26,17 +39,42 @@ namespace ET.Client
         {
         }
 
-        private static void UpdateInfo(this TargetInfoComponent self)
+        private static void SetActive(this TargetInfoComponent self, bool active, bool force = false)
         {
-            self.m_Unit = UnitHelper.GetMyUnitFromClientScene(self.Fiber().Root);
-            if (self.Unit == null)
+            if (active == self.m_CurrentActiveState && !force)
             {
-                Log.Error($"没有找到目标实体");
                 return;
             }
 
+            self.m_CurrentActiveState = active;
+            self.UIBase.SetActive(active);
+        }
+
+        private static void UpdateTarget(this TargetInfoComponent self, Unit target)
+        {
+            if (target == self.Unit) return;
+            self.m_Unit = target;
+            if (self.Unit == null) return;
+
+            self.UIUnitInfo.u_DataLayoutAnim.SetValue("UnitInfoRight", true);
             self.m_UnitConfig = UnitConfigCategory.Instance.Get(self.Unit.ConfigId);
             self.UIUnitInfo.RefreshUnitInfo(self.Unit);
+        }
+
+        [EntitySystem]
+        private static void LateUpdate(this TargetInfoComponent self)
+        {
+            if (self.TargetComponent == null) return;
+            var target = self.TargetComponent.Target;
+            if (target == null)
+            {
+                self.SetActive(false);
+                return;
+            }
+
+            self.SetActive(true);
+
+            self.UpdateTarget(target);
         }
 
         #region YIUIEvent开始

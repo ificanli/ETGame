@@ -17,6 +17,7 @@ namespace ET.Client
         [EntitySystem]
         private static void YIUIInitialize(this PlayerInfoComponent self)
         {
+            self.UIUnitInfo.u_DataLayoutAnim.SetValue("UnitInfoLeft");
             self.UpdateInfo();
             self.UIUnitInfo.u_EventClickInfo.Add(self, PlayerInfoComponent.OnEventClickInfoInvoke);
         }
