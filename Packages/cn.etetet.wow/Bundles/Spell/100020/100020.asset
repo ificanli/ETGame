@@ -90,12 +90,18 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Owner
+      Entry: 1
+      Data: Owner
     - Name: Unit
       Entry: 1
       Data: Unit
     - Name: MaxDistance
-      Entry: 4
-      Data: 40000
+      Entry: 3
+      Data: 0
     - Name: UnitType
       Entry: 3
       Data: 7

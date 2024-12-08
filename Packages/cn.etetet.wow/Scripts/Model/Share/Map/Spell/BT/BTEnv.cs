@@ -35,6 +35,7 @@ namespace ET
     public static class BTEvnKey
     {
         public const string Buff = "Buff";
+        public const string Owner = "Owner";
         public const string Unit = "Unit";
         public const string Caster = "Caster";
         public const string Attacker = "Attacker";

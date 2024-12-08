@@ -9,9 +9,9 @@ namespace ET.Server
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
 
-            Unit unit = buff.GetCaster();
+            Unit caster = env.GetEntity<Unit>(node.Caster);
             
-            TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
+            TargetComponent targetComponent = caster.GetComponent<TargetComponent>();
             
             Unit target = targetComponent.Unit;
             if (target == null)
@@ -37,12 +37,19 @@ namespace ET.Server
                 }
             }
 
-            float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
+            float unitRadius = caster.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
             float targetRadius = target.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
-            float distance = math.distance(unit.Position, target.Position);
+            float distance = math.distance(caster.Position, target.Position);
             if (distance > node.MaxDistance / 1000f + unitRadius + targetRadius)
             {
                 return TextConstDefine.SpellCast_TargetTooFar;
+            }
+            
+            
+            float v = math.dot(caster.Forward, target.Position - caster.Position);
+            if (v < 0)
+            {
+                return TextConstDefine.SpellCast_TargetNotInFrontOfCaster;
             }
             
             buff.GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit.Entity.Id);

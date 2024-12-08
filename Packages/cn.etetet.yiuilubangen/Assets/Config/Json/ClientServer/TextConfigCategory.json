@@ -34,5 +34,11 @@
     "Name": "SpellCast_HPNotEnought",
     "CN": "生命值不足！",
     "EN": ""
+  },
+  {
+    "Id": 10006,
+    "Name": "SpellCast_TargetNotInFrontOfCaster",
+    "CN": "目标不在前方",
+    "EN": ""
   }
 ]

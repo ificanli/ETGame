@@ -63,6 +63,12 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Owner
+      Entry: 1
+      Data: Owner
     - Name: Unit
       Entry: 1
       Data: Unit

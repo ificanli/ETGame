@@ -14,5 +14,7 @@ namespace ET
 
 		public const int SpellCast_HPNotEnought = 10005;
 
+		public const int SpellCast_TargetNotInFrontOfCaster = 10006;
+
 	}
 }
