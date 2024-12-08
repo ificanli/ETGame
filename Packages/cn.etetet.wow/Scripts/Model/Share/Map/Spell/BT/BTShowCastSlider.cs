@@ -21,7 +21,7 @@ namespace ET
         [InfoBox("如: 寒冰箭读条就是增长，暴风雪引导就是减少")]
         public bool IsIncrease = true;
 
-        #if UNITY
+#if UNITY
         [BoxGroup("显示信息", CenterLabel = true)]
         [LabelText("进度条显示名称")]
         public string ShowDisplayName;
@@ -69,6 +69,7 @@ namespace ET
 
             LastIconName = IconName;
 
+#if UNITY_EDITOR
             foreach (string guid in AssetDatabase.FindAssets($"{IconName} t:Sprite", null))
             {
                 var path   = AssetDatabase.GUIDToAssetPath(guid);
@@ -83,10 +84,10 @@ namespace ET
                     break;
                 }
             }
-
+#endif
             return true;
         }
 
-        #endif
+#endif
     }
 }

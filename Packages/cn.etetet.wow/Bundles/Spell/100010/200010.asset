@@ -182,7 +182,7 @@ MonoBehaviour:
       Data: false
     - Name: ShowDisplayName
       Entry: 1
-      Data: AAA
+      Data: Blizzard
     - Name: IconName
       Entry: 1
       Data: Spell_Frost_IceStorm

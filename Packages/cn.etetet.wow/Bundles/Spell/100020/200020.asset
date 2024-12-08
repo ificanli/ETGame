@@ -263,7 +263,7 @@ MonoBehaviour:
       Data: true
     - Name: ShowDisplayName
       Entry: 1
-      Data: BBB
+      Data: Frostbolt
     - Name: IconName
       Entry: 1
       Data: Spell_Frost_FrostBolt02
