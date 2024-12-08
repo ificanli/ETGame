@@ -14,14 +14,16 @@ namespace ET.Client
     public static partial class UnitInfoComponentSystem
     {
         [EntitySystem]
-        private static async ETTask DynamicEvent(this ET.Client.UnitInfoComponent self, ET.NumbericChange param1)
+        private static async ETTask DynamicEvent(this UnitInfoComponent self, NumbericChange data)
         {
-            if (param1.Unit != self.Unit) return;
-            await ETTask.CompletedTask;
+            if (self.Unit == null || data.Unit == null) return;
+            if (data.Unit != self.Unit) return;
 
             //临时处理全监听
             self.UpdateHP();
             self.UpdateMP();
+
+            await ETTask.CompletedTask;
         }
 
         [EntitySystem]

@@ -83,7 +83,8 @@ namespace ET.Client
         private static async ETTask OnEventClickInfoInvoke(this TargetInfoComponent self)
         {
             await ETTask.CompletedTask;
-            Log.Info($"点击了目标的头像 {self.m_UnitConfig.Name}");
+            if (self.Unit == null) return;
+            Log.Info($"点击了目标的头像 {self.m_UnitConfig.Name},{self.Unit.Id}");
         }
 
         #endregion YIUIEvent结束
