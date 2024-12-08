@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
+using Sirenix.OdinInspector;
 
 namespace ET
 {
@@ -9,17 +10,17 @@ namespace ET
     {
         public int Id;
     }
-    
+
     public partial class BuffConfigCategory : Singleton<BuffConfigCategory>, ISingletonAwake
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private Dictionary<int, BuffConfig> dict = new();
-        
+
         public void Awake()
         {
         }
-		
+
         public BuffConfig Get(int id)
         {
             this.dict.TryGetValue(id, out BuffConfig item);
@@ -29,7 +30,7 @@ namespace ET
                 return item;
             }
 
-            item = EventSystem.Instance.Invoke<BuffConfigLoader, BuffConfig>(new BuffConfigLoader() {Id = id});
+            item = EventSystem.Instance.Invoke<BuffConfigLoader, BuffConfig>(new BuffConfigLoader() { Id = id });
             if (item == null)
             {
                 throw new Exception($"not found spell config: {id}");
@@ -38,54 +39,59 @@ namespace ET
             this.dict.Add(id, item);
             return item;
         }
-		
+
         public bool Contain(int id)
         {
             return this.dict.ContainsKey(id);
         }
     }
-    
-    
+
+    [HideReferenceObjectPicker]
     [System.Serializable]
-    public partial class BuffConfig: ProtoObject
-#if UNITY
+    public partial class BuffConfig : ProtoObject
+    #if UNITY
             ,UnityEngine.ISerializationCallbackReceiver
-#endif
+    #endif
     {
+        [LabelText("ID")]
         public int Id;
-        
+
+        [LabelText("描述")]
         public string Desc;
-        
-        /// <summary>持续时间</summary>
+
+        [LabelText("持续时间")]
         public int Duration = 1000000000;
 
-        /// <summary>Tick间隔时间</summary>
+        [LabelText("Tick间隔时间")]
         public int TickTime;
 
-        /// <summary>最大层数</summary>
+        [LabelText("最大层数")]
         public int MaxStack = 1;
 
+        [LabelText("层数")]
         public int Stack = 1;
 
-        /// <summary>叠加规则类型</summary>
+        [LabelText("叠加规则类型")]
         public OverLayRuleType OverLayRuleType;
 
-        /// <summary>移除条件</summary>
+        [LabelText("移除条件")]
         public HashSet<BuffFlags> Flags = new();
 
-        /// <summary>广播客户端类型</summary>
+        [LabelText("广播客户端类型")]
         public NoticeType NoticeType;
-        
-#if UNITY
+
+        #if UNITY
         [UnityEngine.SerializeReference]
-#endif
+        #endif
+        [LabelText("  ")]
+        [HideReferenceObjectPicker]
+        [BoxGroup("效果节点")]
         public List<EffectNode> Effects = new();
-        
-        
-#if UNITY
+
+        #if UNITY
         [NonSerialized]
         [UnityEngine.HideInInspector]
-#endif
+        #endif
         public Dictionary<Type, EffectNode> effectDict;
 
         public void OnBeforeSerialize()
@@ -97,7 +103,7 @@ namespace ET
                 this.effectDict.Add(effectNode.GetType(), effectNode);
             }
         }
-        
+
         public void OnAfterDeserialize()
         {
             this.effectDict ??= new Dictionary<Type, EffectNode>();
@@ -107,19 +113,26 @@ namespace ET
                 this.effectDict.Add(effectNode.GetType(), effectNode);
             }
         }
-        
+
         public T GetEffect<T>() where T : EffectNode
         {
             this.effectDict.TryGetValue(typeof(T), out EffectNode effectNode);
             return effectNode as T;
         }
     }
-    
+
     public enum OverLayRuleType
     {
+        [LabelText("无")]
         None,
+
+        [LabelText("层数")]
         AddStack,
+
+        [LabelText("时间")]
         AddTime,
+
+        [LabelText("替换")]
         Replace,
     }
 }

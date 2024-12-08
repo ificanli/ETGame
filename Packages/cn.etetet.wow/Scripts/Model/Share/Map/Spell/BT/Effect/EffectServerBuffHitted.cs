@@ -1,6 +1,9 @@
-﻿namespace ET
+﻿using Sirenix.OdinInspector;
+
+namespace ET
 {
-    // Buff被攻击的时候触发
+    [LabelText("Buff被攻击的时候触发 (服务器)")]
+    [HideReferenceObjectPicker]
     public class EffectServerBuffHitted: EffectNode
     {
         [BTOutput(typeof(Buff))]
