@@ -101,7 +101,7 @@ MonoBehaviour:
       Data: Unit
     - Name: MaxDistance
       Entry: 3
-      Data: 0
+      Data: 40000
     - Name: UnitType
       Entry: 3
       Data: 7

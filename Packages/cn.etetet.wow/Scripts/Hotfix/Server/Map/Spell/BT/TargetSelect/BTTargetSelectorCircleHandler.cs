@@ -8,11 +8,9 @@ namespace ET.Server
         protected override int Run(TargetSelectorCircle node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
-
+            Unit caster = env.GetEntity<Unit>(node.Caster);
             SpellTargetComponent spellTargetComponent = buff.GetComponent<SpellTargetComponent>();
         
-            Unit caster = buff.GetCaster();
-
             Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
 
             float3 pos = caster.GetComponent<TargetComponent>().Position;
@@ -21,7 +19,7 @@ namespace ET.Server
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
                 Unit unit = aoiEntity.Unit;
-                if (math.distance(pos, unit.Position) > node.Radius)
+                if (math.distance(pos, unit.Position) > node.Radius / 1000f)
                 {
                     continue;
                 }
