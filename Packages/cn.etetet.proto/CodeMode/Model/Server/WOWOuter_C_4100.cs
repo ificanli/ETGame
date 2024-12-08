@@ -1081,6 +1081,9 @@ namespace ET
         public long BuffId { get; set; }
 
         [MemoryPackOrder(2)]
+        public int BuffConfigId { get; set; }
+
+        [MemoryPackOrder(3)]
         public int RemoveType { get; set; }
 
         public override void Dispose()
@@ -1092,6 +1095,7 @@ namespace ET
 
             this.UnitId = default;
             this.BuffId = default;
+            this.BuffConfigId = default;
             this.RemoveType = default;
 
             ObjectPool.Recycle(this);

@@ -252,6 +252,7 @@ namespace ET.Server
             M2C_BuffRemove m2CBuffRemove = M2C_BuffRemove.Create();
             m2CBuffRemove.UnitId = unit.Id;
             m2CBuffRemove.BuffId = buff.Id;
+            m2CBuffRemove.BuffConfigId = buff.ConfigId;
             m2CBuffRemove.RemoveType = (int)removeType;
 
             BuffRemoveTypeComponent buffRemoveTypeComponent = buff.GetComponent<BuffRemoveTypeComponent>() ?? buff.AddComponent<BuffRemoveTypeComponent>();

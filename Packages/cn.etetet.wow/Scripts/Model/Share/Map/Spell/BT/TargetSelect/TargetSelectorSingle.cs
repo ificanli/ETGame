@@ -7,7 +7,7 @@
         [BTOutput(typeof(Unit))]
         public string Unit = BTEvnKey.Unit;
         
-        public float MaxDistance;
+        public int MaxDistance;
         
         public UnitType UnitType;
     }

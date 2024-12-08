@@ -40,7 +40,7 @@ namespace ET.Server
             float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
             float targetRadius = target.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
             float distance = math.distance(unit.Position, target.Position);
-            if (distance > node.MaxDistance + unitRadius + targetRadius)
+            if (distance > node.MaxDistance / 1000f + unitRadius + targetRadius)
             {
                 return TextConstDefine.SpellCast_TargetTooFar;
             }

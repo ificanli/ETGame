@@ -37,6 +37,11 @@
         {
             BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
             Buff buff = buffComponent.GetChild<Buff>(id);
+            if (buff == null)
+            {
+                Log.Error($"not found buff: {id}");
+                return;
+            }
             buff.AddComponent<BuffRemoveTypeComponent>().BuffRemoveType = removeType;
             EffectHelper.RunBT<EffectClientBuffRemove>(buff);
             

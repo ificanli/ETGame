@@ -6,8 +6,7 @@
         {
             Unit unit = env.GetEntity<Unit>(node.Unit);
             Buff buff = env.GetEntity<Buff>(node.Buff);
-            SpellHelper.Cast(unit, node.SpellConfigId, buff);
-            return 0;
+            return SpellHelper.Cast(unit, node.SpellConfigId, buff);
         }
     }
 }

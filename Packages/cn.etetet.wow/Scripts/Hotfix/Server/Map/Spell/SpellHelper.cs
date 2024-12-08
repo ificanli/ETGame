@@ -39,7 +39,7 @@ namespace ET.Server
             int castRet = SpellCasting(unit, buff, spellConfig, parent);
             if (castRet != 0)
             {
-                BuffHelper.RemoveBuff(buff, BuffFlags.NotFoundTargetRemove);
+                unit.GetComponent<BuffComponent>().RemoveBuff(buff);
             }
 
             return castRet;

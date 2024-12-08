@@ -238,7 +238,8 @@ message M2C_BuffRemove // IMessage
 {
 	int64 UnitId = 1;
 	int64 BuffId = 2;
-	int32 RemoveType = 3;
+	int32 BuffConfigId = 3;
+	int32 RemoveType = 4;
 }
 
 message M2C_Error // IMessage

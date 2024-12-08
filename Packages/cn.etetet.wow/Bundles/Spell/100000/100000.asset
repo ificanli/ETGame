@@ -47,7 +47,7 @@ MonoBehaviour:
       Data: 
     - Name: TargetSelector
       Entry: 7
-      Data: 2|ET.TargetSelectorCaster, ET.Model
+      Data: 2|ET.TargetSelectorSingle, ET.Model
     - Name: Children
       Entry: 7
       Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -63,6 +63,15 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: MaxDistance
+      Entry: 3
+      Data: 5000
+    - Name: UnitType
+      Entry: 3
+      Data: 7
     - Name: 
       Entry: 8
       Data: 
