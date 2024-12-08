@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace ET
+﻿namespace ET
 {
     public class BTShowCastSlider: BTNode
     {
@@ -9,7 +7,7 @@ namespace ET
         public string Buff;
 
 #if UNITY
-        public Sprite Icon;
+        public UnityEngine.Sprite Icon;
 #endif
 
         public bool IsIncrease;

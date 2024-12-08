@@ -14,7 +14,9 @@ namespace ET
         [BTOutput(typeof(List<long>))]
         public string Units = BTEvnKey.Units;
         
+#if UNITY
         public UnityEngine.GameObject SpellIndicator;
+#endif
         
         public int Radius;
         public int MaxDistance;
