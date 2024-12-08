@@ -275,6 +275,20 @@ namespace ET.Server
             
             RemoveBuff(buff, removeType);
         }
+
+        public static void RemoveBuffByConfigId(Unit unit, int configId, BuffFlags removeType)
+        {
+            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
+            HashSet<EntityRef<Buff>> buffs = buffComponent.GetByConfigId(configId);
+            if (buffs == null)
+            {
+                return;
+            }
+            foreach (EntityRef<Buff> buff in buffs.ToArray())
+            {
+                RemoveBuff(buff, removeType);
+            }
+        }
         
         public static void RemoveBuffFlag(Unit unit, BuffFlags flag)
         {

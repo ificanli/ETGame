@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c9619ee4f188a34f85cb7d889ed7d1a, type: 3}
-  m_Name: 100000
+  m_Name: 100001
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -26,10 +26,10 @@ MonoBehaviour:
       Data: 0|ET.SpellConfig, ET.Model
     - Name: Id
       Entry: 3
-      Data: 100000
+      Data: 100001
     - Name: Desc
       Entry: 1
-      Data: "\u666E\u901A\u653B\u51FB"
+      Data: "\u666E\u901A\u653B\u51FB\u5B50\u6280\u80FD"
     - Name: Cost
       Entry: 7
       Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
@@ -47,7 +47,7 @@ MonoBehaviour:
       Data: 
     - Name: TargetSelector
       Entry: 7
-      Data: 2|ET.TargetSelectorCaster, ET.Model
+      Data: 2|ET.TargetSelectorSingle, ET.Model
     - Name: Children
       Entry: 7
       Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -63,15 +63,24 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: MaxDistance
+      Entry: 4
+      Data: 5000
+    - Name: UnitType
+      Entry: 3
+      Data: 7
     - Name: 
       Entry: 8
       Data: 
     - Name: CD
       Entry: 3
-      Data: 2000
+      Data: 0
     - Name: BuffId
       Entry: 3
-      Data: 200000
+      Data: 200001
     - Name: 
       Entry: 8
       Data: 
