@@ -13,8 +13,6 @@
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
-	"preserve": [
-    "Sirenix.OdinInspector.Attributes"],
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

@@ -2,6 +2,7 @@
   "dependencies": {
     "cn.etetet.sourcegenerator": "0.0.7",
     "cn.etetet.yiui3ddisplay": "0.7.2",
+	"cn.etetet.yiuidamagetips": "0.0.1",
     "cn.etetet.yiuieffect": "0.7.2",
     "cn.etetet.yiuiframework": "0.7.2",
     "cn.etetet.yiuigm": "0.7.2",

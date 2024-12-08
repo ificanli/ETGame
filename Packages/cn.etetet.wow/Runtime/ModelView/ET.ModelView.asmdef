@@ -3,6 +3,7 @@
     "rootNamespace": "ET",
     "references": [
         "Cinemachine",
+        "DamageNumbersPro",
         "ET.Core",
         "ET.Loader",
         "ET.Model",

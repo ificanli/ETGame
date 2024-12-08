@@ -1,0 +1,13 @@
+﻿{
+    "Id": 1807,
+    "Name": "YIUI.DamageTips",
+    "ScriptsReferences": 
+      {
+        "ModelView": [
+          "DamageNumbersPro"
+        ],
+        "HotfixView": [
+          "DamageNumbersPro"
+        ]
+      }
+}
