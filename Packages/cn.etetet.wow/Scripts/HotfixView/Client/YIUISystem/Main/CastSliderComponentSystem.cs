@@ -16,7 +16,7 @@ namespace ET.Client
         [EntitySystem]
         private static void YIUIInitialize(this CastSliderComponent self)
         {
-            self.m_Player = UnitHelper.GetMyUnitFromClientScene(self.Fiber().Root);
+            self.m_Player = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
             if (self.Player == null)
             {
                 Log.Error($"没有找到玩家实体");

@@ -101,7 +101,7 @@ namespace ET.Client
                 return;
             }
 
-            var player = UnitHelper.GetMyUnitFromClientScene(self.Fiber().Root);
+            var player = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
             if (player == null)
             {
                 return;

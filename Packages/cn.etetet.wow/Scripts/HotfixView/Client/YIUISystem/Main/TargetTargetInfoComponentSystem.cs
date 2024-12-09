@@ -19,7 +19,7 @@ namespace ET.Client
         {
             self.SetActive(false, true);
             self.UIUnitInfo.u_EventClickInfo.Add(self, TargetTargetInfoComponent.OnEventClickInfoInvoke);
-            var playerUnit = UnitHelper.GetMyUnitFromClientScene(self.Fiber().Root);
+            var playerUnit = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
             if (playerUnit == null)
             {
                 Log.Error($"没有找到玩家实体");

@@ -28,7 +28,7 @@ namespace ET.Client
 
         private static void UpdateInfo(this PlayerInfoComponent self)
         {
-            self.m_Unit = UnitHelper.GetMyUnitFromClientScene(self.Fiber().Root);
+            self.m_Unit = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
             if (self.Unit == null)
             {
                 Log.Error($"没有找到玩家实体");
