@@ -39,7 +39,7 @@ namespace ET.Server
 
             // 加入aoi
             unit.AddComponent<AOIEntity>();
-
+            
             // 解锁location，可以接收发给Unit的消息
             await scene.Root().GetComponent<LocationProxyComponent>().UnLock(LocationType.Unit, unit.Id, request.OldActorId, unit.GetActorId());
         }

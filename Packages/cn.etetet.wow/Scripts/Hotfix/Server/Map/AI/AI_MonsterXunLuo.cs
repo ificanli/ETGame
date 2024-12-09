@@ -6,12 +6,12 @@ namespace ET.Server
     {
         public override int Check(AIComponent aiComponent, AIConfig aiConfig)
         {
-            //Unit unit = aiComponent.GetParent<Unit>();
-            //ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
-            //if (threatComponent.GetCount() > 0)
-            //{
-            //    return 1;
-            //}
+            Unit unit = aiComponent.GetParent<Unit>();
+            ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
+            if (threatComponent.GetCount() > 0)
+            {
+                return 1;
+            }
             return 0;
         }
 
@@ -30,7 +30,6 @@ namespace ET.Server
             while (true)
             {
                 // 找一个点
-                
                 float3 randomPos = pathfindingComponent.FindRandomPointWithRaduis(birthPos, 0, aoi);
                 
                 // 走过去

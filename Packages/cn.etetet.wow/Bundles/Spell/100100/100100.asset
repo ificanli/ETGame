@@ -69,12 +69,15 @@ MonoBehaviour:
     - Name: Owner
       Entry: 1
       Data: Owner
+    - Name: MaxDistance
+      Entry: 3
+      Data: 3000
+    - Name: MinDistance
+      Entry: 3
+      Data: 0
     - Name: Unit
       Entry: 1
       Data: Unit
-    - Name: MaxDistance
-      Entry: 3
-      Data: 5000
     - Name: UnitType
       Entry: 3
       Data: 1

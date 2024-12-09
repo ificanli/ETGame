@@ -8,13 +8,11 @@
             CurrentScenesComponent currentScenesComponent = root.GetComponent<CurrentScenesComponent>();
             currentScenesComponent.Scene?.Dispose(); // 删除之前的CurrentScene，创建新的
             Scene currentScene = CurrentSceneFactory.Create(sceneInstanceId, sceneName, currentScenesComponent);
-
+            
             EventSystem.Instance.Publish(root, new SceneChangeStart());          // 可以订阅这个事件中创建Loading界面
-            
+                        
             await WaitUnitCreateFinish(root, currentScene);
-            
             EventSystem.Instance.Publish(root, new SceneChangeFinish());
-
             // 加载场景寻路数据
             await NavmeshComponent.Instance.Load(sceneName);
             

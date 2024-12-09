@@ -38,6 +38,10 @@ namespace ET.Server
         
         public static void SendToClient(Unit unit, IMessage message)
         {
+            if (!unit.Type().IsSame(UnitType.Player))
+            {
+                return;
+            }
             unit.Root().GetComponent<MessageLocationSenderComponent>().Get(LocationType.GateSession).Send(unit.Id, message);
         }
         
