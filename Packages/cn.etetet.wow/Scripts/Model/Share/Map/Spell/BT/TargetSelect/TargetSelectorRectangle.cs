@@ -8,6 +8,5 @@
 #endif
         public float Width;
         public float Length;
-        public int MaxDistance;
     }
 }

@@ -7,7 +7,7 @@ namespace ET
     [FriendOf(typeof (NumericComponent))]
     public static class NumericComponentSystem
     {
-        private const int Max = 10000;
+        public const int Max = 10000;
         
         public static float GetAsFloat(this NumericComponent self, int numericType)
         {

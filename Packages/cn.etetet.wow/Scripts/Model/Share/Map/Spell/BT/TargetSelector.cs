@@ -17,6 +17,10 @@ namespace ET
         [Sirenix.OdinInspector.BoxGroup("输入参数")]
         [BTOutput(typeof(Unit))]
         public string Owner = BTEvnKey.Owner;
+
+        public int MaxDistance;
+
+        public int MinDistance;
     }
     
 

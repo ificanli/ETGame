@@ -8,6 +8,5 @@
 #endif
         public int Radius;
         public int Angle;
-        public int MaxDistance;
     }
 }

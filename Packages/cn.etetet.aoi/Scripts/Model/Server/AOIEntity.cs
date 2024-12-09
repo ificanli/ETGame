@@ -8,7 +8,19 @@ namespace ET.Server
     {
         public Unit Unit => this.GetParent<Unit>();
 
-        public int ViewDistance;
+        private EntityRef<NumericComponent> numericComponent;
+
+        public NumericComponent NumericComponent
+        {
+            get
+            {
+                return this.numericComponent;
+            }
+            set
+            {
+                this.numericComponent = value;
+            }
+        }
 
         private EntityRef<Cell> cell;
 

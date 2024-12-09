@@ -14,7 +14,12 @@ namespace ET.Server
         {
             enterCell.Clear();
             leaveCell.Clear();
-            int r = (aoiEntity.ViewDistance - 1) / AOIManagerComponent.CellSize + 1;
+            int viewDistance = aoiEntity.NumericComponent.GetAsInt(NumericType.AOI);
+            if (viewDistance <= 0)
+            {
+                viewDistance = 1;
+            }
+            int r = (viewDistance - 1) / AOIManagerComponent.CellSize + 1;
             int leaveR = r;
             if (aoiEntity.Unit.Type() == UnitType.Player)
             {

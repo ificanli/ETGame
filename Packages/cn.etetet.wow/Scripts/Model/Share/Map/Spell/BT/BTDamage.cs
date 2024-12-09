@@ -1,16 +1,19 @@
 ﻿namespace ET
 {
-    public class BTNumericChange : BTNode
+    public class BTDamage: BTNode
     {
+        [Sirenix.OdinInspector.BoxGroup("输入参数")]
         [BTInput(typeof(Unit))]
-        [Sirenix.OdinInspector.BoxGroup("输入参数")]
-        public string Unit;
+        public string Caster;
         
-        [BTInput(typeof(Buff))]
         [Sirenix.OdinInspector.BoxGroup("输入参数")]
+        [BTInput(typeof(Unit))]
+        public string Target;
+        
+        [Sirenix.OdinInspector.BoxGroup("输入参数")]
+        [BTInput(typeof(Buff))]
         public string Buff;
         
-        public NumericType NumericType;
         public int Value;
     }
 }

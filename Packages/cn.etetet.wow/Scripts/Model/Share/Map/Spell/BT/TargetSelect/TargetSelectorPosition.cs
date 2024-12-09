@@ -10,7 +10,6 @@
 #if UNITY
         public UnityEngine.GameObject SpellIndicator;
 #endif
-        public int MaxDistance;
 
         public int Radius;
     }

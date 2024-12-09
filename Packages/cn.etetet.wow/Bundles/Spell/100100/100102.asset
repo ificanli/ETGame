@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c9619ee4f188a34f85cb7d889ed7d1a, type: 3}
+  m_Name: 100102
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: SpellConfig
+      Entry: 7
+      Data: 0|ET.SpellConfig, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 100103
+    - Name: Desc
+      Entry: 1
+      Data: "\u666E\u901A\u653B\u51FB\u5B50\u6280\u80FD\u7684\u5B50\u6280\u80FD\uFF0C\u7528\u6765\u4F24\u5BB3\u6280\u80FD"
+    - Name: Cost
+      Entry: 7
+      Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: PreCheck
+      Entry: 6
+      Data: 
+    - Name: TargetSelector
+      Entry: 7
+      Data: 2|ET.TargetSelectorSingle, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Owner
+      Entry: 1
+      Data: Owner
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: MaxDistance
+      Entry: 3
+      Data: 5000
+    - Name: UnitType
+      Entry: 3
+      Data: 7
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: CD
+      Entry: 3
+      Data: 0
+    - Name: BuffId
+      Entry: 3
+      Data: 200002
+    - Name: 
+      Entry: 8
+      Data: 

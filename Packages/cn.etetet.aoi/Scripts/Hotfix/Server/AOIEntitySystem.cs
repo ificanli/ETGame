@@ -12,7 +12,7 @@ namespace ET.Server
         {
             Unit unit = self.GetParent<Unit>();
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
-            self.ViewDistance = numericComponent.GetAsInt(NumericType.AOI);
+            self.NumericComponent = numericComponent;
             self.Scene().GetComponent<AOIManagerComponent>().Add(self, unit.Position.x, unit.Position.z);
         }
 
@@ -28,6 +28,7 @@ namespace ET.Server
         }
     }
 
+    
     [FriendOf(typeof(Cell))]
     [FriendOf(typeof(AOIEntity))]
     public static partial class AOIEntitySystem

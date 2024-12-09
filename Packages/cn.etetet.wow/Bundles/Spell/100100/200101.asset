@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 077118824dd24d999790456b019f2e9d, type: 3}
-  m_Name: 200021
+  m_Name: 200101
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 1293614521383796473, guid: 91fa21dbcb7f39d4ea27060df83b4fe1, type: 3}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -27,13 +26,13 @@ MonoBehaviour:
       Data: 0|ET.BuffConfig, ET.Model
     - Name: Id
       Entry: 3
-      Data: 200021
+      Data: 200101
     - Name: Desc
       Entry: 1
-      Data: "\u5BD2\u51B0\u7BAD\u5047\u5B50\u5F39Buff"
+      Data: "\u666E\u653B\u5B50\u6280\u80FDBuff"
     - Name: Duration
       Entry: 3
-      Data: 0
+      Data: 300
     - Name: TickTime
       Entry: 3
       Data: 0
@@ -51,7 +50,10 @@ MonoBehaviour:
       Data: 1|System.Collections.Generic.HashSet`1[[ET.BuffFlags, ET.Model]], System.Core
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 3
+      Data: 5
     - Name: 
       Entry: 13
       Data: 
@@ -69,16 +71,16 @@ MonoBehaviour:
       Data: 2
     - Name: 
       Entry: 7
-      Data: 3|ET.EffectServerBuffRemove, ET.Model
+      Data: 3|ET.EffectClientBuffAdd, ET.Model
     - Name: Children
       Entry: 7
       Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 5|ET.BTAddBuff, ET.Model
+      Data: 5|ET.BTAnimatorSetTrigger, ET.Model
     - Name: Children
       Entry: 7
       Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -91,48 +93,12 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Caster
+    - Name: Unit
       Entry: 1
       Data: Caster
-    - Name: Target
-      Entry: 1
-      Data: Unit
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: ConfigId
+    - Name: MotionType
       Entry: 3
-      Data: 200022
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 7|ET.BTDamage, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Caster
-      Entry: 1
-      Data: Caster
-    - Name: Target
-      Entry: 1
-      Data: Unit
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: Value
-      Entry: 3
-      Data: 5
+      Data: 4
     - Name: 
       Entry: 8
       Data: 
@@ -156,19 +122,19 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 9|ET.EffectClientBuffAdd, ET.Model
+      Data: 7|ET.EffectServerBuffRemove, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 9|ET.BTGetSpellTargetUnit, ET.Model
     - Name: Children
       Entry: 7
       Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 11|ET.Client.BTCreateFakeBullet, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -178,27 +144,84 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Caster
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Target
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 11|ET.BTSelector, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 13|ET.BTCreateSpell, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
       Entry: 1
       Data: Caster
-    - Name: Target
+    - Name: Buff
       Entry: 1
-      Data: Unit
-    - Name: CasterBindPoint
+      Data: Buff
+    - Name: SpellConfigId
       Entry: 3
-      Data: 1
-    - Name: TargetBindPoint
-      Entry: 3
-      Data: 9
-    - Name: Speed
-      Entry: 3
-      Data: 30000
-    - Name: Effect
-      Entry: 10
+      Data: 100002
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 15|ET.BTRemoveBuff, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
       Data: 0
-    - Name: Duration
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Caster
+    - Name: ConfigId
       Entry: 3
-      Data: 60000
+      Data: 200000
+    - Name: RemoveType
+      Entry: 3
+      Data: 14
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 

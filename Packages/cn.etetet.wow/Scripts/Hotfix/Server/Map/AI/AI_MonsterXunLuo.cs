@@ -23,7 +23,6 @@ namespace ET.Server
             float aoi = numericComponent.GetAsFloat(NumericType.AOI);
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-            
             while (true)
             {
                 // 找一个点

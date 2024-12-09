@@ -114,7 +114,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 7
-      Data: 9|ET.BTNumericChange, ET.Model
+      Data: 9|ET.BTDamage, ET.Model
     - Name: Children
       Entry: 7
       Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -127,15 +127,18 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Target
       Entry: 1
       Data: Unit
-    - Name: NumericType
-      Entry: 3
-      Data: 1001
+    - Name: Buff
+      Entry: 1
+      Data: Buff
     - Name: Value
       Entry: 3
-      Data: -10
+      Data: 3
     - Name: 
       Entry: 8
       Data: 

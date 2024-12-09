@@ -12,11 +12,6 @@ namespace ET.Server
             int cellX = (int)(x * 1000) / AOIManagerComponent.CellSize;
             int cellY = (int)(y * 1000) / AOIManagerComponent.CellSize;
 
-            if (aoiEntity.ViewDistance == 0)
-            {
-                aoiEntity.ViewDistance = 1;
-            }
-
             AOIHelper.CalcEnterAndLeaveCell(aoiEntity, cellX, cellY, aoiEntity.SubEnterCells, aoiEntity.SubLeaveCells);
 
             // 遍历EnterCell
