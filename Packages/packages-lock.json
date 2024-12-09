@@ -201,6 +201,12 @@
         "cn.etetet.yiuiframework": "0.7.2"
       }
     },
+    "cn.etetet.yiuidamagetips": {
+      "version": "file:cn.etetet.yiuidamagetips",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "cn.etetet.yiuieffect": {
       "version": "file:cn.etetet.yiuieffect",
       "depth": 0,
