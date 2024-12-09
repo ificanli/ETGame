@@ -9,20 +9,21 @@ namespace ET.Client
     /// <summary>
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
-    [YIUI(EUICodeType.Panel, EPanelLayer.Scene)]
+    [YIUI(EUICodeType.View)]
     [ComponentOf(typeof(YIUIChild))]
-    public partial class HUDPanelComponent : Entity, IDestroy, IAwake, IYIUIBind, IYIUIInitialize, IYIUIOpen
+    public partial class HPViewComponent : Entity, IDestroy, IAwake, IYIUIBind, IYIUIInitialize, IYIUIOpen
     {
         public const string PkgName = "Main";
-        public const string ResName = "HUDPanel";
+        public const string ResName = "HPView";
 
         public EntityRef<YIUIChild> u_UIBase;
         public YIUIChild UIBase => u_UIBase;
         public EntityRef<YIUIWindowComponent> u_UIWindow;
         public YIUIWindowComponent UIWindow => u_UIWindow;
-        public EntityRef<YIUIPanelComponent> u_UIPanel;
-        public YIUIPanelComponent UIPanel => u_UIPanel;
+        public EntityRef<YIUIViewComponent> u_UIView;
+        public YIUIViewComponent UIView => u_UIView;
         public UnityEngine.RectTransform u_ComHPContent;
+        public YIUIFramework.UIDataValueFloat u_DataHPRatio;
 
     }
 }

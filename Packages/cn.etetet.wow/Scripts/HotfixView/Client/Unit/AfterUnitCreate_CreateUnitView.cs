@@ -27,6 +27,12 @@ namespace ET.Client
                 unit.AddComponent<InputSystemComponent>();
                 unit.AddComponent<SpellIndicatorComponent>();
             }
+            else
+            {
+                //临时做法 //不是玩家的Unit，添加一个血条显示
+                //await YIUIFactory.InstantiateAsync<HPView3DComponent>(unit, go.transform);
+                await YIUIFactory.InstantiateAsync<HPViewComponent>(unit, YIUIMgrComponent.Inst.UICache);
+            }
             
             await ETTask.CompletedTask;
         }

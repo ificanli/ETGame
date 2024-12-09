@@ -23,7 +23,6 @@ namespace ET.Client
         {
         }
 
-        
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this HUDPanelComponent self)
         {
@@ -39,7 +38,25 @@ namespace ET.Client
             return true;
         }
 
+        [EntitySystem]
+        private static async ETTask DynamicEvent(this ET.Client.HUDPanelComponent self, ET.Client.EventMain_ShowHPView param1)
+        {
+            await ETTask.CompletedTask;
+            self.AddHPView(param1.HPView);
+        }
+
+        private static void AddHPView(this HUDPanelComponent self, HPViewComponent hpView)
+        {
+            hpView.UIBase.OwnerRectTransform.SetParent(self.u_ComHPContent);
+        }
+
+        private static void UpdateHPView(this HUDPanelComponent self)
+        {
+            //TODO  Update  所有已知的HP 修改前后顺序
+        }
+
         #region YIUIEvent开始
+
         #endregion YIUIEvent结束
     }
 }

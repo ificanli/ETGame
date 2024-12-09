@@ -10,7 +10,7 @@ namespace ET.Client
     /// Date    2024.12.9
     /// Desc
     /// </summary>
-    public partial class HUDPanelComponent : Entity
+    public partial class HUDPanelComponent : Entity, IDynamicEvent<EventMain_ShowHPView>
     {
         public EntityRef<Unit> m_Unit;
         public Unit            Unit => m_Unit;
