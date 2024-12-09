@@ -3,7 +3,7 @@
     "Id": 301,
     "AIConfigId": 3,
     "Order": 1,
-    "Name": "AI_MonsterXunLuo",
+    "Name": "AI_MonsterReturn",
     "NodeParams": []
   },
   {
@@ -17,7 +17,7 @@
     "Id": 303,
     "AIConfigId": 3,
     "Order": 3,
-    "Name": "AI_MonsterReturn",
+    "Name": "AI_MonsterXunLuo",
     "NodeParams": []
   }
 ]
