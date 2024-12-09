@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 185f6993d5150494d98da50e26cb1c25, type: 3}
   m_Name: AssetBundleCollectorSetting
   m_EditorClassIdentifier: 
-  ShowPackageView: 1
+  ShowPackageView: 0
   ShowEditorAlias: 0
   UniqueBundleName: 1
   Packages:
@@ -174,22 +174,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Packages/cn.etetet.yiuidamagetips/Assets/GameRes
-        CollectorGUID: 3751fd97e08fb9f49a69caec69bc4d24
-        CollectorType: 0
-        AddressRuleName: AddressByFileName
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
-      - CollectPath: Packages/cn.etetet.wow/Assets/GameRes/Sprites
-        CollectorGUID: 92d7057252281604d98a14361ee45bbd
-        CollectorType: 0
-        AddressRuleName: AddressByFileName
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
     - GroupName: Recast
       GroupDesc: 
       AssetTags: 
@@ -213,6 +197,32 @@ MonoBehaviour:
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+    - GroupName: Sprites
+      GroupDesc: "\u56FE\u7247 \u4E00\u628A\u68AD"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Packages/cn.etetet.wow/Assets/GameRes/Sprites
+        CollectorGUID: 92d7057252281604d98a14361ee45bbd
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+    - GroupName: DamageTips
+      GroupDesc: "\u4F24\u5BB3\u98D8\u5B57"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Packages/cn.etetet.yiuidamagetips/Assets/GameRes
+        CollectorGUID: 3751fd97e08fb9f49a69caec69bc4d24
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
