@@ -6,6 +6,12 @@ namespace ET.Server
     {
         public override int Check(AIComponent aiComponent, AIConfig aiConfig)
         {
+            //Unit unit = aiComponent.GetParent<Unit>();
+            //ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
+            //if (threatComponent.GetCount() > 0)
+            //{
+            //    return 1;
+            //}
             return 0;
         }
 
@@ -15,8 +21,6 @@ namespace ET.Server
             Unit unit = aiComponent.GetParent<Unit>();
 
             PathfindingComponent pathfindingComponent = unit.GetComponent<PathfindingComponent>();
-
-            UnitConfig unitConfig = unit.Config();
             
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
             float3 birthPos = new(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));

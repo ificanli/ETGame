@@ -15,7 +15,13 @@ namespace ET.Server
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
             for (int i = 0; i < unitConfig.KV.Length; i += 2)
             {
-                numericComponent.SetNoEvent(unitConfig.KV[i], unitConfig.KV[i + 1]);
+                int k = unitConfig.KV[i];
+                int v = unitConfig.KV[i + 1];
+                if (v == 0)
+                {
+                    continue;
+                }
+                numericComponent.SetNoEvent(k, v);
             }
             
             unit.Position = new float3(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));

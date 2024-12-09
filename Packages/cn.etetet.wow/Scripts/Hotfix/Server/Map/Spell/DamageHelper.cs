@@ -17,7 +17,7 @@
             ThreatComponent threatComponent = target.GetComponent<ThreatComponent>();
             if (threatComponent != null)
             {
-                threatComponent.AddThreat(attacker.Id, value);
+                threatComponent.AddThreat(attacker, value);
             }
 
             var buffs = target.GetComponent<BuffComponent>().GetByEffectType<EffectServerBuffHitted>();

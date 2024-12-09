@@ -77,7 +77,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 7
-      Data: 5|ET.BTBuffNumericChange, ET.Model
+      Data: 5|ET.BTNumericChange, ET.Model
     - Name: Children
       Entry: 7
       Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -90,6 +90,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Unit
     - Name: Buff
       Entry: 1
       Data: Buff
@@ -98,7 +101,7 @@ MonoBehaviour:
       Data: 10003
     - Name: Value
       Entry: 3
-      Data: -50
+      Data: -30
     - Name: 
       Entry: 8
       Data: 

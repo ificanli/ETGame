@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ET.Server
 {
@@ -10,81 +11,113 @@ namespace ET.Server
         {
         }
         
-        public static void AddThreat(this ThreatComponent self, long unitId, int threat)
+        public static void AddThreat(this ThreatComponent self, Unit unit, int threat)
         {
-            if (self.Threats.TryGetValue(unitId, out int value))
+            ThreatInfo threatInfo = self.GetChild<ThreatInfo>(unit.Id);
+            if (threatInfo == null)
             {
-                self.Threats[unitId] = value + threat;
+                threatInfo = self.AddChild<ThreatInfo>();
+                threatInfo.Unit = unit;
+                threatInfo.Threat = threat;
             }
             else
             {
-                self.Threats.Add(unitId, threat);
+                threatInfo.Threat += threat;
             }
         }
 
         public static void RemoveThreat(this ThreatComponent self, long unitId)
         {
-            self.Threats.Remove(unitId);
+            self.RemoveChild(unitId);
+        }
+        
+        public static int GetCount(this ThreatComponent self)
+        {
+            return self.ChildrenCount();
         }
 
         public static void ClearThreat(this ThreatComponent self)
         {
-            self.Threats.Clear();
-        }
-
-        public static void SetThreat(this ThreatComponent self, long unitId, int threat)
-        {
-            self.Threats[unitId] = threat;
+            foreach (long unitId in self.Children.Keys.ToArray())
+            {
+                self.RemoveChild(unitId);
+            }
         }
 
         public static int GetThreat(this ThreatComponent self, long unitId)
         {
-            return self.Threats.GetValueOrDefault(unitId, 0);
-        }
-
-        public static KeyValuePair<long, int> GetMaxThreat(this ThreatComponent self)
-        {
-            KeyValuePair<long, int> max = new KeyValuePair<long, int>(0, 0);
-            foreach (var threat in self.Threats)
+            ThreatInfo threatInfo = self.GetChild<ThreatInfo>(unitId);
+            if (threatInfo == null)
             {
-                if (threat.Value > max.Value)
-                {
-                    max = threat;
-                }
+                return 0;
             }
-
-            return max;
+            return threatInfo.Threat;
         }
 
-        public static KeyValuePair<long, int> GetMinThreat(this ThreatComponent self)
+        public static ThreatInfo GetMaxThreat(this ThreatComponent self)
         {
-            KeyValuePair<long, int> min = new KeyValuePair<long, int>(0, int.MaxValue);
-            foreach (var threat in self.Threats)
+            int max = 0;
+            ThreatInfo threatInfo = null;
+            foreach (var kv in self.Children)
             {
-                if (threat.Value < min.Value)
+                threatInfo = kv.Value as ThreatInfo;
+                if (threatInfo.Unit.Entity == null)
                 {
-                    min = threat;
+                    threatInfo = null;
+                    self.RemoveThreat(kv.Key);
+                    continue;
                 }
-            }
 
-            return min;
+                if (threatInfo.Threat <= max)
+                {
+                    continue;
+                }
+
+                max = threatInfo.Threat;
+            }
+            return threatInfo;
         }
 
-        public static KeyValuePair<long, int> GetRandomThreat(this ThreatComponent self)
+        public static ThreatInfo GetMinThreat(this ThreatComponent self)
+        {            
+            int min = 0;
+            ThreatInfo threatInfo = null;
+            foreach (var kv in self.Children)
+            {
+                threatInfo = kv.Value as ThreatInfo;
+                if (threatInfo.Unit.Entity == null)
+                {
+                    threatInfo = null;
+                    self.RemoveThreat(kv.Key);
+                    continue;
+                }
+
+                if (threatInfo.Threat >= min)
+                {
+                    continue;
+                }
+
+                min = threatInfo.Threat;
+            }
+            return threatInfo;
+        }
+
+        public static ThreatInfo GetRandomThreat(this ThreatComponent self)
         {
-            int index = RandomGenerator.RandomNumber(0, self.Threats.Count);
+            int index = RandomGenerator.RandomNumber(0, self.Children.Count);
             int i = 0;
-            foreach (var threat in self.Threats)
+            ThreatInfo threatInfo = null;
+            foreach (var kv in self.Children)
             {
                 if (i == index)
                 {
-                    return threat;
+                    threatInfo = kv.Value as ThreatInfo;
+                    break;
                 }
 
                 i++;
             }
-
-            return new KeyValuePair<long, int>(0, 0);
+            return threatInfo;
         }
 
     }
