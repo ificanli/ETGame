@@ -8,11 +8,11 @@ namespace ET.Server
         {
             Unit unit = aiComponent.GetParent<Unit>();
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
-            float3 originPos = new(
+            float3 birthPos = new(
                 numericComponent.GetAsFloat(NumericType.X), 
                 numericComponent.GetAsFloat(NumericType.Y),
                 numericComponent.GetAsFloat(NumericType.Z));
-            if (math.distance(unit.Position, originPos) < 40f)
+            if (math.distance(unit.Position, birthPos) < 20f)
             {
                 return 1;
             }
@@ -25,7 +25,7 @@ namespace ET.Server
 
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
 
-            float3 originPos = new(
+            float3 birthPos = new(
                 numericComponent.GetAsFloat(NumericType.X), 
                 numericComponent.GetAsFloat(NumericType.Y),
                 numericComponent.GetAsFloat(NumericType.Z));
@@ -38,7 +38,7 @@ namespace ET.Server
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
-            await unit.FindPathMoveToAsync(originPos);
+            await unit.FindPathMoveToAsync(birthPos);
             if (cancellationToken.IsCancel())
             {
                 return;
