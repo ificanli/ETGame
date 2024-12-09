@@ -61,15 +61,16 @@ namespace ET.Server
                     unit.FindPathMoveToAsync(target.Position).WithContext(cancellationToken);
                     continue;
                 }
+                
+                if (d1 < spellConfig.TargetSelector.MinDistance / 1000f)
+                {
+                    // 反向走
+                    unit.FindPathMoveToAsync(unit.Position - target.Position + unit.Position).WithContext(cancellationToken);
+                    continue;
+                }
 
                 unit.Stop(0);
 
-                //if (d1 < spellConfig.TargetSelector.MinDistance / 1000f)
-                //{
-                //    // 反向走
-                //    unit.FindPathMoveToAsync(unit.Position - target.Position + unit.Position).WithContext(cancellationToken);
-                //    continue;
-                //}
                 // 同一个技能还未结束
                 Buff current = unit.GetComponent<SpellComponent>().Current;
                 if (current != null && spellConfig.BuffId == current.ConfigId)
