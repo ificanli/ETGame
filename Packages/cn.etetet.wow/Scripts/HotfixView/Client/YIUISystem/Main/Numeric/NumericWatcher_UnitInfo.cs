@@ -11,6 +11,15 @@ namespace ET
 
             //临时处理全监听
             YIUIMgrComponent.Inst.DynamicEvent(args).NoContext();
+            
+            var oldHP  = args.Old;
+            var newHP  = args.New;
+            var damage = oldHP - newHP;
+            if (damage > 0)
+            {
+                //临时处理 只要少血就飘字
+                DamageTipsHelper.Show3D("Damage_3D_SawNeon", args.Unit, damage).NoContext();
+            }
         }
     }
 

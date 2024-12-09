@@ -19,15 +19,6 @@ namespace ET.Client
             if (self.Unit == null || data.Unit == null) return;
             if (data.Unit != self.Unit) return;
 
-            var oldHP  = data.Old;
-            var newHP  = data.New;
-            var damage = oldHP - newHP;
-            if (damage > 0)
-            {
-                //临时处理
-                DamageTipsHelper.Show3D("Damage_3D_SawNeon", data.Unit, damage).NoContext();
-            }
-
             //临时处理全监听
             self.UpdateHP();
             self.UpdateMP();
