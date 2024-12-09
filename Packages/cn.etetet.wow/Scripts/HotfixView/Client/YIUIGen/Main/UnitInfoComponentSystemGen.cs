@@ -37,7 +37,6 @@ namespace ET.Client
             self.u_DataMPRatio = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueFloat>("u_DataMPRatio");
             self.u_DataClass = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataClass");
             self.u_DataShowClass = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueBool>("u_DataShowClass");
-            self.u_DataLayoutAnim = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataLayoutAnim");
             self.u_EventClickInfo = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventClickInfo");
             self.u_EventClickInfoHandle = self.u_EventClickInfo.Add(self,UnitInfoComponent.OnEventClickInfoInvoke);
 

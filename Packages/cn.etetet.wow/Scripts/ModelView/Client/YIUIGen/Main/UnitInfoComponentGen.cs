@@ -28,7 +28,6 @@ namespace ET.Client
         public YIUIFramework.UIDataValueFloat u_DataMPRatio;
         public YIUIFramework.UIDataValueString u_DataClass;
         public YIUIFramework.UIDataValueBool u_DataShowClass;
-        public YIUIFramework.UIDataValueString u_DataLayoutAnim;
         public UITaskEventP0 u_EventClickInfo;
         public UITaskEventHandleP0 u_EventClickInfoHandle;
         public const string OnEventClickInfoInvoke = "UnitInfoComponent.OnEventClickInfoInvoke";

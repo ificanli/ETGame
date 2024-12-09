@@ -56,7 +56,6 @@ namespace ET.Client
             self.m_Unit = target;
             if (self.Unit == null) return;
 
-            self.UIUnitInfo.u_DataLayoutAnim.SetValue("UnitInfoRight", true);
             self.m_UnitConfig = UnitConfigCategory.Instance.Get(self.Unit.ConfigId);
             self.UIUnitInfo.RefreshUnitInfo(self.Unit);
         }
