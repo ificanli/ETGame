@@ -52,7 +52,7 @@ namespace ET.Client
 
                 //如果不在屏幕内，则不显示
                 //上下左右各留100像素的范围
-                if (screenPos.x < -100 || screenPos.x > Screen.width + 100 || screenPos.y < -100 || screenPos.y > Screen.height + 100)
+                if (screenPos.x < 100 || screenPos.x > Screen.width - 100 || screenPos.y < 100 || screenPos.y > Screen.height - 100)
                 {
                     self.u_DataShow.SetValue(false);
                     return;
