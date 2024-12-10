@@ -52,8 +52,6 @@ namespace ET.Server
 
             if (parent == null)
             {
-                spellComponent.UpdateCD(spellConfig.Id);
-
                 // 这里简单做一下打断当前技能, 设置新的当前技能
                 Buff currentBuff = spellComponent.Current;
                 if (currentBuff != null)
@@ -78,6 +76,13 @@ namespace ET.Server
                     return ret;
                 }
             }
+
+            // 主技能更新CD
+            if (parent == null)
+            {
+                spellComponent.UpdateCD(spellConfig.Id);
+            }
+            
             BuffHelper.InitBuff(buff, parent);
             
             if (buff.ExpireTime < TimeInfo.Instance.ServerNow())
