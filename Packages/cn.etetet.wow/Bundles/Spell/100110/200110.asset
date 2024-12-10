@@ -1,0 +1,134 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 077118824dd24d999790456b019f2e9d, type: 3}
+  m_Name: 200110
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: BuffConfig
+      Entry: 7
+      Data: 0|ET.BuffConfig, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 200110
+    - Name: Desc
+      Entry: 1
+      Data: "\u602A\u7269\u6218\u6597\u72B6\u6001"
+    - Name: Duration
+      Entry: 3
+      Data: 0
+    - Name: TickTime
+      Entry: 3
+      Data: 0
+    - Name: MaxStack
+      Entry: 3
+      Data: 1
+    - Name: Stack
+      Entry: 3
+      Data: 1
+    - Name: OverLayRuleType
+      Entry: 3
+      Data: 0
+    - Name: Flags
+      Entry: 7
+      Data: 1|System.Collections.Generic.HashSet`1[[ET.BuffFlags, ET.Model]], System.Core
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: NoticeType
+      Entry: 3
+      Data: 0
+    - Name: Effects
+      Entry: 7
+      Data: 2|System.Collections.Generic.List`1[[ET.EffectNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 3|ET.EffectServerBuffAdd, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 5|ET.BTAddBuff, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Target
+      Entry: 1
+      Data: Caster
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: ConfigId
+      Entry: 3
+      Data: 200111
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 

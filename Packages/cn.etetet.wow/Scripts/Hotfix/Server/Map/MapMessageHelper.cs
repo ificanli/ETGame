@@ -21,7 +21,7 @@ namespace ET.Server
             MapMessageHelper.SendToClient(unit, removeUnits);
         }
         
-        public static void Broadcast(Unit unit, IMessage message, bool withSelf = true)
+        private static void Broadcast(Unit unit, IMessage message, bool withSelf = true)
         {
             (message as MessageObject).IsFromPool = false;
             Dictionary<long, EntityRef<AOIEntity>> dict = unit.GetBeSeePlayers();
@@ -36,12 +36,13 @@ namespace ET.Server
             }
         }
         
-        public static void SendToClient(Unit unit, IMessage message)
+        private static void SendToClient(Unit unit, IMessage message)
         {
             if (!unit.Type().IsSame(UnitType.Player))
             {
                 return;
             }
+            
             unit.Root().GetComponent<MessageLocationSenderComponent>().Get(LocationType.GateSession).Send(unit.Id, message);
         }
         
@@ -55,6 +56,8 @@ namespace ET.Server
 
         public static void NoticeClient(Unit unit, IMessage message, NoticeType noticeType)
         {
+            LogMsg.Instance.Debug(unit.Fiber(), message);
+            
             switch (noticeType)
             {
                 case NoticeType.Broadcast:

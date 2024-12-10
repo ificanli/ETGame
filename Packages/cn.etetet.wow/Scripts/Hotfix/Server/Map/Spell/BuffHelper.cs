@@ -108,7 +108,7 @@ namespace ET.Server
                 WaitTick(buff, timerComponent).NoContext();
             }
             
-            if (buff.ExpireTime > 0)
+            if (buff.ExpireTime > 0 && buff.ExpireTime < long.MaxValue)
             {
                 if (buff.TickTime > 0)
                 {

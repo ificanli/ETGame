@@ -26,7 +26,7 @@ namespace ET.Server
                 
             // 广播寻路路径
             m2CPathfindingResult.Id = unit.Id;
-            MapMessageHelper.Broadcast(unit, m2CPathfindingResult);
+            MapMessageHelper.NoticeClient(unit, m2CPathfindingResult, NoticeType.Broadcast);
 
             MoveComponent moveComponent = unit.GetComponent<MoveComponent>();
             
@@ -52,7 +52,7 @@ namespace ET.Server
             m2CStop.Position = unit.Position;
             m2CStop.Rotation = unit.Rotation;
             
-            MapMessageHelper.Broadcast(unit, m2CStop);
+            MapMessageHelper.NoticeClient(unit, m2CStop, NoticeType.Broadcast);
         }
 
         public static void Turn(this Unit unit, quaternion to, int turnTime)
@@ -63,7 +63,7 @@ namespace ET.Server
             m2CTurn.UnitId = unit.Id;
             m2CTurn.Rotation = to;
             m2CTurn.TurnTime = turnTime;
-            MapMessageHelper.Broadcast(unit, m2CTurn);
+            MapMessageHelper.NoticeClient(unit, m2CTurn, NoticeType.Broadcast);
         }
     }
 }

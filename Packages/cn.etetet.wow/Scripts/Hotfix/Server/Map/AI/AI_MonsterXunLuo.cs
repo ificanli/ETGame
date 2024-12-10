@@ -27,6 +27,10 @@ namespace ET.Server
             float aoi = numericComponent.GetAsFloat(NumericType.AOI);
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            
+            // 暂时写死
+            BuffHelper.RemoveBuffByConfigId(unit, 200111, BuffFlags.OutBattleRemove);
+            
             while (true)
             {
                 // 找一个点

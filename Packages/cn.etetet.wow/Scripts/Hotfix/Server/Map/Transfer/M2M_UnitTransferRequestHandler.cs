@@ -30,12 +30,12 @@ namespace ET.Server
             M2C_StartSceneChange m2CStartSceneChange = M2C_StartSceneChange.Create();
             m2CStartSceneChange.SceneInstanceId = scene.InstanceId;
             m2CStartSceneChange.SceneName = scene.Name;
-            MapMessageHelper.SendToClient(unit, m2CStartSceneChange);
+            MapMessageHelper.NoticeClient(unit, m2CStartSceneChange, NoticeType.Self);
 
             // 通知客户端创建My Unit
             M2C_CreateMyUnit m2CCreateUnits = M2C_CreateMyUnit.Create();
             m2CCreateUnits.Unit = UnitHelper.CreateUnitInfo(unit);
-            MapMessageHelper.SendToClient(unit, m2CCreateUnits);
+            MapMessageHelper.NoticeClient(unit, m2CCreateUnits, NoticeType.Self);
 
             // 加入aoi
             unit.AddComponent<AOIEntity>();

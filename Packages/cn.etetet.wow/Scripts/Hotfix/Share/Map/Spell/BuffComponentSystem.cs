@@ -50,15 +50,14 @@ namespace ET
             {
                 buff.TickTime = buffConfig.TickTime;
             }
-            if (buffConfig.Duration > 0)
+            if (buffConfig.Duration >= 0)
             {
                 buff.ExpireTime = TimeInfo.Instance.ServerNow() + buffConfig.Duration;
-                if (buff.TickTime > 0)
-                {
-                    buff.ExpireTime += 1;
-                }
             }
-
+            else
+            {
+                buff.ExpireTime = long.MaxValue;
+            }
             return buff;
         }
 

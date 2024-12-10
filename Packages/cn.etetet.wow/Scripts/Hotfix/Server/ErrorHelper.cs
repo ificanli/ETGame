@@ -11,7 +11,7 @@
             M2C_Error m2CError = M2C_Error.Create();
             m2CError.Error = error;
             m2CError.Values.AddRange(strs);
-            MapMessageHelper.SendToClient(unit, m2CError);
+            MapMessageHelper.NoticeClient(unit, m2CError, NoticeType.Self);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ET.Server
                 numericComponent.GetAsFloat(NumericType.X), 
                 numericComponent.GetAsFloat(NumericType.Y),
                 numericComponent.GetAsFloat(NumericType.Z));
-            if (math.distance(unit.Position, birthPos) < 20f)
+            if (math.distance(unit.Position, birthPos) < 30f)
             {
                 return 1;
             }
