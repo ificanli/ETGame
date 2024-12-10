@@ -1,4 +1,6 @@
-﻿namespace ET
+﻿using System.Collections.Generic;
+
+namespace ET
 {
     [EntitySystemOf(typeof(SpellComponent))]
     public static partial class SpellComponentSystem
@@ -32,6 +34,24 @@
             long timeNow = TimeInfo.Instance.FrameTime;
             self.CDTime = timeNow;
             self.SpellCD[spellConfigId] = timeNow;
+        }
+        
+        public static void AddMod(this SpellComponent self, int spellConfigId, SpellModType spellModType, int value)
+        {
+            if (!self.SpellMods.TryGetValue(spellConfigId, out Dictionary<int, int> mods))
+            {
+                mods = new Dictionary<int, int>();
+                self.SpellMods[spellConfigId] = mods;
+            }
+
+            if (mods.TryGetValue((int)spellModType, out int oldValue))
+            {
+                mods[(int)spellModType] = oldValue + value;
+            }
+            else
+            {
+                mods[(int)spellModType] = value;
+            }
         }
     }
 }

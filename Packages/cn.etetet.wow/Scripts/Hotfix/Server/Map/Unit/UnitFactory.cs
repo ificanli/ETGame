@@ -31,6 +31,7 @@ namespace ET.Server
             // 加入aoi
             unit.AddComponent<AOIEntity>();
             unit.AddComponent<TargetComponent>();
+            unit.AddComponent<SpellComponent>();
             unit.AddComponent<BuffComponent>();
             
             switch ((UnitType)unitConfig.Type)
@@ -41,7 +42,6 @@ namespace ET.Server
                 }
                 case UnitType.Monster:
                 {
-                    unit.AddComponent<SpellComponent>();
                     unit.AddComponent<ThreatComponent>();
                     unit.AddComponent<PathfindingComponent, string>(scene.Name);
                     
