@@ -54,5 +54,16 @@ namespace ET.Server
             
             MapMessageHelper.Broadcast(unit, m2CStop);
         }
+
+        public static void Turn(this Unit unit, quaternion to, int turnTime)
+        {
+            TurnComponent turnComponent = unit.GetComponent<TurnComponent>();
+            turnComponent.Turn(to, turnTime);
+            M2C_Turn m2CTurn = M2C_Turn.Create();
+            m2CTurn.UnitId = unit.Id;
+            m2CTurn.Rotation = to;
+            m2CTurn.TurnTime = turnTime;
+            MapMessageHelper.Broadcast(unit, m2CTurn);
+        }
     }
 }

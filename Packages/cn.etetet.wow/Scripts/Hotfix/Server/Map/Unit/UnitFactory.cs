@@ -27,6 +27,7 @@ namespace ET.Server
             unit.Position = new float3(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
             
             unit.AddComponent<MoveComponent>();
+            unit.AddComponent<TurnComponent>();
             // 加入aoi
             unit.AddComponent<AOIEntity>();
             unit.AddComponent<TargetComponent>();

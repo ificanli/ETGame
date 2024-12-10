@@ -20,6 +20,7 @@ namespace ET.Client
 				numericComponent.Set(kv.Key, kv.Value);
 			}
 	        
+			unit.AddComponent<TurnComponent>();
 	        unit.AddComponent<MoveComponent>();
 	        if (unitInfo.MoveInfo != null)
 	        {

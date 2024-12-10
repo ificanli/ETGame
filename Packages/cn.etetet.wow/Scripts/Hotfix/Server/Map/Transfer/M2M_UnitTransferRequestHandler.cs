@@ -20,6 +20,7 @@ namespace ET.Server
                 unit.AddComponent(entity);
             }
 
+            unit.AddComponent<TurnComponent>();
             unit.AddComponent<MoveComponent>();
             unit.AddComponent<PathfindingComponent, string>(scene.Name);
             unit.AddComponent<SpellComponent>();

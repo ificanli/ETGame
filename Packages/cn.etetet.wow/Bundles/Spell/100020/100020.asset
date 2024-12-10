@@ -52,8 +52,8 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: Buff
-      Entry: 6
-      Data: 
+      Entry: 1
+      Data: Buff
     - Name: NumericType
       Entry: 3
       Data: 1003
@@ -96,12 +96,15 @@ MonoBehaviour:
     - Name: Owner
       Entry: 1
       Data: Owner
-    - Name: Unit
-      Entry: 1
-      Data: Unit
     - Name: MaxDistance
       Entry: 3
       Data: 40000
+    - Name: MinDistance
+      Entry: 3
+      Data: 0
+    - Name: Unit
+      Entry: 1
+      Data: Unit
     - Name: UnitType
       Entry: 3
       Data: 7

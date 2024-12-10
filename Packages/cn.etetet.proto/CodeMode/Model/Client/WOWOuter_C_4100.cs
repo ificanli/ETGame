@@ -1193,6 +1193,39 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_Turn)]
+    public partial class M2C_Turn : MessageObject, IMessage
+    {
+        public static M2C_Turn Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_Turn>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public Unity.Mathematics.quaternion Rotation { get; set; }
+
+        [MemoryPackOrder(2)]
+        public int TurnTime { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.Rotation = default;
+            this.TurnTime = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWOuter
     {
         public const ushort RouterSync = 4101;
@@ -1232,5 +1265,6 @@ namespace ET
         public const ushort M2C_Error = 4135;
         public const ushort M2C_NumericChange = 4136;
         public const ushort C2M_SelectTarget = 4137;
+        public const ushort M2C_Turn = 4138;
     }
 }
