@@ -11,12 +11,11 @@
         [EntitySystem]
         private static void Destroy(this BuffSpellModRecordComponent self)
         {
-            if (self.Parent.IsDisposed)
+            Unit unit = self.Parent.Parent.GetParent<Unit>();
+            if (unit.IsDisposed)
             {
                 return;
             }
-
-            Unit unit = self.Parent.Parent.GetParent<Unit>();
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
 
             for (int i = 0; i < self.Records.Count; i += 3)

@@ -53,8 +53,14 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: Buff
-      Entry: 6
-      Data: 
+      Entry: 1
+      Data: Buff
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Owner
+      Entry: 1
+      Data: Owner
     - Name: NumericType
       Entry: 3
       Data: 1003
@@ -97,15 +103,18 @@ MonoBehaviour:
     - Name: Owner
       Entry: 1
       Data: Owner
+    - Name: MaxDistance
+      Entry: 3
+      Data: 40000
+    - Name: MinDistance
+      Entry: 3
+      Data: 0
     - Name: Pos
       Entry: 1
       Data: Pos
     - Name: SpellIndicator
       Entry: 10
       Data: 0
-    - Name: MaxDistance
-      Entry: 3
-      Data: 40000
     - Name: Radius
       Entry: 3
       Data: 6000

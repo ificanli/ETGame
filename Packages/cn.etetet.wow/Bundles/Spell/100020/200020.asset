@@ -44,7 +44,7 @@ MonoBehaviour:
       Data: 1
     - Name: OverLayRuleType
       Entry: 3
-      Data: 3
+      Data: 0
     - Name: Flags
       Entry: 7
       Data: 1|System.Collections.Generic.HashSet`1[[ET.BuffFlags, ET.Model]], System.Core

@@ -8,5 +8,13 @@
 #endif
         [BTInput(typeof(Buff))]
         public string Buff = BTEvnKey.Buff;
+        
+        [Sirenix.OdinInspector.BoxGroup("输出参数")]
+        [BTOutput(typeof(Unit))]
+        public string Caster = BTEvnKey.Caster;
+        
+        [Sirenix.OdinInspector.BoxGroup("输出参数")]
+        [BTOutput(typeof(Unit))]
+        public string Owner = BTEvnKey.Owner;
     }
 }

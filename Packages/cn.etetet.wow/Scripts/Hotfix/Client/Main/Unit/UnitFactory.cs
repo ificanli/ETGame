@@ -17,7 +17,7 @@ namespace ET.Client
 
 			foreach (var kv in unitInfo.KV)
 			{
-				numericComponent.Set(kv.Key, kv.Value);
+				numericComponent.SetNoEvent(kv.Key, kv.Value);
 			}
 	        
 			unit.AddComponent<TurnComponent>();

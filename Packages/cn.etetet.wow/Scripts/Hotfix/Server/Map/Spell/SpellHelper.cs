@@ -23,14 +23,6 @@ namespace ET.Server
                         return TextConstDefine.SpellCast_SpellInCD;
                     }
                 }
-
-                // 检查消耗的东西是否足够
-                int costCheckRet = CostDispatcher.Instance.Handle(unit, spellConfig);
-                if (costCheckRet != 0)
-                {
-                    ErrorHelper.MapError(unit, costCheckRet);
-                    return costCheckRet;
-                }
             }
 #endregion
             
@@ -77,11 +69,36 @@ namespace ET.Server
                 }
             }
 
+            {
+                // 检查消耗的东西是否足够
+                int costCheckRet = CostDispatcher.Instance.Handle(unit, spellConfig);
+                if (costCheckRet != 0)
+                {
+                    ErrorHelper.MapError(unit, costCheckRet);
+                    return costCheckRet;
+                }
+                
+                // 消耗东西
+                using BTEnv env = BTEnv.Create(buff.Scene());
+                env.AddEntity(BTEvnKey.Buff, buff);
+                env.AddEntity(BTEvnKey.Caster, buff.GetCaster());
+                foreach (CostNode costNode in spellConfig.Cost)
+                {
+                    int ret = BTDispatcher.Instance.Handle(costNode, env);
+                    if (ret == 0)
+                    {
+                        continue;
+                    }
+                    ErrorHelper.MapError(unit, ret);
+                    return ret;
+                }
+            }
             // 主技能更新CD
             if (parent == null)
             {
                 spellComponent.UpdateCD(spellConfig.Id);
             }
+            
             
             BuffHelper.InitBuff(buff, parent);
             

@@ -11,12 +11,11 @@
         [EntitySystem]
         private static void Destroy(this BuffChangeNumericRecordComponent self)
         {
-            if (self.Parent.IsDisposed)
+            Unit unit = self.Parent.Parent.GetParent<Unit>();
+            if (unit.IsDisposed)
             {
                 return;
             }
-
-            Unit unit = self.Parent.Parent.GetParent<Unit>();
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
 
             for (int i = 0; i < self.Records.Count; i += 2)
