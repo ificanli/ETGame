@@ -109,5 +109,15 @@ namespace ET.Server
             
             return 0;
         }
+
+        public static void Stop(Unit unit, BuffFlags buffFlags)
+        {
+            Buff buff = unit.GetComponent<SpellComponent>().Current;
+            if (buff == null)
+            {
+                return;
+            }
+            BuffHelper.RemoveBuff(buff, buffFlags);
+        }
     }
 }

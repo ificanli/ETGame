@@ -27,7 +27,7 @@ namespace ET
         private static void Awake(this AIComponent self, int aiConfigId)
         {
             self.AIConfigId = aiConfigId;
-            self.Timer = self.Root().GetComponent<TimerComponent>().NewRepeatedTimer(1000, TimerInvokeType.AITimer, self);
+            self.Start();
         }
 
         [EntitySystem]
@@ -47,7 +47,7 @@ namespace ET
                 fiber.Root.GetComponent<TimerComponent>().Remove(ref self.Timer);
                 return;
             }
-
+            
             var oneAI = AIConfigCategory.Instance.AIConfigs[self.AIConfigId];
 
             foreach (AIConfig aiConfig in oneAI)
@@ -81,6 +81,26 @@ namespace ET
                 return;
             }
             
+        }
+        
+        public static void Start(this AIComponent self)
+        {
+            if (self.Timer != 0)
+            {
+                return;
+            }
+            self.Timer = self.Root().GetComponent<TimerComponent>().NewRepeatedTimer(1000, TimerInvokeType.AITimer, self);
+        }
+        
+        public static void Stop(this AIComponent self)
+        {
+            if (self.Timer == 0)
+            {
+                return;
+            }
+            
+            self.Cancel();
+            self.Root().GetComponent<TimerComponent>().Remove(ref self.Timer);
         }
 
         private static void Cancel(this AIComponent self)

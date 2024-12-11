@@ -50,7 +50,10 @@ MonoBehaviour:
       Data: 1|System.Collections.Generic.HashSet`1[[ET.BuffFlags, ET.Model]], System.Core
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
+    - Name: 
+      Entry: 3
+      Data: 15
     - Name: 
       Entry: 3
       Data: 5

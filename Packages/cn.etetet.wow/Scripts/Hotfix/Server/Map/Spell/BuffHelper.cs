@@ -120,7 +120,7 @@ namespace ET.Server
             if (buffConfig.Flags.Contains(BuffFlags.ParentRemoveRemove))
             {
                 BuffChildrenComponent buffChildrenComponent =
-                        parent.GetComponent<BuffChildrenComponent>() ?? buff.AddComponent<BuffChildrenComponent>();
+                        parent.GetComponent<BuffChildrenComponent>() ?? parent.AddComponent<BuffChildrenComponent>();
                 buffChildrenComponent.Buffs.Add(buff);
             }
             
@@ -247,6 +247,11 @@ namespace ET.Server
         public static void RemoveBuff(Buff buff, BuffFlags removeType)
         {
             Unit unit = buff.Parent.GetParent<Unit>();
+            if (unit.IsDisposed)
+            {
+                return;
+            }
+            
             BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
             
             M2C_BuffRemove m2CBuffRemove = M2C_BuffRemove.Create();

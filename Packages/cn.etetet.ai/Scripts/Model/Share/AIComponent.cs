@@ -4,7 +4,7 @@ namespace ET
     [ComponentOf]
     public class AIComponent: Entity, IAwake<int>, IDestroy
     {
-        public int AIConfigId;
+        public int AIConfigId { get; set; }
         
         public ETCancellationToken CancellationToken;
 

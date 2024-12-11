@@ -48,5 +48,8 @@ namespace ET
 
         [LabelText("目标不存在")]
         NotFoundTargetRemove = 14,
+        
+        [LabelText("眩晕")]
+        StunRemove = 15,
     }
 }

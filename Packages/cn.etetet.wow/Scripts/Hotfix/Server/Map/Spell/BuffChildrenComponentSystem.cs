@@ -16,6 +16,10 @@ namespace ET.Server
         {
             foreach (Buff buff in self.Buffs)
             {
+                if (buff == null)
+                {
+                    continue;
+                }
                 BuffHelper.RemoveBuff(buff, BuffFlags.ParentRemoveRemove);
             }
         }

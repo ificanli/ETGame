@@ -1,5 +1,33 @@
 [
   {
+    "Id": 101,
+    "AIConfigId": 1,
+    "Order": 1,
+    "Name": "AI_PetZhuiJi",
+    "NodeParams": []
+  },
+  {
+    "Id": 102,
+    "AIConfigId": 1,
+    "Order": 2,
+    "Name": "AI_PetReturn",
+    "NodeParams": []
+  },
+  {
+    "Id": 103,
+    "AIConfigId": 1,
+    "Order": 3,
+    "Name": "AI_PetFollow",
+    "NodeParams": []
+  },
+  {
+    "Id": 104,
+    "AIConfigId": 1,
+    "Order": 4,
+    "Name": "AI_PetIdle",
+    "NodeParams": []
+  },
+  {
     "Id": 301,
     "AIConfigId": 3,
     "Order": 1,

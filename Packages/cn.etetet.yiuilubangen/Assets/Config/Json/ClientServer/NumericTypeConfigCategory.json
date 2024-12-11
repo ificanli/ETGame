@@ -115,5 +115,14 @@
     "MaxNumericType": 0,
     "AffectNumericType": [],
     "AffectValue": []
+  },
+  {
+    "Id": 1013,
+    "Name": "Stun",
+    "NeedSaveDB": 1,
+    "NoticeType": 0,
+    "MaxNumericType": 0,
+    "AffectNumericType": [],
+    "AffectValue": []
   }
 ]

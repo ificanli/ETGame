@@ -63,5 +63,12 @@ namespace ET
 
 		Z = 1012,
 
+		Stun = 1013,
+		StunBase = 10131,
+		StunAdd = 10132,
+		StunPct = 10133,
+		StunFinalAdd = 10134,
+		StunFinalPct = 10135,
+
 	}
 }
