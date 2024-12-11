@@ -1,6 +1,6 @@
 ﻿using ET.Server;
 
-namespace ET
+namespace ET.Server
 {
     [EntitySystemOf(typeof(BuffChildrenComponent))]
     public static partial class BuffChildrenComponentSystem

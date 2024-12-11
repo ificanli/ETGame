@@ -56,5 +56,15 @@ namespace ET.Server
             unitComponent.Add(unit);
             return unit;
         }
+
+        public static Unit CreatePet(Scene scene, Unit owner, long id, int configId)
+        {
+            Unit pet = Create(scene, id, configId);
+            pet.AddComponent<PetComponent>().OwnerId = owner.Id;
+
+            UnitPetComponent unitPetComponent = owner.GetComponent<UnitPetComponent>() ?? owner.AddComponent<UnitPetComponent>();
+            unitPetComponent.PetId = pet.Id;
+            return pet;
+        }
     }
 }

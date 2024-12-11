@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ET
+namespace ET.Server
 {
     [ComponentOf(typeof(Buff))]
     public class BuffChildrenComponent: Entity, IAwake, IDestroy

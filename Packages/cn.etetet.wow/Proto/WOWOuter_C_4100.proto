@@ -44,6 +44,11 @@ message MoveInfo
 	int32 TurnSpeed = 3;
 }
 
+message PetInfo
+{
+	int64 OwnerId = 1;
+}
+
 message UnitInfo
 {
 	int64 UnitId = 1;
@@ -53,6 +58,7 @@ message UnitInfo
 	Unity.Mathematics.float3 Forward = 5;
 	map<int32, int64> KV = 6;
 	MoveInfo MoveInfo = 7;
+	PetInfo PetInfo = 8;
 }
 
 message M2C_CreateUnits // IMessage

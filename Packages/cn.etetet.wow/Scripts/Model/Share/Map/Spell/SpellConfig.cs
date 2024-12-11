@@ -78,12 +78,6 @@ namespace ET
         #if UNITY
         [UnityEngine.SerializeReference]
         #endif
-        [LabelText("检查前置条件")]
-        public BTNode PreCheck;
-
-        #if UNITY
-        [UnityEngine.SerializeReference]
-        #endif
         [LabelText("目标选择")]
         public TargetSelector TargetSelector;
 
