@@ -29,7 +29,7 @@ namespace ET.Server
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
             // 暂时写死
-            BuffHelper.RemoveBuffByConfigId(unit, 200111, BuffFlags.OutBattleRemove);
+            BuffHelper.RemoveBuffByConfigId(unit, 200111, BuffFlags.AIRemove);
             
             while (true)
             {

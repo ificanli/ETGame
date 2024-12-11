@@ -7,31 +7,31 @@ namespace ET
         [LabelText("无")]
         None = 0,
 
-        [LabelText("超时")]
+        [LabelText("超时删除")]
         TimeoutRemove = 1,
 
-        [LabelText("死亡")]
+        [LabelText("死亡删除")]
         DeadRemove = 2,
 
-        [LabelText("进入战斗")]
+        [LabelText("进入战斗删除")]
         InBattleRemove = 3,
 
-        [LabelText("离开战斗")]
+        [LabelText("离开战斗删除")]
         OutBattleRemove = 4,
 
-        [LabelText("移动")]
+        [LabelText("移动删除")]
         MoveRemove = 5,
 
-        [LabelText("伤害")]
+        [LabelText("伤害删除")]
         DamageRemove = 6,
 
-        [LabelText("当前技能")]
+        [LabelText("当前技能删除的时候删除")]
         CurrentSpellRemoveRemove = 7,
 
-        [LabelText("骑乘")]
+        [LabelText("骑乘删除")]
         RideRemove = 8,
 
-        [LabelText("叠加")]
+        [LabelText("堆叠为0删除")]
         StackRemove = 9,
 
         [LabelText("相同配置ID替换")]
@@ -49,7 +49,10 @@ namespace ET
         [LabelText("目标不存在")]
         NotFoundTargetRemove = 14,
         
-        [LabelText("眩晕")]
+        [LabelText("眩晕删除")]
         StunRemove = 15,
+        
+        [LabelText("AI删除")]
+        AIRemove = 16,
     }
 }

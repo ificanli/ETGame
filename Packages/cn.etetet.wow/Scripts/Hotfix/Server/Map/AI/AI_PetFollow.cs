@@ -30,23 +30,21 @@ namespace ET.Server
             Unit unit = aiComponent.GetParent<Unit>();
             Unit owner = PetHelper.GetOwner(unit);
 
-            PathfindingComponent pathfindingComponent = owner.GetComponent<PathfindingComponent>();
-
             TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
+            SpellHelper.Cast(unit, 100110);
+            
             while (true)
             {
-                float3 randomPos = pathfindingComponent.FindRandomPointWithRaduis(owner.Position, 2, 3);
-
-                await unit.FindPathMoveToAsync(randomPos);
+                await unit.FindPathMoveToAsync(owner.Position);
                 if (cancellationToken.IsCancel())
                 {
                     return;
                 }
                 
-                await timerComponent.WaitAsync(RandomGenerator.RandomNumber(5000, 10000));
+                await timerComponent.WaitAsync(200);
                 if (cancellationToken.IsCancel())
                 {
                     return;
