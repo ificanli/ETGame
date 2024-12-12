@@ -175,10 +175,18 @@ namespace ET.Server
         public static void UpdateExpireTime(Buff buff, long expireTime)
         {
             buff.ExpireTime = expireTime;
+            
+            if (buff.ExpireTime < TimeInfo.Instance.ServerFrameTime())
+            {
+                BuffHelper.RemoveBuff(buff, BuffFlags.TimeoutRemove);
+                return;
+            }
+            
+            
             long timeoutTimer = buff.TimeoutTimer;
             TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
             timerComponent.Remove(ref timeoutTimer);
-
+            
             if (buff.ExpireTime > 0)
             {
                 buff.TimeoutTimer = timerComponent.NewOnceTimer(buff.ExpireTime, TimerInvokeType.BuffTimeoutTimer, buff);

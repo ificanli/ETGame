@@ -266,7 +266,7 @@ MonoBehaviour:
       Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 2
     - Name: 
       Entry: 7
       Data: 19|ET.BTAnimatorSetBool, ET.Model
@@ -295,6 +295,36 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: 
+      Entry: 7
+      Data: 21|ET.BTShowCastSlider, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 22|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: IsIncrease
+      Entry: 5
+      Data: false
+    - Name: ShowDisplayName
+      Entry: 1
+      Data: TameBeast
+    - Name: IconName
+      Entry: 1
+      Data: Ability_Hunter_Pet_Bear
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
       Entry: 13
       Data: 
     - Name: 
@@ -314,19 +344,19 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 21|ET.EffectClientBuffRemove, ET.Model
+      Data: 23|ET.EffectClientBuffRemove, ET.Model
     - Name: Children
       Entry: 7
-      Data: 22|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 24|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 23|ET.BTAnimatorSetBool, ET.Model
+      Data: 25|ET.BTAnimatorSetBool, ET.Model
     - Name: Children
       Entry: 7
-      Data: 24|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 26|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0

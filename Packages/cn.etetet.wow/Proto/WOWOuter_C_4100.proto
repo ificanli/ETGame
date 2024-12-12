@@ -235,7 +235,7 @@ message M2C_BuffUpdate // IMessage
 {
 	int64 UnitId = 1;
 	int64 BuffId = 2;
-	int64 TickTime = 5;
+	int32 TickTime = 5;
 	int64 ExpireTime = 6;
 	int32 Stack = 7;
 }

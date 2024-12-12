@@ -1069,7 +1069,7 @@ namespace ET
         public long BuffId { get; set; }
 
         [MemoryPackOrder(4)]
-        public long TickTime { get; set; }
+        public int TickTime { get; set; }
 
         [MemoryPackOrder(5)]
         public long ExpireTime { get; set; }

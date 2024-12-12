@@ -71,7 +71,7 @@ MonoBehaviour:
       Data: 2|System.Collections.Generic.List`1[[ET.EffectNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 4
+      Data: 5
     - Name: 
       Entry: 7
       Data: 3|ET.EffectServerBuffAdd, ET.Model
@@ -339,6 +339,60 @@ MonoBehaviour:
     - Name: Caster
       Entry: 1
       Data: Caster
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 23|ET.EffectServerBuffHitted, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 24|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 25|ET.BTBuffAddExpireTime, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 26|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Value
+      Entry: 3
+      Data: -500
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Attacker
+      Entry: 1
+      Data: Attacker
     - Name: 
       Entry: 8
       Data: 

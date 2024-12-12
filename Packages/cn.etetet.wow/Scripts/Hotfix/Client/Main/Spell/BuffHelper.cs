@@ -21,16 +21,22 @@
             return buff;
         }
         
-        public static void UpdateExpireTime(Buff buff, long expireTime)
+        public static void UpdateBuff(Buff buff, long expireTime, int tickTime, int stack)
         {
-        }
-        
-        public static void UpdateTickTime(Buff buff, int tickTime)
-        {
-        }
-        
-        public static void UpdateStack(Buff buff, int stack)
-        {
+            if (stack > 0)
+            {
+                buff.Stack = stack;
+            }
+
+            if (tickTime > 0)
+            {
+                buff.TickTime = tickTime;
+            }
+
+            if (expireTime > 0)
+            {
+                buff.ExpireTime = expireTime;
+            }
         }
         
         public static void RemoveBuff(Unit unit, long id, BuffFlags removeType)
