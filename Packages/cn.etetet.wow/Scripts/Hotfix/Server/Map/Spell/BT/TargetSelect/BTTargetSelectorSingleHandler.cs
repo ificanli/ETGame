@@ -19,7 +19,7 @@ namespace ET.Server
                 return TextConstDefine.SpellCast_NotSelectTarget;
             }
 
-            if (!node.UnitType.IsSame(target.Type()))
+            if (!node.UnitType.IsSame(target.UnitType))
             {
                 return TextConstDefine.SpellCast_NotSelectTarget;
             }

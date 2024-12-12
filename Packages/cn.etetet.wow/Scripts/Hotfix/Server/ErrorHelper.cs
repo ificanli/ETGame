@@ -4,7 +4,7 @@
     {
         public static void MapError(Unit unit, int error, params string[] strs)
         {
-            if (unit.Type() != UnitType.Player)
+            if (unit.UnitType != UnitType.Player)
             {
                 return;
             }

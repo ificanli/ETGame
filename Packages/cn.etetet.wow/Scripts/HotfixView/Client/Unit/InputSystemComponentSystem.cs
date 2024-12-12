@@ -21,6 +21,7 @@ namespace ET.Client
             self.InputSystem.Player.SelectTarget.canceled += self.SelectTarget;
             self.InputSystem.Player.ChangeTarget.canceled += self.ChangeTarget;
             self.InputSystem.Player.Spell.started += self.CastSpell;
+            self.InputSystem.Player.PetAttack.started += self.PetAttack;
         }
         
         [EntitySystem]
@@ -117,6 +118,13 @@ namespace ET.Client
         private static void Jump(this InputSystemComponent self, InputAction.CallbackContext context)
         {
             
+        }
+
+        private static void PetAttack(this InputSystemComponent self, InputAction.CallbackContext context)
+        {
+            C2M_PetAttack c2MPetAttack = C2M_PetAttack.Create();
+            c2MPetAttack.UnitId = self.GetParent<Unit>().GetComponent<TargetComponent>().Unit.Entity.Id;
+            self.Root().GetComponent<ClientSenderComponent>().Send(c2MPetAttack);
         }
         
         private static void CastSpell(this InputSystemComponent self, InputAction.CallbackContext context)

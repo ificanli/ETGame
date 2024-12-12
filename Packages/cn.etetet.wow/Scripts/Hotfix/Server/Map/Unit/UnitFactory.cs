@@ -23,7 +23,8 @@ namespace ET.Server
                 }
                 numericComponent.SetNoEvent(k, v);
             }
-            
+
+            unit.UnitType = (UnitType)unitConfig.Type;
             unit.Position = new float3(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
             
             unit.AddComponent<MoveComponent>();
@@ -34,7 +35,7 @@ namespace ET.Server
             unit.AddComponent<SpellComponent>();
             unit.AddComponent<BuffComponent>();
             
-            switch ((UnitType)unitConfig.Type)
+            switch (unit.UnitType)
             {
                 case UnitType.Player:
                 {

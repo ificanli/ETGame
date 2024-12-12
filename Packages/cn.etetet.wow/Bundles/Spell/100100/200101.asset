@@ -188,7 +188,7 @@ MonoBehaviour:
       Data: Buff
     - Name: SpellConfigId
       Entry: 3
-      Data: 100002
+      Data: 100102
     - Name: 
       Entry: 8
       Data: 
@@ -212,7 +212,7 @@ MonoBehaviour:
       Data: Caster
     - Name: ConfigId
       Entry: 3
-      Data: 200000
+      Data: 200100
     - Name: RemoveType
       Entry: 3
       Data: 14

@@ -8,5 +8,12 @@
             Unit owner = pet.GetParent<UnitComponent>().Get(ownerId);
             return owner;
         }
+        
+        public static Unit GetPet(Unit unit)
+        {
+            long petId = unit.GetComponent<UnitPetComponent>().PetId;
+            Unit pet = unit.GetParent<UnitComponent>().Get(petId);
+            return pet;
+        }
     }
 }

@@ -199,6 +199,31 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(WOWOuter.PetInfo)]
+    public partial class PetInfo : MessageObject
+    {
+        public static PetInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<PetInfo>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long OwnerId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.OwnerId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(WOWOuter.UnitInfo)]
     public partial class UnitInfo : MessageObject
     {
@@ -228,6 +253,9 @@ namespace ET
         [MemoryPackOrder(6)]
         public MoveInfo MoveInfo { get; set; }
 
+        [MemoryPackOrder(7)]
+        public PetInfo PetInfo { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -242,6 +270,7 @@ namespace ET
             this.Forward = default;
             this.KV.Clear();
             this.MoveInfo = default;
+            this.PetInfo = default;
 
             ObjectPool.Recycle(this);
         }
@@ -1226,6 +1255,35 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWOuter.C2M_PetAttack)]
+    public partial class C2M_PetAttack : MessageObject, ILocationMessage
+    {
+        public static C2M_PetAttack Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_PetAttack>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long UnitId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.UnitId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWOuter
     {
         public const ushort RouterSync = 4101;
@@ -1234,37 +1292,39 @@ namespace ET
         public const ushort C2G_EnterMap = 4104;
         public const ushort G2C_EnterMap = 4105;
         public const ushort MoveInfo = 4106;
-        public const ushort UnitInfo = 4107;
-        public const ushort M2C_CreateUnits = 4108;
-        public const ushort M2C_CreateMyUnit = 4109;
-        public const ushort M2C_StartSceneChange = 4110;
-        public const ushort M2C_RemoveUnits = 4111;
-        public const ushort C2M_PathfindingResult = 4112;
-        public const ushort C2M_Stop = 4113;
-        public const ushort M2C_PathfindingResult = 4114;
-        public const ushort M2C_Stop = 4115;
-        public const ushort G2C_Test = 4116;
-        public const ushort C2M_Reload = 4117;
-        public const ushort M2C_Reload = 4118;
-        public const ushort G2C_TestHotfixMessage = 4119;
-        public const ushort C2M_TestRobotCase = 4120;
-        public const ushort M2C_TestRobotCase = 4121;
-        public const ushort C2M_TestRobotCase2 = 4122;
-        public const ushort M2C_TestRobotCase2 = 4123;
-        public const ushort C2M_TransferMap = 4124;
-        public const ushort M2C_TransferMap = 4125;
-        public const ushort C2G_Benchmark = 4126;
-        public const ushort G2C_Benchmark = 4127;
-        public const ushort C2M_SpellCast = 4128;
-        public const ushort M2C_SpellAdd = 4129;
-        public const ushort M2C_SpellRemove = 4130;
-        public const ushort SpellTarget = 4131;
-        public const ushort M2C_BuffAdd = 4132;
-        public const ushort M2C_BuffUpdate = 4133;
-        public const ushort M2C_BuffRemove = 4134;
-        public const ushort M2C_Error = 4135;
-        public const ushort M2C_NumericChange = 4136;
-        public const ushort C2M_SelectTarget = 4137;
-        public const ushort M2C_Turn = 4138;
+        public const ushort PetInfo = 4107;
+        public const ushort UnitInfo = 4108;
+        public const ushort M2C_CreateUnits = 4109;
+        public const ushort M2C_CreateMyUnit = 4110;
+        public const ushort M2C_StartSceneChange = 4111;
+        public const ushort M2C_RemoveUnits = 4112;
+        public const ushort C2M_PathfindingResult = 4113;
+        public const ushort C2M_Stop = 4114;
+        public const ushort M2C_PathfindingResult = 4115;
+        public const ushort M2C_Stop = 4116;
+        public const ushort G2C_Test = 4117;
+        public const ushort C2M_Reload = 4118;
+        public const ushort M2C_Reload = 4119;
+        public const ushort G2C_TestHotfixMessage = 4120;
+        public const ushort C2M_TestRobotCase = 4121;
+        public const ushort M2C_TestRobotCase = 4122;
+        public const ushort C2M_TestRobotCase2 = 4123;
+        public const ushort M2C_TestRobotCase2 = 4124;
+        public const ushort C2M_TransferMap = 4125;
+        public const ushort M2C_TransferMap = 4126;
+        public const ushort C2G_Benchmark = 4127;
+        public const ushort G2C_Benchmark = 4128;
+        public const ushort C2M_SpellCast = 4129;
+        public const ushort M2C_SpellAdd = 4130;
+        public const ushort M2C_SpellRemove = 4131;
+        public const ushort SpellTarget = 4132;
+        public const ushort M2C_BuffAdd = 4133;
+        public const ushort M2C_BuffUpdate = 4134;
+        public const ushort M2C_BuffRemove = 4135;
+        public const ushort M2C_Error = 4136;
+        public const ushort M2C_NumericChange = 4137;
+        public const ushort C2M_SelectTarget = 4138;
+        public const ushort M2C_Turn = 4139;
+        public const ushort C2M_PetAttack = 4140;
     }
 }

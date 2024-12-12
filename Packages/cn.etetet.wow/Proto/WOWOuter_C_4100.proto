@@ -273,3 +273,9 @@ message M2C_Turn // IMessage
 	Unity.Mathematics.quaternion Rotation = 2;
 	int32 TurnTime = 3;
 }
+
+message C2M_PetAttack // ILocationMessage
+{
+	int32 RpcId = 1;
+	int64 UnitId = 2;
+}

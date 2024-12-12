@@ -45,7 +45,7 @@
                     "name": "ChangeTarget",
                     "type": "Button",
                     "id": "b7ba0cc8-3652-4338-90cd-108d6cc4cae3",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -54,7 +54,16 @@
                     "name": "SelectTarget",
                     "type": "Button",
                     "id": "88fb32c7-2c7f-4149-92e7-d558752a1d0c",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "PetAttack",
+                    "type": "Button",
+                    "id": "55937ef6-a1d4-4fc5-a9e9-06c0a9412d59",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -201,6 +210,17 @@
                     "processors": "",
                     "groups": "PlayerControl",
                     "action": "SelectTarget",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cc6095cb-910f-4011-8dbc-83ea3c9c9f5a",
+                    "path": "<Keyboard>/f1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";PlayerControl",
+                    "action": "PetAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

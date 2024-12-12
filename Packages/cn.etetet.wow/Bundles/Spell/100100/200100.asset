@@ -137,7 +137,7 @@ MonoBehaviour:
       Data: Unit
     - Name: ConfigId
       Entry: 3
-      Data: 200000
+      Data: 200100
     - Name: RemoveType
       Entry: 3
       Data: 14
@@ -179,22 +179,73 @@ MonoBehaviour:
       Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 1
+      Data: 3
     - Name: 
       Entry: 7
-      Data: 13|ET.BTSelector, ET.Model
+      Data: 13|ET.BTGetSpellTargetUnit, ET.Model
     - Name: Children
       Entry: 7
       Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Target
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 7
-      Data: 15|ET.BTCreateSpell, ET.Model
+      Data: 15|ET.BTTurnToUnit, ET.Model
     - Name: Children
       Entry: 7
       Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Target
+      Entry: 1
+      Data: Target
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 17|ET.BTSelector, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 19|ET.BTCreateSpell, ET.Model
+    - Name: Children
+      Entry: 7
+      Data: 20|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -212,16 +263,16 @@ MonoBehaviour:
       Data: Buff
     - Name: SpellConfigId
       Entry: 3
-      Data: 100001
+      Data: 100101
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 17|ET.BTRemoveBuff, ET.Model
+      Data: 21|ET.BTRemoveBuff, ET.Model
     - Name: Children
       Entry: 7
-      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 22|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -236,7 +287,7 @@ MonoBehaviour:
       Data: Unit
     - Name: ConfigId
       Entry: 3
-      Data: 200000
+      Data: 200100
     - Name: RemoveType
       Entry: 3
       Data: 14

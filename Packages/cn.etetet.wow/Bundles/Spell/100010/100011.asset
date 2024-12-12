@@ -42,9 +42,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: PreCheck
-      Entry: 6
-      Data: 
     - Name: TargetSelector
       Entry: 7
       Data: 2|ET.TargetSelectorCircle, ET.Model
@@ -69,6 +66,12 @@ MonoBehaviour:
     - Name: Owner
       Entry: 1
       Data: Owner
+    - Name: MaxDistance
+      Entry: 3
+      Data: 40000
+    - Name: MinDistance
+      Entry: 3
+      Data: 0
     - Name: Unit
       Entry: 1
       Data: Unit
@@ -81,12 +84,9 @@ MonoBehaviour:
     - Name: Radius
       Entry: 3
       Data: 6000
-    - Name: MaxDistance
-      Entry: 3
-      Data: 40000
     - Name: UnitType
       Entry: 3
-      Data: 7
+      Data: 15
     - Name: 
       Entry: 8
       Data: 

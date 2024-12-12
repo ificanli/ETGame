@@ -12,7 +12,7 @@ namespace ET.Client
 	        
 	        unit.Position = unitInfo.Position;
 	        unit.Forward = unitInfo.Forward;
-	        
+	        unit.UnitType = (UnitType)unitInfo.Type;
 	        NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
 
 			foreach (var kv in unitInfo.KV)

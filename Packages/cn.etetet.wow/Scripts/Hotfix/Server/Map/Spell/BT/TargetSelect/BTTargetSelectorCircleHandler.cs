@@ -25,7 +25,7 @@ namespace ET.Server
                     continue;
                 }
 
-                if (!aoiEntity.Unit.Type().IsSame(node.UnitType))
+                if (!aoiEntity.Unit.UnitType.IsSame(node.UnitType))
                 {
                     continue;
                 }

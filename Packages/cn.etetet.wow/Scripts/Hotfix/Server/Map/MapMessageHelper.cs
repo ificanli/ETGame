@@ -38,7 +38,7 @@ namespace ET.Server
         
         private static void SendToClient(Unit unit, IMessage message)
         {
-            if (!unit.Type().IsSame(UnitType.Player))
+            if (!unit.UnitType.IsSame(UnitType.Player))
             {
                 return;
             }

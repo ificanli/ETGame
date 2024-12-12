@@ -42,9 +42,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: PreCheck
-      Entry: 6
-      Data: 
     - Name: TargetSelector
       Entry: 7
       Data: 2|ET.TargetSelectorSingle, ET.Model
@@ -80,7 +77,7 @@ MonoBehaviour:
       Data: Unit
     - Name: UnitType
       Entry: 3
-      Data: 1
+      Data: 15
     - Name: 
       Entry: 8
       Data: 
@@ -89,7 +86,7 @@ MonoBehaviour:
       Data: 0
     - Name: BuffId
       Entry: 3
-      Data: 200001
+      Data: 200101
     - Name: 
       Entry: 8
       Data: 
