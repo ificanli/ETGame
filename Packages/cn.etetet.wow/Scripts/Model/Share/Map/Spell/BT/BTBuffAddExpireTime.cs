@@ -7,5 +7,7 @@
         public string Buff;
         
         public int Value;
+
+        public int Pct;
     }
 }

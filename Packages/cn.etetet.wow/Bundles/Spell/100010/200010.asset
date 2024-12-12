@@ -371,7 +371,10 @@ MonoBehaviour:
       Data: Buff
     - Name: Value
       Entry: 3
-      Data: -500
+      Data: 0
+    - Name: Pct
+      Entry: 3
+      Data: -25
     - Name: 
       Entry: 8
       Data: 
