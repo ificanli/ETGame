@@ -22,7 +22,7 @@ namespace ET
             Name = _buf.ReadString();
             HeadIcon = _buf.ReadString();
             ClassType = (EClassType)_buf.ReadInt();
-            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);KV = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); KV[__index0] = __e0;}}
+            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);KV = new System.Collections.Generic.Dictionary<int, long>(n0 * 3 / 2);for(var i0 = 0 ; i0 < n0 ; i0++) { int _k0;  _k0 = _buf.ReadInt(); long _v0;  _v0 = _buf.ReadLong();     KV.Add(_k0, _v0);}}
 
             EndInit();
         }
@@ -32,12 +32,30 @@ namespace ET
             return new UnitConfig(_buf);
         }
 
+        /// <summary>
+        /// Id
+        /// </summary>
         public readonly int Id;
+        /// <summary>
+        /// Type
+        /// </summary>
         public readonly int Type;
+        /// <summary>
+        /// 名字
+        /// </summary>
         public readonly string Name;
+        /// <summary>
+        /// 头像图片
+        /// </summary>
         public readonly string HeadIcon;
+        /// <summary>
+        /// 职业
+        /// </summary>
         public readonly EClassType ClassType;
-        public readonly int[] KV;
+        /// <summary>
+        /// 出生X坐标
+        /// </summary>
+        public readonly System.Collections.Generic.Dictionary<int, long> KV;
     
         public const int __ID__ = -568528378;
         public override int GetTypeId() => __ID__;

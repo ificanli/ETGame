@@ -13,14 +13,8 @@ namespace ET.Server
             UnitConfig unitConfig = unit.Config();
             
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
-            for (int i = 0; i < unitConfig.KV.Length; i += 2)
+            foreach ((int k, long v) in unitConfig.KV)
             {
-                int k = unitConfig.KV[i];
-                int v = unitConfig.KV[i + 1];
-                if (v == 0)
-                {
-                    continue;
-                }
                 numericComponent.SetNoEvent(k, v);
             }
 

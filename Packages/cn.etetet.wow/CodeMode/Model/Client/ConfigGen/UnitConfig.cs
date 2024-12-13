@@ -31,10 +31,25 @@ namespace ET
             return new UnitConfig(_buf);
         }
 
+        /// <summary>
+        /// Id
+        /// </summary>
         public readonly int Id;
+        /// <summary>
+        /// Type
+        /// </summary>
         public readonly int Type;
+        /// <summary>
+        /// 名字
+        /// </summary>
         public readonly string Name;
+        /// <summary>
+        /// 头像图片
+        /// </summary>
         public readonly string HeadIcon;
+        /// <summary>
+        /// 职业
+        /// </summary>
         public readonly EClassType ClassType;
     
         public const int __ID__ = -568528378;
