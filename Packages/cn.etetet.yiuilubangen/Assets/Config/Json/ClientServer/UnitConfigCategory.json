@@ -1,7 +1,7 @@
 [
   {
     "Id": 1001,
-    "Type": 1,
+    "UnitType": 1,
     "Name": "Mage",
     "head_icon": "Portrait",
     "class_type": 5,
@@ -62,7 +62,7 @@
   },
   {
     "Id": 1002,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "TrainingDummy",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 1,
@@ -123,7 +123,7 @@
   },
   {
     "Id": 1003,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "TrainingDummy",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 2,
@@ -184,7 +184,7 @@
   },
   {
     "Id": 1004,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Boar",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 3,
@@ -245,7 +245,7 @@
   },
   {
     "Id": 1005,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Boar",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 4,
@@ -306,7 +306,7 @@
   },
   {
     "Id": 1006,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Boar",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 5,
@@ -367,7 +367,7 @@
   },
   {
     "Id": 1007,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Boar",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 6,
@@ -428,7 +428,7 @@
   },
   {
     "Id": 1008,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Boar",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 7,
@@ -489,7 +489,7 @@
   },
   {
     "Id": 1009,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Bear",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 8,
@@ -550,7 +550,7 @@
   },
   {
     "Id": 1010,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Bear",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 9,
@@ -611,7 +611,7 @@
   },
   {
     "Id": 1011,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Bear",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 10,
@@ -672,7 +672,7 @@
   },
   {
     "Id": 1012,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Bear",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 11,
@@ -733,7 +733,7 @@
   },
   {
     "Id": 1013,
-    "Type": 2,
+    "UnitType": 2,
     "Name": "Bear",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 12,

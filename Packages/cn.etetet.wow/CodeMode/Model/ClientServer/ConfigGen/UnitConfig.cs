@@ -18,7 +18,7 @@ namespace ET
         public UnitConfig(ByteBuf _buf) 
         {
             Id = _buf.ReadInt();
-            Type = _buf.ReadInt();
+            UnitType = (UnitType)_buf.ReadInt();
             Name = _buf.ReadString();
             HeadIcon = _buf.ReadString();
             ClassType = (EClassType)_buf.ReadInt();
@@ -39,7 +39,7 @@ namespace ET
         /// <summary>
         /// Type
         /// </summary>
-        public readonly int Type;
+        public readonly UnitType UnitType;
         /// <summary>
         /// 名字
         /// </summary>
@@ -69,7 +69,7 @@ namespace ET
         {
             return "{ "
             + "Id:" + Id + ","
-            + "Type:" + Type + ","
+            + "UnitType:" + UnitType + ","
             + "Name:" + Name + ","
             + "headIcon:" + HeadIcon + ","
             + "classType:" + ClassType + ","

@@ -18,7 +18,7 @@ namespace ET
         public UnitConfig(ByteBuf _buf) 
         {
             Id = _buf.ReadInt();
-            Type = _buf.ReadInt();
+            UnitType = (UnitType)_buf.ReadInt();
             Name = _buf.ReadString();
             ClassType = (EClassType)_buf.ReadInt();
             {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);KV = new System.Collections.Generic.Dictionary<int, long>(n0 * 3 / 2);for(var i0 = 0 ; i0 < n0 ; i0++) { int _k0;  _k0 = _buf.ReadInt(); long _v0;  _v0 = _buf.ReadLong();     KV.Add(_k0, _v0);}}
@@ -38,7 +38,7 @@ namespace ET
         /// <summary>
         /// Type
         /// </summary>
-        public readonly int Type;
+        public readonly UnitType UnitType;
         /// <summary>
         /// 名字
         /// </summary>
@@ -64,7 +64,7 @@ namespace ET
         {
             return "{ "
             + "Id:" + Id + ","
-            + "Type:" + Type + ","
+            + "UnitType:" + UnitType + ","
             + "Name:" + Name + ","
             + "classType:" + ClassType + ","
             + "KV:" + Luban.StringUtil.CollectionToString(KV) + ","
