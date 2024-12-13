@@ -15,6 +15,8 @@ namespace ET.Client
         public EntityRef<Unit> m_OwnerUnit;
         public Unit            OwnerUnit => m_OwnerUnit;
 
+        public Transform HPPoint;
+
         public EntityRef<Unit> m_Player;
         public Unit            Player => m_Player;
 

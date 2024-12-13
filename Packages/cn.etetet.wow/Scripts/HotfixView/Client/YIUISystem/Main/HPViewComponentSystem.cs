@@ -17,7 +17,21 @@ namespace ET.Client
         private static void YIUIInitialize(this HPViewComponent self)
         {
             self.m_OwnerUnit = self.Parent.GetParent<Unit>();
-            self.m_Numeric   = self.OwnerUnit.GetComponent<NumericComponent>();
+
+            var bindPoint = self.OwnerUnit?.GetComponent<GameObjectComponent>()?.GameObject?.GetComponent<BindPointComponent>()?.BindPoints;
+            if (bindPoint != null)
+            {
+                if (!bindPoint.TryGetValue(BindPoint.HP, out self.HPPoint))
+                {
+                    Log.Error($" {self.OwnerUnit?.Config().Name} 没有找到 HP 点位");
+                }
+            }
+            else
+            {
+                Log.Error($" {self.OwnerUnit?.Config().Name} 没有找到 BindPointComponent");
+            }
+
+            self.m_Numeric = self.OwnerUnit.GetComponent<NumericComponent>();
         }
 
         [EntitySystem]
@@ -38,6 +52,11 @@ namespace ET.Client
             if (self.UpdateHP() <= 0)
             {
                 self.SetUICache();
+                return;
+            }
+
+            if (self.HPPoint == null)
+            {
                 return;
             }
 
@@ -62,7 +81,7 @@ namespace ET.Client
 
             if (Vector3.Distance(self.Player.Position, self.OwnerUnit.Position) <= 10)
             {
-                var screenPos = Camera.main.WorldToScreenPoint(self.OwnerUnit.Position);
+                var screenPos = Camera.main.WorldToScreenPoint(self.HPPoint.position);
 
                 //如果不在屏幕内，则不显示
                 //上下左右各留100像素的范围
