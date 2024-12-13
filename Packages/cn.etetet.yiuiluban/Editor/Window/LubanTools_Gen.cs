@@ -43,25 +43,25 @@ namespace YIUI.Luban.Editor
             List<SchemaFile> AllSchemaFile = new();
             foreach (string directory in Directory.GetDirectories("Packages", "cn.etetet.*"))
             {
-                var tablesPath = Path.Combine(directory, "Assets/Editor/Luban/Base/__tables__.xlsx");
+                var tablesPath = Path.Combine(directory, "Luban/Base/__tables__.xlsx");
                 if (File.Exists(tablesPath))
                 {
                     AllSchemaFile.Add(new() { fileName = $"../../../../../../{tablesPath}", type = "table" });
                 }
 
-                var beansPath = Path.Combine(directory, "Assets/Editor/Luban/Base/__beans__.xlsx");
+                var beansPath = Path.Combine(directory, "Luban/Base/__beans__.xlsx");
                 if (File.Exists(beansPath))
                 {
                     AllSchemaFile.Add(new() { fileName = $"../../../../../../{beansPath}", type = "bean" });
                 }
 
-                var enumsPath = Path.Combine(directory, "Assets/Editor/Luban/Base/__enums__.xlsx");
+                var enumsPath = Path.Combine(directory, "Luban/Base/__enums__.xlsx");
                 if (File.Exists(enumsPath))
                 {
                     AllSchemaFile.Add(new() { fileName = $"../../../../../../{enumsPath}", type = "enum" });
                 }
 
-                var definesPath = Path.Combine(directory, "Assets/Editor/Luban/Base/Defines");
+                var definesPath = Path.Combine(directory, "Luban/Base/Defines");
                 if (Directory.Exists(definesPath))
                 {
                     AllSchemaFile.Add(new() { fileName = $"../../../../../../{definesPath}", type = "" });
@@ -105,7 +105,7 @@ namespace YIUI.Luban.Editor
             File.WriteAllText(filePath, updatedContent);
         }
 
-        private static bool m_UsePs = false;
+        private static bool m_UsePs = true;
 
         private static void RunLubanGen(bool tips = false)
         {
