@@ -1,0 +1,26 @@
+{
+    "$id": 0,
+    "$type": "0|ET.BuffConfig, ET.Model",
+    "Id": 5444,
+    "Desc": null,
+    "Duration": 1000000000,
+    "TickTime": 0,
+    "MaxStack": 1,
+    "Stack": 1,
+    "OverLayRuleType": 0,
+    "Flags": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.HashSet`1[[ET.BuffFlags, ET.Model]], System.Core",
+        "$rlength": 0,
+        "$rcontent": [
+        ]
+    },
+    "NoticeType": 0,
+    "Effects": {
+        "$id": 2,
+        "$type": "2|System.Collections.Generic.List`1[[ET.EffectNode, ET.Model]], mscorlib",
+        "$rlength": 0,
+        "$rcontent": [
+        ]
+    }
+}

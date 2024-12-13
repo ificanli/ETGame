@@ -37,5 +37,7 @@
             
             File.WriteAllText("Packages/cn.etetet.wow/Scripts/Model/Share/NumericType.cs", sb.ToString());
         }*/
+        
+        
     }
 }
