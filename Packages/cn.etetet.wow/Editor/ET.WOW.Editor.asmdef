@@ -6,9 +6,10 @@
         "ET.YooAssets.Editor",
         "Unity.TextMeshPro",
         "ET.HybridCLR.Editor",
-        "ET.Excel.Editor",
         "ET.Proto.Editor",
-        "ET.Loader.Editor"
+        "ET.Loader.Editor",
+        "ET.Model",
+        "ET.ModelView"
     ],
     "includePlatforms": [
         "Editor"
