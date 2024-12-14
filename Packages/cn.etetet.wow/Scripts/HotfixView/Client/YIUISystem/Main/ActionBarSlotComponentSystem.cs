@@ -47,8 +47,9 @@ namespace ET.Client
             if (hasSkillCD)
             {
                 //TODO 技能系统还没有实现 技能在CD中被减少  所以这里没处理
-                self.u_DataCountDown.SetValue((skillCDTime - timeNow) / 1000f);
-                self.u_DataIconFill.SetValue((self.m_SpellConfig.CD - (float)(skillCDTime - timeNow)) / self.m_SpellConfig.CD);
+                var residueTime = (float)(skillCDTime - timeNow);
+                self.u_DataCountDown.SetValue(residueTime / 1000f);
+                self.u_DataIconFill.SetValue(residueTime / self.m_SpellConfig.CD);
                 return;
             }
 
@@ -56,7 +57,7 @@ namespace ET.Client
             if (hasGGCD)
             {
                 self.u_DataCountDown.SetValue(0); //ggcd 没有倒计时
-                self.u_DataIconFill.SetValue((self.GGCD - (float)(ggCDTime - timeNow)) / self.GGCD);
+                self.u_DataIconFill.SetValue((float)(ggCDTime - timeNow) / self.GGCD);
                 return;
             }
 
