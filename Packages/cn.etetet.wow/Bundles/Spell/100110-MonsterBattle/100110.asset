@@ -30,6 +30,15 @@ MonoBehaviour:
     - Name: Desc
       Entry: 1
       Data: "\u602A\u7269\u6218\u6597\u72B6\u6001"
+    - Name: IconName
+      Entry: 1
+      Data: Warrior_talent_icon_Deadlycalm
+    - Name: CD
+      Entry: 3
+      Data: 0
+    - Name: BuffId
+      Entry: 3
+      Data: 200110
     - Name: Cost
       Entry: 7
       Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
@@ -41,9 +50,6 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 8
-      Data: 
-    - Name: PreCheck
-      Entry: 6
       Data: 
     - Name: TargetSelector
       Entry: 7
@@ -78,12 +84,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: CD
-      Entry: 3
-      Data: 0
-    - Name: BuffId
-      Entry: 3
-      Data: 200110
     - Name: 
       Entry: 8
       Data: 

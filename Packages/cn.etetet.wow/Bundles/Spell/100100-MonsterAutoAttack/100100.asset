@@ -30,6 +30,15 @@ MonoBehaviour:
     - Name: Desc
       Entry: 1
       Data: "\u602A\u7269\u666E\u901A\u653B\u51FB"
+    - Name: IconName
+      Entry: 1
+      Data: Spell_Shadow_SummonFelHunter
+    - Name: CD
+      Entry: 3
+      Data: 2000
+    - Name: BuffId
+      Entry: 3
+      Data: 200100
     - Name: Cost
       Entry: 7
       Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
@@ -81,12 +90,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: CD
-      Entry: 3
-      Data: 2000
-    - Name: BuffId
-      Entry: 3
-      Data: 200100
     - Name: 
       Entry: 8
       Data: 

@@ -30,6 +30,8 @@ namespace ET.Client
         public ET.Client.PlayerInfoComponent UIPlayerInfo => u_UIPlayerInfo;
         public EntityRef<ET.Client.CastSliderComponent> u_UICastFrame;
         public ET.Client.CastSliderComponent UICastFrame => u_UICastFrame;
+        public EntityRef<ET.Client.ActionBarComponent> u_UIActionBar;
+        public ET.Client.ActionBarComponent UIActionBar => u_UIActionBar;
 
     }
 }

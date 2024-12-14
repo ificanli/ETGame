@@ -30,6 +30,15 @@ MonoBehaviour:
     - Name: Desc
       Entry: 1
       Data: "\u666E\u901A\u653B\u51FB"
+    - Name: IconName
+      Entry: 1
+      Data: Ability_Warrior_OffensiveStance
+    - Name: CD
+      Entry: 3
+      Data: 2000
+    - Name: BuffId
+      Entry: 3
+      Data: 200000
     - Name: Cost
       Entry: 7
       Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
@@ -41,9 +50,6 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 8
-      Data: 
-    - Name: PreCheck
-      Entry: 6
       Data: 
     - Name: TargetSelector
       Entry: 7
@@ -69,24 +75,21 @@ MonoBehaviour:
     - Name: Owner
       Entry: 1
       Data: Owner
-    - Name: Unit
-      Entry: 1
-      Data: Unit
     - Name: MaxDistance
       Entry: 3
       Data: 5000
+    - Name: MinDistance
+      Entry: 3
+      Data: 0
+    - Name: Unit
+      Entry: 1
+      Data: Unit
     - Name: UnitType
       Entry: 3
       Data: 7
     - Name: 
       Entry: 8
       Data: 
-    - Name: CD
-      Entry: 3
-      Data: 2000
-    - Name: BuffId
-      Entry: 3
-      Data: 200000
     - Name: 
       Entry: 8
       Data: 

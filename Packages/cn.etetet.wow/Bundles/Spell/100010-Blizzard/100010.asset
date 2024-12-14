@@ -31,6 +31,15 @@ MonoBehaviour:
     - Name: Desc
       Entry: 1
       Data: "\u66B4\u98CE\u96EA"
+    - Name: IconName
+      Entry: 1
+      Data: Spell_Frost_IceStorm
+    - Name: CD
+      Entry: 3
+      Data: 5000
+    - Name: BuffId
+      Entry: 3
+      Data: 200010
     - Name: Cost
       Entry: 7
       Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
@@ -76,9 +85,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: PreCheck
-      Entry: 6
-      Data: 
     - Name: TargetSelector
       Entry: 7
       Data: 4|ET.TargetSelectorPosition, ET.Model
@@ -121,12 +127,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: CD
-      Entry: 3
-      Data: 5000
-    - Name: BuffId
-      Entry: 3
-      Data: 200010
     - Name: 
       Entry: 8
       Data: 
