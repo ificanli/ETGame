@@ -1284,6 +1284,46 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_UpdateCD)]
+    public partial class M2C_UpdateCD : MessageObject, IMessage
+    {
+        public static M2C_UpdateCD Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_UpdateCD>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long UnitId { get; set; }
+
+        /// <summary>
+        /// 0表示公共CD
+        /// </summary>
+        [MemoryPackOrder(2)]
+        public int SpellConfigId { get; set; }
+
+        [MemoryPackOrder(3)]
+        public long Time { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.UnitId = default;
+            this.SpellConfigId = default;
+            this.Time = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWOuter
     {
         public const ushort RouterSync = 4101;
@@ -1326,5 +1366,6 @@ namespace ET
         public const ushort C2M_SelectTarget = 4138;
         public const ushort M2C_Turn = 4139;
         public const ushort C2M_PetAttack = 4140;
+        public const ushort M2C_UpdateCD = 4141;
     }
 }

@@ -279,3 +279,11 @@ message C2M_PetAttack // ILocationMessage
 	int32 RpcId = 1;
 	int64 UnitId = 2;
 }
+
+message M2C_UpdateCD // IMessage
+{
+	int32 RpcId = 1;
+	int64 UnitId = 2;
+	int32 SpellConfigId = 3; // 0表示公共CD
+	int64 Time = 4;
+}

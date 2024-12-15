@@ -29,11 +29,10 @@ namespace ET
             return true;
         }
 
-        public static void UpdateCD(this SpellComponent self, int spellConfigId)
+        public static void UpdateCD(this SpellComponent self, int spellConfigId, long time)
         {
-            long timeNow = TimeInfo.Instance.FrameTime;
-            self.CDTime = timeNow;
-            self.SpellCD[spellConfigId] = timeNow;
+            self.CDTime = time;
+            self.SpellCD[spellConfigId] = time;
         }
 
         public static int GetMod(this SpellComponent self, int spellConfigId, SpellModType spellModType)
