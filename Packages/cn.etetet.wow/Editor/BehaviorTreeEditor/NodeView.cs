@@ -15,6 +15,7 @@ namespace ET
         public NodeView(BTNode node)
         {
             this.node = node;
+            this.title = node.GetType().Name;
         }
         
         public List<NodeView> GetChildren()

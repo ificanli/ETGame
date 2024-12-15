@@ -9,7 +9,8 @@
         "ET.Proto.Editor",
         "ET.Loader.Editor",
         "ET.Model",
-        "ET.ModelView"
+        "ET.ModelView",
+        "ET.Core"
     ],
     "includePlatforms": [
         "Editor"

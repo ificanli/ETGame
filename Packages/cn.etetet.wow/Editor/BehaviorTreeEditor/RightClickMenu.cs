@@ -9,16 +9,9 @@ namespace ET
 {
     public class RightClickMenu : ScriptableObject, ISearchWindowProvider
     {
-        private TreeView treeView;
-        
         private List<SearchTreeEntry> entries;
         
         public Func<SearchTreeEntry, SearchWindowContext, bool> OnSelectEntryHandler;
-
-        public void Init(TreeView treeView)
-        {
-            this.treeView = treeView;
-        }
         
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
         {

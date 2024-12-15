@@ -11,8 +11,8 @@ namespace ET
     public partial class TreeView: GraphView
     {
         private readonly RightClickMenu rightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
-        
-        
+
+        private NodeView root;
         
         public TreeView()
         {
@@ -32,7 +32,9 @@ namespace ET
 
         private bool OnSelectEntryHandler(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
         {
-            Debug.Log($"11111111111111111111111111111111111111111222222 {((Type)searchTreeEntry.userData).FullName}");
+            Type type = searchTreeEntry.userData as Type;
+            NodeView nodeView = new(Activator.CreateInstance(type) as BTNode);
+            this.AddElement(nodeView);
             return true;
         }
 
