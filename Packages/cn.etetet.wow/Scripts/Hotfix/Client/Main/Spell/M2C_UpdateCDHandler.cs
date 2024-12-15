@@ -15,6 +15,7 @@ namespace ET.Client
 
 			SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
 			spellComponent.UpdateCD(message.SpellConfigId, message.Time);
+			await ETTask.CompletedTask;
 		}
 	}
 }

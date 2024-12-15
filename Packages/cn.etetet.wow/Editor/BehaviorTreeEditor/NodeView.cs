@@ -45,7 +45,7 @@ namespace ET
             NodeIMGUI nodeIMGUI = ScriptableObject.CreateInstance<NodeIMGUI>();
             nodeIMGUI.Node = this.Node;
             
-            Editor editor = Editor.CreateEditor(nodeIMGUI);
+            UnityEditor.Editor editor = UnityEditor.Editor.CreateEditor(nodeIMGUI);
             
             IMGUIContainer imgui = new(() => { editor.OnInspectorGUI(); });
             
