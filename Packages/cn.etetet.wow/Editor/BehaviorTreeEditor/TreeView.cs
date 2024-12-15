@@ -13,6 +13,9 @@ namespace ET
         public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
 
         private NodeView root;
+
+        public NodeView CopyNode;
+        public bool IsCut;
         
         public TreeView()
         {
@@ -56,24 +59,26 @@ namespace ET
             SearchWindow.Open(new SearchWindowContext(pos), this.RightClickMenu);
         }
 
-        public void RemoveNode(NodeView nodeView)
+        public void RemoveNode(NodeView nodeView, bool recu = true)
         {
             if (nodeView == this.root)
             {
                 this.root = null;
             }
             
-            if (nodeView.Edge != null)
+            if (nodeView.edge != null)
             {
-                this.RemoveElement(nodeView.Edge);
+                this.RemoveElement(nodeView.edge);
             }
-            
             
             this.RemoveElement(nodeView);
 
-            foreach (NodeView child in nodeView.GetChildren())
+            if (recu)
             {
-                this.RemoveNode(child);
+                foreach (NodeView child in nodeView.GetChildren())
+                {
+                    this.RemoveNode(child);
+                }
             }
         }
     }

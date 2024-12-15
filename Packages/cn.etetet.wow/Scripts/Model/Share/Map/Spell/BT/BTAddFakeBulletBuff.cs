@@ -1,5 +1,6 @@
 ﻿namespace ET
 {
+    [System.Serializable]
     public class BTAddFakeBulletBuff: BTNode
     {
         [Sirenix.OdinInspector.BoxGroup("输入参数")]

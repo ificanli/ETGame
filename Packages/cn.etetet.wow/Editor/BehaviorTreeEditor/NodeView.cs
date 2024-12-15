@@ -24,13 +24,13 @@ namespace ET
         
         private BTNode Node { get; }
 
-        public NodeView Parent { get; set; }
+        private NodeView Parent { get; set; }
 
-        public Port In;
+        private Port @in;
 
-        public Port Out;
+        private Port @out;
 
-        public Edge Edge;
+        public Edge edge;
 
         private readonly List<NodeView> children = new();
         
@@ -53,10 +53,10 @@ namespace ET
             
             this.AddManipulator(new ResizableManipulator());
             
-            this.In = Port.Create<Edge>(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(float));
-            inputContainer.Add(this.In);
-            this.Out = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
-            outputContainer.Add(this.Out);
+            this.@in = Port.Create<Edge>(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(float));
+            inputContainer.Add(this.@in);
+            this.@out = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
+            outputContainer.Add(this.@out);
         }
         
         public List<NodeView> GetChildren()
@@ -64,19 +64,30 @@ namespace ET
             return this.children;
         }
         
-        public void AddNode(NodeView nodeView)
+        public void AddChild(NodeView nodeView)
         {
             nodeView.Parent = this;
-            this.treeView.AddElement(nodeView);
             this.children.Add(nodeView);
+            if (!this.Node.Children.Contains(nodeView.Node))
+            {
+                this.Node.Children.Add(nodeView.Node);
+            }
 
-            nodeView.Edge = nodeView.Parent.Out.ConnectTo(nodeView.In);
-            this.treeView.AddElement(nodeView.Edge);
+            this.treeView.AddElement(nodeView);
+            nodeView.edge = nodeView.Parent.@out.ConnectTo(nodeView.@in);
+            this.treeView.AddElement(nodeView.edge);
+            
+            foreach (BTNode child in nodeView.Node.Children)
+            {
+                NodeView childNodeView = new(this.treeView, child);
+                nodeView.AddChild(childNodeView);
+            }
         }
         
-        public void RemoveNode(NodeView nodeView)
+        public void RemoveChild(NodeView nodeView)
         {
             this.children.Remove(nodeView);
+            this.Node.Children.Remove(nodeView.Node);
             this.treeView.RemoveNode(nodeView);
         }
         
@@ -85,6 +96,44 @@ namespace ET
         {
             evt.menu.AppendAction("Create", this.CreateNode);
             evt.menu.AppendAction("Delete", this.DeleteNode);
+            evt.menu.AppendAction("Copy", this.CopyNode);
+            evt.menu.AppendAction("Cut", this.CutNode);
+            evt.menu.AppendAction("Paste", this.PasterNode);
+        }
+
+        private void CutNode(DropdownMenuAction obj)
+        {
+            if (this.Parent == null)
+            {
+                return;
+            }
+            this.treeView.CopyNode = this;
+            this.treeView.IsCut = true;
+        }
+
+        private void PasterNode(DropdownMenuAction obj)
+        {
+            if (this.treeView.CopyNode == null)
+            {
+                return;
+            }
+
+            byte[] nodeBytes= Sirenix.Serialization.SerializationUtility.SerializeValue(this.treeView.CopyNode.Node, DataFormat.Binary);
+            BTNode clone = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTNode>(nodeBytes, DataFormat.Binary);
+            
+            NodeView nodeView = new(this.treeView, clone);
+            this.AddChild(nodeView);
+
+            if (this.treeView.IsCut)
+            {
+                this.treeView.CopyNode.Parent.RemoveChild(this.treeView.CopyNode);
+            }
+        }
+
+        private void CopyNode(DropdownMenuAction obj)
+        {
+            this.treeView.CopyNode = this;
+            this.treeView.IsCut = false;
         }
 
         private void CreateNode(DropdownMenuAction obj)
@@ -95,11 +144,11 @@ namespace ET
             SearchWindow.Open(new SearchWindowContext(pos), this.treeView.RightClickMenu);
         }
 
-        private bool OnSelectEntryHandler(SearchTreeEntry searchTreeEntry, SearchWindowContext arg2)
+        private bool OnSelectEntryHandler(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
         {
             Type type = searchTreeEntry.userData as Type;
             NodeView nodeView = new(this.treeView, Activator.CreateInstance(type) as BTNode);
-            this.AddNode(nodeView);
+            this.AddChild(nodeView);
             return true;
         }
 
@@ -110,7 +159,7 @@ namespace ET
                 this.treeView.RemoveNode(this);
                 return;
             }
-            this.Parent.RemoveNode(this);
+            this.Parent.RemoveChild(this);
         }
     }
 }
