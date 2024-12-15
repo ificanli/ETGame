@@ -63,6 +63,12 @@ namespace ET
                 this.root = null;
             }
             
+            if (nodeView.Edge != null)
+            {
+                this.RemoveElement(nodeView.Edge);
+            }
+            
+            
             this.RemoveElement(nodeView);
 
             foreach (NodeView child in nodeView.GetChildren())

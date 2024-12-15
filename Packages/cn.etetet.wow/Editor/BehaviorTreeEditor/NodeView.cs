@@ -26,6 +26,12 @@ namespace ET
 
         public NodeView Parent { get; set; }
 
+        public Port In;
+
+        public Port Out;
+
+        public Edge Edge;
+
         private readonly List<NodeView> children = new();
         
         public NodeView(TreeView treeView, BTNode node)
@@ -46,6 +52,11 @@ namespace ET
             Add(imgui);
             
             this.AddManipulator(new ResizableManipulator());
+            
+            this.In = Port.Create<Edge>(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(float));
+            inputContainer.Add(this.In);
+            this.Out = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
+            outputContainer.Add(this.Out);
         }
         
         public List<NodeView> GetChildren()
@@ -58,6 +69,9 @@ namespace ET
             nodeView.Parent = this;
             this.treeView.AddElement(nodeView);
             this.children.Add(nodeView);
+
+            nodeView.Edge = nodeView.Parent.Out.ConnectTo(nodeView.In);
+            this.treeView.AddElement(nodeView.Edge);
         }
         
         public void RemoveNode(NodeView nodeView)
