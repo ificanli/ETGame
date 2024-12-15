@@ -41,7 +41,7 @@ namespace ET
         //点击右键菜单时触发
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.menu.AppendAction("Create Node", this.CreateNode);
+            evt.menu.AppendAction("Create", this.CreateNode);
         }
 
         private void CreateNode(DropdownMenuAction obj)
