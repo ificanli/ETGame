@@ -21,6 +21,8 @@ namespace ET
             }
             this.entries = new List<SearchTreeEntry>();
             entries.Add(new SearchTreeGroupEntry(new GUIContent("Create Node")));
+
+            List<SearchTreeEntry> list = new();
             foreach (Type type in TypeCache.GetTypesDerivedFrom<BTNode>())
             {
                 if (type.IsAbstract)
@@ -29,9 +31,12 @@ namespace ET
                 }
                 if (type.IsSubclassOf(typeof(BTNode)))
                 {
-                    this.entries.Add(new SearchTreeEntry(new GUIContent(type.Name)) { level = 1, userData = type});
+                    list.Add(new SearchTreeEntry(new GUIContent(type.Name)) { level = 1, userData = type});
                 }
             }
+            list.Sort((x, y)=>string.Compare(x.name, y.name, StringComparison.Ordinal));
+            
+            this.entries.AddRange(list);
 
             return this.entries;
         }

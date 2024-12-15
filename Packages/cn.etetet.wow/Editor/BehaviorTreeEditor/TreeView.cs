@@ -10,7 +10,7 @@ namespace ET
     [UxmlElement]
     public partial class TreeView: GraphView
     {
-        private readonly RightClickMenu rightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
+        public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
 
         private NodeView root;
         
@@ -26,29 +26,49 @@ namespace ET
 
             StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/cn.etetet.wow/Editor/BehaviorTreeEditor/BehaviorTreeEditor.uss");
             styleSheets.Add(styleSheet);
-            
-            rightClickMenu.OnSelectEntryHandler += OnSelectEntryHandler;
         }
 
         private bool OnSelectEntryHandler(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
         {
             Type type = searchTreeEntry.userData as Type;
-            NodeView nodeView = new(Activator.CreateInstance(type) as BTNode);
+            NodeView nodeView = new(this, Activator.CreateInstance(type) as BTNode);
             this.AddElement(nodeView);
+            
+            this.root = nodeView;
+            
             return true;
         }
 
         //点击右键菜单时触发
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.menu.AppendAction("Create", this.CreateNode);
+            if (this.root == null)
+            {
+                evt.menu.AppendAction("Create", this.CreateNode);
+            }
         }
 
         private void CreateNode(DropdownMenuAction obj)
         {
             VisualElement windowRoot = BehaviorTreeEditor.Instance.rootVisualElement;
             Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent, obj.eventInfo.mousePosition + BehaviorTreeEditor.Instance.position.position);
-            SearchWindow.Open(new SearchWindowContext(pos), rightClickMenu);
+            this.RightClickMenu.OnSelectEntryHandler = OnSelectEntryHandler;
+            SearchWindow.Open(new SearchWindowContext(pos), this.RightClickMenu);
+        }
+
+        public void RemoveNode(NodeView nodeView)
+        {
+            if (nodeView == this.root)
+            {
+                this.root = null;
+            }
+            
+            this.RemoveElement(nodeView);
+
+            foreach (NodeView child in nodeView.GetChildren())
+            {
+                this.RemoveNode(child);
+            }
         }
     }
 }
