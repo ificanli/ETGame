@@ -10,27 +10,28 @@ using UnityEngine.UIElements;
 
 namespace ET
 {
+    [HideMonoScript]
     public class NodeIMGUI : SerializedScriptableObject
     {
         [NonSerialized, OdinSerialize]
         [HideReferenceObjectPicker]
-        [LabelText("节点内容")]
+        [InlineProperty, HideLabel] // 去掉折叠和标题
         public BTNode Node;
     }
-
+    
     public class NodeView : Node, IDisposable
     {
-        public long Id;
-        
         private readonly TreeView treeView;
 
-        private BTNode Node { get; }
+        public BTNode Node { get; private set; }
 
         private NodeView Parent { get; set; }
 
         private readonly Port inPort;
 
         private readonly Port outPort;
+
+        private Label idLabel;
 
         private Edge edge;
 
@@ -39,6 +40,18 @@ namespace ET
         private readonly Button collapseButton;
 
         private bool childrenCollapsed;
+
+        public int Id
+        {
+            get
+            {
+                return this.Node.Id;
+            }
+            set
+            {
+                this.Node.Id = value;
+            }
+        }
 
         private Vector2 position;
         
@@ -146,23 +159,33 @@ namespace ET
         public NodeView(TreeView treeView, BTNode node)
         {
             this.treeView = treeView;
-            this.Id = this.treeView.GeneraterId();
             this.Node = node;
             base.title = node.GetType().Name;
 
+            if (node.Id == 0)
+            {
+                this.Id = this.treeView.GenerateId();
+            }
+
+            this.idLabel = new Label(node.Id.ToString());
+            idLabel.style.width = 32;
+            idLabel.style.height = 20;
+            idLabel.style.marginTop = 5;
+            this.titleContainer.Add(this.idLabel);
+            
             style.backgroundColor = new Color(0f, 0f, 0f, 1f);
 
             NodeIMGUI nodeIMGUI = ScriptableObject.CreateInstance<NodeIMGUI>();
             nodeIMGUI.Node = this.Node;
 
             contentCollapseButton = new Button();
-            contentCollapseButton.style.height = 32;
+            contentCollapseButton.style.height = 20;
             contentCollapseButton.style.marginLeft = 5;
             contentCollapseButton.clicked += ChangeContentCollapse;
             
             base.contentContainer.Add(this.contentCollapseButton);
             
-            UnityEditor.Editor editor = UnityEditor.Editor.CreateEditor(nodeIMGUI);
+            Editor editor = Editor.CreateEditor(nodeIMGUI);
 
             this.imgui = new(() => { editor.OnInspectorGUI(); });
             Add(this.imgui);
@@ -183,11 +206,15 @@ namespace ET
             this.titleContainer.Add(this.collapseButton);
             
             this.ContentCollapsed = false;
+            
+            this.treeView.AddElement(this);
+            this.treeView.AddNode(this);
         }
         
         public void Dispose()
         {
-            if (this.Id == 0)
+            long id = this.Id;
+            if (id == 0)
             {
                 return;
             }
@@ -196,10 +223,13 @@ namespace ET
             this.treeView.RemoveElement(this);
             this.treeView.RemoveElement(this.edge);
 
-            if (this.Parent != null)
+            if (this.Parent != null && this.Parent.Id != 0)
             {
                 this.Parent.GetChildren().Remove(this);
+                this.Parent.Node.Children.Remove(this.Node);
             }
+
+            this.treeView.RemoveNode(id);
 
             foreach (NodeView nodeView in this.GetChildren())
             {
@@ -221,23 +251,22 @@ namespace ET
             return this.children;
         }
 
-        public void AddChild(NodeView nodeView)
+        public void AddChild(BTNode node)
         {
+            NodeView nodeView = new(this.treeView, node);
             nodeView.Parent = this;
             this.children.Add(nodeView);
             if (!this.Node.Children.Contains(nodeView.Node))
             {
                 this.Node.Children.Add(nodeView.Node);
             }
-
-            this.treeView.AddElement(nodeView);
+            
             nodeView.edge = nodeView.Parent.outPort.ConnectTo(nodeView.inPort);
             this.treeView.AddElement(nodeView.edge);
 
             foreach (BTNode child in nodeView.Node.Children)
             {
-                NodeView childNodeView = new(this.treeView, child);
-                nodeView.AddChild(childNodeView);
+                nodeView.AddChild(child);
             }
         }
 
@@ -249,7 +278,7 @@ namespace ET
         //点击右键菜单时触发
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.menu.AppendAction("Create", this.CreateNode);
+            evt.menu.AppendAction("Create", (o)=>this.CreateNode(o).NoContext());
             evt.menu.AppendAction("Delete", this.DeleteNode);
             evt.menu.AppendAction("Copy", this.CopyNode);
             evt.menu.AppendAction("Cut", this.CutNode);
@@ -279,6 +308,15 @@ namespace ET
             this.treeView.IsCut = true;
         }
 
+        private static void ClearId(BTNode node)
+        {
+            node.Id = 0;
+            foreach (BTNode child in node.Children)
+            {
+                ClearId(child);
+            }
+        }
+
         private void PasterNode(DropdownMenuAction obj)
         {
             if (this.treeView.CopyNode == null)
@@ -288,9 +326,8 @@ namespace ET
 
             byte[] nodeBytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.treeView.CopyNode.Node, DataFormat.Binary);
             BTNode clone = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTNode>(nodeBytes, DataFormat.Binary);
-
-            NodeView nodeView = new(this.treeView, clone);
-            this.AddChild(nodeView);
+            ClearId(clone);
+            this.AddChild(clone);
 
             if (this.treeView.IsCut)
             {
@@ -308,23 +345,17 @@ namespace ET
             this.treeView.IsCut = false;
         }
 
-        private void CreateNode(DropdownMenuAction obj)
+        private async ETTask CreateNode(DropdownMenuAction obj)
         {
             VisualElement windowRoot = BehaviorTreeEditor.Instance.rootVisualElement;
             Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent,
                 obj.eventInfo.mousePosition + BehaviorTreeEditor.Instance.position.position);
-            this.treeView.RightClickMenu.OnSelectEntryHandler = OnSelectEntryHandler;
-            SearchWindow.Open(new SearchWindowContext(pos), this.treeView.RightClickMenu);
-        }
-
-        private bool OnSelectEntryHandler(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
-        {
+            (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.treeView.RightClickMenu.WaitSelect(pos);
             Type type = searchTreeEntry.userData as Type;
-            NodeView nodeView = new(this.treeView, Activator.CreateInstance(type) as BTNode);
-            this.AddChild(nodeView);
+            BTNode btNode = Activator.CreateInstance(type) as BTNode;
+            this.AddChild(btNode);
             
             this.treeView.Layout();
-            return true;
         }
 
         private void DeleteNode(DropdownMenuAction obj)

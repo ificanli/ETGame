@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 
 namespace ET
@@ -6,6 +7,8 @@ namespace ET
     [System.Serializable]
     public abstract class BTNode : Object
     {
+        public int Id;
+        
         #if UNITY
         [UnityEngine.SerializeReference]
         [Sirenix.OdinInspector.PropertyOrder(100)]

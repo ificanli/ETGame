@@ -10,8 +10,8 @@ namespace ET
     public class RightClickMenu : ScriptableObject, ISearchWindowProvider
     {
         private List<SearchTreeEntry> entries;
-        
-        public Func<SearchTreeEntry, SearchWindowContext, bool> OnSelectEntryHandler;
+
+        private ETTask<(SearchTreeEntry, SearchWindowContext)> tcs;
         
         public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
         {
@@ -41,13 +41,22 @@ namespace ET
             return this.entries;
         }
         
-        public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
+        public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
         {
-            if (OnSelectEntryHandler == null)
+            if (this.tcs == null)
             {
                 return false;
             }
-            return OnSelectEntryHandler(SearchTreeEntry, context);
+            this.tcs.SetResult((searchTreeEntry, context));
+            return true;
+        }
+
+        public async ETTask<(SearchTreeEntry, SearchWindowContext)> WaitSelect(Vector2 pos)
+        {
+            SearchWindow.Open(new SearchWindowContext(pos), this);
+            
+            this.tcs = ETTask<(SearchTreeEntry, SearchWindowContext)>.Create();
+            return await this.tcs;
         }
     }
 }

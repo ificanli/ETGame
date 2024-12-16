@@ -14,14 +14,14 @@ namespace ET
 
         private NodeView root;
 
+        private Dictionary<long, NodeView> nodes = new();
+
         public NodeView CopyNode;
         public bool IsCut;
-
-        public long idGenerater;
-        
-        public long GeneraterId()
+        private int maxId;
+        public int GenerateId()
         {
-            return ++idGenerater;
+            return ++this.maxId;
         }
         
         public TreeView()
@@ -38,15 +38,45 @@ namespace ET
             styleSheets.Add(styleSheet);
         }
 
-        private bool OnSelectEntryHandler(SearchTreeEntry searchTreeEntry, SearchWindowContext context)
+        public void InitTree(BTNode node)
         {
-            Type type = searchTreeEntry.userData as Type;
-            NodeView nodeView = new(this, Activator.CreateInstance(type) as BTNode);
-            this.AddElement(nodeView);
+            GetMaxId(node);
             
-            this.root = nodeView;
-            
-            return true;
+            this.root = new NodeView(this, node);
+            foreach (BTNode child in node.Children)
+            {
+                this.root.AddChild(child);
+            }
+        }
+
+        private void GetMaxId(BTNode node)
+        {
+            if (node.Id > this.maxId)
+            {
+                this.maxId = node.Id;
+            }
+
+            foreach (BTNode child in node.Children)
+            {
+                GetMaxId(child);
+            }
+        }
+
+        public void AddNode(NodeView node)
+        {
+            this.nodes.Add(node.Id, node);
+        }
+
+        public NodeView GetNode(long id)
+        {
+            this.nodes.TryGetValue(id, out NodeView node);
+            return node;
+        }
+        
+        public NodeView RemoveNode(long id)
+        {
+            this.nodes.Remove(id, out NodeView node);
+            return node;
         }
 
         //点击右键菜单时触发
@@ -54,16 +84,22 @@ namespace ET
         {
             if (this.root == null)
             {
-                evt.menu.AppendAction("Create", this.CreateNode);
+                evt.menu.AppendAction("Create", (o)=>
+                {
+                    this.CreateNode(o).NoContext();
+                });
             }
         }
 
-        private void CreateNode(DropdownMenuAction obj)
+        private async ETTask CreateNode(DropdownMenuAction obj)
         {
             VisualElement windowRoot = BehaviorTreeEditor.Instance.rootVisualElement;
             Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent, obj.eventInfo.mousePosition + BehaviorTreeEditor.Instance.position.position);
-            this.RightClickMenu.OnSelectEntryHandler = OnSelectEntryHandler;
-            SearchWindow.Open(new SearchWindowContext(pos), this.RightClickMenu);
+            (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.RightClickMenu.WaitSelect(pos);
+            
+            Type type = searchTreeEntry.userData as Type;
+            BTNode btNode = Activator.CreateInstance(type) as BTNode;
+            this.InitTree(btNode);
         }
 
         public void Layout()
