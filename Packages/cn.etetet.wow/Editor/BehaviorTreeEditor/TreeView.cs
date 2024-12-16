@@ -16,6 +16,13 @@ namespace ET
 
         public NodeView CopyNode;
         public bool IsCut;
+
+        public long idGenerater;
+        
+        public long GeneraterId()
+        {
+            return ++idGenerater;
+        }
         
         public TreeView()
         {
@@ -59,27 +66,14 @@ namespace ET
             SearchWindow.Open(new SearchWindowContext(pos), this.RightClickMenu);
         }
 
-        public void RemoveNode(NodeView nodeView, bool recu = true)
+        public void Layout()
         {
-            if (nodeView == this.root)
+            if (this.root == null)
             {
-                this.root = null;
+                return;
             }
             
-            if (nodeView.edge != null)
-            {
-                this.RemoveElement(nodeView.edge);
-            }
-            
-            this.RemoveElement(nodeView);
-
-            if (recu)
-            {
-                foreach (NodeView child in nodeView.GetChildren())
-                {
-                    this.RemoveNode(child);
-                }
-            }
+            this.root.Layout();
         }
     }
 }
