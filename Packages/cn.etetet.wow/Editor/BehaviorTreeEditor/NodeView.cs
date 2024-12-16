@@ -152,6 +152,7 @@ namespace ET
             evt.menu.AppendAction("Copy", this.CopyNode);
             evt.menu.AppendAction("Cut", this.CutNode);
             evt.menu.AppendAction("Paste", this.PasterNode);
+            evt.menu.AppendAction("Layout", this.Layout);
         }
 
         private void ChangeCollapse()
@@ -219,6 +220,55 @@ namespace ET
                 return;
             }
             this.Parent.RemoveChild(this);
+        }
+
+        private void Layout(DropdownMenuAction obj)
+        {
+            // 递归计算布局，从根节点开始
+            LayoutNode(this, this.GetPosition().position.x, this.GetPosition().position.y, out _);
+        }
+        
+        private const float HorizontalSpacing = 300f; // 水平间距
+        private const float VerticalSpacing = 300f;  // 垂直间距
+        
+        // 递归布局方法
+        private float LayoutNode(NodeView node, float currentX, float startY, out float totalHeight)
+        {
+            float childY = startY; // 当前子节点的Y坐标
+            float maxChildWidth = 0; // 子节点中最大的宽度
+
+            // 获取当前节点的子节点
+            List<NodeView> children = node.GetChildren();
+
+            // 如果没有子节点，直接设置当前节点的位置并返回
+            if (children.Count == 0)
+            {
+                node.SetPosition(new Rect(currentX, startY, 200, 150)); // 设置节点位置
+                totalHeight = 150; // 节点的高度
+                return currentX + 200; // 节点的宽度
+            }
+
+            // 遍历子节点，递归布局
+            foreach (var child in children)
+            {
+                float childHeight;
+                float nextX = LayoutNode(child, currentX + HorizontalSpacing, childY, out childHeight);
+
+                // 更新垂直方向位置
+                childY += childHeight + VerticalSpacing;
+
+                // 计算子节点中的最大宽度
+                maxChildWidth = Mathf.Max(maxChildWidth, nextX - currentX);
+            }
+
+            // 计算子节点总高度
+            totalHeight = childY - startY - VerticalSpacing;
+
+            // 将当前节点居中放置在子节点左侧
+            float nodeY = startY + totalHeight / 2f;
+            node.SetPosition(new Rect(currentX, nodeY, 200, 150));
+
+            return currentX + maxChildWidth;
         }
     }
 }
