@@ -26,13 +26,58 @@ namespace ET
 
         private NodeView Parent { get; set; }
 
-        private Port @in;
+        private readonly Port inPort;
 
-        private Port @out;
+        private readonly Port outPort;
 
         public Edge edge;
 
         private readonly List<NodeView> children = new();
+        
+        private Button collapseButton;
+
+        private bool collapsed;
+
+        public bool Collapsed
+        {
+            get
+            {
+                return this.collapsed;
+            }
+            set
+            {
+                this.collapsed = value;
+                if (this.collapsed)
+                {
+                    this.collapseButton.text = "+";
+                    foreach (NodeView child in this.GetChildren())
+                    {
+                        child.Visibale = false;
+                    }
+                }
+                else
+                {
+                    this.collapseButton.text = "-";
+                    foreach (NodeView child in this.GetChildren())
+                    {
+                        child.Visibale = true;
+                    }
+                }
+            }
+        }
+
+        public bool Visibale
+        {
+            get
+            {
+                return this.visible;
+            }
+            set
+            {
+                this.visible = value;
+                this.edge.visible = this.visible;
+            }
+        }
         
         public NodeView(TreeView treeView, BTNode node)
         {
@@ -53,10 +98,18 @@ namespace ET
             
             this.AddManipulator(new ResizableManipulator());
             
-            this.@in = Port.Create<Edge>(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(float));
-            inputContainer.Add(this.@in);
-            this.@out = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
-            outputContainer.Add(this.@out);
+            this.inPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(float));
+            inputContainer.Add(this.inPort);
+            this.outPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
+            outputContainer.Add(this.outPort);
+
+            collapseButton = new Button();
+            collapseButton.text = "-";
+            collapseButton.style.width = 32;
+            collapseButton.style.height = 32;
+            collapseButton.style.marginLeft = 5;
+            collapseButton.clicked += ChangeCollapse;
+            this.titleContainer.Add(this.collapseButton);
         }
         
         public List<NodeView> GetChildren()
@@ -74,7 +127,7 @@ namespace ET
             }
 
             this.treeView.AddElement(nodeView);
-            nodeView.edge = nodeView.Parent.@out.ConnectTo(nodeView.@in);
+            nodeView.edge = nodeView.Parent.outPort.ConnectTo(nodeView.inPort);
             this.treeView.AddElement(nodeView.edge);
             
             foreach (BTNode child in nodeView.Node.Children)
@@ -99,6 +152,11 @@ namespace ET
             evt.menu.AppendAction("Copy", this.CopyNode);
             evt.menu.AppendAction("Cut", this.CutNode);
             evt.menu.AppendAction("Paste", this.PasterNode);
+        }
+
+        private void ChangeCollapse()
+        {
+            this.Collapsed = !this.Collapsed;
         }
 
         private void CutNode(DropdownMenuAction obj)
@@ -128,6 +186,7 @@ namespace ET
             {
                 this.treeView.CopyNode.Parent.RemoveChild(this.treeView.CopyNode);
             }
+            this.treeView.CopyNode = null;
         }
 
         private void CopyNode(DropdownMenuAction obj)
