@@ -22,7 +22,7 @@ namespace ET
     {
         public long Id;
         
-        private TreeView treeView;
+        private readonly TreeView treeView;
 
         private BTNode Node { get; }
 
@@ -32,13 +32,28 @@ namespace ET
 
         private readonly Port outPort;
 
-        public Edge edge;
+        private Edge edge;
 
         private readonly List<NodeView> children = new();
 
         private readonly Button collapseButton;
 
         private bool childrenCollapsed;
+
+        private Vector2 position;
+        
+        public Vector2 Position
+        {
+            get
+            {
+                return this.position;
+            }
+            set
+            {
+                this.position = value;
+                this.SetPosition(new Rect(this.position, this.GetPosition().size));
+            }
+        }
 
         public bool ChildrenCollapsed
         {
@@ -54,7 +69,7 @@ namespace ET
                     this.collapseButton.text = "+";
                     foreach (NodeView child in this.GetChildren())
                     {
-                        child.Visibale = false;
+                        child.Visible = false;
                     }
                 }
                 else
@@ -62,13 +77,13 @@ namespace ET
                     this.collapseButton.text = "-";
                     foreach (NodeView child in this.GetChildren())
                     {
-                        child.Visibale = true;
+                        child.Visible = true;
                     }
                 }
             }
         }
 
-        public bool Visibale
+        public bool Visible
         {
             get
             {
@@ -78,6 +93,24 @@ namespace ET
             {
                 this.visible = value;
                 this.edge.visible = this.visible;
+
+                if (!this.visible)
+                {
+                    foreach (NodeView child in this.GetChildren())
+                    {
+                        child.Visible = value;
+                    }
+                }
+                else
+                {
+                    if (!this.childrenCollapsed)
+                    {
+                        foreach (NodeView child in this.GetChildren())
+                        {
+                            child.Visible = value;
+                        }
+                    }
+                }
             }
         }
 
@@ -232,6 +265,7 @@ namespace ET
         private void ChangeCollapse()
         {
             this.ChildrenCollapsed = !this.ChildrenCollapsed;
+            this.treeView.Layout();
         }
 
         private void CutNode(DropdownMenuAction obj)
@@ -264,6 +298,8 @@ namespace ET
             }
 
             this.treeView.CopyNode = null;
+            
+            this.treeView.Layout();
         }
 
         private void CopyNode(DropdownMenuAction obj)
@@ -300,95 +336,75 @@ namespace ET
 
         #region Layout
 
-        private const float NodeWidth = 200f; // 节点的宽度
-        private const float NodeHeight = 150f; // 节点的高度
-        private const float HorizontalSpacing = 50f; // 节点之间的水平间距
-        private const float VerticalSpacing = 50f; // 节点之间的垂直间距
+        private const float HorizontalSpacing = 300f; // 节点之间的水平间距
+        private const float VerticalSpacing = 100f; // 节点之间的垂直间距
 
-        /// <summary>
-        /// Reingold-Tilford自动布局入口
-        /// </summary>
         private void Layout(DropdownMenuAction obj)
         {
             this.Layout();
         }
-
+        
+        void AjustPosition(Vector2 offset)
+        {
+            this.Position -= offset;
+            foreach (NodeView child in this.GetChildren())
+            {
+                child.AjustPosition(offset);
+            }
+        }
+        
+        
         public void Layout()
         {
-            // 存储节点的布局信息
-            Dictionary<NodeView, NodeData> nodeDataDict = new Dictionary<NodeView, NodeData>();
-
-            // 第一次遍历：计算初始坐标和偏移量
-            CalculateInitialPosition(this, 0, 0, nodeDataDict);
-
-            // 第二次遍历：根据根节点调整最终坐标
-            SetFinalPosition(this, 0, 0, nodeDataDict);
+            Vector2 oldPos = this.GetPosition().position;
+            Vector2 newPos = LayoutNode(this, oldPos.x, oldPos.y, out _, out _);
+            Vector2 offset = newPos - oldPos;
+            AjustPosition(offset);
         }
 
         /// <summary>
-        /// 计算节点的初始位置
+        /// 递归布局节点（从左往右排列）
         /// </summary>
-        private static void CalculateInitialPosition(NodeView node, float depth, float siblingIndex, Dictionary<NodeView, NodeData> nodeDataDict)
+        private static Vector2 LayoutNode(NodeView node, float currentX, float startY, out float totalHeight, out float nextX)
         {
+            float childY = startY; // 当前子节点的Y坐标
+            float maxChildWidth = 0; // 子节点中最大的宽度
+
+            // 获取当前节点的子节点
             List<NodeView> children = node.GetNotCollapsedChildren();
 
-            NodeData nodeData = new()
-            {
-                X = depth * (NodeWidth + HorizontalSpacing), // 从左到右
-                Y = 0,
-                Modifier = 0
-            };
-
+            // 如果没有子节点，直接设置当前节点的位置并返回
             if (children.Count == 0)
             {
-                // 如果没有子节点，则按顺序排列
-                nodeData.Y = siblingIndex * (NodeHeight + VerticalSpacing);
-            }
-            else
-            {
-                // 递归计算子节点位置
-                float childY = 0;
-                for (int i = 0; i < children.Count; i++)
-                {
-                    NodeView child = children[i];
-                    CalculateInitialPosition(child, depth + 1, i, nodeDataDict);
-                    childY += nodeDataDict[child].Y;
-                }
-
-                // 让父节点垂直居中所有子节点
-                nodeData.Y = childY / children.Count;
+                node.Position = new Vector2(currentX, startY); // 设置节点位置
+                totalHeight = VerticalSpacing; // 节点的高度
+                nextX = currentX + HorizontalSpacing; // 节点的宽度
+                return new Vector2(currentX, startY);
             }
 
-            nodeDataDict[node] = nodeData;
-        }
-
-        /// <summary>
-        /// 设置最终坐标
-        /// </summary>
-        private static void SetFinalPosition(NodeView node, float offsetX, float offsetY, Dictionary<NodeView, NodeData> nodeDataDict)
-        {
-            NodeData nodeData = nodeDataDict[node];
-
-            float finalX = nodeData.X + offsetX; // 水平坐标
-            float finalY = nodeData.Y + offsetY; // 垂直坐标
-
-            node.SetPosition(new Rect(finalX, finalY, NodeWidth, NodeHeight));
-
-            List<NodeView> children = node.GetNotCollapsedChildren();
+            // 遍历子节点，递归布局
             foreach (NodeView child in children)
             {
-                SetFinalPosition(child, offsetX, offsetY + nodeData.Modifier, nodeDataDict);
-            }
-        }
+                float childHeight;
+                LayoutNode(child, currentX + HorizontalSpacing, childY, out childHeight, out nextX);
 
-        /// <summary>
-        /// 用于存储节点布局信息的类
-        /// </summary>
-        private class NodeData
-        {
-            public float X; // X坐标
-            public float Y; // Y坐标
-            public float Modifier; // 偏移量
+                // 更新垂直方向位置
+                childY += childHeight + VerticalSpacing;
+
+                // 计算子节点中的最大宽度
+                maxChildWidth = Mathf.Max(maxChildWidth, nextX - currentX);
+            }
+
+            // 计算子节点总高度
+            totalHeight = childY - startY - VerticalSpacing;
+
+            // 将当前节点居中放置在子节点左侧
+            float nodeY = startY + (totalHeight - VerticalSpacing) / 2f;
+            node.Position = new Vector2(currentX, nodeY);
+
+            nextX = currentX + maxChildWidth;
+
+            return new Vector2(currentX, nodeY);
         }
 
         #endregion
