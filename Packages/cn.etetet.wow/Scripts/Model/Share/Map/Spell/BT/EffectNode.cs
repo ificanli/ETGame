@@ -1,7 +1,7 @@
 ﻿namespace ET
 {
     [System.Serializable]
-    public abstract class EffectNode: BTNode
+    public abstract class EffectNode: BTRoot
     {
         
     }

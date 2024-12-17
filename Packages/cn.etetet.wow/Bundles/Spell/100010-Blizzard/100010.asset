@@ -49,6 +49,12 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 2|ET.CostNumeric, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 1
+    - Name: Desc
+      Entry: 6
+      Data: 
     - Name: Children
       Entry: 7
       Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -60,6 +66,9 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 8
+      Data: 
+    - Name: _
+      Entry: 6
       Data: 
     - Name: Buff
       Entry: 1
@@ -88,6 +97,12 @@ MonoBehaviour:
     - Name: TargetSelector
       Entry: 7
       Data: 4|ET.TargetSelectorPosition, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 0
+    - Name: Desc
+      Entry: 6
+      Data: 
     - Name: Children
       Entry: 7
       Data: 5|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -99,6 +114,9 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 8
+      Data: 
+    - Name: _
+      Entry: 6
       Data: 
     - Name: Buff
       Entry: 1

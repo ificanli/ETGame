@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public abstract class CostNode: BTNode
+    public abstract class CostNode: BTRoot
     {
 #if UNITY
         //[Sirenix.OdinInspector.ReadOnly]

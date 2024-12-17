@@ -9,6 +9,7 @@ namespace ET.Client
 {
     [CreateAssetMenu(menuName = "ET/BuffScriptableObject")]
     [EnableClass]
+    [HideMonoScript]
     public class BuffScriptableObject : SerializedScriptableObject
     {
         [Title("Buff 配置", TitleAlignment = TitleAlignments.Centered)]

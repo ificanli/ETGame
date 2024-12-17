@@ -221,7 +221,10 @@ namespace ET
             this.Id = 0;
             
             this.treeView.RemoveElement(this);
-            this.treeView.RemoveElement(this.edge);
+            if (this.edge != null)
+            {
+                this.treeView.RemoveElement(this.edge);
+            }
 
             if (this.Parent != null && this.Parent.Id != 0)
             {
@@ -347,9 +350,9 @@ namespace ET
 
         private async ETTask CreateNode(DropdownMenuAction obj)
         {
-            VisualElement windowRoot = BehaviorTreeEditor.Instance.rootVisualElement;
+            VisualElement windowRoot = this.treeView.BehaviorTreeEditor.rootVisualElement;
             Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent,
-                obj.eventInfo.mousePosition + BehaviorTreeEditor.Instance.position.position);
+                obj.eventInfo.mousePosition + this.treeView.BehaviorTreeEditor.position.position);
             (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.treeView.RightClickMenu.WaitSelect(pos);
             Type type = searchTreeEntry.userData as Type;
             BTNode btNode = Activator.CreateInstance(type) as BTNode;

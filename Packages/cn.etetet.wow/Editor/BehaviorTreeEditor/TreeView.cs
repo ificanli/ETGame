@@ -12,9 +12,11 @@ namespace ET
     {
         public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
 
+        public BehaviorTreeEditor BehaviorTreeEditor;
+
         private NodeView root;
 
-        private Dictionary<long, NodeView> nodes = new();
+        private new Dictionary<long, NodeView> nodes = new();
 
         public NodeView CopyNode;
         public bool IsCut;
@@ -37,9 +39,24 @@ namespace ET
             StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/cn.etetet.wow/Editor/BehaviorTreeEditor/BehaviorTreeEditor.uss");
             styleSheets.Add(styleSheet);
         }
-
-        public void InitTree(BTNode node)
+        
+        public void InitTree(BehaviorTreeEditor behaviorTreeEditor, BTRoot node)
         {
+            this.BehaviorTreeEditor = behaviorTreeEditor;
+
+            if (this.root != null)
+            {
+                this.root.Dispose();
+                this.root = null;
+                this.CopyNode = null;
+            }
+
+            if (node == null)
+            {
+                return;
+            }
+
+            this.maxId = 0;
             GetMaxId(node);
             
             this.root = new NodeView(this, node);
@@ -47,6 +64,8 @@ namespace ET
             {
                 this.root.AddChild(child);
             }
+
+            this.Layout();
         }
 
         private void GetMaxId(BTNode node)
@@ -93,13 +112,13 @@ namespace ET
 
         private async ETTask CreateNode(DropdownMenuAction obj)
         {
-            VisualElement windowRoot = BehaviorTreeEditor.Instance.rootVisualElement;
-            Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent, obj.eventInfo.mousePosition + BehaviorTreeEditor.Instance.position.position);
+            VisualElement windowRoot = this.BehaviorTreeEditor.rootVisualElement;
+            Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent, obj.eventInfo.mousePosition + this.BehaviorTreeEditor.position.position);
             (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.RightClickMenu.WaitSelect(pos);
             
             Type type = searchTreeEntry.userData as Type;
-            BTNode btNode = Activator.CreateInstance(type) as BTNode;
-            this.InitTree(btNode);
+            BTRoot btNode = Activator.CreateInstance(type) as BTRoot;
+            this.InitTree(BehaviorTreeEditor, btNode);
         }
 
         public void Layout()

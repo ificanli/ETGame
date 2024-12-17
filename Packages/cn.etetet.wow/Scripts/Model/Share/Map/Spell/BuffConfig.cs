@@ -84,7 +84,7 @@ namespace ET
         [UnityEngine.SerializeReference]
         #endif
         [LabelText("  ")]
-        [HideReferenceObjectPicker]
+        //[HideReferenceObjectPicker]
         [BoxGroup("效果节点")]
         public List<EffectNode> Effects = new();
 

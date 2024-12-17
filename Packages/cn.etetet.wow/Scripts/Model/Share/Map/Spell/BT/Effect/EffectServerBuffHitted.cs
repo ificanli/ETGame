@@ -2,8 +2,8 @@
 
 namespace ET
 {
-    [LabelText("Buff被攻击的时候触发 (服务器)")]
-    [HideReferenceObjectPicker]
+    //[LabelText("Buff被攻击的时候触发 (服务器)")]
+    //[HideReferenceObjectPicker]
     public class EffectServerBuffHitted: EffectNode
     {
         [BTOutput(typeof(Buff))]

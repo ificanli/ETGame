@@ -3,7 +3,7 @@ using Unity.Mathematics;
 
 namespace ET
 {
-    public abstract class TargetSelector : BTNode
+    public abstract class TargetSelector : BTRoot
     {
         //[Sirenix.OdinInspector.ReadOnly]
         [Sirenix.OdinInspector.BoxGroup("输入参数")]
