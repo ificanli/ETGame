@@ -7,8 +7,6 @@ using UnityEngine;
 
 namespace ET
 {
-    [LabelText("显示施法进度条")]
-    [HideReferenceObjectPicker]
     public class BTShowCastSlider : BTNode
     {
         [BTInput(typeof(Buff))]
