@@ -25,21 +25,17 @@ namespace ET
 
         public BTNode Node { get; private set; }
 
-        private NodeView Parent { get; set; }
+        public NodeView Parent { get; private set; }
 
         private readonly Port inPort;
 
         private readonly Port outPort;
-
-        private Label idLabel;
 
         private Edge edge;
 
         private readonly List<NodeView> children = new();
 
         private readonly Button collapseButton;
-
-        private bool childrenCollapsed;
 
         public int Id
         {
@@ -52,19 +48,17 @@ namespace ET
                 this.Node.Id = value;
             }
         }
-
-        private Vector2 position;
         
         public Vector2 Position
         {
             get
             {
-                return this.position;
+                return this.Node.Position;
             }
             set
             {
-                this.position = value;
-                this.SetPosition(new Rect(this.position, this.GetPosition().size));
+                this.Node.Position = value;
+                this.SetPosition(new Rect(this.Node.Position, this.GetPosition().size));
             }
         }
 
@@ -72,12 +66,12 @@ namespace ET
         {
             get
             {
-                return this.childrenCollapsed;
+                return this.Node.ChildrenCollapsed;
             }
             set
             {
-                this.childrenCollapsed = value;
-                if (this.childrenCollapsed)
+                this.Node.ChildrenCollapsed = value;
+                if (this.Node.ChildrenCollapsed)
                 {
                     this.collapseButton.text = "+";
                     foreach (NodeView child in this.GetChildren())
@@ -116,7 +110,7 @@ namespace ET
                 }
                 else
                 {
-                    if (!this.childrenCollapsed)
+                    if (!this.ChildrenCollapsed)
                     {
                         foreach (NodeView child in this.GetChildren())
                         {
@@ -129,19 +123,17 @@ namespace ET
 
         private readonly IMGUIContainer imgui;
         private readonly Button contentCollapseButton;
-
-        private bool contentCollapsed;
         
         public bool ContentCollapsed
         {
             get
             {
-                return this.contentCollapsed;
+                return this.Node.IsCollapsed;
             }
             set
             {
-                this.contentCollapsed = value;
-                if (this.contentCollapsed)
+                this.Node.IsCollapsed = value;
+                if (!this.Node.IsCollapsed)
                 {
                     this.contentCollapseButton.text = "隐藏节点内容";
                     this.imgui.style.display = DisplayStyle.Flex;
@@ -167,11 +159,11 @@ namespace ET
                 this.Id = this.treeView.GenerateId();
             }
 
-            this.idLabel = new Label(node.Id.ToString());
+            Label idLabel = new(node.Id.ToString());
             idLabel.style.width = 32;
             idLabel.style.height = 20;
             idLabel.style.marginTop = 5;
-            this.titleContainer.Add(this.idLabel);
+            this.titleContainer.Add(idLabel);
             
             style.backgroundColor = new Color(0f, 0f, 0f, 1f);
 
@@ -187,7 +179,24 @@ namespace ET
             
             Editor editor = Editor.CreateEditor(nodeIMGUI);
 
-            this.imgui = new(() => { editor.OnInspectorGUI(); });
+            this.imgui = new(() =>
+            {
+                byte[] nodeBytes = null;
+                Event evt = Event.current;
+                if (evt != null && (evt.type == EventType.KeyDown || evt.type == EventType.MouseDown || evt.type == EventType.DragPerform))
+                {
+                    nodeBytes = this.treeView.BackupRoot();
+                }
+                editor.OnInspectorGUI(); 
+                
+                if (GUI.changed)
+                {
+                    if (nodeBytes != null)
+                    {
+                        this.treeView.SaveToUndo(nodeBytes);
+                    }
+                }
+            });
             Add(this.imgui);
             
             this.AddManipulator(new ResizableManipulator());
@@ -205,10 +214,14 @@ namespace ET
             collapseButton.clicked += ChangeCollapse;
             this.titleContainer.Add(this.collapseButton);
             
-            this.ContentCollapsed = false;
-            
             this.treeView.AddElement(this);
             this.treeView.AddNode(this);
+            
+            this.ContentCollapsed = this.Node.IsCollapsed;
+            this.Position = this.Node.Position;
+            this.ChildrenCollapsed = this.Node.ChildrenCollapsed;
+            
+            RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
         
         public void Dispose()
@@ -240,6 +253,11 @@ namespace ET
             }
         }
 
+        private void OnMouseDown(MouseDownEvent evt)
+        {
+            this.treeView.MouseDownNode = this;
+        }
+
         public List<NodeView> GetChildren()
         {
             return this.children;
@@ -254,22 +272,44 @@ namespace ET
             return this.children;
         }
 
-        public void AddChild(BTNode node)
+        public void AddChild(NodeView nodeView, int index = -1)
         {
-            NodeView nodeView = new(this.treeView, node);
             nodeView.Parent = this;
-            this.children.Add(nodeView);
+            if (index == -1)
+            {
+                this.children.Add(nodeView);
+            }
+            else
+            {
+                this.children.Insert(index, nodeView);
+            }
             if (!this.Node.Children.Contains(nodeView.Node))
             {
-                this.Node.Children.Add(nodeView.Node);
+                if (index == -1)
+                {
+                    this.Node.Children.Add(nodeView.Node);
+                }
+                else
+                {
+                    this.Node.Children.Insert(index, nodeView.Node);
+                }
             }
             
             nodeView.edge = nodeView.Parent.outPort.ConnectTo(nodeView.inPort);
             this.treeView.AddElement(nodeView.edge);
+            
+            if (this.ChildrenCollapsed)
+            {
+                nodeView.Visible = false;
+            }
+            if (!this.Visible)
+            {
+                nodeView.Visible = false;
+            }
 
             foreach (BTNode child in nodeView.Node.Children)
             {
-                nodeView.AddChild(child);
+                nodeView.AddChild(new NodeView(this.treeView, child));
             }
         }
 
@@ -286,7 +326,6 @@ namespace ET
             evt.menu.AppendAction("Copy", this.CopyNode);
             evt.menu.AppendAction("Cut", this.CutNode);
             evt.menu.AppendAction("Paste", this.PasterNode);
-            evt.menu.AppendAction("Layout", this.Layout);
         }
         
         private void ChangeContentCollapse()
@@ -326,11 +365,13 @@ namespace ET
             {
                 return;
             }
+            
+            this.treeView.SaveToUndo();
 
             byte[] nodeBytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.treeView.CopyNode.Node, DataFormat.Binary);
             BTNode clone = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTNode>(nodeBytes, DataFormat.Binary);
             ClearId(clone);
-            this.AddChild(clone);
+            this.AddChild(new NodeView(this.treeView, clone));
 
             if (this.treeView.IsCut)
             {
@@ -354,15 +395,20 @@ namespace ET
             Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent,
                 obj.eventInfo.mousePosition + this.treeView.BehaviorTreeEditor.position.position);
             (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.treeView.RightClickMenu.WaitSelect(pos);
+            
+            this.treeView.SaveToUndo();
+            
             Type type = searchTreeEntry.userData as Type;
             BTNode btNode = Activator.CreateInstance(type) as BTNode;
-            this.AddChild(btNode);
+            this.AddChild(new NodeView(this.treeView, btNode));
             
             this.treeView.Layout();
         }
 
         private void DeleteNode(DropdownMenuAction obj)
         {
+            this.treeView.SaveToUndo();
+            
             this.Dispose();
             
             this.treeView.Layout();
@@ -373,11 +419,6 @@ namespace ET
         private const float HorizontalSpacing = 300f; // 节点之间的水平间距
         private const float VerticalSpacing = 100f; // 节点之间的垂直间距
 
-        private void Layout(DropdownMenuAction obj)
-        {
-            this.Layout();
-        }
-        
         void AjustPosition(Vector2 offset)
         {
             this.Position -= offset;

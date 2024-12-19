@@ -1,5 +1,6 @@
 using System;
 using UnityEditor;
+using UnityEditor.ShortcutManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,7 +8,7 @@ namespace ET
 {
     public class BehaviorTreeEditor : EditorWindow
     {
-        private TreeView treeView;
+        public TreeView TreeView;
 
         [MenuItem("ET/BehaviorTreeEditor _F8")]
         public static void ShowWindow()
@@ -15,7 +16,7 @@ namespace ET
             BehaviorTreeEditor wnd = GetWindow<BehaviorTreeEditor>();
             wnd.titleContent = new GUIContent("BehaviorTreeEditor");
             
-            wnd.treeView.InitTree(wnd, BTRoot.OpenNode);
+            wnd.TreeView.InitTree(wnd, BTRoot.OpenNode);
         }
 
         public void CreateGUI()
@@ -25,7 +26,7 @@ namespace ET
             VisualTreeAsset visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Packages/cn.etetet.wow/Editor/BehaviorTreeEditor/BehaviorTreeEditor.uxml");
             visualTree.CloneTree(root);
             
-            this.treeView = root.Q<TreeView>();
+            this.TreeView = root.Q<TreeView>();
         }
 
         public void OnDestroy()
