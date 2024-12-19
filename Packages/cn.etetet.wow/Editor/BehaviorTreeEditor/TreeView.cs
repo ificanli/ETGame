@@ -73,32 +73,50 @@ namespace ET
                 return change;
             }
 
+            NodeView moveNode = null;
             foreach (GraphElement element in change.movedElements)
             {
-                if (element is not NodeView movedNode)
+                if (element is not NodeView nodeView)
                 {
                     continue;
                 }
 
-                Rect movedRect = movedNode.GetPosition();
-                // 检查与其他节点重叠
-                foreach ((long _, NodeView otherNode) in this.Nodes)
+                moveNode = nodeView;
+                break;
+            }
+
+
+            Rect movedRect = moveNode.GetPosition();
+            // 检查与其他节点重叠
+
+            float maxV = 0;
+            NodeView targetNode = null;
+            foreach ((long _, NodeView otherNode) in this.Nodes)
+            {
+                if (otherNode == moveNode)
                 {
-                    if (otherNode == movedNode)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    Rect otherRect = otherNode.GetPosition();
-                    if (!movedRect.Overlaps(otherRect))
-                    {
-                        continue;
-                    }
+                Rect otherRect = otherNode.GetPosition();
+                if (!movedRect.Overlaps(otherRect))
+                {
+                    continue;
+                }
+                
+                float xMin = Mathf.Max(movedRect.xMin, otherRect.xMin);
+                float yMin = Mathf.Max(movedRect.yMin, otherRect.yMin);
+                float xMax = Mathf.Min(movedRect.xMax, otherRect.xMax);
+                float yMax = Mathf.Min(movedRect.yMax, otherRect.yMax);
 
-                    this.MoveToNode(movedNode, otherNode);
-                    break;
+                Rect overRect = Rect.MinMaxRect(xMin, yMin, xMax, yMax);
+                if (overRect.width * overRect.height > maxV)
+                {
+                    maxV = overRect.width * overRect.height;
+                    targetNode = otherNode;                    
                 }
             }
+            this.MoveToNode(moveNode, targetNode);
             return change;
         }
         
