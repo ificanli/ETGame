@@ -129,6 +129,21 @@ namespace ET
         
         private void MoveToNode(NodeView move, NodeView to)
         {
+            // 父节点不能移到子节点上
+            NodeView tmp = to;
+            while (true)
+            {
+                if (tmp == null)
+                {
+                    break;
+                }
+                if (tmp.Id == move.Id)
+                {
+                    return;
+                }
+                tmp = tmp.Parent;
+            }
+            
             //Debug.Log($"Node {move.Id} overlapped with Node {to.Id}");
             if (move.Parent == to.Parent)
             {
