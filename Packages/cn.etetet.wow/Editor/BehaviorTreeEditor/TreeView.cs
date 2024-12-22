@@ -291,6 +291,7 @@ namespace ET
         
         public void Save()
         {
+            EditorUtility.SetDirty(this.SO);
             AssetDatabase.SaveAssets();
         }
         
