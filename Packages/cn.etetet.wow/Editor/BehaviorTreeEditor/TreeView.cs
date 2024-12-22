@@ -116,7 +116,10 @@ namespace ET
                     targetNode = otherNode;                    
                 }
             }
-            this.MoveToNode(moveNode, targetNode);
+            if (targetNode != null)
+            {
+                this.MoveToNode(moveNode, targetNode);
+            }
             return change;
         }
         

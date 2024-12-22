@@ -39,6 +39,7 @@
                 threatComponent.AddThreat(attacker, threat);
             }
 
+            // 触发被攻击Effect
             var buffs = target.GetComponent<BuffComponent>().GetByEffectType<EffectServerBuffHitted>();
             if (buffs != null)
             {
