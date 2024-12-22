@@ -19,6 +19,11 @@
             return SpellConfigCategory.Instance.Get(self.ConfigId / 10 * 10 - 100000);
         } 
         
+        public static int GetSpellConfigId(this Buff self)
+        {
+            return self.ConfigId / 10 * 10 - 100000;
+        } 
+        
         public static Unit GetCaster(this Buff self)
         {
             return self.Scene().GetComponent<UnitComponent>().Get(self.Caster);
