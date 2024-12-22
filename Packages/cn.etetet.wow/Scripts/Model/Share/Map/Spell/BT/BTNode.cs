@@ -8,6 +8,7 @@ namespace ET
     [System.Serializable]
     public abstract class BTNode : Object
     {
+        [ReadOnly]
         public int Id;
         
         [PropertyOrder(100)]

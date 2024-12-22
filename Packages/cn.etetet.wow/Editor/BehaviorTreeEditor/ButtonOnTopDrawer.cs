@@ -19,6 +19,7 @@ namespace ET
             {
                 // 打开行为树编辑器
                 BTRoot.OpenNode = node;
+                BTRoot.So = this.Property.Tree.WeakTargets[0] as UnityEngine.Object;
                 EditorApplication.ExecuteMenuItem("ET/BehaviorTreeEditor");
             }
 

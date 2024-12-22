@@ -1,6 +1,8 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEditor;
@@ -256,6 +258,21 @@ namespace ET
         private void OnMouseDown(MouseDownEvent evt)
         {
             this.treeView.MouseDownNode = this;
+
+            this.treeView.SetRed(this);
+        }
+        
+        public void SetBorderColor(Color color)
+        {
+            style.borderTopColor    = new StyleColor(color);
+            style.borderRightColor  = new StyleColor(color);
+            style.borderBottomColor = new StyleColor(color);
+            style.borderLeftColor   = new StyleColor(color);
+
+            style.borderTopWidth    = 2;
+            style.borderRightWidth  = 2;
+            style.borderBottomWidth = 2;
+            style.borderLeftWidth   = 2;
         }
 
         public List<NodeView> GetChildren()

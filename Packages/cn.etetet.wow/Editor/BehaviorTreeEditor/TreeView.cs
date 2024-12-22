@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Sirenix.Serialization;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -15,6 +17,8 @@ namespace ET
         public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
 
         public BehaviorTreeEditor BehaviorTreeEditor;
+
+        public UnityEngine.Object SO;
 
         private NodeView root;
 
@@ -165,9 +169,10 @@ namespace ET
             }
         }
         
-        public void InitTree(BehaviorTreeEditor behaviorTreeEditor, BTRoot node)
+        public void InitTree(BehaviorTreeEditor behaviorTreeEditor, UnityEngine.Object so, BTRoot node)
         {
             this.BehaviorTreeEditor = behaviorTreeEditor;
+            this.SO = so;
 
             this.Nodes.Clear();
             if (this.root != null)
@@ -241,7 +246,7 @@ namespace ET
             
             Type type = searchTreeEntry.userData as Type;
             BTRoot btNode = Activator.CreateInstance(type) as BTRoot;
-            this.InitTree(BehaviorTreeEditor, btNode);
+            this.InitTree(BehaviorTreeEditor, this.SO, btNode);
         }
 
         public void Layout()
@@ -269,6 +274,11 @@ namespace ET
             this.undo.Push(bytes);
         }
         
+        public void Save()
+        {
+            AssetDatabase.SaveAssets();
+        }
+        
         public void UnDo()
         {
             if (this.undo.Count == 0)
@@ -282,7 +292,7 @@ namespace ET
             
             byte[] undoBytes = this.undo.Pop();
             BTRoot undoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(undoBytes, DataFormat.Binary);
-            this.InitTree(this.BehaviorTreeEditor, undoRoot);
+            this.InitTree(this.BehaviorTreeEditor, this.SO, undoRoot);
         }
 
         public void Redo()
@@ -296,7 +306,56 @@ namespace ET
             
             byte[] redoBytes = this.redo.Pop();
             BTRoot redoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(redoBytes, DataFormat.Binary);
-            this.InitTree(this.BehaviorTreeEditor, redoRoot);
+            this.InitTree(this.BehaviorTreeEditor, this.SO, redoRoot);
+        }
+        
+        public void SetRed(NodeView inputNode)
+        {
+            ClearNodeViewBordColor(this.root);
+            
+            List<string> inputs = NodeFieldHelper.GetInputs(inputNode, typeof(BTInput));
+            this.SetRed(this.root, inputNode, inputs);
+        }
+        
+        public static void ClearNodeViewBordColor(NodeView nodeView)
+        {
+            nodeView.SetBorderColor(Color.black);
+            foreach (NodeView child in nodeView.GetChildren())
+            {
+                ClearNodeViewBordColor(child);
+            }
+        }
+
+        // 返回值，是否继续遍历
+        private bool SetRed(NodeView node, NodeView endNode, List<string> inputs)
+        {
+            if (node.Id == endNode.Id)
+            {
+                return false;
+            }
+            
+            FieldInfo[] fieldInfos = node.Node.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var btInputFields = fieldInfos.Where(field =>
+                    field.GetCustomAttributes(typeof(BTOutput), false).Any()
+            );
+            foreach (FieldInfo field in btInputFields)
+            {
+                string v = field.GetValue(node.Node) as string;
+                if (inputs.Contains(v))
+                {
+                    node.SetBorderColor(Color.yellow);
+                    break;
+                }
+            }
+
+            foreach (NodeView child in node.GetChildren())
+            {
+                if (!SetRed(child, endNode, inputs))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

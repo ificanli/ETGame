@@ -15,8 +15,7 @@ namespace ET
         {
             BehaviorTreeEditor wnd = GetWindow<BehaviorTreeEditor>();
             wnd.titleContent = new GUIContent("BehaviorTreeEditor");
-            
-            wnd.TreeView.InitTree(wnd, BTRoot.OpenNode);
+            wnd.TreeView.InitTree(wnd, BTRoot.So, BTRoot.OpenNode);
         }
 
         public void CreateGUI()
@@ -32,6 +31,8 @@ namespace ET
         public void OnDestroy()
         {
             BTRoot.OpenNode = null;
+            BTRoot.So = null;
+            this.TreeView.Save();
         }
     }
 }
