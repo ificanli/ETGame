@@ -35,6 +35,9 @@ namespace ET
             return ++this.maxId;
         }
 
+        private Label text;
+        private double messageEndTime;
+
         public NodeView MouseDownNode;
         
         public TreeView()
@@ -53,6 +56,8 @@ namespace ET
             this.RegisterCallback<KeyDownEvent>(OnKeyDown);
             this.RegisterCallback<MouseUpEvent>(OnMouseUp);
             this.graphViewChanged = OnGraphViewChanged;
+
+            this.schedule.Execute((_)=> { this.Update(); }).Every(30);
         }
 
 #region 拖动节点到另外的节点上
@@ -126,6 +131,27 @@ namespace ET
             }
             return change;
         }
+
+        public void ShowText(string s, float timeout = 1)
+        {
+            this.text = this.Q<Label>("LabelTips");
+            this.messageEndTime = EditorApplication.timeSinceStartup + timeout;
+            this.text.style.opacity = 1f;
+            this.text.text = s;
+        }
+
+        private void Update()
+        {
+            // 如果当前时间超过 _messageEndTime，就隐藏提示
+            if (EditorApplication.timeSinceStartup > this.messageEndTime)
+            {
+                if (this.text != null)
+                {
+                    this.text.style.opacity = 0f;
+                    this.text = null;
+                }
+            }
+        }
         
         private void MoveToNode(NodeView move, NodeView to)
         {
@@ -180,6 +206,12 @@ namespace ET
             if (e.keyCode == KeyCode.Y && e.control)
             {
                 this.Redo();
+                e.Use();
+            }
+
+            if (e.keyCode == KeyCode.S && e.control)
+            {
+                this.Save();
                 e.Use();
             }
         }
@@ -293,6 +325,7 @@ namespace ET
         {
             EditorUtility.SetDirty(this.SO);
             AssetDatabase.SaveAssets();
+            this.ShowText("Save Finish!");
         }
         
         public void UnDo()

@@ -57,9 +57,6 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 1
-    - Name: Desc
-      Entry: 6
-      Data: 
     - Name: Children
       Entry: 7
       Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -72,8 +69,26 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: _
+    - Name: Desc
       Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Buff
       Entry: 1
