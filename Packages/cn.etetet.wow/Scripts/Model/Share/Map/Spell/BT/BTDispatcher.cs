@@ -28,7 +28,7 @@ namespace ET
             return this.Run(c, env);
         }
 
-        public Type GetNodeType()
+        public virtual Type GetNodeType()
         {
             return typeof (Node);
         }

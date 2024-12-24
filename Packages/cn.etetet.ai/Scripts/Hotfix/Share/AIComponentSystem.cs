@@ -4,7 +4,6 @@ namespace ET
 {
     [EntitySystemOf(typeof(AIComponent))]
     [FriendOf(typeof(AIComponent))]
-    [FriendOf(typeof(AIDispatcherComponent))]
     public static partial class AIComponentSystem
     {
         [Invoke(TimerInvokeType.AITimer)]
@@ -24,9 +23,17 @@ namespace ET
         }
     
         [EntitySystem]
-        private static void Awake(this AIComponent self, int aiConfigId)
+        private static void Awake(this AIComponent self, AIRoot aiRoot)
         {
-            self.AIConfigId = aiConfigId;
+            self.AIRoot = aiRoot;
+            self.Start();
+        }
+        
+        [EntitySystem]
+        private static void Awake(this AIComponent self, int ai)
+        {
+            AIConfig aiRoot = AIConfigCategory.Instance.Get(ai);
+            self.AIRoot = aiRoot.Root;
             self.Start();
         }
 
@@ -48,39 +55,9 @@ namespace ET
                 return;
             }
             
-            var oneAI = AIConfigCategory.Instance.AIConfigs[self.AIConfigId];
-
-            foreach (AIConfig aiConfig in oneAI)
-            {
-
-                AAIHandler aaiHandler = AIDispatcherComponent.Instance.Get(aiConfig.Name);
-
-                if (aaiHandler == null)
-                {
-                    Log.Error($"not found aihandler: {aiConfig.Name}");
-                    continue;
-                }
-
-                int ret = aaiHandler.Check(self, aiConfig);
-                if (ret != 0)
-                {
-                    continue;
-                }
-
-                if (self.Current == aiConfig.Id)
-                {
-                    break;
-                }
-
-                self.Cancel(); // 取消之前的行为
-                ETCancellationToken cancellationToken = new();
-                self.CancellationToken = cancellationToken;
-                self.Current = aiConfig.Id;
-
-                aaiHandler.Execute(self, aiConfig).WithContext(cancellationToken);
-                return;
-            }
-            
+            using BTEnv env = BTEnv.Create(self.Scene());
+            env.AddEntity(BTEvnKey.AIComponent, self);
+            BTDispatcher.Instance.Handle(self.AIRoot, env);
         }
         
         public static void Start(this AIComponent self)
@@ -103,7 +80,7 @@ namespace ET
             self.Root().GetComponent<TimerComponent>().Remove(ref self.Timer);
         }
 
-        private static void Cancel(this AIComponent self)
+        public static void Cancel(this AIComponent self)
         {
             self.CancellationToken?.Cancel();
             self.Current = 0;

@@ -200,6 +200,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
+      - CollectPath: Packages/cn.etetet.wow/Bundles/AI
+        CollectorGUID: 925196a0de01c404999ce81b5ae5cb78
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
     - GroupName: Sprites
       GroupDesc: "\u56FE\u7247 \u4E00\u628A\u68AD"
       AssetTags: 

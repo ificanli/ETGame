@@ -43,6 +43,7 @@ namespace ET
         public const string Units = "Units";
         public const string Pos = "Pos";
         public const string BuffRemoveType = "BuffRemoveType";
+        public const string AIComponent = "AIComponent";
     }
     
     public class BTEnv: DisposeObject, IPool
@@ -103,6 +104,23 @@ namespace ET
             {
                 IValue<T> iValue = (IValue<T>) value;
                 return iValue.Value;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new Exception($"不能把{value.GetType()}转换为{typeof (T)}", e);
+            }
+        }
+        
+        public T GetClass<T>(string key) where T: class
+        {
+            if (!this.dict.TryGetValue(key, out object value))
+            {
+                throw new Exception($"btenv not found key: {key} {typeof(T).FullName}");
+            }
+
+            try
+            {
+                return (T)value;
             }
             catch (InvalidCastException e)
             {

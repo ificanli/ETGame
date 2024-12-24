@@ -11,7 +11,8 @@
             unitPetComponent.PetId = target.Id;
             target.UnitType = UnitType.Pet;
             target.AddComponent<PetComponent>().OwnerId = unit.Id;
-            target.GetComponent<AIComponent>().AIConfigId = node.AIConfigId;
+            target.RemoveComponent<AIComponent>();
+            target.AddComponent<AIComponent, int>(node.AIConfigId);
             return 0;
         }
     }

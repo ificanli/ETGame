@@ -59,6 +59,7 @@ namespace ET
             await World.Instance.AddSingleton<ConfigLoader>().LoadAsync();
             World.Instance.AddSingleton<SpellConfigCategory>();
             World.Instance.AddSingleton<BuffConfigCategory>();
+            World.Instance.AddSingleton<AIConfigCategory>();
             
             await FiberManager.Instance.Create(SchedulerType.Main, SceneType.Main, 0, SceneType.Main, "Main");
         }
