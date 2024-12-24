@@ -16,6 +16,7 @@ MonoBehaviour:
     SerializedFormat: 2
     SerializedBytes: 
     ReferencedUnityObjects:
+    - {fileID: 21300000, guid: bb8a2139a3ea85b48a65c6a705f5fe7a, type: 3}
     - {fileID: 129346, guid: 0f99196705e80b74295a340c3ece118b, type: 3}
     SerializedBytesString: 
     Prefab: {fileID: 0}
@@ -34,6 +35,9 @@ MonoBehaviour:
     - Name: IconName
       Entry: 1
       Data: Spell_Frost_IceStorm
+    - Name: Icon
+      Entry: 10
+      Data: 0
     - Name: CD
       Entry: 3
       Data: 5000
@@ -55,6 +59,24 @@ MonoBehaviour:
     - Name: Desc
       Entry: 6
       Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Children
       Entry: 7
       Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -66,9 +88,6 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 8
-      Data: 
-    - Name: _
-      Entry: 6
       Data: 
     - Name: Buff
       Entry: 1
@@ -99,9 +118,27 @@ MonoBehaviour:
       Data: 4|ET.TargetSelectorPosition, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: Desc
       Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Children
       Entry: 7
@@ -114,9 +151,6 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 8
-      Data: 
-    - Name: _
-      Entry: 6
       Data: 
     - Name: Buff
       Entry: 1
@@ -136,12 +170,15 @@ MonoBehaviour:
     - Name: Pos
       Entry: 1
       Data: Pos
-    - Name: SpellIndicator
-      Entry: 10
-      Data: 0
     - Name: Radius
       Entry: 3
       Data: 6000
+    - Name: SpellIndicatorGO
+      Entry: 10
+      Data: 1
+    - Name: SpellIndicator
+      Entry: 1
+      Data: RoundIndicator
     - Name: 
       Entry: 8
       Data: 

@@ -1,9 +1,7 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 using Sirenix.OdinInspector;
-#if UNITY
-using UnityEditor;
-using UnityEngine;
-#endif
+using Sirenix.Serialization;
 
 namespace ET
 {
@@ -20,25 +18,22 @@ namespace ET
         public bool IsIncrease = true;
 
 #if UNITY
-        [BoxGroup("显示信息", CenterLabel = true)]
-        [LabelText("进度条显示名称")]
+        [BoxGroup("进度条显示信息", CenterLabel = true)]
+        [LabelText("显示名称")]
         public string ShowDisplayName;
 
         [BoxGroup("显示信息")]
-        [LabelText("显示图标名称")]
         [ReadOnly]
-        [ShowIf("ShowIcon")]
+        [UnityEngine.HideInInspector]
         public string IconName;
 
-        [BoxGroup("显示信息")]
-        [HideLabel]
+        [BsonIgnore]
+        [BoxGroup("进度条显示信息")]
+        [LabelText("显示图标")]
+        [OdinSerialize]
         [ShowInInspector, PreviewField(45, ObjectFieldAlignment.Left)]
         [OnValueChanged("OnIconValueChanged")]
-        [NonSerialized]
-        private Sprite Icon;
-
-        [NonSerialized]
-        private string LastIconName;
+        private UnityEngine.Sprite Icon;
 
         private void OnIconValueChanged()
         {
@@ -49,41 +44,6 @@ namespace ET
             }
 
             IconName = Icon.name;
-        }
-
-        private bool ShowIcon()
-        {
-            if (string.IsNullOrEmpty(IconName))
-            {
-                Icon         = null;
-                LastIconName = "";
-                return true;
-            }
-
-            if (IconName == LastIconName)
-            {
-                return true;
-            }
-
-            LastIconName = IconName;
-
-#if UNITY_EDITOR
-            foreach (string guid in AssetDatabase.FindAssets($"{IconName} t:Sprite", null))
-            {
-                var path   = AssetDatabase.GUIDToAssetPath(guid);
-                var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-                if (sprite == null)
-                {
-                    Debug.LogError($"找不到图标资源: {IconName}");
-                }
-                else
-                {
-                    Icon = sprite;
-                    break;
-                }
-            }
-#endif
-            return true;
         }
 
 #endif

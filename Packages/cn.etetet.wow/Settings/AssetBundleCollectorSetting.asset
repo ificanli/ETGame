@@ -208,12 +208,20 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
+      - CollectPath: Packages/cn.etetet.wow/Bundles/SpellIndicator
+        CollectorGUID: a49841fa1f1fe6c4da820cd4bd4e1061
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
     - GroupName: Sprites
       GroupDesc: "\u56FE\u7247 \u4E00\u628A\u68AD"
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.wow/Assets/GameRes/Sprites
+      - CollectPath: Packages/cn.etetet.wow/Bundles/Sprites
         CollectorGUID: 92d7057252281604d98a14361ee45bbd
         CollectorType: 0
         AddressRuleName: AddressByFileName
