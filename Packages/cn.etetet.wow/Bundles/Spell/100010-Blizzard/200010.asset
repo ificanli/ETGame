@@ -15,8 +15,7 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 21300000, guid: bb8a2139a3ea85b48a65c6a705f5fe7a, type: 3}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -294,7 +293,7 @@ MonoBehaviour:
       Data: 10|ET.EffectClientBuffAdd, ET.Model
     - Name: Id
       Entry: 3
-      Data: 1
+      Data: 25
     - Name: Desc
       Entry: 6
       Data: 
@@ -327,7 +326,7 @@ MonoBehaviour:
       Data: 12|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
-      Data: 2
+      Data: 24
     - Name: Desc
       Entry: 6
       Data: 
@@ -366,7 +365,7 @@ MonoBehaviour:
       Data: 13|ET.BTShowCastSlider, ET.Model
     - Name: Id
       Entry: 3
-      Data: 3
+      Data: 23
     - Name: Desc
       Entry: 6
       Data: 
@@ -397,12 +396,15 @@ MonoBehaviour:
     - Name: ShowDisplayName
       Entry: 1
       Data: Blizzard
-    - Name: IconName
+    - Name: Icon
+      Entry: 7
+      Data: 14|ET.OdinUnityObject, ET.Model
+    - Name: Name
       Entry: 1
       Data: Spell_Frost_IceStorm
-    - Name: Icon
-      Entry: 10
-      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -426,7 +428,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 14|ET.EffectClientBuffRemove, ET.Model
+      Data: 15|ET.EffectClientBuffRemove, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -453,13 +455,13 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 15|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 16|ET.BTAnimatorSetBool, ET.Model
+      Data: 17|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -516,7 +518,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 17|ET.EffectServerBuffHitted, ET.Model
+      Data: 18|ET.EffectServerBuffHitted, ET.Model
     - Name: Id
       Entry: 3
       Data: 1
@@ -543,13 +545,13 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 19|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 19|ET.BTBuffAddExpireTime, ET.Model
+      Data: 20|ET.BTBuffAddExpireTime, ET.Model
     - Name: Id
       Entry: 3
       Data: 2

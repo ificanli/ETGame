@@ -18,34 +18,16 @@ namespace ET
         public bool IsIncrease = true;
 
 #if UNITY
-        [BoxGroup("进度条显示信息", CenterLabel = true)]
-        [LabelText("显示名称")]
+        [BoxGroup("显示信息", CenterLabel = true)]
+        [LabelText("进度条显示名称")]
         public string ShowDisplayName;
 
         [BoxGroup("显示信息")]
-        [ReadOnly]
-        [UnityEngine.HideInInspector]
-        public string IconName;
-
-        [BsonIgnore]
-        [BoxGroup("进度条显示信息")]
-        [LabelText("显示图标")]
-        [OdinSerialize]
-        [ShowInInspector, PreviewField(45, ObjectFieldAlignment.Left)]
-        [OnValueChanged("OnIconValueChanged")]
-        private UnityEngine.Sprite Icon;
-
-        private void OnIconValueChanged()
-        {
-            if (Icon == null)
-            {
-                IconName = "";
-                return;
-            }
-
-            IconName = Icon.name;
-        }
-
+        [InlineProperty] // 去掉折叠和标题
+        [HideReferenceObjectPicker]
+        [LabelText("进度条显示图标")]
+        
+        public OdinUnityObject Icon = new();
 #endif
     }
 }

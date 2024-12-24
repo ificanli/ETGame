@@ -15,8 +15,7 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 21300000, guid: bc56b0330219a274fb0356fb6a2abdcd, type: 3}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -352,12 +351,15 @@ MonoBehaviour:
     - Name: ShowDisplayName
       Entry: 1
       Data: Frostbolt
-    - Name: IconName
+    - Name: Icon
+      Entry: 7
+      Data: 12|ET.OdinUnityObject, ET.Model
+    - Name: Name
       Entry: 1
       Data: Spell_Frost_FrostBolt02
-    - Name: Icon
-      Entry: 10
-      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -381,7 +383,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 12|ET.EffectClientBuffRemove, ET.Model
+      Data: 13|ET.EffectClientBuffRemove, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -408,13 +410,13 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 13|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 14|ET.BTAnimatorSetTrigger, ET.Model
+      Data: 15|ET.BTAnimatorSetTrigger, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -450,7 +452,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 15|ET.BTAnimatorSetBool, ET.Model
+      Data: 16|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -507,7 +509,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 16|ET.EffectServerBuffTick, ET.Model
+      Data: 17|ET.EffectServerBuffTick, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -534,13 +536,13 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 17|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 18|ET.BTGetSpellTargetUnit, ET.Model
+      Data: 19|ET.BTGetSpellTargetUnit, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -576,7 +578,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 19|ET.BTTurnToUnit, ET.Model
+      Data: 20|ET.BTTurnToUnit, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -633,7 +635,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 20|ET.EffectServerBuffHitted, ET.Model
+      Data: 21|ET.EffectServerBuffHitted, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -660,13 +662,13 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 21|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 22|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 22|ET.BTBuffAddExpireTime, ET.Model
+      Data: 23|ET.BTBuffAddExpireTime, ET.Model
     - Name: Id
       Entry: 3
       Data: 0

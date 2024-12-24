@@ -72,31 +72,14 @@ namespace ET
         [LabelText("描述")]
         public string Desc;
 
-        [BoxGroup("技能信息")]
-        [LabelText("显示图标名称")]
-        [ReadOnly]
 #if UNITY
-        public string IconName;
-
         [BoxGroup("技能信息")]
-        [HideLabel]
-        [OdinSerialize]
-        [ShowInInspector, PreviewField(45, ObjectFieldAlignment.Left)]
-        [OnValueChanged("OnIconValueChanged")]
-        private UnityEngine.Sprite Icon;
-
-        private void OnIconValueChanged()
-        {
-            if (Icon == null)
-            {
-                IconName = "";
-                return;
-            }
-
-            IconName = Icon.name;
-        }
+        [InlineProperty] // 去掉折叠和标题
+        [HideReferenceObjectPicker]
+        [LabelText("图标")]
+        public OdinUnityObject Icon = new();
 #endif
-
+        
         [BoxGroup("技能信息")]
         [LabelText("技能CD（毫秒）")]
         public int CD;

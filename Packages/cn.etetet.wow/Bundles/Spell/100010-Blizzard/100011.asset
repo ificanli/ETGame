@@ -30,8 +30,14 @@ MonoBehaviour:
     - Name: Desc
       Entry: 1
       Data: "\u66B4\u98CE\u96EA\u6BCF\u6CE2\u96EA\u6280\u80FD"
-    - Name: IconName
+    - Name: Icon
+      Entry: 7
+      Data: 1|ET.OdinUnityObject, ET.Model
+    - Name: Name
       Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: CD
       Entry: 3
@@ -41,7 +47,7 @@ MonoBehaviour:
       Data: 200011
     - Name: Cost
       Entry: 7
-      Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
+      Data: 2|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -53,7 +59,7 @@ MonoBehaviour:
       Data: 
     - Name: TargetSelector
       Entry: 7
-      Data: 2|ET.TargetSelectorCircle, ET.Model
+      Data: 3|ET.TargetSelectorCircle, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -80,7 +86,7 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -117,11 +123,8 @@ MonoBehaviour:
     - Name: UnitType
       Entry: 3
       Data: 15
-    - Name: SpellIndicatorGO
+    - Name: SpellIndicatorName
       Entry: 6
-      Data: 
-    - Name: SpellIndicator
-      Entry: 1
       Data: 
     - Name: 
       Entry: 8

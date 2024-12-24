@@ -39,6 +39,7 @@ namespace ET
         private double messageEndTime;
 
         public NodeView MouseDownNode;
+        public Vector2 MoveStartPos;
         
         public TreeView()
         {
@@ -94,10 +95,16 @@ namespace ET
                 break;
             }
 
+            // 移动距离太小，可能是误操作
+            float distance = (moveNode.GetPosition().position - this.MoveStartPos).magnitude;
+            if (distance < 20)
+            {
+                return change;
+            }
 
             Rect movedRect = moveNode.GetPosition();
             // 检查与其他节点重叠
-
+            
             float maxV = 0;
             NodeView targetNode = null;
             foreach ((long _, NodeView otherNode) in this.Nodes)
@@ -119,7 +126,9 @@ namespace ET
                 float yMax = Mathf.Min(movedRect.yMax, otherRect.yMax);
 
                 Rect overRect = Rect.MinMaxRect(xMin, yMin, xMax, yMax);
-                if (overRect.width * overRect.height > maxV)
+                float v3 = overRect.width * overRect.height;
+                // 覆盖的面积要大于两个长方形其中一个的一半，避免误操作
+                if (v3 > maxV)
                 {
                     maxV = overRect.width * overRect.height;
                     targetNode = otherNode;                    
@@ -173,6 +182,8 @@ namespace ET
             //Debug.Log($"Node {move.Id} overlapped with Node {to.Id}");
             if (move.Parent == to.Parent)
             {
+                this.SaveToUndo();
+                
                 int toIndex = to.Parent.GetChildren().IndexOf(to);
                 
                 BTNode btNode = move.Node;
@@ -186,6 +197,8 @@ namespace ET
                 {
                     return;
                 }
+                
+                this.SaveToUndo();
                 
                 BTNode btNode = move.Node;
                 move.Dispose();
@@ -227,16 +240,23 @@ namespace ET
             this.SO = so;
 
             this.Nodes.Clear();
-            if (this.root != null)
-            {
-                this.root.Dispose();
-                this.root = null;
-                this.CopyNode = null;
-            }
-
+            
             if (node == null)
             {
                 return;
+            }
+            
+            if (this.root != null)
+            {
+                BTRoot btRootNode = (BTRoot)this.root.Node;
+                
+                this.root.Dispose();
+                this.root = null;
+                this.CopyNode = null;
+
+                btRootNode.Children.Clear();
+                btRootNode.Children.AddRange(node.Children);
+                node = btRootNode;
             }
 
             this.maxId = 0;

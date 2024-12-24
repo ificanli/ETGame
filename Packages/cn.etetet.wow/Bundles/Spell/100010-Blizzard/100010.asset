@@ -15,9 +15,7 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 21300000, guid: bb8a2139a3ea85b48a65c6a705f5fe7a, type: 3}
-    - {fileID: 129346, guid: 0f99196705e80b74295a340c3ece118b, type: 3}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -32,12 +30,15 @@ MonoBehaviour:
     - Name: Desc
       Entry: 1
       Data: "\u66B4\u98CE\u96EA"
-    - Name: IconName
+    - Name: Icon
+      Entry: 7
+      Data: 1|ET.OdinUnityObject, ET.Model
+    - Name: Name
       Entry: 1
       Data: Spell_Frost_IceStorm
-    - Name: Icon
-      Entry: 10
-      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: CD
       Entry: 3
       Data: 5000
@@ -46,13 +47,13 @@ MonoBehaviour:
       Data: 200010
     - Name: Cost
       Entry: 7
-      Data: 1|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
+      Data: 2|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 2|ET.CostNumeric, ET.Model
+      Data: 3|ET.CostNumeric, ET.Model
     - Name: Id
       Entry: 3
       Data: 1
@@ -79,7 +80,7 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -115,7 +116,7 @@ MonoBehaviour:
       Data: 
     - Name: TargetSelector
       Entry: 7
-      Data: 4|ET.TargetSelectorPosition, ET.Model
+      Data: 5|ET.TargetSelectorPosition, ET.Model
     - Name: Id
       Entry: 3
       Data: 1
@@ -142,7 +143,7 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 5|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -173,12 +174,15 @@ MonoBehaviour:
     - Name: Radius
       Entry: 3
       Data: 6000
-    - Name: SpellIndicatorGO
-      Entry: 10
-      Data: 1
     - Name: SpellIndicator
+      Entry: 7
+      Data: 7|ET.OdinUnityObject, ET.Model
+    - Name: Name
       Entry: 1
       Data: RoundIndicator
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 

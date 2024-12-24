@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
 using Sirenix.OdinInspector;
 
 namespace ET
@@ -13,23 +14,10 @@ namespace ET
         public int Radius;
         
 #if UNITY
-        [BsonIgnore]
-        [OnValueChanged("OnSpellIndicatorValueChanged")]
-        public UnityEngine.GameObject SpellIndicatorGO;
-        
-        [UnityEngine.HideInInspector]
-        public string SpellIndicator;
-
-        private void OnSpellIndicatorValueChanged()
-        {
-            if (this.SpellIndicatorGO == null)
-            {
-                this.SpellIndicator = "";
-                return;
-            }
-
-            this.SpellIndicator = this.SpellIndicatorGO.name;
-        }
+        [InlineProperty] // 去掉折叠和标题
+        [HideReferenceObjectPicker]
+        [LabelText("技能指示器")]
+        public OdinUnityObject SpellIndicator = new();
 #endif
     }
 }

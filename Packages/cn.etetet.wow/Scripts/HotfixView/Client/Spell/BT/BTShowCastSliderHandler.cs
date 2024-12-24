@@ -16,7 +16,7 @@ namespace ET.Client
                 Unit            = target,
                 Buff            = buff,
                 ShowDisplayName = node.ShowDisplayName,
-                IconName        = node.IconName,
+                IconName        = node.Icon.Name,
                 IsIncrease      = node.IsIncrease
             }).NoContext();
 

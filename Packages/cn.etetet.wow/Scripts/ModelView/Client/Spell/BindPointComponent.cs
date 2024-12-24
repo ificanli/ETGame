@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
@@ -20,7 +21,7 @@ namespace ET
     public class BindPointComponent : SerializedMonoBehaviour
     {
         [ShowInInspector]
-        [OdinSerialize]
+        [NonSerialized, OdinSerialize]
         public Dictionary<BindPoint, Transform> BindPoints = new(new BindPointComparer());
     }
 }

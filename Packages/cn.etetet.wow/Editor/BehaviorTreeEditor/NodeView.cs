@@ -275,7 +275,7 @@ namespace ET
         private void OnMouseDown(MouseDownEvent evt)
         {
             this.treeView.MouseDownNode = this;
-
+            this.treeView.MoveStartPos = this.Position;
             this.treeView.SetRed(this);
         }
         
