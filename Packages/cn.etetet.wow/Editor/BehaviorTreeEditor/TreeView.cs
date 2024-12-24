@@ -182,6 +182,11 @@ namespace ET
             else
             {
                 // 不同父节点下，移动到另一个节点下
+                if (to.Node is not BTComposite && to.Node is not BTDecorate && to.Node is not BTRoot)
+                {
+                    return;
+                }
+                
                 BTNode btNode = move.Node;
                 move.Dispose();
                 to.AddChild(new NodeView(this, btNode));
@@ -253,9 +258,12 @@ namespace ET
                 this.maxId = node.Id;
             }
 
-            foreach (BTNode child in node.Children)
+            if (node is BTNodeHasChildren btNodeHasChildren)
             {
-                GetMaxId(child);
+                foreach (BTNode child in btNodeHasChildren.Children)
+                {
+                    GetMaxId(child);
+                }
             }
         }
 

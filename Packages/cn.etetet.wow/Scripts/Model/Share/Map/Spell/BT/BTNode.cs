@@ -10,15 +10,6 @@ namespace ET
     {
         [ReadOnly]
         public int Id;
-        
-        [PropertyOrder(100)]
-#if UNITY
-        [UnityEngine.SerializeReference]
-        [UnityEngine.HideInInspector]
-#endif
-        [LabelText("子节点")]
-        public List<BTNode> Children = new();
-        
 
         // 主要用于行为树编辑器保存一些显示层的数据
 #if UNITY_EDITOR

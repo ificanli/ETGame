@@ -20,7 +20,7 @@ namespace ET
                 return this.entries;
             }
             this.entries = new List<SearchTreeEntry>();
-            entries.Add(new SearchTreeGroupEntry(new GUIContent("Create Node")));
+            entries.Add(new SearchTreeGroupEntry(new GUIContent("Nodes")));
 
             List<SearchTreeEntry> list = new();
             foreach (Type type in TypeCache.GetTypesDerivedFrom<BTNode>())

@@ -72,6 +72,11 @@ namespace ET
             }
             set
             {
+                if (this.Node is not BTNodeHasChildren)
+                {
+                    return;
+                }
+                
                 this.Node.ChildrenCollapsed = value;
                 if (this.Node.ChildrenCollapsed)
                 {
@@ -208,14 +213,18 @@ namespace ET
             this.outPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
             outputContainer.Add(this.outPort);
 
-            collapseButton = new Button();
-            collapseButton.text = "-";
-            collapseButton.style.width = 32;
-            collapseButton.style.height = 32;
-            collapseButton.style.marginLeft = 5;
-            collapseButton.clicked += ChangeCollapse;
-            this.titleContainer.Add(this.collapseButton);
-            
+            // 有孩子，显示折叠按钮
+            if (this.Node is BTNodeHasChildren)
+            {
+                collapseButton = new Button();
+                collapseButton.text = "-";
+                collapseButton.style.width = 32;
+                collapseButton.style.height = 32;
+                collapseButton.style.marginLeft = 5;
+                collapseButton.clicked += ChangeCollapse;
+                this.titleContainer.Add(this.collapseButton);
+            }
+
             this.treeView.AddElement(this);
             this.treeView.AddNode(this);
             
@@ -244,7 +253,11 @@ namespace ET
             if (this.Parent != null && this.Parent.Id != 0)
             {
                 this.Parent.GetChildren().Remove(this);
-                this.Parent.Node.Children.Remove(this.Node);
+
+                if (this.Parent.Node is BTNodeHasChildren btNodeHasChildren)
+                {
+                    btNodeHasChildren.Children.Remove(this.Node);
+                }
             }
 
             this.treeView.RemoveNode(id);
@@ -291,6 +304,11 @@ namespace ET
 
         public void AddChild(NodeView nodeView, int index = -1)
         {
+            if (this.Node is not BTNodeHasChildren btNodeHasChildren)
+            {
+                return;
+            }
+            
             nodeView.Parent = this;
             if (index == -1)
             {
@@ -300,15 +318,16 @@ namespace ET
             {
                 this.children.Insert(index, nodeView);
             }
-            if (!this.Node.Children.Contains(nodeView.Node))
+
+            if (!btNodeHasChildren.Children.Contains(nodeView.Node))
             {
                 if (index == -1)
                 {
-                    this.Node.Children.Add(nodeView.Node);
+                    btNodeHasChildren.Children.Add(nodeView.Node);
                 }
                 else
                 {
-                    this.Node.Children.Insert(index, nodeView.Node);
+                    btNodeHasChildren.Children.Insert(index, nodeView.Node);
                 }
             }
             
@@ -324,9 +343,12 @@ namespace ET
                 nodeView.Visible = false;
             }
 
-            foreach (BTNode child in nodeView.Node.Children)
+            if (nodeView.Node is BTNodeHasChildren nodeHasChildren)
             {
-                nodeView.AddChild(new NodeView(this.treeView, child));
+                foreach (BTNode child in nodeHasChildren.Children)
+                {
+                    nodeView.AddChild(new NodeView(this.treeView, child));
+                }
             }
         }
 
@@ -338,11 +360,20 @@ namespace ET
         //点击右键菜单时触发
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.menu.AppendAction("Create", (o)=>this.CreateNode(o).NoContext());
+            if (this.Node is BTNodeHasChildren)
+            {
+                evt.menu.AppendAction("Create", (o)=>this.CreateNode(o).NoContext());    
+            }
             evt.menu.AppendAction("Delete", this.DeleteNode);
             evt.menu.AppendAction("Copy", this.CopyNode);
             evt.menu.AppendAction("Cut", this.CutNode);
-            evt.menu.AppendAction("Paste", this.PasterNode);
+            if (this.treeView.CopyNode != null)
+            {
+                if (this.Node is BTNodeHasChildren)
+                {
+                    evt.menu.AppendAction("Paste", this.PasterNode);
+                }
+            }
         }
         
         private void ChangeContentCollapse()
@@ -370,7 +401,13 @@ namespace ET
         private static void ClearId(BTNode node)
         {
             node.Id = 0;
-            foreach (BTNode child in node.Children)
+
+            if (node is not BTNodeHasChildren btNodeHasChildren)
+            {
+                return;
+            }
+            
+            foreach (BTNode child in btNodeHasChildren.Children)
             {
                 ClearId(child);
             }

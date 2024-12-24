@@ -1,6 +1,9 @@
-﻿namespace ET
+﻿using System.Collections.Generic;
+using Sirenix.OdinInspector;
+
+namespace ET
 {
-    public class BTRoot: BTNode
+    public class BTRoot: BTNodeHasChildren
     {
 #if UNITY_EDITOR
         [StaticField]
