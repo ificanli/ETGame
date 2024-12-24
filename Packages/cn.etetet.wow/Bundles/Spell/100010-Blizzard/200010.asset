@@ -78,7 +78,7 @@ MonoBehaviour:
       Data: 3|ET.EffectServerBuffAdd, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: Desc
       Entry: 6
       Data: 
@@ -96,7 +96,7 @@ MonoBehaviour:
       Data: 0
     - Name: 
       Entry: 4
-      Data: 0
+      Data: -2.5
     - Name: 
       Entry: 8
       Data: 
@@ -111,7 +111,7 @@ MonoBehaviour:
       Data: 5|ET.BTGetSpellTargetPos, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 2
     - Name: Desc
       Entry: 6
       Data: 
@@ -126,10 +126,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
-      Data: 0
+      Data: -102.5
     - Name: 
       Entry: 8
       Data: 
@@ -147,7 +147,7 @@ MonoBehaviour:
       Data: 6|ET.BTTurnToPos, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 3
     - Name: Desc
       Entry: 6
       Data: 
@@ -162,10 +162,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 97.5
     - Name: 
       Entry: 8
       Data: 
@@ -204,7 +204,7 @@ MonoBehaviour:
       Data: 7|ET.EffectServerBuffTick, ET.Model
     - Name: Id
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -237,7 +237,7 @@ MonoBehaviour:
       Data: 9|ET.BTCreateSpell, ET.Model
     - Name: Id
       Entry: 3
-      Data: 2
+      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -252,7 +252,7 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
       Data: 0
@@ -477,7 +477,7 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
       Data: 0

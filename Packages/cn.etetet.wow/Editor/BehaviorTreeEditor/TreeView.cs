@@ -287,22 +287,18 @@ namespace ET
         //点击右键菜单时触发
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
-            evt.menu.AppendAction("Create", (o)=>
-            {
-                this.CreateNode(o).NoContext();
-            });
         }
 
-        private async ETTask CreateNode(DropdownMenuAction obj)
-        {
-            VisualElement windowRoot = this.BehaviorTreeEditor.rootVisualElement;
-            Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent, obj.eventInfo.mousePosition + this.BehaviorTreeEditor.position.position);
-            (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.RightClickMenu.WaitSelect(pos);
-            
-            Type type = searchTreeEntry.userData as Type;
-            BTRoot btNode = Activator.CreateInstance(type) as BTRoot;
-            this.InitTree(BehaviorTreeEditor, this.SO, btNode);
-        }
+        //private async ETTask CreateNode(DropdownMenuAction obj)
+        //{
+        //    VisualElement windowRoot = this.BehaviorTreeEditor.rootVisualElement;
+        //    Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent, obj.eventInfo.mousePosition + this.BehaviorTreeEditor.position.position);
+        //    (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.RightClickMenu.WaitSelect(pos);
+        //    
+        //    Type type = searchTreeEntry.userData as Type;
+        //    BTRoot btNode = Activator.CreateInstance(type) as BTRoot;
+        //    this.InitTree(BehaviorTreeEditor, this.SO, btNode);
+        //}
 
         public void Layout()
         {

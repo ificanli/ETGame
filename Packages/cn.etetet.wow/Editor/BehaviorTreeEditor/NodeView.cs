@@ -364,6 +364,7 @@ namespace ET
         //点击右键菜单时触发
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
+            evt.menu.ClearItems();
             if (this.Node is BTNodeHasChildren)
             {
                 evt.menu.AppendAction("Create", (o)=>this.CreateNode(o).NoContext());    
