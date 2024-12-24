@@ -77,7 +77,7 @@ MonoBehaviour:
       Data: 3|ET.EffectServerBuffRemove, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: Desc
       Entry: 6
       Data: 
@@ -110,7 +110,7 @@ MonoBehaviour:
       Data: 5|ET.BTBuffRemoveTypeCase, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 2
     - Name: Desc
       Entry: 6
       Data: 
@@ -125,10 +125,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
-      Data: 0
+      Data: -200
     - Name: 
       Entry: 8
       Data: 
@@ -146,7 +146,7 @@ MonoBehaviour:
       Data: 6|ET.BTGetSpellTargetUnit, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 3
     - Name: Desc
       Entry: 6
       Data: 
@@ -161,7 +161,7 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
       Data: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
       Data: 7|ET.BTAddFakeBulletBuff, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 4
     - Name: Desc
       Entry: 6
       Data: 
@@ -197,10 +197,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 200
     - Name: 
       Entry: 8
       Data: 

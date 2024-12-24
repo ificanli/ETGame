@@ -101,7 +101,7 @@ MonoBehaviour:
       Data: 4|ET.AI_MonsterZhuiJi, ET.Model
     - Name: Id
       Entry: 3
-      Data: 5
+      Data: 3
     - Name: Desc
       Entry: 6
       Data: 
@@ -134,7 +134,7 @@ MonoBehaviour:
       Data: 5|ET.AI_MonsterXunLuo, ET.Model
     - Name: Id
       Entry: 3
-      Data: 3
+      Data: 4
     - Name: Desc
       Entry: 6
       Data: 

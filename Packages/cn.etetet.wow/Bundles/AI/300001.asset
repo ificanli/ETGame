@@ -68,7 +68,7 @@ MonoBehaviour:
       Data: 3|ET.AI_PetZhuiJi, ET.Model
     - Name: Id
       Entry: 3
-      Data: 6
+      Data: 2
     - Name: Desc
       Entry: 6
       Data: 
@@ -101,7 +101,7 @@ MonoBehaviour:
       Data: 4|ET.AI_PetReturn, ET.Model
     - Name: Id
       Entry: 3
-      Data: 7
+      Data: 3
     - Name: Desc
       Entry: 6
       Data: 
@@ -134,7 +134,7 @@ MonoBehaviour:
       Data: 5|ET.AI_PetFollow, ET.Model
     - Name: Id
       Entry: 3
-      Data: 2
+      Data: 4
     - Name: Desc
       Entry: 6
       Data: 
@@ -167,7 +167,7 @@ MonoBehaviour:
       Data: 6|ET.AI_PetIdle, ET.Model
     - Name: Id
       Entry: 3
-      Data: 3
+      Data: 5
     - Name: Desc
       Entry: 6
       Data: 
