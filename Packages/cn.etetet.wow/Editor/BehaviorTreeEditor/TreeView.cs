@@ -18,7 +18,7 @@ namespace ET
 
         public BehaviorTreeEditor BehaviorTreeEditor;
 
-        public UnityEngine.Object SO;
+        private UnityEngine.Object scriptableObject;
 
         private NodeView root;
 
@@ -237,7 +237,7 @@ namespace ET
         public void InitTree(BehaviorTreeEditor behaviorTreeEditor, UnityEngine.Object so, BTRoot node)
         {
             this.BehaviorTreeEditor = behaviorTreeEditor;
-            this.SO = so;
+            this.scriptableObject = so;
 
             this.Nodes.Clear();
             
@@ -347,7 +347,7 @@ namespace ET
         
         public void Save()
         {
-            EditorUtility.SetDirty(this.SO);
+            EditorUtility.SetDirty(this.scriptableObject);
             AssetDatabase.SaveAssets();
             this.ShowText("Save Finish!");
         }
@@ -365,7 +365,7 @@ namespace ET
             
             byte[] undoBytes = this.undo.Pop();
             BTRoot undoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(undoBytes, DataFormat.Binary);
-            this.InitTree(this.BehaviorTreeEditor, this.SO, undoRoot);
+            this.InitTree(this.BehaviorTreeEditor, this.scriptableObject, undoRoot);
         }
 
         public void Redo()
@@ -379,7 +379,7 @@ namespace ET
             
             byte[] redoBytes = this.redo.Pop();
             BTRoot redoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(redoBytes, DataFormat.Binary);
-            this.InitTree(this.BehaviorTreeEditor, this.SO, redoRoot);
+            this.InitTree(this.BehaviorTreeEditor, this.scriptableObject, redoRoot);
         }
         
         public void SetRed(NodeView inputNode)

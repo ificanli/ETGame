@@ -17,7 +17,9 @@ namespace ET
 #if UNITY_EDITOR
 
         [BsonIgnore]
-        [HideInInspector]
+        //[HideInInspector]
+        [PropertyOrder(99)]
+        [TextArea]
         public string Desc;
         
         [BsonIgnore]

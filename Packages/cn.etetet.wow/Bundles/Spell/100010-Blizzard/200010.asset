@@ -203,9 +203,9 @@ MonoBehaviour:
       Data: 7|ET.EffectServerBuffTick, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: Desc
-      Entry: 6
+      Entry: 1
       Data: 
     - Name: IsCollapsed
       Entry: 5
@@ -236,7 +236,7 @@ MonoBehaviour:
       Data: 9|ET.BTCreateSpell, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 2
     - Name: Desc
       Entry: 6
       Data: 
@@ -295,7 +295,7 @@ MonoBehaviour:
       Entry: 3
       Data: 25
     - Name: Desc
-      Entry: 6
+      Entry: 1
       Data: 
     - Name: IsCollapsed
       Entry: 5
@@ -326,7 +326,7 @@ MonoBehaviour:
       Data: 12|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
-      Data: 24
+      Data: 29
     - Name: Desc
       Entry: 6
       Data: 
@@ -365,7 +365,7 @@ MonoBehaviour:
       Data: 13|ET.BTShowCastSlider, ET.Model
     - Name: Id
       Entry: 3
-      Data: 23
+      Data: 28
     - Name: Desc
       Entry: 6
       Data: 
@@ -431,7 +431,7 @@ MonoBehaviour:
       Data: 15|ET.EffectClientBuffRemove, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: Desc
       Entry: 6
       Data: 
@@ -464,7 +464,7 @@ MonoBehaviour:
       Data: 17|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 2
     - Name: Desc
       Entry: 6
       Data: 

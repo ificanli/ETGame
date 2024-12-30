@@ -184,6 +184,8 @@ namespace ET
             
             base.contentContainer.Add(this.contentCollapseButton);
             
+            this.tooltip = this.Node.Desc;
+            
             Editor editor = Editor.CreateEditor(nodeIMGUI);
 
             this.imgui = new(() =>
@@ -194,10 +196,12 @@ namespace ET
                 {
                     nodeBytes = this.treeView.BackupRoot();
                 }
+
                 editor.OnInspectorGUI(); 
                 
                 if (GUI.changed)
                 {
+                    this.tooltip = this.Node.Desc;
                     if (nodeBytes != null)
                     {
                         this.treeView.SaveToUndo(nodeBytes);
@@ -206,8 +210,6 @@ namespace ET
             });
             Add(this.imgui);
             
-            this.AddManipulator(new ResizableManipulator());
-
             this.inPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(float));
             inputContainer.Add(this.inPort);
 

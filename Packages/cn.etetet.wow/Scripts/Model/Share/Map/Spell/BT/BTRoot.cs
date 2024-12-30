@@ -10,7 +10,7 @@ namespace ET
         public static BTRoot OpenNode;
 
         [StaticField]
-        public static UnityEngine.Object So;
+        public static UnityEngine.Object ScriptableObject;
 #endif
     }
 }
