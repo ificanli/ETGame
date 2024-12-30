@@ -241,23 +241,36 @@ namespace ET
 
             this.Nodes.Clear();
             
-            if (node == null)
-            {
-                return;
-            }
-            
             if (this.root != null)
             {
-                BTRoot btRootNode = (BTRoot)this.root.Node;
-                
                 this.root.Dispose();
-                this.root = null;
-                this.CopyNode = null;
-
-                btRootNode.Children.Clear();
-                btRootNode.Children.AddRange(node.Children);
-                node = btRootNode;
             }
+
+            this.maxId = 0;
+            GetMaxId(node);
+            
+            this.root = new NodeView(this, node);
+            foreach (BTNode child in node.Children)
+            {
+                this.root.AddChild(new NodeView(this, child));
+            }
+
+            this.Layout();
+        }
+
+        private void MoveChildrenToRoot(BTRoot node)
+        {
+            this.Nodes.Clear();
+            
+            BTRoot btRootNode = (BTRoot)this.root.Node;
+            
+            this.root.Dispose();
+            this.root = null;
+            this.CopyNode = null;
+
+            btRootNode.Children.Clear();
+            btRootNode.Children.AddRange(node.Children);
+            node = btRootNode;
 
             this.maxId = 0;
             GetMaxId(node);
@@ -365,7 +378,7 @@ namespace ET
             
             byte[] undoBytes = this.undo.Pop();
             BTRoot undoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(undoBytes, DataFormat.Binary);
-            this.InitTree(this.BehaviorTreeEditor, this.scriptableObject, undoRoot);
+            this.MoveChildrenToRoot(undoRoot);
         }
 
         public void Redo()
@@ -379,7 +392,7 @@ namespace ET
             
             byte[] redoBytes = this.redo.Pop();
             BTRoot redoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(redoBytes, DataFormat.Binary);
-            this.InitTree(this.BehaviorTreeEditor, this.scriptableObject, redoRoot);
+            this.MoveChildrenToRoot(redoRoot);
         }
         
         public void SetRed(NodeView inputNode)

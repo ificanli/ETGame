@@ -521,7 +521,7 @@ MonoBehaviour:
       Data: 18|ET.EffectServerBuffHitted, ET.Model
     - Name: Id
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -554,7 +554,7 @@ MonoBehaviour:
       Data: 20|ET.BTBuffAddExpireTime, ET.Model
     - Name: Id
       Entry: 3
-      Data: 2
+      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -569,7 +569,7 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
       Data: 0
