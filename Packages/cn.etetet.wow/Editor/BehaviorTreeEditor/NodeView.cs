@@ -379,8 +379,63 @@ namespace ET
                     evt.menu.AppendAction("Paste", this.PasterNode);
                 }
             }
+
+            if (this.Parent != null)
+            {
+                evt.menu.AppendAction("Change", (o)=>this.Change(o).NoContext());
+            }
         }
-        
+
+        private async ETTask Change(DropdownMenuAction obj)
+        {
+            if (this.Parent == null)
+            {
+                return;
+            }
+            
+            VisualElement windowRoot = this.treeView.BehaviorTreeEditor.rootVisualElement;
+            Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent,
+                obj.eventInfo.mousePosition + this.treeView.BehaviorTreeEditor.position.position);
+            (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.treeView.RightClickMenu.WaitSelect(pos);
+            
+            this.treeView.SaveToUndo();
+            
+            Type type = searchTreeEntry.userData as Type;
+            BTNode btNode = Activator.CreateInstance(type) as BTNode;
+            
+            if (btNode is BTRoot)
+            {
+                this.treeView.ShowText("can not change to root node!");
+                return;
+            }
+            
+            if (this.GetChildren().Count > 0 && btNode is not BTNodeHasChildren)
+            {
+                this.treeView.ShowText("node has child!");
+                return;
+            }
+
+            int index = this.Parent.GetChildren().IndexOf(this);
+            
+            // 把孩子复制过去
+            if (this.GetChildren().Count > 0)
+            {
+                BTNodeHasChildren btNodeHasChildren = btNode as BTNodeHasChildren;
+                foreach (NodeView child in this.GetChildren())
+                {
+                    btNodeHasChildren.Children.Add(child.Node);
+                }
+            }
+            
+            // 删除当前节点
+            this.Dispose();
+
+            NodeView replaceNodeView = new(this.treeView, btNode);
+            this.Parent.AddChild(replaceNodeView, index);
+            
+            this.treeView.Layout();
+        }
+
         private void ChangeContentCollapse()
         {
             this.ContentCollapsed = !this.ContentCollapsed;

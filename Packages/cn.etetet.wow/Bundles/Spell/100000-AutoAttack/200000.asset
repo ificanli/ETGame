@@ -110,7 +110,7 @@ MonoBehaviour:
       Data: 5|ET.BTSelector, ET.Model
     - Name: Id
       Entry: 3
-      Data: 2
+      Data: 17
     - Name: Desc
       Entry: 6
       Data: 
@@ -143,13 +143,13 @@ MonoBehaviour:
       Data: 7|ET.BTCreateSpell, ET.Model
     - Name: Id
       Entry: 3
-      Data: 3
+      Data: 18
     - Name: Desc
       Entry: 6
       Data: 
     - Name: IsCollapsed
       Entry: 5
-      Data: true
+      Data: false
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
@@ -182,7 +182,7 @@ MonoBehaviour:
       Data: 8|ET.BTRemoveBuff, ET.Model
     - Name: Id
       Entry: 3
-      Data: 4
+      Data: 19
     - Name: Desc
       Entry: 6
       Data: 

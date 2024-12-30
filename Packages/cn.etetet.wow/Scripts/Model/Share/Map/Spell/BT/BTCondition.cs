@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class BTCondition: BTNode
+    public abstract class BTCondition: BTNode
     {
     }
 }

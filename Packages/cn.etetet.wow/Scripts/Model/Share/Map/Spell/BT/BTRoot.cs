@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
-    public class BTRoot: BTNodeHasChildren
+    public abstract class BTRoot: BTNodeHasChildren
     {
 #if UNITY_EDITOR
         [StaticField]

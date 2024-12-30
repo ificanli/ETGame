@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class BTAction: BTNode
+    public abstract class BTAction: BTNode
     {
         
     }
