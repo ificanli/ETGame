@@ -9,7 +9,7 @@ namespace ET
     public class OdinUnityObject
     {
 
-        [HorizontalGroup("1")]
+        [HorizontalGroup("Split", 0.3f)]
         [BsonIgnore]
         [HideLabel]
         [ShowInInspector, PreviewField(45, ObjectFieldAlignment.Left)]
@@ -18,7 +18,7 @@ namespace ET
         private UnityEngine.Object Object;
         
         [HideLabel]
-        [HorizontalGroup("1")]
+        [HorizontalGroup("Split", 0.7f)]
         [ReadOnly]
         [ShowIf("Show")]
         public string Name;
