@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 
 namespace ET
 {

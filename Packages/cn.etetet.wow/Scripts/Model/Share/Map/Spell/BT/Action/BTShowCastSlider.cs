@@ -1,7 +1,6 @@
 ﻿using System;
 using MongoDB.Bson.Serialization.Attributes;
 using Sirenix.OdinInspector;
-using Sirenix.Serialization;
 
 namespace ET
 {
