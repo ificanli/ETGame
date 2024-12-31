@@ -125,10 +125,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
-      Data: 0
+      Data: -100
     - Name: 
       Entry: 8
       Data: 
@@ -161,10 +161,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 300
     - Name: 
       Entry: 4
-      Data: 0
+      Data: 100
     - Name: 
       Entry: 8
       Data: 
@@ -206,7 +206,7 @@ MonoBehaviour:
       Data: 7|ET.EffectServerBuffRemove, ET.Model
     - Name: Id
       Entry: 3
-      Data: 1
+      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -239,7 +239,7 @@ MonoBehaviour:
       Data: 9|ET.BTBuffRemoveTypeCase, ET.Model
     - Name: Id
       Entry: 3
-      Data: 2
+      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -275,7 +275,7 @@ MonoBehaviour:
       Data: 10|ET.BTGetSpellTargetUnit, ET.Model
     - Name: Id
       Entry: 3
-      Data: 3
+      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -311,7 +311,7 @@ MonoBehaviour:
       Data: 11|ET.BTTameBeast, ET.Model
     - Name: Id
       Entry: 3
-      Data: 4
+      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -371,7 +371,7 @@ MonoBehaviour:
       Data: 12|ET.EffectClientBuffAdd, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: Desc
       Entry: 6
       Data: 
@@ -404,7 +404,7 @@ MonoBehaviour:
       Data: 14|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 2
     - Name: Desc
       Entry: 6
       Data: 
@@ -443,7 +443,7 @@ MonoBehaviour:
       Data: 15|ET.BTShowCastSlider, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 3
     - Name: Desc
       Entry: 6
       Data: 
@@ -474,9 +474,15 @@ MonoBehaviour:
     - Name: ShowDisplayName
       Entry: 1
       Data: TameBeast
-    - Name: IconName
+    - Name: Icon
+      Entry: 7
+      Data: 16|ET.OdinUnityObject, ET.Model
+    - Name: Name
       Entry: 1
-      Data: Ability_Hunter_Pet_Bear
+      Data: Ability_Druid_Berserk
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -500,7 +506,7 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 16|ET.EffectClientBuffRemove, ET.Model
+      Data: 17|ET.EffectClientBuffRemove, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
@@ -527,13 +533,13 @@ MonoBehaviour:
       Data: 
     - Name: Children
       Entry: 7
-      Data: 17|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 18|ET.BTAnimatorSetBool, ET.Model
+      Data: 19|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
