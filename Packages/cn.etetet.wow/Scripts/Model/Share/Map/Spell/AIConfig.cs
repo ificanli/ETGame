@@ -47,7 +47,7 @@ namespace ET
     }
     
     [EnableClass]
-    public partial class AIConfig
+    public class AIConfig
     {
         public int Id;
 

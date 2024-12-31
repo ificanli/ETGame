@@ -18,11 +18,12 @@
             {
                 return 0;
             }
-            aiComponent.Current = node.Id;
             
             // 取消上一个协程
             aiComponent.Cancel();
             aiComponent.CancellationToken = new ETCancellationToken();
+            
+            aiComponent.Current = node.Id;
             this.Execute(aiComponent, node, env).WithContext(aiComponent.CancellationToken);
             return 0;
         }
