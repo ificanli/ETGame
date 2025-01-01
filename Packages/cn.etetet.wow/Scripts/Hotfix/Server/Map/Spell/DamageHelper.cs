@@ -1,4 +1,6 @@
-﻿namespace ET.Server
+﻿using System.Collections.Generic;
+
+namespace ET.Server
 {
     public static class DamageHelper
     {
@@ -40,24 +42,23 @@
             }
 
             // 触发被攻击Effect
-            var buffs = target.GetComponent<BuffComponent>().GetByEffectType<EffectServerBuffHitted>();
-            if (buffs != null)
+            using ListComponent<Buff> hittedBuffs = ListComponent<Buff>.Create();
+            target.GetComponent<BuffComponent>().GetByEffectType<EffectServerBuffHitted>(hittedBuffs);
+            using BTEnv env = BTEnv.Create(attacker.Scene());
+            env.AddEntity(BTEvnKey.Attacker, attacker);
+            env.AddEntity(BTEvnKey.Target, target);
+            foreach (Buff buff in hittedBuffs)
             {
-                using BTEnv env = BTEnv.Create(attacker.Scene());
-                env.AddEntity(BTEvnKey.Attacker, attacker);
-                env.AddEntity(BTEvnKey.Target, target);
-                foreach (Buff buff in buffs)
+                if (buff == null)
                 {
-                    if (buff == null)
-                    {
-                        continue;
-                    }
-
-                    env.AddEntity(BTEvnKey.Buff, buff);
-
-                    EffectServerBuffHitted effect = buff.GetConfig().GetEffect<EffectServerBuffHitted>();
-                    BTDispatcher.Instance.Handle(effect, env);
+                    Log.Error("hitted buff is null");
+                    continue;
                 }
+
+                env.AddEntity(BTEvnKey.Buff, buff);
+
+                EffectServerBuffHitted effect = buff.GetConfig().GetEffect<EffectServerBuffHitted>();
+                BTDispatcher.Instance.Handle(effect, env);
             }
         }
     }

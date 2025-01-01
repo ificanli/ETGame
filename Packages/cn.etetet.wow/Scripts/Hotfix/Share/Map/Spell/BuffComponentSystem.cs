@@ -127,10 +127,16 @@ namespace ET
             }
         }
         
-        public static HashSet<EntityRef<Buff>> GetByEffectType<T>(this BuffComponent self) where T: EffectNode
+        public static void GetByEffectType<T>(this BuffComponent self, List<Buff> buffs) where T: EffectNode
         {
-            self.effectBuffs.TryGetValue(typeof(T), out var set);
-            return set;
+            if (!self.effectBuffs.TryGetValue(typeof(T), out var set))
+            {
+                return;
+            }
+            foreach (var buffRef in set)
+            {
+                buffs.Add(buffRef);
+            }
         }
     }
 }
