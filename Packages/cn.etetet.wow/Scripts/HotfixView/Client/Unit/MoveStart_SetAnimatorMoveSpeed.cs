@@ -2,12 +2,12 @@
 
 namespace ET.Client
 {
-	[MessageHandler(SceneType.WOW)]
-	public class M2C_PathfindingResultHandler_ChangeMotionToMove : MessageHandler<Scene, M2C_PathfindingResult>
+	[Event(SceneType.Current)]
+	public class MoveStart_SetAnimatorMoveSpeed : AEvent<Scene, MoveStart>
 	{
-		protected override async ETTask Run(Scene root, M2C_PathfindingResult message)
+		protected override async ETTask Run(Scene scene, MoveStart a)
 		{
-			Unit unit = root.CurrentScene().GetComponent<UnitComponent>().Get(message.Id);
+			Unit unit = a.Unit;
 
 			float speed = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Speed);
 			

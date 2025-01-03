@@ -21,7 +21,7 @@ namespace ET.Client
             self.m_IsFromTips = false;
             self.Fiber()?.EntitySystem?.DynamicEvent(new EventPutTipsView() { View = self.GetParent<YIUIWindowComponent>()?.OwnerUIEntity, Destroy = true });
         }
-
+        
         [EntitySystem]
         private static async ETTask YIUIWindowClose(this TipsViewComponent self, bool viewCloseResult)
         {
