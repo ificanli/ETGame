@@ -7,9 +7,16 @@ namespace ET.Server
         protected override int Check(AIComponent aiComponent, AI_PetZhuiJi node, BTEnv env)
         {
             Unit pet = aiComponent.GetParent<Unit>();
+            
             TargetComponent targetComponent = pet.GetComponent<TargetComponent>();
             Unit target = targetComponent.Target;
             if (target == null)
+            {
+                return 1;
+            }
+            
+            // 自己阵营的不攻击
+            if (PetHelper.GetOwner(pet).Id == target.Id)
             {
                 return 1;
             }
