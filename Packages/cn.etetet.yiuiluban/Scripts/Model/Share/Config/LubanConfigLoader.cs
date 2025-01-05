@@ -121,7 +121,11 @@ namespace ET
             foreach (Type type in hashSet)
             {
                 object obj = Activator.CreateInstance(type);
-                ((ISingletonAwake)obj).Awake();
+                if (obj is ISingletonAwake awakeSingleton)
+                {
+                    awakeSingleton.Awake();
+                }
+
                 World.Instance.AddSingleton((ASingleton)obj);
             }
         }

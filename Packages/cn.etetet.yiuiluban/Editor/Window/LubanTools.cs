@@ -10,7 +10,7 @@ namespace YIUI.Luban.Editor
         [MenuItem("ET/Luban 配置工具")]
         private static void OpenWindow()
         {
-            var window = GetWindow<LubanTools>();
+            var window = GetWindow<LubanTools>("Luban 配置工具");
             if (window != null)
                 window.Show();
         }
