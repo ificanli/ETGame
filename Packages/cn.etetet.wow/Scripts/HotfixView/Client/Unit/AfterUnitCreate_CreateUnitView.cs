@@ -17,7 +17,12 @@ namespace ET.Client
             GameObject go = UnityEngine.Object.Instantiate(bundleGameObject, globalComponent.Unit, true);
             go.AddComponent<GameObjectEntityRef>().EntityRef = unit;
             go.transform.position = unit.Position;
-            GameObjectPosHelper.OnTerrain(go.transform);
+
+            {
+                using CoroutineLock coroutineLock = await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
+                GameObjectPosHelper.OnTerrain(go.transform);
+            }
+
             unit.AddComponent<GameObjectComponent>().GameObject = go;
             unit.AddComponent<AnimatorComponent>();
             

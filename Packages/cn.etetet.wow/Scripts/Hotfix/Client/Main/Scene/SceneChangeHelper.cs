@@ -16,6 +16,7 @@
             // 加载场景寻路数据
             await NavmeshComponent.Instance.Load(sceneName);
             
+            using CoroutineLock coroutineLock = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
             // 通知等待场景切换的协程
             root.GetComponent<ObjectWait>().Notify(new Wait_SceneChangeFinish());
             currentScenesComponent.Progress = 100;

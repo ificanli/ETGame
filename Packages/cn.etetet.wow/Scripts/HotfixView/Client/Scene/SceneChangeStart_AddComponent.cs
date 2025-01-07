@@ -10,6 +10,8 @@ namespace ET.Client
         {
             try
             {
+                using CoroutineLock coroutineLock = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
+                
                 CurrentScenesComponent currentScenesComponent = root.GetComponent<CurrentScenesComponent>();
                 
                 await YIUIMgrComponent.Inst.Root.OpenPanelAsync<LoadingPanelComponent>();

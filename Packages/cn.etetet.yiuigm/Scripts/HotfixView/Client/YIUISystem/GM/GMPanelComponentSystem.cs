@@ -3,6 +3,7 @@ using YIUIFramework;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace ET.Client
 {
@@ -12,7 +13,6 @@ namespace ET.Client
         [EntitySystem]
         private static void YIUIInitialize(this GMPanelComponent self)
         {
-            self._OpenGMViewKey = YIUIConstHelper.Const.OpenGMViewKey;
         }
 
         [EntitySystem]
@@ -37,8 +37,7 @@ namespace ET.Client
         [EntitySystem]
         private static void Update(this GMPanelComponent self)
         {
-            if (self._OpenGMViewKey == KeyCode.None) return;
-            if (Input.GetKeyDown(self._OpenGMViewKey))
+            if (Keyboard.current.escapeKey.IsPressed())
             {
                 if (!self.UIPanel.CurrentOpenViewActiveSelf)
                 {
