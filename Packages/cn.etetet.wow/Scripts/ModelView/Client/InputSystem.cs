@@ -51,7 +51,7 @@ namespace ET.Client
                     ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""0f568f49-afae-45f1-a407-98073d6d5cff"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false

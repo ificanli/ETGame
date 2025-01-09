@@ -137,14 +137,6 @@
       "source": "embedded",
       "dependencies": {}
     },
-    "cn.etetet.referencecollector": {
-      "version": "file:cn.etetet.referencecollector",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "cn.etetet.core": "2.0.0"
-      }
-    },
     "cn.etetet.router": {
       "version": "file:cn.etetet.router",
       "depth": 0,
