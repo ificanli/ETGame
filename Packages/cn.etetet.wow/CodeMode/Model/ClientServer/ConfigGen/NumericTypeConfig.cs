@@ -22,8 +22,7 @@ namespace ET
             NeedSaveDB = _buf.ReadInt();
             NoticeType = _buf.ReadInt();
             MaxNumericType = _buf.ReadInt();
-            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);AffectNumericType = new System.Collections.Generic.List<int>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { int _e0;  _e0 = _buf.ReadInt(); AffectNumericType.Add(_e0);}}
-            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);AffectValue = new System.Collections.Generic.List<int>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { int _e0;  _e0 = _buf.ReadInt(); AffectValue.Add(_e0);}}
+            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);AffectNumeric = new System.Collections.Generic.Dictionary<int, long>(n0 * 3 / 2);for(var i0 = 0 ; i0 < n0 ; i0++) { int _k0;  _k0 = _buf.ReadInt(); long _v0;  _v0 = _buf.ReadLong();     AffectNumeric.Add(_k0, _v0);}}
 
             EndInit();
         }
@@ -56,11 +55,7 @@ namespace ET
         /// <summary>
         /// 影响的属性id
         /// </summary>
-        public readonly System.Collections.Generic.List<int> AffectNumericType;
-        /// <summary>
-        /// 影响的属性数值
-        /// </summary>
-        public readonly System.Collections.Generic.List<int> AffectValue;
+        public readonly System.Collections.Generic.Dictionary<int, long> AffectNumeric;
     
         public const int __ID__ = 57587177;
         public override int GetTypeId() => __ID__;
@@ -78,8 +73,7 @@ namespace ET
             + "NeedSaveDB:" + NeedSaveDB + ","
             + "NoticeType:" + NoticeType + ","
             + "MaxNumericType:" + MaxNumericType + ","
-            + "AffectNumericType:" + Luban.StringUtil.CollectionToString(AffectNumericType) + ","
-            + "AffectValue:" + Luban.StringUtil.CollectionToString(AffectValue) + ","
+            + "AffectNumeric:" + Luban.StringUtil.CollectionToString(AffectNumeric) + ","
             + "}";
         }
 

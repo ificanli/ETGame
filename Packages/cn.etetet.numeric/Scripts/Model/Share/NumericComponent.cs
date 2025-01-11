@@ -70,6 +70,22 @@ namespace ET
                     value = max;
                 }
             }
+            
+            // 影响其它数值
+            if (numericTypeConfig.AffectNumeric.Count > 0)
+            {
+                foreach (var kv in numericTypeConfig.AffectNumeric)
+                {
+                    // 影响的值必须大于Max，这样才能恢复回去
+                    if (kv.Key < Max)
+                    {
+                        Log.Error($"AffectNumericType is {kv.Key}, numericType is {numericTypeConfig.Id}");
+                        continue;
+                    }
+                    long affectOldValue = self.GetByKey(kv.Key);
+                    self.Insert(kv.Key, affectOldValue + kv.Value, isPublicEvent);
+                }
+            }
 
             if (isPublicEvent)
             {
