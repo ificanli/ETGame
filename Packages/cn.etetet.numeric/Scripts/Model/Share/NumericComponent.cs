@@ -83,7 +83,7 @@ namespace ET
                         continue;
                     }
                     long affectOldValue = self.GetByKey(kv.Key);
-                    self.Insert(kv.Key, affectOldValue + kv.Value, isPublicEvent);
+                    self.Insert(kv.Key, affectOldValue + kv.Value * (value - oldValue), isPublicEvent);
                 }
             }
 
