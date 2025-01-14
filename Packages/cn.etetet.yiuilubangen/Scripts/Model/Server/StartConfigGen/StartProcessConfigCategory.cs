@@ -14,7 +14,7 @@ namespace ET
 {
 
     [Config]
-    public partial class StartProcessConfigCategory : Singleton<StartProcessConfigCategory>, ILubanConfig
+    public partial class StartProcessConfigCategory : Singleton<StartProcessConfigCategory>, IConfig
     {
         private readonly Dictionary<int, StartProcessConfig> _dataMap;
         private readonly List<StartProcessConfig> _dataList;

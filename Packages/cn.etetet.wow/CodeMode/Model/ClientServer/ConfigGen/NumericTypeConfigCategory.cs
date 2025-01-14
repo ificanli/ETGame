@@ -14,7 +14,7 @@ namespace ET
 {
 
     [Config]
-    public partial class NumericTypeConfigCategory : Singleton<NumericTypeConfigCategory>, ILubanConfig
+    public partial class NumericTypeConfigCategory : Singleton<NumericTypeConfigCategory>, IConfig
     {
         private readonly Dictionary<int, NumericTypeConfig> _dataMap;
         private readonly List<NumericTypeConfig> _dataList;

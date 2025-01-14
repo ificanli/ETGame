@@ -14,7 +14,7 @@ namespace ET
 {
 
     [Config]
-    public partial class UnitConfigCategory : Singleton<UnitConfigCategory>, ILubanConfig
+    public partial class UnitConfigCategory : Singleton<UnitConfigCategory>, IConfig
     {
         private readonly Dictionary<int, UnitConfig> _dataMap;
         private readonly List<UnitConfig> _dataList;

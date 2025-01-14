@@ -11,7 +11,7 @@ namespace ET
     }
 
     [CodeProcess]
-    public partial class AIConfigCategory : Singleton<AIConfigCategory>, ISingletonAwake
+    public partial class AIConfigCategory : Singleton<AIConfigCategory>, ISingletonAwake, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
@@ -48,6 +48,10 @@ namespace ET
         public bool Contain(int id)
         {
             return this.dict.ContainsKey(id);
+        }
+
+        public void ResolveRef()
+        {
         }
     }
     

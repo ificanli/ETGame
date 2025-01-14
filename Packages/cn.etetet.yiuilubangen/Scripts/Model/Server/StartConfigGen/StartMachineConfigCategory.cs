@@ -14,7 +14,7 @@ namespace ET
 {
 
     [Config]
-    public partial class StartMachineConfigCategory : Singleton<StartMachineConfigCategory>, ILubanConfig
+    public partial class StartMachineConfigCategory : Singleton<StartMachineConfigCategory>, IConfig
     {
         private readonly Dictionary<int, StartMachineConfig> _dataMap;
         private readonly List<StartMachineConfig> _dataList;

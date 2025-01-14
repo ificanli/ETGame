@@ -36,7 +36,7 @@ using System.Collections.Generic;
     /// </summary>
     {{~end~}}
     [Config]
-    public partial class {{__name}} : Singleton<{{__name}}>, ILubanConfig
+    public partial class {{__name}} : Singleton<{{__name}}>, IConfig
     {
         {{~if __table.is_map_table ~}}
         private readonly Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}> _dataMap;

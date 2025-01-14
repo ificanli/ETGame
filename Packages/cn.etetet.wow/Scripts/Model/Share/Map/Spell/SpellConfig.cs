@@ -11,7 +11,7 @@ namespace ET
         public int Id;
     }
 
-    public partial class SpellConfigCategory : Singleton<SpellConfigCategory>, ISingletonAwake
+    public partial class SpellConfigCategory : Singleton<SpellConfigCategory>, ISingletonAwake, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
@@ -48,6 +48,10 @@ namespace ET
         public bool Contain(int id)
         {
             return this.dict.ContainsKey(id);
+        }
+
+        public void ResolveRef()
+        {
         }
     }
 
