@@ -26,7 +26,7 @@ MonoBehaviour:
       Data: 0|ET.AIConfig, ET.Model
     - Name: Id
       Entry: 3
-      Data: 300000
+      Data: 300001
     - Name: Desc
       Entry: 1
       Data: "\u5BA0\u7269ai"

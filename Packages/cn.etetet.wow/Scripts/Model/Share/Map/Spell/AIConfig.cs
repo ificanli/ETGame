@@ -20,6 +20,11 @@ namespace ET
         public void Awake()
         {
         }
+        
+        public void Add(AIConfig aiConfig)
+        {
+            this.dict.Add(aiConfig.Id, aiConfig);
+        }
 
         public AIConfig Get(int id)
         {

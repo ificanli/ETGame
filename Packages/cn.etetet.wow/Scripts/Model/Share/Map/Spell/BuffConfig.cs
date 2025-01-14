@@ -20,6 +20,11 @@ namespace ET
         public void Awake()
         {
         }
+        
+        public void Add(BuffConfig buffConfig)
+        {
+            this.dict.Add(buffConfig.Id, buffConfig);
+        }
 
         public BuffConfig Get(int id)
         {
@@ -92,6 +97,7 @@ namespace ET
         [NonSerialized]
         [UnityEngine.HideInInspector]
         #endif
+        [BsonIgnore]
         public Dictionary<Type, EffectNode> effectDict;
 
         public void OnBeforeSerialize()

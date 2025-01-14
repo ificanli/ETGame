@@ -20,6 +20,11 @@ namespace ET
         public void Awake()
         {
         }
+        
+        public void Add(SpellConfig spellConfig)
+        {
+            this.dict.Add(spellConfig.Id, spellConfig);
+        }
 
         public SpellConfig Get(int id)
         {
