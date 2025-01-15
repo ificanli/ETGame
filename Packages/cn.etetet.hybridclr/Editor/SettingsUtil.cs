@@ -22,7 +22,7 @@ namespace HybridCLR.Editor
             }
         }
 
-        public static string PackageName { get; } = "com.code-philosophy.hybridclr";
+        public static string PackageName { get; } = "cn.etetet.hybridclr";
 
         public static string HybridCLRDataPathInPackage => $"Packages/{PackageName}/Data~";
 
@@ -65,9 +65,6 @@ namespace HybridCLR.Editor
             public string name;
         }
 
-        /// <summary>
-        /// 热更新dll列表。不包含 preserveHotUpdateAssemblies。
-        /// </summary>
         public static List<string> HotUpdateAssemblyNamesExcludePreserved
         {
             get

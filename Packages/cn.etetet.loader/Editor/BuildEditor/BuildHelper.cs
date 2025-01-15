@@ -89,7 +89,7 @@ namespace ET
 
             Debug.Log("start build");
 
-            string[] levels = { "Packages/cn.etetet.loader/Scenes/Init.unity" };
+            string[] levels = { "Packages/cn.etetet.wow/Scenes/Init.unity" };
             BuildReport report = BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, buildOptions);
             if (report.summary.result != BuildResult.Succeeded)
             {
