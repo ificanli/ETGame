@@ -8,8 +8,14 @@ namespace ET.Client
         {
             Unit unit = env.GetEntity<Unit>(node.Unit);
             
-            EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, true, node.Duration);
+            CreateEffectOnPosAsync(unit, node.Effect.Name, node.BindPoint, node.Duration).NoContext();
             return 0;
+        }
+        
+        private static async ETTask CreateEffectOnPosAsync(Unit unit, string effectName, BindPoint bindPoint, int duration)
+        {
+            GameObject go = await unit.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(effectName);
+            EffectUnitHelper.Create(unit, bindPoint, go, true, duration);
         }
     }
 }

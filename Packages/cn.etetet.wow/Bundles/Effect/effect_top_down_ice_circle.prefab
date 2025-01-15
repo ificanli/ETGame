@@ -43720,7 +43720,7 @@ GameObject:
   - component: {fileID: 2144152144740425296}
   - component: {fileID: 2144152144740425297}
   m_Layer: 0
-  m_Name: top_down_ice_circle
+  m_Name: effect_top_down_ice_circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

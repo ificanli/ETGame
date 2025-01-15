@@ -4854,7 +4854,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2181488694587037852}
   m_Layer: 0
-  m_Name: Frost Nova State
+  m_Name: effect_Frost Nova State
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

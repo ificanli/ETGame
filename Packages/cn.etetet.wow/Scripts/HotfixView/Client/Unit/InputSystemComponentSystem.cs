@@ -65,10 +65,12 @@ namespace ET.Client
             Unit unit = self.GetParent<Unit>();
             v = v.normalized * 2;
 
-            float3 eulerAngles = math.Euler(unit.Rotation);
+            CinemachineComponent cinemachineComponent = self.CinemachineComponent;
+            Vector3 eulerAngles = cinemachineComponent.Follow.rotation.eulerAngles;
+            eulerAngles.x = 0;
+            eulerAngles.z = 0;
             
-            Vector3 rotV = math.mul(quaternion.Euler(0f, math.radians(eulerAngles.y), 0f), new float3(v.x, 0, v.y));
-
+            Vector3 rotV = Quaternion.Euler(eulerAngles) * new float3(v.x, 0, v.y);
             float3 targetPos = new float3(rotV) + unit.Position;
             
             unit.MoveToAsync(targetPos).NoContext();

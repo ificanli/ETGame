@@ -25,7 +25,6 @@ namespace ET
         [InlineProperty] // 去掉折叠和标题
         [HideReferenceObjectPicker]
         [LabelText("进度条显示图标")]
-        
         public OdinUnityObject Icon = new();
 #endif
     }

@@ -69,6 +69,10 @@ namespace ET
         
         public int Handle(BTNode node, BTEnv env)
         {
+            if (node == null)
+            {
+                Log.Debug($"11111111111111111111111111111111111111111");
+            }
             if (!this.btHandlers.TryGetValue(node.GetType(), out IBTHandler ibtHandler))
             {
                 throw new Exception($"not found bt handler: {node.GetType().FullName}");

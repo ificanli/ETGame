@@ -8,10 +8,7 @@ namespace ET
         [BTInput(typeof(float3))]
         public string Pos;
         
-#if UNITY
-        [BsonIgnore]
-        public UnityEngine.GameObject Effect;
-#endif
+        public OdinUnityObject Effect;
 
         public int Duration = 5000;
     }

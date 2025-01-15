@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 508798679891960361}
   - component: {fileID: 6026163739109382664}
   m_Layer: 0
-  m_Name: Frost Nova
+  m_Name: effect_Frost Nova
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

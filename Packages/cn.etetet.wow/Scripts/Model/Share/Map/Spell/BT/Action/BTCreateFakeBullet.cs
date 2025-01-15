@@ -15,12 +15,8 @@ namespace ET.Client
         public BindPoint TargetBindPoint;
 
         public int Speed;
-        
 
-#if UNITY
-        [BsonIgnore]
-        public UnityEngine.GameObject Effect;
-#endif
+        public OdinUnityObject Effect;
 
         public int Duration = 50000;
     }

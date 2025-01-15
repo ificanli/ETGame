@@ -10,13 +10,20 @@ namespace ET.Client
             Unit target = env.GetEntity<Unit>(node.Target);
 
             GameObject targetGameObject = target.GetComponent<GameObjectComponent>().GameObject;
+            Transform targetTransform = targetGameObject.GetComponent<BindPointComponent>().BindPoints[node.TargetBindPoint];
             
-            GameObject gameObject = EffectUnitHelper.Create(caster, node.CasterBindPoint, node.Effect, true, 0);
-
-            Transform bindPoint = targetGameObject.GetComponent<BindPointComponent>().BindPoints[node.TargetBindPoint];
-
-            MoveToTarget(caster.Root(), gameObject.transform, bindPoint, node).NoContext();;
+            CreateEffectOnPosAsync(caster, targetTransform, node.Effect.Name, node.CasterBindPoint, node.Duration, node).NoContext();
+            
             return 0;
+        }
+        
+        private static async ETTask CreateEffectOnPosAsync(
+                Unit caster, Transform target, string effectName, 
+                BindPoint casterBindPoint, int duration, BTCreateFakeBullet node)
+        {
+            GameObject go = await caster.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(effectName);
+            GameObject effect = EffectUnitHelper.Create(caster, casterBindPoint, go, true, duration);
+            await MoveToTarget(caster.Root(), effect.transform, target, node);;
         }
         
         private static async ETTask MoveToTarget(Scene root, Transform gameObject, Transform bindPoint, BTCreateFakeBullet node)

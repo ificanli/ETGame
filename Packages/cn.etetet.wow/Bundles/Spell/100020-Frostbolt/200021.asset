@@ -15,8 +15,7 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 9179840976877207132, guid: 02fb0a6cf8049a74fba0cdd5e0536cf2, type: 3}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -314,8 +313,14 @@ MonoBehaviour:
       Entry: 3
       Data: 30000
     - Name: Effect
-      Entry: 10
-      Data: 0
+      Entry: 7
+      Data: 11|ET.OdinUnityObject, ET.Model
+    - Name: Name
+      Entry: 1
+      Data: effect_Frost Bolt
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Duration
       Entry: 3
       Data: 60000

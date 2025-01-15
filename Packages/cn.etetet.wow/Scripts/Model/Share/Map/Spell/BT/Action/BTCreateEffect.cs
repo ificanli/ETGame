@@ -9,10 +9,7 @@ namespace ET
         
         public BindPoint BindPoint;
 
-#if UNITY
-        [BsonIgnore]
-        public UnityEngine.GameObject Effect;
-#endif
+        public OdinUnityObject Effect;
 
         public int Duration = 5000;
     }

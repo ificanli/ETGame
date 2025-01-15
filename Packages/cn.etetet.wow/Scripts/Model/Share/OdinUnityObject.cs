@@ -1,5 +1,4 @@
-﻿#if UNITY
-using System;
+﻿using System;
 using MongoDB.Bson.Serialization.Attributes;
 using Sirenix.OdinInspector;
 
@@ -8,7 +7,13 @@ namespace ET
     [EnableClass]
     public class OdinUnityObject
     {
-
+        [HideLabel]
+        [HorizontalGroup("Split", 0.7f)]
+        [ReadOnly]
+        [ShowIf("Show")]
+        public string Name;
+        
+#if UNITY_EDITOR
         [HorizontalGroup("Split", 0.3f)]
         [BsonIgnore]
         [HideLabel]
@@ -16,12 +21,6 @@ namespace ET
         [OnValueChanged("OnValueChanged")]
         [NonSerialized]
         private UnityEngine.Object Object;
-        
-        [HideLabel]
-        [HorizontalGroup("Split", 0.7f)]
-        [ReadOnly]
-        [ShowIf("Show")]
-        public string Name;
 
         private void OnValueChanged()
         {
@@ -42,7 +41,6 @@ namespace ET
                 return true;
             }
 
-#if UNITY_EDITOR
             string s = this.Name;
             if (this.Object != null)
             {
@@ -62,10 +60,8 @@ namespace ET
                     break;
                 }
             }
-#endif
             return true;
         }
-
+#endif
     }
 }
-#endif

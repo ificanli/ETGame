@@ -53,6 +53,10 @@ namespace ET
 
         public void ResolveRef()
         {
+            foreach (var kv in this.dict)
+            {
+                kv.Value.OnAfterDeserialize();
+            }
         }
     }
 

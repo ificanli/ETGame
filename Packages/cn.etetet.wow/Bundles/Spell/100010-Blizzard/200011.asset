@@ -15,8 +15,7 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 2144152144740425326, guid: c7efcaa73a7c8874ca1b6795b80df662, type: 3}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -76,6 +75,30 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 3|ET.EffectServerBuffRemove, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 1
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Children
       Entry: 7
       Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -85,15 +108,27 @@ MonoBehaviour:
     - Name: 
       Entry: 7
       Data: 5|ET.BTGetSpellTargetUnits, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
+    - Name: Id
+      Entry: 3
+      Data: 2
+    - Name: Desc
+      Entry: 6
       Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 300
+    - Name: 
+      Entry: 4
+      Data: -100
     - Name: 
       Entry: 8
       Data: 
@@ -108,25 +143,61 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 7|ET.BTForeachUnit, ET.Model
+      Data: 6|ET.BTForeachUnit, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 3
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 300
+    - Name: 
+      Entry: 4
+      Data: 100
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Children
       Entry: 7
-      Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 7|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 9|ET.BTDamage, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
+      Data: 8|ET.BTDamage, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 4
+    - Name: Desc
+      Entry: 6
       Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 600
+    - Name: 
+      Entry: 4
+      Data: 100
     - Name: 
       Entry: 8
       Data: 
@@ -180,25 +251,61 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 11|ET.EffectClientBuffAdd, ET.Model
+      Data: 9|ET.EffectClientBuffAdd, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 1
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Children
       Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 13|ET.BTGetSpellTargetPos, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
+      Data: 11|ET.BTGetSpellTargetPos, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 4
+    - Name: Desc
+      Entry: 6
       Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 300
+    - Name: 
+      Entry: 4
+      Data: -100
     - Name: 
       Entry: 8
       Data: 
@@ -213,16 +320,28 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 15|ET.Client.BTCreateEffectOnPos, ET.ModelView
-    - Name: Children
-      Entry: 7
-      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
+      Data: 12|ET.BTCreateEffectOnPos, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 2
+    - Name: Desc
+      Entry: 6
       Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 300
+    - Name: 
+      Entry: 4
+      Data: 100
     - Name: 
       Entry: 8
       Data: 
@@ -230,11 +349,17 @@ MonoBehaviour:
       Entry: 1
       Data: Pos
     - Name: Effect
-      Entry: 10
-      Data: 0
+      Entry: 7
+      Data: 13|ET.OdinUnityObject, ET.Model
+    - Name: Name
+      Entry: 1
+      Data: effect_top_down_ice_circle
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Duration
       Entry: 3
-      Data: 3000
+      Data: 5000
     - Name: 
       Entry: 8
       Data: 
