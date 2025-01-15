@@ -10,7 +10,7 @@ namespace ET
         public int Id;
     }
 
-    [CodeProcess]
+    [ConfigProcess]
     public partial class AIConfigCategory : Singleton<AIConfigCategory>, ISingletonAwake, IConfig
     {
         [BsonElement]

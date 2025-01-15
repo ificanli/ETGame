@@ -11,6 +11,7 @@ namespace ET
         public int Id;
     }
 
+    [ConfigProcess]
     public partial class BuffConfigCategory : Singleton<BuffConfigCategory>, ISingletonAwake, IConfig
     {
         [BsonElement]

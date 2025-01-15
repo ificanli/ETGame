@@ -19,6 +19,8 @@ namespace ET
         {
             Id = _buf.ReadInt();
             Name = _buf.ReadString();
+            MaxNumericType = _buf.ReadInt();
+            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);AffectNumeric = new System.Collections.Generic.Dictionary<int, long>(n0 * 3 / 2);for(var i0 = 0 ; i0 < n0 ; i0++) { int _k0;  _k0 = _buf.ReadInt(); long _v0;  _v0 = _buf.ReadLong();     AffectNumeric.Add(_k0, _v0);}}
 
             EndInit();
         }
@@ -36,6 +38,14 @@ namespace ET
         /// 名字
         /// </summary>
         public readonly string Name;
+        /// <summary>
+        /// 对应的最大值属性
+        /// </summary>
+        public readonly int MaxNumericType;
+        /// <summary>
+        /// 影响的属性id
+        /// </summary>
+        public readonly System.Collections.Generic.Dictionary<int, long> AffectNumeric;
     
         public const int __ID__ = 57587177;
         public override int GetTypeId() => __ID__;
@@ -50,6 +60,8 @@ namespace ET
             return "{ "
             + "Id:" + Id + ","
             + "Name:" + Name + ","
+            + "MaxNumericType:" + MaxNumericType + ","
+            + "AffectNumeric:" + Luban.StringUtil.CollectionToString(AffectNumeric) + ","
             + "}";
         }
 

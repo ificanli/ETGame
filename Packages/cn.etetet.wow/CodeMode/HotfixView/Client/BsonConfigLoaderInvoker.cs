@@ -13,7 +13,7 @@ namespace ET
             await ETTask.CompletedTask;
             
             Dictionary<Type, byte[]> output = new Dictionary<Type, byte[]>();
-            HashSet<Type> configTypes = CodeTypes.Instance.GetTypes(typeof (ConfigAttribute));
+            HashSet<Type> configTypes = CodeTypes.Instance.GetTypes(typeof (ConfigProcessAttribute));
             if (!Define.IsEditor)
             {
                 foreach (Type type in configTypes)

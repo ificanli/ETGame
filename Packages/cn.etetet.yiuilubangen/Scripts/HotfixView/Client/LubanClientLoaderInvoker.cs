@@ -12,7 +12,7 @@ namespace ET
         public override async ETTask<Dictionary<Type, ByteBuf>> Handle(ConfigLoader.LubanGetAllConfigBytes args)
         {
             var output   = new Dictionary<Type, ByteBuf>();
-            var allTypes = CodeTypes.Instance.GetTypes(typeof(ConfigAttribute));
+            var allTypes = CodeTypes.Instance.GetTypes(typeof(ConfigProcessAttribute));
 
             if (Define.IsEditor)
             {
@@ -29,7 +29,10 @@ namespace ET
                     {
                         configFilePath = $"{LubanHelper.ConfigResPath}/{codeMode}/{configType.Name}.bytes";
                     }
-
+                    if (!File.Exists(configFilePath))
+                    {
+                        continue;
+                    }
                     output[configType] = new ByteBuf(File.ReadAllBytes(configFilePath));
                 }
             }

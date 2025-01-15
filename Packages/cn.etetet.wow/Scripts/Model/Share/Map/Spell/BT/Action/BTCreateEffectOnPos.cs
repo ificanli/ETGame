@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using Unity.Mathematics;
 
-namespace ET.Client
+namespace ET
 {
     public class BTCreateEffectOnPos: BTNode
     {

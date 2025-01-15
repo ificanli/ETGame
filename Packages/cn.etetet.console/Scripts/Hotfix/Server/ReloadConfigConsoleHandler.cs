@@ -23,7 +23,7 @@ namespace ET.Server
                         Log.Console($"reload config but not find {category}");
                         return;
                     }
-                    await ConfigLoader.Instance.Reload(type);
+                    await ConfigLoader.Instance.LoadAsync();
                     Log.Console($"reload config {configName} finish!");
                     break;
             }

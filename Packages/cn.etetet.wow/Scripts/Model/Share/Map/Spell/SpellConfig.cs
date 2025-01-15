@@ -11,6 +11,7 @@ namespace ET
         public int Id;
     }
 
+    [ConfigProcess]
     public partial class SpellConfigCategory : Singleton<SpellConfigCategory>, ISingletonAwake, IConfig
     {
         [BsonElement]

@@ -13,7 +13,7 @@ namespace ET
             
             const string BsonConfigPath = "Packages/cn.etetet.wow/Bundles/Bson";
             Dictionary<Type, byte[]> output = new Dictionary<Type, byte[]>();
-            HashSet<Type> configTypes = CodeTypes.Instance.GetTypes(typeof (ConfigAttribute));
+            HashSet<Type> configTypes = CodeTypes.Instance.GetTypes(typeof (ConfigProcessAttribute));
             foreach (Type configType in configTypes)
             {
                 string configFilePath = $"{BsonConfigPath}/{configType.Name}.bytes";

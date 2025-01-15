@@ -34,15 +34,6 @@ namespace ET
         {
         }
 
-        public async ETTask Reload(Type configType)
-        {
-            var getOneConfigBytes = new LubanGetOneConfigBytes() { ConfigName = configType.Name };
-            var oneConfigBytes    = await EventSystem.Instance.Invoke<LubanGetOneConfigBytes, ETTask<ByteBuf>>(getOneConfigBytes);
-            this.LoadOneLubanConfig(configType, oneConfigBytes);
-            ResolveRef();
-            ConfigProcess();
-        }
-
         public async ETTask LoadAsync()
         {
             m_AllConfig.Clear();
@@ -90,46 +81,24 @@ namespace ET
                 LoadOneConfig(type, configBytes[type]);
             }
 #endif
-            
-            ResolveRef();
-            ConfigProcess();
         }
         
         private void LoadOneBsonConfig(Type configType, byte[] oneConfigBytes)
         {
             object category = MongoHelper.Deserialize(configType, oneConfigBytes);
-            m_AllConfig[configType] = category as IConfig;
+            IConfig iConfig = category as IConfig;
+            iConfig.ResolveRef();
+            m_AllConfig[configType] = iConfig;
             World.Instance.AddSingleton(category as ASingleton);
         }
 
         private void LoadOneLubanConfig(Type configType, ByteBuf oneConfigBytes)
         {
             object category = Activator.CreateInstance(configType, oneConfigBytes);
-            m_AllConfig[configType] = category as IConfig;
+            IConfig iConfig = category as IConfig;
+            iConfig.ResolveRef();
+            m_AllConfig[configType] = iConfig;
             World.Instance.AddSingleton(category as ASingleton);
-        }
-
-        private void ResolveRef()
-        {
-            foreach (IConfig targetConfig in m_AllConfig.Values)
-            {
-                targetConfig.ResolveRef();
-            }
-        }
-
-        private void ConfigProcess()
-        {
-            var hashSet = CodeTypes.Instance.GetTypes(typeof(ConfigProcessAttribute));
-            foreach (Type type in hashSet)
-            {
-                object obj = Activator.CreateInstance(type);
-                if (obj is ISingletonAwake awakeSingleton)
-                {
-                    awakeSingleton.Awake();
-                }
-
-                World.Instance.AddSingleton((ASingleton)obj);
-            }
         }
     }
 }

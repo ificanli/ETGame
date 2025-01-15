@@ -10,8 +10,6 @@
                 root.AddComponent<ConsoleComponent>();
             }
             
-            World.Instance.AddSingleton<NavmeshComponent>();
-            
             int process = root.Fiber.Process;
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(process);
             if (startProcessConfig.Port != 0)

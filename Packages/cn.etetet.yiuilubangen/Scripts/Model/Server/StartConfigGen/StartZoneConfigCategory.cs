@@ -13,7 +13,7 @@ using System.Collections.Generic;
 namespace ET
 {
 
-    [Config]
+    [ConfigProcess]
     public partial class StartZoneConfigCategory : Singleton<StartZoneConfigCategory>, IConfig
     {
         private readonly Dictionary<int, StartZoneConfig> _dataMap;
