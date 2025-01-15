@@ -10,11 +10,18 @@ namespace ET.Client
             
             Buff buff = env.GetEntity<Buff>(node.Buff);
             
-            GameObject effect = EffectUnitHelper.Create(unit, node.BindPoint, node.Effect, true, node.Duration);
-            
-            buff.AddComponent<BuffGameObjectComponent>().GameObjects.Add(effect);
+            CreateBuffEffectAsync(unit, buff, node.BindPoint, node.Effect.Name, node.Duration).NoContext();
             
             return 0;
+        }
+
+        private static async ETTask CreateBuffEffectAsync(Unit unit, Buff buff, BindPoint bindPoint, string effectName, int duration)
+        {
+            GameObject go = await unit.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(effectName);
+            
+            GameObject effect = EffectUnitHelper.Create(unit, bindPoint, go, true, duration);
+            
+            buff.AddComponent<BuffGameObjectComponent>().GameObjects.Add(effect);
         }
     }
 }

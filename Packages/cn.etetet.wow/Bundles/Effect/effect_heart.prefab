@@ -14741,7 +14741,7 @@ GameObject:
   - component: {fileID: 5579294690110463385}
   - component: {fileID: 5579294690110463386}
   m_Layer: 0
-  m_Name: Projectiles_heart
+  m_Name: effect_heart
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

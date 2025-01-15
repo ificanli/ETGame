@@ -15,8 +15,7 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 5579294690110463380, guid: b299201702b523b4989e6d10e8b7d12e, type: 3}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -72,7 +71,31 @@ MonoBehaviour:
       Data: 2
     - Name: 
       Entry: 7
-      Data: 3|ET.EffectClientBuffAdd, ET.Model
+      Data: 3|ET.EffectServerBuffAdd, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 0
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Children
       Entry: 7
       Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -81,16 +104,28 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 7
-      Data: 5|ET.Client.BTCreateBuffEffect, ET.ModelView
-    - Name: Children
+      Data: 5|ET.BTNumericChange, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 0
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
       Entry: 7
-      Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
-      Entry: 12
+      Entry: 4
       Data: 0
     - Name: 
-      Entry: 13
-      Data: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -100,15 +135,12 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
-    - Name: BindPoint
+    - Name: NumericType
       Entry: 3
-      Data: 3
-    - Name: Effect
-      Entry: 10
-      Data: 0
-    - Name: Duration
+      Data: 10132
+    - Name: Value
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: 
       Entry: 8
       Data: 
@@ -132,25 +164,61 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 7|ET.EffectServerBuffAdd, ET.Model
+      Data: 6|ET.EffectClientBuffAdd, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 1
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Children
       Entry: 7
-      Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 7|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 9|ET.BTNumericChange, ET.Model
-    - Name: Children
-      Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
+      Data: 8|ET.BTCreateBuffEffect, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 2
+    - Name: Desc
+      Entry: 6
       Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 300
+    - Name: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -160,12 +228,21 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
-    - Name: NumericType
+    - Name: BindPoint
       Entry: 3
-      Data: 10132
-    - Name: Value
+      Data: 3
+    - Name: Effect
+      Entry: 7
+      Data: 9|ET.OdinUnityObject, ET.Model
+    - Name: Name
+      Entry: 1
+      Data: effect_heart
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Duration
       Entry: 3
-      Data: 1
+      Data: 5000
     - Name: 
       Entry: 8
       Data: 
