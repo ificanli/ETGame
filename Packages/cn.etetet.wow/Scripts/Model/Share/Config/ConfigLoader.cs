@@ -10,25 +10,11 @@ namespace ET
 {
     public class ConfigLoader : Singleton<ConfigLoader>, ISingletonAwake
     {
-        public struct BsonGetAllConfigBytes
+        public struct ConfigGetAllConfigBytes
         {
         }
-
-        public struct BsonGetOneConfigBytes
-        {
-            public string ConfigName;
-        }
-
-        public struct LubanGetAllConfigBytes
-        {
-        }
-
-        public struct LubanGetOneConfigBytes
-        {
-            public string ConfigName;
-        }
-
-        private readonly ConcurrentDictionary<Type, IConfig> m_AllConfig = new();
+        
+        private readonly ConcurrentDictionary<Type, IConfig> allConfig = new();
 
         public void Awake()
         {
@@ -36,40 +22,19 @@ namespace ET
 
         public async ETTask LoadAsync()
         {
-            m_AllConfig.Clear();
-            
-            // load bson config
-            Dictionary<Type, byte[]> bsonConfigBytes = await EventSystem.Instance.Invoke<BsonGetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>(new BsonGetAllConfigBytes());
-            
-#if DOTNET || UNITY_STANDALONE
-            {
-                using ListComponent<Task> listTasks = ListComponent<Task>.Create();
-                foreach (Type type in bsonConfigBytes.Keys)
-                {
-                    byte[] oneConfigBytes = bsonConfigBytes[type];
-                    Task task = Task.Run(() => LoadOneBsonConfig(type, oneConfigBytes));
-                    listTasks.Add(task);
-                }
-                await Task.WhenAll(listTasks.ToArray());
-            }
-#else
-            foreach (Type type in bsonConfigBytes.Keys)
-            {
-                LoadOneConfig(type, bsonConfigBytes[type]);
-            }
-#endif
+            this.allConfig.Clear();
 
-            // load luban config
-            Dictionary<Type, ByteBuf> lubanConfigBytes = await EventSystem.Instance.Invoke<LubanGetAllConfigBytes, ETTask<Dictionary<Type, ByteBuf>>>(new LubanGetAllConfigBytes());
+            // load config
+            Dictionary<Type, byte[]> configBytes = await EventSystem.Instance.Invoke<ConfigGetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>(new ConfigGetAllConfigBytes());
 
 #if DOTNET || UNITY_STANDALONE
             {
                 using ListComponent<Task> listTasks = ListComponent<Task>.Create();
 
-                foreach (Type type in lubanConfigBytes.Keys)
+                foreach (Type type in configBytes.Keys)
                 {
-                    ByteBuf oneConfigBytes = lubanConfigBytes[type];
-                    Task task = Task.Run(() => this.LoadOneLubanConfig(type, oneConfigBytes));
+                    byte[] oneConfigBytes = configBytes[type];
+                    Task task = Task.Run(() => this.LoadOneConfig(type, oneConfigBytes));
                     listTasks.Add(task);
                 }
 
@@ -83,21 +48,24 @@ namespace ET
 #endif
         }
         
-        private void LoadOneBsonConfig(Type configType, byte[] oneConfigBytes)
+        private void LoadOneConfig(Type configType, byte[] oneConfigBytes)
         {
-            object category = MongoHelper.Deserialize(configType, oneConfigBytes);
+            object category = null;
+            
+            ConfigProcessAttribute configProcessAttribute = configType.GetCustomAttributes(typeof(ConfigProcessAttribute), false)[0] as ConfigProcessAttribute;
+            switch(configProcessAttribute.ConfigType)
+            {
+                case ConfigType.Luban:
+                    category = Activator.CreateInstance(configType, new ByteBuf(oneConfigBytes));
+                    break;
+                case ConfigType.Bson:
+                    category = MongoHelper.Deserialize(configType, oneConfigBytes);
+                    break;
+            }
+            
             IConfig iConfig = category as IConfig;
             iConfig.ResolveRef();
-            m_AllConfig[configType] = iConfig;
-            World.Instance.AddSingleton(category as ASingleton);
-        }
-
-        private void LoadOneLubanConfig(Type configType, ByteBuf oneConfigBytes)
-        {
-            object category = Activator.CreateInstance(configType, oneConfigBytes);
-            IConfig iConfig = category as IConfig;
-            iConfig.ResolveRef();
-            m_AllConfig[configType] = iConfig;
+            this.allConfig[configType] = iConfig;
             World.Instance.AddSingleton(category as ASingleton);
         }
     }

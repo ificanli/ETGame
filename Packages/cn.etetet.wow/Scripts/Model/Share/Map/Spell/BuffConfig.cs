@@ -6,12 +6,7 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
-    public struct BuffConfigLoader
-    {
-        public int Id;
-    }
-
-    [ConfigProcess]
+    [ConfigProcess(ConfigType.Bson)]
     public partial class BuffConfigCategory : Singleton<BuffConfigCategory>, ISingletonAwake, IConfig
     {
         [BsonElement]
@@ -30,19 +25,6 @@ namespace ET
         public BuffConfig Get(int id)
         {
             this.dict.TryGetValue(id, out BuffConfig item);
-
-            if (item != null)
-            {
-                return item;
-            }
-
-            item = EventSystem.Instance.Invoke<BuffConfigLoader, BuffConfig>(new BuffConfigLoader() { Id = id });
-            if (item == null)
-            {
-                throw new Exception($"not found spell config: {id}");
-            }
-
-            this.dict.Add(id, item);
             return item;
         }
 

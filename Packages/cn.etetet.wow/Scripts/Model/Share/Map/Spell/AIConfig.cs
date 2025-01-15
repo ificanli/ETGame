@@ -5,12 +5,7 @@ using MongoDB.Bson.Serialization.Options;
 
 namespace ET
 {
-    public struct AIConfigLoader
-    {
-        public int Id;
-    }
-
-    [ConfigProcess]
+    [ConfigProcess(ConfigType.Bson)]
     public partial class AIConfigCategory : Singleton<AIConfigCategory>, ISingletonAwake, IConfig
     {
         [BsonElement]
@@ -29,19 +24,6 @@ namespace ET
         public AIConfig Get(int id)
         {
             this.dict.TryGetValue(id, out AIConfig item);
-
-            if (item != null)
-            {
-                return item;
-            }
-
-            item = EventSystem.Instance.Invoke<AIConfigLoader, AIConfig>(new AIConfigLoader() { Id = id });
-            if (item == null)
-            {
-                throw new Exception($"not found ai config: {id}");
-            }
-
-            this.dict.Add(id, item);
             return item;
         }
 

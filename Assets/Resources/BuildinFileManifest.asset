@@ -17,11 +17,11 @@ MonoBehaviour:
     FileName: defaultpackage_assets_gameres_yiui_26f4f8767a3542efd839c796e6a3ba7b.bundle
     FileCRC32: c513b871
   - PackageName: DefaultPackage
-    FileName: defaultpackage_packages_cn_etetet_loader_bundles_aotdlls_0db1815fe098fd2ede2e3625865abff9.bundle
-    FileCRC32: 43fb8d5d
+    FileName: defaultpackage_packages_cn_etetet_loader_bundles_aotdlls_ed4f55969b1ed9566a203b463d7e3974.bundle
+    FileCRC32: 24894469
   - PackageName: DefaultPackage
-    FileName: defaultpackage_packages_cn_etetet_loader_bundles_code_d88e62e4740184036e7177a0c54b4b51.bundle
-    FileCRC32: d0cb61d9
+    FileName: defaultpackage_packages_cn_etetet_loader_bundles_code_182a5b26a5f1049fb01917665a9ce304.bundle
+    FileCRC32: 668853cb
   - PackageName: DefaultPackage
     FileName: defaultpackage_packages_cn_etetet_wow_assets_gameres_yiui_loading_prefabs_f110a862c61871cdd75b8ae7bcf89e42.bundle
     FileCRC32: 3012a3f4
@@ -59,8 +59,8 @@ MonoBehaviour:
     FileName: defaultpackage_packages_cn_etetet_wow_bundles_ai_300001_5820bee1cab450b0be5a7b85bb22f246.bundle
     FileCRC32: 7c3bb966
   - PackageName: DefaultPackage
-    FileName: defaultpackage_packages_cn_etetet_wow_bundles_bson_58f63c10d43c9cc203a7bbfe63038e3e.bundle
-    FileCRC32: 2fe85a4d
+    FileName: defaultpackage_packages_cn_etetet_wow_bundles_config_2409ffd136faa5ad0ce66f44466b2b94.bundle
+    FileCRC32: 107c9ddb
   - PackageName: DefaultPackage
     FileName: defaultpackage_packages_cn_etetet_wow_bundles_effect_effect_frost bolt_3dd07b71f1f3a1de7c1c0e3a40df2b07.bundle
     FileCRC32: f9941352
@@ -635,8 +635,8 @@ MonoBehaviour:
     FileName: defaultpackage_share_packages_cn_etetet_yiuidamagetips_plugins_damagenumberspro_materials_fire_74ae5a2bc6b10c86ad3a84a5df3df26a.bundle
     FileCRC32: a9ad802c
   - PackageName: DefaultPackage
-    FileName: defaultpackage_share_packages_cn_etetet_yiuidamagetips_plugins_damagenumberspro_materials_pixel_51fd94b064af46d13c176a0fba668b06.bundle
-    FileCRC32: 2d5c4f69
+    FileName: defaultpackage_share_packages_cn_etetet_yiuidamagetips_plugins_damagenumberspro_materials_pixel_1358efd8fc1dfd9b209fde5483de41cf.bundle
+    FileCRC32: 2dc79a72
   - PackageName: DefaultPackage
     FileName: defaultpackage_share_packages_com_unity_ai_navigation_gizmos_311d6620cea1238a2f2091e4cabbaddd.bundle
     FileCRC32: 16b32213

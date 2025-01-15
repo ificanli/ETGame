@@ -15,11 +15,8 @@ namespace ET
         private Dictionary<string, TextAsset> dlls;
         private Dictionary<string, TextAsset> aotDlls;
 
-        private bool enableDll;
-
         public void Awake()
         {
-            this.enableDll = Resources.Load<GlobalConfig>("GlobalConfig").EnableDll;
         }
 
         private async ETTask DownloadAsync()
@@ -63,35 +60,23 @@ namespace ET
             }
             else
             {
-                if (this.enableDll)
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly assembly in assemblies)
                 {
-                    byte[] modelAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Model.dll.bytes"));
-                    byte[] modelPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Model.pdb.bytes"));
-                    byte[] modelViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.ModelView.dll.bytes"));
-                    byte[] modelViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.ModelView.pdb.bytes"));
-                    this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
-                    this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
-                }
-                else
-                {
-                    Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                    foreach (Assembly assembly in assemblies)
+                    string name = assembly.GetName().Name;
+                    if (name == "ET.Model")
                     {
-                        string name = assembly.GetName().Name;
-                        if (name == "ET.Model")
-                        {
-                            this.modelAssembly = assembly;
-                            continue;
-                        }
-                        if (name == "ET.ModelView")
-                        {
-                            this.modelViewAssembly = assembly;
-                            continue;
-                        }
-                        if (this.modelAssembly != null && this.modelViewAssembly != null)
-                        {
-                            break;
-                        }
+                        this.modelAssembly = assembly;
+                        continue;
+                    }
+                    if (name == "ET.ModelView")
+                    {
+                        this.modelViewAssembly = assembly;
+                        continue;
+                    }
+                    if (this.modelAssembly != null && this.modelViewAssembly != null)
+                    {
+                        break;
                     }
                 }
             }

@@ -63,7 +63,7 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Packages/cn.etetet.wow/Bundles/Bson
+      - CollectPath: Packages/cn.etetet.wow/Bundles/Config
         CollectorGUID: d6967790921b3ca4bacb10dde1d5d1aa
         CollectorType: 0
         AddressRuleName: AddressByFileName

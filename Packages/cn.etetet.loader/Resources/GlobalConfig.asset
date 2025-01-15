@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CodeMode: 1
   SceneName: WOW
-  EnableDll: 0
   Address: 127.0.0.1:10101

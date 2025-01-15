@@ -7,7 +7,7 @@ namespace ET.Client
 {
     public static class ExportScriptableObjectEditor
     {
-        private const string ExportPath = "Packages/cn.etetet.wow/Bundles/Bson";
+        private const string ExportPath = "Packages/cn.etetet.wow/Bundles/Config";
         
         [MenuItem("ET/WOW/ExportScriptableObject")]
         public static void ExportScriptableObject()

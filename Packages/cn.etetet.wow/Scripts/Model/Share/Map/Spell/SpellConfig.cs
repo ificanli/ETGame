@@ -6,12 +6,7 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
-    public struct SpellConfigLoader
-    {
-        public int Id;
-    }
-
-    [ConfigProcess]
+    [ConfigProcess(ConfigType.Bson)]
     public partial class SpellConfigCategory : Singleton<SpellConfigCategory>, ISingletonAwake, IConfig
     {
         [BsonElement]
@@ -30,19 +25,6 @@ namespace ET
         public SpellConfig Get(int id)
         {
             this.dict.TryGetValue(id, out SpellConfig item);
-
-            if (item != null)
-            {
-                return item;
-            }
-
-            item = EventSystem.Instance.Invoke<SpellConfigLoader, SpellConfig>(new SpellConfigLoader() { Id = id });
-            if (item == null)
-            {
-                throw new Exception($"not found spell config: {id}");
-            }
-
-            this.dict.Add(id, item);
             return item;
         }
 
@@ -81,13 +63,11 @@ namespace ET
         [LabelText("描述")]
         public string Desc;
 
-#if UNITY
         [BoxGroup("技能信息")]
         [InlineProperty] // 去掉折叠和标题
         [HideReferenceObjectPicker]
         [LabelText("图标")]
         public OdinUnityObject Icon = new();
-#endif
         
         [BoxGroup("技能信息")]
         [LabelText("技能CD（毫秒）")]

@@ -91,18 +91,8 @@ namespace ET
         /// </summary>
         static void OnExitingEditMode()
         {
-            GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
-
             DisableDll("ET.Hotfix");
             DisableDll("ET.HotfixView");
-            
-            if (!globalConfig.EnableDll)
-            {
-                return;
-            }
-
-            DisableDll("ET.Model");
-            DisableDll("ET.ModelView");
         }
 
         /// <summary>
@@ -111,17 +101,8 @@ namespace ET
         /// </summary>
         static void OnExitingPlayMode()
         {
-            GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
-            
             EnableDll("ET.Hotfix");
             EnableDll("ET.HotfixView");
-            if (!globalConfig.EnableDll)
-            {
-                return;
-            }
-
-            EnableDll("ET.Model");
-            EnableDll("ET.ModelView");
         }
     }
 }
