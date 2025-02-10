@@ -27,7 +27,7 @@ namespace ET
             }
             else
             {
-                return Run("/usr/local/bin/dotnet", arguments, workingDirectory, waitExit);
+                return Run("/opt/homebrew/bin/dotnet", arguments, workingDirectory, waitExit);
             }
         }
 

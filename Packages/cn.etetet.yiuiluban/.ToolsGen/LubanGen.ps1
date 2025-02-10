@@ -24,7 +24,3 @@ Write-Host "==================== Localhost 完成 ===================="
 # Release
 dotnet $GEN_CLIENT --customTemplateDir $CUSTOM -t all -c cs-bin -d bin -d json --conf $CONF_ROOT\..\StartConfig\Release\Base\luban.conf -x outputCodeDir=$WORKSPACEGEN\Scripts\Model\Server\StartConfigGen -x bin.outputDataDir=$WORKSPACEGEN\Assets\Config\Binary\Server\StartConfig\Release -x json.outputDataDir=$WORKSPACEGEN\Assets\Config\Json\Server\StartConfig\Release
 Write-Host "==================== Release 完成 ===================="
-
-# 暂停
-Write-Host "Press any key to continue..."
-$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
