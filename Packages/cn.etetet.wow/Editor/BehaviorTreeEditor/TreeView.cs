@@ -286,14 +286,16 @@ namespace ET
 
         private void GetMaxId(BTNode node)
         {
+            node.Children ??= new List<BTNode>();
+            
             if (node.Id > this.maxId)
             {
                 this.maxId = node.Id;
             }
 
-            if (node is BTNodeHasChildren btNodeHasChildren)
+            if (node.Children != null)
             {
-                foreach (BTNode child in btNodeHasChildren.Children)
+                foreach (BTNode child in node.Children)
                 {
                     GetMaxId(child);
                 }

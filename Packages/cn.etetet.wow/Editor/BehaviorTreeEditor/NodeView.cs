@@ -72,11 +72,6 @@ namespace ET
             }
             set
             {
-                if (this.Node is not BTNodeHasChildren)
-                {
-                    return;
-                }
-                
                 this.Node.ChildrenCollapsed = value;
                 if (this.Node.ChildrenCollapsed)
                 {
@@ -213,14 +208,14 @@ namespace ET
             this.inPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(float));
             inputContainer.Add(this.inPort);
 
-            if (this.Node is BTNodeHasChildren)
+            if (this.Node.Children is { Count: > 0 })
             {
                 this.outPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
                 outputContainer.Add(this.outPort);
             }
 
             // 有孩子，显示折叠按钮
-            if (this.Node is BTNodeHasChildren)
+            if (this.Node.Children is { Count: > 0 })
             {
                 collapseButton = new Button();
                 collapseButton.text = "-";
@@ -229,6 +224,8 @@ namespace ET
                 collapseButton.style.marginLeft = 5;
                 collapseButton.clicked += ChangeCollapse;
                 this.titleContainer.Add(this.collapseButton);
+                
+                this.ChildrenCollapsed = this.Node.ChildrenCollapsed;
             }
 
             this.treeView.AddElement(this);
@@ -236,8 +233,7 @@ namespace ET
             
             this.ContentCollapsed = this.Node.IsCollapsed;
             this.Position = this.Node.Position;
-            this.ChildrenCollapsed = this.Node.ChildrenCollapsed;
-            
+
             RegisterCallback<MouseDownEvent>(OnMouseDown);
         }
         
@@ -260,10 +256,7 @@ namespace ET
             {
                 this.Parent.GetChildren().Remove(this);
 
-                if (this.Parent.Node is BTNodeHasChildren btNodeHasChildren)
-                {
-                    btNodeHasChildren.Children.Remove(this.Node);
-                }
+                this.Parent.Node.Children.Remove(this.Node);
             }
 
             this.treeView.RemoveNode(id);
@@ -310,11 +303,6 @@ namespace ET
 
         public void AddChild(NodeView nodeView, int index = -1)
         {
-            if (this.Node is not BTNodeHasChildren btNodeHasChildren)
-            {
-                return;
-            }
-            
             nodeView.Parent = this;
             if (index == -1)
             {
@@ -325,15 +313,15 @@ namespace ET
                 this.children.Insert(index, nodeView);
             }
 
-            if (!btNodeHasChildren.Children.Contains(nodeView.Node))
+            if (!this.Node.Children.Contains(nodeView.Node))
             {
                 if (index == -1)
                 {
-                    btNodeHasChildren.Children.Add(nodeView.Node);
+                    this.Node.Children.Add(nodeView.Node);
                 }
                 else
                 {
-                    btNodeHasChildren.Children.Insert(index, nodeView.Node);
+                    this.Node.Children.Insert(index, nodeView.Node);
                 }
             }
             
@@ -349,9 +337,9 @@ namespace ET
                 nodeView.Visible = false;
             }
 
-            if (nodeView.Node is BTNodeHasChildren nodeHasChildren)
+            if (nodeView.Node.Children != null)
             {
-                foreach (BTNode child in nodeHasChildren.Children)
+                foreach (BTNode child in nodeView.Node.Children)
                 {
                     nodeView.AddChild(new NodeView(this.treeView, child));
                 }
@@ -367,19 +355,13 @@ namespace ET
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             evt.menu.ClearItems();
-            if (this.Node is BTNodeHasChildren)
-            {
-                evt.menu.AppendAction("Create", (o)=>this.CreateNode(o).NoContext());    
-            }
+            evt.menu.AppendAction("Create", (o)=>this.CreateNode(o).NoContext());
             evt.menu.AppendAction("Delete", this.DeleteNode);
             evt.menu.AppendAction("Copy", this.CopyNode);
             evt.menu.AppendAction("Cut", this.CutNode);
             if (this.treeView.CopyNode != null)
             {
-                if (this.Node is BTNodeHasChildren)
-                {
-                    evt.menu.AppendAction("Paste", this.PasterNode);
-                }
+                evt.menu.AppendAction("Paste", this.PasterNode);
             }
 
             if (this.Parent != null)
@@ -411,7 +393,7 @@ namespace ET
                 return;
             }
             
-            if (this.GetChildren().Count > 0 && btNode is not BTNodeHasChildren)
+            if (this.GetChildren().Count > 0)
             {
                 this.treeView.ShowText("node has child!");
                 return;
@@ -422,10 +404,9 @@ namespace ET
             // 把孩子复制过去
             if (this.GetChildren().Count > 0)
             {
-                BTNodeHasChildren btNodeHasChildren = btNode as BTNodeHasChildren;
                 foreach (NodeView child in this.GetChildren())
                 {
-                    btNodeHasChildren.Children.Add(child.Node);
+                    btNode.Children.Add(child.Node);
                 }
             }
             
@@ -464,12 +445,8 @@ namespace ET
         {
             node.Id = 0;
 
-            if (node is not BTNodeHasChildren btNodeHasChildren)
-            {
-                return;
-            }
             
-            foreach (BTNode child in btNodeHasChildren.Children)
+            foreach (BTNode child in node.Children)
             {
                 ClearId(child);
             }

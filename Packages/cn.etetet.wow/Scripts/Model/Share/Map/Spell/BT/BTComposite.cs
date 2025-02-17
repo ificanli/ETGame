@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
-    public abstract class BTComposite: BTNodeHasChildren
+    public abstract class BTComposite: BTNode
     {
     }
 }
