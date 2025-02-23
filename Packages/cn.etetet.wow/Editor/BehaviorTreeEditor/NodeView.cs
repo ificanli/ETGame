@@ -208,12 +208,9 @@ namespace ET
             this.inPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(float));
             inputContainer.Add(this.inPort);
 
-            if (this.Node.Children is { Count: > 0 })
-            {
-                this.outPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
-                outputContainer.Add(this.outPort);
-            }
-
+            this.outPort = Port.Create<Edge>(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(float));
+            outputContainer.Add(this.outPort);
+            
             // 有孩子，显示折叠按钮
             if (this.Node.Children is { Count: > 0 })
             {

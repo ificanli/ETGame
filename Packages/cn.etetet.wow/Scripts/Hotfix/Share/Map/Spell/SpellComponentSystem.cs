@@ -11,7 +11,7 @@ namespace ET
 
         }
 
-        public static bool CheckCD(this SpellComponent self, SpellConfig spellConfig)
+        public static bool CheckCD(this SpellComponent self, SpellConfig spellConfig)    
         {
             long timeNow = TimeInfo.Instance.FrameTime;
             if (self.CDTime + 2000 > timeNow)
