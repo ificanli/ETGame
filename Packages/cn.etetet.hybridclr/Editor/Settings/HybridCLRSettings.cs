@@ -52,9 +52,9 @@ namespace HybridCLR.Editor.Settings
         public int maxMethodBridgeGenericIteration = 10;
 
         [Tooltip("enable profiler support when publishing in release mode")]
-        public bool enableProfilerInReleaseBuild = false;
+        public bool enableProfilerInReleaseBuild;
 
         [Tooltip("enable StraceTrace support when publishing to the WebGL platform in release mode")]
-        public bool enableStraceTraceInWebGLReleaseBuild = false;
+        public bool enableStraceTraceInWebGLReleaseBuild;
     }
 }
