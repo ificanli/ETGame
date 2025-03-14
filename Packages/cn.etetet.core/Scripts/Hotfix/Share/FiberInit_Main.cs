@@ -1,4 +1,6 @@
-﻿namespace ET
+﻿using System;
+
+namespace ET
 {
     [Invoke(SceneType.Main)]
     public class FiberInit_Main: AInvokeHandler<FiberInit, ETTask>
