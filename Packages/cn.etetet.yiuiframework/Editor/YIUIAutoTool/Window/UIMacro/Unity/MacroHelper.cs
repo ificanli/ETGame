@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 namespace YIUIFramework.Editor
@@ -13,14 +14,14 @@ namespace YIUIFramework.Editor
     {
         public static List<string> GetSymbols(BuildTargetGroup targetGroup)
         {
-            var ori = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
+            var ori = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(targetGroup));
             return new List<string>(ori.Split(';'));
         }
 
         public static void SetSymbols(List<string>     defineSymbols,
                                       BuildTargetGroup targetGroup)
         {
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(targetGroup, string.Join(";", defineSymbols.ToArray()));
+            PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(targetGroup), string.Join(";", defineSymbols.ToArray()));
         }
 
         /// <summary>

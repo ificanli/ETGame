@@ -167,7 +167,7 @@ namespace ET.PackageManager.Editor
         [ShowIf("CheckUpdateAllEnd")]
         public void SyncPackages()
         {
-            UnityTipsHelper.CallBack($"确定同步生成当前所有改动版本?", () => { UpdatePackagesInfo(); });
+            UnityTipsHelper.CallBack($"确定同步生成当前所有改动版本?", () => { var _ = UpdatePackagesInfo(); });
         }
 
         [Button("文档", 30, Icon = SdfIconType.Link45deg, IconAlignment = IconAlignment.LeftOfText)]

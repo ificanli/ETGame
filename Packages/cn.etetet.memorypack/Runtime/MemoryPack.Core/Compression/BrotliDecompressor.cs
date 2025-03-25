@@ -114,7 +114,7 @@ public struct BrotliDecompressor : IDisposable
             {
                 if (bytesWritten > 0)
                 {
-                    sequenceBuilder.Add(buffer.AsMemory(0, bytesWritten), true);
+                    sequenceBuilder?.Add(buffer.AsMemory(0, bytesWritten), true);
                 }
                 if (bytesConsumed > 0)
                 {
@@ -136,7 +136,7 @@ public struct BrotliDecompressor : IDisposable
             }
             if (bytesWritten > 0)
             {
-                sequenceBuilder.Add(buffer.AsMemory(0, bytesWritten), true);
+                sequenceBuilder?.Add(buffer.AsMemory(0, bytesWritten), true);
                 buffer = null;
             }
         }

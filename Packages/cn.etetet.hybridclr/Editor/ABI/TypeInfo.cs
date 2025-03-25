@@ -86,7 +86,7 @@ namespace HybridCLR.Editor.ABI
                 case ParamOrReturnType.TYPEDBYREF: return strTypedByRef;
                 case ParamOrReturnType.STRUCT: return $"s{_typeId}";
                 default: throw new NotSupportedException(PorType.ToString());
-            };
+            }
         }
 
         public string GetTypeName()
@@ -109,7 +109,7 @@ namespace HybridCLR.Editor.ABI
                 case ParamOrReturnType.TYPEDBYREF: return "Il2CppTypedRef";
                 case ParamOrReturnType.STRUCT: return $"__struct_{_typeId}__";
                 default: throw new NotImplementedException(PorType.ToString());
-            };
+            }
         }
         
     }

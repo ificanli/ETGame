@@ -26,7 +26,13 @@ namespace I2.Loc
                 bool changed = mInstance == null;
 
                 if (mInstance == null)
-                    mInstance = (ResourceManager)FindObjectOfType(typeof(ResourceManager));
+                {
+                    Object[] objs = FindObjectsByType(typeof(ResourceManager), FindObjectsSortMode.None);
+                    if (objs.Length > 0)
+                    {
+                        mInstance = (ResourceManager)objs[0];
+                    }
+                }
 
                 if (mInstance == null)
                 {

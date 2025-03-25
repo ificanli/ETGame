@@ -10,7 +10,7 @@ namespace ET
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class StaticFieldAttribute: Attribute
     {
-        public readonly object valueToAssign;
+        public object valueToAssign;
 
         public readonly bool assignNewTypeInstance;
         

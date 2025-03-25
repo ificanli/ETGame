@@ -24,7 +24,7 @@ namespace ET.Client
             }
 
             self.UIRoot.name = self.UIRoot.name.Replace("(Clone)", "");
-            UnityEngine.Object.DontDestroyOnLoad(self.UIRoot);
+            //UnityEngine.Object.DontDestroyOnLoad(self.UIRoot);
 
             //root可修改位置防止与世界3D场景重叠导致不好编辑
             self.UIRoot.transform.position = new Vector3(YIUIConstHelper.Const.RootPosOffset, YIUIConstHelper.Const.RootPosOffset, 0);

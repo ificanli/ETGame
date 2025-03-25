@@ -114,7 +114,7 @@ namespace ET.PackageManager.Editor
             m_CheckUpdateCallback            = callback;
             m_Requesting                     = true;
 
-            RefreshPackages();
+            var _ = RefreshPackages();
         }
 
         private static async Task RefreshPackages()
