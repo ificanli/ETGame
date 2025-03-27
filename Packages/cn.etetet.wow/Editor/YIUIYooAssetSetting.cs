@@ -84,33 +84,6 @@ namespace YooAsset.Editor
         }
 
         /// <summary>
-        /// 获取包裹收集的资源文件
-        /// </summary>
-        public CollectResult GetPackageAssets(EBuildMode buildMode, string packageName)
-        {
-            if (string.IsNullOrEmpty(packageName))
-                throw new Exception("Build package name is null or empty !");
-
-            // 检测配置合法性
-            var package = GetPackage(packageName);
-            package.CheckConfigError();
-
-            // 创建资源收集命令
-            CollectCommand command = new CollectCommand(buildMode, packageName,
-                package.EnableAddressable,
-                package.LocationToLower,
-                package.IncludeAssetGUID,
-                package.IgnoreDefaultType,
-                package.AutoCollectShaders,
-                UniqueBundleName);
-
-            // 获取收集的资源集合
-            CollectResult collectResult = new CollectResult(command);
-            collectResult.SetCollectAssets(package.GetAllCollectAssets(command));
-            return collectResult;
-        }
-
-        /// <summary>
         /// 获取包裹类
         /// </summary>
         public AssetBundleCollectorPackage GetPackage(string packageName)
