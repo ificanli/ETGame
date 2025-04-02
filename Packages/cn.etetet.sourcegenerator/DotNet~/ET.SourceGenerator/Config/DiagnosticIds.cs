@@ -68,5 +68,7 @@
         public const string DisableNormalClassDeclaratonInModelAssemblyAnalyzerRuleId = "ET0032";
         
         public const string ETSystemMethodIsInStaticPartialClassRuleId = "ET1001";
+        
+        public const string ETAwaitEntityAnalyzerRuleId = "ET1002";
     }
 }
