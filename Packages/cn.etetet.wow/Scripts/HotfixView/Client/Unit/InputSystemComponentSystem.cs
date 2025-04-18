@@ -95,7 +95,7 @@ namespace ET.Client
                 return;
             }
 
-            if (gameObjectEntityRef.EntityRef.Entity is not Unit targetUnit)
+            if (gameObjectEntityRef.Entity is not Unit targetUnit)
             {
                 return;
             }

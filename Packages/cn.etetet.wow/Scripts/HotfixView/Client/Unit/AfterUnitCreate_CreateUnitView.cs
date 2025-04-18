@@ -15,7 +15,7 @@ namespace ET.Client
 
             GlobalComponent globalComponent = scene.Root().GetComponent<GlobalComponent>();
             GameObject go = UnityEngine.Object.Instantiate(bundleGameObject, globalComponent.Unit, true);
-            go.AddComponent<GameObjectEntityRef>().EntityRef = unit;
+            go.AddComponent<GameObjectEntityRef>().Entity = unit;
             go.transform.position = unit.Position;
 
             {
