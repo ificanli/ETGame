@@ -70,5 +70,8 @@
         public const string ETSystemMethodIsInStaticPartialClassRuleId = "ET1001";
         
         public const string ETAwaitEntityAnalyzerRuleId = "ET1002";
+        
+        public const string ETFieldAccessDiagnosticId = "ET1003";
+        public const string ETCyclicCallDiagnosticId = "ET1004";
     }
 }
