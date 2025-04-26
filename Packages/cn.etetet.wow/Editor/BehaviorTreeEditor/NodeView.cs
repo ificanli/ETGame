@@ -374,9 +374,7 @@ namespace ET
                 return;
             }
             
-            VisualElement windowRoot = this.treeView.BehaviorTreeEditor.rootVisualElement;
-            Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent,
-                obj.eventInfo.mousePosition + this.treeView.BehaviorTreeEditor.position.position);
+            Vector2 pos = GUIUtility.GUIToScreenPoint(obj.eventInfo.localMousePosition);
             (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.treeView.RightClickMenu.WaitSelect(pos);
             
             this.treeView.SaveToUndo();
@@ -481,9 +479,7 @@ namespace ET
 
         private async ETTask CreateNode(DropdownMenuAction obj)
         {
-            VisualElement windowRoot = this.treeView.BehaviorTreeEditor.rootVisualElement;
-            Vector2 pos = windowRoot.ChangeCoordinatesTo(windowRoot.parent,
-                obj.eventInfo.mousePosition + this.treeView.BehaviorTreeEditor.position.position);
+            Vector2 pos = GUIUtility.GUIToScreenPoint(obj.eventInfo.localMousePosition);
             (SearchTreeEntry searchTreeEntry, SearchWindowContext context) = await this.treeView.RightClickMenu.WaitSelect(pos);
             
             this.treeView.SaveToUndo();
