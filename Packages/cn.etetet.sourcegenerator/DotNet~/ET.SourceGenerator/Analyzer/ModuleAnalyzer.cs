@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -37,10 +38,15 @@ namespace ET
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(FieldWriteRule, FieldAccessRule, MethodCallRule);
+        private static readonly DiagnosticDescriptor ModuleReportRule = new DiagnosticDescriptor(
+            "MOD999",
+            "模块关系信息",
+            "{0}",
+            "ModuleReport",
+            DiagnosticSeverity.Info,
+            isEnabledByDefault: true);
 
-        private readonly Dictionary<string, HashSet<string>> _fieldAccess = new();
-        private readonly Dictionary<string, HashSet<string>> _moduleCalls = new();
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(FieldWriteRule, FieldAccessRule, MethodCallRule, ModuleReportRule);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -51,11 +57,18 @@ namespace ET
 
         private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
         {
-            var moduleHelper = new ModuleHelper();
-            var fieldAccess = new Dictionary<string, HashSet<string>>();
-            var moduleCalls = new Dictionary<string, HashSet<string>>();
+            if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
+            {
+                return;
+            }
 
-            // 字段读取（包括 const、enum、普通字段）：统一记录，禁止双向访问
+            var moduleHelper = new ModuleHelper();
+
+            var moduleRelations = new ConcurrentDictionary<(string Source, string Target), byte>();
+            var fieldAccess = new ConcurrentDictionary<string, ConcurrentBag<string>>();
+            var moduleCalls = new ConcurrentDictionary<string, ConcurrentBag<string>>();
+
+            // 字段读取
             context.RegisterOperationAction(opContext =>
             {
                 var fieldAccessOp = (IFieldReferenceOperation)opContext.Operation;
@@ -70,13 +83,8 @@ namespace ET
 
                 if (sourceModule != targetModule)
                 {
-                    if (!fieldAccess.TryGetValue(sourceModule, out var targets))
-                    {
-                        targets = new HashSet<string>();
-                        fieldAccess[sourceModule] = targets;
-                    }
-
-                    targets.Add(targetModule);
+                    fieldAccess.GetOrAdd(sourceModule, _ => new ConcurrentBag<string>()).Add(targetModule);
+                    moduleRelations.TryAdd((sourceModule, targetModule), 0);
 
                     if (fieldAccess.TryGetValue(targetModule, out var reverse) && reverse.Contains(sourceModule))
                     {
@@ -85,7 +93,7 @@ namespace ET
                 }
             }, OperationKind.FieldReference);
 
-            // 字段写入（包括任何字段类型）：禁止跨模块
+            // 字段写入
             context.RegisterOperationAction(opContext =>
             {
                 IFieldSymbol fieldSymbol = null;
@@ -114,12 +122,13 @@ namespace ET
 
                 if (sourceModule != targetModule)
                 {
+                    moduleRelations.TryAdd((sourceModule, targetModule), 0);
                     opContext.ReportDiagnostic(Diagnostic.Create(FieldWriteRule, opContext.Operation.Syntax.GetLocation(), sourceModule, targetModule));
                 }
 
             }, OperationKind.SimpleAssignment, OperationKind.CompoundAssignment, OperationKind.Increment, OperationKind.Decrement);
 
-            // 方法调用：禁止双向
+            // 方法调用
             context.RegisterOperationAction(opContext =>
             {
                 var invocation = (IInvocationOperation)opContext.Operation;
@@ -134,13 +143,8 @@ namespace ET
 
                 if (callerModule != calleeModule)
                 {
-                    if (!moduleCalls.TryGetValue(callerModule, out var targets))
-                    {
-                        targets = new HashSet<string>();
-                        moduleCalls[callerModule] = targets;
-                    }
-
-                    targets.Add(calleeModule);
+                    moduleCalls.GetOrAdd(callerModule, _ => new ConcurrentBag<string>()).Add(calleeModule);
+                    moduleRelations.TryAdd((callerModule, calleeModule), 0);
 
                     if (moduleCalls.TryGetValue(calleeModule, out var reverse) && reverse.Contains(callerModule))
                     {
@@ -149,6 +153,17 @@ namespace ET
                 }
 
             }, OperationKind.Invocation);
+
+            context.RegisterCompilationEndAction(endContext =>
+            {
+                var anyLocation = context.Compilation.SyntaxTrees.FirstOrDefault()?.GetRoot().GetLocation() ?? Location.None;
+
+                foreach (var relation in moduleRelations.Keys)
+                {
+                    var message = $"{relation.Source} -> {relation.Target}";
+                    endContext.ReportDiagnostic(Diagnostic.Create(ModuleReportRule, anyLocation, message));
+                }
+            });
         }
 
         private class ModuleHelper
