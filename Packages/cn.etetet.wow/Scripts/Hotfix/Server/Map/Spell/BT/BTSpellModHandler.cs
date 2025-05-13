@@ -1,5 +1,6 @@
 ﻿namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     public class BTSpellModHandler: ABTHandler<BTSpellMod>
     {
         protected override int Run(BTSpellMod node, BTEnv env)

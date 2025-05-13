@@ -26,7 +26,7 @@ namespace ET
 
         public override void Initialize(AnalysisContext context)
         {
-            if (!AnalyzerGlobalSetting.EnableAnalyzer)
+            if (AnalyzerGlobalSetting.EnableAnalyzer)
             {
                 return;
             }

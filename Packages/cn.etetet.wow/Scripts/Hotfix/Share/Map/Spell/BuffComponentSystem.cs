@@ -2,6 +2,7 @@
 
 namespace ET
 {
+    [Module(ModuleName.Spell)]
     [EntitySystemOf(typeof(BuffComponent))]
     public static partial class BuffComponentSystem
     {

@@ -4,9 +4,11 @@ using System.Linq;
 
 namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     [FriendOf(typeof(BuffComponent))]
     public static class BuffHelper
     {
+        [Module(ModuleName.Spell)]
         [Invoke(TimerInvokeType.BuffTimeoutTimer)]
         public class BuffTimeoutTimer: ATimer<Buff>
         {

@@ -1,5 +1,6 @@
 ﻿namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     public class BTBuffAddExpireTimeHandler: ABTHandler<BTBuffAddExpireTime>
     {
         protected override int Run(BTBuffAddExpireTime node, BTEnv env)

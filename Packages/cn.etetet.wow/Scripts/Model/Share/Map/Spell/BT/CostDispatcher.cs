@@ -37,6 +37,7 @@ namespace ET
     /// <summary>
     /// 分发组件
     /// </summary>
+    [Module(ModuleName.Spell)]
     [CodeProcess]
     public class CostDispatcher: Singleton<CostDispatcher>, ISingletonAwake
     {

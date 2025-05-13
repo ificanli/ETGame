@@ -1,5 +1,6 @@
 ﻿namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     public class BTCreateSpellHandler: ABTHandler<BTCreateSpell>
     {
         protected override int Run(BTCreateSpell node, BTEnv env)

@@ -1,5 +1,6 @@
 ﻿namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     public class BTGetBuffOwnerHandler: ABTHandler<BTGetBuffOwner>
     {
         protected override int Run(BTGetBuffOwner node, BTEnv env)

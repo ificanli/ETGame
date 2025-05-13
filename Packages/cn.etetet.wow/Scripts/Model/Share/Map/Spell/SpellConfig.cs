@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
+    [Module(ModuleName.Spell)]
     [ConfigProcess(ConfigType.Bson)]
     public partial class SpellConfigCategory : Singleton<SpellConfigCategory>, ISingletonAwake, IConfig
     {
@@ -38,6 +39,7 @@ namespace ET
         }
     }
 
+    [Module(ModuleName.Spell)]
     [LabelText("施法类型")]
     public enum CastTimeType
     {
@@ -51,6 +53,7 @@ namespace ET
         Channeling,
     }
 
+    [Module(ModuleName.Spell)]
     [Serializable]
     [HideReferenceObjectPicker]
     public partial class SpellConfig : ProtoObject

@@ -6,6 +6,7 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
+    [Module(ModuleName.Spell)]
     [ConfigProcess(ConfigType.Bson)]
     public partial class BuffConfigCategory : Singleton<BuffConfigCategory>, ISingletonAwake, IConfig
     {
@@ -42,6 +43,7 @@ namespace ET
         }
     }
 
+    [Module(ModuleName.Spell)]
     [HideReferenceObjectPicker]
     [System.Serializable]
     public partial class BuffConfig : ProtoObject

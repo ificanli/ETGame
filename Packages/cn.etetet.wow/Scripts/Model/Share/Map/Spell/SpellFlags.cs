@@ -2,6 +2,7 @@
 
 namespace ET
 {
+    [Module(ModuleName.Spell)]
     public enum SpellFlags
     {
         MoveInterrupt = 1, // 移动

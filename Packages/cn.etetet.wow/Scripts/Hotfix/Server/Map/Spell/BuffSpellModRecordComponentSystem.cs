@@ -1,5 +1,6 @@
 ﻿namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     [EntitySystemOf(typeof(BuffSpellModRecordComponent))]
     public static partial class BuffSpellModRecordComponentSystem
     {

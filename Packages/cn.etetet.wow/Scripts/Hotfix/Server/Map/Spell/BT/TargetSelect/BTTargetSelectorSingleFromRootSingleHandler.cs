@@ -2,6 +2,7 @@
 
 namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     public class BTTargetSelectorSingleFromRootSingleHandler: ABTHandler<TargetSelectorSingleFromRootSingle>
     {
         protected override int Run(TargetSelectorSingleFromRootSingle node, BTEnv env)

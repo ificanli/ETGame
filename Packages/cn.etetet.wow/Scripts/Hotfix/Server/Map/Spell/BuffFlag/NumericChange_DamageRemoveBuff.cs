@@ -2,6 +2,7 @@
 
 namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     [NumericWatcher(SceneType.Map, (int)NumericType.HP)]
     public class NumericChange_DamageRemoveBuff: INumericWatcher
     {

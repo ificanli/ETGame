@@ -3,6 +3,7 @@
 namespace ET.Server
 {
     [FriendOf(typeof(SpellComponent))]
+    [Module(ModuleName.Spell)]
     public static class SpellHelper
     {
         public static int Cast(Unit unit, int spellConfigId, Buff parent = null)

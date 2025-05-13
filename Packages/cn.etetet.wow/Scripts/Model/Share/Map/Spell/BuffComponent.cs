@@ -4,6 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ET
 {
+    [Module(ModuleName.Spell)]
     [ComponentOf(typeof(Unit))]
     public class BuffComponent: Entity, IAwake, ITransfer, IDeserialize
     {

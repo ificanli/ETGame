@@ -3,6 +3,7 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
+    [Module(ModuleName.Spell)]
     public class BTTargetSelectorCasterCircleHandler: ABTHandler<TargetSelectorCasterCircle>
     {
         protected override int Run(TargetSelectorCasterCircle node, BTEnv env)

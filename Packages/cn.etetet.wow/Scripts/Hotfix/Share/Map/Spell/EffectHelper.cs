@@ -2,6 +2,7 @@
 
 namespace ET
 {
+    [Module(ModuleName.Spell)]
     public static partial class EffectHelper
     {
         public static int RunBT<T>(Buff buff) where T: EffectNode

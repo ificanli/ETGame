@@ -2,6 +2,7 @@
 
 namespace ET
 {
+    [Module(ModuleName.Spell)]
     [EntitySystemOf(typeof(SpellComponent))]
     public static partial class SpellComponentSystem
     {

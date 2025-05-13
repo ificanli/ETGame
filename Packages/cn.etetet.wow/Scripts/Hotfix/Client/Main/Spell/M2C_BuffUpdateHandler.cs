@@ -1,5 +1,6 @@
 ﻿namespace ET.Client
 {
+    [Module(ModuleName.Spell)]
     [MessageHandler(SceneType.WOW)]
     public class M2C_BuffUpdateHandler: MessageHandler<Scene, M2C_BuffUpdate>
     {

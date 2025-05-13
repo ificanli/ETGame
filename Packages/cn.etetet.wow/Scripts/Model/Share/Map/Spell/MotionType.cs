@@ -1,5 +1,6 @@
 ﻿namespace ET
 {
+    [Module(ModuleName.Spell)]
     public enum MotionType
     {
         None,

@@ -2,6 +2,7 @@
 
 namespace ET
 {
+    [Module(ModuleName.Spell)]
     public enum BuffFlags
     {
         [LabelText("无")]
