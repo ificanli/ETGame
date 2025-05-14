@@ -114,9 +114,10 @@ namespace ET
 
             if (classPathSet.Contains(currentClass))
             {
-                var cyclePath = pathRecords.SkipWhile(r => !SymbolEqualityComparer.Default.Equals(r.CallerSymbol.ContainingType, currentClass)).ToList();
-                if (cyclePath.Any())
+                var index = pathRecords.FindLastIndex(r => SymbolEqualityComparer.Default.Equals(r.TargetClass, currentClass));
+                if (index >= 0)
                 {
+                    var cyclePath = pathRecords.Skip(index).ToList();
                     var message = string.Join("\n", cyclePath.Select(r => $"{r.CallerSymbol.ContainingType.Name}.{r.CallerSymbol.Name}() -> {r.TargetClass.Name}.{r.TargetSymbol.Name}()"));
                     var firstLocation = cyclePath.First().Location ?? Location.None;
                     context.ReportDiagnostic(Diagnostic.Create(Rule, firstLocation, message));
