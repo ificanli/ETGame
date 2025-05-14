@@ -14,10 +14,6 @@ namespace ET.Server
         {
             protected override void Run(Buff self)
             {
-                if (self.IsDisposed)
-                {
-                    return;
-                }
                 BuffHelper.RemoveBuff(self, BuffFlags.TimeoutRemove);
             }
         }

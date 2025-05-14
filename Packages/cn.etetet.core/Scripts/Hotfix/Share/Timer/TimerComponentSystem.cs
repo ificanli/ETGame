@@ -85,13 +85,16 @@ namespace ET
             {
                 case TimerClass.OnceTimer:
                 {
-                    EventSystem.Instance.Invoke(timerAction.Type, new TimerCallback() { Args = timerAction.Object });
+                    Entity entity = timerAction.GetEntity();
+                    EventSystem.Instance.Invoke(timerAction.Type, new TimerCallback() { Args = entity });
+                    timerAction.Dispose();
                     break;
                 }
                 case TimerClass.OnceWaitTimer:
                 {
                     ETTask tcs = timerAction.Object as ETTask;
                     tcs.SetResult();
+                    timerAction.Dispose();
                     break;
                 }
                 case TimerClass.RepeatedTimer:
@@ -99,7 +102,8 @@ namespace ET
                     long timeNow = self.GetNow();
                     timerAction.StartTime = timeNow;
                     self.AddTimer(timerId, ref timerAction);
-                    EventSystem.Instance.Invoke(timerAction.Type, new TimerCallback() { Args = timerAction.Object });
+                    Entity entity = timerAction.GetEntity();
+                    EventSystem.Instance.Invoke(timerAction.Type, new TimerCallback() { Args = entity });
                     break;
                 }
             }
@@ -147,7 +151,7 @@ namespace ET
 
             ETTask tcs = ETTask.Create(true);
             long timerId = self.GetId();
-            TimerAction timer = new(TimerClass.OnceWaitTimer, timeNow, tillTime - timeNow, 0, tcs);
+            TimerAction timer = TimerAction.Create(TimerClass.OnceWaitTimer, timeNow, tillTime - timeNow, 0, tcs);
             self.AddTimer(timerId, ref timer);
 
             void CancelAction()
@@ -186,7 +190,7 @@ namespace ET
 
             ETTask tcs = ETTask.Create(true);
             long timerId = self.GetId();
-            TimerAction timer = new (TimerClass.OnceWaitTimer, timeNow, time, 0, tcs);
+            TimerAction timer = TimerAction.Create(TimerClass.OnceWaitTimer, timeNow, time, 0, tcs);
             self.AddTimer(timerId, ref timer);
 
             void CancelAction()
@@ -212,7 +216,7 @@ namespace ET
         // 用这个优点是可以热更，缺点是回调式的写法，逻辑不连贯。WaitTillAsync不能热更，优点是逻辑连贯。
         // wait时间短并且逻辑需要连贯的建议WaitTillAsync
         // wait时间长不需要逻辑连贯的建议用NewOnceTimer
-        public static long NewOnceTimer(this TimerComponent self, long tillTime, int type, object args)
+        public static long NewOnceTimer(this TimerComponent self, long tillTime, int type, Entity args)
         {
             long timeNow = self.GetNow();
             if (tillTime < timeNow)
@@ -220,12 +224,14 @@ namespace ET
                 Log.Error($"new once time too small: {tillTime}");
             }
             long timerId = self.GetId();
-            TimerAction timer = new (TimerClass.OnceTimer, timeNow, tillTime - timeNow, type, args);
+            EntityRef<Entity> entityRef = args;
+            ValueTypeWrap<EntityRef<Entity>> wrap = ValueTypeWrap<EntityRef<Entity>>.Create(entityRef);
+            TimerAction timer = TimerAction.Create(TimerClass.OnceTimer, timeNow, tillTime - timeNow, type, wrap);
             self.AddTimer(timerId, ref timer);
             return timerId;
         }
 
-        public static long NewFrameTimer(this TimerComponent self, int type, object args)
+        public static long NewFrameTimer(this TimerComponent self, int type, Entity args)
         {
 #if DOTNET
             return self.NewRepeatedTimerInner(100, type, args);
@@ -237,7 +243,7 @@ namespace ET
         /// <summary>
         /// 创建一个RepeatedTimer
         /// </summary>
-        private static long NewRepeatedTimerInner(this TimerComponent self, long time, int type, object args)
+        private static long NewRepeatedTimerInner(this TimerComponent self, long time, int type, Entity args)
         {
 #if DOTNET
             if (time < 100)
@@ -248,14 +254,16 @@ namespace ET
             
             long timeNow = self.GetNow();
             long timerId = self.GetId();
-            TimerAction timer = new (TimerClass.RepeatedTimer, timeNow, time, type, args);
+            EntityRef<Entity> entityRef = args;
+            ValueTypeWrap<EntityRef<Entity>> wrap = ValueTypeWrap<EntityRef<Entity>>.Create(entityRef);
+            TimerAction timer = TimerAction.Create(TimerClass.RepeatedTimer, timeNow, time, type, wrap);
 
             // 每帧执行的不用加到timerId中，防止遍历
             self.AddTimer(timerId, ref timer);
             return timerId;
         }
 
-        public static long NewRepeatedTimer(this TimerComponent self, long time, int type, object args)
+        public static long NewRepeatedTimer(this TimerComponent self, long time, int type, Entity args)
         {
             if (time < 100)
             {

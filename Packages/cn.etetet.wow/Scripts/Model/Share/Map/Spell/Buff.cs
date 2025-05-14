@@ -7,7 +7,7 @@
     
     [Module(ModuleName.Spell)]
     [ChildOf(typeof(BuffComponent))]
-    public class Buff: Entity, IAwake<int>
+    public class Buff: Entity, IAwake<int>, IDestroy
     {
         public int ConfigId { get; set; }
         public long Caster { get; set; }
@@ -15,7 +15,6 @@
         public int TickTime { get; set; }
         public long ExpireTime { get; set; }
         public int Stack { get; set; }
-
-        public long TimeoutTimer { get; set; }
+        public long TimeoutTimer;
     }
 }

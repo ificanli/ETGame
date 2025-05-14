@@ -28,7 +28,7 @@
                 return coroutineLock;
             }
 
-            WaitCoroutineLock waitCoroutineLock = WaitCoroutineLock.Create();
+            WaitCoroutineLock waitCoroutineLock = self.AddChild<WaitCoroutineLock>(true);
             self.queue.Enqueue(waitCoroutineLock);
             if (time > 0)
             {
@@ -47,13 +47,12 @@
             {
                 WaitCoroutineLock waitCoroutineLock = self.queue.Dequeue();
 
-                if (waitCoroutineLock.IsDisposed())
+                if (waitCoroutineLock == null)
                 {
                     continue;
                 }
 
                 CoroutineLock coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, level, true);
-
                 waitCoroutineLock.SetResult(coroutineLock);
                 return true;
             }

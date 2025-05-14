@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public abstract class ATimer<T>: AInvokeHandler<TimerCallback> where T: class
+    public abstract class ATimer<T>: AInvokeHandler<TimerCallback> where T: Entity
     {
         public override void Handle(TimerCallback a)
         {

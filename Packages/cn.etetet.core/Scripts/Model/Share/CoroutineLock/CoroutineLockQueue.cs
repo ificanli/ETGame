@@ -10,7 +10,7 @@ namespace ET
 
         public bool isStart;
         
-        public Queue<WaitCoroutineLock> queue = new();
+        public Queue<EntityRef<WaitCoroutineLock>> queue = new();
 
         public int Count
         {
