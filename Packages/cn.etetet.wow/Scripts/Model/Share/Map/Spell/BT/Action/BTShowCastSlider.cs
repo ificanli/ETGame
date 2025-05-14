@@ -10,7 +10,7 @@ namespace ET
         [BoxGroup("输入参数")]
         [ReadOnly]
         [ShowIf("@ShowInInspector.Value")]
-        public string Buff = BTEvnKey.Buff;
+        public string Buff = "Buff";
 
         [LabelText("是否增加施法进度条")]
         [InfoBox("如: 寒冰箭读条就是增长，暴风雪引导就是减少")]

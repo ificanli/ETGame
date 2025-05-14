@@ -45,9 +45,7 @@ namespace ET.Server
             // 触发被攻击Effect
             using ListComponent<Buff> hittedBuffs = ListComponent<Buff>.Create();
             target.GetComponent<BuffComponent>().GetByEffectType<EffectServerBuffHitted>(hittedBuffs);
-            using BTEnv env = BTEnv.Create(attacker.Scene());
-            env.AddEntity(BTEvnKey.Attacker, attacker);
-            env.AddEntity(BTEvnKey.Target, target);
+
             foreach (Buff buff in hittedBuffs)
             {
                 if (buff == null)
@@ -56,10 +54,15 @@ namespace ET.Server
                     continue;
                 }
 
-                env.AddEntity(BTEvnKey.Buff, buff);
-
                 EffectServerBuffHitted effect = buff.GetConfig().GetEffect<EffectServerBuffHitted>();
-                BTDispatcher.Instance.Handle(effect, env);
+                if (effect != null)
+                {
+                    using BTEnv env = BTEnv.Create(attacker.Scene());
+                    env.AddEntity(effect.Attacker, attacker);
+                    env.AddEntity(effect.Unit, target);
+                    env.AddEntity(effect.Buff, buff);
+                    BTDispatcher.Instance.Handle(effect, env);
+                }
             }
         }
     }

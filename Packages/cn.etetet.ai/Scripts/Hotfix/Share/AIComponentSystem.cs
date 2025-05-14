@@ -54,10 +54,14 @@ namespace ET
                 fiber.Root.GetComponent<TimerComponent>().Remove(ref self.Timer);
                 return;
             }
-            
-            using BTEnv env = BTEnv.Create(self.Scene());
-            env.AddEntity(BTEvnKey.AIComponent, self);
-            BTDispatcher.Instance.Handle(self.AIRoot, env);
+
+            AIRoot aiRoot = self.AIRoot;
+            if (aiRoot != null)
+            {
+                using BTEnv env = BTEnv.Create(self.Scene());
+                env.AddEntity(aiRoot.AIComponent, self);
+                BTDispatcher.Instance.Handle(self.AIRoot, env);
+            }
         }
         
         public static void Start(this AIComponent self)

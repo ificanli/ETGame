@@ -6,17 +6,17 @@ namespace ET
     public abstract class TargetSelector : BTRoot
     {
         //[Sirenix.OdinInspector.ReadOnly]
-        [Sirenix.OdinInspector.BoxGroup("输入参数")]
-        [BTInput(typeof(Buff))]
-        public string Buff = BTEvnKey.Buff;
+        [Sirenix.OdinInspector.BoxGroup("输出参数")]
+        [BTOutput(typeof(Buff))]
+        public string Buff = "Buff";
         
-        [Sirenix.OdinInspector.BoxGroup("输入参数")]
+        [Sirenix.OdinInspector.BoxGroup("输出参数")]
         [BTOutput(typeof(Unit))]
-        public string Caster = BTEvnKey.Caster;
+        public string Caster = "Caster";
         
-        [Sirenix.OdinInspector.BoxGroup("输入参数")]
+        [Sirenix.OdinInspector.BoxGroup("输出参数")]
         [BTOutput(typeof(Unit))]
-        public string Owner = BTEvnKey.Owner;
+        public string Owner = "Owner";
 
         public int MaxDistance;
 

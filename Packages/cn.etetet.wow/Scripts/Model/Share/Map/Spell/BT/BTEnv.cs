@@ -32,20 +32,6 @@ namespace ET
         }
     }
     
-    public static class BTEvnKey
-    {
-        public const string Buff = "Buff";
-        public const string Owner = "Owner";
-        public const string Unit = "Unit";
-        public const string Caster = "Caster";
-        public const string Attacker = "Attacker";
-        public const string Target = "Target";
-        public const string Units = "Units";
-        public const string Pos = "Pos";
-        public const string BuffRemoveType = "BuffRemoveType";
-        public const string AIComponent = "AIComponent";
-    }
-    
     public class BTEnv: DisposeObject, IPool
     {
         public static BTEnv Create(Scene scene, bool isFromPool = true)

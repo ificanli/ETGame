@@ -58,40 +58,51 @@ namespace ET.Server
             // 选择目标
             {
                 buff.AddComponent<SpellTargetComponent>();
-                using BTEnv env = BTEnv.Create(buff.Scene());
-                env.AddEntity(BTEvnKey.Buff, buff);
-                env.AddEntity(BTEvnKey.Caster, buff.GetCaster());
-                env.AddEntity(BTEvnKey.Owner, buff.GetOwner());
-                int ret = BTDispatcher.Instance.Handle(spellConfig.TargetSelector, env);
-                if (ret != 0)
+                TargetSelector targetSelector = spellConfig.TargetSelector;
+                if (targetSelector != null)
                 {
-                    ErrorHelper.MapError(unit, ret);
-                    return ret;
+                    using BTEnv env = BTEnv.Create(buff.Scene());
+                    env.AddEntity(targetSelector.Buff, buff);
+                    env.AddEntity(targetSelector.Caster, buff.GetCaster());
+                    env.AddEntity(targetSelector.Owner, buff.GetOwner());
+                    int ret = BTDispatcher.Instance.Handle(spellConfig.TargetSelector, env);
+                    if (ret != 0)
+                    {
+                        ErrorHelper.MapError(unit, ret);
+                        return ret;
+                    }
                 }
             }
 
+            CostNode costNode = spellConfig.Cost;
+            if (costNode != null)
             {
-                // 检查消耗的东西是否足够
-                int costCheckRet = CostDispatcher.Instance.Handle(unit, spellConfig);
-                if (costCheckRet != 0)
+                // 先检查消耗的东西是否足够
                 {
-                    ErrorHelper.MapError(unit, costCheckRet);
-                    return costCheckRet;
-                }
-                
-                // 消耗东西
-                using BTEnv env = BTEnv.Create(buff.Scene());
-                env.AddEntity(BTEvnKey.Buff, buff);
-                env.AddEntity(BTEvnKey.Caster, buff.GetCaster());
-                foreach (CostNode costNode in spellConfig.Cost)
-                {
-                    int ret = BTDispatcher.Instance.Handle(costNode, env);
-                    if (ret == 0)
+                    using BTEnv env = BTEnv.Create(buff.Scene());
+                    env.AddEntity(costNode.Buff, buff);
+                    env.AddEntity(costNode.Caster, buff.GetCaster());
+                    env.AddStruct(costNode.Check, true);
+                    int ret = BTDispatcher.Instance.Handle(spellConfig.Cost, env);
+                    if (ret != 0)
                     {
-                        continue;
+                        ErrorHelper.MapError(unit, ret);
+                        return ret;
                     }
-                    ErrorHelper.MapError(unit, ret);
-                    return ret;
+                }
+
+                // 消耗东西
+                {
+                    using BTEnv env = BTEnv.Create(buff.Scene());
+                    env.AddEntity(costNode.Buff, buff);
+                    env.AddEntity(costNode.Caster, buff.GetCaster());
+                    env.AddStruct(costNode.Check, false);
+                    int ret = BTDispatcher.Instance.Handle(spellConfig.Cost, env);
+                    if (ret != 0)
+                    {
+                        ErrorHelper.MapError(unit, ret);
+                        return ret;
+                    }
                 }
             }
             // 主技能更新CD

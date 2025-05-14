@@ -16,8 +16,16 @@
                 spellTargetComponent.Units.AddRange(buffAdd.SpellTarget.TargetUnitId);
                 spellTargetComponent.Position = buffAdd.SpellTarget.TargetPosition;
             }
-            
-            EffectHelper.RunBT<EffectClientBuffAdd>(buff);
+
+            EffectClientBuffAdd effect = buff.GetConfig().GetEffect<EffectClientBuffAdd>();
+            if (effect != null)
+            {
+                using BTEnv env = BTEnv.Create(buff.Scene());
+                env.AddEntity(effect.Buff, buff);
+                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                env.AddEntity(effect.Caster, buff.GetCaster());
+                BTDispatcher.Instance.Handle(effect, env);
+            }
 
             return buff;
         }
@@ -50,8 +58,17 @@
                 return;
             }
             buff.AddComponent<BuffRemoveTypeComponent>().BuffRemoveType = removeType;
-            EffectHelper.RunBT<EffectClientBuffRemove>(buff);
             
+            EffectClientBuffRemove effect = buff.GetConfig().GetEffect<EffectClientBuffRemove>();
+            if (effect != null)
+            {
+                using BTEnv env = BTEnv.Create(buff.Scene());
+                env.AddEntity(effect.Buff, buff);
+                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                env.AddEntity(effect.Caster, buff.GetCaster());
+                BTDispatcher.Instance.Handle(effect, env);
+            }
+
             buffComponent.RemoveBuff(buff);
         }
     }

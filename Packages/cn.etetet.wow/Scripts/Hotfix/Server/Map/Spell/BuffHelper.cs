@@ -149,8 +149,16 @@ namespace ET.Server
             
             MapMessageHelper.NoticeClient(unit, m2CBuffAdd, buffConfig.NoticeType);
 
-            EffectHelper.RunBT<EffectServerBuffAdd>(buff);
-            
+            EffectServerBuffAdd effect = buff.GetConfig().GetEffect<EffectServerBuffAdd>();
+            if (effect != null)
+            {
+                using BTEnv env = BTEnv.Create(buff.Scene());
+                env.AddEntity(effect.Buff, buff);
+                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                env.AddEntity(effect.Caster, buff.GetCaster());
+                BTDispatcher.Instance.Handle(effect, env);
+            }
+
             return buff;
         }
 
@@ -170,7 +178,16 @@ namespace ET.Server
                 {
                     return;
                 }
-                EffectHelper.RunBT<EffectServerBuffTick>(buff);
+                
+                EffectServerBuffTick effect = buff.GetConfig().GetEffect<EffectServerBuffTick>();
+                if (effect != null)
+                {
+                    using BTEnv env = BTEnv.Create(buff.Scene());
+                    env.AddEntity(effect.Buff, buff);
+                    env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                    env.AddEntity(effect.Caster, buff.GetCaster());
+                    BTDispatcher.Instance.Handle(effect, env);
+                }
             }
         }
         
@@ -272,8 +289,17 @@ namespace ET.Server
 
             BuffRemoveTypeComponent buffRemoveTypeComponent = buff.GetComponent<BuffRemoveTypeComponent>() ?? buff.AddComponent<BuffRemoveTypeComponent>();
             buffRemoveTypeComponent.BuffRemoveType = removeType;
-            EffectHelper.RunBT<EffectServerBuffRemove>(buff);
             
+            EffectServerBuffRemove effect = buff.GetConfig().GetEffect<EffectServerBuffRemove>();
+            if (effect != null)
+            {
+                using BTEnv env = BTEnv.Create(buff.Scene());
+                env.AddEntity(effect.Buff, buff);
+                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                env.AddEntity(effect.Caster, buff.GetCaster());
+                BTDispatcher.Instance.Handle(effect, env);
+            }
+
             buffComponent.RemoveBuff(buff);
             
             MapMessageHelper.NoticeClient(unit, m2CBuffRemove, buff.GetConfig().NoticeType);

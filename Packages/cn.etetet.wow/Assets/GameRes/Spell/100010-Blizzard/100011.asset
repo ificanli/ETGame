@@ -47,7 +47,13 @@ MonoBehaviour:
       Data: 200011
     - Name: Cost
       Entry: 7
-      Data: 2|System.Collections.Generic.List`1[[ET.CostNode, ET.Model]], mscorlib
+      Data: 2|ET.CostNode, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 0
+    - Name: Children
+      Entry: 7
+      Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -57,12 +63,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: TargetSelector
-      Entry: 7
-      Data: 3|ET.TargetSelectorCircle, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -84,15 +84,57 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Owner
+      Entry: 1
+      Data: Owner
+    - Name: Check
+      Entry: 1
+      Data: Check
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: TargetSelector
+      Entry: 7
+      Data: 4|ET.TargetSelectorCircle, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 0
     - Name: Children
       Entry: 7
-      Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 5|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
     - Name: 
       Entry: 13
       Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
@@ -123,7 +165,7 @@ MonoBehaviour:
     - Name: UnitType
       Entry: 3
       Data: 15
-    - Name: SpellIndicatorName
+    - Name: SpellIndicator
       Entry: 6
       Data: 
     - Name: 

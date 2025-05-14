@@ -81,7 +81,7 @@ namespace ET
         public int BuffId;
 
         [LabelText("消耗")]
-        public List<CostNode> Cost = new();
+        public CostNode Cost;
 
         #if UNITY
         [UnityEngine.SerializeReference]

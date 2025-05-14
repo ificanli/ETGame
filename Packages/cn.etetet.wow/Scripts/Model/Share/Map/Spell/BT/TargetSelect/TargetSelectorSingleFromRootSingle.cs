@@ -5,6 +5,6 @@
     {
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
         [BTOutput(typeof(Unit))]
-        public string Unit = BTEvnKey.Unit;
+        public string Unit = "Unit";
     }
 }

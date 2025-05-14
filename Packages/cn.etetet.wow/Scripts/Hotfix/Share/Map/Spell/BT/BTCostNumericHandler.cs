@@ -1,15 +1,22 @@
 ﻿namespace ET
 {
-    public class BTCostNumericHandler: ABTHandler<CostNumeric>
+    public class BTCostNumericHandler: ABTHandler<BTCostNumeric>
     {
-        protected override int Run(CostNumeric node, BTEnv env)
+        protected override int Run(BTCostNumeric node, BTEnv env)
         {
             Unit caster = env.GetEntity<Unit>(node.Caster);
+            bool check = env.GetStruct<bool>(node.Check);
 
             NumericComponent numericComponent = caster.GetComponent<NumericComponent>();
             long a = numericComponent.Get(node.NumericType);
-            if (a < node.Value)
+            
+            if (check)
             {
+                if (a >= node.Value)
+                {
+                    return 0;
+                }
+
                 switch (node.NumericType)
                 {
                     case NumericType.MP:
@@ -18,7 +25,11 @@
                         return TextConstDefine.SpellCast_HPNotEnought;
                 }
             }
-            numericComponent.Set(node.NumericType, a - node.Value);
+            else
+            {
+                numericComponent.Set(node.NumericType, a - node.Value);
+            }
+
             return 0;
         }
     }

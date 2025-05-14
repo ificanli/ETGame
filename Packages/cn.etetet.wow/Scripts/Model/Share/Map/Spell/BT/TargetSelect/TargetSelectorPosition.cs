@@ -9,7 +9,7 @@ namespace ET
     {
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
         [BTOutput(typeof(Unit))]
-        public string Pos = BTEvnKey.Pos;
+        public string Pos = "Pos";
 
         public int Radius;
         

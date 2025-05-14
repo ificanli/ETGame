@@ -10,12 +10,12 @@ namespace ET
     {
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
         [BTOutput(typeof(Unit))]
-        public string Unit = BTEvnKey.Unit;
+        public string Unit = "Unit";
         
         
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
         [BTOutput(typeof(List<long>))]
-        public string Units = BTEvnKey.Units;
+        public string Units = "Units";
         
         public int Radius;
         

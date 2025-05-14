@@ -1,20 +1,21 @@
 ﻿namespace ET
 {
-    public abstract class CostNode: BTRoot
+    public class CostNode: BTRoot
     {
-#if UNITY
-        //[Sirenix.OdinInspector.ReadOnly]
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
-#endif
-        [BTInput(typeof(Buff))]
-        public string Buff = BTEvnKey.Buff;
+        [BTOutput(typeof(Buff))]
+        public string Buff = "Buff";
         
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
         [BTOutput(typeof(Unit))]
-        public string Caster = BTEvnKey.Caster;
+        public string Caster = "Caster";
         
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
         [BTOutput(typeof(Unit))]
-        public string Owner = BTEvnKey.Owner;
+        public string Owner = "Owner";
+
+        [Sirenix.OdinInspector.BoxGroup("输出参数")]
+        [BTOutput(typeof(bool))]
+        public string Check = "Check";
     }
 }
