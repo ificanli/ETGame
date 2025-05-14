@@ -15,8 +15,8 @@ namespace ET
     {
         private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
             id: "CCD001",
-            title: "禁止类之间形成任何循环调用",
-            messageFormat: "检测到类循环依赖链: {0}",
+            title: "禁止类之间形成循环调用",
+            messageFormat: "检测到类循环依赖: {0}",
             category: "Dependency",
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true);
@@ -56,20 +56,18 @@ namespace ET
             if (targetType == null) return;
 
             if (SymbolEqualityComparer.Default.Equals(callerType, targetType)) return;
+            if (HasIgnoreAttribute(callerType) || HasIgnoreAttribute(targetType)) return;
 
-            var kind = symbol switch
-            {
-                IMethodSymbol => AccessKind.MethodCall,
-                IFieldSymbol => AccessKind.FieldAccess,
-                IPropertySymbol => AccessKind.PropertyAccess,
-                _ => AccessKind.MethodCall
-            };
-
-            AddAccess(graph, callerType, context.ContainingSymbol, targetType, identifier.GetLocation(), kind);
+            AddAccess(graph, callerType, context.ContainingSymbol, targetType, symbol, identifier.GetLocation());
         }
 
         private void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context, ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph)
         {
+            if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
+            {
+                return;
+            }
+            
             var creation = (ObjectCreationExpressionSyntax)context.Node;
             var symbol = context.SemanticModel.GetSymbolInfo(creation).Symbol as IMethodSymbol;
             if (symbol == null) return;
@@ -81,88 +79,85 @@ namespace ET
             if (targetType == null) return;
 
             if (SymbolEqualityComparer.Default.Equals(callerType, targetType)) return;
+            if (HasIgnoreAttribute(callerType) || HasIgnoreAttribute(targetType)) return;
 
-            AddAccess(graph, callerType, context.ContainingSymbol, targetType, creation.GetLocation(), AccessKind.ConstructorCall);
+            AddAccess(graph, callerType, context.ContainingSymbol, targetType, symbol, creation.GetLocation());
         }
 
-        private void AddAccess(ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph, INamedTypeSymbol fromType, ISymbol callerSymbol, INamedTypeSymbol toType, Location location, AccessKind kind)
+        private void AddAccess(ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph, INamedTypeSymbol fromType, ISymbol callerSymbol, INamedTypeSymbol toType, ISymbol targetSymbol, Location location)
         {
             var list = graph.GetOrAdd(fromType, _ => new List<AccessRecord>());
-            list.Add(new AccessRecord(callerSymbol, toType, location, kind));
+            list.Add(new AccessRecord(callerSymbol, targetSymbol, toType, location));
         }
 
         private void AnalyzeGraph(CompilationAnalysisContext context, ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph)
         {
-            var visited = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
-            var stack = new Stack<AccessRecord>();
-
+            if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
+            {
+                return;
+            }
+            
             foreach (var node in graph.Keys)
             {
-                DetectCycles(node, graph, visited, new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default), stack, context);
+                DetectClassCycles(node, graph, new List<AccessRecord>(), new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default), context);
             }
         }
 
-        private void DetectCycles(
-            INamedTypeSymbol current,
+        private void DetectClassCycles(
+            INamedTypeSymbol currentClass,
             ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph,
-            HashSet<INamedTypeSymbol> visited,
-            HashSet<INamedTypeSymbol> pathSet,
-            Stack<AccessRecord> pathStack,
+            List<AccessRecord> pathRecords,
+            HashSet<INamedTypeSymbol> classPathSet,
             CompilationAnalysisContext context)
         {
-            if (pathSet.Contains(current))
-            {
-                var cycle = pathStack.Reverse()
-                    .SkipWhile(r => !SymbolEqualityComparer.Default.Equals(r.CallerSymbol.ContainingType, current))
-                    .ToList();
+            if (HasIgnoreAttribute(currentClass)) return;
 
-                if (cycle.Any())
+            if (classPathSet.Contains(currentClass))
+            {
+                var cyclePath = pathRecords.SkipWhile(r => !SymbolEqualityComparer.Default.Equals(r.CallerSymbol.ContainingType, currentClass)).ToList();
+                if (cyclePath.Any())
                 {
-                    var message = string.Join(" -> ", cycle.Select(r => $"{r.CallerSymbol.ContainingType.Name}.{r.CallerSymbol.Name}"));
-                    var firstLocation = cycle.First().Location ?? Location.None;
+                    var message = string.Join("\n", cyclePath.Select(r => $"{r.CallerSymbol.ContainingType.Name}.{r.CallerSymbol.Name}() -> {r.TargetClass.Name}.{r.TargetSymbol.Name}()"));
+                    var firstLocation = cyclePath.First().Location ?? Location.None;
                     context.ReportDiagnostic(Diagnostic.Create(Rule, firstLocation, message));
                 }
                 return;
             }
 
-            visited.Add(current);
-            pathSet.Add(current);
+            classPathSet.Add(currentClass);
 
-            if (graph.TryGetValue(current, out var records))
+            if (graph.TryGetValue(currentClass, out var records))
             {
                 foreach (var record in records)
                 {
-                    pathStack.Push(record);
-                    DetectCycles(record.TargetClass, graph, visited, pathSet, pathStack, context);
-                    pathStack.Pop();
+                    pathRecords.Add(record);
+                    DetectClassCycles(record.TargetClass, graph, pathRecords, classPathSet, context);
+                    pathRecords.RemoveAt(pathRecords.Count - 1);
                 }
             }
 
-            pathSet.Remove(current);
+            classPathSet.Remove(currentClass);
+        }
+
+        private static bool HasIgnoreAttribute(INamedTypeSymbol type)
+        {
+            return type.GetAttributes().Any(attr => attr.AttributeClass?.Name == "IgnoreCircularDependencyAttribute");
         }
 
         private class AccessRecord
         {
             public ISymbol CallerSymbol { get; }
+            public ISymbol TargetSymbol { get; }
             public INamedTypeSymbol TargetClass { get; }
             public Location Location { get; }
-            public AccessKind Kind { get; }
 
-            public AccessRecord(ISymbol callerSymbol, INamedTypeSymbol targetClass, Location location, AccessKind kind)
+            public AccessRecord(ISymbol callerSymbol, ISymbol targetSymbol, INamedTypeSymbol targetClass, Location location)
             {
                 CallerSymbol = callerSymbol;
+                TargetSymbol = targetSymbol;
                 TargetClass = targetClass;
                 Location = location;
-                Kind = kind;
             }
-        }
-
-        private enum AccessKind
-        {
-            MethodCall,
-            FieldAccess,
-            ConstructorCall,
-            PropertyAccess
         }
     }
 }

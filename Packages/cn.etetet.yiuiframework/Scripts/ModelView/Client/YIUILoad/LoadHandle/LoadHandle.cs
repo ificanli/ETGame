@@ -3,6 +3,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace ET.Client
 {
+    [IgnoreCircularDependency]
     [EnableClass]
     public class LoadHandle : IRefPool
     {

@@ -8,8 +8,7 @@ namespace ET
     {
         public T Value
         {
-            get;
-            protected set;
+            get; set;
         }
     }
     
@@ -125,17 +124,34 @@ namespace ET
             this.dict[key] = list;
         }
 
-        public void AddEntity<T>(string key, T value) where T: Entity
+        public void AddEntity<T>(string key, T entity) where T: Entity
         {
-            EntityRef<T> entityRef = value;
-            ValueTypeWrap<EntityRef<T>> wrap = ValueTypeWrap<EntityRef<T>>.Create(entityRef);
-            this.dict[key] = wrap;
+            ValueTypeWrap<EntityRef<T>> wrap = null;
+            if (this.dict.TryGetValue(key, out object value))
+            {
+                wrap = (ValueTypeWrap<EntityRef<T>>) value;
+                wrap.Value = entity;
+            }
+            else
+            {
+                wrap = ValueTypeWrap<EntityRef<T>>.Create(entity);
+                this.dict.Add(key, wrap);
+            }
         }
         
         public void AddStruct<T>(string key, T value) where T: struct
         {
-            ValueTypeWrap<T> wrap = ValueTypeWrap<T>.Create(value);
-            this.dict[key] = wrap;
+            ValueTypeWrap<T> wrap = null;
+            if (this.dict.TryGetValue(key, out object obj))
+            {
+                wrap = (ValueTypeWrap<T>) obj;
+                wrap.Value = value;
+            }
+            else
+            {
+                wrap = ValueTypeWrap<T>.Create(value);
+                this.dict.Add(key, wrap);
+            }
         }
     }
 }

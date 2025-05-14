@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -65,10 +64,9 @@ namespace ET
             var moduleHelper = new ModuleHelper();
 
             var moduleRelations = new ConcurrentDictionary<(string Source, string Target), byte>();
-            var fieldAccess = new ConcurrentDictionary<string, ConcurrentBag<string>>();
-            var moduleCalls = new ConcurrentDictionary<string, ConcurrentBag<string>>();
+            var fieldAccess = new ConcurrentDictionary<(string, string), byte>();
+            var methodCalls = new ConcurrentDictionary<(string, string), byte>();
 
-            // 字段读取
             context.RegisterOperationAction(opContext =>
             {
                 var fieldAccessOp = (IFieldReferenceOperation)opContext.Operation;
@@ -83,17 +81,16 @@ namespace ET
 
                 if (sourceModule != targetModule)
                 {
-                    fieldAccess.GetOrAdd(sourceModule, _ => new ConcurrentBag<string>()).Add(targetModule);
                     moduleRelations.TryAdd((sourceModule, targetModule), 0);
 
-                    if (fieldAccess.TryGetValue(targetModule, out var reverse) && reverse.Contains(sourceModule))
+                    if (fieldAccess.TryAdd((sourceModule, targetModule), 0) &&
+                        fieldAccess.ContainsKey((targetModule, sourceModule)))
                     {
                         opContext.ReportDiagnostic(Diagnostic.Create(FieldAccessRule, fieldAccessOp.Syntax.GetLocation(), targetModule, sourceModule));
                     }
                 }
             }, OperationKind.FieldReference);
 
-            // 字段写入
             context.RegisterOperationAction(opContext =>
             {
                 IFieldSymbol fieldSymbol = null;
@@ -128,7 +125,6 @@ namespace ET
 
             }, OperationKind.SimpleAssignment, OperationKind.CompoundAssignment, OperationKind.Increment, OperationKind.Decrement);
 
-            // 方法调用
             context.RegisterOperationAction(opContext =>
             {
                 var invocation = (IInvocationOperation)opContext.Operation;
@@ -143,10 +139,10 @@ namespace ET
 
                 if (callerModule != calleeModule)
                 {
-                    moduleCalls.GetOrAdd(callerModule, _ => new ConcurrentBag<string>()).Add(calleeModule);
                     moduleRelations.TryAdd((callerModule, calleeModule), 0);
 
-                    if (moduleCalls.TryGetValue(calleeModule, out var reverse) && reverse.Contains(callerModule))
+                    if (methodCalls.TryAdd((callerModule, calleeModule), 0) &&
+                        methodCalls.ContainsKey((calleeModule, callerModule)))
                     {
                         opContext.ReportDiagnostic(Diagnostic.Create(MethodCallRule, invocation.Syntax.GetLocation(), calleeModule, callerModule));
                     }
@@ -168,7 +164,7 @@ namespace ET
 
         private class ModuleHelper
         {
-            private readonly Dictionary<INamedTypeSymbol, string> _cache = new(SymbolEqualityComparer.Default);
+            private readonly ConcurrentDictionary<INamedTypeSymbol, string> _cache = new(SymbolEqualityComparer.Default);
 
             public string GetModuleName(INamedTypeSymbol type)
             {
