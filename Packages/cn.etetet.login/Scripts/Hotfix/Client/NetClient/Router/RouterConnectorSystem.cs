@@ -11,9 +11,15 @@ namespace ET.Client
         {
             NetComponent netComponent = self.GetParent<NetComponent>();
             KService kService = (KService)netComponent.AService;
+            EntityRef<RouterConnector> routerConnectorRef = self;
             kService.AddRouterAckCallback(self.Id, (flag) =>
             {
-                self.Flag = flag;
+                RouterConnector routerConnector = routerConnectorRef;
+                if (routerConnector == null)
+                {
+                    return;
+                }
+                routerConnector.Flag = flag;
             });
         }
         [EntitySystem]

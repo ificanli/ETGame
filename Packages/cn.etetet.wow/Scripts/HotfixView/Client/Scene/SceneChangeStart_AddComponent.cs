@@ -22,10 +22,12 @@ namespace ET.Client
                 ResourcesLoaderComponent resourcesLoaderComponent = currentScene.GetComponent<ResourcesLoaderComponent>();
             
                 // 加载场景资源
+                EntityRef<CurrentScenesComponent> currentScenesComponentRef = currentScenesComponent;
                 await resourcesLoaderComponent.LoadSceneAsync($"Packages/cn.etetet.wow/Bundles/Scenes/{currentScene.Name}.unity", LoadSceneMode.Single,
                     (progress) =>
                     {
-                        currentScenesComponent.Progress = (int)progress * 99f;
+                        CurrentScenesComponent currentScenes = currentScenesComponentRef;
+                        currentScenes.Progress = (int)progress * 99f;
                     });
                 // 切换到map场景
 

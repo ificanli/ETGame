@@ -156,7 +156,14 @@ namespace ET.Client
             }
             else
             {
-                uEventClickItem.Add(() => { self.OnClickItem(item); });
+                EntityRef<YIUILoopScrollChild> selfRef = self;
+                EntityRef<Entity> itemRef = item;
+                uEventClickItem.Add(() =>
+                {
+                    YIUILoopScrollChild loopScrollChild = selfRef;
+                    Entity it = itemRef;
+                    loopScrollChild.OnClickItem(it);
+                });
             }
         }
 

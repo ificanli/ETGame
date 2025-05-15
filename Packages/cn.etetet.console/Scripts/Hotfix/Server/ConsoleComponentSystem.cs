@@ -25,9 +25,10 @@ namespace ET.Server
                 try
                 {
                     ModeContex modeContex = self.GetComponent<ModeContex>();
+                    string prefix = $"{modeContex?.Mode ?? ""}> ";
                     string line = await Task.Factory.StartNew(() =>
                     {
-                        Console.Write($"{modeContex?.Mode ?? ""}> ");
+                        Console.Write(prefix);
                         return Console.In.ReadLine();
                     }, self.CancellationTokenSource.Token);
                     
