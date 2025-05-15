@@ -42,12 +42,17 @@ namespace ET.Server
 
         private static async ETTask Accept(this HttpComponent self)
         {
-            long instanceId = self.InstanceId;
-            while (self.InstanceId == instanceId)
+            EntityRef<HttpComponent> selfRef = self;
+            while (true)
             {
                 try
                 {
                     HttpListenerContext context = await self.Listener.GetContextAsync();
+                    self = selfRef;
+                    if (self == null)
+                    {
+                        return;
+                    }
                     self.Handle(context).NoContext();
                 }
                 catch (ObjectDisposedException)

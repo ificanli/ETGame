@@ -14,7 +14,9 @@ namespace ET.Client
         
         private static async ETTask CreateEffectOnPosAsync(Unit unit, string effectName, BindPoint bindPoint, int duration)
         {
+            EntityRef<Unit> unitRef = unit;
             GameObject go = await unit.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(effectName);
+            unit = unitRef;
             EffectUnitHelper.Create(unit, bindPoint, go, true, duration);
         }
     }

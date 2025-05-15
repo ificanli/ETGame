@@ -74,7 +74,7 @@ namespace ET.Client
                 Log.Error($"没有找到ET UI组件");
                 return null;
             }
-
+            EntityRef<YIUIPanelComponent> selfRef = self;
             using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, resName.GetHashCode());
 
             var data = YIUIBindHelper.GetBindVoByResName(resName);
@@ -86,6 +86,7 @@ namespace ET.Client
                 return null;
             }
 
+            self = selfRef;
             var viewParent = self.GetViewParent(resName);
             if (viewParent == null)
             {
@@ -100,12 +101,14 @@ namespace ET.Client
 
             var view = await YIUIFactory.InstantiateAsync(vo, self.UIBase.OwnerUIEntity, viewParent);
 
+            self = selfRef;
             self.m_ExistView.Add(resName, view);
             return view;
         }
 
         internal static async ETTask<Entity> GetView<T>(this YIUIPanelComponent self) where T : Entity
         {
+            EntityRef<YIUIPanelComponent> selfRef = self;
             if (self.UIBase.OwnerUIEntity == null)
             {
                 Log.Error($"没有找到ET UI组件");
@@ -124,6 +127,7 @@ namespace ET.Client
             }
 
             var viewName   = vo.ResName;
+            self = selfRef;
             var viewParent = self.GetViewParent(viewName);
             if (viewParent == null)
             {
@@ -138,6 +142,7 @@ namespace ET.Client
 
             var view = await YIUIFactory.InstantiateAsync(vo, self.UIBase.OwnerUIEntity, viewParent);
 
+            self = selfRef;
             self.m_ExistView.Add(viewName, view);
             return view;
         }

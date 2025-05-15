@@ -14,13 +14,14 @@ namespace ET.Client
         [EntitySystem]
         private static void Destroy(this PingComponent self)
         {
-            self.Ping = default;
+            self.Ping = 0;
         }
         
         private static async ETTask PingAsync(this PingComponent self)
         {
             Session session = self.GetParent<Session>();
-            long instanceId = self.InstanceId;
+            EntityRef<Session> sessionRef = session;
+            EntityRef<PingComponent> selfRef = self;
             Fiber fiber = self.Fiber();
             
             while (true)
@@ -28,7 +29,13 @@ namespace ET.Client
                 try
                 {
                     await fiber.Root.GetComponent<TimerComponent>().WaitAsync(2000);
-                    if (self.InstanceId != instanceId)
+                    self = selfRef;
+                    if (self == null)
+                    {
+                        return;
+                    }
+                    session = sessionRef;
+                    if (session == null)
                     {
                         return;
                     }
@@ -37,8 +44,8 @@ namespace ET.Client
                     C2G_Ping c2GPing = C2G_Ping.Create(true);
                     // 这里response要用using才能回收到池，默认不回收
                     using G2C_Ping response = await session.Call(c2GPing) as G2C_Ping;
-
-                    if (self.InstanceId != instanceId)
+                    self = selfRef;
+                    if (self == null)
                     {
                         return;
                     }

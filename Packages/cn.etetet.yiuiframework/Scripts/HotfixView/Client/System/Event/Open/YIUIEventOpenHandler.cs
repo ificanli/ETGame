@@ -6,7 +6,9 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelOpenBefore arg)
         {
+            EntityRef<Scene> sceneRef = scene;
             await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            scene = sceneRef;
             await scene.DynamicEvent(arg);
         }
     }
@@ -17,7 +19,9 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelOpenAfter arg)
         {
+            EntityRef<Scene> sceneRef = scene;
             await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            scene = sceneRef;
             await scene.DynamicEvent(arg);
         }
     }

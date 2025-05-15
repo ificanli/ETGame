@@ -132,7 +132,9 @@ namespace ET.Client
 
         private static async ETTask<EntityRef<Entity>> OnCreateItemRenderer(this YIUILoopScrollChild self)
         {
+            EntityRef<YIUILoopScrollChild> selfRef = self;
             var item = await EventSystem.Instance?.YIUIInvokeAsync<YIUIInvokeLoadInstantiateByVo, ETTask<Entity>>(self.m_InvokeLoadInstantiate);
+            self = selfRef;
             if (item == null)
             {
                 Log.Error($"YIUILoopScroll 实例化失败 请检查 {self.m_BindVo.PkgName} {self.m_BindVo.ResName}");

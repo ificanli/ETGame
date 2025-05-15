@@ -28,10 +28,12 @@ namespace ET.Server
 
                     // 创建机器人
                     TimerComponent timerComponent = fiber.Root.GetComponent<TimerComponent>();
+                    EntityRef<TimerComponent> timerComponentRef = timerComponent;
                     for (int i = 0; i < options.Num; ++i)
                     {
                         await robotManagerComponent.NewRobot($"Robot_{i}");
                         Log.Console($"create robot {i}");
+                        timerComponent = timerComponentRef;
                         await timerComponent.WaitAsync(2000);
                     }
                     break;

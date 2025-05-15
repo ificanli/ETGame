@@ -30,21 +30,29 @@ namespace ET.Server
         {
             Unit unit = aiComponent.GetParent<Unit>();
             Unit owner = PetHelper.GetOwner(unit);
+            
+            EntityRef<Unit> unitRef = unit;
+            EntityRef<Unit> ownerRef = owner;
 
             TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
+            EntityRef<TimerComponent> timerRef = timerComponent;
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
+            unit = unitRef;
             SpellHelper.Cast(unit, 100110);
             
             while (true)
             {
+                unit = unitRef;
+                owner = ownerRef;
                 await unit.FindPathMoveToAsync(owner.Position);
                 if (cancellationToken.IsCancel())
                 {
                     return;
                 }
                 
+                timerComponent = timerRef;
                 await timerComponent.WaitAsync(200);
                 if (cancellationToken.IsCancel())
                 {

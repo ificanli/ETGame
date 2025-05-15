@@ -10,6 +10,7 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene root, EntryEvent3 args)
         {
+            EntityRef<Scene> rootRef = root;
             root.AddComponent<GlobalComponent>();
             root.AddComponent<ResourcesLoaderComponent>();
             root.AddComponent<PlayerComponent>();
@@ -22,6 +23,7 @@ namespace ET.Client
                 return;
             }
 
+            root = rootRef;
             await EventSystem.Instance.PublishAsync(root, new AppStartInitFinish());
         }
     }

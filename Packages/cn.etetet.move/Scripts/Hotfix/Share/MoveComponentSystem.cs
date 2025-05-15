@@ -94,11 +94,14 @@ namespace ET
             EventSystem.Instance.Publish(self.Scene(), new MoveStart() {Unit = self.GetParent<Unit>()});
             
             self.StartMove();
+
+            EntityRef<MoveComponent> selfRef = self;
             
             bool moveRet = await self.tcs;
 
             if (moveRet)
             {
+                self = selfRef;
                 EventSystem.Instance.Publish(self.Scene(), new MoveStop() {Unit = self.GetParent<Unit>()});
             }
             return moveRet;

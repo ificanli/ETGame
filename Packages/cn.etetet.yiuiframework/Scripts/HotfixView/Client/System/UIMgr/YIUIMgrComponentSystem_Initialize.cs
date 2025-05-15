@@ -8,6 +8,7 @@ namespace ET.Client
         //因为UI初始化需要动态加载UI根节点
         public static async ETTask<bool> Initialize(this YIUIMgrComponent self)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             //YIUI资源管理
             var loadResult = await self.AddComponent<YIUILoadComponent>().Initialize();
             if (!loadResult) return false;
@@ -20,6 +21,7 @@ namespace ET.Client
             var buildResult = YIUIBindHelper.InitAllBind();
             if (!buildResult) return false;
 
+            self = selfRef;
             //初始化其他UI框架中的管理器
             self.AddComponent<CountDownMgr>();
 
@@ -27,8 +29,10 @@ namespace ET.Client
             await YIUISingletonHelper.InitializeAll();
 
             //初始化YIUIRoot
+            self = selfRef;
             var rootResult = await self.InitRoot();
             if (!rootResult) return false;
+            self = selfRef;
             self.InitSafeArea();
 
             //其他模块各自初始化

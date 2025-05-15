@@ -31,13 +31,17 @@ namespace ET.Client
 
         public static async ETTask DisposeAsync(this ClientSenderComponent self)
         {
+            EntityRef<ClientSenderComponent> selfRef = self;
             await self.RemoveFiberAsync();
-            self.Dispose();
+            self = selfRef;
+            self?.Dispose();
         }
 
         public static async ETTask<long> LoginAsync(this ClientSenderComponent self, string address, string account, string password)
         {
+            EntityRef<ClientSenderComponent> selfRef = self;
             self.fiberId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, 0, SceneType.NetClient, "NetClient");
+            self = selfRef;
             self.netClientActorId = new ActorId(self.Fiber().Process, self.fiberId);
 
             Main2NetClient_Login main2NetClientLogin = Main2NetClient_Login.Create();

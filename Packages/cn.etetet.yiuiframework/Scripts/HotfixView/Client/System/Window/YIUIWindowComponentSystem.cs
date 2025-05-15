@@ -151,6 +151,7 @@ namespace ET.Client
 
         private static async ETTask OnOpenTween(this YIUIWindowComponent self)
         {
+            EntityRef<YIUIWindowComponent> selfRef = self;
             if (self._LastCloseETTask != null)
             {
                 await self._LastCloseETTask;
@@ -169,6 +170,7 @@ namespace ET.Client
                 //panel会有默认动画
                 //不要动画请在界面参数上调整 WindowBanTween
                 //需要其他动画请实现动画事件
+                self = selfRef;
                 if (self.UIBase.UIBindVo.CodeType == EUICodeType.Panel)
                     await WindowFadeAnim.In(self.UIBase?.OwnerGameObject);
             }
@@ -180,6 +182,7 @@ namespace ET.Client
 
         private static async ETTask OnCloseTween(this YIUIWindowComponent self)
         {
+            EntityRef<YIUIWindowComponent> selfRef = self;
             if (self._LastOpenETTask != null)
             {
                 await self._LastOpenETTask;
@@ -195,6 +198,7 @@ namespace ET.Client
             var tweent = await YIUIEventSystem.CloseTween(self.UIBase.OwnerUIEntity);
             if (!tweent)
             {
+                self = selfRef;
                 if (self.UIBase.UIBindVo.CodeType == EUICodeType.Panel)
                     await WindowFadeAnim.Out(self.UIBase?.OwnerGameObject);
             }

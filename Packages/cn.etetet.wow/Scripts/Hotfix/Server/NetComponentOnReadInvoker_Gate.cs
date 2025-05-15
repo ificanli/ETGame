@@ -13,6 +13,7 @@ namespace ET.Server
         private async ETTask HandleAsync(NetComponentOnRead args)
         {
             Session session = args.Session;
+            EntityRef<Session> sessionRef = session;
             object message = args.Message;
             Scene root = args.Session.Root();
             // 根据消息接口判断是不是Actor消息，不同的接口做不同的处理,比如需要转发给Chat Scene，可以做一个IChatMessage接口
@@ -33,12 +34,12 @@ namespace ET.Server
                 {
                     long unitId = session.GetComponent<SessionPlayerComponent>().Player.Id;
                     int rpcId = actorLocationRequest.RpcId; // 这里要保存客户端的rpcId
-                    long instanceId = session.InstanceId;
                     IResponse iResponse = await root.GetComponent<MessageLocationSenderComponent>().Get(LocationType.Unit).Call(unitId, actorLocationRequest);
                     
                     iResponse.RpcId = rpcId;
                     // session可能已经断开了，所以这里需要判断
-                    if (session.InstanceId == instanceId)
+                    session = sessionRef;
+                    if (session != null)
                     {
                         session.Send(iResponse);
                     }

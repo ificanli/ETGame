@@ -19,9 +19,13 @@ namespace ET.Server
         protected override async ETTask Execute(AIComponent aiComponent, AI_MonsterXunLuo node, BTEnv env)
         {
             Scene root = aiComponent.Root();
+            EntityRef<Scene> rootRef = root;
+            
             Unit unit = aiComponent.GetParent<Unit>();
+            EntityRef<Unit> unitRef = unit;
 
             PathfindingComponent pathfindingComponent = unit.GetComponent<PathfindingComponent>();
+            EntityRef<PathfindingComponent> pathfindingComponentRef = pathfindingComponent;
             
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
             float3 birthPos = new(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
@@ -35,9 +39,11 @@ namespace ET.Server
             while (true)
             {
                 // 找一个点
+                pathfindingComponent = pathfindingComponentRef;
                 float3 randomPos = pathfindingComponent.FindRandomPointWithRaduis(birthPos, 0, aoi);
                 
                 // 走过去
+                unit = unitRef;
                 await unit.FindPathMoveToAsync(randomPos);
                 if (cancellationToken.IsCancel())
                 {
@@ -45,6 +51,7 @@ namespace ET.Server
                 }
                 
                 // 等待一段时间
+                root = rootRef;
                 await root.GetComponent<TimerComponent>().WaitAsync(RandomGenerator.RandomNumber(1000, 4000));
                 if (cancellationToken.IsCancel())
                 {

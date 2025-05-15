@@ -62,6 +62,7 @@ namespace ET
         [StaticField]
         public static ETTask CompletedTask
         {
+            [SkipAwaitEntityCheck]
             get
             {
                 return completedTask ??= new ETTask() { state = AwaiterStatus.Succeeded };

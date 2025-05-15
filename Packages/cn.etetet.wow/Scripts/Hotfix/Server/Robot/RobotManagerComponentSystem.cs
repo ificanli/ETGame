@@ -25,7 +25,9 @@
 
         public static async ETTask NewRobot(this RobotManagerComponent self, string account)
         {
+            EntityRef<RobotManagerComponent> selfRef = self;
             int robot = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Robot, account);
+            self = selfRef;
             self.robots.Add(robot);
         }
     }

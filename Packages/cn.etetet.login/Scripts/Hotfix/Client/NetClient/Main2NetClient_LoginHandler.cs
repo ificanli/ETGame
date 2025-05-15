@@ -16,7 +16,11 @@ namespace ET.Client
             // 获取路由跟realmDispatcher地址
             RouterAddressComponent routerAddressComponent =
                     root.AddComponent<RouterAddressComponent, string>(request.Address);
+            EntityRef<Scene> rootRef = root;
+            EntityRef<RouterAddressComponent> routerAddressComponentRef = routerAddressComponent;
             await routerAddressComponent.Init();
+            root = rootRef;
+            routerAddressComponent = routerAddressComponentRef;
 #if UNITY_WEBGL
             root.AddComponent<NetComponent, IKcpTransport>(new WebSocketTransport(routerAddressComponent.AddressFamily));
 #else
@@ -25,7 +29,7 @@ namespace ET.Client
             root.GetComponent<FiberParentComponent>().ParentFiberId = request.OwnerFiberId;
 
             NetComponent netComponent = root.GetComponent<NetComponent>();
-            
+            EntityRef<NetComponent> netComponentRef = netComponent;
             IPEndPoint realmAddress = routerAddressComponent.GetRealmAddress(account);
 
 
@@ -39,8 +43,10 @@ namespace ET.Client
             }
 
             // 创建一个gate Session,并且保存到SessionComponent中
+            netComponent = netComponentRef;
             Session gateSession = await netComponent.CreateRouterSession(NetworkHelper.ToIPEndPoint(r2CLogin.Address), account, password);
             gateSession.AddComponent<ClientSessionErrorComponent>();
+            root = rootRef;
             root.AddComponent<SessionComponent>().Session = gateSession;
             C2G_LoginGate c2GLoginGate = C2G_LoginGate.Create();
             c2GLoginGate.Key = r2CLogin.Key;

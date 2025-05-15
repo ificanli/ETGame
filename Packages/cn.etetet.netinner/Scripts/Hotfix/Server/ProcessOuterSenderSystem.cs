@@ -63,6 +63,8 @@ namespace ET.Server
             Fiber fiber = self.Fiber();
             int fromProcess = actorId.Process;
             actorId.Process = fiber.Process;
+            
+            EntityRef<ProcessOuterSender> selfRef = self;
 
             switch (message)
             {
@@ -81,6 +83,7 @@ namespace ET.Server
                         // 注意这里的response会在该协程执行完之后由ProcessInnerSender dispose。
                         actorId.Process = fromProcess;
                         res.RpcId = rpcId;
+                        self = selfRef;
                         self.Send(actorId, res);
                         ((MessageObject)res).Dispose();
                     }
@@ -212,10 +215,13 @@ namespace ET.Server
             self.requestCallback.Add(rpcId, messageSenderStruct);
             
             self.SendInner(actorId, iRequest as MessageObject);
+            
+            EntityRef<ProcessOuterSender> selfRef = self;
 
             async ETTask Timeout()
             {
                 await fiber.Root.GetComponent<TimerComponent>().WaitAsync(ProcessOuterSender.TIMEOUT_TIME);
+                self = selfRef;
                 if (!self.requestCallback.Remove(rpcId, out MessageSenderStruct action))
                 {
                     return;

@@ -54,10 +54,12 @@ namespace ET.Server
 
         public static async ETTask Lock(this LocationOneType self, long key, ActorId actorId, int time = 0)
         {
+            EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
             CoroutineLock coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key);
-
+            self = selfRef;
             LockInfo lockInfo = self.AddChild<LockInfo, ActorId, CoroutineLock>(actorId, coroutineLock);
+            EntityRef<LockInfo> lockInfoRef = lockInfo;
             self.lockInfos.Add(key, lockInfo);
 
             Log.Info($"location lock key: {key} instanceId: {actorId}");
@@ -66,13 +68,14 @@ namespace ET.Server
             {
                 async ETTask TimeWaitAsync()
                 {
-                    long lockInfoInstanceId = lockInfo.InstanceId;
                     await self.Root().GetComponent<TimerComponent>().WaitAsync(time);
-                    if (lockInfo.InstanceId != lockInfoInstanceId)
+                    lockInfo = lockInfoRef;
+                    if (lockInfo == null)
                     {
                         return;
                     }
                     Log.Info($"location timeout unlock key: {key} instanceId: {actorId} newInstanceId: {actorId}");
+                    self = selfRef;
                     self.UnLock(key, actorId, actorId);
                 }
                 TimeWaitAsync().NoContext();

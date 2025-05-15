@@ -8,9 +8,10 @@ namespace ET.Client
             
             ClientSenderComponent clientSenderComponent = root.AddComponent<ClientSenderComponent>();
             
-            
+            EntityRef<Scene> rootRef = root;
             long playerId = await clientSenderComponent.LoginAsync(address, account, password);
 
+            root = rootRef;
             root.GetComponent<PlayerComponent>().MyId = playerId;
             
             await EventSystem.Instance.PublishAsync(root, new LoginFinish());

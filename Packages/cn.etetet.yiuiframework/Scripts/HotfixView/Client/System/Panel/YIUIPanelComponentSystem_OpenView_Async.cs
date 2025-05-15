@@ -9,16 +9,20 @@ namespace ET.Client
         public static async ETTask<T> OpenViewAsync<T>(this YIUIPanelComponent self)
                 where T : Entity
         {
-            var view = await self.GetView<T>();
+            EntityRef<YIUIPanelComponent> selfRef = self;
+            Entity view = await self.GetView<T>();
             if (view == null) return default;
-
+            EntityRef<Entity> viewRef = view;
             var success       = false;
             var component     = (T)view;
             var viewComponent = component.GetParent<YIUIChild>().GetComponent<YIUIViewComponent>();
+            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
+            self = selfRef;
             await self.OpenViewBefore(view);
 
             try
             {
+                viewComponent = viewComponentRef;
                 success = await viewComponent.Open();
             }
             catch (Exception e)
@@ -26,6 +30,9 @@ namespace ET.Client
                 Debug.LogError($"err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
+
+            view = viewRef;
             await self.OpenViewAfter(view, success);
 
             return component;
@@ -34,18 +41,23 @@ namespace ET.Client
         public static async ETTask<T> OpenViewParamAsync<T>(this YIUIPanelComponent self, params object[] paramMore)
                 where T : Entity, IYIUIOpen<ParamVo>
         {
+            EntityRef<YIUIPanelComponent> selfRef = self;
             var view = await self.GetView<T>();
+            
             if (view == null) return default;
-
+            EntityRef<Entity> viewRef = view;
             var success       = false;
             var component     = (T)view;
             var viewComponent = component.GetParent<YIUIChild>().GetComponent<YIUIViewComponent>();
+            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
+            self = selfRef;
             await self.OpenViewBefore(view);
 
             var p = ParamVo.Get(paramMore);
 
             try
             {
+                viewComponent = viewComponentRef;
                 success = await viewComponent.Open(p);
             }
             catch (Exception e)
@@ -53,6 +65,8 @@ namespace ET.Client
                 Debug.LogError($"err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
+            view = viewRef;
             await self.OpenViewAfter(view, success);
 
             ParamVo.Put(p);
@@ -63,16 +77,21 @@ namespace ET.Client
         public static async ETTask<T> OpenViewAsync<T, P1>(this YIUIPanelComponent self, P1 p1)
                 where T : Entity, IYIUIOpen<P1>
         {
+            EntityRef<YIUIPanelComponent> selfRef = self;
             var view = await self.GetView<T>();
             if (view == null) return default;
+            EntityRef<Entity> viewRef = view;
 
             var success       = false;
             var component     = (T)view;
             var viewComponent = component.GetParent<YIUIChild>().GetComponent<YIUIViewComponent>();
+            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
+            self = selfRef;
             await self.OpenViewBefore(view);
 
             try
             {
+                viewComponent = viewComponentRef;
                 success = await viewComponent.Open(p1);
             }
             catch (Exception e)
@@ -80,6 +99,8 @@ namespace ET.Client
                 Debug.LogError($"err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
+            view = viewRef;
             await self.OpenViewAfter(view, success);
 
             return component;
@@ -88,16 +109,21 @@ namespace ET.Client
         public static async ETTask<T> OpenViewAsync<T, P1, P2>(this YIUIPanelComponent self, P1 p1, P2 p2)
                 where T : Entity, IYIUIOpen<P1, P2>
         {
+            EntityRef<YIUIPanelComponent> selfRef = self;
             var view = await self.GetView<T>();
             if (view == null) return default;
 
+            EntityRef<Entity> viewRef = view;
             var success       = false;
             var component     = (T)view;
             var viewComponent = component.GetParent<YIUIChild>().GetComponent<YIUIViewComponent>();
+            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
+            self = selfRef;
             await self.OpenViewBefore(view);
 
             try
             {
+                viewComponent = viewComponentRef;
                 success = await viewComponent.Open(p1, p2);
             }
             catch (Exception e)
@@ -105,6 +131,8 @@ namespace ET.Client
                 Debug.LogError($"err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
+            view = viewRef;
             await self.OpenViewAfter(view, success);
 
             return component;
@@ -113,16 +141,21 @@ namespace ET.Client
         public static async ETTask<T> OpenViewAsync<T, P1, P2, P3>(this YIUIPanelComponent self, P1 p1, P2 p2, P3 p3)
                 where T : Entity, IYIUIOpen<P1, P2, P3>
         {
+            EntityRef<YIUIPanelComponent> selfRef = self;
             var view = await self.GetView<T>();
             if (view == null) return default;
 
+            EntityRef<Entity> viewRef = view;
             var success       = false;
             var component     = (T)view;
             var viewComponent = component.GetParent<YIUIChild>().GetComponent<YIUIViewComponent>();
+            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
+            self = selfRef;
             await self.OpenViewBefore(view);
 
             try
             {
+                viewComponent = viewComponentRef;
                 success = await viewComponent.Open(p1, p2, p3);
             }
             catch (Exception e)
@@ -130,6 +163,8 @@ namespace ET.Client
                 Debug.LogError($"err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
+            view = viewRef;
             await self.OpenViewAfter(view, success);
 
             return component;
@@ -138,16 +173,21 @@ namespace ET.Client
         public static async ETTask<T> OpenViewAsync<T, P1, P2, P3, P4>(this YIUIPanelComponent self, P1 p1, P2 p2, P3 p3, P4 p4)
                 where T : Entity, IYIUIOpen<P1, P2, P3, P4>
         {
+            EntityRef<YIUIPanelComponent> selfRef = self;
             var view = await self.GetView<T>();
             if (view == null) return default;
 
+            EntityRef<Entity> viewRef = view;
             var success       = false;
             var component     = (T)view;
             var viewComponent = component.GetParent<YIUIChild>().GetComponent<YIUIViewComponent>();
+            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
+            self = selfRef;
             await self.OpenViewBefore(view);
 
             try
             {
+                viewComponent = viewComponentRef;
                 success = await viewComponent.Open(p1, p2, p3, p4);
             }
             catch (Exception e)
@@ -155,6 +195,8 @@ namespace ET.Client
                 Debug.LogError($"err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
+            view = viewRef;
             await self.OpenViewAfter(view, success);
 
             return component;
@@ -164,16 +206,20 @@ namespace ET.Client
                                                                            P5                      p5)
                 where T : Entity, IYIUIOpen<P1, P2, P3, P4, P5>
         {
+            EntityRef<YIUIPanelComponent> selfRef = self;
             var view = await self.GetView<T>();
             if (view == null) return default;
-
+            EntityRef<Entity> viewRef = view;
             var success       = false;
             var component     = (T)view;
             var viewComponent = component.GetParent<YIUIChild>().GetComponent<YIUIViewComponent>();
+            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
+            self = selfRef;
             await self.OpenViewBefore(view);
 
             try
             {
+                viewComponent = viewComponentRef;
                 success = await viewComponent.Open(p1, p2, p3, p4, p5);
             }
             catch (Exception e)
@@ -181,6 +227,8 @@ namespace ET.Client
                 Debug.LogError($"err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
+            view = viewRef;
             await self.OpenViewAfter(view, success);
 
             return component;

@@ -8,6 +8,7 @@ namespace ET.Client
     {
         internal static async ETTask<Entity> OpenPanelAsync(this YIUIMgrComponent self, string componentName, Entity root)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = self.GetPanelInfo(componentName);
             if (info == null) return default;
 
@@ -16,6 +17,8 @@ namespace ET.Client
 
             var success   = false;
             var component = info.OwnerUIEntity;
+            EntityRef<Entity> componentRef = component;
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -27,13 +30,16 @@ namespace ET.Client
                 Debug.LogError($"panel={info.ResName}, err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
+            component = componentRef;
             return success ? component : null;
         }
 
         internal static async ETTask<Entity> OpenPanelParamAsync(this YIUIMgrComponent self, string componentName, Entity root, params object[] paramMore)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = self.GetPanelInfo(componentName);
             if (info == null) return default;
 
@@ -42,6 +48,8 @@ namespace ET.Client
 
             var success   = false;
             var component = info.OwnerUIEntity;
+            EntityRef<Entity> componentRef = component;
+            self = selfRef;
             await self.OpenPanelBefore(info);
             var p = ParamVo.Get(paramMore);
 
@@ -54,14 +62,17 @@ namespace ET.Client
                 Debug.LogError($"panel={info.ResName}, err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
             ParamVo.Put(p);
 
+            component = componentRef;
             return success ? component : null;
         }
 
         internal static async ETTask<Entity> OpenPanelAsync<P1>(this YIUIMgrComponent self, string componentName, Entity root, P1 p1)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = self.GetPanelInfo(componentName);
             if (info == null) return default;
 
@@ -70,6 +81,8 @@ namespace ET.Client
 
             var success   = false;
             var component = info.OwnerUIEntity;
+            EntityRef<Entity> componentRef = component;
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -81,13 +94,16 @@ namespace ET.Client
                 Debug.LogError($"panel={info.ResName}, err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
+            component = componentRef;
             return success ? component : null;
         }
 
         internal static async ETTask<Entity> OpenPanelAsync<P1, P2>(this YIUIMgrComponent self, string componentName, Entity root, P1 p1, P2 p2)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = self.GetPanelInfo(componentName);
             if (info == null) return default;
 
@@ -96,6 +112,8 @@ namespace ET.Client
 
             var success   = false;
             var component = info.OwnerUIEntity;
+            EntityRef<Entity> componentRef = component;
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -107,13 +125,16 @@ namespace ET.Client
                 Debug.LogError($"panel={info.ResName}, err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
+            component = componentRef;
             return success ? component : null;
         }
 
         internal static async ETTask<Entity> OpenPanelAsync<P1, P2, P3>(this YIUIMgrComponent self, string componentName, Entity root, P1 p1, P2 p2, P3 p3)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = self.GetPanelInfo(componentName);
             if (info == null) return default;
 
@@ -122,6 +143,8 @@ namespace ET.Client
 
             var success   = false;
             var component = info.OwnerUIEntity;
+            EntityRef<Entity> componentRef = component;
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -133,13 +156,16 @@ namespace ET.Client
                 Debug.LogError($"panel={info.ResName}, err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
+            component = componentRef;
             return success ? component : null;
         }
 
         internal static async ETTask<Entity> OpenPanelAsync<P1, P2, P3, P4>(this YIUIMgrComponent self, string componentName, Entity root, P1 p1, P2 p2, P3 p3, P4 p4)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = self.GetPanelInfo(componentName);
             if (info == null) return default;
 
@@ -148,6 +174,8 @@ namespace ET.Client
 
             var success   = false;
             var component = info.OwnerUIEntity;
+            EntityRef<Entity> componentRef = component;
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -159,13 +187,16 @@ namespace ET.Client
                 Debug.LogError($"panel={info.ResName}, err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
+            component = componentRef;
             return success ? component : null;
         }
 
         internal static async ETTask<Entity> OpenPanelAsync<P1, P2, P3, P4, P5>(this YIUIMgrComponent self, string componentName, Entity root, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = self.GetPanelInfo(componentName);
             if (info == null) return default;
 
@@ -174,6 +205,8 @@ namespace ET.Client
 
             var success   = false;
             var component = info.OwnerUIEntity;
+            EntityRef<Entity> componentRef = component;
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -185,8 +218,10 @@ namespace ET.Client
                 Debug.LogError($"panel={info.ResName}, err={e.Message}{e.StackTrace}");
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
+            component = componentRef;
             return success ? component : null;
         }
     }

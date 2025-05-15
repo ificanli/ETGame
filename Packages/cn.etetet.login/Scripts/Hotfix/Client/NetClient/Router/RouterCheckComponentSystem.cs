@@ -15,23 +15,28 @@ namespace ET.Client
         private static async ETTask CheckAsync(this RouterCheckComponent self)
         {
             Session session = self.GetParent<Session>();
-            long instanceId = self.InstanceId;
             Fiber fiber = self.Fiber();
             Scene root = fiber.Root;
             
             IPEndPoint realAddress = session.RemoteAddress;
             NetComponent netComponent = root.GetComponent<NetComponent>();
             
+            EntityRef<RouterCheckComponent> selfRef = self;
+            EntityRef<Session> sessionRef = session;
+            EntityRef<Scene> rootRef = root;
+            EntityRef<NetComponent> netComponentRef = netComponent;
             while (true)
             {
-                if (self.InstanceId != instanceId)
+                await fiber.Root.GetComponent<TimerComponent>().WaitAsync(1000);
+                
+                self = selfRef;
+                session = sessionRef;
+                
+                if (self == null)
                 {
                     return;
                 }
-
-                await fiber.Root.GetComponent<TimerComponent>().WaitAsync(1000);
-                
-                if (self.InstanceId != instanceId)
+                if (session == null)
                 {
                     return;
                 }
@@ -49,10 +54,14 @@ namespace ET.Client
 
                     (uint localConn, uint remoteConn) = session.AService.GetChannelConn(sessionId);
                     
+                    root = rootRef;
+                    netComponent = netComponentRef;
                     
                     Log.Info($"get recvLocalConn start: {root.Id} {realAddress} {localConn} {remoteConn}");
 
                     (uint recvLocalConn, IPEndPoint routerAddress) = await netComponent.GetRouterAddress(realAddress, localConn, remoteConn);
+                    session = sessionRef;
+                    root = rootRef;
                     if (recvLocalConn == 0)
                     {
                         Log.Error($"get recvLocalConn fail: {root.Id} {routerAddress} {realAddress} {localConn} {remoteConn}");

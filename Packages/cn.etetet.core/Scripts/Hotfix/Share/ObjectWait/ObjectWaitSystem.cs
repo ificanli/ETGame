@@ -25,13 +25,14 @@ namespace ET
         
         public static async ETTask<T> Wait<T>(this ObjectWait self) where T : struct, IWaitType
         {
-            ResultCallback<T> tcs = new ResultCallback<T>();
+            ResultCallback<T> tcs = new();
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             self.tcss.Add(typeof (T), tcs);
-            
+            EntityRef<ObjectWait> selfRef = self;
             void CancelAction()
             {
-                self.Notify(new T() { Error = WaitTypeError.Cancel });
+                ObjectWait objectWait = selfRef;
+                objectWait.Notify(new T() { Error = WaitTypeError.Cancel });
             }
             
             T ret;

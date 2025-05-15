@@ -81,6 +81,8 @@ namespace ET.Client
         [EnableAccessEntiyChild]
         internal static async ETTask<PanelInfo> OpenPanelStartAsync(this YIUIMgrComponent self, string panelName, Entity parentEntity)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
+            EntityRef<Entity> parentEntityRef = parentEntity;
             if (string.IsNullOrEmpty(panelName))
             {
                 Debug.LogError($"<color=red> 无法打开 这是一个空名称 </color>");
@@ -101,10 +103,12 @@ namespace ET.Client
             Debug.Log($"<color=yellow> 打开UI: {panelName} </color>");
             #endif
 
+            self = selfRef;
             EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelOpenBefore { UIPkgName = info.PkgName, UIResName = info.ResName, UIComponentName = info.Name, PanelLayer = info.PanelLayer, });
 
             if (info.UIBase == null)
             {
+                parentEntity = parentEntityRef;
                 var uiCom = await YIUIFactory.CreatePanelAsync(info, parentEntity);
                 if (uiCom == null)
                 {
@@ -171,6 +175,7 @@ namespace ET.Client
         internal static async ETTask<T> OpenPanelAsync<T>(this YIUIMgrComponent self, Entity root)
         where T : Entity, IAwake, IYIUIOpen
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = await self.OpenPanelStartAsync(self.GetPanelName<T>(), root ?? self);
             if (info == null) return default;
 
@@ -182,6 +187,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -194,6 +200,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
             return success ? component : null;
@@ -202,6 +209,7 @@ namespace ET.Client
         internal static async ETTask<T> OpenPanelParamAsync<T>(this YIUIMgrComponent self, Entity root, params object[] paramMore)
         where T : Entity, IYIUIOpen<ParamVo>
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = await self.OpenPanelStartAsync(self.GetPanelName<T>(), root ?? self);
             if (info == null) return default;
 
@@ -213,6 +221,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             var p = ParamVo.Get(paramMore);
@@ -227,6 +236,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
             ParamVo.Put(p);
@@ -237,6 +247,7 @@ namespace ET.Client
         internal static async ETTask<T> OpenPanelAsync<T, P1>(this YIUIMgrComponent self, Entity root, P1 p1)
         where T : Entity, IYIUIOpen<P1>
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = await self.OpenPanelStartAsync(self.GetPanelName<T>(), root ?? self);
             if (info == null) return default;
 
@@ -248,6 +259,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -260,6 +272,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
             return success ? component : null;
@@ -268,6 +281,7 @@ namespace ET.Client
         internal static async ETTask<T> OpenPanelAsync<T, P1, P2>(this YIUIMgrComponent self, Entity root, P1 p1, P2 p2)
         where T : Entity, IYIUIOpen<P1, P2>
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = await self.OpenPanelStartAsync(self.GetPanelName<T>(), root ?? self);
             if (info == null) return default;
 
@@ -279,6 +293,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -291,6 +306,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
             return success ? component : null;
@@ -299,6 +315,7 @@ namespace ET.Client
         internal static async ETTask<T> OpenPanelAsync<T, P1, P2, P3>(this YIUIMgrComponent self, Entity root, P1 p1, P2 p2, P3 p3)
         where T : Entity, IYIUIOpen<P1, P2, P3>
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = await self.OpenPanelStartAsync(self.GetPanelName<T>(), root ?? self);
             if (info == null) return default;
 
@@ -310,6 +327,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -322,6 +340,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
             return success ? component : default;
@@ -330,6 +349,7 @@ namespace ET.Client
         internal static async ETTask<T> OpenPanelAsync<T, P1, P2, P3, P4>(this YIUIMgrComponent self, Entity root, P1 p1, P2 p2, P3 p3, P4 p4)
         where T : Entity, IYIUIOpen<P1, P2, P3, P4>
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = await self.OpenPanelStartAsync(self.GetPanelName<T>(), root ?? self);
             if (info == null) return default;
 
@@ -341,6 +361,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -353,6 +374,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
             return success ? component : null;
@@ -361,6 +383,7 @@ namespace ET.Client
         internal static async ETTask<T> OpenPanelAsync<T, P1, P2, P3, P4, P5>(this YIUIMgrComponent self, Entity root, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5)
         where T : Entity, IYIUIOpen<P1, P2, P3, P4, P5>
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var info = await self.OpenPanelStartAsync(self.GetPanelName<T>(), root ?? self);
             if (info == null) return default;
 
@@ -372,6 +395,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelBefore(info);
 
             try
@@ -384,6 +408,7 @@ namespace ET.Client
                 return default;
             }
 
+            self = selfRef;
             await self.OpenPanelAfter(info, success);
 
             return success ? component : null;

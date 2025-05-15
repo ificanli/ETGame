@@ -11,10 +11,12 @@
         //关闭自己 异步
         public static async ETTask<bool> CloseAsync(this YIUIViewComponent self, bool tween = true)
         {
+            EntityRef<YIUIViewComponent> selfRef = self;
             var view = self?.OwnerUIEntity;
             if (view != null)
             {
                 var success = await YIUIEventSystem.Close(view);
+                self = selfRef;
                 if (self.UIWindow is { WindowCloseTweenBefor: true })
                     await YIUIEventSystem.WindowClose(self.UIWindow, success);
                 if (!success)
@@ -26,6 +28,7 @@
 
             await self.UIWindow.InternalOnWindowCloseTween(tween);
 
+            self = selfRef;
             self.UIBase.SetActive(false);
 
             if (self.UIWindow is { WindowCloseTweenBefor: false })

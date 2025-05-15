@@ -37,7 +37,9 @@ namespace ET.Server
             response.StatusCode = 200;
             response.ContentEncoding = Encoding.UTF8;
             response.ContentLength64 = bytes.Length;
+            EntityRef<Scene> sceneRef = scene;
             await response.OutputStream.WriteAsync(bytes, 0, bytes.Length);
+            scene = sceneRef;
             await scene.Root().GetComponent<TimerComponent>().WaitAsync(1000);
         }
     }

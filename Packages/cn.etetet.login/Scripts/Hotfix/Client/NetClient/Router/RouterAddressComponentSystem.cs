@@ -23,11 +23,13 @@ namespace ET.Client
 
         private static async ETTask GetAllRouter(this RouterAddressComponent self)
         {
+            EntityRef<RouterAddressComponent> selfRef = self;
             string url = $"http://{self.Address}/get_router?v={RandomGenerator.RandUInt32()}";
             Log.Debug($"start get router info: {url}");
             string routerInfo = await HttpClientHelper.Get(url);
             Log.Debug($"recv router info: {routerInfo}");
             HttpGetRouterResponse httpGetRouterResponse = MongoHelper.FromJson<HttpGetRouterResponse>(routerInfo);
+            self = selfRef;
             self.Info = httpGetRouterResponse;
             Log.Debug($"start get router info finish: {MongoHelper.ToJson(httpGetRouterResponse)}");
             
@@ -40,7 +42,9 @@ namespace ET.Client
         // 等10分钟再获取一次
         public static async ETTask WaitTenMinGetAllRouter(this RouterAddressComponent self)
         {
+            EntityRef<RouterAddressComponent> selfRef = self;
             await self.Root().GetComponent<TimerComponent>().WaitAsync(5 * 60 * 1000);
+            self = selfRef;
             if (self.IsDisposed)
             {
                 return;

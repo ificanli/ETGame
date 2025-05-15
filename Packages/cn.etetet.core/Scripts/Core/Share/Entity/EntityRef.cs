@@ -41,7 +41,9 @@ namespace ET
         {
             if (t == null)
             {
-                throw new Exception("cant convert to entityref, entity is null");
+                this.instanceId = 0;
+                this.entity = null;
+                return;
             }
 
             if (t.InstanceId == 0)
@@ -92,7 +94,9 @@ namespace ET
         {
             if (t == null)
             {
-                throw new Exception("cant convert to entityref, entity is null");
+                this.instanceId = 0;
+                this.weakRef = null;
+                return;
             }
 
             if (t.InstanceId == 0)
@@ -109,6 +113,12 @@ namespace ET
             {
                 if (this.instanceId == 0)
                 {
+                    return null;
+                }
+
+                if (this.weakRef == null)
+                {
+                    this.instanceId = 0;
                     return null;
                 }
 

@@ -74,6 +74,7 @@ namespace ET.Client
 
         public static async ETTask<Entity> CreateAsync(YIUIBindVo vo, Entity parentEntity)
         {
+            EntityRef<Entity> parentEntityRef = parentEntity;
             var obj = await YIUILoadComponent.Inst?.LoadAssetAsyncInstantiate(vo.PkgName, vo.ResName);
             if (obj == null)
             {
@@ -81,6 +82,7 @@ namespace ET.Client
                 return null;
             }
 
+            parentEntity = parentEntityRef;
             return CreateByObjVo(vo, obj, parentEntity);
         }
     }

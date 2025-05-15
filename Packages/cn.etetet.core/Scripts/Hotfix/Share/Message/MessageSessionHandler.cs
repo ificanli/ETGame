@@ -61,6 +61,8 @@ namespace ET
                 int rpcId = request.RpcId;
                 long instanceId = session.InstanceId;
 
+                EntityRef<Session> sessionRef = session;
+                
                 // 这里用using很安全，因为后面是session发送出去了
                 using Response response = ObjectPool.Fetch<Response>();
                 try
@@ -79,9 +81,11 @@ namespace ET
                     Log.Error(exception.ToString());
                     response.Error = ErrorCode.ERR_RpcFail;
                 }
+
+                session = sessionRef;
                 
                 // 等回调回来,session可以已经断开了,所以需要判断session InstanceId是否一样
-                if (session.InstanceId != instanceId)
+                if (session == null)
                 {
                     return;
                 }

@@ -7,7 +7,9 @@ namespace ET.Client
         {
             var currentScene = scene.GetComponent<CurrentScenesComponent>().Scene;
             var yiuiRoot     = currentScene.GetComponent<YIUIRootComponent>();
+            EntityRef<YIUIRootComponent> yiuiRootRef = yiuiRoot;
             await yiuiRoot.OpenPanelAsync<MainPanelComponent>();
+            yiuiRoot = yiuiRootRef;
             await yiuiRoot.OpenPanelAsync<HUDPanelComponent>();
         }
     }

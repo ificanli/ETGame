@@ -5,6 +5,7 @@ namespace ET
 {
     public static class ETTaskHelper
     {
+        [SkipAwaitEntityCheck]
         public static async ETTask<T> GetContextAsync<T>() where T: class
         {
             ETTask<object> tcs = ETTask<object>.Create(true);

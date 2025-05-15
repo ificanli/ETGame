@@ -103,6 +103,8 @@ namespace ET.Client
         [EnableAccessEntiyChild]
         private static async ETTask<bool> OpenTips(this TipsPanelComponent self, Type uiType, Entity parent, ParamVo vo, long waitId = 0)
         {
+            EntityRef<TipsPanelComponent> selfRef = self;
+            EntityRef<Entity> parentRef = parent;
             if (!self._AllPool.ContainsKey(uiType))
             {
                 async ETTask<EntityRef<Entity>> Create()
@@ -117,6 +119,7 @@ namespace ET.Client
             var pool = self._AllPool[uiType];
             self._RefCount += 1; //加载前引用计数+1 防止加载过程中有人关闭 出现问题
             Entity view = await pool.Get();
+            self = selfRef;
             if (view == null)
             {
                 self._RefCount -= 1;
@@ -155,16 +158,21 @@ namespace ET.Client
 
             uiComponent.OwnerRectTransform.SetAsLastSibling();
 
+            parent = parentRef;
             uiComponent.SetParent(parent);
 
             self._AllRefView.Add(view);
+            
+            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
 
             var result = await viewComponent.Open(vo);
             if (!result)
             {
+                viewComponent = viewComponentRef;
                 await viewComponent.CloseAsync(false);
             }
 
+            self = selfRef;
             return self._RefCount > 0;
         }
 

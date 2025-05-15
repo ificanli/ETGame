@@ -8,9 +8,11 @@ namespace ET.Client
         // 注册router
         public static async ETTask<Session> CreateRouterSession(this NetComponent netComponent, IPEndPoint address, string account, string password)
         {
+            EntityRef<NetComponent> netComponentRef = netComponent;
             uint localConn = (uint)(account.GetLongHashCode() ^ password.GetLongHashCode() ^ RandomGenerator.RandUInt32());
             (uint recvLocalConn, IPEndPoint routerAddress) = await GetRouterAddress(netComponent, address, localConn, 0);
-
+            
+            netComponent = netComponentRef;
             if (recvLocalConn == 0)
             {
                 throw new Exception($"get router fail: {netComponent.Root().Id} {address}");
@@ -27,13 +29,14 @@ namespace ET.Client
         
         public static async ETTask<(uint, IPEndPoint)> GetRouterAddress(this NetComponent netComponent, IPEndPoint address, uint localConn, uint remoteConn)
         {
+            EntityRef<NetComponent> netComponentRef = netComponent;
             Log.Info($"start get router address: {netComponent.Root().Id} {address} {localConn} {remoteConn}");
             //return (RandomHelper.RandUInt32(), address);
             RouterAddressComponent routerAddressComponent = netComponent.Root().GetComponent<RouterAddressComponent>();
             IPEndPoint routerInfo = routerAddressComponent.GetAddress();
             
             uint recvLocalConn = await netComponent.Connect(routerInfo, address, localConn, remoteConn);
-            
+            netComponent = netComponentRef;
             Log.Info($"finish get router address: {netComponent.Root().Id} {address} {localConn} {remoteConn} {recvLocalConn} {routerInfo}");
             return (recvLocalConn, routerInfo);
         }
@@ -46,7 +49,7 @@ namespace ET.Client
             // 注意，session也以localConn作为id，所以这里不能用localConn作为id
             long id = (long)(((ulong)localConn << 32) | remoteConn);
             using RouterConnector routerConnector = netComponent.AddChildWithId<RouterConnector>(id);
-            
+            EntityRef<RouterConnector> routerConnectorRef = routerConnector;
             int count = 20;
             byte[] sendCache = new byte[512];
 
@@ -79,7 +82,7 @@ namespace ET.Client
                 }
 
                 await timerComponent.WaitFrameAsync();
-                
+
                 if (routerConnector.Flag == 0)
                 {
                     continue;

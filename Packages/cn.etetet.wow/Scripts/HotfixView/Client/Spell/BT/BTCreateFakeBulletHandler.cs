@@ -21,7 +21,9 @@ namespace ET.Client
                 Unit caster, Transform target, string effectName, 
                 BindPoint casterBindPoint, int duration, BTCreateFakeBullet node)
         {
+            EntityRef<Unit> casterRef = caster;
             GameObject go = await caster.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(effectName);
+            caster = casterRef;
             GameObject effect = EffectUnitHelper.Create(caster, casterBindPoint, go, true, duration);
             await MoveToTarget(caster.Root(), effect.transform, target, node);;
         }

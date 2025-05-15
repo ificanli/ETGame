@@ -48,10 +48,12 @@ namespace ET.Client
 
         public static async ETTask<DamageNumber> Get(this DamageTipsPanelComponent self, string presetName)
         {
+            EntityRef<DamageTipsPanelComponent> selfRef = self;
             if (!self.m_Pool.ContainsKey(presetName))
             {
                 using var coroutineLock = await YIUIMgrComponent.Inst?.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, presetName.GetHashCode());
 
+                self = selfRef;
                 if (!self.m_Original.ContainsKey(presetName))
                 {
                     var original = await BaseCreate();
@@ -59,6 +61,7 @@ namespace ET.Client
                     var obj = original.gameObject;
                     obj.name = obj.name.Replace("(Clone)", "(Original)");
                     obj.SetActive(false);
+                    self = selfRef;
                     self.m_Original.Add(presetName, original);
                     self.m_Pool.Add(presetName, new ObjAsyncCache<DamageNumber>(Create));
                 }
@@ -84,6 +87,7 @@ namespace ET.Client
                     if (rectTsf == null) //3D
                     {
                         //TODO 这里应该还有个2D判断 但是我们的3D游戏 所以不考虑
+                        self = selfRef;
                         damageNumber.transform.SetParent(self.m_PoolParent, true);
                     }
                     else //UI
@@ -99,6 +103,7 @@ namespace ET.Client
                     var damageNumber = await BaseCreate();
                     if (damageNumber == null) return null;
                     damageNumber.PoolPutAction  = Put;
+                    self = selfRef;
                     damageNumber.OriginalPrefab = self.m_Original[presetName];
                     return damageNumber;
                 }
@@ -109,8 +114,11 @@ namespace ET.Client
 
             //编辑器下 可以手动删除对象池就会返回空 方便调试这里一定会返回一个存在的对象
             if (damageNumber == null)
+            {
+                self = selfRef;
                 damageNumber = await self.Get(presetName);
-            #endif
+            }
+#endif
             if (damageNumber == null)
             {
                 Log.Error($"{presetName} 错误 没有得到一个正确的对象");

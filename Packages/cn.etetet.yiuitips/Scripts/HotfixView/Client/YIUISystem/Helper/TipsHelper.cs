@@ -48,8 +48,10 @@ namespace ET.Client
         public static async ETTask OpenToParent<T>(ParamVo vo, Entity parent = null)
                 where T : Entity
         {
+            EntityRef<Entity> parentRef = parent;
             using var coroutineLock = await YIUIMgrComponent.Inst.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, typeof(TipsHelper).GetHashCode());
 
+            parent = parentRef;
             await YIUIMgrComponent.Inst.Root.OpenPanelAsync<TipsPanelComponent, Type, Entity, ParamVo>(typeof(T), parent, vo);
         }
 
@@ -64,9 +66,11 @@ namespace ET.Client
         private static async ETTask OpenToParent2NewVo<T>(ParamVo vo, Entity parent = null)
                 where T : Entity
         {
+            EntityRef<Entity> parentRef = parent;
             using var coroutineLock = await YIUIMgrComponent.Inst.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, typeof(TipsHelper).GetHashCode());
 
             var newVo = ParamVo.Get(vo.Data);
+            parent = parentRef;
             await YIUIMgrComponent.Inst.Root.OpenPanelAsync<TipsPanelComponent, Type, Entity, ParamVo>(typeof(T), parent, newVo);
             ParamVo.Put(newVo);
         }

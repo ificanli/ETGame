@@ -27,10 +27,13 @@ namespace ET.Server
         protected override async ETTask Execute(AIComponent aiComponent, AI_PetZhuiJi node, BTEnv env)
         {
             Unit unit = aiComponent.GetParent<Unit>();
+            EntityRef<Unit> unitRef = unit;
 
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
+            EntityRef<TargetComponent> targetComponentRef = targetComponent;
             
             TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
+            EntityRef<TimerComponent> timerRef = timerComponent;
             
             float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
             
@@ -40,12 +43,14 @@ namespace ET.Server
             
             while (true)
             {
+                timerComponent = timerRef;
                 await timerComponent.WaitAsync(200);
                 if (cancellationToken.IsCancel())
                 {
                     return;
                 }
-                
+
+                targetComponent = targetComponentRef;
                 Unit target = targetComponent.Unit;
                 if (target == null)
                 {
@@ -55,6 +60,7 @@ namespace ET.Server
                 // 选择技能，移动到技能攻击范围
                 int spellId = 100100;
                 SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellId);
+                unit = unitRef;
                 float distance = math.distance(unit.Position, target.Position);
                 float targetRadius = target.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
                 float d1 = distance - targetRadius - unitRadius;

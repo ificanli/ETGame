@@ -21,18 +21,27 @@ namespace ET.Server
 
             PlayerComponent playerComponent = root.GetComponent<PlayerComponent>();
             Player player = playerComponent.GetByAccount(account);
+            EntityRef<Session> sessionRef = session;
+            
             if (player == null)
             {
                 player = playerComponent.AddChild<Player, string>(account);
+                EntityRef<Player> playerRef = player;
                 playerComponent.Add(player);
                 PlayerSessionComponent playerSessionComponent = player.AddComponent<PlayerSessionComponent>();
                 playerSessionComponent.AddComponent<MailBoxComponent, int>(MailBoxType.GateSession);
+                
+                EntityRef<PlayerSessionComponent> playerSessionComponentRef = playerSessionComponent;
                 await playerSessionComponent.AddLocation(LocationType.GateSession);
-			
+
+                player = playerRef;
                 player.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
                 await player.AddLocation(LocationType.Player);
-			
+                
+                player = playerRef;
+                session = sessionRef;
                 session.AddComponent<SessionPlayerComponent>().Player = player;
+                playerSessionComponent = playerSessionComponentRef;
                 playerSessionComponent.Session = session;
             }
             else

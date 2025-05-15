@@ -7,8 +7,9 @@ namespace ET.Server
     {
         public static async ETTask TransferAtFrameFinish(Unit unit, ActorId sceneInstanceId, string sceneName)
         {
+            EntityRef<Unit> unitRef = unit;
             await unit.Fiber().WaitFrameFinish();
-
+            unit = unitRef;
             await TransferHelper.Transfer(unit, sceneInstanceId, sceneName);
         }
         
@@ -16,7 +17,7 @@ namespace ET.Server
         public static async ETTask Transfer(Unit unit, ActorId sceneInstanceId, string sceneName)
         {
             Scene root = unit.Root();
-            
+            EntityRef<Scene> rootRef = root;
             // location加锁
             long unitId = unit.Id;
             
@@ -33,6 +34,7 @@ namespace ET.Server
             unit.Dispose();
             
             await root.GetComponent<LocationProxyComponent>().Lock(LocationType.Unit, unitId, request.OldActorId);
+            root = rootRef;
             await root.GetComponent<MessageSender>().Call(sceneInstanceId, request);
         }
     }

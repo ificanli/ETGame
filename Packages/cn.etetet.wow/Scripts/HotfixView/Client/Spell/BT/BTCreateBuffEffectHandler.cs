@@ -17,10 +17,14 @@ namespace ET.Client
 
         private static async ETTask CreateBuffEffectAsync(Unit unit, Buff buff, BindPoint bindPoint, string effectName, int duration)
         {
+            EntityRef<Buff> buffRef = buff;
+            EntityRef<Unit> unitRef = unit;
             GameObject go = await unit.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(effectName);
-            
+
+            unit = unitRef;
             GameObject effect = EffectUnitHelper.Create(unit, bindPoint, go, true, duration);
-            
+
+            buff = buffRef;
             buff.AddComponent<BuffGameObjectComponent>().GameObjects.Add(effect);
         }
     }

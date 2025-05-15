@@ -86,10 +86,14 @@ namespace ET.Client
             try
             {
                 var paramVo = ParamVo.Get(objData);
+                EntityRef<GMCommandComponent> selfRef = self;
                 var closeGM = await info.Command.Run(self.Root(), paramVo);
                 ParamVo.Put(paramVo);
                 if (closeGM)
+                {
+                    self = selfRef;
                     await self.DynamicEvent(new OnGMEventClose());
+                }
             }
             catch (Exception e)
             {

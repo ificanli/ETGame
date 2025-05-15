@@ -19,7 +19,7 @@ namespace ET.Server
         private static async ETTask Start(this ConsoleComponent self)
         {
             self.CancellationTokenSource = new CancellationTokenSource();
-
+            EntityRef<ConsoleComponent> selfRef = self;
             while (true)
             {
                 try
@@ -39,6 +39,7 @@ namespace ET.Server
                         case "":
                             break;
                         case "exit":
+                            self = selfRef;
                             self.RemoveComponent<ModeContex>();
                             break;
                         default:

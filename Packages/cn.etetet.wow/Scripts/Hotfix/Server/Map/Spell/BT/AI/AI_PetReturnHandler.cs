@@ -25,10 +25,12 @@ namespace ET.Server
             unit.GetComponent<TargetComponent>().Unit = default;
 
             TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
+            EntityRef<TimerComponent> timerRef = timerComponent;
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
             while (true)
             {
+                timerComponent = timerRef;
                 await timerComponent.WaitAsync(1000);
                 if (cancellationToken.IsCancel())
                 {

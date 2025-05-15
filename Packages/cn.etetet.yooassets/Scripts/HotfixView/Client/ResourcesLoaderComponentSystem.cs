@@ -48,15 +48,18 @@ namespace ET.Client
 
         public static async ETTask<T> LoadAssetAsync<T>(this ResourcesLoaderComponent self, string location) where T : UnityEngine.Object
         {
+            EntityRef<ResourcesLoaderComponent> selfRef = self;
             using CoroutineLock coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.ResourcesLoader, location.GetHashCode());
 
             HandleBase handler;
+            self = selfRef;
             if (!self.handlers.TryGetValue(location, out handler))
             {
                 handler = self.package.LoadAssetAsync<T>(location);
 
                 await handler.Task;
 
+                self = selfRef;
                 self.handlers.Add(location, handler);
             }
 
@@ -78,13 +81,17 @@ namespace ET.Client
 
         public static async ETTask<Dictionary<string, T>> LoadAllAssetsAsync<T>(this ResourcesLoaderComponent self, string location) where T : UnityEngine.Object
         {
+            EntityRef<ResourcesLoaderComponent> selfRef = self;
             using CoroutineLock coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.ResourcesLoader, location.GetHashCode());
 
             HandleBase handler;
+            self = selfRef;
             if (!self.handlers.TryGetValue(location, out handler))
             {
                 handler = self.package.LoadAllAssetsAsync<T>(location);
                 await handler.Task;
+                
+                self = selfRef;
                 self.handlers.Add(location, handler);
             }
 
@@ -100,9 +107,11 @@ namespace ET.Client
 
         public static async ETTask LoadSceneAsync(this ResourcesLoaderComponent self, string location, LoadSceneMode loadSceneMode, Action<float> action = null)
         {
+            EntityRef<ResourcesLoaderComponent> selfRef = self;
             using CoroutineLock coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.ResourcesLoader, location.GetHashCode());
            
             HandleBase handler;
+            self = selfRef;
             if (self.handlers.TryGetValue(location, out handler))
             {
                 return;
@@ -123,6 +132,7 @@ namespace ET.Client
             
             async ETTask LoadProgressCallback(HandleBase handleBase)
             {
+                self = selfRef;
                 TimerComponent timerComponent = self.Root().GetComponent<TimerComponent>();
                 while (true)
                 {

@@ -13,6 +13,7 @@ namespace ET.Client
         /// <param name="ignoreElse">忽略堆栈操作 -- 不要轻易忽略除非你明白 </param>
         public static async ETTask<bool> ClosePanelAsync(this YIUIMgrComponent self, string panelName, bool tween = true, bool ignoreElse = false)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             #if YIUIMACRO_PANEL_OPENCLOSE
             Debug.Log($"<color=yellow> 关闭UI: {panelName} </color>");
             #endif
@@ -24,6 +25,7 @@ namespace ET.Client
 
             using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, coroutineLockCode);
 
+            self = selfRef;
             EventSystem.Instance?.Publish(self.Root(),
                 new YIUIEventPanelCloseBefore
                 {
@@ -61,10 +63,15 @@ namespace ET.Client
                 await info.UIWindow.InternalOnWindowCloseTween(tween);
 
             if (!ignoreElse)
+            {
+                self = selfRef;
                 await self.RemoveUIAddElse(info);
+            }
 
             if (info.UIWindow is { WindowLastClose: true })
+            {
                 await info.UIWindow.InternalOnWindowCloseTween(tween);
+            }
 
             //必须后关闭所有view 没有动画 也不管会不会失败
             //如果你有其他特殊需求 请自行处理
@@ -73,6 +80,7 @@ namespace ET.Client
             if (info.UIWindow is { WindowCloseTweenBefor: false })
                 await YIUIEventSystem.WindowClose(info.UIWindow, true);
 
+            self = selfRef;
             self.RemoveUI(info);
 
             return true;
@@ -135,6 +143,7 @@ namespace ET.Client
         /// <param name="forceHome">如果不存在则 强制打开 被强制打开的无法触发Back Home消息 只会触发常规的open close</param>
         public static async ETTask<bool> HomePanel(this YIUIMgrComponent self, string homeName, bool tween = true, YIUIRootComponent forceHome = null)
         {
+            EntityRef<YIUIRootComponent> forceHomeRef = forceHome;
             #if YIUIMACRO_PANEL_OPENCLOSE
             Debug.Log($"<color=yellow> Home关闭其他所有Panel UI: {homeName} </color>");
             #endif
@@ -149,6 +158,7 @@ namespace ET.Client
                 if (forceHome != null)
                 {
                     await self.CloseAll(EPanelLayer.Panel, EPanelOption.IgnoreClose, tween);
+                    forceHome = forceHomeRef;
                     return await EventSystem.Instance?.YIUIInvokeAsync<YIUIInvokeRootOpenPanel, ETTask<bool>>(new YIUIInvokeRootOpenPanel
                     {
                         Root      = forceHome,

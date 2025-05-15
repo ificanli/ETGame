@@ -67,13 +67,17 @@ namespace ET.Client
 
         public static async ETTask<Vector3> WaitSpellIndicator(this SpellIndicatorComponent self, TargetSelectorCircle targetSelectorCircle)
         {
+            EntityRef<SpellIndicatorComponent> selfRef = self;
             GameObject spellIndicator = await self.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(targetSelectorCircle.SpellIndicator.Name);
+            self = selfRef;
             return await self.WaitPos(spellIndicator, targetSelectorCircle.Radius, targetSelectorCircle.MaxDistance);
         }
         
         public static async ETTask<Vector3> WaitSpellIndicator(this SpellIndicatorComponent self, TargetSelectorPosition targetSelectorPosition)
         {
+            EntityRef<SpellIndicatorComponent> selfRef = self;
             GameObject spellIndicator = await self.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(targetSelectorPosition.SpellIndicator.Name);
+            self = selfRef;
             return await self.WaitPos(spellIndicator, targetSelectorPosition.Radius, targetSelectorPosition.MaxDistance);
         }
     }

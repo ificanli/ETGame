@@ -162,6 +162,7 @@ namespace ET.Server
         {
             BuffConfig buffConfig = buff.GetConfig();
 
+            EntityRef<Buff> buffRef = buff;
             int i = 0;
             while (true)
             {
@@ -170,7 +171,8 @@ namespace ET.Server
                 long nextTick = buff.CreateTime + buffConfig.TickTime * i;
                 
                 await timerComponent.WaitTillAsync(nextTick);
-                if (buff.IsDisposed)
+                buff = buffRef;
+                if (buff == null)
                 {
                     return;
                 }

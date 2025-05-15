@@ -30,9 +30,12 @@ namespace ET.Server
 
             MoveComponent moveComponent = unit.GetComponent<MoveComponent>();
             
+            EntityRef<Unit> unitRef = unit;
+            
             bool ret = await moveComponent.MoveToAsync(m2CPathfindingResult.Points, speed, turnTime);
             if (ret) // 如果返回false，说明被其它移动取消了，这时候不需要通知客户端stop
             {
+                unit = unitRef;
                 unit.SendStop(0);
             }
         }

@@ -12,9 +12,12 @@ namespace ET
             int sceneType = SceneTypeSingleton.Instance.GetSceneType(Options.Instance.SceneName);
             root.SceneType = sceneType;
             root.Name = Options.Instance.SceneName;
-            
+
+            EntityRef<Scene> rootRef = root;
             await EventSystem.Instance.PublishAsync(root, new EntryEvent1());
+            root = rootRef;
             await EventSystem.Instance.PublishAsync(root, new EntryEvent2());
+            root = rootRef;
             await EventSystem.Instance.PublishAsync(root, new EntryEvent3());
         }
     }

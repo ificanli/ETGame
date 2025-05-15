@@ -98,14 +98,13 @@ namespace ET.Server
         private static async ETTask SendInner(this MessageLocationSenderOneType self, long entityId, IMessage message)
         {
             MessageLocationSender messageLocationSender = self.GetOrCreate(entityId);
-
+            EntityRef<MessageLocationSender> messageLocationSenderRef = messageLocationSender;
             Scene root = self.Root();
-            
-            long instanceId = messageLocationSender.InstanceId;
             
             using (await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
             {
-                if (messageLocationSender.InstanceId != instanceId)
+                messageLocationSender = messageLocationSenderRef;
+                if (messageLocationSender == null)
                 {
                     throw new RpcException(ErrorCode.ERR_MessageTimeout, $"{message}");
                 }
@@ -113,7 +112,8 @@ namespace ET.Server
                 if (messageLocationSender.ActorId == default)
                 {
                     messageLocationSender.ActorId = await root.GetComponent<LocationProxyComponent>().Get((int)self.Id, messageLocationSender.Id);
-                    if (messageLocationSender.InstanceId != instanceId)
+                    messageLocationSender = messageLocationSenderRef;
+                    if (messageLocationSender == null)
                     {
                         throw new RpcException(ErrorCode.ERR_ActorLocationSenderTimeout2, $"{message}");
                     }
@@ -129,14 +129,15 @@ namespace ET.Server
         public static async ETTask<IResponse> Call(this MessageLocationSenderOneType self, long entityId, IRequest request)
         {
             MessageLocationSender messageLocationSender = self.GetOrCreate(entityId);
+            EntityRef<MessageLocationSender> messageLocationSenderRef = messageLocationSender;
 
             Scene root = self.Root();
-            
-            long instanceId = messageLocationSender.InstanceId;
+            EntityRef<Scene> rootRef = root;
             
             using (await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
             {
-                if (messageLocationSender.InstanceId != instanceId)
+                messageLocationSender = messageLocationSenderRef;
+                if (messageLocationSender == null)
                 {
                     throw new RpcException(ErrorCode.ERR_MessageTimeout, $"{request}");
                 }
@@ -144,14 +145,17 @@ namespace ET.Server
                 if (messageLocationSender.ActorId == default)
                 {
                     messageLocationSender.ActorId = await root.GetComponent<LocationProxyComponent>().Get((int)self.Id, messageLocationSender.Id);
-                    if (messageLocationSender.InstanceId != instanceId)
+                    messageLocationSender = messageLocationSenderRef;
+                    if (messageLocationSender == null)
                     {
                         throw new RpcException(ErrorCode.ERR_ActorLocationSenderTimeout2, $"{request}");
                     }
                 }
             }
 
+            messageLocationSender = messageLocationSenderRef;
             messageLocationSender.LastSendOrRecvTime = TimeInfo.Instance.ServerNow();
+            root = rootRef;
             return await root.GetComponent<MessageSender>().Call(messageLocationSender.ActorId, request);
         }
 
@@ -194,10 +198,12 @@ namespace ET.Server
         private static async ETTask<IResponse> CallInner(this MessageLocationSenderOneType self, MessageLocationSender messageLocationSender, IRequest iRequest)
         {
             int failTimes = 0;
-            long instanceId = messageLocationSender.InstanceId;
+            EntityRef<MessageLocationSender> messageLocationSenderRef = messageLocationSender;
+            EntityRef<MessageLocationSenderOneType> selfRef = self;
             messageLocationSender.LastSendOrRecvTime = TimeInfo.Instance.ServerNow();
             
             Scene root = self.Root();
+            EntityRef<Scene> rootRef = root;
 
             Type requestType = iRequest.GetType();
             while (true)
@@ -205,7 +211,8 @@ namespace ET.Server
                 if (messageLocationSender.ActorId == default)
                 {
                     messageLocationSender.ActorId = await root.GetComponent<LocationProxyComponent>().Get((int)self.Id, messageLocationSender.Id);
-                    if (messageLocationSender.InstanceId != instanceId)
+                    messageLocationSender = messageLocationSenderRef;
+                    if (messageLocationSender == null)
                     {
                         throw new RpcException(ErrorCode.ERR_ActorLocationSenderTimeout2, $"{iRequest}");
                     }
@@ -216,8 +223,8 @@ namespace ET.Server
                     return MessageHelper.CreateResponse(requestType, 0, ErrorCode.ERR_NotFoundActor);
                 }
                 IResponse response = await root.GetComponent<MessageSender>().Call(messageLocationSender.ActorId, iRequest, needException: false);
-                
-                if (messageLocationSender.InstanceId != instanceId)
+                messageLocationSender = messageLocationSenderRef;
+                if (messageLocationSender == null)
                 {
                     throw new RpcException(ErrorCode.ERR_ActorLocationSenderTimeout3, $"{requestType.FullName}");
                 }
@@ -233,13 +240,19 @@ namespace ET.Server
                             Log.Debug($"actor send message fail, actorid: {messageLocationSender.Id} {requestType.FullName}");
                             
                             // 这里删除actor，后面等待发送的消息会判断InstanceId，InstanceId不一致返回ERR_NotFoundActor
-                            self.Remove(messageLocationSender.Id);
+                            self = selfRef;
+                            if (self != null)
+                            {
+                                self.Remove(messageLocationSender.Id);
+                            }
                             return response;
                         }
 
                         // 等待0.5s再发送
+                        root = rootRef;
                         await root.GetComponent<TimerComponent>().WaitAsync(500);
-                        if (messageLocationSender.InstanceId != instanceId)
+                        messageLocationSender = messageLocationSenderRef;
+                        if (messageLocationSender == null)
                         {
                             throw new RpcException(ErrorCode.ERR_ActorLocationSenderTimeout4, $"{requestType.FullName}");
                         }

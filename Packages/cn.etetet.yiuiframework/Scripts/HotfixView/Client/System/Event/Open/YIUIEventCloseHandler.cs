@@ -6,7 +6,9 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelCloseBefore arg)
         {
+            EntityRef<Scene> sceneRef = scene;
             await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            scene = sceneRef;
             await scene.DynamicEvent(arg);
         }
     }
@@ -17,7 +19,9 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelCloseAfter arg)
         {
+            EntityRef<Scene> sceneRef = scene;
             await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            scene = sceneRef;
             await scene.DynamicEvent(arg);
         }
     }
@@ -28,7 +32,9 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelDestroy arg)
         {
+            EntityRef<Scene> sceneRef = scene;
             await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            scene = sceneRef;
             await scene.DynamicEvent(arg);
         }
     }

@@ -24,15 +24,16 @@ namespace ET.Client
         public static async ETTask<HashWaitError> OpenWaitToParent<T>(ParamVo vo, Entity parent = null)
                 where T : Entity, IYIUIBind, IYIUIOpen<ParamVo>
         {
-            var coroutineLock = await YIUIMgrComponent.Inst.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, typeof(TipsHelper).GetHashCode());
+            EntityRef<Entity> parentRef = parent;
+            using CoroutineLock coroutineLock = await YIUIMgrComponent.Inst.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, typeof(TipsHelper).GetHashCode());
 
             var guid = IdGenerater.Instance.GenerateId();
 
             var hashWait = YIUIMgrComponent.Inst.Root.GetComponent<HashWait>().Wait(guid);
 
+            parent = parentRef;
             await YIUIMgrComponent.Inst.Root.OpenPanelAsync<TipsPanelComponent, Type, Entity, long, ParamVo>(typeof(T), parent, guid, vo);
 
-            coroutineLock.Dispose();
             return await hashWait;
         }
     }

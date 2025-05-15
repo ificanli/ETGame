@@ -147,8 +147,9 @@ namespace ET
             
             async ETTask Timeout()
             {
+                EntityRef<ProcessInnerSender> selfRef = self;
                 await fiber.Root.GetComponent<TimerComponent>().WaitAsync(ProcessInnerSender.TIMEOUT_TIME);
-
+                self = selfRef;
                 if (!self.requestCallback.Remove(rpcId, out MessageSenderStruct action))
                 {
                     return;

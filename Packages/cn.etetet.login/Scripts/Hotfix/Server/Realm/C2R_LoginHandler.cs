@@ -9,6 +9,7 @@ namespace ET.Server
 	{
 		protected override async ETTask Run(Session session, C2R_Login request, R2C_Login response)
 		{
+			EntityRef<Session> sessionRef = session;
 			const int UserZone = 3; // 这里一般会有创角，选择区服，demo就不做这个操作了，直接放在3区
 			// 随机分配一个Gate
 			StartSceneConfig config = RealmGateAddressHelper.GetGate(UserZone, request.Account);
@@ -23,14 +24,16 @@ namespace ET.Server
 			response.Address = config.InnerIPPort.ToString();
 			response.Key = g2RGetLoginKey.Key;
 			response.GateId = g2RGetLoginKey.GateId;
-			
+			session = sessionRef;
 			CloseSession(session).NoContext();
 		}
 
 		private async ETTask CloseSession(Session session)
 		{
+			EntityRef<Session> sessionRef = session;
 			await session.Root().GetComponent<TimerComponent>().WaitAsync(1000);
-			session.Dispose();
+			session = sessionRef;
+			session?.Dispose();
 		}
 	}
 }

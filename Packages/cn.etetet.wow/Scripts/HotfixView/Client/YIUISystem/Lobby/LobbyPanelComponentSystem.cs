@@ -30,7 +30,9 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventEnterMapInvoke)]
         private static async ETTask OnEventEnterMapInvoke(this LobbyPanelComponent self)
         {
+            EntityRef<LobbyPanelComponent> selfRef = self;
             await EnterMapHelper.EnterMapAsync(self.Root());
+            self = selfRef;
             await self.UIPanel.CloseAsync();
         }
 
