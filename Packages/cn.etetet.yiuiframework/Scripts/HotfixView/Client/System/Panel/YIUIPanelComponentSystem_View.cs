@@ -251,6 +251,9 @@ namespace ET.Client
             {
                 return;
             }
+            
+            EntityRef<YIUIPanelComponent> selfRef = self;
+            EntityRef<Entity> viewRef = view;
 
             //View只有切换没有关闭
             var skipTween = view.GetParent<YIUIChild>().GetComponent<YIUIWindowComponent>().WindowSkipOtherCloseTween;
@@ -290,6 +293,8 @@ namespace ET.Client
                 }
             }
 
+            view = viewRef;
+            self = selfRef;
             self.u_CurrentOpenView = view;
         }
 

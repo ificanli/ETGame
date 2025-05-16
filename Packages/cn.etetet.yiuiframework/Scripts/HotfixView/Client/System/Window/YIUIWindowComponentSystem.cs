@@ -159,10 +159,12 @@ namespace ET.Client
 
             if (self._LastOpenETTask != null)
             {
+                self = selfRef;
                 await self._LastOpenETTask;
                 return;
             }
 
+            self = selfRef;
             self._LastOpenETTask = ETTask.Create(true);
             var tweent = await YIUIEventSystem.OpenTween(self.UIBase.OwnerUIEntity);
             if (!tweent)
@@ -175,6 +177,7 @@ namespace ET.Client
                     await WindowFadeAnim.In(self.UIBase?.OwnerGameObject);
             }
 
+            self = selfRef;
             if (self.IsDisposed) return;
             self._LastOpenETTask?.SetResult();
             self._LastOpenETTask = null;
@@ -190,11 +193,14 @@ namespace ET.Client
 
             if (self._LastCloseETTask != null)
             {
+                self = selfRef;
                 await self._LastCloseETTask;
                 return;
             }
 
+            self = selfRef;
             self._LastCloseETTask = ETTask.Create(true);
+            self = selfRef;
             var tweent = await YIUIEventSystem.CloseTween(self.UIBase.OwnerUIEntity);
             if (!tweent)
             {
@@ -203,6 +209,7 @@ namespace ET.Client
                     await WindowFadeAnim.Out(self.UIBase?.OwnerGameObject);
             }
 
+            self = selfRef;
             if (self.IsDisposed) return;
             self._LastCloseETTask?.SetResult();
             self._LastCloseETTask = null;

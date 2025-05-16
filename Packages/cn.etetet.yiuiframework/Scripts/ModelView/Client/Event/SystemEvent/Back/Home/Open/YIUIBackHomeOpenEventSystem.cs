@@ -23,6 +23,7 @@ namespace ET.Client
                 return;
             }
 
+            EntityRef<Entity> componentRef = component;
             foreach (IYIUIBackHomeOpenSystem aYIUIBackHomeOpenSystem in iYIUIBackHomeOpenSystems)
             {
                 if (aYIUIBackHomeOpenSystem == null)
@@ -32,6 +33,7 @@ namespace ET.Client
 
                 try
                 {
+                    component = componentRef;
                     await aYIUIBackHomeOpenSystem.Run(component);
                 }
                 catch (Exception e)

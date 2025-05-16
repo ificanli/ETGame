@@ -86,6 +86,7 @@ namespace ET
                 throw new Exception($"not found message handler: {message} {entity.GetType().FullName}");
             }
 
+            EntityRef<Entity> entityRef = entity;
             int sceneType = entity.IScene.SceneType;
             foreach (MessageDispatcherInfo actorMessageDispatcherInfo in list)
             {
@@ -93,6 +94,8 @@ namespace ET
                 {
                     continue;
                 }
+
+                entity = entityRef;
                 await actorMessageDispatcherInfo.IMHandler.Handle(entity, fromAddress, message);   
             }
         }

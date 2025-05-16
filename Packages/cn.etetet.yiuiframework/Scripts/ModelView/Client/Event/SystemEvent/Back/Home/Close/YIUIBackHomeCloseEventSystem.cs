@@ -24,6 +24,7 @@ namespace ET.Client
                 return;
             }
 
+            EntityRef<Entity> componentRef = component;
             foreach (IYIUIBackHomeCloseSystem aYIUIBackHomeCloseSystem in iYIUIBackHomeCloseSystems)
             {
                 if (aYIUIBackHomeCloseSystem == null)
@@ -33,6 +34,7 @@ namespace ET.Client
 
                 try
                 {
+                    component = componentRef;
                     await aYIUIBackHomeCloseSystem.Run(component, HomeClosePanelInfo);
                 }
                 catch (Exception e)

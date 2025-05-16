@@ -20,6 +20,7 @@ namespace ET.Client
                 return false; //没有则执行默认
             }
 
+            EntityRef<Entity> componentRef = component;
             foreach (IYIUIOpenTweenSystem aYIUIOpenTweenSystem in iYIUIOpenTweenSystems)
             {
                 if (aYIUIOpenTweenSystem == null)
@@ -29,6 +30,7 @@ namespace ET.Client
 
                 try
                 {
+                    component = componentRef;
                     await aYIUIOpenTweenSystem.Run(component);
                 }
                 catch (Exception e)

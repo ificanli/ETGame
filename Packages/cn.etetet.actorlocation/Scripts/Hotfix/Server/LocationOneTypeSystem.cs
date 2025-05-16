@@ -34,9 +34,11 @@ namespace ET.Server
         
         public static async ETTask Add(this LocationOneType self, long key, ActorId instanceId)
         {
+            EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
             using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key))
             {
+                self = selfRef;
                 self.locations[key] = instanceId;
                 Log.Info($"location add key: {key} instanceId: {instanceId}");
             }
@@ -44,9 +46,11 @@ namespace ET.Server
 
         public static async ETTask Remove(this LocationOneType self, long key)
         {
+            EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
             using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key))
             {
+                self = selfRef;
                 self.locations.Remove(key);
                 Log.Info($"location remove key: {key}");
             }
@@ -109,9 +113,11 @@ namespace ET.Server
 
         public static async ETTask<ActorId> Get(this LocationOneType self, long key)
         {
+            EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
             using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key))
             {
+                self = selfRef;
                 self.locations.TryGetValue(key, out ActorId actorId);
                 Log.Info($"location get key: {key} actorId: {actorId}");
                 return actorId;

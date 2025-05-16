@@ -21,6 +21,7 @@
                     await YIUIEventSystem.WindowClose(self.UIWindow, success);
                 if (!success)
                 {
+                    self = selfRef;
                     Log.Info($"<color=yellow> 关闭事件返回不允许关闭View UI: {self.UIBase?.OwnerGameObject.name} </color>");
                     return false;
                 }

@@ -58,6 +58,7 @@ namespace ET.Client
 
         public static async ETTask Run<T>(this YIUIEventComponent self, string componentName, T data)
         {
+            EntityRef<YIUIEventComponent> selfRef = self;
             var eventType = typeof(T);
             if (!self._AllEventInfo.TryGetValue(eventType, out var componentDic))
             {
@@ -71,6 +72,7 @@ namespace ET.Client
 
             foreach (var info in eventInfos)
             {
+                self = selfRef;
                 await info.UIEvent.Run(self.Root(), data);
             }
         }

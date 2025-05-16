@@ -97,8 +97,10 @@ namespace ET.Client
                                             bool                  tween        = false,
                                             bool                  ignoreElse   = true)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             while (true)
             {
+                self = selfRef;
                 if (!await self.CloseLayerTopPanelAsync(layer, ignoreOption, tween, ignoreElse))
                     break;
             }

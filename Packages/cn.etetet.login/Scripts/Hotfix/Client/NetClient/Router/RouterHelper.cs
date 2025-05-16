@@ -61,6 +61,7 @@ namespace ET.Client
             byte[] addressBytes = realAddress.ToString().ToByteArray();
             Array.Copy(addressBytes, 0, sendCache, 13, addressBytes.Length);
             TimerComponent timerComponent = netComponent.Root().GetComponent<TimerComponent>();
+            EntityRef<TimerComponent> timerComponentRef = timerComponent;
             Log.Info($"router connect: {localConn} {remoteConn} {routerAddress} {realAddress}");
 
             long lastSendTimer = 0;
@@ -81,6 +82,7 @@ namespace ET.Client
                     routerConnector.Connect(sendCache, 0, addressBytes.Length + 13, routerAddress);
                 }
 
+                timerComponent = timerComponentRef;
                 await timerComponent.WaitFrameAsync();
 
                 if (routerConnector.Flag == 0)

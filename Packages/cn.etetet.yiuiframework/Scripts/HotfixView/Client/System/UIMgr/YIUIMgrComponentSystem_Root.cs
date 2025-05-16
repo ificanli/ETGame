@@ -11,12 +11,14 @@ namespace ET.Client
         {
             #region UICanvasRoot 查找各种组件
 
+            EntityRef<YIUIMgrComponent> selfRef = self;
             self.UIRoot = GameObject.Find(YIUIConstHelper.Const.UIRootName);
             if (self.UIRoot == null)
             {
                 self.UIRoot = await self.GetComponent<YIUILoadComponent>().LoadAssetAsyncInstantiate(YIUIConstHelper.Const.UIRootPkgName, YIUIConstHelper.Const.UIRootName);
             }
 
+            self = selfRef;
             if (self.UIRoot == null)
             {
                 Debug.LogError($"初始化错误 没有找到UIRoot");

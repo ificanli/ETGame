@@ -53,6 +53,7 @@ namespace ET.Client
             var iYIUICloseSystems = EntitySystemSingleton.Instance.TypeSystems.GetSystems(component.GetType(), typeof(IYIUIWindowCloseSystem));
             if (iYIUICloseSystems is not { Count: > 0 }) return;
 
+            EntityRef<Entity> componentRef = component;
             foreach (IYIUIWindowCloseSystem aYIUICloseSystem in iYIUICloseSystems)
             {
                 if (aYIUICloseSystem == null)
@@ -62,6 +63,7 @@ namespace ET.Client
 
                 try
                 {
+                    component = componentRef;
                     await aYIUICloseSystem.Run(component, viewCloseResult);
                 }
                 catch (Exception e)

@@ -25,6 +25,7 @@ namespace ET.Server
                 try
                 {
                     ModeContex modeContex = self.GetComponent<ModeContex>();
+                    EntityRef<ModeContex> modeContexRef = modeContex;
                     string prefix = $"{modeContex?.Mode ?? ""}> ";
                     string line = await Task.Factory.StartNew(() =>
                     {
@@ -44,6 +45,7 @@ namespace ET.Server
                             break;
                         default:
                         {
+                            modeContex = modeContexRef;
                             string[] lines = line.Split(" ");
                             string mode = modeContex == null? lines[0] : modeContex.Mode;
 

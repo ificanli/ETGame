@@ -23,6 +23,8 @@ namespace ET.Client
             {
                 return;
             }
+            
+            EntityRef<YIUIMgrComponent> selfRef = self;
 
             var layerList = self.GetLayerPanelInfoList(EPanelLayer.Panel);
             var skipTween = info.UIWindow.WindowSkipOtherCloseTween;
@@ -58,6 +60,7 @@ namespace ET.Client
                         break;
                 }
 
+                self = selfRef;
                 EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseBefore
                                                            {
                                                                UIPkgName       = child.PkgName,
@@ -102,6 +105,7 @@ namespace ET.Client
                         break;
                 }
 
+                self = selfRef;
                 EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseAfter
                                                            {
                                                                UIPkgName       = child.PkgName,
@@ -125,6 +129,7 @@ namespace ET.Client
                 return;
             }
 
+            EntityRef<YIUIMgrComponent> selfRef = self;
             var layerList = self.GetLayerPanelInfoList(EPanelLayer.Panel);
             var skipTween = info.UIWindow.WindowSkipOtherOpenTween;
 
@@ -137,6 +142,7 @@ namespace ET.Client
                     continue;
                 }
 
+                self = selfRef;
                 EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelOpenBefore
                                                            {
                                                                UIPkgName       = child.PkgName,
@@ -179,6 +185,7 @@ namespace ET.Client
                                                                         });
                 }
 
+                self = selfRef;
                 EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelOpenAfter
                                                            {
                                                                UIPkgName       = child.PkgName,
@@ -200,6 +207,8 @@ namespace ET.Client
                 return false; //home的UI必须在panel层
             }
 
+            EntityRef<YIUIMgrComponent> selfRef = self;
+            
             var layerList           = self.GetLayerPanelInfoList(EPanelLayer.Panel);
             var skipOtherCloseTween = home.UIWindow.WindowSkipOtherCloseTween;
             var skipHomeOpenTween   = home.UIWindow.WindowSkipHomeOpenTween;
@@ -244,10 +253,12 @@ namespace ET.Client
 
                     if (skipOtherCloseTween)
                     {
+                        self = selfRef;
                         self.ClosePanel(child.Name, false, true);
                     }
                     else
                     {
+                        self = selfRef;
                         var success = await self.ClosePanelAsync(child.Name, tween, true);
                         if (!success)
                         {
@@ -255,6 +266,7 @@ namespace ET.Client
                         }
                     }
 
+                    self = selfRef;
                     EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseAfter
                                                                {
                                                                    UIPkgName       = child.PkgName,
@@ -310,6 +322,7 @@ namespace ET.Client
                     await YIUIEventSystem.BackHomeOpen(child.OwnerUIEntity);
                 }
 
+                self = selfRef;
                 EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelOpenAfter
                                                            {
                                                                UIPkgName       = child.PkgName,

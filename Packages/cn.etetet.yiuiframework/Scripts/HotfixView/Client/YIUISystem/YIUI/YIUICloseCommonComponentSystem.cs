@@ -26,6 +26,8 @@ namespace ET.Client
                 return false;
             }
 
+            EntityRef<YIUICloseCommonComponent> selfRef = self;
+            EntityRef<Entity> parentRef = parent;
             if (parent.Parent is YIUIChild yiuiChild)
             {
                 var panelComponent = yiuiChild.GetComponent<YIUIPanelComponent>();
@@ -41,6 +43,8 @@ namespace ET.Client
                 }
             }
 
+            self = selfRef;
+            parent = parentRef;
             return await self.CloseUI(parent.Parent);
         }
 

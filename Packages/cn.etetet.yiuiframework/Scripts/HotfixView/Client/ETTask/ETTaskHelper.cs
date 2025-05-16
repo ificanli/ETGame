@@ -9,8 +9,10 @@ namespace ET
     {
         public static async ETTask WaitUntil(this Entity self, Func<bool> func)
         {
+            EntityRef<Entity> selfRef = self;
             while (true)
             {
+                self = selfRef;
                 await self.Root().GetComponent<TimerComponent>().WaitFrameAsync();
                 if (func == null || func.Invoke()) return;
             }
@@ -18,8 +20,10 @@ namespace ET
 
         public static async ETTask WaitUntil(this TimerComponent self, Func<bool> func)
         {
+            EntityRef<TimerComponent> selfRef = self;
             while (true)
             {
+                self = selfRef;
                 await self.WaitFrameAsync();
                 if (func == null || func.Invoke()) return;
             }

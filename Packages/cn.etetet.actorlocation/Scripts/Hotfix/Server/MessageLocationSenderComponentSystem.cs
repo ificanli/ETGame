@@ -97,9 +97,11 @@ namespace ET.Server
         
         private static async ETTask SendInner(this MessageLocationSenderOneType self, long entityId, IMessage message)
         {
+            EntityRef<MessageLocationSenderOneType> selfRef = self;
             MessageLocationSender messageLocationSender = self.GetOrCreate(entityId);
             EntityRef<MessageLocationSender> messageLocationSenderRef = messageLocationSender;
             Scene root = self.Root();
+            EntityRef<Scene> rootRef = root;
             
             using (await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
             {
@@ -111,15 +113,20 @@ namespace ET.Server
                 
                 if (messageLocationSender.ActorId == default)
                 {
-                    messageLocationSender.ActorId = await root.GetComponent<LocationProxyComponent>().Get((int)self.Id, messageLocationSender.Id);
+                    root = rootRef;
+                    self = selfRef;
+                    ActorId actorId = await root.GetComponent<LocationProxyComponent>().Get((int)self.Id, messageLocationSender.Id);
                     messageLocationSender = messageLocationSenderRef;
                     if (messageLocationSender == null)
                     {
                         throw new RpcException(ErrorCode.ERR_ActorLocationSenderTimeout2, $"{message}");
                     }
+                    messageLocationSender.ActorId = actorId;
                 }
                 
+                messageLocationSender = messageLocationSenderRef;
                 messageLocationSender.LastSendOrRecvTime = TimeInfo.Instance.ServerNow();
+                root = rootRef;
                 root.GetComponent<MessageSender>().Send(messageLocationSender.ActorId, message);
             }
         }
@@ -132,6 +139,7 @@ namespace ET.Server
             EntityRef<MessageLocationSender> messageLocationSenderRef = messageLocationSender;
 
             Scene root = self.Root();
+            EntityRef<MessageLocationSenderOneType> selfRef = self;
             EntityRef<Scene> rootRef = root;
             
             using (await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
@@ -144,12 +152,15 @@ namespace ET.Server
 
                 if (messageLocationSender.ActorId == default)
                 {
-                    messageLocationSender.ActorId = await root.GetComponent<LocationProxyComponent>().Get((int)self.Id, messageLocationSender.Id);
+                    self = selfRef;
+                    root = rootRef;
+                    ActorId actorId = await root.GetComponent<LocationProxyComponent>().Get((int)self.Id, messageLocationSender.Id);
                     messageLocationSender = messageLocationSenderRef;
                     if (messageLocationSender == null)
                     {
                         throw new RpcException(ErrorCode.ERR_ActorLocationSenderTimeout2, $"{request}");
                     }
+                    messageLocationSender.ActorId = actorId;
                 }
             }
 
@@ -168,12 +179,13 @@ namespace ET.Server
         {
             MessageLocationSender messageLocationSender = self.GetOrCreate(entityId);
 
+            EntityRef<MessageLocationSender> messageLocationSenderRef = messageLocationSender;
             Scene root = self.Root();
             Type iRequestType = iRequest.GetType();
-            long actorLocationSenderInstanceId = messageLocationSender.InstanceId;
             using (await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
             {
-                if (messageLocationSender.InstanceId != actorLocationSenderInstanceId)
+                messageLocationSender = messageLocationSenderRef;
+                if (messageLocationSender == null)
                 {
                     throw new RpcException(ErrorCode.ERR_NotFoundActor, $"{iRequest}");
                 }
@@ -222,6 +234,8 @@ namespace ET.Server
                 {
                     return MessageHelper.CreateResponse(requestType, 0, ErrorCode.ERR_NotFoundActor);
                 }
+
+                root = rootRef;
                 IResponse response = await root.GetComponent<MessageSender>().Call(messageLocationSender.ActorId, iRequest, needException: false);
                 messageLocationSender = messageLocationSenderRef;
                 if (messageLocationSender == null)

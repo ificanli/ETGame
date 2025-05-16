@@ -123,9 +123,11 @@ namespace ET.Client
             }
             else
             {
+                parentEntity = parentEntityRef;
                 info.UIBase.SetParent(parentEntity);
             }
 
+            self = selfRef;
             self.AddUI(info);
 
             return info;
@@ -147,6 +149,7 @@ namespace ET.Client
         /// </summary>
         internal static async ETTask OpenPanelAfter(this YIUIMgrComponent self, PanelInfo info, bool success)
         {
+            EntityRef<YIUIMgrComponent> selfRef = self;
             if (success)
             {
                 if (info.UIWindow is { WindowLastClose: true })
@@ -165,6 +168,7 @@ namespace ET.Client
                 info?.UIPanel?.Close();
             }
 
+            self = selfRef;
             EventSystem.Instance?.Publish(
                 self.Root(), new YIUIEventPanelOpenAfter
                 {

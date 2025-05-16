@@ -20,6 +20,7 @@ namespace ET.Client
                 return false; //没有则执行默认
             }
 
+            EntityRef<Entity> componentRef = component;
             foreach (IYIUICloseTweenSystem aYIUICloseTweenSystem in iYIUICloseTweenSystems)
             {
                 if (aYIUICloseTweenSystem == null)
@@ -29,6 +30,7 @@ namespace ET.Client
 
                 try
                 {
+                    component = componentRef;
                     await aYIUICloseTweenSystem.Run(component);
                 }
                 catch (Exception e)

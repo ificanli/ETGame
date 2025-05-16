@@ -20,15 +20,16 @@
                 return;
             }
 
-            long instanceId = mailBoxComponent.InstanceId;
+            EntityRef<MailBoxComponent> mailBoxComponentRef = mailBoxComponent;
             using (await fiber.Root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, mailBoxComponent.ParentInstanceId))
             {
-                if (mailBoxComponent.InstanceId != instanceId)
+                mailBoxComponent = mailBoxComponentRef;
+                if (mailBoxComponent == null)
                 {
                     if (messageObject is IRequest request)
                     {
                         IResponse resp = MessageHelper.CreateResponse(request.GetType(), request.RpcId, ErrorCode.ERR_NotFoundActor);
-                        mailBoxComponent.Root().GetComponent<ProcessInnerSender>().Reply(args.FromAddress, resp);
+                        fiber.Root.GetComponent<ProcessInnerSender>().Reply(args.FromAddress, resp);
                     }
                     return;
                 }
