@@ -31,7 +31,6 @@ namespace ET.Client
         private static async ETTask MoveToTarget(Scene root, Transform gameObject, Transform bindPoint, BTCreateFakeBullet node)
         {
             TimerComponent timerComponent = root.GetComponent<TimerComponent>();
-            EntityRef<TimerComponent> timerComponentRef = timerComponent;
             float startTime = Time.time;
             while (Time.time - startTime < node.Duration)
             {
@@ -47,7 +46,6 @@ namespace ET.Client
                 
                 gameObject.forward = v;
                 
-                timerComponent = timerComponentRef;
                 await timerComponent.WaitAsync(1);
             }
             UnityEngine.Object.Destroy(gameObject.gameObject);

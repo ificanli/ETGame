@@ -33,7 +33,6 @@ namespace ET.Server
             EntityRef<TargetComponent> targetComponentRef = targetComponent;
             
             TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
-            EntityRef<TimerComponent> timerRef = timerComponent;
             
             float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
             
@@ -43,7 +42,6 @@ namespace ET.Server
             
             while (true)
             {
-                timerComponent = timerRef;
                 await timerComponent.WaitAsync(200);
                 if (cancellationToken.IsCancel())
                 {

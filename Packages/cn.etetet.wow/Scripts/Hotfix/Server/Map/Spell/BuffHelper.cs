@@ -162,7 +162,6 @@ namespace ET.Server
         {
             BuffConfig buffConfig = buff.GetConfig();
 
-            EntityRef<TimerComponent> timerRef = timerComponent;
             EntityRef<Buff> buffRef = buff;
             int i = 0;
             while (true)
@@ -170,7 +169,6 @@ namespace ET.Server
                 ++i;
                 // 新版本的buff tick会立刻受到急速属性影响，这里每次tick完成都要重新计算
                 long nextTick = buff.CreateTime + buffConfig.TickTime * i;
-                timerComponent = timerRef;
                 await timerComponent.WaitTillAsync(nextTick);
                 buff = buffRef;
                 if (buff == null)

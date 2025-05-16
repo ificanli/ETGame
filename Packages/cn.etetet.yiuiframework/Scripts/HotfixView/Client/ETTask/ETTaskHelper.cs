@@ -20,10 +20,8 @@ namespace ET
 
         public static async ETTask WaitUntil(this TimerComponent self, Func<bool> func)
         {
-            EntityRef<TimerComponent> selfRef = self;
             while (true)
             {
-                self = selfRef;
                 await self.WaitFrameAsync();
                 if (func == null || func.Invoke()) return;
             }

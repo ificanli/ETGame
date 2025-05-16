@@ -27,7 +27,6 @@ namespace ET.Server
         protected override async ETTask Execute(AIComponent aiComponent, AI_PetIdle node, BTEnv env)
         {
             TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
-            EntityRef<TimerComponent> timerRef = timerComponent;
             Unit unit = aiComponent.GetParent<Unit>();
             EntityRef<Unit> unitRef = unit;
             Unit owner = PetHelper.GetOwner(unit);
@@ -51,7 +50,6 @@ namespace ET.Server
                     return;
                 }
                 
-                timerComponent = timerRef;
                 await timerComponent.WaitAsync(RandomGenerator.RandomNumber(10000, 20000));
                 if (cancellationToken.IsCancel())
                 {

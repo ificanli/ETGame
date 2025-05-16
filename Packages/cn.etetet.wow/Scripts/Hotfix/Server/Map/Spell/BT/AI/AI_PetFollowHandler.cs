@@ -35,7 +35,6 @@ namespace ET.Server
             EntityRef<Unit> ownerRef = owner;
 
             TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
-            EntityRef<TimerComponent> timerRef = timerComponent;
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
@@ -52,7 +51,6 @@ namespace ET.Server
                     return;
                 }
                 
-                timerComponent = timerRef;
                 await timerComponent.WaitAsync(200);
                 if (cancellationToken.IsCancel())
                 {

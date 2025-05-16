@@ -64,6 +64,7 @@ namespace ET
         public Entity Args;
     }
 
+    [SkipAwaitEntityCheck]
     [ComponentOf(typeof(Scene))]
     public class TimerComponent: Entity, IAwake, IUpdate
     {

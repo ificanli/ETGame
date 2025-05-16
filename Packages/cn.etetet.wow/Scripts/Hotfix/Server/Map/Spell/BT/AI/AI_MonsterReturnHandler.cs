@@ -36,7 +36,6 @@ namespace ET.Server
             threatComponent.ClearThreat();
 
             TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
-            EntityRef<TimerComponent> timerRef = timerComponent;
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             
@@ -48,7 +47,6 @@ namespace ET.Server
             
             while (true)
             {
-                timerComponent = timerRef;
                 await timerComponent.WaitAsync(1000);
                 if (cancellationToken.IsCancel())
                 {
