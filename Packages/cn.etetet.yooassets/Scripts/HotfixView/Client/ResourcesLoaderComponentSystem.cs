@@ -134,8 +134,10 @@ namespace ET.Client
             {
                 self = selfRef;
                 TimerComponent timerComponent = self.Root().GetComponent<TimerComponent>();
+                EntityRef<TimerComponent> timerComponentRef = timerComponent;
                 while (true)
                 {
+                    timerComponent = timerComponentRef;
                     await timerComponent.WaitAsync(500);
                     float progress = handleBase.Progress;
                     action?.Invoke(progress);

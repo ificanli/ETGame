@@ -45,53 +45,48 @@ namespace ET
             context.RegisterSyntaxNodeAction(ctx =>
             {
                 var awaitExpr = (AwaitExpressionSyntax)ctx.Node;
-                if (AnalyzerHelper.IsAssemblyNeedAnalyze(ctx.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
-                    AnalyzeAwaitUsage(ctx, awaitExpr);
+                if (!AnalyzerHelper.IsAssemblyNeedAnalyze(ctx.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
+                    return;
+
+                if (awaitExpr.FirstAncestorOrSelf<MethodDeclarationSyntax>() is not { } method)
+                    return;
+
+                if (!method.DescendantNodes().OfType<AwaitExpressionSyntax>().Any())
+                    return;
+
+                AnalyzeAwaitUsage(ctx, awaitExpr, method);
             }, SyntaxKind.AwaitExpression);
         }
 
-        private static void AnalyzeAwaitUsage(SyntaxNodeAnalysisContext context, AwaitExpressionSyntax awaitExpr)
+        private static void AnalyzeAwaitUsage(SyntaxNodeAnalysisContext context, AwaitExpressionSyntax awaitExpr, MethodDeclarationSyntax method)
         {
             var semanticModel = context.SemanticModel;
-
-            if (awaitExpr.FirstAncestorOrSelf<LocalFunctionStatementSyntax>() != null ||
-                awaitExpr.FirstAncestorOrSelf<LambdaExpressionSyntax>() != null ||
-                awaitExpr.FirstAncestorOrSelf<AnonymousMethodExpressionSyntax>() != null)
+            var methodSymbol = semanticModel.GetDeclaredSymbol(method);
+            if (methodSymbol == null || HasSkipAwaitEntityCheckAttribute(methodSymbol))
                 return;
 
             if (IsAwaitedMethodHasSkipAttribute(semanticModel, awaitExpr))
                 return;
 
-            var method = awaitExpr.FirstAncestorOrSelf<MethodDeclarationSyntax>();
-            if (method == null)
-                return;
-
-            var methodSymbol = semanticModel.GetDeclaredSymbol(method);
-            if (methodSymbol == null)
-                return;
-
-            var variablesBeforeAwait = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-            var variablesFromAwait = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-            var loopDeclaredVariables = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-            var preAwaitIgnoreSymbols = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+            var varsBeforeAwait = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+            var varsFromAwait = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+            var loopDeclared = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+            var preAwaitIgnore = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
 
             foreach (var p in method.ParameterList.Parameters)
             {
                 var ps = semanticModel.GetDeclaredSymbol(p);
-                if (ps != null && IsEntityOrSubclass(ps.Type))
-                    variablesBeforeAwait.Add(ps);
+                if (ps is { } && IsEntityOrSubclass(ps.Type))
+                    varsBeforeAwait.Add(ps);
             }
 
-            // ✅ 修复 Test19：豁免 foreach 表达式对 unit 的访问
             if (awaitExpr.FirstAncestorOrSelf<ForEachStatementSyntax>() is { } foreachStmt)
             {
                 foreach (var id in foreachStmt.Expression.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
                 {
                     var sym = semanticModel.GetSymbolInfo(id).Symbol;
-                    if (sym is { } && IsEntityOrSubclass(sym.GetSymbolTypeSafe()))
-                    {
-                        preAwaitIgnoreSymbols.Add(sym);
-                    }
+                    if (sym != null && IsEntityOrSubclass(sym.GetSymbolTypeSafe()))
+                        preAwaitIgnore.Add(sym);
                 }
             }
 
@@ -106,9 +101,9 @@ namespace ET
                     {
                         foreach (var v in decl.Declaration.Variables)
                         {
-                            var symbol = semanticModel.GetDeclaredSymbol(v);
-                            if (symbol is ILocalSymbol ls && IsEntityOrSubclass(ls.Type))
-                                variablesBeforeAwait.Add(ls);
+                            var sym = semanticModel.GetDeclaredSymbol(v);
+                            if (sym is ILocalSymbol ls && IsEntityOrSubclass(ls.Type))
+                                varsBeforeAwait.Add(ls);
                         }
                     }
 
@@ -117,119 +112,152 @@ namespace ET
                         foreach (var id in foreachStmt2.Expression.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
                         {
                             var sym = semanticModel.GetSymbolInfo(id).Symbol;
-                            if (sym is { } && IsEntityOrSubclass(sym.GetSymbolTypeSafe()))
-                                preAwaitIgnoreSymbols.Add(sym);
+                            if (sym != null && IsEntityOrSubclass(sym.GetSymbolTypeSafe()))
+                                preAwaitIgnore.Add(sym);
                         }
                     }
                 }
             }
 
-            if (awaitExpr.Parent is AssignmentExpressionSyntax assign)
+            var parent = awaitExpr.Parent;
+            if (parent is AssignmentExpressionSyntax a)
             {
-                var leftSymbol = semanticModel.GetSymbolInfo(assign.Left).Symbol;
-                if (leftSymbol != null)
-                    variablesFromAwait.Add(leftSymbol);
+                var left = semanticModel.GetSymbolInfo(a.Left).Symbol;
+                if (left != null) varsFromAwait.Add(left);
             }
-            else if (awaitExpr.Parent is VariableDeclaratorSyntax declVar)
+            else if (parent is VariableDeclaratorSyntax vd)
             {
-                var sym = semanticModel.GetDeclaredSymbol(declVar);
-                if (sym != null)
-                    variablesFromAwait.Add(sym);
+                var sym = semanticModel.GetDeclaredSymbol(vd);
+                if (sym != null) varsFromAwait.Add(sym);
             }
 
-            var awaitStatement = awaitExpr.FirstAncestorOrSelf<StatementSyntax>();
-            if (awaitStatement == null)
-                return;
+            var awaitStmt = awaitExpr.FirstAncestorOrSelf<StatementSyntax>();
+            if (awaitStmt == null) return;
 
-            var impactedStatements = GetStatementsImpactedByAwait(awaitStatement, semanticModel, loopDeclaredVariables);
+            var impacted = GetImpactedStatements(awaitStmt, semanticModel, loopDeclared);
             var assigned = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
 
-            foreach (var stmt in impactedStatements)
+            foreach (var stmt in impacted)
             {
-                foreach (var assignExpr in stmt.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+                foreach (var assign in stmt.DescendantNodes().OfType<AssignmentExpressionSyntax>())
                 {
-                    var target = semanticModel.GetSymbolInfo(assignExpr.Left).Symbol;
-                    var rhsType = semanticModel.GetTypeInfo(assignExpr.Right).Type;
-
-                    if (target != null && variablesBeforeAwait.Contains(target))
+                    var sym = semanticModel.GetSymbolInfo(assign.Left).Symbol;
+                    var rhsType = semanticModel.GetTypeInfo(assign.Right).Type;
+                    if (sym != null && varsBeforeAwait.Contains(sym))
                     {
-                        assigned.Add(target);
+                        assigned.Add(sym);
                         if (!IsEntityOrSubclass(rhsType))
-                            variablesFromAwait.Add(target);
+                            varsFromAwait.Add(sym);
                     }
                 }
 
                 foreach (var id in stmt.DescendantNodes().OfType<IdentifierNameSyntax>())
                 {
-                    var symbol = semanticModel.GetSymbolInfo(id).Symbol;
-                    if (symbol != null &&
-                        variablesBeforeAwait.Contains(symbol) &&
-                        !variablesFromAwait.Contains(symbol) &&
-                        !assigned.Contains(symbol) &&
-                        !loopDeclaredVariables.Contains(symbol) &&
-                        !preAwaitIgnoreSymbols.Contains(symbol) &&
-                        !IsInUsingScope(context, symbol, awaitExpr))
+                    var sym = semanticModel.GetSymbolInfo(id).Symbol;
+                    if (sym != null &&
+                        varsBeforeAwait.Contains(sym) &&
+                        !varsFromAwait.Contains(sym) &&
+                        !assigned.Contains(sym) &&
+                        !loopDeclared.Contains(sym) &&
+                        !preAwaitIgnore.Contains(sym) &&
+                        !IsInUsingScope(context, sym, awaitExpr))
                     {
-                        var diag = Diagnostic.Create(Rule, id.GetLocation(), id.Identifier.Text);
-                        context.ReportDiagnostic(diag);
+                        context.ReportDiagnostic(Diagnostic.Create(Rule, id.GetLocation(), id.Identifier.Text));
                     }
                 }
             }
         }
 
-        private static List<StatementSyntax> GetStatementsImpactedByAwait(
-            StatementSyntax awaitStatement,
+        private static List<StatementSyntax> GetImpactedStatements(
+            StatementSyntax awaitStmt,
             SemanticModel semanticModel,
-            HashSet<ISymbol> loopDeclaredVars)
+            HashSet<ISymbol> loopDeclared)
         {
-            var impacted = new List<StatementSyntax>();
+            var list = new List<StatementSyntax>();
 
-            if (awaitStatement.Parent is BlockSyntax block)
+            if (awaitStmt.Parent is BlockSyntax blk)
             {
-                var idx = block.Statements.IndexOf(awaitStatement);
-                for (int i = idx + 1; i < block.Statements.Count; i++)
-                    impacted.Add(block.Statements[i]);
+                int idx = blk.Statements.IndexOf(awaitStmt);
+                for (int i = idx + 1; i < blk.Statements.Count; i++)
+                    list.Add(blk.Statements[i]);
             }
 
-            SyntaxNode parent = awaitStatement;
+            SyntaxNode parent = awaitStmt;
             while ((parent = parent.Parent) != null)
             {
+                if (parent is LocalFunctionStatementSyntax lfs &&
+                    lfs.Modifiers.Any(m => m.IsKind(SyntaxKind.AsyncKeyword)))
+                {
+                    var methodSymbol = semanticModel.GetDeclaredSymbol(lfs) as IMethodSymbol;
+                    if (methodSymbol != null)
+                    {
+                        var returnType = methodSymbol.ReturnType;
+                        if (returnType.SpecialType == SpecialType.System_Void)
+                            return list;
+
+                        var getAwaiterMethods = returnType.GetMembers("GetAwaiter")
+                            .OfType<IMethodSymbol>()
+                            .Where(m => m.Parameters.Length == 0);
+
+                        if (getAwaiterMethods.Any())
+                            return list;
+                    }
+                }
+
+                if (parent is ParenthesizedLambdaExpressionSyntax parenthesizedLambda)
+                {
+                    if (parenthesizedLambda.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
+                        return list;
+                }
+                else if (parent is SimpleLambdaExpressionSyntax simpleLambda)
+                {
+                    if (simpleLambda.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
+                        return list;
+                }
+                else if (parent is AnonymousMethodExpressionSyntax anonymousMethod)
+                {
+                    if (anonymousMethod.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
+                        return list;
+                }
+
                 if (parent is IfStatementSyntax ifStmt && parent.Parent is BlockSyntax outer)
                 {
-                    bool ifHasAwait = ContainsAwait(ifStmt.Statement);
-                    bool elseHasAwait = ContainsAwait(ifStmt.Else?.Statement);
-                    bool ifTerminates = Terminates(ifStmt.Statement);
-                    bool elseTerminates = ifStmt.Else != null && Terminates(ifStmt.Else.Statement);
-
-                    if ((ifHasAwait && !ifTerminates) || (elseHasAwait && !elseTerminates))
+                    bool ifAwait = ContainsAwait(ifStmt.Statement);
+                    bool elseAwait = ContainsAwait(ifStmt.Else?.Statement);
+                    bool ifExit = Terminates(ifStmt.Statement);
+                    bool elseExit = ifStmt.Else != null && Terminates(ifStmt.Else.Statement);
+                    if ((ifAwait && !ifExit) || (elseAwait && !elseExit))
                     {
                         int idx = outer.Statements.IndexOf(ifStmt);
                         for (int i = idx + 1; i < outer.Statements.Count; i++)
-                            impacted.Add(outer.Statements[i]);
+                            list.Add(outer.Statements[i]);
                     }
                 }
                 else if (parent is StatementSyntax stmt &&
                          ContainsAwait(stmt) &&
                          (stmt is WhileStatementSyntax or ForStatementSyntax or ForEachStatementSyntax or DoStatementSyntax))
                 {
-                    var loopStatements = GetAllStatementsIn(stmt);
-                    impacted.AddRange(loopStatements);
+                    List<StatementSyntax> body;
+                    if (stmt is BlockSyntax b)
+                    {
+                        body = b.Statements.ToList();
+                    }
+                    else
+                    {
+                        body = new List<StatementSyntax> { stmt };
+                    }
+                    list.AddRange(body);
 
                     foreach (var decl in stmt.DescendantNodes().OfType<VariableDeclaratorSyntax>())
                     {
-                        var symbol = semanticModel.GetDeclaredSymbol(decl);
-                        if (symbol is ILocalSymbol local && IsEntityOrSubclass(local.Type))
-                            loopDeclaredVars.Add(local);
+                        var sym = semanticModel.GetDeclaredSymbol(decl);
+                        if (sym is ILocalSymbol ls && IsEntityOrSubclass(ls.Type))
+                            loopDeclared.Add(ls);
                     }
                 }
             }
 
-            return impacted;
-        }
-
-        private static List<StatementSyntax> GetAllStatementsIn(StatementSyntax stmt)
-        {
-            return stmt is BlockSyntax block ? block.Statements.ToList() : new List<StatementSyntax> { stmt };
+            return list;
         }
 
         private static bool ContainsAwait(StatementSyntax stmt)
@@ -240,26 +268,22 @@ namespace ET
         private static bool Terminates(StatementSyntax stmt)
         {
             if (stmt == null) return false;
-            if (stmt is BlockSyntax block && block.Statements.Any())
-                stmt = block.Statements.Last();
+            if (stmt is BlockSyntax b && b.Statements.Any())
+                stmt = b.Statements.Last();
 
             return stmt is ReturnStatementSyntax or ThrowStatementSyntax or BreakStatementSyntax or ContinueStatementSyntax;
         }
 
-        private static bool IsInUsingScope(SyntaxNodeAnalysisContext context, ISymbol symbol, AwaitExpressionSyntax awaitExpr)
+        private static bool IsInUsingScope(SyntaxNodeAnalysisContext context, ISymbol sym, AwaitExpressionSyntax awaitExpr)
         {
-            var syntax = symbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
-            if (syntax == null) return false;
-
-            var usingDecl = syntax.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
+            var syntax = sym.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+            var usingDecl = syntax?.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
             if (usingDecl == null || !usingDecl.UsingKeyword.IsKind(SyntaxKind.UsingKeyword))
                 return false;
 
             var block = usingDecl.FirstAncestorOrSelf<BlockSyntax>();
-            var awaitBlock = awaitExpr.FirstAncestorOrSelf<BlockSyntax>();
-            if (block == null || awaitBlock == null) return false;
-
-            return block.Span.Contains(awaitExpr.SpanStart);
+            var ablock = awaitExpr.FirstAncestorOrSelf<BlockSyntax>();
+            return block != null && ablock != null && block.Span.Contains(awaitExpr.SpanStart);
         }
 
         private static bool IsEntityOrSubclass(ITypeSymbol type)
