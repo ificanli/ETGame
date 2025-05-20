@@ -17,10 +17,8 @@ namespace ET.Server
 			{
 				toMap = "Map1";
 			}
-
-			StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(unit.Fiber().Zone, toMap);
 			
-			TransferHelper.TransferAtFrameFinish(unit, startSceneConfig.ActorId, toMap).NoContext();
+			TransferHelper.TransferAtFrameFinish(unit, toMap).NoContext();
 			
 			await ETTask.CompletedTask;
 		}

@@ -133,11 +133,88 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWInner.A2MapManager_GetMapRequest)]
+    [ResponseType(nameof(A2MapManager_GetMapResponse))]
+    public partial class A2MapManager_GetMapRequest : MessageObject, IRequest
+    {
+        public static A2MapManager_GetMapRequest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<A2MapManager_GetMapRequest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public string MapName { get; set; }
+
+        [MemoryPackOrder(2)]
+        public long UnitId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.MapName = default;
+            this.UnitId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWInner.A2MapManager_GetMapResponse)]
+    public partial class A2MapManager_GetMapResponse : MessageObject, IResponse
+    {
+        public static A2MapManager_GetMapResponse Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<A2MapManager_GetMapResponse>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        [MemoryPackOrder(3)]
+        public string MapName { get; set; }
+
+        [MemoryPackOrder(4)]
+        public ActorId MapActorId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.MapName = default;
+            this.MapActorId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWInner
     {
         public const ushort M2A_Reload = 4001;
         public const ushort A2M_Reload = 4002;
         public const ushort M2M_UnitTransferRequest = 4003;
         public const ushort M2M_UnitTransferResponse = 4004;
+        public const ushort A2MapManager_GetMapRequest = 4005;
+        public const ushort A2MapManager_GetMapResponse = 4006;
     }
 }

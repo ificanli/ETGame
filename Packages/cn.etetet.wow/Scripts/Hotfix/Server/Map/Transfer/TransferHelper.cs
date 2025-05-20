@@ -5,20 +5,33 @@ namespace ET.Server
 {
     public static partial class TransferHelper
     {
-        public static async ETTask TransferAtFrameFinish(Unit unit, ActorId sceneInstanceId, string sceneName)
+        public static async ETTask TransferAtFrameFinish(Unit unit, string mapName)
         {
             EntityRef<Unit> unitRef = unit;
             await unit.Fiber().WaitFrameFinish();
             unit = unitRef;
-            await TransferHelper.Transfer(unit, sceneInstanceId, sceneName);
+            await TransferHelper.TransferLock(unit, mapName, true);
         }
-        
 
-        public static async ETTask Transfer(Unit unit, ActorId sceneInstanceId, string sceneName)
+        public static async ETTask TransferLock(Unit unit, string mapName, bool isLockUnit)
+        {
+            if (isLockUnit)
+            {
+                EntityRef<Unit> unitRef = unit;
+                using CoroutineLock _ = await unit.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, unit.Id);
+                unit = unitRef;
+                await TransferHelper.Transfer(unit, mapName);
+            }
+            else
+            {
+                await TransferHelper.Transfer(unit, mapName);
+            }
+        }
+
+        private static async ETTask Transfer(Unit unit, string mapName)
         {
             Scene root = unit.Root();
             EntityRef<Scene> rootRef = root;
-            // location加锁
             long unitId = unit.Id;
             
             M2M_UnitTransferRequest request = M2M_UnitTransferRequest.Create();
@@ -33,9 +46,21 @@ namespace ET.Server
             }
             unit.Dispose();
             
-            await root.GetComponent<LocationProxyComponent>().Lock(LocationType.Unit, unitId, request.OldActorId);
             root = rootRef;
-            await root.GetComponent<MessageSender>().Call(sceneInstanceId, request);
+            // location加锁
+            await root.GetComponent<LocationProxyComponent>().Lock(LocationType.Unit, unitId, request.OldActorId);
+            
+            root = rootRef;
+            // 申请地图副本
+            A2MapManager_GetMapRequest mapRequest = A2MapManager_GetMapRequest.Create();
+            mapRequest.MapName = mapName;
+            StartSceneConfig mapManagerConfig = StartSceneConfigCategory.Instance.GetOneBySceneType(root.Zone(), SceneType.MapManager);
+            root = rootRef;
+            A2MapManager_GetMapResponse mapResponse = await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, mapRequest) as A2MapManager_GetMapResponse;
+
+            
+            root = rootRef;
+            await root.GetComponent<MessageSender>().Call(mapResponse.MapActorId, request);
         }
     }
 }

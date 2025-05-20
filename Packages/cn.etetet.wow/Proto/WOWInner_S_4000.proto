@@ -31,3 +31,20 @@ message M2M_UnitTransferResponse // IResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+// ResponseType A2MapManager_GetMapResponse
+message A2MapManager_GetMapRequest // IRequest
+{
+	int32 RpcId = 1;
+	string MapName = 2;
+	int64 UnitId = 3;
+}
+
+message A2MapManager_GetMapResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	string MapName = 4;
+	ActorId MapActorId = 5;
+}
