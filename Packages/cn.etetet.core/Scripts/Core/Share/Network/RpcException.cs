@@ -19,7 +19,12 @@ namespace ET
 
         public override string ToString()
         {
-            return $"Error: {this.Error}\n{base.ToString()}";
+            int error = this.Error;
+            if (this.Error > ErrorCore.ERR_WithException)
+            {
+                error -= ErrorCore.ERR_WithException;
+            }
+            return $"Error: {this.Error} package: {error / 1000} id: {error % 1000}\n{base.ToString()}";
         }
     }
 }

@@ -51,7 +51,7 @@ namespace ET.Server
             }
             
             // 创建Copy Fiber
-            long mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, 0, SceneType.Map, self.MapName);
+            long mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, self.MapName);
             MapCopy mapCopy = self.AddChildWithId<MapCopy>(mapCopyId);
             return mapCopy;
         }

@@ -70,6 +70,7 @@ namespace ET
             
             try
             {
+                Log.Debug($"create fiber: {fiberId} {zone} {sceneType} {name}");
                 Fiber fiber = new(fiberId, zone, sceneType, name);
 
                 if (!this.fibers.TryAdd(fiberId, fiber))

@@ -30,6 +30,7 @@ message M2M_UnitTransferResponse // IResponse
 	int32 RpcId = 1;
 	int32 Error = 2;
 	string Message = 3;
+	ActorId NewActorId = 4;
 }
 
 // ResponseType A2MapManager_GetMapResponse
@@ -47,4 +48,19 @@ message A2MapManager_GetMapResponse // IResponse
 	string Message = 3;
 	string MapName = 4;
 	ActorId MapActorId = 5;
+}
+
+// ResponseType A2MapManager_NotifyPlayerAlreadyEnterMapResponse
+message A2MapManager_NotifyPlayerAlreadyEnterMapRequest // IRequest
+{
+	int32 RpcId = 1;
+	string MapName = 2;
+	int64 UnitId = 3;
+}
+
+message A2MapManager_NotifyPlayerAlreadyEnterMapResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
 }

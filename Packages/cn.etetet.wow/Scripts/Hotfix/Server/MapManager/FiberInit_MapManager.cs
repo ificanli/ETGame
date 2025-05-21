@@ -9,6 +9,9 @@
             root.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
             root.AddComponent<TimerComponent>();
             root.AddComponent<CoroutineLockComponent>();
+            root.AddComponent<ProcessInnerSender>();
+            root.AddComponent<MessageSender>();
+            
             root.AddComponent<MapManagerComponent>();
             await ETTask.CompletedTask;
         }

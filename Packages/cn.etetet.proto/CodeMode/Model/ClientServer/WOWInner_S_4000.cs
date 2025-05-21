@@ -118,6 +118,9 @@ namespace ET
         [MemoryPackOrder(2)]
         public string Message { get; set; }
 
+        [MemoryPackOrder(3)]
+        public ActorId NewActorId { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -128,6 +131,7 @@ namespace ET
             this.RpcId = default;
             this.Error = default;
             this.Message = default;
+            this.NewActorId = default;
 
             ObjectPool.Recycle(this);
         }
@@ -208,6 +212,73 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWInner.A2MapManager_NotifyPlayerAlreadyEnterMapRequest)]
+    [ResponseType(nameof(A2MapManager_NotifyPlayerAlreadyEnterMapResponse))]
+    public partial class A2MapManager_NotifyPlayerAlreadyEnterMapRequest : MessageObject, IRequest
+    {
+        public static A2MapManager_NotifyPlayerAlreadyEnterMapRequest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<A2MapManager_NotifyPlayerAlreadyEnterMapRequest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public string MapName { get; set; }
+
+        [MemoryPackOrder(2)]
+        public long UnitId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.MapName = default;
+            this.UnitId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWInner.A2MapManager_NotifyPlayerAlreadyEnterMapResponse)]
+    public partial class A2MapManager_NotifyPlayerAlreadyEnterMapResponse : MessageObject, IResponse
+    {
+        public static A2MapManager_NotifyPlayerAlreadyEnterMapResponse Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<A2MapManager_NotifyPlayerAlreadyEnterMapResponse>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWInner
     {
         public const ushort M2A_Reload = 4001;
@@ -216,5 +287,7 @@ namespace ET
         public const ushort M2M_UnitTransferResponse = 4004;
         public const ushort A2MapManager_GetMapRequest = 4005;
         public const ushort A2MapManager_GetMapResponse = 4006;
+        public const ushort A2MapManager_NotifyPlayerAlreadyEnterMapRequest = 4007;
+        public const ushort A2MapManager_NotifyPlayerAlreadyEnterMapResponse = 4008;
     }
 }

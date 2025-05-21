@@ -80,6 +80,11 @@ namespace ET
 
         public override void Initialize(AnalysisContext context)
         {
+            if (AnalyzerGlobalSetting.EnableAnalyzer)
+            {
+                return;
+            }
+            
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterSyntaxNodeAction(ctx =>

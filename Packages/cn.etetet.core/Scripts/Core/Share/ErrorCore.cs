@@ -32,6 +32,8 @@
         public const int ERR_PacketParserError = 110005;
         public const int ERR_WebsocketConnectError = 110304;
         
+        public const int ERR_WithException = 100000000;
+        
         // 110000 以上，避免跟SocketError冲突
     }
 }

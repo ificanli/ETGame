@@ -71,7 +71,7 @@ namespace ET
         {
             if (node == null)
             {
-                Log.Debug($"11111111111111111111111111111111111111111");
+                throw new Exception($"bt node is null");
             }
             if (!this.btHandlers.TryGetValue(node.GetType(), out IBTHandler ibtHandler))
             {

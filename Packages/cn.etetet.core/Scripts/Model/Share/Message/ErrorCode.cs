@@ -15,7 +15,7 @@ namespace ET
         
         //public const int ErrorExampleException = 100000000 + PackageType.Core * 1000 + 1;
         //public const int ErrorExampleNoException = 200000000 + PackageType.Core * 1000 + 1;
-        public const int ERR_WithException = 100000000;
+        
         // 小于这个Rpc会抛异常，大于这个异常的error需要自己判断处理，也就是说需要处理的错误应该要大于该值
         public const int ERR_WithoutException = 200000000;
         

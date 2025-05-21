@@ -2,7 +2,7 @@
   {
     "Id": 101,
     "Process": 1,
-    "Zone": 3,
+    "Zone": 1,
     "SceneType": "RouterManager",
     "Name": "RouterManager",
     "Port": 10101
@@ -10,7 +10,7 @@
   {
     "Id": 102,
     "Process": 1,
-    "Zone": 3,
+    "Zone": 1,
     "SceneType": "Router",
     "Name": "Router01",
     "Port": 10102
@@ -18,7 +18,7 @@
   {
     "Id": 103,
     "Process": 1,
-    "Zone": 3,
+    "Zone": 1,
     "SceneType": "Router",
     "Name": "Router02",
     "Port": 10103
@@ -26,7 +26,7 @@
   {
     "Id": 104,
     "Process": 1,
-    "Zone": 3,
+    "Zone": 1,
     "SceneType": "Router",
     "Name": "Router03",
     "Port": 10104
@@ -34,7 +34,7 @@
   {
     "Id": 105,
     "Process": 1,
-    "Zone": 3,
+    "Zone": 1,
     "SceneType": "Router",
     "Name": "Router04",
     "Port": 10105
@@ -42,7 +42,7 @@
   {
     "Id": 201,
     "Process": 1,
-    "Zone": 2,
+    "Zone": 3,
     "SceneType": "Realm",
     "Name": "Realm",
     "Port": 20101

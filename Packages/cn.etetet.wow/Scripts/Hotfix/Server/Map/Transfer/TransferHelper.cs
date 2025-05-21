@@ -13,9 +13,10 @@ namespace ET.Server
             await TransferHelper.TransferLock(unit, mapName, true);
         }
 
-        public static async ETTask TransferLock(Unit unit, string mapName, bool isLockUnit)
+        // needLock 是否需要加上Mailbox协程锁
+        public static async ETTask TransferLock(Unit unit, string mapName, bool needLock)
         {
-            if (isLockUnit)
+            if (needLock)
             {
                 EntityRef<Unit> unitRef = unit;
                 using CoroutineLock _ = await unit.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, unit.Id);
@@ -35,7 +36,8 @@ namespace ET.Server
             long unitId = unit.Id;
             
             M2M_UnitTransferRequest request = M2M_UnitTransferRequest.Create();
-            request.OldActorId = unit.GetActorId();
+            ActorId oldActorId = unit.GetActorId();
+            request.OldActorId = oldActorId;
             request.Unit = unit.ToBson();
             foreach (Entity entity in unit.Components.Values)
             {
@@ -47,20 +49,34 @@ namespace ET.Server
             unit.Dispose();
             
             root = rootRef;
-            // location加锁
-            await root.GetComponent<LocationProxyComponent>().Lock(LocationType.Unit, unitId, request.OldActorId);
+            //1. location加锁
+            await root.GetComponent<LocationProxyComponent>().Lock(LocationType.Unit, unitId, oldActorId);
             
             root = rootRef;
-            // 申请地图副本
+            //2. 申请地图副本
             A2MapManager_GetMapRequest mapRequest = A2MapManager_GetMapRequest.Create();
             mapRequest.MapName = mapName;
+            mapRequest.UnitId = unitId;
             StartSceneConfig mapManagerConfig = StartSceneConfigCategory.Instance.GetOneBySceneType(root.Zone(), SceneType.MapManager);
             root = rootRef;
             A2MapManager_GetMapResponse mapResponse = await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, mapRequest) as A2MapManager_GetMapResponse;
 
             
+            //3. 传送到副本
             root = rootRef;
-            await root.GetComponent<MessageSender>().Call(mapResponse.MapActorId, request);
+            M2M_UnitTransferResponse response = await root.GetComponent<MessageSender>().Call(mapResponse.MapActorId, request) as M2M_UnitTransferResponse;
+            
+            //4. 通知副本，玩家已经传送进入副本
+            A2MapManager_NotifyPlayerAlreadyEnterMapRequest a2MapManagerNotifyPlayerAlreadyEnterMapRequest = A2MapManager_NotifyPlayerAlreadyEnterMapRequest.Create();
+            a2MapManagerNotifyPlayerAlreadyEnterMapRequest.MapName = mapName;
+            a2MapManagerNotifyPlayerAlreadyEnterMapRequest.UnitId = unitId;
+            root = rootRef;
+            await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, a2MapManagerNotifyPlayerAlreadyEnterMapRequest);
+            
+            
+            root = rootRef;
+            //5. 解锁location，可以接收发给Unit的消息
+            await root.GetComponent<LocationProxyComponent>().UnLock(LocationType.Unit, unitId, oldActorId, response.NewActorId);
         }
     }
 }
