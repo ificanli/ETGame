@@ -1,0 +1,20 @@
+[
+  {
+    "Id": 1,
+    "Name": "Map1",
+    "Desc": "Map1",
+    "CopyType": 1
+  },
+  {
+    "Id": 2,
+    "Name": "Map2",
+    "Desc": "Map2",
+    "CopyType": 2
+  },
+  {
+    "Id": 3,
+    "Name": "Map3",
+    "Desc": "Map3",
+    "CopyType": 3
+  }
+]
