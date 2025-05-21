@@ -27,7 +27,7 @@ namespace ET
             for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 UnitConfig _v;
-                _v = UnitConfig.DeserializeUnitConfig(_buf);
+                _v = global::ET.UnitConfig.DeserializeUnitConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

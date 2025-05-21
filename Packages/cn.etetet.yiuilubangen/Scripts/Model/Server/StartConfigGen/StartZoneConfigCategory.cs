@@ -27,7 +27,7 @@ namespace ET
             for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 StartZoneConfig _v;
-                _v = StartZoneConfig.DeserializeStartZoneConfig(_buf);
+                _v = global::ET.StartZoneConfig.DeserializeStartZoneConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

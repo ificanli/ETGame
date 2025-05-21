@@ -27,7 +27,7 @@ namespace ET
             for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 TextConfig _v;
-                _v = TextConfig.DeserializeTextConfig(_buf);
+                _v = global::ET.TextConfig.DeserializeTextConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

@@ -27,7 +27,7 @@ namespace ET
             for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 StartProcessConfig _v;
-                _v = StartProcessConfig.DeserializeStartProcessConfig(_buf);
+                _v = global::ET.StartProcessConfig.DeserializeStartProcessConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

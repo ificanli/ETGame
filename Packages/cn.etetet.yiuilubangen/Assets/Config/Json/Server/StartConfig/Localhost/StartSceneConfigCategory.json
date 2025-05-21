@@ -75,16 +75,8 @@
     "Id": 304,
     "Process": 1,
     "Zone": 3,
-    "SceneType": "Map",
-    "Name": "Map1",
-    "Port": 0
-  },
-  {
-    "Id": 305,
-    "Process": 1,
-    "Zone": 3,
-    "SceneType": "Map",
-    "Name": "Map2",
+    "SceneType": "MapManager",
+    "Name": "MapManager",
     "Port": 0
   }
 ]
