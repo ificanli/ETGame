@@ -2,6 +2,7 @@
 {
     public struct SceneChangeStart
     {
+        public string PreSceneName;
     }
     
     public struct SceneChangeFinish

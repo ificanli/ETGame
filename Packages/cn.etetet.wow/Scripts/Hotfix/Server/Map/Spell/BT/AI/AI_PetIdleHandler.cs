@@ -5,10 +5,8 @@ namespace ET.Server
     [Module(ModuleName.AI)]
     public class AI_PetIdleHandler: AIHandler<AI_PetIdle>
     {
-        protected override int Check(AIComponent aiComponent, AI_PetIdle node, BTEnv env)
+        protected override int Check(Unit unit, AI_PetIdle node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
-            
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             Unit target = targetComponent.Target;
             if (target != null)
@@ -24,10 +22,9 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(AIComponent aiComponent, AI_PetIdle node, BTEnv env)
+        protected override async ETTask Execute(Unit unit, AI_PetIdle node, BTEnv env)
         {
-            TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
-            Unit unit = aiComponent.GetParent<Unit>();
+            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             EntityRef<Unit> unitRef = unit;
             Unit owner = PetHelper.GetOwner(unit);
             EntityRef<Unit> ownerRef = owner;

@@ -5,10 +5,8 @@ namespace ET.Server
     [Module(ModuleName.AI)]
     public class AI_PetFollowHandler: AIHandler<AI_PetFollow>
     {
-        protected override int Check(AIComponent aiComponent, AI_PetFollow node, BTEnv env)
-        {            
-            Unit unit = aiComponent.GetParent<Unit>();
-            
+        protected override int Check(Unit unit, AI_PetFollow node, BTEnv env)
+        {
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             Unit target = targetComponent.Target;
             if (target != null)
@@ -26,15 +24,14 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(AIComponent aiComponent, AI_PetFollow node, BTEnv env)
+        protected override async ETTask Execute(Unit unit, AI_PetFollow node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
             Unit owner = PetHelper.GetOwner(unit);
             
             EntityRef<Unit> unitRef = unit;
             EntityRef<Unit> ownerRef = owner;
 
-            TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             

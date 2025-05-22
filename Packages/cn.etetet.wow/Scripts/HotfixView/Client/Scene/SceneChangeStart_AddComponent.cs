@@ -16,25 +16,36 @@ namespace ET.Client
 
                 root = rootRef;
                 CurrentScenesComponent currentScenesComponent = root.GetComponent<CurrentScenesComponent>();
-                
-                await YIUIMgrComponent.Inst.Root.OpenPanelAsync<LoadingPanelComponent>();
-                root = rootRef;
                 Scene currentScene = root.CurrentScene();
                 EntityRef<Scene> currentSceneRef = currentScene;
-                currentScenesComponent = currentScenesComponentRef;
-                currentScenesComponent.Progress = 0;
+                MapConfig preMapConfig = null;
+                if (args.PreSceneName != null)
+                {
+                    preMapConfig = MapConfigCategory.Instance.GetByName(args.PreSceneName);
+                }
+                 
+                MapConfig mapConfig = MapConfigCategory.Instance.GetByName(currentScene.Name);
                 
-                ResourcesLoaderComponent resourcesLoaderComponent = currentScene.GetComponent<ResourcesLoaderComponent>();
+                // 地图资源相同,则不创建Loading界面,也不需要重新加载地图
+                if (mapConfig.MapResName != preMapConfig?.MapResName)
+                {
+                    await YIUIMgrComponent.Inst.Root.OpenPanelAsync<LoadingPanelComponent>();
+                    
+                    currentScenesComponent = currentScenesComponentRef;
+                    currentScenesComponent.Progress = 0;
+                
+                    ResourcesLoaderComponent resourcesLoaderComponent = currentScene.GetComponent<ResourcesLoaderComponent>();
             
-                // 加载场景资源
-                await resourcesLoaderComponent.LoadSceneAsync($"Packages/cn.etetet.wow/Bundles/Scenes/{currentScene.Name}.unity", LoadSceneMode.Single,
-                    (progress) =>
-                    {
-                        CurrentScenesComponent currentScenes = currentScenesComponentRef;
-                        currentScenes.Progress = (int)progress * 99f;
-                    });
+                    // 加载场景资源
+                    await resourcesLoaderComponent.LoadSceneAsync(mapConfig.MapResName, LoadSceneMode.Single,
+                        (progress) =>
+                        {
+                            CurrentScenesComponent currentScenes = currentScenesComponentRef;
+                            currentScenes.Progress = (int)progress * 99f;
+                        });
+                }
+                
                 // 切换到map场景
-
                 currentScene = currentSceneRef;
                 currentScene.AddComponent<OperaComponent>();
             }

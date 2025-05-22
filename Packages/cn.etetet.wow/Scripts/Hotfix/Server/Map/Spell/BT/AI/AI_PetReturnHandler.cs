@@ -6,10 +6,8 @@ namespace ET.Server
     [Module(ModuleName.AI)]
     public class AI_PetReturnHandler: AIHandler<AI_PetReturn>
     {
-        protected override int Check(AIComponent aiComponent, AI_PetReturn node, BTEnv env)
+        protected override int Check(Unit unit, AI_PetReturn node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
-            
             Unit owner = PetHelper.GetOwner(unit);
             if (math.distance(unit.Position, owner.Position) < 30f)
             {
@@ -18,10 +16,8 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(AIComponent aiComponent, AI_PetReturn node, BTEnv env)
+        protected override async ETTask Execute(Unit unit, AI_PetReturn node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
-
             unit.GetComponent<TargetComponent>().Unit = default;
 
             TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();

@@ -82,5 +82,11 @@
     "Name": "Stun",
     "MaxNumericType": 0,
     "AffectNumeric": []
+  },
+  {
+    "Id": 1014,
+    "Name": "Yaw",
+    "MaxNumericType": 0,
+    "AffectNumeric": []
   }
 ]

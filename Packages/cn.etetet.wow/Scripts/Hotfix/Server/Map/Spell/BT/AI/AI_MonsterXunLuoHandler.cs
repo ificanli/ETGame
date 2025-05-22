@@ -5,9 +5,8 @@ namespace ET.Server
     [Module(ModuleName.AI)]
     public class AI_MonsterXunLuoHandler: AIHandler<AI_MonsterXunLuo>
     {
-        protected override int Check(AIComponent aiComponent, AI_MonsterXunLuo node, BTEnv env)
+        protected override int Check(Unit unit, AI_MonsterXunLuo node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
             ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
             if (threatComponent.GetCount() > 0)
             {
@@ -16,12 +15,10 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(AIComponent aiComponent, AI_MonsterXunLuo node, BTEnv env)
+        protected override async ETTask Execute(Unit unit, AI_MonsterXunLuo node, BTEnv env)
         {
-            Scene root = aiComponent.Root();
+            Scene root = unit.Root();
             EntityRef<Scene> rootRef = root;
-            
-            Unit unit = aiComponent.GetParent<Unit>();
             EntityRef<Unit> unitRef = unit;
 
             PathfindingComponent pathfindingComponent = unit.GetComponent<PathfindingComponent>();

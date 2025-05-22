@@ -5,9 +5,8 @@ namespace ET.Server
     [Module(ModuleName.AI)]
     public class AI_MonsterReturnHandler: AIHandler<AI_MonsterReturn>
     {
-        protected override int Check(AIComponent aiComponent, AI_MonsterReturn node, BTEnv env)
+        protected override int Check(Unit unit, AI_MonsterReturn node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
             float3 birthPos = new(
                 numericComponent.GetAsFloat(NumericType.X), 
@@ -20,10 +19,8 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(AIComponent aiComponent, AI_MonsterReturn node, BTEnv env)
+        protected override async ETTask Execute(Unit unit, AI_MonsterReturn node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
-
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
 
             float3 birthPos = new(
@@ -35,7 +32,7 @@ namespace ET.Server
 
             threatComponent.ClearThreat();
 
-            TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             
             ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             

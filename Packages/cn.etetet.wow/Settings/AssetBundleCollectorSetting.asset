@@ -21,8 +21,8 @@ MonoBehaviour:
     EnableAddressable: 1
     LocationToLower: 0
     IncludeAssetGUID: 0
-    IgnoreDefaultType: 1
     AutoCollectShaders: 1
+    IgnoreRuleName: NormalIgnoreRule
     Groups:
     - GroupName: AotDlls
       GroupDesc: 
@@ -79,7 +79,7 @@ MonoBehaviour:
       - CollectPath: Packages/cn.etetet.wow/Bundles/Scenes
         CollectorGUID: 22804885a77c3ce4dbc6faadfa0208df
         CollectorType: 0
-        AddressRuleName: AddressByFolderAndFileName
+        AddressRuleName: AddressByFileName
         PackRuleName: PackSeparately
         FilterRuleName: CollectScene
         AssetTags: 

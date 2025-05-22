@@ -69,6 +69,24 @@ namespace ET
             }
         }
         
+        public T TryGetEntity<T>(string key) where T: Entity
+        {
+            if (!this.dict.TryGetValue(key, out object value))
+            {
+                return null;
+            }
+
+            try
+            {
+                IValue<EntityRef<T>> iValue = (ValueTypeWrap<EntityRef<T>>) value;
+                return iValue.Value;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new Exception($"不能把{value.GetType()}转换为{typeof (T)}", e);
+            }
+        }
+        
         public T GetEntity<T>(string key) where T: Entity
         {
             if (!this.dict.TryGetValue(key, out object value))

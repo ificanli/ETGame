@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce564582968c4738a661b9b77ced9354, type: 3}
-  m_Name: 300000
+  m_Name: 300002
   m_EditorClassIdentifier: 
   serializationData:
     SerializedFormat: 2
@@ -26,82 +26,40 @@ MonoBehaviour:
       Data: 0|ET.AIConfig, ET.Model
     - Name: Id
       Entry: 3
-      Data: 300000
+      Data: 300002
     - Name: Desc
-      Entry: 1
-      Data: "\u602A\u7269ai"
+      Entry: 6
+      Data: 
     - Name: Root
       Entry: 7
       Data: 1|ET.AIRoot, ET.Model
     - Name: Id
       Entry: 3
       Data: 1
-    - Name: Desc
-      Entry: 6
-      Data: 
-    - Name: IsCollapsed
-      Entry: 5
-      Data: false
-    - Name: ChildrenCollapsed
-      Entry: 5
-      Data: false
-    - Name: Position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: Children
       Entry: 7
       Data: 2|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 3|ET.AI_MonsterReturn, ET.Model
+      Data: 3|ET.BTCreateSpell, ET.Model
     - Name: Id
       Entry: 3
       Data: 2
-    - Name: Desc
-      Entry: 6
-      Data: 
-    - Name: IsCollapsed
-      Entry: 5
-      Data: false
-    - Name: ChildrenCollapsed
-      Entry: 5
-      Data: false
-    - Name: Position
+    - Name: Children
       Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+      Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
-      Entry: 4
-      Data: 300
+      Entry: 12
+      Data: 0
     - Name: 
-      Entry: 4
-      Data: -200
+      Entry: 13
+      Data: 
     - Name: 
       Entry: 8
       Data: 
-    - Name: AIComponent
-      Entry: 1
-      Data: AIComponent
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 4|ET.AI_MonsterZhuiJi, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 3
     - Name: Desc
       Entry: 6
       Data: 
@@ -123,42 +81,15 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: AIComponent
+    - Name: Unit
       Entry: 1
-      Data: AIComponent
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 5|ET.AI_MonsterXunLuo, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 4
-    - Name: Desc
+      Data: Unit
+    - Name: Buff
       Entry: 6
       Data: 
-    - Name: IsCollapsed
-      Entry: 5
-      Data: false
-    - Name: ChildrenCollapsed
-      Entry: 5
-      Data: false
-    - Name: Position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 300
-    - Name: 
-      Entry: 4
-      Data: 200
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: AIComponent
-      Entry: 1
-      Data: AIComponent
+    - Name: SpellConfigId
+      Entry: 3
+      Data: 100120
     - Name: 
       Entry: 8
       Data: 
@@ -168,9 +99,30 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: AIComponent
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
       Entry: 1
-      Data: AIComponent
+      Data: Unit
     - Name: 
       Entry: 8
       Data: 

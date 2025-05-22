@@ -70,5 +70,7 @@ namespace ET
 		StunFinalAdd = 10134,
 		StunFinalPct = 10135,
 
+		Yaw = 1014,
+
 	}
 }

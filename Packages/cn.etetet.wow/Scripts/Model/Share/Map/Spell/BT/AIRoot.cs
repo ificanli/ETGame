@@ -2,7 +2,7 @@
 {
     public class AIRoot: BTRoot
     {
-        [BTOutput(typeof(AIComponent))]
-        public string AIComponent;
+        [BTOutput(typeof(Unit))]
+        public string Unit;
     }
 }

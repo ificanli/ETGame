@@ -110,5 +110,13 @@
     "NoticeType": 0,
     "MaxNumericType": 0,
     "AffectNumeric": []
+  },
+  {
+    "Id": 1014,
+    "Name": "Yaw",
+    "NeedSaveDB": 0,
+    "NoticeType": 0,
+    "MaxNumericType": 0,
+    "AffectNumeric": []
   }
 ]

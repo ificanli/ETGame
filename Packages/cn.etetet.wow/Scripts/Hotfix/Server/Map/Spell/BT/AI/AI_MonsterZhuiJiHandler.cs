@@ -5,9 +5,8 @@ namespace ET.Server
     [Module(ModuleName.AI)]
     public class AI_MonsterZhuiJiHandler: AIHandler<AI_MonsterZhuiJi>
     {
-        protected override int Check(AIComponent aiComponent, AI_MonsterZhuiJi node, BTEnv env)
+        protected override int Check(Unit unit, AI_MonsterZhuiJi node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
             ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
             if (threatComponent == null)
             {
@@ -21,14 +20,13 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(AIComponent aiComponent, AI_MonsterZhuiJi node, BTEnv env)
+        protected override async ETTask Execute(Unit unit, AI_MonsterZhuiJi node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
             EntityRef<Unit> unitRef = unit;
             ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
             EntityRef<ThreatComponent> threatComponentRef = threatComponent;
 
-            TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             
             float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
             

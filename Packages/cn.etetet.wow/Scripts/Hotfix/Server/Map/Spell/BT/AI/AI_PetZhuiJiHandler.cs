@@ -5,11 +5,9 @@ namespace ET.Server
     [Module(ModuleName.AI)]
     public class AI_PetZhuiJiHandler: AIHandler<AI_PetZhuiJi>
     {
-        protected override int Check(AIComponent aiComponent, AI_PetZhuiJi node, BTEnv env)
+        protected override int Check(Unit unit, AI_PetZhuiJi node, BTEnv env)
         {
-            Unit pet = aiComponent.GetParent<Unit>();
-            
-            TargetComponent targetComponent = pet.GetComponent<TargetComponent>();
+            TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             Unit target = targetComponent.Target;
             if (target == null)
             {
@@ -17,22 +15,21 @@ namespace ET.Server
             }
             
             // 自己阵营的不攻击
-            if (PetHelper.GetOwner(pet).Id == target.Id)
+            if (PetHelper.GetOwner(unit).Id == target.Id)
             {
                 return 1;
             }
             return 0;
         }
 
-        protected override async ETTask Execute(AIComponent aiComponent, AI_PetZhuiJi node, BTEnv env)
+        protected override async ETTask Execute(Unit unit, AI_PetZhuiJi node, BTEnv env)
         {
-            Unit unit = aiComponent.GetParent<Unit>();
             EntityRef<Unit> unitRef = unit;
 
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             EntityRef<TargetComponent> targetComponentRef = targetComponent;
             
-            TimerComponent timerComponent = aiComponent.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             
             float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
             

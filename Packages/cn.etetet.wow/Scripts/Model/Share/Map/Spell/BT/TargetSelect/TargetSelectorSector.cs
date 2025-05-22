@@ -8,5 +8,7 @@
 #endif
         public int Radius;
         public int Angle;
+        
+        public UnitType UnitType;
     }
 }

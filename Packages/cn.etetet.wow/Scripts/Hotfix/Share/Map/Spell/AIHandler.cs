@@ -5,14 +5,16 @@
     {
         protected override int Run(T node, BTEnv env)
         {
-            AIComponent aiComponent = env.GetEntity<AIComponent>(node.AIComponent);
+            Unit unit = env.GetEntity<Unit>(node.Unit);
 
-            int ret = this.Check(aiComponent, node, env);
+            int ret = this.Check(unit, node, env);
             
             if (ret != 0)
             {
                 return ret;
             }
+            
+            AIComponent aiComponent = unit.GetComponent<AIComponent>();
             
             if (aiComponent.Current == node.Id)
             {
@@ -24,12 +26,12 @@
             aiComponent.CancellationToken = new ETCancellationToken();
             
             aiComponent.Current = node.Id;
-            this.Execute(aiComponent, node, env).WithContext(aiComponent.CancellationToken);
+            this.Execute(unit, node, env).WithContext(aiComponent.CancellationToken);
             return 0;
         }
 
-        protected abstract int Check(AIComponent aiComponent, T node, BTEnv env);
+        protected abstract int Check(Unit unit, T node, BTEnv env);
         
-        protected abstract ETTask Execute(AIComponent aiComponent, T node, BTEnv env);
+        protected abstract ETTask Execute(Unit unit, T node, BTEnv env);
     }
 }

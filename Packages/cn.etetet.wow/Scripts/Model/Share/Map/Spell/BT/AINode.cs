@@ -2,7 +2,7 @@
 {
     public abstract class AINode: BTAction
     {
-        [BTInput(typeof(AIComponent))]
-        public string AIComponent = "AIComponent";
+        [BTInput(typeof(Unit))]
+        public string Unit = "Unit";
     }
 }

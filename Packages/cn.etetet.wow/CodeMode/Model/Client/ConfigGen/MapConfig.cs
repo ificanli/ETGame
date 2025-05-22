@@ -21,6 +21,7 @@ namespace ET
             Name = _buf.ReadString();
             Desc = _buf.ReadString();
             CopyType = (CopyType)_buf.ReadInt();
+            MapResName = _buf.ReadString();
 
             EndInit();
         }
@@ -46,6 +47,10 @@ namespace ET
         /// 副本类型
         /// </summary>
         public readonly CopyType CopyType;
+        /// <summary>
+        /// 地图场景资源
+        /// </summary>
+        public readonly string MapResName;
     
         public const int __ID__ = -1840922722;
         public override int GetTypeId() => __ID__;
@@ -62,6 +67,7 @@ namespace ET
             + "Name:" + Name + ","
             + "Desc:" + Desc + ","
             + "CopyType:" + CopyType + ","
+            + "MapResName:" + MapResName + ","
             + "}";
         }
 
