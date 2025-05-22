@@ -30,7 +30,7 @@ namespace ET.Server
             
             foreach ((int _, UnitConfig unitConfig) in UnitConfigCategory.Instance.GetAll())
             {
-                if (unitConfig.UnitType == UnitType.Player)
+                if (root.Name != unitConfig.MapName)
                 {
                     continue;
                 }

@@ -20,6 +20,7 @@ namespace ET
             Id = _buf.ReadInt();
             UnitType = (UnitType)_buf.ReadInt();
             Name = _buf.ReadString();
+            MapName = _buf.ReadString();
             HeadIcon = _buf.ReadString();
             ClassType = (EClassType)_buf.ReadInt();
 
@@ -44,6 +45,10 @@ namespace ET
         /// </summary>
         public readonly string Name;
         /// <summary>
+        /// 所在地图
+        /// </summary>
+        public readonly string MapName;
+        /// <summary>
         /// 头像图片
         /// </summary>
         public readonly string HeadIcon;
@@ -66,6 +71,7 @@ namespace ET
             + "Id:" + Id + ","
             + "UnitType:" + UnitType + ","
             + "Name:" + Name + ","
+            + "MapName:" + MapName + ","
             + "headIcon:" + HeadIcon + ","
             + "classType:" + ClassType + ","
             + "}";

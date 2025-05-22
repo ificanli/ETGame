@@ -7,8 +7,9 @@ namespace ET.Server
     public static partial class MapCopySystem
     {
         [EntitySystem]
-        private static void Awake(this MapCopy self)
+        private static void Awake(this MapCopy self, int lineNum)
         {
+            self.LineNum = lineNum;
         }
         
         public static void AddPlayer(this MapCopy self, long playerId)
@@ -35,8 +36,39 @@ namespace ET.Server
             self.MapName = mapName;
         }
 
+        private static int GetNotUsedLineNumber(this MapInfo self)
+        {
+            int lineNum = 1;
+            foreach (var kv  in self.Lines)
+            {
+                if (kv.Key == lineNum)
+                {
+                    lineNum++;
+                    continue;
+                }
+                break;
+            }
+            return lineNum;
+        }
+        
+        public static MapCopy GetByLineNum(this MapInfo self, int lineNum)
+        {
+            if (!self.Lines.TryGetValue(lineNum, out var mapCopyId))
+            {
+                throw new Exception($"line num not found: {self.MapName} {lineNum}");
+            }
+            return self.GetChild<MapCopy>(mapCopyId);
+        }
+
+        public static MapCopy GetCopy(this MapInfo self, long id)
+        {
+            return self.GetChild<MapCopy>(id);
+        }
+
         public static async ETTask<MapCopy> GetCopy(this MapInfo self)
         {
+            MapConfig mapConfig = MapConfigCategory.Instance.GetByName(self.MapName);
+            
             foreach (var kv in self.Children)
             {
                 MapCopy copy = (MapCopy)kv.Value;
@@ -44,7 +76,7 @@ namespace ET.Server
                 {
                     continue;
                 }
-                if (copy.Players.Count < MapCopy.MaxNum)
+                if (copy.Players.Count < mapConfig.RecommendPlayerNum)
                 {
                     return copy;
                 }
@@ -52,7 +84,10 @@ namespace ET.Server
             
             // 创建Copy Fiber
             long mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, self.MapName);
-            MapCopy mapCopy = self.AddChildWithId<MapCopy>(mapCopyId);
+
+            int lineNum = self.GetNotUsedLineNumber();
+            self.Lines[lineNum] = mapCopyId;
+            MapCopy mapCopy = self.AddChildWithId<MapCopy, int>(mapCopyId, lineNum);
             return mapCopy;
         }
     }
@@ -67,8 +102,8 @@ namespace ET.Server
         {
 
         }
-        
-        public static MapInfo AddMap(this MapManagerComponent self, string mapName)
+
+        private static MapInfo AddMap(this MapManagerComponent self, string mapName)
         {
             MapInfo mapInfo = self.AddChild<MapInfo, string>(mapName);
             self.MapInfos.Add(mapName, mapInfo);

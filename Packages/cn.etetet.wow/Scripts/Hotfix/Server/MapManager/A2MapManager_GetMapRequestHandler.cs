@@ -9,7 +9,6 @@ namespace ET.Server
             MapManagerComponent mapManagerComponent = root.GetComponent<MapManagerComponent>();
             int processId = root.Fiber.Process;
             MapCopy mapCopy = await mapManagerComponent.GetMap(request.MapName);
-            Log.Debug($"111111111111111111111gggg: {request.UnitId}");
             mapCopy.AddWaitPlayer(request.UnitId);  // 加入等待进入列表
             response.MapName = request.MapName;
             response.MapActorId = new ActorId(processId, (int)mapCopy.Id);

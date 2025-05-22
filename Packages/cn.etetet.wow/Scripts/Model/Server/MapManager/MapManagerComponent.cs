@@ -7,6 +7,8 @@ namespace ET.Server
     public class MapInfo: Entity, IAwake<string>
     {
         public string MapName;
+
+        public SortedDictionary<int, long> Lines = new();
     }
     
     public enum MapCopyStatus
@@ -20,9 +22,9 @@ namespace ET.Server
     
     // 地图副本或者分线，一个MapCopy对应一个Fiber
     [ChildOf(typeof(MapInfo))]
-    public class MapCopy: Entity, IAwake
+    public class MapCopy: Entity, IAwake<int>
     {
-        public const int MaxNum = 10;
+        public int LineNum;
         
         // 该副本已经进入的所有玩家
         public HashSet<long> Players = new();
