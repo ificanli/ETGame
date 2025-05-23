@@ -19,6 +19,12 @@ namespace ET.Server
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
                 Unit unit = aoiEntity.Unit;
+                
+                if (!unit.UnitType.IsSame(node.UnitType))
+                {
+                    continue;
+                }
+                
                 NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
                 if (math.distance(pos, unit.Position) > node.Radius / 1000f + numericComponent.GetAsFloat(NumericType.Radius))
                 {

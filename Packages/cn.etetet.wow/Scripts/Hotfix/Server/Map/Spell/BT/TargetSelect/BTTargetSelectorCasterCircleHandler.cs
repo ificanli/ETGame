@@ -9,10 +9,10 @@ namespace ET.Server
         protected override int Run(TargetSelectorCasterCircle node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
-
-            List<EntityRef<Unit>> units = new ();
+            SpellTargetComponent spellTargetComponent = buff.GetComponent<SpellTargetComponent>();
 
             Unit caster = buff.GetCaster();
+            spellTargetComponent.Position = caster.Position;
 
             Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
 
@@ -21,6 +21,12 @@ namespace ET.Server
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
                 Unit unit = aoiEntity.Unit;
+                
+                if (!unit.UnitType.IsSame(node.UnitType))
+                {
+                    continue;
+                }
+                
                 if (math.distance(pos, unit.Position) > node.Radius)
                 {
                     continue;
@@ -49,11 +55,8 @@ namespace ET.Server
                     }
                 }
 
-                units.Add(aoiEntity.Unit);
+                spellTargetComponent.Units.Add(aoiEntity.Unit.Id);
             }
-
-            env.AddCollection(node.Units, units);
-            
             return 0;
         }
     }
