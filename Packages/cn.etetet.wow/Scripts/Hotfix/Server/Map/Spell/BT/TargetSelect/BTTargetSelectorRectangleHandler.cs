@@ -7,7 +7,6 @@
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
 
-            
             return 0;
         }
     }

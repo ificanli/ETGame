@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace ET.Client
+namespace ET
 {
     public class BTCreateFakeBullet: BTAction
     {

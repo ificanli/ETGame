@@ -9,15 +9,15 @@ namespace ET
     [System.Serializable]
     public class TargetSelectorRectangle : TargetSelector
     {
-#if UNITY
         [InlineProperty] // 去掉折叠和标题
         [HideReferenceObjectPicker]
         [LabelText("技能指示器")]
         public OdinUnityObject SpellIndicator = new();
-#endif
 
-        public float2 Offset; 
+        //public float2 Offset; 
         public float Width;
         public float Length;
+        
+        public UnitType UnitType;
     }
 }

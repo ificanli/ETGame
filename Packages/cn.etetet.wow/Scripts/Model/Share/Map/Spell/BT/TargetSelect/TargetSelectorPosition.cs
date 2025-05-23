@@ -13,11 +13,9 @@ namespace ET
 
         public int Radius;
         
-#if UNITY
         [InlineProperty] // 去掉折叠和标题
         [HideReferenceObjectPicker]
         [LabelText("技能指示器")]
         public OdinUnityObject SpellIndicator = new();
-#endif
     }
 }

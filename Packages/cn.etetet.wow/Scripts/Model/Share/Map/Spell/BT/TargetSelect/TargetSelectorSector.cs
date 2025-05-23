@@ -1,11 +1,15 @@
-﻿namespace ET
+﻿using Sirenix.OdinInspector;
+
+namespace ET
 {
     [System.Serializable]
     public class TargetSelectorSector : TargetSelector
     {
-#if UNITY
-        public UnityEngine.GameObject SpellIndicator;
-#endif
+        [InlineProperty] // 去掉折叠和标题
+        [HideReferenceObjectPicker]
+        [LabelText("技能指示器")]
+        public OdinUnityObject SpellIndicator = new();
+        
         public int Radius;
         public int Angle;
         

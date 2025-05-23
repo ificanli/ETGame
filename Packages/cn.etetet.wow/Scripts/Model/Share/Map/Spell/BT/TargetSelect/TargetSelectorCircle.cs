@@ -21,11 +21,9 @@ namespace ET
         
         public UnitType UnitType;
         
-#if UNITY
         [InlineProperty] // 去掉折叠和标题
         [HideReferenceObjectPicker]
         [LabelText("技能指示器")]
         public OdinUnityObject SpellIndicator = new();
-#endif
     }
 }

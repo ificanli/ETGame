@@ -18,7 +18,6 @@ namespace ET.Client
             SpellConfigCategory spellConfigCategory = new();
             BuffConfigCategory buffConfigCategory = new();
             AIConfigCategory aiConfigCategory = new();
-            
             foreach (var guid in allScriptableObjects)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
@@ -36,6 +35,16 @@ namespace ET.Client
                         {
                             Log.Error($"File name not match Id: {spellScriptableObject.name}");
                         }
+
+                        try
+                        {
+                            spellScriptableObject.SpellConfig.ToBson();
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError($"error: {scriptableObject.name}, {e}");
+                        }
+                        
                         spellConfigCategory.Add(spellScriptableObject.SpellConfig);
                         continue;
                     }
@@ -46,6 +55,16 @@ namespace ET.Client
                         {
                             Log.Error($"File name not match Id: {buffScriptableObject.name}");
                         }
+                        
+                        try
+                        {
+                            buffScriptableObject.BuffConfig.ToBson();
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError($"error: {scriptableObject.name}, {e}");
+                        }
+                        
                         buffConfigCategory.Add(buffScriptableObject.BuffConfig);
                         continue;
                     }
@@ -56,6 +75,16 @@ namespace ET.Client
                         {
                             Log.Error($"File name not match Id: {aiScriptableObject.name}");
                         }
+                        
+                        try
+                        {
+                            aiScriptableObject.AIConfig.ToBson();
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError($"error: {scriptableObject.name}, {e}");
+                        }
+                        
                         aiConfigCategory.Add(aiScriptableObject.AIConfig);
                         continue;
                     }

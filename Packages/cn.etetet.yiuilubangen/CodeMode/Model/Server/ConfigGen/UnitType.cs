@@ -28,6 +28,10 @@ namespace ET
         /// 宠物
         /// </summary>
         Pet = 8,
+        /// <summary>
+        /// 虚拟单位
+        /// </summary>
+        Virtual = 16,
     }
 
 } 

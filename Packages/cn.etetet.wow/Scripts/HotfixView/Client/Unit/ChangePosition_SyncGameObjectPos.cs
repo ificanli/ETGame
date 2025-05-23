@@ -18,6 +18,7 @@ namespace ET.Client
             Transform transform = gameObjectComponent.Transform;
 
             transform.position = unit.Position;
+            transform.rotation = unit.Rotation;
             
             // 贴地
             GameObjectPosHelper.OnTerrain(transform);

@@ -21,6 +21,7 @@ namespace ET.Client
             unit = unitRef;
             go.AddComponent<GameObjectEntityRef>().Entity = unit;
             go.transform.position = unit.Position;
+            go.transform.rotation = unit.Rotation;
 
             {
                 using CoroutineLock coroutineLock = await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);

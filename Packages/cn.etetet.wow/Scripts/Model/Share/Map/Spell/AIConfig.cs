@@ -38,7 +38,7 @@ namespace ET
     }
     
     [EnableClass]
-    public class AIConfig
+    public class AIConfig: ProtoObject
     {
         public int Id;
 

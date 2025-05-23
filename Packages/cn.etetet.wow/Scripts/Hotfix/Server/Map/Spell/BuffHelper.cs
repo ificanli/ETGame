@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace ET.Server
 {
@@ -270,8 +271,8 @@ namespace ET.Server
 
         public static void RemoveBuff(Buff buff, BuffFlags removeType)
         {
-            Unit unit = buff.Parent.GetParent<Unit>();
-            if (unit.IsDisposed)
+            Unit unit = buff.Parent?.GetParent<Unit>();
+            if (unit == null || unit.IsDisposed)
             {
                 return;
             }

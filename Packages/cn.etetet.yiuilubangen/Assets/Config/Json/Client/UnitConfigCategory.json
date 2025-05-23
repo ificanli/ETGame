@@ -9,7 +9,7 @@
   },
   {
     "Id": 1002,
-    "UnitType": 2,
+    "UnitType": 16,
     "Name": "TrainingDummy",
     "MapName": "Map1",
     "head_icon": "UI-ChatIcon-Battlenet",
@@ -17,9 +17,9 @@
   },
   {
     "Id": 1003,
-    "UnitType": 2,
+    "UnitType": 16,
     "Name": "TrainingDummy",
-    "MapName": "Map1",
+    "MapName": "Map2",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 2
   },

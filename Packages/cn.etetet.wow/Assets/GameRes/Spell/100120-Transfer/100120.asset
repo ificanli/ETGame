@@ -105,24 +105,15 @@ MonoBehaviour:
     - Name: SpellIndicator
       Entry: 6
       Data: 
-    - Name: Offset
-      Entry: 7
-      Data: Unity.Mathematics.float2, Unity.Mathematics
-    - Name: x
-      Entry: 4
-      Data: -60
-    - Name: y
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: Width
       Entry: 4
       Data: 1000
     - Name: Length
       Entry: 4
       Data: 100
+    - Name: UnitType
+      Entry: 3
+      Data: 1
     - Name: 
       Entry: 8
       Data: 

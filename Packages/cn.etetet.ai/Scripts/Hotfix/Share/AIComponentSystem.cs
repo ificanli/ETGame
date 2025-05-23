@@ -13,11 +13,11 @@ namespace ET
             {
                 try
                 {
-                    self.Check();
+                    self?.Check();
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"move timer error: {self.Id}\n{e}");
+                    Log.Error($"ai timer error: {self.Id}\n{e}");
                 }
             }
         }

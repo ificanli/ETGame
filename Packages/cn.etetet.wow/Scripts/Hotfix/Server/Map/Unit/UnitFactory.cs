@@ -12,14 +12,17 @@ namespace ET.Server
             Unit unit = unitComponent.AddChildWithId<Unit, int>(id, configId);
             UnitConfig unitConfig = unit.Config();
             
+            
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
             foreach ((int k, long v) in unitConfig.KV)
             {
                 numericComponent.SetNoEvent(k, v);
             }
 
+            // 设置面向
             unit.UnitType = unitConfig.UnitType;
             unit.Position = new float3(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
+            unit.Rotation = quaternion.Euler(0, math.radians(numericComponent.Get(NumericType.Yaw)), 0);
             
             unit.AddComponent<MoveComponent>();
             unit.AddComponent<TurnComponent>();
@@ -39,15 +42,20 @@ namespace ET.Server
                 {
                     unit.AddComponent<ThreatComponent>();
                     unit.AddComponent<PathfindingComponent, string>(scene.Name);
-                    
-                    int ai = numericComponent.GetAsInt(NumericType.AI);
-                    if (ai != 0)
-                    {
-                        unit.AddComponent<AIComponent, int>(ai);
-                    }
+                    break;
+                }
+                case UnitType.Virtual:
+                {
                     break;
                 }
             }
+            
+            int ai = numericComponent.GetAsInt(NumericType.AI);
+            if (ai != 0)
+            {
+                unit.AddComponent<AIComponent, int>(ai);
+            }
+            
             unitComponent.Add(unit);
             return unit;
         }
