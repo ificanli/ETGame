@@ -35,10 +35,13 @@ namespace ET.Server
             EntityRef<Scene> rootRef = root;
             long unitId = unit.Id;
             
+            bool changeScene = TransferSceneHelper.IsChangeScene(unit.Scene().Name, mapName);
+            
             M2M_UnitTransferRequest request = M2M_UnitTransferRequest.Create();
             ActorId oldActorId = unit.GetActorId();
             request.OldActorId = oldActorId;
             request.Unit = unit.ToBson();
+            request.ChangeScene = changeScene;
             foreach (Entity entity in unit.Components.Values)
             {
                 if (entity is ITransfer)
@@ -60,19 +63,17 @@ namespace ET.Server
             StartSceneConfig mapManagerConfig = StartSceneConfigCategory.Instance.GetOneBySceneType(root.Zone(), SceneType.MapManager);
             root = rootRef;
             A2MapManager_GetMapResponse mapResponse = await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, mapRequest) as A2MapManager_GetMapResponse;
-
             
             //3. 传送到副本
             root = rootRef;
             M2M_UnitTransferResponse response = await root.GetComponent<MessageSender>().Call(mapResponse.MapActorId, request) as M2M_UnitTransferResponse;
-            
+
             //4. 通知副本，玩家已经传送进入副本
             A2MapManager_NotifyPlayerAlreadyEnterMapRequest a2MapManagerNotifyPlayerAlreadyEnterMapRequest = A2MapManager_NotifyPlayerAlreadyEnterMapRequest.Create();
             a2MapManagerNotifyPlayerAlreadyEnterMapRequest.MapName = mapName;
             a2MapManagerNotifyPlayerAlreadyEnterMapRequest.UnitId = unitId;
             root = rootRef;
             await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, a2MapManagerNotifyPlayerAlreadyEnterMapRequest);
-            
             
             root = rootRef;
             //5. 解锁location，可以接收发给Unit的消息

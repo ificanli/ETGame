@@ -20,7 +20,6 @@ namespace ET.Server
 
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
-                Log.Debug($"1111111111111111111111a1");
                 Unit unit = aoiEntity.Unit;
                 if (!unit.UnitType.IsSame(node.UnitType))
                 {
@@ -30,7 +29,6 @@ namespace ET.Server
                 {
                     continue;
                 }
-                Log.Debug($"1111111111111111111111a2 {aoiEntity.Unit.Id}");
                 spellTargetComponent.Units.Add(aoiEntity.Unit.Id);
             }
             return 0;

@@ -1,29 +1,42 @@
 [
   {
     "Id": 1,
+    "Name": "GateMap",
+    "Desc": "GateMap",
+    "CopyType": 1,
+    "MaxLineNum": 1,
+    "MaxPlayerNum": 1,
+    "RecommendPlayerNum": 1,
+    "MapResName": ""
+  },
+  {
+    "Id": 2,
     "Name": "Map1",
     "Desc": "Map1",
     "CopyType": 1,
     "MaxLineNum": 1,
     "MaxPlayerNum": 10,
-    "RecommendPlayerNum": 8
+    "RecommendPlayerNum": 8,
+    "MapResName": "Map1"
   },
   {
-    "Id": 2,
+    "Id": 3,
     "Name": "Map2",
     "Desc": "Map2",
     "CopyType": 2,
     "MaxLineNum": 1000,
     "MaxPlayerNum": 10,
-    "RecommendPlayerNum": 8
+    "RecommendPlayerNum": 8,
+    "MapResName": "Map1"
   },
   {
-    "Id": 3,
+    "Id": 4,
     "Name": "Map3",
     "Desc": "Map3",
     "CopyType": 3,
     "MaxLineNum": 1000,
     "MaxPlayerNum": 1,
-    "RecommendPlayerNum": 1
+    "RecommendPlayerNum": 1,
+    "MapResName": "Map1"
   }
 ]

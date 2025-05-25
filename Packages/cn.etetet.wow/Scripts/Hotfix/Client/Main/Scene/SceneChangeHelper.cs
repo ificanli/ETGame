@@ -6,32 +6,39 @@
         public static async ETTask SceneChangeTo(Scene root, string sceneName, long sceneInstanceId)
         {
             CurrentScenesComponent currentScenesComponent = root.GetComponent<CurrentScenesComponent>();
-            string currentSceneName = currentScenesComponent.Scene?.Name;
-            currentScenesComponent.Scene?.Dispose(); // 删除之前的CurrentScene，创建新的
-            Scene currentScene = CurrentSceneFactory.Create(sceneInstanceId, sceneName, currentScenesComponent);
             
-            EventSystem.Instance.Publish(root, new SceneChangeStart() {PreSceneName = currentSceneName});          // 可以订阅这个事件中创建Loading界面
-            EntityRef<Scene> rootRef = root;
-            EntityRef<CurrentScenesComponent> currentScenesComponentRef = currentScenesComponent;
-            await WaitUnitCreateFinish(root, currentScene);
-            root = rootRef;
+            bool changeScene = TransferSceneHelper.IsChangeScene(currentScenesComponent.Scene?.Name, sceneName);
+            
+            if (changeScene)
+            {
+                // 先卸载当前场景
+                currentScenesComponent.Scene?.Dispose(); // 删除之前的CurrentScene，创建新的
+                Scene currentScene = CurrentSceneFactory.Create(sceneInstanceId, sceneName, currentScenesComponent);
+                currentScene.AddComponent<UnitComponent>();
+                await WaitUnitCreateFinish(root, currentScenesComponent.Scene);
+            }
+            
+            EventSystem.Instance.Publish(root, new SceneChangeStart() {ChangeScene = changeScene});          // 可以订阅这个事件中创建Loading界面
+
+            if (changeScene)
+            {
+                // 加载场景寻路数据
+                await NavmeshComponent.Instance.Load(sceneName);
+            }
+            
             EventSystem.Instance.Publish(root, new SceneChangeFinish());
-            // 加载场景寻路数据
-            await NavmeshComponent.Instance.Load(sceneName);
-            root = rootRef;
+            
             using CoroutineLock coroutineLock = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
-            root = rootRef;
             // 通知等待场景切换的协程
             root.GetComponent<ObjectWait>().Notify(new Wait_SceneChangeFinish());
             
-            currentScenesComponent = currentScenesComponentRef;
             currentScenesComponent.Progress = 100;
         }
 
         private static async ETTask WaitUnitCreateFinish(Scene root, Scene currentScene)
         {
             EntityRef<Scene> currentSceneRef = currentScene;
-            UnitComponent unitComponent = currentScene.AddComponent<UnitComponent>();
+            UnitComponent unitComponent = currentScene.GetComponent<UnitComponent>();
             EntityRef<UnitComponent> unitComponentRef = unitComponent;
             
             // 等待CreateMyUnit的消息

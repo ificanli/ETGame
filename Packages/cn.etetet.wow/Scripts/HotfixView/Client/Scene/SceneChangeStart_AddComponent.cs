@@ -12,30 +12,24 @@ namespace ET.Client
             {
                 EntityRef<Scene> rootRef = root;
                 EntityRef<CurrentScenesComponent> currentScenesComponentRef = root.GetComponent<CurrentScenesComponent>();
+                CurrentScenesComponent currentScenesComponent = currentScenesComponentRef;
                 using CoroutineLock coroutineLock = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
 
                 root = rootRef;
-                CurrentScenesComponent currentScenesComponent = root.GetComponent<CurrentScenesComponent>();
-                Scene currentScene = root.CurrentScene();
-                EntityRef<Scene> currentSceneRef = currentScene;
-                MapConfig preMapConfig = null;
-                if (args.PreSceneName != null)
-                {
-                    preMapConfig = MapConfigCategory.Instance.GetByName(args.PreSceneName);
-                }
-                 
-                MapConfig mapConfig = MapConfigCategory.Instance.GetByName(currentScene.Name);
-                
+
+                Scene currentScene = currentScenesComponent.Scene;
                 // 地图资源相同,则不创建Loading界面,也不需要重新加载地图
-                if (mapConfig.MapResName != preMapConfig?.MapResName)
+                if (args.ChangeScene)
                 {
                     await YIUIMgrComponent.Inst.Root.OpenPanelAsync<LoadingPanelComponent>();
-                    
+
+                    currentScenesComponent = currentScenesComponentRef;
                     currentScenesComponent = currentScenesComponentRef;
                     currentScenesComponent.Progress = 0;
                 
                     ResourcesLoaderComponent resourcesLoaderComponent = currentScene.GetComponent<ResourcesLoaderComponent>();
-            
+
+                    MapConfig mapConfig = MapConfigCategory.Instance.GetByName(currentScene.Name);
                     // 加载场景资源
                     await resourcesLoaderComponent.LoadSceneAsync(mapConfig.MapResName, LoadSceneMode.Single,
                         (progress) =>
@@ -44,10 +38,6 @@ namespace ET.Client
                             currentScenes.Progress = (int)progress * 99f;
                         });
                 }
-                
-                // 切换到map场景
-                currentScene = currentSceneRef;
-                currentScene.AddComponent<OperaComponent>();
             }
             catch (Exception e)
             {

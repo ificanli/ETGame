@@ -24,6 +24,7 @@ namespace ET
             MaxLineNum = _buf.ReadInt();
             MaxPlayerNum = _buf.ReadInt();
             RecommendPlayerNum = _buf.ReadInt();
+            MapResName = _buf.ReadString();
 
             EndInit();
         }
@@ -61,6 +62,10 @@ namespace ET
         /// 推荐人数，超过开新线
         /// </summary>
         public readonly int RecommendPlayerNum;
+        /// <summary>
+        /// 地图场景资源
+        /// </summary>
+        public readonly string MapResName;
     
         public const int __ID__ = -1840922722;
         public override int GetTypeId() => __ID__;
@@ -80,6 +85,7 @@ namespace ET
             + "MaxLineNum:" + MaxLineNum + ","
             + "MaxPlayerNum:" + MaxPlayerNum + ","
             + "RecommendPlayerNum:" + RecommendPlayerNum + ","
+            + "MapResName:" + MapResName + ","
             + "}";
         }
 

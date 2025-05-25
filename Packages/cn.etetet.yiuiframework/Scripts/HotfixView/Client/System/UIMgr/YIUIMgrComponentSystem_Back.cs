@@ -61,6 +61,10 @@ namespace ET.Client
                 }
 
                 self = selfRef;
+                if (self == null)
+                {
+                    return;
+                }
                 EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseBefore
                                                            {
                                                                UIPkgName       = child.PkgName,
@@ -220,6 +224,11 @@ namespace ET.Client
 
                 if (child != home)
                 {
+                    self = selfRef;
+                    if (self == null)
+                    {
+                        return false;
+                    }
                     EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseBefore
                                                                {
                                                                    UIPkgName       = child.PkgName,

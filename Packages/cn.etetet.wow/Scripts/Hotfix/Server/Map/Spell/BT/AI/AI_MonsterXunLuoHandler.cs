@@ -49,6 +49,10 @@ namespace ET.Server
                 
                 // 等待一段时间
                 root = rootRef;
+                if (root == null)
+                {
+                    return;
+                }
                 await root.GetComponent<TimerComponent>().WaitAsync(RandomGenerator.RandomNumber(1000, 4000));
                 if (cancellationToken.IsCancel())
                 {

@@ -26,6 +26,10 @@ namespace ET.Client
             using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, coroutineLockCode);
 
             self = selfRef;
+            if (self == null)
+            {
+                return true;
+            }
             EventSystem.Instance?.Publish(self.Root(),
                 new YIUIEventPanelCloseBefore
                 {
@@ -100,7 +104,12 @@ namespace ET.Client
             Debug.Log($"<color=yellow> 关闭一个窗口(被直接摧毁的): {panelName} </color>");
             #endif
 
-            EventSystem.Instance?.Publish(self.Root(),
+            Scene root = self.Root();
+            if (root == null)
+            {
+                return true;
+            }
+            EventSystem.Instance?.Publish(root,
                 new YIUIEventPanelCloseBefore
                 {
                     UIPkgName  = info.PkgName, UIResName = info.ResName, UIComponentName = info.Name,
