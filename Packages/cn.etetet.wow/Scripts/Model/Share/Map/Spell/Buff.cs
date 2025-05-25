@@ -1,10 +1,5 @@
 ﻿namespace ET
 {
-    public static partial class TimerInvokeType
-    {
-        public const int BuffTimeoutTimer = PackageType.WOW * 1000 + 1;
-    }
-    
     [Module(ModuleName.Spell)]
     [ChildOf(typeof(BuffComponent))]
     public class Buff: Entity, IAwake<int>, IDestroy

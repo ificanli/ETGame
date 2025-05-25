@@ -65,3 +65,17 @@ message A2MapManager_NotifyPlayerAlreadyEnterMapResponse // IResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+// ResponseType MapManager2Map_NotifyPlayerTransferResponse
+message MapManager2Map_NotifyPlayerTransferRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	ActorId MapActorId = 2;
+}
+
+message MapManager2Map_NotifyPlayerTransferResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}

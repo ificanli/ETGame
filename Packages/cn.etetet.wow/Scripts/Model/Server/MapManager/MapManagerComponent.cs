@@ -18,6 +18,8 @@ namespace ET.Server
         WaitFinish = 2,
         // 结束
         Finished = 3,
+        // 等待合线
+        WaitMerge = 4,
     }
     
     // 地图副本或者分线，一个MapCopy对应一个Fiber
@@ -33,6 +35,8 @@ namespace ET.Server
         public Dictionary<long, long> WaitEnterPlayer = new();
         
         public MapCopyStatus Status = MapCopyStatus.Running;
+
+        public long MergeTime = 0;
     }
     
     
