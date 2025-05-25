@@ -25,8 +25,8 @@
     "Desc": "Map2",
     "CopyType": 2,
     "MaxLineNum": 1000,
-    "MaxPlayerNum": 10,
-    "RecommendPlayerNum": 8,
+    "MaxPlayerNum": 1,
+    "RecommendPlayerNum": 1,
     "MapResName": "Map1"
   },
   {
