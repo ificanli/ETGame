@@ -1324,6 +1324,65 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWOuter.C2G_LoginOut)]
+    [ResponseType(nameof(G2C_LoginOut))]
+    public partial class C2G_LoginOut : MessageObject, IRequest
+    {
+        public static C2G_LoginOut Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2G_LoginOut>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWOuter.G2C_LoginOut)]
+    public partial class G2C_LoginOut : MessageObject, IResponse
+    {
+        public static G2C_LoginOut Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<G2C_LoginOut>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWOuter
     {
         public const ushort RouterSync = 4101;
@@ -1367,5 +1426,7 @@ namespace ET
         public const ushort M2C_Turn = 4139;
         public const ushort C2M_PetAttack = 4140;
         public const ushort M2C_UpdateCD = 4141;
+        public const ushort C2G_LoginOut = 4142;
+        public const ushort G2C_LoginOut = 4143;
     }
 }

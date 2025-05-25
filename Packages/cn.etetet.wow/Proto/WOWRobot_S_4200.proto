@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package ET;
+
+// ResponseType Console2Robot_LogoutResponse
+message Console2Robot_LogoutRequest // IRequest
+{
+	int32 RpcId = 1;
+}
+
+message Console2Robot_LogoutResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
