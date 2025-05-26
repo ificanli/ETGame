@@ -32,7 +32,6 @@ namespace ET.Server
                             return;
                         }
                         robotManagerComponent.GetRobotActorId(options.Account, out ActorId actorId);
-                        Log.Debug($"1111111111111111111111111111111111111111111111111111 {actorId}");
                         ProcessInnerSender processInnerSender = fiber.Root.GetComponent<ProcessInnerSender>();
                         Console2Robot_LogoutRequest request = Console2Robot_LogoutRequest.Create();
                         Console2Robot_LogoutResponse response = await processInnerSender.Call(actorId, request) as Console2Robot_LogoutResponse;

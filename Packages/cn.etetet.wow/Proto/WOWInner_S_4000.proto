@@ -79,3 +79,32 @@ message MapManager2Map_NotifyPlayerTransferResponse // ILocationResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+// ResponseType Map2MapManager_LogoutResponse
+message Map2MapManager_LogoutRequest // IRequest
+{
+	int32 RpcId = 1;
+	string MapName = 2;
+	int64 UnitId = 3;
+	int64 MapId = 4;
+}
+
+message Map2MapManager_LogoutResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType Map2G_Logout
+message G2Map_Logout // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message Map2G_Logout // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}

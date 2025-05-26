@@ -346,6 +346,136 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWInner.Map2MapManager_LogoutRequest)]
+    [ResponseType(nameof(Map2MapManager_LogoutResponse))]
+    public partial class Map2MapManager_LogoutRequest : MessageObject, IRequest
+    {
+        public static Map2MapManager_LogoutRequest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<Map2MapManager_LogoutRequest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public string MapName { get; set; }
+
+        [MemoryPackOrder(2)]
+        public long UnitId { get; set; }
+
+        [MemoryPackOrder(3)]
+        public long MapId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.MapName = default;
+            this.UnitId = default;
+            this.MapId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWInner.Map2MapManager_LogoutResponse)]
+    public partial class Map2MapManager_LogoutResponse : MessageObject, IResponse
+    {
+        public static Map2MapManager_LogoutResponse Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<Map2MapManager_LogoutResponse>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWInner.G2Map_Logout)]
+    [ResponseType(nameof(Map2G_Logout))]
+    public partial class G2Map_Logout : MessageObject, ILocationRequest
+    {
+        public static G2Map_Logout Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<G2Map_Logout>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWInner.Map2G_Logout)]
+    public partial class Map2G_Logout : MessageObject, ILocationResponse
+    {
+        public static Map2G_Logout Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<Map2G_Logout>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWInner
     {
         public const ushort M2A_Reload = 4001;
@@ -358,5 +488,9 @@ namespace ET
         public const ushort A2MapManager_NotifyPlayerAlreadyEnterMapResponse = 4008;
         public const ushort MapManager2Map_NotifyPlayerTransferRequest = 4009;
         public const ushort MapManager2Map_NotifyPlayerTransferResponse = 4010;
+        public const ushort Map2MapManager_LogoutRequest = 4011;
+        public const ushort Map2MapManager_LogoutResponse = 4012;
+        public const ushort G2Map_Logout = 4013;
+        public const ushort Map2G_Logout = 4014;
     }
 }

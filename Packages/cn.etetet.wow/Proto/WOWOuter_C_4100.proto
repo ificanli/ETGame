@@ -288,13 +288,13 @@ message M2C_UpdateCD // IMessage
 	int64 Time = 4;
 }
 
-// ResponseType G2C_LoginOut
-message C2G_LoginOut // ISessionRequest
+// ResponseType G2C_Logout
+message C2G_Logout // ISessionRequest
 {
 	int32 RpcId = 1;
 }
 
-message G2C_LoginOut // ISessionResponse
+message G2C_Logout // ISessionResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;

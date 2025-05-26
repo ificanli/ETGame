@@ -81,6 +81,8 @@ namespace ET.Server
         // line2合并到line1
         public static async ETTask MergeLines(this MapInfo self, int lineNum1, int lineNum2)
         {
+            Log.Debug($"start merge lines: {self.MapName} {lineNum1} {lineNum2}");
+            
             MapCopy mapCopy1 = self.GetByLineNum(lineNum1);
             MapCopy mapCopy2 = self.GetByLineNum(lineNum2);
 
@@ -96,8 +98,10 @@ namespace ET.Server
             foreach (long playerId in mapCopy2.Players.ToArray())
             {
                 MapManager2Map_NotifyPlayerTransferRequest request = MapManager2Map_NotifyPlayerTransferRequest.Create();
+                request.MapActorId = new ActorId(self.Fiber().Process, (int)mapCopy2.Id);
                 await messageLocationSenderOneType.Call(playerId, request);
 
+                Log.Debug($"merge lines transfer: {self.MapName} transfer {playerId} to line {lineNum1}");
                 mapCopy1.Players.Add(playerId);
                 mapCopy2.Players.Remove(playerId);
             }
@@ -182,6 +186,18 @@ namespace ET.Server
             }
 
             return await mapInfo.GetCopy();
+        }
+        
+        public static MapCopy FindMap(this MapManagerComponent self, string mapName, long mapId)
+        {
+            if (!self.MapInfos.TryGetValue(mapName, out EntityRef<MapInfo> mapInfoRef))
+            {
+                return null;
+            }
+
+            MapInfo mapInfo = mapInfoRef;
+            MapCopy mapCopy = mapInfo.GetCopy(mapId);
+            return mapCopy;
         }
     }
 }

@@ -11,6 +11,8 @@
             root.AddComponent<CoroutineLockComponent>();
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
+            root.AddComponent<LocationProxyComponent>();
+            root.AddComponent<MessageLocationSenderComponent>();
             
             root.AddComponent<MapManagerComponent>();
             await ETTask.CompletedTask;

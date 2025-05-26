@@ -1325,13 +1325,13 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2G_LoginOut)]
-    [ResponseType(nameof(G2C_LoginOut))]
-    public partial class C2G_LoginOut : MessageObject, ISessionRequest
+    [Message(WOWOuter.C2G_Logout)]
+    [ResponseType(nameof(G2C_Logout))]
+    public partial class C2G_Logout : MessageObject, ISessionRequest
     {
-        public static C2G_LoginOut Create(bool isFromPool = false)
+        public static C2G_Logout Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<C2G_LoginOut>(isFromPool);
+            return ObjectPool.Fetch<C2G_Logout>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -1351,12 +1351,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.G2C_LoginOut)]
-    public partial class G2C_LoginOut : MessageObject, ISessionResponse
+    [Message(WOWOuter.G2C_Logout)]
+    public partial class G2C_Logout : MessageObject, ISessionResponse
     {
-        public static G2C_LoginOut Create(bool isFromPool = false)
+        public static G2C_Logout Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<G2C_LoginOut>(isFromPool);
+            return ObjectPool.Fetch<G2C_Logout>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -1426,7 +1426,7 @@ namespace ET
         public const ushort M2C_Turn = 4139;
         public const ushort C2M_PetAttack = 4140;
         public const ushort M2C_UpdateCD = 4141;
-        public const ushort C2G_LoginOut = 4142;
-        public const ushort G2C_LoginOut = 4143;
+        public const ushort C2G_Logout = 4142;
+        public const ushort G2C_Logout = 4143;
     }
 }

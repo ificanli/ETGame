@@ -92,6 +92,7 @@ namespace ET.Server
         // 发送过去找不到actor不会重试,用此方法，你得保证actor提前注册好了location
         public static void Send(this MessageLocationSenderOneType self, long entityId, IMessage message)
         {
+            LogMsg.Instance.Debug(self.Fiber(), message);
             self.SendInner(entityId, message).NoContext();
         }
         
@@ -192,7 +193,10 @@ namespace ET.Server
 
                 try
                 {
-                    return await self.CallInner(messageLocationSender, iRequest);
+                    LogMsg.Instance.Debug(self.Fiber(), iRequest);
+                    IResponse response = await self.CallInner(messageLocationSender, iRequest);
+                    LogMsg.Instance.Debug(self.Fiber(), response);
+                    return response;
                 }
                 catch (RpcException)
                 {
@@ -216,7 +220,7 @@ namespace ET.Server
             
             Scene root = self.Root();
             EntityRef<Scene> rootRef = root;
-
+            
             Type requestType = iRequest.GetType();
             while (true)
             {

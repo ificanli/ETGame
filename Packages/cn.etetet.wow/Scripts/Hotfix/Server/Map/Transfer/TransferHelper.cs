@@ -61,10 +61,12 @@ namespace ET.Server
 
         public static async ETTask Transfer(Unit unit, ActorId mapActorId, bool changeScene)
         {
+            long unitId = unit.Id;
+            Log.Debug("start transfer1 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
+            
             Scene root = unit.Root();
             EntityRef<Scene> rootRef = root;
             
-            long unitId = unit.Id;
             ActorId oldActorId = unit.GetActorId();
             //2. location加锁
             await root.GetComponent<LocationProxyComponent>().Lock(LocationType.Unit, unitId, oldActorId);
@@ -83,15 +85,17 @@ namespace ET.Server
             }
             unit.Dispose();
             
-            
+            Log.Debug("start transfer2 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
             //4. 传送到副本
             root = rootRef;
             M2M_UnitTransferResponse response = await root.GetComponent<MessageSender>().Call(mapActorId, request) as M2M_UnitTransferResponse;
             
-            
+            Log.Debug("start transfer3 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
             root = rootRef;
             //5. 解锁location，可以接收发给Unit的消息
             await root.GetComponent<LocationProxyComponent>().UnLock(LocationType.Unit, unitId, oldActorId, response.NewActorId);
+            
+            Log.Debug("start transfer4 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
         }
     }
 }

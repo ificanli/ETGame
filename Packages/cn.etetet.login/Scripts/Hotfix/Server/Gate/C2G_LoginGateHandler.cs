@@ -46,7 +46,9 @@ namespace ET.Server
             }
             else
             {
-                throw new Exception("not write");
+                player.RemoveComponent<WaitLogoutComponent>();
+                session.AddComponent<SessionPlayerComponent>().Player = player;
+                player.GetComponent<PlayerSessionComponent>().Session = session;
             }
 
             response.PlayerId = player.Id;

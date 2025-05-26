@@ -12,8 +12,6 @@ namespace ET.Server
     [ComponentOf(typeof(MapInfo))]
     public class MergeLinesComponent: Entity, IAwake, IDestroy
     {
-        public long Timer;
-        
         public Queue<MergeLineInfo> WaitMergetQueue = new();
     }
 }
