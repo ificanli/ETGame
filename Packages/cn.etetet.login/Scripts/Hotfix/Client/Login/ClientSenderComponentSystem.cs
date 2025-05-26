@@ -49,7 +49,12 @@ namespace ET.Client
             main2NetClientLogin.Account = account;
             main2NetClientLogin.Password = password;
             main2NetClientLogin.Address = address;
+            
+            LogMsg.Instance.Debug(self.Fiber(), main2NetClientLogin);
+            
             NetClient2Main_Login response = await self.Root().GetComponent<ProcessInnerSender>().Call(self.netClientActorId, main2NetClientLogin) as NetClient2Main_Login;
+            
+            LogMsg.Instance.Debug(self.Fiber(), response);
             
             return response.PlayerId;
         }
@@ -73,6 +78,8 @@ namespace ET.Client
             
             using A2NetClient_Response a2NetClientResponse = await self.Root().GetComponent<ProcessInnerSender>().Call(self.netClientActorId, a2NetClientRequest) as A2NetClient_Response;
             IResponse response = a2NetClientResponse.MessageObject;
+            
+            LogMsg.Instance.Debug(self.Fiber(), response);
                         
             if (response.Error == ErrorCode.ERR_MessageTimeout)
             {

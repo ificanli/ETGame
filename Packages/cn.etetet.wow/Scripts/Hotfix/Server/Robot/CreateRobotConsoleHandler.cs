@@ -9,39 +9,44 @@ namespace ET.Server
     {
         public async ETTask Run(Fiber fiber, ModeContex contex, string content)
         {
-            switch (content)
+            try
             {
-                case ConsoleMode.CreateRobot:
+                switch (content)
                 {
-                    Log.Console("CreateRobot args error!");
-                    break;
-                }
-                default:
-                {
-                    CreateRobotArgs options = null;
-                    Parser.Default.ParseArguments<CreateRobotArgs>(content.Split(' '))
-                            .WithNotParsed(error => throw new Exception($"CreateRobotArgs error!"))
-                            .WithParsed(o => { options = o; });
-
-                    RobotManagerComponent robotManagerComponent =
-                            fiber.Root.GetComponent<RobotManagerComponent>() ?? fiber.Root.AddComponent<RobotManagerComponent>();
-
-                    EntityRef<RobotManagerComponent> robotManagerComponentRef = robotManagerComponent;
-                    
-                    // 创建机器人
-                    TimerComponent timerComponent = fiber.Root.GetComponent<TimerComponent>();
-                    for (int i = 0; i < options.Num; ++i)
+                    case ConsoleMode.CreateRobot:
                     {
-                        robotManagerComponent = robotManagerComponentRef;
-                        await robotManagerComponent.NewRobot($"Robot_{i}");
-                        Log.Console($"create robot {i}");
-                        await timerComponent.WaitAsync(2000);
+                        Log.Console("CreateRobot args error!");
+                        break;
                     }
-                    break;
+                    default:
+                    {
+                        CreateRobotArgs options = null;
+                        Parser.Default.ParseArguments<CreateRobotArgs>(content.Split(' '))
+                                .WithNotParsed(error => throw new Exception($"CreateRobotArgs error!"))
+                                .WithParsed(o => { options = o; });
+
+                        RobotManagerComponent robotManagerComponent =
+                                fiber.Root.GetComponent<RobotManagerComponent>() ?? fiber.Root.AddComponent<RobotManagerComponent>();
+
+                        EntityRef<RobotManagerComponent> robotManagerComponentRef = robotManagerComponent;
+                    
+                        // 创建机器人
+                        TimerComponent timerComponent = fiber.Root.GetComponent<TimerComponent>();
+                        for (int i = 0; i < options.Num; ++i)
+                        {
+                            robotManagerComponent = robotManagerComponentRef;
+                            await robotManagerComponent.NewRobot($"Robot_{i}");
+                            Log.Console($"create robot {i}");
+                            await timerComponent.WaitAsync(2000);
+                        }
+                        break;
+                    }
                 }
             }
-            contex.Parent.RemoveComponent<ModeContex>();
-            await ETTask.CompletedTask;
+            finally
+            {
+                contex.Parent.RemoveComponent<ModeContex>();
+            }
         }
     }
 }

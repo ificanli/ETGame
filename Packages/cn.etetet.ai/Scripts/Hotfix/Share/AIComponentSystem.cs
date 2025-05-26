@@ -32,9 +32,17 @@ namespace ET
         [EntitySystem]
         private static void Awake(this AIComponent self, int ai)
         {
-            AIConfig aiRoot = AIConfigCategory.Instance.Get(ai);
-            self.AIRoot = aiRoot.Root;
-            self.Start();
+            try
+            {
+                AIConfig aiRoot = AIConfigCategory.Instance.Get(ai);
+                self.AIRoot = aiRoot.Root;
+                self.Start();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"ai error: {ai}", e);
+            }
+
         }
 
         [EntitySystem]

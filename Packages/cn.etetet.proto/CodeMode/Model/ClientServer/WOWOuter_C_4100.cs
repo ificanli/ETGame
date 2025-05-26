@@ -1327,7 +1327,7 @@ namespace ET
     [MemoryPackable]
     [Message(WOWOuter.C2G_LoginOut)]
     [ResponseType(nameof(G2C_LoginOut))]
-    public partial class C2G_LoginOut : MessageObject, IRequest
+    public partial class C2G_LoginOut : MessageObject, ISessionRequest
     {
         public static C2G_LoginOut Create(bool isFromPool = false)
         {
@@ -1352,7 +1352,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(WOWOuter.G2C_LoginOut)]
-    public partial class G2C_LoginOut : MessageObject, IResponse
+    public partial class G2C_LoginOut : MessageObject, ISessionResponse
     {
         public static G2C_LoginOut Create(bool isFromPool = false)
         {

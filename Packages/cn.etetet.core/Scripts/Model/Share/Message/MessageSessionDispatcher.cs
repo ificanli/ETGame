@@ -66,6 +66,8 @@ namespace ET
 
         public void Handle(Session session, object message)
         {
+            LogMsg.Instance.Debug(session.Fiber(), message);
+            
             List<MessageSessionDispatcherInfo> actions;
             ushort opcode = OpcodeType.Instance.GetOpcode(message.GetType());
             if (!this.handlers.TryGetValue(opcode, out actions))

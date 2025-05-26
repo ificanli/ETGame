@@ -47,11 +47,14 @@ namespace ET
             World.Instance.AddSingleton<NetServices>();
             
             LogMsg logMsg = World.Instance.AddSingleton<LogMsg>();
-            logMsg.AddIgnore(LoginOuter.C2G_Ping);
-            logMsg.AddIgnore(LoginOuter.G2C_Ping);
-            logMsg.AddIgnore(WOWOuter.C2M_PathfindingResult);
-            logMsg.AddIgnore(WOWOuter.M2C_PathfindingResult);
-            logMsg.AddIgnore(WOWOuter.M2C_Stop);
+            logMsg.AddIgnore(typeof(C2G_Ping));
+            logMsg.AddIgnore(typeof(G2C_Ping));
+            logMsg.AddIgnore(typeof(C2M_PathfindingResult));
+            logMsg.AddIgnore(typeof(M2C_PathfindingResult));
+            logMsg.AddIgnore(typeof(M2C_Stop));
+            logMsg.AddIgnore(typeof(A2NetClient_Message));
+            logMsg.AddIgnore(typeof(A2NetClient_Request));
+            logMsg.AddIgnore(typeof(A2NetClient_Response));
             
             // 创建需要reload的code singleton
             CodeTypes.Instance.CodeProcess();

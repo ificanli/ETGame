@@ -289,12 +289,12 @@ message M2C_UpdateCD // IMessage
 }
 
 // ResponseType G2C_LoginOut
-message C2G_LoginOut // IRequest
+message C2G_LoginOut // ISessionRequest
 {
 	int32 RpcId = 1;
 }
 
-message G2C_LoginOut // IResponse
+message G2C_LoginOut // ISessionResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;

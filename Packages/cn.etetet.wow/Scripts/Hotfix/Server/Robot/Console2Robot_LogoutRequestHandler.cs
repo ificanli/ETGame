@@ -2,7 +2,7 @@ using ET.Client;
 
 namespace ET.Server
 {
-    [MessageHandler(SceneType.Robot)]
+    [MessageHandler(SceneType.WOW)]
     public class Console2Robot_LogoutRequestHandler: MessageHandler<Scene, Console2Robot_LogoutRequest, Console2Robot_LogoutResponse>
     {
         protected override async ETTask Run(Scene root, Console2Robot_LogoutRequest request, Console2Robot_LogoutResponse response)

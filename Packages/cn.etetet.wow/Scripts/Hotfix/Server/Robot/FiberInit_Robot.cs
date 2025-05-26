@@ -22,8 +22,6 @@
             await LoginHelper.Login(root, "127.0.0.1:10101", root.Name, "");
             root = rootRef;
             await EnterMapHelper.EnterMapAsync(root);
-            root = rootRef;
-            root.AddComponent<AIComponent, int>(1);
         }
     }
 }

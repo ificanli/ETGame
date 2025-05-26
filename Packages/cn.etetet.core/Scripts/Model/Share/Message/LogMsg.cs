@@ -1,34 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ET
 {
     public class LogMsg: Singleton<LogMsg>, ISingletonAwake
     {
-        private readonly HashSet<ushort> ignore = new();
-            //OuterMessage.C2G_Ping, 
-            //OuterMessage.G2C_Ping, 
-            //OuterMessage.C2G_Benchmark, 
-            //OuterMessage.G2C_Benchmark,
+        private readonly HashSet<Type> ignore = new();
 
         public void Awake()
         {
         }
 
-        public void AddIgnore(ushort opcode)
+        public void AddIgnore(Type type)
         {
-            this.ignore.Add(opcode);
+            this.ignore.Add(type);
         }
 
         [Conditional("DEBUG")]
         public void Debug(Fiber fiber, object msg)
         {
-            ushort opcode = OpcodeType.Instance.GetOpcode(msg.GetType());
-            if (this.ignore.Contains(opcode))
+            Type type = msg.GetType();
+            if (this.ignore.Contains(type))
             {
                 return;
             }
-            fiber.Log.Debug($"{fiber.Root.Name,-10}: {msg}");
+            fiber.Log.Debug($"{fiber.Root.Name,-10} {fiber.Root.SceneType}: {msg}");
         }
     }
 }

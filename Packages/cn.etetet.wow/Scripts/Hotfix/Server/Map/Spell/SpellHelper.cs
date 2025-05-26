@@ -83,7 +83,7 @@ namespace ET.Server
                     env.AddEntity(costNode.Buff, buff);
                     env.AddEntity(costNode.Caster, buff.GetCaster());
                     env.AddStruct(costNode.Check, true);
-                    int ret = BTDispatcher.Instance.Handle(spellConfig.Cost, env);
+                    int ret = BTDispatcher.Instance.Handle(costNode, env);
                     if (ret != 0)
                     {
                         ErrorHelper.MapError(unit, ret);
@@ -97,7 +97,7 @@ namespace ET.Server
                     env.AddEntity(costNode.Buff, buff);
                     env.AddEntity(costNode.Caster, buff.GetCaster());
                     env.AddStruct(costNode.Check, false);
-                    int ret = BTDispatcher.Instance.Handle(spellConfig.Cost, env);
+                    int ret = BTDispatcher.Instance.Handle(costNode, env);
                     if (ret != 0)
                     {
                         ErrorHelper.MapError(unit, ret);
