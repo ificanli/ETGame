@@ -10,7 +10,7 @@
             // 获取传送规则
             MapTransferRuleConfig mapTransferRuleConfig = MapTransferRuleConfigCategory.Instance.Get(node.TransferId);
 
-            TransferHelper.TransferLock(target, mapTransferRuleConfig.ToMap, true).NoContext();
+            TransferHelper.TransferLock(target, mapTransferRuleConfig.ToMap, 0, true).NoContext();
             return 0;
         }
     }

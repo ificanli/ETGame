@@ -10,7 +10,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this MapCopy self, int lineNum)
         {
-            self.LineNum = lineNum;
+            self.Line = lineNum;
         }
         
         public static void AddPlayer(this MapCopy self, long playerId)
@@ -72,9 +72,9 @@ namespace ET.Server
             
             MapCopy mapCopy = self.GetChild<MapCopy>(id);
             
-            Log.Debug($"remove map copy: {self.MapName}:{mapCopy.LineNum}:{mapCopy.Id}");
+            Log.Debug($"remove map copy: {self.MapName}:{mapCopy.Line}:{mapCopy.Id}");
             
-            self.Lines.Remove(mapCopy.LineNum);
+            self.Lines.Remove(mapCopy.Line);
             self.RemoveChild(id);
         }
 
@@ -98,7 +98,8 @@ namespace ET.Server
             foreach (long playerId in mapCopy2.Players.ToArray())
             {
                 MapManager2Map_NotifyPlayerTransferRequest request = MapManager2Map_NotifyPlayerTransferRequest.Create();
-                request.MapActorId = new ActorId(self.Fiber().Process, (int)mapCopy2.Id);
+                request.MapName = self.MapName;
+                request.Line = mapCopy1.Line;
                 await messageLocationSenderOneType.Call(playerId, request);
 
                 Log.Debug($"merge lines transfer: {self.MapName} transfer {playerId} to line {lineNum1}");
@@ -120,9 +121,19 @@ namespace ET.Server
             await self.RemoveCopy(mapCopy2.Id);
         }
 
-        public static async ETTask<MapCopy> GetCopy(this MapInfo self)
+        public static async ETTask<MapCopy> GetCopy(this MapInfo self, int line = 0)
         {
             MapConfig mapConfig = MapConfigCategory.Instance.GetByName(self.MapName);
+
+            long mapCopyId = 0;
+            MapCopy mapCopy = null;
+            if (line != 0)
+            {
+                self.Lines.TryGetValue(line, out mapCopyId);
+                mapCopy = self.GetChild<MapCopy>(mapCopyId);
+                Log.Debug($"get map copy: {self.MapName}:{line}:{mapCopyId}");
+                return mapCopy;
+            }
             
             foreach (var kv in self.Children)
             {
@@ -133,17 +144,18 @@ namespace ET.Server
                 }
                 if (copy.Players.Count < mapConfig.RecommendPlayerNum)
                 {
+                    Log.Debug($"get map copy: {self.MapName}:{copy.Line}:{mapCopyId}");
                     return copy;
                 }
             }
             
             int lineNum = self.GetNotUsedLineNumber();
             // 创建Copy Fiber
-            long mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, $"{self.MapName}@{lineNum}");
-            MapCopy mapCopy = self.AddChildWithId<MapCopy, int>(mapCopyId, lineNum);
+            mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, $"{self.MapName}@{lineNum}");
+            mapCopy = self.AddChildWithId<MapCopy, int>(mapCopyId, lineNum);
             self.Lines[lineNum] = mapCopyId;
             
-            Log.Debug($"create map copy: {self.MapName}:{lineNum}:{mapCopyId}");
+            Log.Debug($"get map copy: {self.MapName}:{lineNum}:{mapCopyId}");
             
             return mapCopy;
         }
@@ -172,7 +184,7 @@ namespace ET.Server
             return mapInfo;
         }
 
-        public static async ETTask<MapCopy> GetMap(this MapManagerComponent self, string mapName)
+        public static async ETTask<MapCopy> GetMap(this MapManagerComponent self, string mapName, int line)
         {
             MapInfo mapInfo = null;
             if (!self.MapInfos.TryGetValue(mapName, out var mapInfoRef))
@@ -184,7 +196,7 @@ namespace ET.Server
                 mapInfo = mapInfoRef;
             }
 
-            return await mapInfo.GetCopy();
+            return await mapInfo.GetCopy(line);
         }
         
         public static MapCopy FindMap(this MapManagerComponent self, string mapName, long mapId)

@@ -7,7 +7,7 @@ namespace ET.Server
         protected override async ETTask Run(Scene root, A2MapManager_NotifyPlayerAlreadyEnterMapRequest request, A2MapManager_NotifyPlayerAlreadyEnterMapResponse response)
         {
             MapManagerComponent mapManagerComponent = root.GetComponent<MapManagerComponent>();
-            MapCopy mapCopy = await mapManagerComponent.GetMap(request.MapName);
+            MapCopy mapCopy = await mapManagerComponent.GetMap(request.MapName, request.Line);
             mapCopy.AddPlayer(request.UnitId);  // 加入地图
         }
     }

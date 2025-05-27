@@ -14,7 +14,6 @@ namespace ET.Server
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(startSceneConfig.Process);
             IPEndPoint outIPPort = NetworkHelper.ToIPEndPoint($"{startProcessConfig.OuterIP}:{startSceneConfig.Port}");
             root.AddComponent<RouterComponent, IPEndPoint, string>(outIPPort, startProcessConfig.InnerIP);
-            Log.Console($"Router create: {root.Fiber.Id}");
             await ETTask.CompletedTask;
         }
     }

@@ -39,7 +39,8 @@ message A2MapManager_GetMapRequest // IRequest
 {
 	int32 RpcId = 1;
 	string MapName = 2;
-	int64 UnitId = 3;
+	int32 Line = 3;
+	int64 UnitId = 4;
 }
 
 message A2MapManager_GetMapResponse // IResponse
@@ -48,7 +49,8 @@ message A2MapManager_GetMapResponse // IResponse
 	int32 Error = 2;
 	string Message = 3;
 	string MapName = 4;
-	ActorId MapActorId = 5;
+	int32 Line = 5;
+	ActorId MapActorId = 6;
 }
 
 // ResponseType A2MapManager_NotifyPlayerAlreadyEnterMapResponse
@@ -56,7 +58,8 @@ message A2MapManager_NotifyPlayerAlreadyEnterMapRequest // IRequest
 {
 	int32 RpcId = 1;
 	string MapName = 2;
-	int64 UnitId = 3;
+	int32 Line = 3;
+	int64 UnitId = 4;
 }
 
 message A2MapManager_NotifyPlayerAlreadyEnterMapResponse // IResponse
@@ -70,7 +73,8 @@ message A2MapManager_NotifyPlayerAlreadyEnterMapResponse // IResponse
 message MapManager2Map_NotifyPlayerTransferRequest // ILocationRequest
 {
 	int32 RpcId = 1;
-	ActorId MapActorId = 2;
+	string MapName = 2;
+	int32 Line = 3;
 }
 
 message MapManager2Map_NotifyPlayerTransferResponse // ILocationResponse

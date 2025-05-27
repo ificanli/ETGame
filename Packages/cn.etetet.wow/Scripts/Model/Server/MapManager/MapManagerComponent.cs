@@ -26,7 +26,7 @@ namespace ET.Server
     [ChildOf(typeof(MapInfo))]
     public class MapCopy: Entity, IAwake<int>
     {
-        public int LineNum;
+        public int Line;
         
         // 该副本已经进入的所有玩家
         public HashSet<long> Players = new();

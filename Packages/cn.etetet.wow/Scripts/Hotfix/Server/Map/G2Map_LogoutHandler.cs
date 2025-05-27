@@ -9,7 +9,7 @@ namespace ET.Server
 		{
 			StartSceneConfig mapManagerConfig = StartSceneConfigCategory.Instance.GetOneBySceneType(unit.Zone(), SceneType.MapManager);
 			Map2MapManager_LogoutRequest managerLogoutRequest = Map2MapManager_LogoutRequest.Create();
-			managerLogoutRequest.MapName = unit.Scene().Name;
+			managerLogoutRequest.MapName = unit.Scene().Name.GetMapName();
 			managerLogoutRequest.UnitId = unit.Id;
 			managerLogoutRequest.MapId = unit.Fiber().Id;
 			await unit.Root().GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, managerLogoutRequest);

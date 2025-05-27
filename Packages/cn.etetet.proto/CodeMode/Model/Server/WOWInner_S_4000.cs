@@ -158,6 +158,9 @@ namespace ET
         public string MapName { get; set; }
 
         [MemoryPackOrder(2)]
+        public int Line { get; set; }
+
+        [MemoryPackOrder(3)]
         public long UnitId { get; set; }
 
         public override void Dispose()
@@ -169,6 +172,7 @@ namespace ET
 
             this.RpcId = default;
             this.MapName = default;
+            this.Line = default;
             this.UnitId = default;
 
             ObjectPool.Recycle(this);
@@ -197,6 +201,9 @@ namespace ET
         public string MapName { get; set; }
 
         [MemoryPackOrder(4)]
+        public int Line { get; set; }
+
+        [MemoryPackOrder(5)]
         public ActorId MapActorId { get; set; }
 
         public override void Dispose()
@@ -210,6 +217,7 @@ namespace ET
             this.Error = default;
             this.Message = default;
             this.MapName = default;
+            this.Line = default;
             this.MapActorId = default;
 
             ObjectPool.Recycle(this);
@@ -233,6 +241,9 @@ namespace ET
         public string MapName { get; set; }
 
         [MemoryPackOrder(2)]
+        public int Line { get; set; }
+
+        [MemoryPackOrder(3)]
         public long UnitId { get; set; }
 
         public override void Dispose()
@@ -244,6 +255,7 @@ namespace ET
 
             this.RpcId = default;
             this.MapName = default;
+            this.Line = default;
             this.UnitId = default;
 
             ObjectPool.Recycle(this);
@@ -297,7 +309,10 @@ namespace ET
         public int RpcId { get; set; }
 
         [MemoryPackOrder(1)]
-        public ActorId MapActorId { get; set; }
+        public string MapName { get; set; }
+
+        [MemoryPackOrder(2)]
+        public int Line { get; set; }
 
         public override void Dispose()
         {
@@ -307,7 +322,8 @@ namespace ET
             }
 
             this.RpcId = default;
-            this.MapActorId = default;
+            this.MapName = default;
+            this.Line = default;
 
             ObjectPool.Recycle(this);
         }

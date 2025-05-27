@@ -5,31 +5,31 @@ namespace ET.Server
 {
     public static partial class TransferHelper
     {
-        public static async ETTask TransferAtFrameFinish(Unit unit, string mapName)
+        public static async ETTask TransferAtFrameFinish(Unit unit, string mapName, int line)
         {
             EntityRef<Unit> unitRef = unit;
             await unit.Fiber().WaitFrameFinish();
             unit = unitRef;
-            await TransferHelper.TransferLock(unit, mapName, true);
+            await TransferHelper.TransferLock(unit, mapName, line, true);
         }
 
         // needLock 是否需要加上Mailbox协程锁
-        public static async ETTask TransferLock(Unit unit, string mapName, bool needLock)
+        public static async ETTask TransferLock(Unit unit, string mapName, int line, bool needLock)
         {
             if (needLock)
             {
                 EntityRef<Unit> unitRef = unit;
                 using CoroutineLock _ = await unit.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, unit.Id);
                 unit = unitRef;
-                await TransferHelper.Transfer(unit, mapName);
+                await TransferHelper.Transfer(unit, mapName, line);
             }
             else
             {
-                await TransferHelper.Transfer(unit, mapName);
+                await TransferHelper.Transfer(unit, mapName, line);
             }
         }
 
-        private static async ETTask Transfer(Unit unit, string mapName)
+        private static async ETTask Transfer(Unit unit, string mapName, int line)
         {
             Scene root = unit.Root();
             EntityRef<Scene> rootRef = root;
@@ -42,6 +42,7 @@ namespace ET.Server
             A2MapManager_GetMapRequest mapRequest = A2MapManager_GetMapRequest.Create();
             mapRequest.MapName = mapName;
             mapRequest.UnitId = unitId;
+            mapRequest.Line = line;
             StartSceneConfig mapManagerConfig = StartSceneConfigCategory.Instance.GetOneBySceneType(root.Zone(), SceneType.MapManager);
             root = rootRef;
             A2MapManager_GetMapResponse mapResponse = await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, mapRequest) as A2MapManager_GetMapResponse;
@@ -53,13 +54,14 @@ namespace ET.Server
 
             //3. 通知副本，玩家已经传送进入副本
             A2MapManager_NotifyPlayerAlreadyEnterMapRequest a2MapManagerNotifyPlayerAlreadyEnterMapRequest = A2MapManager_NotifyPlayerAlreadyEnterMapRequest.Create();
-            a2MapManagerNotifyPlayerAlreadyEnterMapRequest.MapName = mapName;
+            a2MapManagerNotifyPlayerAlreadyEnterMapRequest.MapName = mapResponse.MapName;
             a2MapManagerNotifyPlayerAlreadyEnterMapRequest.UnitId = unitId;
+            a2MapManagerNotifyPlayerAlreadyEnterMapRequest.Line = mapResponse.Line;
             root = rootRef;
             await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, a2MapManagerNotifyPlayerAlreadyEnterMapRequest);
         }
 
-        public static async ETTask Transfer(Unit unit, ActorId mapActorId, bool changeScene)
+        private static async ETTask Transfer(Unit unit, ActorId mapActorId, bool changeScene)
         {
             long unitId = unit.Id;
             Log.Debug("start transfer1 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);

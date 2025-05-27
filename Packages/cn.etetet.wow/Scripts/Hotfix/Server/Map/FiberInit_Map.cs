@@ -22,15 +22,17 @@ namespace ET.Server
             root.AddComponent<MessageLocationSenderComponent>();
             
             EntityRef<UnitComponent> unitComponentRef = unitComponent;
+
+            string mapName = root.Name.GetMapName();
             // 加载场景寻路数据
-            await NavmeshComponent.Instance.Load(MapHelper.GetMapName(root.Name));
+            await NavmeshComponent.Instance.Load(mapName);
             
             root = rootRef;
             unitComponent = unitComponentRef;
             
             foreach ((int _, UnitConfig unitConfig) in UnitConfigCategory.Instance.GetAll())
             {
-                if (root.Name != unitConfig.MapName)
+                if (mapName != unitConfig.MapName)
                 {
                     continue;
                 }

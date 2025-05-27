@@ -1,6 +1,5 @@
 using MemoryPack;
 using System.Collections.Generic;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace ET
 {
@@ -241,10 +240,10 @@ namespace ET
 
         [MemoryPackOrder(2)]
         public int Type { get; set; }
-        [BsonIgnore]
+
         [MemoryPackOrder(3)]
         public Unity.Mathematics.float3 Position { get; set; }
-        [BsonIgnore]
+
         [MemoryPackOrder(4)]
         public Unity.Mathematics.float3 Forward { get; set; }
 
@@ -253,6 +252,7 @@ namespace ET
         public Dictionary<int, long> KV { get; set; } = new();
         [MemoryPackOrder(6)]
         public MoveInfo MoveInfo { get; set; }
+
         [MemoryPackOrder(7)]
         public PetInfo PetInfo { get; set; }
 
