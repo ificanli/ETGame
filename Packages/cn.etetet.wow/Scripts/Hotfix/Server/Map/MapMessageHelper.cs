@@ -48,7 +48,7 @@ namespace ET.Server
         
         public static void NoticeClient(Unit unit, IMessage message, NoticeType noticeType)
         {
-            //LogMsg.Instance.Debug(unit.Fiber(), message);
+            LogMsg.Instance.Debug(unit.Fiber(), message);
             
             switch (noticeType)
             {

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using CommandLine;
+using MongoDB.Bson;
+using Unity.Mathematics;
 
 namespace ET.Server
 {
@@ -36,8 +38,7 @@ namespace ET.Server
                         {
                             robotManagerComponent = robotManagerComponentRef;
                             await robotManagerComponent.NewRobot($"Robot_{i}");
-                            Log.Console($"create robot {i}");
-                            await timerComponent.WaitAsync(2000);
+                            Log.Console($"Create Robot_{i}");
                         }
                         break;
                     }

@@ -92,10 +92,11 @@ namespace ET
             }
 
             using ListComponent<ETTask> list = ListComponent<ETTask>.Create();
-            
+
+            int sceneType = scene.SceneType;
             foreach (EventInfo eventInfo in iEvents)
             {
-                if (!SceneTypeSingleton.IsSame(scene.SceneType, eventInfo.SceneType))
+                if (!SceneTypeSingleton.IsSame(sceneType, eventInfo.SceneType))
                 {
                     continue;
                 }
