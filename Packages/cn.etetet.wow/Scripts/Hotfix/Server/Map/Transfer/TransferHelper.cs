@@ -71,6 +71,9 @@ namespace ET.Server
             //2. location加锁
             await root.GetComponent<LocationProxyComponent>().Lock(LocationType.Unit, unitId, oldActorId);
             
+            // 先从AOI中移除
+            unit.RemoveComponent<AOIEntity>();
+            
             //3. 拼装消息
             M2M_UnitTransferRequest request = M2M_UnitTransferRequest.Create();
             request.OldActorId = oldActorId;
