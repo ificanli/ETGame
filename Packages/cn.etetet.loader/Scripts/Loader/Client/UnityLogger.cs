@@ -8,30 +8,37 @@ namespace ET
     {
         public override ILog Handle(LogInvoker args)
         {
-            return new UnityLogger();
+            return new UnityLogger(args.SceneName);
         }
     }
     
     public class UnityLogger: ILog
     {
+        private readonly string sceneName;
+
+        public UnityLogger(string sceneName)
+        {
+            this.sceneName = sceneName;
+        }
+        
         public void Trace(string msg)
         {
-            UnityEngine.Debug.Log(msg);
+            UnityEngine.Debug.Log($"{this.sceneName} {msg}");
         }
 
         public void Debug(string msg)
         {
-            UnityEngine.Debug.Log(msg);
+            UnityEngine.Debug.Log($"{this.sceneName} {msg}");
         }
 
         public void Info(string msg)
         {
-            UnityEngine.Debug.Log(msg);
+            UnityEngine.Debug.Log($"{this.sceneName} {msg}");
         }
 
         public void Warning(string msg)
         {
-            UnityEngine.Debug.LogWarning(msg);
+            UnityEngine.Debug.LogWarning($"{this.sceneName} {msg}");
         }
 
         public void Error(string msg)
@@ -56,31 +63,6 @@ namespace ET
         public void Error(Exception e)
         {
             UnityEngine.Debug.LogException(e);
-        }
-
-        public void Trace(string message, params object[] args)
-        {
-            UnityEngine.Debug.LogFormat(message, args);
-        }
-
-        public void Warning(string message, params object[] args)
-        {
-            UnityEngine.Debug.LogWarningFormat(message, args);
-        }
-
-        public void Info(string message, params object[] args)
-        {
-            UnityEngine.Debug.LogFormat(message, args);
-        }
-
-        public void Debug(string message, params object[] args)
-        {
-            UnityEngine.Debug.LogFormat(message, args);
-        }
-
-        public void Error(string message, params object[] args)
-        {
-            UnityEngine.Debug.LogErrorFormat(message, args);
         }
     }
 }

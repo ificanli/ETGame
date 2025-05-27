@@ -22,14 +22,14 @@ namespace ET.Server
 
             unit.AddComponent<TurnComponent>();
             unit.AddComponent<MoveComponent>();
-            unit.AddComponent<PathfindingComponent, string>(scene.Name);
+            unit.AddComponent<PathfindingComponent, string>(scene.Name.GetMapName());
             unit.AddComponent<MailBoxComponent, int>(MailBoxType.OrderedMessage);
             unit.AddComponent<TargetComponent>();
 
             // 通知客户端开始切场景
             M2C_StartSceneChange m2CStartSceneChange = M2C_StartSceneChange.Create();
             m2CStartSceneChange.SceneInstanceId = scene.InstanceId;
-            m2CStartSceneChange.SceneName = scene.Name;
+            m2CStartSceneChange.SceneName = scene.Name.GetMapName();
             MapMessageHelper.NoticeClient(unit, m2CStartSceneChange, NoticeType.Self);
 
             if (request.ChangeScene)

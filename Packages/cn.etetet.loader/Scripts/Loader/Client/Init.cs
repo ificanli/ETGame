@@ -29,7 +29,7 @@ namespace ET
             GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
             Options.Instance.SceneName = globalConfig.SceneName;
 			
-            World.Instance.AddSingleton<Logger>().Log = new UnityLogger();
+            World.Instance.AddSingleton<Logger>().Log = new UnityLogger("None");
             ETTask.ExceptionHandler += Log.Error;
 			
             World.Instance.AddSingleton<TimeInfo>();

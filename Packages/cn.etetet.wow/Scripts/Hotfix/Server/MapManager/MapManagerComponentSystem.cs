@@ -137,10 +137,9 @@ namespace ET.Server
                 }
             }
             
-            // 创建Copy Fiber
-            long mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, self.MapName);
-            
             int lineNum = self.GetNotUsedLineNumber();
+            // 创建Copy Fiber
+            long mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, $"{self.MapName}@{lineNum}");
             MapCopy mapCopy = self.AddChildWithId<MapCopy, int>(mapCopyId, lineNum);
             self.Lines[lineNum] = mapCopyId;
             

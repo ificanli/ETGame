@@ -41,7 +41,7 @@ namespace ET
         {
             if (Logger.Instance == null)
             {
-                World.Instance.AddSingleton<Logger>().Log = new UnityLogger();
+                World.Instance.AddSingleton<Logger>().Log = new UnityLogger("Editor");
             }
 
             if (Options.Instance == null)

@@ -48,19 +48,20 @@ namespace ET.Server
         
         public static void NoticeClient(Unit unit, IMessage message, NoticeType noticeType)
         {
-            LogMsg.Instance.Debug(unit.Fiber(), message);
-            
             switch (noticeType)
             {
                 case NoticeType.Broadcast:
+                    LogMsg.Instance.Debug(unit.Fiber(), message);
                     Broadcast(unit, message);
                     break;
                 case NoticeType.Self:
+                    LogMsg.Instance.Debug(unit.Fiber(), message);
                     SendToClient(unit, message);
                     break;
                 case NoticeType.NoNotice:
                     break;
                 case NoticeType.BroadcastWithoutSelf:
+                    LogMsg.Instance.Debug(unit.Fiber(), message);
                     Broadcast(unit, message, false);
                     break;
             }

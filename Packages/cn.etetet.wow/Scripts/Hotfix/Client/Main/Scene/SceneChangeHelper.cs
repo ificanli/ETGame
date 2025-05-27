@@ -23,7 +23,7 @@
             if (changeScene)
             {
                 // 加载场景寻路数据
-                await NavmeshComponent.Instance.Load(sceneName);
+                await NavmeshComponent.Instance.Load(MapHelper.GetMapName(sceneName));
             }
             
             EventSystem.Instance.Publish(root, new SceneChangeFinish());

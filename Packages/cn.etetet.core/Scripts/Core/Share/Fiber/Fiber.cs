@@ -60,7 +60,7 @@ namespace ET
             this.ThreadSynchronizationContext = new ThreadSynchronizationContext();
 
             LogInvoker logInvoker = new()
-                    { Fiber = this.Id, Process = this.Process, SceneName = SceneTypeSingleton.Instance.GetSceneName(sceneType) };
+                    { Fiber = this.Id, Process = this.Process, SceneName = name };
             this.Log = EventSystem.Instance.Invoke<LogInvoker, ILog>(logInvoker);
             
             this.Root = new Scene(this, id, 1, sceneType, name);
