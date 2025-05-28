@@ -24,7 +24,7 @@ namespace ET
         {
             self.list.Clear();
             Fiber fiber = self.Fiber();
-            MessageQueue.Instance.Fetch(fiber.Id, 1000, self.list);
+            MessageQueue.Instance.Fetch(fiber, 1000, self.list);
 
             foreach (MessageInfo actorMessageInfo in self.list)
             {
@@ -103,8 +103,7 @@ namespace ET
             {
                 throw new Exception($"actor inner process diff: {actorId.Process} {fiber.Process}");
             }
-            
-            return MessageQueue.Instance.Send(fiber.Address, actorId, message);
+            return MessageQueue.Instance.Send(fiber, actorId, message);
         }
 
         private static int GetRpcId(this ProcessInnerSender self)

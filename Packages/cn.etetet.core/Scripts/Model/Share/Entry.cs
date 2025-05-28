@@ -52,9 +52,7 @@ namespace ET
             logMsg.AddIgnore(typeof(C2M_PathfindingResult));
             logMsg.AddIgnore(typeof(M2C_PathfindingResult));
             logMsg.AddIgnore(typeof(M2C_Stop));
-            logMsg.AddIgnore(typeof(A2NetClient_Message));
-            logMsg.AddIgnore(typeof(A2NetClient_Request));
-            logMsg.AddIgnore(typeof(A2NetClient_Response));
+            logMsg.AddIgnore(typeof(MessageResponse));
             
             // 创建需要reload的code singleton
             CodeTypes.Instance.CodeProcess();

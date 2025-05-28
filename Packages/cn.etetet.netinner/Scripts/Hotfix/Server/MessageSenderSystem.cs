@@ -21,8 +21,8 @@ namespace ET.Server
             a2NetInnerMessage.FromAddress = fiber.Address;
             a2NetInnerMessage.ActorId = actorId;
             a2NetInnerMessage.MessageObject = message;
-
-            MessageQueue.Instance.Send(new ActorId(fiber.Process, SceneType.NetInner), a2NetInnerMessage);
+            
+            MessageQueue.Instance.Send(fiber, new ActorId(fiber.Process, SceneType.NetInner), a2NetInnerMessage);
         }
 
         private static int GetRpcId(this MessageSender self)
@@ -42,7 +42,6 @@ namespace ET.Server
                 throw new Exception($"actor id is 0: {request}");
             }
             Fiber fiber = self.Fiber();
-            LogMsg.Instance.Debug(self.Fiber(), request);
             IResponse response;
             if (fiber.Process == actorId.Process)
             {
@@ -68,8 +67,6 @@ namespace ET.Server
             {
                 throw new RpcException(response.Error, $"Rpc error: actorId: {actorId} {request}, response: {response}");
             }
-            
-            LogMsg.Instance.Debug(self.Fiber(), response);
             return response;
         }
     }

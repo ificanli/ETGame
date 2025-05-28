@@ -59,7 +59,7 @@ namespace ET.Server
                 self.HandleIActorResponse(response);
                 return;
             }
-
+            
             Fiber fiber = self.Fiber();
             int fromProcess = actorId.Process;
             actorId.Process = fiber.Process;

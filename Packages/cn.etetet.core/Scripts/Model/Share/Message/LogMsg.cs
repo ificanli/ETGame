@@ -18,14 +18,35 @@ namespace ET
         }
 
         [Conditional("DEBUG")]
-        public void Debug(Fiber fiber, object msg)
+        public void Send(Fiber fiber, object msg)
         {
+            if (msg is IMessageWrapper messageWrapper)
+            {
+                msg = messageWrapper.GetMessageObject();
+            }
+            
             Type type = msg.GetType();
             if (this.ignore.Contains(type))
             {
                 return;
             }
-            fiber.Log.Debug(msg.ToString());
+            fiber.Log.Debug($"Send: {msg}");
+        }
+        
+        [Conditional("DEBUG")]
+        public void Recv(Fiber fiber, object msg)
+        {
+            if (msg is IMessageWrapper messageWrapper)
+            {
+                msg = messageWrapper.GetMessageObject();
+            }
+            
+            Type type = msg.GetType();
+            if (this.ignore.Contains(type))
+            {
+                return;
+            }
+            fiber.Log.Debug($"Recv: {msg}");
         }
     }
 }

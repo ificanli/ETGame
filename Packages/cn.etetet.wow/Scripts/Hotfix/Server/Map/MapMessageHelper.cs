@@ -51,17 +51,14 @@ namespace ET.Server
             switch (noticeType)
             {
                 case NoticeType.Broadcast:
-                    LogMsg.Instance.Debug(unit.Fiber(), message);
                     Broadcast(unit, message);
                     break;
                 case NoticeType.Self:
-                    LogMsg.Instance.Debug(unit.Fiber(), message);
                     SendToClient(unit, message);
                     break;
                 case NoticeType.NoNotice:
                     break;
                 case NoticeType.BroadcastWithoutSelf:
-                    LogMsg.Instance.Debug(unit.Fiber(), message);
                     Broadcast(unit, message, false);
                     break;
             }

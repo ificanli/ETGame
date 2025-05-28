@@ -1,7 +1,7 @@
 ﻿namespace ET
 {
     [Message]
-    public class A2NetClient_Message: MessageObject, IMessage
+    public class A2NetClient_Message: MessageObject, IMessage, IMessageWrapper
     {
         public static A2NetClient_Message Create()
         {
@@ -15,11 +15,16 @@
         }
         
         public IMessage MessageObject;
+        
+        public IMessage GetMessageObject()
+        {
+            return this.MessageObject;
+        }
     }
     
     [Message]
     [ResponseType(nameof(A2NetClient_Response))]
-    public class A2NetClient_Request: MessageObject, IRequest
+    public class A2NetClient_Request: MessageObject, IRequest, IMessageWrapper
     {
         public static A2NetClient_Request Create()
         {
@@ -35,10 +40,15 @@
      
         public int RpcId { get; set; }
         public IRequest MessageObject;
+        
+        public IMessage GetMessageObject()
+        {
+            return this.MessageObject;
+        }
     }
     
     [Message]
-    public class A2NetClient_Response: MessageObject, IResponse
+    public class A2NetClient_Response: MessageObject, IResponse, IMessageWrapper
     {
         public static A2NetClient_Response Create()
         {
@@ -59,6 +69,11 @@
         public string Message { get; set; }
         
         public IResponse MessageObject;
+        
+        public IMessage GetMessageObject()
+        {
+            return this.MessageObject;
+        }
     }
     
     [Message]

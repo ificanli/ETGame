@@ -85,8 +85,6 @@ namespace ET
             {
                 throw new Exception($"not found message handler: {message} {entity.GetType().FullName}");
             }
-
-            LogMsg.Instance.Debug(entity.Fiber(), message);
             
             EntityRef<Entity> entityRef = entity;
             int sceneType = entity.IScene.SceneType;
@@ -110,8 +108,6 @@ namespace ET
                 throw new Exception($"not found message handler: {message} {entity.GetType().FullName}");
             }
             
-            LogMsg.Instance.Debug(entity.Fiber(), message);
-
             int sceneType = entity.IScene.SceneType;
             foreach (MessageDispatcherInfo actorMessageDispatcherInfo in list)
             {

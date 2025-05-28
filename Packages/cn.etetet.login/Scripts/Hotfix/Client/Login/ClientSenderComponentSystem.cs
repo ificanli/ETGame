@@ -50,11 +50,7 @@ namespace ET.Client
             main2NetClientLogin.Password = password;
             main2NetClientLogin.Address = address;
             
-            LogMsg.Instance.Debug(self.Fiber(), main2NetClientLogin);
-            
             NetClient2Main_Login response = await self.Root().GetComponent<ProcessInnerSender>().Call(self.netClientActorId, main2NetClientLogin) as NetClient2Main_Login;
-            
-            LogMsg.Instance.Debug(self.Fiber(), response);
             
             return response.PlayerId;
         }
@@ -63,9 +59,6 @@ namespace ET.Client
         {
             A2NetClient_Message a2NetClientMessage = A2NetClient_Message.Create();
             a2NetClientMessage.MessageObject = message;
-            
-            LogMsg.Instance.Debug(self.Fiber(), message);
-            
             self.Root().GetComponent<ProcessInnerSender>().Send(self.netClientActorId, a2NetClientMessage);
         }
 
@@ -74,13 +67,9 @@ namespace ET.Client
             A2NetClient_Request a2NetClientRequest = A2NetClient_Request.Create();
             a2NetClientRequest.MessageObject = request;
             
-            LogMsg.Instance.Debug(self.Fiber(), request);
-            
             using A2NetClient_Response a2NetClientResponse = await self.Root().GetComponent<ProcessInnerSender>().Call(self.netClientActorId, a2NetClientRequest) as A2NetClient_Response;
             IResponse response = a2NetClientResponse.MessageObject;
             
-            LogMsg.Instance.Debug(self.Fiber(), response);
-                        
             if (response.Error == ErrorCode.ERR_MessageTimeout)
             {
                 throw new RpcException(response.Error, $"Rpc error: request, 注意Actor消息超时，请注意查看是否死锁或者没有reply: {request}, response: {response}");

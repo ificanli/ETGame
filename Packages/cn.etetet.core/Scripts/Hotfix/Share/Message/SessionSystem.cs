@@ -36,6 +36,7 @@ namespace ET
         
         public static void OnResponse(this Session self, IResponse response)
         {
+            LogMsg.Instance.Recv(self.Fiber(), response);
             if (!self.requestCallbacks.Remove(response.RpcId, out RpcInfo action))
             {
                 return;
@@ -92,8 +93,9 @@ namespace ET
         
         public static void Send(this Session self, ActorId actorId, IMessage message)
         {
+            LogMsg.Instance.Send(self.Fiber(), message);
+            
             self.LastSendTime = TimeInfo.Instance.ClientNow();
-            //LogMsg.Instance.Debug(self.Fiber(), message);
 
             (ushort opcode, MemoryBuffer memoryBuffer) = MessageSerializeHelper.ToMemoryBuffer(self.AService, actorId, message);
             

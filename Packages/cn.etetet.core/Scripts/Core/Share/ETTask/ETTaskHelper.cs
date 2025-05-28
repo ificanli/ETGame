@@ -75,11 +75,13 @@ namespace ET
                 return;
             }
 
+            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            
             CoroutineBlocker coroutineBlocker = new CoroutineBlocker(1);
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).NoContext();
+                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(cancellationToken);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -92,11 +94,12 @@ namespace ET
                 return;
             }
 
+            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             CoroutineBlocker coroutineBlocker = new CoroutineBlocker(1);
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).NoContext();
+                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(cancellationToken);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -109,11 +112,12 @@ namespace ET
                 return;
             }
 
+            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             CoroutineBlocker coroutineBlocker = new CoroutineBlocker(tasks.Length);
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).NoContext();
+                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(cancellationToken);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -126,11 +130,12 @@ namespace ET
                 return;
             }
 
+            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
             CoroutineBlocker coroutineBlocker = new CoroutineBlocker(tasks.Count);
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).NoContext();
+                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(cancellationToken);
             }
 
             await coroutineBlocker.WaitAsync();
