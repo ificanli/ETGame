@@ -62,7 +62,11 @@ namespace ET
 
         public void Error(Exception e)
         {
-            UnityEngine.Debug.LogException(e);
+            string msg = e.ToString();
+#if UNITY_EDITOR
+            msg = Msg2LinkStackMsg(msg);
+#endif
+            UnityEngine.Debug.LogError($"{this.sceneName,-10}\n{msg}");
         }
     }
 }

@@ -18,7 +18,7 @@ namespace ET
     public class NLogger: ILog
     {
         private readonly NLog.Logger logger;
-        
+
         private readonly string sceneName;
 
         static NLogger()
@@ -30,62 +30,84 @@ namespace ET
         public NLogger(string name, int process, int fiber)
         {
             this.sceneName = name;
-            this.logger = LogManager.GetLogger($"{(uint)process:000000}.{(uint)fiber:0000000000}.{name}");
+            this.logger = LogManager.GetLogger($"{(uint)process:000000}.{(uint)fiber:000000}.{name}");
         }
 
         public void Trace(string message)
         {
-            this.logger.Trace($"{this.sceneName} {message}");
+            LogEventInfo logEvent = new(LogLevel.Trace, logger.Name, message);
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Warning(string message)
         {
-            this.logger.Warn($"{this.sceneName} {message}");
+            LogEventInfo logEvent = new(LogLevel.Warn, logger.Name, message);
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Info(string message)
         {
-            this.logger.Info($"{this.sceneName} {message}");
+            LogEventInfo logEvent = new(LogLevel.Info, logger.Name, message);
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Debug(string message)
         {
-            this.logger.Debug($"{this.sceneName} {message}");
+            LogEventInfo logEvent = new(LogLevel.Debug, logger.Name, message);
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Error(string message)
         {
-            this.logger.Error($"{this.sceneName} {message}");
+            LogEventInfo logEvent = new(LogLevel.Error, logger.Name, message);
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Error(Exception e)
         {
-            this.logger.Error($"{this.sceneName} {e}");
+            LogEventInfo logEvent = new(LogLevel.Info, logger.Name, e.ToString());
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Trace(ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler message)
         {
-            this.logger.Trace($"{this.sceneName} {message.ToStringAndClear()}");
+            LogEventInfo logEvent = new(LogLevel.Trace, logger.Name, message.ToStringAndClear());
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Warning(ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler message)
         {
-            this.logger.Warn($"{this.sceneName} {message.ToStringAndClear()}");
+            LogEventInfo logEvent = new(LogLevel.Warn, logger.Name, message.ToStringAndClear());
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Info(ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler message)
         {
-            this.logger.Info($"{this.sceneName} {message.ToStringAndClear()}");
+            LogEventInfo logEvent = new(LogLevel.Info, logger.Name, message.ToStringAndClear());
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Debug(ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler message)
         {
-            this.logger.Debug($"{this.sceneName} {message.ToStringAndClear()}");
+            LogEventInfo logEvent = new(LogLevel.Debug, logger.Name, message.ToStringAndClear());
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
 
         public void Error(ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler message)
         {
-            this.logger.Error($"{this.sceneName} {message.ToStringAndClear()}");
+            LogEventInfo logEvent = new(LogLevel.Error, logger.Name, message.ToStringAndClear());
+            logEvent.Properties["sceneName"] = this.sceneName;
+            logger.Log(logEvent);
         }
     }
 }
