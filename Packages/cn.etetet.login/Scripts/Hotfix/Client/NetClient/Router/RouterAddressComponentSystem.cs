@@ -30,11 +30,12 @@ namespace ET.Client
             Log.Debug($"recv router info: {routerInfo}");
             HttpGetRouterResponse httpGetRouterResponse = MongoHelper.FromJson<HttpGetRouterResponse>(routerInfo);
             self = selfRef;
-            self.Info = httpGetRouterResponse;
+            self.Realms.AddRange(httpGetRouterResponse.Realms);
+            self.Routers.AddRange(httpGetRouterResponse.Routers);
             Log.Debug($"start get router info finish: {MongoHelper.ToJson(httpGetRouterResponse)}");
             
             // 打乱顺序
-            RandomGenerator.BreakRank(self.Info.Routers);
+            RandomGenerator.BreakRank(self.Routers);
             
             self.WaitTenMinGetAllRouter().NoContext();
         }
@@ -54,12 +55,12 @@ namespace ET.Client
 
         public static IPEndPoint GetAddress(this RouterAddressComponent self)
         {
-            if (self.Info.Routers.Count == 0)
+            if (self.Routers.Count == 0)
             {
                 return null;
             }
 
-            string address = self.Info.Routers[self.RouterIndex++ % self.Info.Routers.Count];
+            string address = self.Routers[self.RouterIndex++ % self.Routers.Count];
             Log.Info($"get router address: {self.RouterIndex - 1} {address}");
             string[] ss = address.Split(':');
             IPAddress ipAddress = IPAddress.Parse(ss[0]);
@@ -72,8 +73,8 @@ namespace ET.Client
         
         public static IPEndPoint GetRealmAddress(this RouterAddressComponent self, string account)
         {
-            int v = account.Mode(self.Info.Realms.Count);
-            string address = self.Info.Realms[v];
+            int v = account.Mode(self.Realms.Count);
+            string address = self.Realms[v];
             
             IPAddress ipAddress = IPAddress.Parse(address.Substring(0, address.LastIndexOf(":")));
             int port = int.Parse(address.Substring(address.LastIndexOf(":") + 1));

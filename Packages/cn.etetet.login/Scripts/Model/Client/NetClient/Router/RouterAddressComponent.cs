@@ -9,7 +9,8 @@ namespace ET.Client
     {
         public AddressFamily AddressFamily { get; set; }
         public string Address;
-        public HttpGetRouterResponse Info;
+        public List<string> Realms { get; set; } = new();
+        public List<string> Routers { get; set; } = new();
         public int RouterIndex;
     }
 }
