@@ -21,7 +21,8 @@ namespace ET
             defaultSeverity: DiagnosticSeverity.Error,
             isEnabledByDefault: true);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+            => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context)
         {
@@ -29,13 +30,14 @@ namespace ET
             {
                 return;
             }
-            
+
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
             context.RegisterCompilationStartAction(startContext =>
             {
-                var graph = new ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>>(SymbolEqualityComparer.Default);
+                // 使用线程安全集合 ConcurrentBag 代替 List
+                var graph = new ConcurrentDictionary<INamedTypeSymbol, ConcurrentBag<AccessRecord>>(SymbolEqualityComparer.Default);
 
                 startContext.RegisterSyntaxNodeAction(ctx => AnalyzeMemberAccess(ctx, graph), SyntaxKind.IdentifierName);
                 startContext.RegisterSyntaxNodeAction(ctx => AnalyzeObjectCreation(ctx, graph), SyntaxKind.ObjectCreationExpression);
@@ -43,13 +45,13 @@ namespace ET
             });
         }
 
-        private void AnalyzeMemberAccess(SyntaxNodeAnalysisContext context, ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph)
+        private void AnalyzeMemberAccess(
+            SyntaxNodeAnalysisContext context,
+            ConcurrentDictionary<INamedTypeSymbol, ConcurrentBag<AccessRecord>> graph)
         {
             if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
-            {
                 return;
-            }
-            
+
             var identifier = (IdentifierNameSyntax)context.Node;
             var symbol = context.SemanticModel.GetSymbolInfo(identifier).Symbol;
             if (symbol == null) return;
@@ -66,13 +68,13 @@ namespace ET
             AddAccess(graph, callerType, context.ContainingSymbol, targetType, symbol, identifier.GetLocation());
         }
 
-        private void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context, ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph)
+        private void AnalyzeObjectCreation(
+            SyntaxNodeAnalysisContext context,
+            ConcurrentDictionary<INamedTypeSymbol, ConcurrentBag<AccessRecord>> graph)
         {
             if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
-            {
                 return;
-            }
-            
+
             var creation = (ObjectCreationExpressionSyntax)context.Node;
             var symbol = context.SemanticModel.GetSymbolInfo(creation).Symbol as IMethodSymbol;
             if (symbol == null) return;
@@ -89,19 +91,25 @@ namespace ET
             AddAccess(graph, callerType, context.ContainingSymbol, targetType, symbol, creation.GetLocation());
         }
 
-        private void AddAccess(ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph, INamedTypeSymbol fromType, ISymbol callerSymbol, INamedTypeSymbol toType, ISymbol targetSymbol, Location location)
+        private void AddAccess(
+            ConcurrentDictionary<INamedTypeSymbol, ConcurrentBag<AccessRecord>> graph,
+            INamedTypeSymbol fromType,
+            ISymbol callerSymbol,
+            INamedTypeSymbol toType,
+            ISymbol targetSymbol,
+            Location location)
         {
-            var list = graph.GetOrAdd(fromType, _ => new List<AccessRecord>());
-            list.Add(new AccessRecord(callerSymbol, targetSymbol, toType, location));
+            var bag = graph.GetOrAdd(fromType, _ => new ConcurrentBag<AccessRecord>());
+            bag.Add(new AccessRecord(callerSymbol, targetSymbol, toType, location));
         }
 
-        private void AnalyzeGraph(CompilationAnalysisContext context, ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph)
+        private void AnalyzeGraph(
+            CompilationAnalysisContext context,
+            ConcurrentDictionary<INamedTypeSymbol, ConcurrentBag<AccessRecord>> graph)
         {
             if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
-            {
                 return;
-            }
-            
+
             foreach (var node in graph.Keys)
             {
                 DetectClassCycles(node, graph, new List<AccessRecord>(), new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default), context);
@@ -110,7 +118,7 @@ namespace ET
 
         private void DetectClassCycles(
             INamedTypeSymbol currentClass,
-            ConcurrentDictionary<INamedTypeSymbol, List<AccessRecord>> graph,
+            ConcurrentDictionary<INamedTypeSymbol, ConcurrentBag<AccessRecord>> graph,
             List<AccessRecord> pathRecords,
             HashSet<INamedTypeSymbol> classPathSet,
             CompilationAnalysisContext context)
@@ -123,7 +131,8 @@ namespace ET
                 if (index >= 0)
                 {
                     var cyclePath = pathRecords.Skip(index).ToList();
-                    var message = string.Join("\n", cyclePath.Select(r => $"{r.CallerSymbol.ContainingType.Name}.{r.CallerSymbol.Name}() -> {r.TargetClass.Name}.{r.TargetSymbol.Name}()"));
+                    var message = string.Join("\n", cyclePath.Select(r =>
+                        $"{r.CallerSymbol.ContainingType.Name}.{r.CallerSymbol.Name}() -> {r.TargetClass.Name}.{r.TargetSymbol.Name}()"));
                     var firstLocation = cyclePath.First().Location ?? Location.None;
                     context.ReportDiagnostic(Diagnostic.Create(Rule, firstLocation, message));
                 }
