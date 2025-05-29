@@ -51,7 +51,7 @@ namespace ET
     }
     
     [AsyncMethodBuilder(typeof (ETAsyncTaskMethodBuilder))]
-    public class ETTask: ICriticalNotifyCompletion, IETTask
+    public partial class ETTask: ICriticalNotifyCompletion, IETTask
     {
         [StaticField]
         public static Action<Exception> ExceptionHandler;

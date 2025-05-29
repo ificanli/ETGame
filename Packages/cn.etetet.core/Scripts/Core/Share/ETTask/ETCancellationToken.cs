@@ -4,6 +4,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ET
 {
+    public static class ETCancellationTokenExtensions
+    {
+        public static bool IsCancel(this ETCancellationToken self)
+        {
+            if (self == null)
+            {
+                return false;
+            }
+            return self.IsDispose();
+        }
+    }
+    
     public class ETCancellationToken
     {
         private HashSetComponent<Action> actions = HashSetComponent<Action>.Create();

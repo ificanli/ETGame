@@ -121,7 +121,7 @@ namespace ET.Client
 
             self.handlers.Add(location, handler);
             
-            await ETTaskHelper.WaitAll(new[] { WaitLoadFinish(handler), LoadProgressCallback(handler) });
+            await ETTask.WaitAll(new[] { WaitLoadFinish(handler), LoadProgressCallback(handler) });
             
             return;
 

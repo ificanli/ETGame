@@ -30,7 +30,7 @@ namespace ET
                 return HashWaitError.Error;
             }
 
-            var cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            var cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
 
             var task = ETTask<HashWaitError>.Create(true);
             self.m_HashWaitTasks.Add(hashCode, task);

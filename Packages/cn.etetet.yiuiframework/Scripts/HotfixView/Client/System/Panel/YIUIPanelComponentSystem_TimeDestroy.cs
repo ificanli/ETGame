@@ -28,7 +28,7 @@ namespace ET.Client
         {
             try
             {
-                ETCancellationToken oldCancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+                ETCancellationToken oldCancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
 
                 await self.Root().GetComponent<TimerComponent>().WaitAsync((long)(self.CachePanelTime * 1000));
 

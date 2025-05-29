@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ET
 {
-    public static class ETTaskHelper
+    public partial class ETTask
     {
         [SkipAwaitEntityCheck]
         public static async ETTask<T> GetContextAsync<T>() where T: class
@@ -18,13 +18,17 @@ namespace ET
             return (T)ret;
         }
         
-        public static bool IsCancel(this ETCancellationToken self)
+        [SkipAwaitEntityCheck]
+        public static async ETTask<object> GetContextAsync()
         {
-            if (self == null)
+            ETTask<object> tcs = ETTask<object>.Create(true);
+            tcs.TaskType = TaskType.ContextTask;
+            object ret = await tcs;
+            if (ret == null)
             {
-                return false;
+                return null;
             }
-            return self.IsDispose();
+            return ret;
         }
         
         private class CoroutineBlocker
@@ -75,13 +79,13 @@ namespace ET
                 return;
             }
 
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            object context = await ETTask.GetContextAsync();
             
-            CoroutineBlocker coroutineBlocker = new CoroutineBlocker(1);
+            CoroutineBlocker coroutineBlocker = new(1);
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(cancellationToken);
+                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(context);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -94,12 +98,12 @@ namespace ET
                 return;
             }
 
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-            CoroutineBlocker coroutineBlocker = new CoroutineBlocker(1);
+            object context = await ETTask.GetContextAsync();
+            CoroutineBlocker coroutineBlocker = new(1);
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(cancellationToken);
+                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(context);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -112,12 +116,12 @@ namespace ET
                 return;
             }
 
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-            CoroutineBlocker coroutineBlocker = new CoroutineBlocker(tasks.Length);
+            object context = await ETTask.GetContextAsync();
+            CoroutineBlocker coroutineBlocker = new(tasks.Length);
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(cancellationToken);
+                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(context);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -130,12 +134,12 @@ namespace ET
                 return;
             }
 
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
-            CoroutineBlocker coroutineBlocker = new CoroutineBlocker(tasks.Count);
+            object context = await ETTask.GetContextAsync();
+            CoroutineBlocker coroutineBlocker = new(tasks.Count);
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(cancellationToken);
+                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(context);
             }
 
             await coroutineBlocker.WaitAsync();

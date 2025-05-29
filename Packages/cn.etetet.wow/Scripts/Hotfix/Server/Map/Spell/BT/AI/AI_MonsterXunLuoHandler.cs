@@ -28,7 +28,7 @@ namespace ET.Server
             float3 birthPos = new(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
             float aoi = numericComponent.GetAsFloat(NumericType.AOI);
             
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             // 暂时写死
             BuffHelper.RemoveBuffByConfigId(unit, 200111, BuffFlags.AIRemove);

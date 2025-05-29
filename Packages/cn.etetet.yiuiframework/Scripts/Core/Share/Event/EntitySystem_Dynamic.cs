@@ -70,7 +70,7 @@ namespace ET
 
             try
             {
-                await ETTaskHelper.WaitAll(list);
+                await ETTask.WaitAll(list);
             }
             catch (Exception e)
             {

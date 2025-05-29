@@ -30,7 +30,7 @@ namespace ET.Server
             EntityRef<Unit> ownerRef = owner;
             PathfindingComponent pathfindingComponent = unit.GetComponent<PathfindingComponent>();
             EntityRef<PathfindingComponent> pathfindingComponentRef = pathfindingComponent;
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             // 暂时写死
             BuffHelper.RemoveBuffByConfigId(unit, 200111, BuffFlags.AIRemove);

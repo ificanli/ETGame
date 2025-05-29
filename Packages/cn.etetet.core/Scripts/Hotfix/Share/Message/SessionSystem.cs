@@ -67,7 +67,7 @@ namespace ET
                 action.SetResult(response);
             }
 
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             IResponse ret;
             try
             {

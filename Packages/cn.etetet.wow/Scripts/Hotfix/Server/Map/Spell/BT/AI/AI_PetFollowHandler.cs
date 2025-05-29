@@ -33,7 +33,7 @@ namespace ET.Server
 
             TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             unit = unitRef;
             SpellHelper.Cast(unit, 100110);

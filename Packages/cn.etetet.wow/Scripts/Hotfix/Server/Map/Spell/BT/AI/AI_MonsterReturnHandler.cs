@@ -34,7 +34,7 @@ namespace ET.Server
 
             TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             await unit.FindPathMoveToAsync(birthPos);
             if (cancellationToken.IsCancel())

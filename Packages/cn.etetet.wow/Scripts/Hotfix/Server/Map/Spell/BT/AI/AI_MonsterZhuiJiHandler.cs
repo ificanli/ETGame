@@ -30,7 +30,7 @@ namespace ET.Server
             
             float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
             
-            ETCancellationToken cancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
 
             SpellHelper.Cast(unit, 100110);
             

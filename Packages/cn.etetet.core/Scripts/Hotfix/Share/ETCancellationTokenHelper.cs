@@ -34,7 +34,7 @@ namespace ET
             {
                 throw new Exception("add cancel token is null");
             }
-            ETCancellationToken cancelToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            ETCancellationToken cancelToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             cancelToken?.Add(addCancelToken.Cancel);
             
@@ -51,7 +51,7 @@ namespace ET
                 throw new Exception("add cancel token is null");
             }
             
-            ETCancellationToken cancelToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+            ETCancellationToken cancelToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             cancelToken?.Add(addCancelToken.Cancel);
             
