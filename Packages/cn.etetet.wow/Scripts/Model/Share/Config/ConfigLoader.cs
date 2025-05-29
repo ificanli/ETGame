@@ -46,6 +46,12 @@ namespace ET
                 LoadOneConfig(type, configBytes[type]);
             }
 #endif
+            
+            // 处理Ref
+            foreach (IConfig config in this.allConfig.Values)
+            {
+                config.ResolveRef();
+            }
         }
         
         private void LoadOneConfig(Type configType, byte[] oneConfigBytes)
@@ -64,7 +70,6 @@ namespace ET
             }
             
             IConfig iConfig = category as IConfig;
-            iConfig.ResolveRef();
             this.allConfig[configType] = iConfig;
             World.Instance.AddSingleton(category as ASingleton);
         }
