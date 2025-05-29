@@ -33,6 +33,7 @@ namespace ET.Server
         {
             Scene root = unit.Root();
             EntityRef<Scene> rootRef = root;
+            EntityRef<Unit> unitRef = unit;
             long unitId = unit.Id;
             
             bool changeScene = TransferSceneHelper.IsChangeScene(unit.Scene().Name, mapName);
@@ -49,6 +50,7 @@ namespace ET.Server
             
             //2. 传送
             root = rootRef;
+            unit = unitRef;
             await Transfer(unit, mapResponse.MapActorId, changeScene);
 
 
@@ -63,6 +65,7 @@ namespace ET.Server
 
         private static async ETTask Transfer(Unit unit, ActorId mapActorId, bool changeScene)
         {
+            EntityRef<Unit> unitRef = unit;
             long unitId = unit.Id;
             Log.Debug("start transfer1 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
             
@@ -74,6 +77,7 @@ namespace ET.Server
             await root.GetComponent<LocationProxyComponent>().Lock(LocationType.Unit, unitId, oldActorId);
             
             // 先从AOI中移除
+            unit = unitRef;
             unit.RemoveComponent<AOIEntity>();
             
             //3. 拼装消息

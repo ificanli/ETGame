@@ -68,8 +68,9 @@ namespace ET.Server
         
         public static async ETTask RemoveCopy(this MapInfo self, long id)
         {
+            EntityRef<MapInfo> selfRef = self;
             await FiberManager.Instance.Remove((int)id);
-            
+            self = selfRef;
             MapCopy mapCopy = self.GetChild<MapCopy>(id);
             
             Log.Debug($"remove map copy: {self.MapName}:{mapCopy.Line}:{mapCopy.Id}");
@@ -82,9 +83,12 @@ namespace ET.Server
         public static async ETTask MergeLines(this MapInfo self, int lineNum1, int lineNum2)
         {
             Log.Debug($"start merge lines: {self.MapName} {lineNum1} {lineNum2}");
-            
+         
+            EntityRef<MapInfo> selfRef = self;
             MapCopy mapCopy1 = self.GetByLineNum(lineNum1);
             MapCopy mapCopy2 = self.GetByLineNum(lineNum2);
+            EntityRef<MapCopy> mapCopy1Ref = mapCopy1;
+            EntityRef<MapCopy> mapCopy2Ref = mapCopy2;
 
             if (mapCopy1.Status != MapCopyStatus.WaitMerge || mapCopy2.Status != MapCopyStatus.WaitMerge)
             {
@@ -93,16 +97,22 @@ namespace ET.Server
             
             MessageLocationSenderComponent messageLocationSender = self.Root().GetComponent<MessageLocationSenderComponent>();
             MessageLocationSenderOneType messageLocationSenderOneType = messageLocationSender.Get(LocationType.Unit);
-            
+            EntityRef<MessageLocationSenderOneType> messageLocationSenderOneTypeRef = messageLocationSenderOneType;
             // 通知传送
             foreach (long playerId in mapCopy2.Players.ToArray())
             {
                 MapManager2Map_NotifyPlayerTransferRequest request = MapManager2Map_NotifyPlayerTransferRequest.Create();
+                self = selfRef;
+                mapCopy1 = mapCopy1Ref;
                 request.MapName = self.MapName;
                 request.Line = mapCopy1.Line;
+                messageLocationSenderOneType = messageLocationSenderOneTypeRef;
                 await messageLocationSenderOneType.Call(playerId, request);
 
+                self = selfRef;
                 Log.Debug($"merge lines transfer: {self.MapName} transfer {playerId} to line {lineNum1}");
+                mapCopy1 = mapCopy1Ref;
+                mapCopy2 = mapCopy2Ref;
                 mapCopy1.Players.Add(playerId);
                 mapCopy2.Players.Remove(playerId);
             }
@@ -150,8 +160,10 @@ namespace ET.Server
             }
             
             int lineNum = self.GetNotUsedLineNumber();
+            EntityRef<MapInfo> selfRef = self;
             // 创建Copy Fiber
             mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, $"{self.MapName}@{lineNum}");
+            self = selfRef;
             mapCopy = self.AddChildWithId<MapCopy, int>(mapCopyId, lineNum);
             self.Lines[lineNum] = mapCopyId;
             

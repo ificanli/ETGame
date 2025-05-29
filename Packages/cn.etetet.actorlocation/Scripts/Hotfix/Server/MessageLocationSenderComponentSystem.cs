@@ -223,6 +223,8 @@ namespace ET.Server
             {
                 if (messageLocationSender.ActorId == default)
                 {
+                    root = rootRef;
+                    self = selfRef;
                     messageLocationSender.ActorId = await root.GetComponent<LocationProxyComponent>().Get((int)self.Id, messageLocationSender.Id);
                     messageLocationSender = messageLocationSenderRef;
                     if (messageLocationSender == null)

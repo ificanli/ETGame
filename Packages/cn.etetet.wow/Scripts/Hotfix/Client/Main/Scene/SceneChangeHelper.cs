@@ -5,7 +5,9 @@
         // 场景切换协程
         public static async ETTask SceneChangeTo(Scene root, string sceneName, long sceneInstanceId)
         {
+            EntityRef<Scene> rootRef = root;
             CurrentScenesComponent currentScenesComponent = root.GetComponent<CurrentScenesComponent>();
+            EntityRef<CurrentScenesComponent> currentScenesComponentRef = currentScenesComponent;
             
             bool changeScene = TransferSceneHelper.IsChangeScene(currentScenesComponent.Scene?.Name, sceneName);
             
@@ -17,7 +19,8 @@
                 currentScene.AddComponent<UnitComponent>();
                 await WaitUnitCreateFinish(root, currentScenesComponent.Scene);
             }
-            
+
+            root = rootRef;
             EventSystem.Instance.Publish(root, new SceneChangeStart() {ChangeScene = changeScene});          // 可以订阅这个事件中创建Loading界面
 
             if (changeScene)
@@ -26,12 +29,15 @@
                 await NavmeshComponent.Instance.Load(MapHelper.GetMapName(sceneName));
             }
             
+            root = rootRef;
             EventSystem.Instance.Publish(root, new SceneChangeFinish());
             
             using CoroutineLock coroutineLock = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
             // 通知等待场景切换的协程
+            root = rootRef;
             root.GetComponent<ObjectWait>().Notify(new Wait_SceneChangeFinish());
-            
+
+            currentScenesComponent = currentScenesComponentRef;
             currentScenesComponent.Progress = 100;
         }
 

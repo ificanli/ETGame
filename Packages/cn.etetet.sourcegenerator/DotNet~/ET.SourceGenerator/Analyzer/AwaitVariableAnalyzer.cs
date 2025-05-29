@@ -15,17 +15,14 @@ namespace ET
 {
     public static class SymbolExtensions
     {
-        public static ITypeSymbol GetSymbolTypeSafe(this ISymbol symbol)
+        public static ITypeSymbol GetSymbolTypeSafe(this ISymbol symbol) => symbol switch
         {
-            return symbol switch
-            {
-                ILocalSymbol ls => ls.Type,
-                IFieldSymbol fs => fs.Type,
-                IPropertySymbol ps => ps.Type,
-                IParameterSymbol ps => ps.Type,
-                _ => null
-            };
-        }
+            ILocalSymbol ls      => ls.Type,
+            IFieldSymbol fs      => fs.Type,
+            IPropertySymbol ps   => ps.Type,
+            IParameterSymbol ps2 => ps2.Type,
+            _                    => null
+        };
     }
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -34,214 +31,245 @@ namespace ET
         private static readonly DiagnosticDescriptor Rule = new(
             "ETAE001",
             "禁止在 await 之后访问 Entity 及其子类变量",
-            "变量 '{0}' 是 Entity 或其子类类型，不允许在 await 之后访问。请使用EntityRef包装传递!",
+            "变量 '{0}' 是 Entity 或其子类类型，不允许在 await 之后访问。请使用 EntityRef 包装传递！",
             "ET.Hotfix",
             DiagnosticSeverity.Error,
-            isEnabledByDefault: true);
+            isEnabledByDefault: true
+        );
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-        private static readonly ConcurrentDictionary<string, bool> SkipTypeAttributeCache = new();
-        private static readonly ConcurrentDictionary<string, bool> AsyncReturnTypeCache = new();
-
-        private static bool HasSkipAttributeCached(ITypeSymbol type)
-        {
-            if (type == null) return false;
-            var key = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-            return SkipTypeAttributeCache.GetOrAdd(key, _ =>
-            {
-                return type.GetAttributes().Any(attr =>
-                {
-                    var name = attr.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                    return name?.EndsWith(".SkipAwaitEntityCheck") == true
-                           || name?.EndsWith(".SkipAwaitEntityCheckAttribute") == true;
-                });
-            });
-        }
-
-        private static bool IsAsyncReturnType(ITypeSymbol type)
-        {
-            if (type == null) return false;
-            var key = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-            return AsyncReturnTypeCache.GetOrAdd(key, _ =>
-            {
-                if (type.SpecialType == SpecialType.System_Void)
-                    return true;
-
-                var members = type.GetMembers("GetAwaiter");
-                foreach (var member in members)
-                {
-                    if (member is IMethodSymbol ms && ms.Parameters.Length == 0)
-                        return true;
-                }
-                return false;
-            });
-        }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+            => ImmutableArray.Create(Rule);
 
         public override void Initialize(AnalysisContext context)
         {
-            if (AnalyzerGlobalSetting.EnableAnalyzer)
-            {
-                return;
-            }
-            
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(ctx =>
+
+            context.RegisterCompilationStartAction(compCtx =>
             {
-                var awaitExpr = (AwaitExpressionSyntax)ctx.Node;
-                if (!AnalyzerHelper.IsAssemblyNeedAnalyze(ctx.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
-                    return;
+                // 全局缓存：ET.Entity 与 SkipAwaitEntityCheckAttribute
+                var entityBaseSym    = compCtx.Compilation.GetTypeByMetadataName("ET.Entity");
+                var skipAttrSym      = compCtx.Compilation.GetTypeByMetadataName("ET.SkipAwaitEntityCheckAttribute");
 
-                if (awaitExpr.FirstAncestorOrSelf<MethodDeclarationSyntax>() is not { } method)
-                    return;
+                // 方法级缓存：该方法是否含有任何 Entity 变量
+                var methodHasEntity  = new ConcurrentDictionary<IMethodSymbol, bool>(SymbolEqualityComparer.Default);
+                // 类型继承 & SkipAttribute 缓存
+                var inheritsCache    = new ConcurrentDictionary<ITypeSymbol, bool>(SymbolEqualityComparer.Default);
+                var skipTypeAttrCache= new ConcurrentDictionary<ITypeSymbol, bool>(SymbolEqualityComparer.Default);
 
-                // 这里注释掉早期跳过逻辑，强制执行完整分析，方便调试
-                // if (!MethodHasEntityVariables(ctx.SemanticModel, method))
-                //     return;
+                // 判断类型是否继承自 ET.Entity（带缓存）
+                bool InheritsFromEntity(ITypeSymbol type)
+                {
+                    if (type == null) return false;
+                    if (inheritsCache.TryGetValue(type, out var ok)) return ok;
+                    bool result = false;
+                    var cur = type;
+                    while (cur != null)
+                    {
+                        if (SymbolEqualityComparer.Default.Equals(cur, entityBaseSym))
+                        {
+                            result = true;
+                            break;
+                        }
+                        cur = cur.BaseType;
+                    }
+                    inheritsCache[type] = result;
+                    return result;
+                }
 
-                AnalyzeAwaitUsage(ctx, awaitExpr, method);
-            }, SyntaxKind.AwaitExpression);
+                // 判断类型或其成员是否标记 [SkipAwaitEntityCheck]（带缓存）
+                bool HasSkipAttributeCached(ITypeSymbol type)
+                {
+                    if (type == null) return false;
+                    if (skipTypeAttrCache.TryGetValue(type, out var ok)) return ok;
+                    bool result = type.GetAttributes().Any(attr =>
+                    {
+                        var cls = attr.AttributeClass;
+                        return SymbolEqualityComparer.Default.Equals(cls, skipAttrSym)
+                            || SymbolEqualityComparer.Default.Equals(cls?.BaseType, skipAttrSym);
+                    });
+                    skipTypeAttrCache[type] = result;
+                    return result;
+                }
+
+                // 判断方法上或其所在类型上是否贴了 SkipAwaitEntityCheck
+                bool HasSkipAwaitEntityCheckAttribute(IMethodSymbol method)
+                    => HasSkipAttributeCached(method.ContainingType)
+                       || method.GetAttributes().Any(attr =>
+                           {
+                               var cls = attr.AttributeClass;
+                               return SymbolEqualityComparer.Default.Equals(cls, skipAttrSym)
+                                   || SymbolEqualityComparer.Default.Equals(cls?.BaseType, skipAttrSym);
+                           });
+
+                // 判断某个 await 调用的目标是否贴了 SkipAwaitEntityCheck
+                bool IsAwaitedMethodHasSkipAttribute(SemanticModel model, AwaitExpressionSyntax expr)
+                {
+                    var sym = model.GetSymbolInfo(expr.Expression).Symbol
+                              ?? model.GetSymbolInfo(expr.Expression)
+                                      .CandidateSymbols.FirstOrDefault();
+                    if (sym is IMethodSymbol ms)   return HasSkipAwaitEntityCheckAttribute(ms);
+                    if (sym is IPropertySymbol ps && ps.GetMethod != null)
+                                                    return HasSkipAwaitEntityCheckAttribute(ps.GetMethod);
+                    return false;
+                }
+
+                // 判断方法里是否含有任何 Entity 变量（参数或局部）
+                bool ContainsAnyEntity(IMethodSymbol method, SemanticModel model)
+                {
+                    // 参数
+                    if (method.Parameters.Any(p => InheritsFromEntity(p.Type)))
+                        return true;
+                    // 局部声明
+                    foreach (var declRef in method.DeclaringSyntaxReferences)
+                    {
+                        if (declRef.GetSyntax() is MethodDeclarationSyntax mds && mds.Body != null)
+                        {
+                            var flow = model.AnalyzeDataFlow(mds.Body);
+                            if (flow.VariablesDeclared.Any(v => InheritsFromEntity(v.GetSymbolTypeSafe())))
+                                return true;
+                        }
+                    }
+                    return false;
+                }
+
+                // 注册对 await 节点的分析
+                compCtx.RegisterSyntaxNodeAction(ctx =>
+                {
+                    var awaitExpr  = (AwaitExpressionSyntax)ctx.Node;
+                    var model      = ctx.SemanticModel;
+                    var methodDecl = awaitExpr.FirstAncestorOrSelf<MethodDeclarationSyntax>();
+                    if (methodDecl == null) return;
+
+                    var methodSym = model.GetDeclaredSymbol(methodDecl) as IMethodSymbol;
+                    if (methodSym == null) return;
+
+                    // 早期退出：方法中无 Entity 变量
+                    if (!methodHasEntity.GetOrAdd(methodSym, ms => ContainsAnyEntity(ms, model)))
+                        return;
+
+                    // 跳过贴了 SkipAwaitEntityCheck 的方法
+                    if (HasSkipAwaitEntityCheckAttribute(methodSym))
+                        return;
+
+                    // 跳过带 SkipAwaitEntityCheck 的 await 调用
+                    if (IsAwaitedMethodHasSkipAttribute(model, awaitExpr))
+                        return;
+
+                    // 若通过上述检查，则执行深度分析
+                    AnalyzeAwaitUsage(
+                        ctx,
+                        awaitExpr,
+                        methodDecl,
+                        model,
+                        InheritsFromEntity,
+                        HasSkipAttributeCached);
+                }, SyntaxKind.AwaitExpression);
+            });
         }
 
-        private static void AnalyzeAwaitUsage(SyntaxNodeAnalysisContext context, AwaitExpressionSyntax awaitExpr, MethodDeclarationSyntax method)
+        private static void AnalyzeAwaitUsage(
+            SyntaxNodeAnalysisContext context,
+            AwaitExpressionSyntax awaitExpr,
+            MethodDeclarationSyntax method,
+            SemanticModel semanticModel,
+            Func<ITypeSymbol,bool> isEntityOrSubclass,
+            Func<ITypeSymbol,bool> hasSkipAttributeCached)
         {
-            var semanticModel = context.SemanticModel;
-            var methodSymbol = semanticModel.GetDeclaredSymbol(method);
-            if (methodSymbol == null || HasSkipAwaitEntityCheckAttribute(methodSymbol))
-                return;
-
-            if (IsAwaitedMethodHasSkipAttribute(semanticModel, awaitExpr))
-                return;
-
-            var declaredSymbolCache = new Dictionary<SyntaxNode, ISymbol>();
-            ISymbol GetCachedDeclaredSymbol(SyntaxNode node)
-            {
-                if (declaredSymbolCache.TryGetValue(node, out var s)) return s;
-                var sym = semanticModel.GetDeclaredSymbol(node);
-                declaredSymbolCache[node] = sym;
-                return sym;
-            }
+            // 本地缓存
+            var declaredCache = new Dictionary<SyntaxNode, ISymbol>();
+            ISymbol GetDeclared(SyntaxNode n)
+                => declaredCache.TryGetValue(n, out var s)
+                   ? s
+                   : (declaredCache[n] = semanticModel.GetDeclaredSymbol(n));
 
             var symbolInfoCache = new Dictionary<SyntaxNode, ISymbol>();
-            ISymbol GetCachedSymbolInfo(SyntaxNode node)
-            {
-                if (symbolInfoCache.TryGetValue(node, out var s)) return s;
-                var sym = semanticModel.GetSymbolInfo(node).Symbol;
-                symbolInfoCache[node] = sym;
-                return sym;
-            }
+            ISymbol GetSymbol(SyntaxNode n)
+                => symbolInfoCache.TryGetValue(n, out var s)
+                   ? s
+                   : (symbolInfoCache[n] = semanticModel.GetSymbolInfo(n).Symbol);
 
+            // 收集 await 前的 Entity 变量
             var varsBeforeAwait = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-            var varsFromAwait = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-            var loopDeclared = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-            var preAwaitIgnore = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
-
             foreach (var p in method.ParameterList.Parameters)
             {
-                var ps = GetCachedDeclaredSymbol(p);
-                if (ps != null && IsEntityOrSubclass(ps.GetSymbolTypeSafe()))
-                {
+                var ps = GetDeclared(p);
+                if (ps != null && isEntityOrSubclass(ps.GetSymbolTypeSafe()))
                     varsBeforeAwait.Add(ps);
-                    Debug.WriteLine($"Parameter entity detected: {ps.Name}");
-                }
             }
-
-            if (awaitExpr.FirstAncestorOrSelf<ForEachStatementSyntax>() is { } foreachStmt)
+            foreach (var blk in awaitExpr.Ancestors().OfType<BlockSyntax>())
             {
-                foreach (var id in EnumerateIdentifiersUnlimited(foreachStmt.Expression))
-                {
-                    var sym = GetCachedSymbolInfo(id);
-                    if (sym != null && IsEntityOrSubclass(sym.GetSymbolTypeSafe()))
-                    {
-                        preAwaitIgnore.Add(sym);
-                        Debug.WriteLine($"Foreach expression entity detected: {sym.Name}");
-                    }
-                }
-            }
-
-            foreach (var block in awaitExpr.Ancestors().OfType<BlockSyntax>())
-            {
-                foreach (var stmt in block.Statements)
+                foreach (var stmt in blk.Statements)
                 {
                     if (stmt.Span.End >= awaitExpr.SpanStart)
                         break;
-
                     if (stmt is LocalDeclarationStatementSyntax decl)
                     {
                         foreach (var v in decl.Declaration.Variables)
                         {
-                            var sym = GetCachedDeclaredSymbol(v);
-                            if (sym is ILocalSymbol ls && IsEntityOrSubclass(ls.Type))
-                            {
+                            var sym = GetDeclared(v);
+                            if (sym is ILocalSymbol ls && isEntityOrSubclass(ls.Type))
                                 varsBeforeAwait.Add(ls);
-                                Debug.WriteLine($"Local entity detected: {ls.Name}");
-                            }
-                        }
-                    }
-
-                    if (stmt is ForEachStatementSyntax foreachStmt2)
-                    {
-                        foreach (var id in EnumerateIdentifiersUnlimited(foreachStmt2.Expression))
-                        {
-                            var sym = GetCachedSymbolInfo(id);
-                            if (sym != null && IsEntityOrSubclass(sym.GetSymbolTypeSafe()))
-                            {
-                                preAwaitIgnore.Add(sym);
-                                Debug.WriteLine($"Foreach2 expression entity detected: {sym.Name}");
-                            }
                         }
                     }
                 }
             }
 
-            var parent = awaitExpr.Parent;
-            if (parent is AssignmentExpressionSyntax a)
+            // 收集 await 左侧或新声明的变量
+            var varsFromAwait = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+            if (awaitExpr.Parent is AssignmentExpressionSyntax assign)
             {
-                var left = GetCachedSymbolInfo(a.Left);
+                var left = GetSymbol(assign.Left);
                 if (left != null) varsFromAwait.Add(left);
             }
-            else if (parent is VariableDeclaratorSyntax vd)
+            else if (awaitExpr.Parent is VariableDeclaratorSyntax vd)
             {
-                var sym = GetCachedDeclaredSymbol(vd);
+                var sym = GetDeclared(vd);
                 if (sym != null) varsFromAwait.Add(sym);
             }
 
-            var awaitStmt = awaitExpr.FirstAncestorOrSelf<StatementSyntax>();
+            // 获取受影响的后续语句列表
+            var loopDeclared = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+            var awaitStmt    = awaitExpr.FirstAncestorOrSelf<StatementSyntax>();
             if (awaitStmt == null) return;
+            var impacted     = GetImpactedStatements(
+                awaitStmt,
+                semanticModel,
+                loopDeclared,
+                GetDeclared);
 
-            var impacted = GetImpactedStatements(awaitStmt, semanticModel, loopDeclared, GetCachedDeclaredSymbol);
             var assigned = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
 
+            // 在受影响的语句中查找赋值和引用
             foreach (var stmt in impacted)
             {
-                foreach (var assign in stmt.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+                // 重新赋值后视作新变量
+                foreach (var asg in stmt.DescendantNodes().OfType<AssignmentExpressionSyntax>())
                 {
-                    var sym = GetCachedSymbolInfo(assign.Left);
-                    var rhsType = semanticModel.GetTypeInfo(assign.Right).Type;
+                    var sym     = GetSymbol(asg.Left);
+                    var rhsType = semanticModel.GetTypeInfo(asg.Right).Type;
                     if (sym != null && varsBeforeAwait.Contains(sym))
                     {
                         assigned.Add(sym);
-                        if (!IsEntityOrSubclass(rhsType))
+                        if (!isEntityOrSubclass(rhsType))
                             varsFromAwait.Add(sym);
                     }
                 }
 
+                // 查找后续引用
                 foreach (var id in EnumerateIdentifiersUnlimited(stmt))
                 {
-                    var sym = GetCachedSymbolInfo(id);
-                    if (sym != null &&
-                        varsBeforeAwait.Contains(sym) &&
-                        !varsFromAwait.Contains(sym) &&
-                        !assigned.Contains(sym) &&
-                        !loopDeclared.Contains(sym) &&
-                        !preAwaitIgnore.Contains(sym) &&
-                        !IsInUsingScope(context, sym, awaitExpr) &&
-                        !IsVariableFromSkipClass(sym))
-                    {
-                        context.ReportDiagnostic(Diagnostic.Create(Rule, id.GetLocation(), id.Identifier.Text));
-                        Debug.WriteLine($"Diagnostic reported on {id.Identifier.Text}");
-                    }
+                    var sym = GetSymbol(id);
+                    if (sym == null) continue;
+                    if (!varsBeforeAwait.Contains(sym))          continue;
+                    if (varsFromAwait.Contains(sym))              continue;
+                    if (assigned.Contains(sym))                   continue;
+                    if (loopDeclared.Contains(sym))               continue;
+                    if (hasSkipAttributeCached(sym.GetSymbolTypeSafe())) continue;
+                    if (IsInUsingScope(context, sym, awaitExpr))  continue;
+
+                    context.ReportDiagnostic(
+                        Diagnostic.Create(Rule, id.GetLocation(), id.Identifier.Text));
                 }
             }
         }
@@ -261,6 +289,7 @@ namespace ET
         {
             var list = new List<StatementSyntax>();
 
+            // 同一块内，await 之后的后续语句
             if (awaitStmt.Parent is BlockSyntax blk)
             {
                 int idx = blk.Statements.IndexOf(awaitStmt);
@@ -268,9 +297,11 @@ namespace ET
                     list.Add(blk.Statements[i]);
             }
 
+            // 向上查找直到方法边界
             SyntaxNode parent = awaitStmt;
             while ((parent = parent.Parent) != null)
             {
+                // ★ 异步本地函数跳出
                 if (parent is LocalFunctionStatementSyntax lfs &&
                     lfs.Modifiers.Any(m => m.IsKind(SyntaxKind.AsyncKeyword)))
                 {
@@ -279,6 +310,7 @@ namespace ET
                         return list;
                 }
 
+                // ★ 异步 Lambda / 匿名方法跳出
                 if (parent is ParenthesizedLambdaExpressionSyntax pls && pls.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
                     return list;
                 if (parent is SimpleLambdaExpressionSyntax sls && sls.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
@@ -286,12 +318,13 @@ namespace ET
                 if (parent is AnonymousMethodExpressionSyntax ams && ams.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
                     return list;
 
+                // If 分支敏感
                 if (parent is IfStatementSyntax ifStmt && parent.Parent is BlockSyntax outer)
                 {
-                    bool ifAwait = ContainsAwait(ifStmt.Statement);
+                    bool ifAwait   = ContainsAwait(ifStmt.Statement);
                     bool elseAwait = ContainsAwait(ifStmt.Else?.Statement);
-                    bool ifExit = Terminates(ifStmt.Statement);
-                    bool elseExit = ifStmt.Else != null && Terminates(ifStmt.Else.Statement);
+                    bool ifExit    = Terminates(ifStmt.Statement);
+                    bool elseExit  = ifStmt.Else != null && Terminates(ifStmt.Else.Statement);
                     if ((ifAwait && !ifExit) || (elseAwait && !elseExit))
                     {
                         int idx = outer.Statements.IndexOf(ifStmt);
@@ -299,17 +332,48 @@ namespace ET
                             list.Add(outer.Statements[i]);
                     }
                 }
-                else if (parent is StatementSyntax stmt &&
-                         ContainsAwait(stmt) &&
-                         (stmt is WhileStatementSyntax or ForStatementSyntax or ForEachStatementSyntax or DoStatementSyntax))
+                // while 循环
+                else if (parent is WhileStatementSyntax whileStmt && ContainsAwait(whileStmt.Statement))
                 {
-                    List<StatementSyntax> body = stmt is BlockSyntax b ? b.Statements.ToList() : new List<StatementSyntax> { stmt };
-                    list.AddRange(body);
+                    if (whileStmt.Statement is BlockSyntax wb)
+                        list.AddRange(wb.Statements);
+                    else
+                        list.Add(whileStmt.Statement);
 
-                    foreach (var decl in stmt.DescendantNodes().OfType<VariableDeclaratorSyntax>())
+                    foreach (var decl in whileStmt.DescendantNodes().OfType<VariableDeclaratorSyntax>())
                     {
                         var sym = getDeclaredSymbol(decl);
-                        if (sym is ILocalSymbol ls && IsEntityOrSubclass(ls.Type))
+                        if (sym is ILocalSymbol ls && !loopDeclared.Contains(ls))
+                            loopDeclared.Add(ls);
+                    }
+                }
+                // for 循环
+                else if (parent is ForStatementSyntax forStmt && ContainsAwait(forStmt.Statement))
+                {
+                    if (forStmt.Statement is BlockSyntax fb)
+                        list.AddRange(fb.Statements);
+                    else
+                        list.Add(forStmt.Statement);
+
+                    foreach (var decl in forStmt.Statement.DescendantNodes().OfType<VariableDeclaratorSyntax>())
+                    {
+                        var sym = getDeclaredSymbol(decl);
+                        if (sym is ILocalSymbol ls && !loopDeclared.Contains(ls))
+                            loopDeclared.Add(ls);
+                    }
+                }
+                // foreach 循环
+                else if (parent is ForEachStatementSyntax feStmt && ContainsAwait(feStmt.Statement))
+                {
+                    if (feStmt.Statement is BlockSyntax fb)
+                        list.AddRange(fb.Statements);
+                    else
+                        list.Add(feStmt.Statement);
+
+                    foreach (var decl in feStmt.Statement.DescendantNodes().OfType<VariableDeclaratorSyntax>())
+                    {
+                        var sym = getDeclaredSymbol(decl);
+                        if (sym is ILocalSymbol ls && !loopDeclared.Contains(ls))
                             loopDeclared.Add(ls);
                     }
                 }
@@ -319,77 +383,41 @@ namespace ET
         }
 
         private static bool ContainsAwait(StatementSyntax stmt)
-        {
-            return stmt?.DescendantNodes().OfType<AwaitExpressionSyntax>().Any() == true;
-        }
+            => stmt?.DescendantNodes().OfType<AwaitExpressionSyntax>().Any() == true;
 
         private static bool Terminates(StatementSyntax stmt)
         {
             if (stmt == null) return false;
             if (stmt is BlockSyntax b && b.Statements.Any())
                 stmt = b.Statements.Last();
-
-            return stmt is ReturnStatementSyntax or ThrowStatementSyntax or BreakStatementSyntax or ContinueStatementSyntax;
+            return stmt is ReturnStatementSyntax
+                || stmt is ThrowStatementSyntax
+                || stmt is BreakStatementSyntax
+                || stmt is ContinueStatementSyntax;
         }
 
-        private static bool IsInUsingScope(SyntaxNodeAnalysisContext context, ISymbol sym, AwaitExpressionSyntax awaitExpr)
+        private static bool IsInUsingScope(
+            SyntaxNodeAnalysisContext context,
+            ISymbol sym,
+            AwaitExpressionSyntax awaitExpr)
         {
-            var syntax = sym.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
-            var usingDecl = syntax?.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
-            if (usingDecl == null || !usingDecl.UsingKeyword.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingKeyword))
+            var syntaxRef = sym.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+            var usingDecl = syntaxRef?.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
+            if (usingDecl == null || !usingDecl.UsingKeyword.IsKind(SyntaxKind.UsingKeyword))
                 return false;
 
-            var block = usingDecl.FirstAncestorOrSelf<BlockSyntax>();
+            var block  = usingDecl.FirstAncestorOrSelf<BlockSyntax>();
             var ablock = awaitExpr.FirstAncestorOrSelf<BlockSyntax>();
-            return block != null && ablock != null && block.Span.Contains(awaitExpr.SpanStart);
+            return block != null && ablock != null && block.Span.Contains(ablock.SpanStart);
         }
 
-        private static bool IsEntityOrSubclass(ITypeSymbol type)
+        private static bool IsAsyncReturnType(ITypeSymbol type)
         {
-            while (type != null)
-            {
-                if (type.Name == "Entity")
+            if (type == null) return false;
+            if (type.SpecialType == SpecialType.System_Void) return true;
+            foreach (var m in type.GetMembers("GetAwaiter"))
+                if (m is IMethodSymbol ms && ms.Parameters.Length == 0)
                     return true;
-                type = type.BaseType;
-            }
-            return false;
-        }
-
-        private static bool HasSkipAwaitEntityCheckAttribute(IMethodSymbol method)
-        {
-            return method.GetAttributes().Any(attr =>
-            {
-                var name = attr.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                return name?.EndsWith(".SkipAwaitEntityCheck") == true || name?.EndsWith(".SkipAwaitEntityCheckAttribute") == true;
-            });
-        }
-
-        private static bool IsAwaitedMethodHasSkipAttribute(SemanticModel model, AwaitExpressionSyntax expr)
-        {
-            var symbol = model.GetSymbolInfo(expr.Expression).Symbol ??
-                         model.GetSymbolInfo(expr.Expression).CandidateSymbols.FirstOrDefault();
-
-            return symbol switch
-            {
-                IMethodSymbol ms => HasSkipAwaitEntityCheckAttribute(ms),
-                IPropertySymbol ps => ps.GetMethod is { } g && HasSkipAwaitEntityCheckAttribute(g),
-                _ => false
-            };
-        }
-
-        private static bool IsVariableFromSkipClass(ISymbol variableSymbol)
-        {
-            if (variableSymbol == null)
-                return false;
-
-            var varType = variableSymbol.GetSymbolTypeSafe();
-            if (HasSkipAttributeCached(varType))
-                return true;
-
-            var containingType = variableSymbol.ContainingType;
-            if (HasSkipAttributeCached(containingType))
-                return true;
-
             return false;
         }
     }

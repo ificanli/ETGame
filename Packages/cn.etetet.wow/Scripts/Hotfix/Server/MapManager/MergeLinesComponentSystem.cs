@@ -37,6 +37,8 @@ namespace ET.Server
         private static async ETTask TransferAsync(this MergeLinesComponent self)
         {
             MapInfo mapInfo = self.GetParent<MapInfo>();
+            EntityRef<MapInfo> mapInfoRef = mapInfo;
+            EntityRef<MergeLinesComponent> selfRef = self;
             // 如果有合线
             while (self.WaitMergetQueue.Count > 0)
             {
@@ -47,7 +49,8 @@ namespace ET.Server
                     
                     // 合线，把mapCopy2合并到mapCopy1
                     await mapInfo.MergeLines(mergeLineInfo.LineNum1, mergeLineInfo.LineNum2);
-                    
+                    self = selfRef;
+                    mapInfo = mapInfoRef;
                     Log.Info($"merge line ok, {mapInfo.MapName} {mergeLineInfo.LineNum1} {mergeLineInfo.LineNum2}");
                 }
                 else

@@ -5,19 +5,22 @@ namespace ET.Server
     {
         protected override async ETTask Run(Session session, C2G_Logout request, G2C_Logout response)
         {
+            EntityRef<Session> sessionRef = session;
             SessionPlayerComponent sessionPlayerComponent = session.GetComponent<SessionPlayerComponent>();
             await LogoutHelper.Logout(sessionPlayerComponent.Player);
             
             response.Error = ErrorCode.ERR_Success;
             response.Message = "Logout successful!";
 
+            session = sessionRef;
             WaitRemoveSession(session).NoContext();
         }
 
         private static async ETTask WaitRemoveSession(Session session)
         {
-            await session.Root().GetComponent<TimerComponent>().WaitAsync(500); 
-            
+            EntityRef<Session> sessionRef = session;
+            await session.Root().GetComponent<TimerComponent>().WaitAsync(500);
+            session = sessionRef;
             session.Dispose();
         }
     }

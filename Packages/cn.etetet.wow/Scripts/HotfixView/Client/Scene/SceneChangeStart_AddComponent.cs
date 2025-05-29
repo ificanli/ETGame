@@ -16,17 +16,18 @@ namespace ET.Client
                 using CoroutineLock coroutineLock = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
 
                 root = rootRef;
-
+                currentScenesComponent = currentScenesComponentRef;
                 Scene currentScene = currentScenesComponent.Scene;
+                EntityRef<Scene> currentSceneRef = currentScene;
                 // 地图资源相同,则不创建Loading界面,也不需要重新加载地图
                 if (args.ChangeScene)
                 {
                     await YIUIMgrComponent.Inst.Root.OpenPanelAsync<LoadingPanelComponent>();
 
                     currentScenesComponent = currentScenesComponentRef;
-                    currentScenesComponent = currentScenesComponentRef;
                     currentScenesComponent.Progress = 0;
-                
+
+                    currentScene = currentSceneRef;
                     ResourcesLoaderComponent resourcesLoaderComponent = currentScene.GetComponent<ResourcesLoaderComponent>();
 
                     MapConfig mapConfig = MapConfigCategory.Instance.GetByName(currentScene.Name);
