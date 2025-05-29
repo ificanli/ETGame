@@ -11,11 +11,7 @@ namespace ET
             ETTask<object> tcs = ETTask<object>.Create(true);
             tcs.TaskType = TaskType.ContextTask;
             object ret = await tcs;
-            if (ret == null)
-            {
-                return null;
-            }
-            return (T)ret;
+            return ret as T;
         }
         
         [SkipAwaitEntityCheck]
@@ -24,10 +20,6 @@ namespace ET
             ETTask<object> tcs = ETTask<object>.Create(true);
             tcs.TaskType = TaskType.ContextTask;
             object ret = await tcs;
-            if (ret == null)
-            {
-                return null;
-            }
             return ret;
         }
         
