@@ -253,12 +253,6 @@
       "source": "embedded",
       "dependencies": {}
     },
-    "cn.etetet.yiuilubangen": {
-      "version": "file:cn.etetet.yiuilubangen",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "cn.etetet.yiuireddot": {
       "version": "file:cn.etetet.yiuireddot",
       "depth": 0,

@@ -72,5 +72,7 @@ namespace ET
 
 		Yaw = 1014,
 
+		Phase = 1015,
+
 	}
 }

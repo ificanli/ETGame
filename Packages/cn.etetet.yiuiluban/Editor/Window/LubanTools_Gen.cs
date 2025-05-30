@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using ET;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -11,25 +12,25 @@ using Debug = UnityEngine.Debug;
 
 namespace YIUI.Luban.Editor
 {
+    public class LubanInfo
+    {
+        public string LubanConfigPath;
+        
+        public List<string> subConfigDir = new List<string>();
+    }
+    
     public partial class LubanTools
     {
         [MenuItem("ET/Excel/ExcelExporter")]
         public static void MenuLubanGen()
         {
-            if (!CreateLubanConf()) return;
-
-            RunLubanGen();
-
-            Process process = ET.ProcessHelper.DotNet("./Packages/cn.etetet.excel/DotNet~/Exe/ET.ExcelExporter.dll", "./", true);
+            if (!CreateLubanConf())
+            {
+                return;
+            }
+            Process process = ProcessHelper.DotNet("./Packages/cn.etetet.excel/DotNet~/Exe/ET.ExcelExporter.dll", "./", true);
 
             UnityEngine.Debug.Log(process.StandardOutput.ReadToEnd());
-        }
-
-        public static void LubanGen()
-        {
-            if (!CreateLubanConf()) return;
-
-            RunLubanGen(true);
         }
 
         private class SchemaFile
@@ -38,64 +39,102 @@ namespace YIUI.Luban.Editor
             public string type     { get; set; }
         }
 
+        private static Dictionary<string, LubanInfo> lubanInfos = new();
+
         private static bool CreateLubanConf()
         {
-            List<SchemaFile> AllSchemaFile = new();
-            foreach (string directory in Directory.GetDirectories("Packages", "cn.etetet.*"))
+            lubanInfos.Clear();
+            foreach (string packageDir in Directory.GetDirectories("Packages", "cn.etetet.*"))
             {
-                var tablesPath = Path.Combine(directory, "Luban/Base/__tables__.xlsx");
-                if (File.Exists(tablesPath))
+                string d = Path.Combine(packageDir, "Luban");
+                if (!Directory.Exists(d))
                 {
-                    AllSchemaFile.Add(new() { fileName = $"../../../../../../{tablesPath}", type = "table" });
+                    continue;
+                }
+                foreach (string directory in Directory.GetDirectories(d))
+                {
+                    string configCollectionName = Path.GetFileName(directory);
+                    if (!lubanInfos.TryGetValue(configCollectionName, out LubanInfo lubanInfo))
+                    {
+                        lubanInfo = new LubanInfo();
+                        lubanInfos.Add(configCollectionName, lubanInfo);
+                    }
+
+                    if (File.Exists(Path.Combine(directory, "luban.conf")))
+                    {
+                        lubanInfo.LubanConfigPath = directory;
+                    }
+
+                    lubanInfo.subConfigDir.Add(directory);
                 }
 
-                var beansPath = Path.Combine(directory, "Luban/Base/__beans__.xlsx");
-                if (File.Exists(beansPath))
+                foreach ((string configCollectionsName, LubanInfo lubanInfo) in lubanInfos)
                 {
-                    AllSchemaFile.Add(new() { fileName = $"../../../../../../{beansPath}", type = "bean" });
-                }
+                    List<SchemaFile> AllSchemaFile = new();
+                    foreach (var configPath in lubanInfo.subConfigDir)
+                    {
+                        var tablesPath = Path.Combine(configPath, "Base/__tables__.xlsx");
+                        if (File.Exists(tablesPath))
+                        {
+                            AllSchemaFile.Add(new() { fileName = $"../../../../{tablesPath}", type = "table" });
+                        }
 
-                var enumsPath = Path.Combine(directory, "Luban/Base/__enums__.xlsx");
-                if (File.Exists(enumsPath))
-                {
-                    AllSchemaFile.Add(new() { fileName = $"../../../../../../{enumsPath}", type = "enum" });
-                }
+                        var beansPath = Path.Combine(configPath, "Base/__beans__.xlsx");
+                        if (File.Exists(beansPath))
+                        {
+                            AllSchemaFile.Add(new() { fileName = $"../../../../{beansPath}", type = "bean" });
+                        }
 
-                var definesPath = Path.Combine(directory, "Luban/Base/Defines");
-                if (Directory.Exists(definesPath))
-                {
-                    AllSchemaFile.Add(new() { fileName = $"../../../../../../{definesPath}", type = "" });
+                        var enumsPath = Path.Combine(configPath, "Base/__enums__.xlsx");
+                        if (File.Exists(enumsPath))
+                        {
+                            AllSchemaFile.Add(new() { fileName = $"../../../../{enumsPath}", type = "enum" });
+                        }
+
+                        var definesPath = Path.Combine(configPath, "Base/Defines");
+                        if (Directory.Exists(definesPath))
+                        {
+                            AllSchemaFile.Add(new() { fileName = $"../../../../{definesPath}", type = "" });
+                        }
+                    }
+
+                    var packagePath = $"{lubanInfo.LubanConfigPath}/luban.conf";
+                    
+                    if (!File.Exists(packagePath))
+                    {
+                        Debug.LogError($"源文件 luban.conf 不存在 请重新初始化LubanGen");
+                        return false;
+                    }
+
+                    try
+                    {
+                        string fileContent = File.ReadAllText(packagePath);
+
+                        JObject json = JObject.Parse(fileContent);
+
+                        JArray schemaFilesArray = JArray.FromObject(AllSchemaFile);
+
+                        json["schemaFiles"] = schemaFilesArray;
+
+                        string updatedJsonContent = json.ToString(Newtonsoft.Json.Formatting.Indented);
+
+                        File.WriteAllText(packagePath, updatedJsonContent, Encoding.UTF8);
+
+
+
+                        RunLubanGen(lubanInfo.LubanConfigPath, false);
+
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"创建 LubanConf失败 {configCollectionsName} {e.Message}");
+                        return false;
+                    }
                 }
             }
 
-            var packagePath = $"{Application.dataPath}/../Packages/cn.etetet.yiuilubangen/Assets/Editor/Luban/Base/luban.conf";
-            if (!File.Exists(packagePath))
-            {
-                Debug.LogError($"源文件 luban.conf 不存在 请重新初始化LubanGen");
-                return false;
-            }
-
-            try
-            {
-                string fileContent = File.ReadAllText(packagePath);
-
-                JObject json = JObject.Parse(fileContent);
-
-                JArray schemaFilesArray = JArray.FromObject(AllSchemaFile);
-
-                json["schemaFiles"] = schemaFilesArray;
-
-                string updatedJsonContent = json.ToString(Newtonsoft.Json.Formatting.Indented);
-
-                File.WriteAllText(packagePath, updatedJsonContent, Encoding.UTF8);
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"创建 LubanConf失败 {e.Message}");
-                return false;
-            }
+            return true;
         }
 
         static void ConvertLineEndings(string filePath, string newLine)
@@ -107,32 +146,18 @@ namespace YIUI.Luban.Editor
 
         private static bool m_UsePs = true;
 
-        private static void RunLubanGen(bool tips = false)
+
+        private static void RunLubanGen(string configCollectionPath, bool tips = false)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                if (m_UsePs)
-                {
-                    RunProcess("powershell.exe", $"-NoExit -ExecutionPolicy Bypass -File ./Packages/cn.etetet.yiuiluban/.ToolsGen/LubanGen.ps1", tips);
-                }
-                else
-                {
-                    var path = $"{Application.dataPath}/../Packages/cn.etetet.yiuiluban/.ToolsGen/LubanGen.bat";
-                    ConvertLineEndings(path, "\r\n");
-                    RunProcess(path, "", tips);
-                }
+                RunProcess("powershell.exe", $"-NoExit -ExecutionPolicy Bypass -File {Path.Combine(configCollectionPath, "LubanGen.ps1")}", tips);
             }
             else
             {
                 if (m_UsePs)
                 {
-                    RunProcess("/usr/local/bin/pwsh", $"-NoExit -ExecutionPolicy Bypass -File ./Packages/cn.etetet.yiuiluban/.ToolsGen/LubanGen.ps1", tips);
-                }
-                else
-                {
-                    var path = $"./Packages/cn.etetet.yiuiluban/.ToolsGen/LubanGen.sh";
-                    ChangePermissions($"{Application.dataPath}/../{path}", "755");
-                    RunProcess("/bin/bash", $"-c \"{path}\"", tips);
+                    RunProcess("/usr/local/bin/pwsh", $"-NoExit -ExecutionPolicy Bypass -File {Path.Combine(configCollectionPath, "LubanGen.ps1")}", tips);
                 }
             }
         }
@@ -235,7 +260,6 @@ namespace YIUI.Luban.Editor
                         Debug.LogError($"Luban导出错误:\n{error}");
                     }
 
-                    CloseWindow();
                 }
                 else
                 {
@@ -247,8 +271,6 @@ namespace YIUI.Luban.Editor
                     {
                         Debug.Log("Luban导出完成");
                     }
-
-                    CloseWindowRefresh();
                 }
             }
             catch (Exception e)

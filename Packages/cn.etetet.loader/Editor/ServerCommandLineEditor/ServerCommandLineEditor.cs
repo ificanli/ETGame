@@ -27,7 +27,7 @@ namespace ET
 
         public void OnEnable()
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo("Packages/cn.etetet.yiuilubangen/Assets/Config/Binary/Server/StartConfig");
+            DirectoryInfo directoryInfo = new DirectoryInfo("Packages/cn.etetet.startconfig/Assets/Config/Binary/Server/StartConfig");
             this.startConfigs = directoryInfo.GetDirectories().Select(x => x.Name).ToArray();
         }
 

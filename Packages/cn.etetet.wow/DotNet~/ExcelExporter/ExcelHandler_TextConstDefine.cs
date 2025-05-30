@@ -8,7 +8,7 @@ namespace ET
     {
         public void Run()
         {
-            ExcelPackage excelPackage = ExcelExporter.GetPackage(Path.GetFullPath("Packages/cn.etetet.wow/Luban/Datas/Text.xlsx"));
+            ExcelPackage excelPackage = ExcelExporter.GetPackage(Path.GetFullPath("Packages/cn.etetet.wow/Luban/Config/Datas/Text.xlsx"));
 
             StringBuilder sb = new();
             sb.Append("namespace ET\n");
