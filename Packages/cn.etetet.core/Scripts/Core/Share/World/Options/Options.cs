@@ -12,7 +12,7 @@ namespace ET
         [Option("WatcherStartSceneName", Required = false, Default = "", HelpText = "define in SceneType class")]
         public string WatcherStartSceneName { get; set; }
 
-        [Option("StartConfig", Required = false, Default = "StartConfig/Localhost")]
+        [Option("StartConfig", Required = false, Default = "Localhost")]
         public string StartConfig { get; set; }
 
         [Option("Process", Required = false, Default = 1)]

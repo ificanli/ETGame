@@ -119,12 +119,8 @@ namespace YIUI.Luban.Editor
                         string updatedJsonContent = json.ToString(Newtonsoft.Json.Formatting.Indented);
 
                         File.WriteAllText(packagePath, updatedJsonContent, Encoding.UTF8);
-
-
-
+                        
                         RunLubanGen(lubanInfo.LubanConfigPath, false);
-
-                        return true;
                     }
                     catch (Exception e)
                     {

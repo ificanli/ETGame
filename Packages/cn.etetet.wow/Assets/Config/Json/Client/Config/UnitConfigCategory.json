@@ -1,0 +1,106 @@
+[
+  {
+    "Id": 1001,
+    "UnitType": 1,
+    "Name": "Mage",
+    "MapName": "",
+    "head_icon": "Portrait",
+    "class_type": 5
+  },
+  {
+    "Id": 1002,
+    "UnitType": 16,
+    "Name": "TrainingDummy",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 1
+  },
+  {
+    "Id": 1003,
+    "UnitType": 16,
+    "Name": "TrainingDummy",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 2
+  },
+  {
+    "Id": 1004,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 3
+  },
+  {
+    "Id": 1005,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 4
+  },
+  {
+    "Id": 1006,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 5
+  },
+  {
+    "Id": 1007,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 6
+  },
+  {
+    "Id": 1008,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 7
+  },
+  {
+    "Id": 1009,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 8
+  },
+  {
+    "Id": 1010,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 9
+  },
+  {
+    "Id": 1011,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 10
+  },
+  {
+    "Id": 1012,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 11
+  },
+  {
+    "Id": 1013,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map1",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 12
+  }
+]

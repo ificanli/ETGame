@@ -23,11 +23,11 @@ namespace ET
                     case ConfigType.Luban:
                         if (LubanHelper.StartConfigs.Contains(configType.Name))
                         {
-                            configFilePath = Path.Combine($"{LubanHelper.ConfigResPath}/Server/{Options.Instance.StartConfig}/{configType.Name}.bytes");
+                            configFilePath = Path.Combine($"Packages/cn.etetet.startconfig/Assets/Config/Binary/Server/{Options.Instance.StartConfig}/{configType.Name}.bytes");
                         }
                         else
                         {
-                            configFilePath = Path.Combine($"{LubanHelper.ConfigResPath}/Server/{configType.Name}.bytes");
+                            configFilePath = Path.Combine($"Packages/cn.etetet.startconfig/Assets/Config/Binary/Server/{configType.Name}.bytes");
                         }
                         break;
                     case ConfigType.Bson:
