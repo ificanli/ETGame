@@ -63,6 +63,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
+      - CollectPath: Packages/cn.etetet.wow/Assets/Config/Binary/Client/Config
+        CollectorGUID: 3f8353194682143c9bcdab259558aa05
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
     - GroupName: Scenes
       GroupDesc: 
       AssetTags: 
