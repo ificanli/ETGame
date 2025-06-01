@@ -23,15 +23,15 @@ namespace ET
                     case ConfigType.Luban:
                         if (LubanHelper.StartConfigs.Contains(configType.Name))
                         {
-                            configFilePath = Path.Combine($"Packages/cn.etetet.startconfig/Assets/Config/Binary/Server/{Options.Instance.StartConfig}/{configType.Name}.bytes");
+                            configFilePath = Path.Combine($"Packages/cn.etetet.startconfig/Bundles/Luban/{Options.Instance.StartConfig}/Server/Binary/{configType.Name}.bytes");
                         }
                         else
                         {
-                            configFilePath = Path.Combine($"Packages/cn.etetet.startconfig/Assets/Config/Binary/Server/{configType.Name}.bytes");
+                            configFilePath = Path.Combine($"Packages/cn.etetet.wow/Bundles/Luban/Config/Server/Binary/{configType.Name}.bytes");
                         }
                         break;
                     case ConfigType.Bson:
-                        configFilePath = Path.Combine($"Packages/cn.etetet.wow/Bundles/Config/{configType.Name}.bytes");
+                        configFilePath = Path.Combine($"Packages/cn.etetet.wow/Bundles/Bson/{configType.Name}.bytes");
                         break;
                 }
 

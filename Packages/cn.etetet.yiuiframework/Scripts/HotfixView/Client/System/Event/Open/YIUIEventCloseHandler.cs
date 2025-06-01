@@ -6,10 +6,6 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelCloseBefore arg)
         {
-            if (scene == null)
-            {
-                return;
-            }
             EntityRef<Scene> sceneRef = scene;
             await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
             scene = sceneRef;
@@ -27,10 +23,6 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelCloseAfter arg)
         {
-            if (scene == null)
-            {
-                return;
-            }
             EntityRef<Scene> sceneRef = scene;
             await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
             scene = sceneRef;
@@ -48,10 +40,6 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelDestroy arg)
         {
-            if (scene == null)
-            {
-                return;
-            }
             EntityRef<Scene> sceneRef = scene;
             await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
             scene = sceneRef;

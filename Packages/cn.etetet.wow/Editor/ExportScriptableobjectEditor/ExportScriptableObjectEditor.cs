@@ -7,7 +7,7 @@ namespace ET.Client
 {
     public static class ExportScriptableObjectEditor
     {
-        private const string ExportPath = "Packages/cn.etetet.wow/Bundles/Config";
+        private const string ExportPath = "Packages/cn.etetet.wow/Bundles/Bson";
         
         [MenuItem("ET/WOW/ExportScriptableObject")]
         public static void ExportScriptableObject()
@@ -93,6 +93,11 @@ namespace ET.Client
                 {
                     throw new Exception($"error: {path}", e);
                 }
+            }
+
+            if (!Directory.Exists(ExportPath))
+            {
+                Directory.CreateDirectory(ExportPath);
             }
             
             File.WriteAllBytes(Path.Combine(ExportPath, "SpellConfigCategory.bytes"), spellConfigCategory.ToBson());

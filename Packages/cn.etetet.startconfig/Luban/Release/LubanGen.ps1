@@ -13,5 +13,5 @@ if ($IsWindows -ne $true) {
     $DotNet = "/usr/local/share/dotnet/dotnet"
 }
 
-& $DotNet $GEN_CLIENT --customTemplateDir $CUSTOM -t all -c cs-bin -d bin -d json --conf $PACKAGE/Luban/$CONFIG_NAME/luban.conf -x outputCodeDir=$PACKAGE/Scripts/Model/Server/StartConfigGen -x bin.outputDataDir=$PACKAGE/Assets/Config/Binary/Server/$CONFIG_NAME -x json.outputDataDir=$PACKAGE/Assets/Config/Json/Server/$CONFIG_NAME
+& $DotNet $GEN_CLIENT --customTemplateDir $CUSTOM -t all -c cs-bin -d bin -d json --conf $PACKAGE/Luban/$CONFIG_NAME/luban.conf -x outputCodeDir=$PACKAGE/Scripts/Model/Server/StartConfig -x bin.outputDataDir=$PACKAGE/Bundles/Luban/$CONFIG_NAME/Server/Binary/ -x json.outputDataDir=$PACKAGE/Bundles/Luban/$CONFIG_NAME/Server/Json/
 Write-Host "==================== $CONFIG_NAME 完成 ===================="

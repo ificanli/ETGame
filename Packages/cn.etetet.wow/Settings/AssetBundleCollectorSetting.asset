@@ -55,16 +55,16 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.wow/Bundles/Config
-        CollectorGUID: d6967790921b3ca4bacb10dde1d5d1aa
+      - CollectPath: Packages/cn.etetet.wow/Bundles/Luban/Config/Client/Binary
+        CollectorGUID: 5e0f8c9093bcc4efabd0d76c591b48e6
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Packages/cn.etetet.wow/Assets/Config/Binary/Client/Config
-        CollectorGUID: 3f8353194682143c9bcdab259558aa05
+      - CollectPath: Packages/cn.etetet.wow/Bundles/Bson
+        CollectorGUID: 9cc2fb3e224124dec850612fdc4c545f
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory

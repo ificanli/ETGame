@@ -39,17 +39,13 @@ namespace ET
 
         private EntityRef(T t)
         {
-            if (t == null)
+            if (t == null || t.InstanceId == 0)
             {
                 this.instanceId = 0;
                 this.entity = null;
                 return;
             }
 
-            if (t.InstanceId == 0)
-            {
-                throw new Exception("cant convert to entityref, entity instanceid == 0!");
-            }
             this.instanceId = t.InstanceId;
             this.entity = t;
         }

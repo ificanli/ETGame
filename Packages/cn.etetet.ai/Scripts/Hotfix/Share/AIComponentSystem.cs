@@ -17,7 +17,7 @@ namespace ET
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"ai timer error: {self.Id}\n{e}");
+                    Log.Error($"ai error: {self.Id}\n{e}");
                 }
             }
         }
