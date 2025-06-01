@@ -67,4 +67,10 @@
 	</Reference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="..\..\..\cn.etetet.startconfig\">
+	    <Link>cn.etetet.startconfig</Link>
+	  </Folder>
+	</ItemGroup>
+
 </Project>
