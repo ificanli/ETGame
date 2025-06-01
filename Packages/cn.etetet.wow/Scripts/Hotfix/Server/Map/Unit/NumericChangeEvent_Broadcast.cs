@@ -10,7 +10,7 @@
             m2CNumericChange.NumericType = a.NumericType;
             m2CNumericChange.UnitId = a.Unit.Id;
             m2CNumericChange.Value = a.New;
-            MapMessageHelper.NoticeClient(a.Unit, m2CNumericChange, (NoticeType)numericTypeConfig.NoticeType);
+            MapMessageHelper.NoticeClient(a.Unit, m2CNumericChange, numericTypeConfig.NoticeType);
 
             await ETTask.CompletedTask;
         }

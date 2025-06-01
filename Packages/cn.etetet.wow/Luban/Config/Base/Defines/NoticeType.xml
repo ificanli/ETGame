@@ -1,0 +1,27 @@
+<module name="">
+
+	<enum name="NoticeType">
+        <var name="NoNotice" alias="无" value="0"/>
+        <var name="Self" alias="自己" value="1"/>
+        <var name="Broadcast" alias="全体" value="2"/>
+		<var name="BroadcastWithoutSelf" alias="除自己外" value="3"/>
+
+        <mapper target="client" codeTarget="cs-bin,cs-dotnet-json,cs-newtonsoft-json">
+     	    <option name="type" value="ET.NoticeType"/>
+        </mapper>
+
+        <mapper target="clientserver" codeTarget="cs-bin,cs-dotnet-json,cs-newtonsoft-json">
+   	        <option name="type" value="ET.NoticeType"/> 
+        </mapper>
+
+        <mapper target="server" codeTarget="cs-bin,cs-dotnet-json,cs-newtonsoft-json">
+            <option name="type" value="ET.NoticeType"/>
+        </mapper>
+
+        <mapper target="all" codeTarget="cs-bin,cs-dotnet-json,cs-newtonsoft-json">
+           	<option name="type" value="ET.NoticeType"/>
+        </mapper>
+
+    </enum>
+
+</module>
