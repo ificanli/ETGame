@@ -39,11 +39,15 @@ namespace ET
 
         private EntityRef(T t)
         {
-            if (t == null || t.InstanceId == 0)
+            if (t == null)
             {
                 this.instanceId = 0;
                 this.entity = null;
                 return;
+            }
+            if (t.InstanceId == 0)
+            {
+                throw new Exception("entity is disposed, instanceid == 0!");
             }
 
             this.instanceId = t.InstanceId;
