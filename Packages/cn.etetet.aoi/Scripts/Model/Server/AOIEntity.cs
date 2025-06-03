@@ -6,6 +6,8 @@ namespace ET.Server
     [ComponentOf(typeof(Unit))]
     public class AOIEntity: Entity, IAwake, IDestroy
     {
+        public PhaseType Phase = PhaseType.Normal;
+
         public Unit Unit => this.GetParent<Unit>();
 
         private EntityRef<NumericComponent> numericComponent;

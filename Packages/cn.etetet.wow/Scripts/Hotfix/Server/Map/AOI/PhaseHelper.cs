@@ -1,0 +1,37 @@
+namespace ET.Server
+{
+    public static class PhaseHelper
+    {
+        public static bool SamePhase(this AOIEntity a, AOIEntity b)
+        {
+            return (a.Phase & b.Phase) != 0;
+        }
+        
+        public static bool IsPhase(this Unit self, PhaseType phaseType)
+        {
+            AOIEntity aoiEntity = self.GetComponent<AOIEntity>();
+            return (aoiEntity.Phase & phaseType) == phaseType;
+        }
+
+        public static void SetPhase(this Unit self, PhaseType phaseType)
+        {
+            AOIEntity aoiEntity = self.GetComponent<AOIEntity>();
+            aoiEntity.Phase = phaseType;
+            self.GetComponent<NumericComponent>()?.Set(NumericType.Phase, (long)aoiEntity.Phase);
+        }
+
+        public static void AddPhase(this Unit self, PhaseType phaseType)
+        {
+            AOIEntity aoiEntity = self.GetComponent<AOIEntity>();
+            aoiEntity.Phase |= phaseType;
+            self.GetComponent<NumericComponent>()?.Set(NumericType.Phase, (long)aoiEntity.Phase);
+        }
+
+        public static void RemovePhase(this Unit self, PhaseType phaseType)
+        {
+            AOIEntity aoiEntity = self.GetComponent<AOIEntity>();
+            aoiEntity.Phase &= ~phaseType;
+            self.GetComponent<NumericComponent>()?.Set(NumericType.Phase, (long)aoiEntity.Phase);
+        }
+    }
+}

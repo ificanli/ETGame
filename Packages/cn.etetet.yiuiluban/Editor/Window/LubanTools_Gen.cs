@@ -95,7 +95,7 @@ namespace YIUI.Luban.Editor
                         AllSchemaFile.Add(new() { fileName = $"../../../../{enumsPath}", type = "enum" });
                     }
 
-                    var definesPath = Path.Combine(configPath, "Base/Defines");
+                    var definesPath = Path.Combine(configPath, "Defines");
                     if (Directory.Exists(definesPath))
                     {
                         AllSchemaFile.Add(new() { fileName = $"../../../../{definesPath}", type = "" });

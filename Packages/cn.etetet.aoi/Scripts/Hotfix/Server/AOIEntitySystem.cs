@@ -12,6 +12,7 @@ namespace ET.Server
         {
             Unit unit = self.GetParent<Unit>();
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            self.Phase = (PhaseType)numericComponent.Get(NumericType.Phase);
             self.NumericComponent = numericComponent;
             self.Scene().GetComponent<AOIManagerComponent>().Add(self, unit.Position.x, unit.Position.z);
         }
@@ -93,6 +94,11 @@ namespace ET.Server
         // enter进入self视野
         public static void EnterSight(this AOIEntity self, AOIEntity enter)
         {
+            if (!self.SamePhase(enter))
+            {
+                return;
+            }
+            
             // 有可能之前在Enter，后来出了Enter还在LeaveCell，这样仍然没有删除，继续进来Enter，这种情况不需要处理
             if (self.SeeUnits.ContainsKey(enter.Id))
             {

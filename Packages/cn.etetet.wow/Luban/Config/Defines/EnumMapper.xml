@@ -24,4 +24,23 @@
 
     </enum>
 
+    <enum name="PhaseType">
+        <var name="Normal" value="1"/>
+        <var name="Phase1" value="2"/>
+        <var name="Phase2" value="4"/>
+
+        <mapper target="clientserver" codeTarget="cs-bin,cs-dotnet-json,cs-newtonsoft-json">
+            <option name="type" value="ET.Server.PhaseType"/>
+        </mapper>
+
+        <mapper target="server" codeTarget="cs-bin,cs-dotnet-json,cs-newtonsoft-json">
+            <option name="type" value="ET.Server.PhaseType"/>
+        </mapper>
+
+        <mapper target="all" codeTarget="cs-bin,cs-dotnet-json,cs-newtonsoft-json">
+            <option name="type" value="ET.Server.PhaseType"/>
+        </mapper>
+
+    </enum>
+
 </module>
