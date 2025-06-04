@@ -22,9 +22,9 @@
   },
   {
     "Id": 4,
-    "Name": "Map3",
-    "Desc": "Map3",
+    "Name": "Lordaeron",
+    "Desc": "Lordaeron",
     "CopyType": 3,
-    "MapResName": "Map1"
+    "MapResName": "Lordaeron"
   }
 ]

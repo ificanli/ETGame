@@ -19,7 +19,7 @@ namespace ET
         {
             Id = _buf.ReadInt();
             ToMap = _buf.ReadString();
-            Pos = _buf.ReadInt();
+            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);Pos = new float[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { float __e0;__e0 = _buf.ReadFloat(); Pos[__index0] = __e0;}}
 
             EndInit();
         }
@@ -40,7 +40,7 @@ namespace ET
         /// <summary>
         /// 目标位置
         /// </summary>
-        public readonly int Pos;
+        public readonly float[] Pos;
     
         public const int __ID__ = 2092018182;
         public override int GetTypeId() => __ID__;
@@ -55,7 +55,7 @@ namespace ET
             return "{ "
             + "Id:" + Id + ","
             + "ToMap:" + ToMap + ","
-            + "Pos:" + Pos + ","
+            + "Pos:" + Luban.StringUtil.CollectionToString(Pos) + ","
             + "}";
         }
 

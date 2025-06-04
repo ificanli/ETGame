@@ -102,5 +102,85 @@
     "MapName": "Map1",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 12
+  },
+  {
+    "Id": 1214,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 3
+  },
+  {
+    "Id": 1215,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 4
+  },
+  {
+    "Id": 1216,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 5
+  },
+  {
+    "Id": 1217,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 6
+  },
+  {
+    "Id": 1218,
+    "UnitType": 2,
+    "Name": "Boar",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 7
+  },
+  {
+    "Id": 1219,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 8
+  },
+  {
+    "Id": 1220,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 9
+  },
+  {
+    "Id": 1221,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 10
+  },
+  {
+    "Id": 1222,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 11
+  },
+  {
+    "Id": 1223,
+    "UnitType": 2,
+    "Name": "Bear",
+    "MapName": "Map2",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 12
   }
 ]

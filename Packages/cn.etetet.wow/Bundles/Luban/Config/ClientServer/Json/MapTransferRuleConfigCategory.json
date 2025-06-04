@@ -2,11 +2,16 @@
   {
     "Id": 1,
     "ToMap": "Map2",
-    "Pos": 0
+    "Pos": []
   },
   {
     "Id": 2,
     "ToMap": "Map1",
-    "Pos": 0
+    "Pos": []
+  },
+  {
+    "Id": 3,
+    "ToMap": "Lordaeron",
+    "Pos": []
   }
 ]

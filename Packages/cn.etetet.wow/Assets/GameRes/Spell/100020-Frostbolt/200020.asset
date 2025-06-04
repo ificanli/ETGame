@@ -78,27 +78,6 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 1
-    - Name: Desc
-      Entry: 6
-      Data: 
-    - Name: IsCollapsed
-      Entry: 5
-      Data: false
-    - Name: ChildrenCollapsed
-      Entry: 5
-      Data: false
-    - Name: Position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: Children
       Entry: 7
       Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -111,6 +90,9 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 2
+    - Name: Children
+      Entry: 6
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -147,6 +129,9 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 3
+    - Name: Children
+      Entry: 6
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -183,6 +168,9 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 4
+    - Name: Children
+      Entry: 6
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -231,24 +219,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 8|ET.EffectClientBuffAdd, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 1
     - Name: Desc
       Entry: 6
       Data: 
@@ -270,6 +240,24 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 8|ET.EffectClientBuffAdd, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 1
     - Name: Children
       Entry: 7
       Data: 9|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -282,6 +270,18 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 2
+    - Name: Children
+      Entry: 7
+      Data: 11|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -317,10 +317,22 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 11|ET.BTShowCastSlider, ET.Model
+      Data: 12|ET.BTShowCastSlider, ET.Model
     - Name: Id
       Entry: 3
       Data: 3
+    - Name: Children
+      Entry: 7
+      Data: 13|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -353,7 +365,7 @@ MonoBehaviour:
       Data: Frostbolt
     - Name: Icon
       Entry: 7
-      Data: 12|ET.OdinUnityObject, ET.Model
+      Data: 14|ET.OdinUnityObject, ET.Model
     - Name: Name
       Entry: 1
       Data: Spell_Frost_FrostBolt02
@@ -369,24 +381,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 13|ET.EffectClientBuffRemove, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 1
     - Name: Desc
       Entry: 6
       Data: 
@@ -408,18 +402,39 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 15|ET.EffectClientBuffRemove, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 1
     - Name: Children
       Entry: 7
-      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 15|ET.BTAnimatorSetBool, ET.Model
+      Data: 17|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
       Data: 3
+    - Name: Children
+      Entry: 6
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -459,24 +474,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 16|ET.EffectServerBuffTick, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -498,18 +495,39 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 18|ET.EffectServerBuffTick, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 0
     - Name: Children
       Entry: 7
-      Data: 17|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 19|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 18|ET.BTGetSpellTargetUnit, ET.Model
+      Data: 20|ET.BTGetSpellTargetUnit, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
+    - Name: Children
+      Entry: 6
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -542,10 +560,13 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 19|ET.BTTurnToUnit, ET.Model
+      Data: 21|ET.BTTurnToUnit, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
+    - Name: Children
+      Entry: 6
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -585,24 +606,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 20|ET.EffectServerBuffHitted, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -624,18 +627,39 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 22|ET.EffectServerBuffHitted, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 0
     - Name: Children
       Entry: 7
-      Data: 21|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 23|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 22|ET.BTBuffAddExpireTime, ET.Model
+      Data: 24|ET.BTBuffAddExpireTime, ET.Model
     - Name: Id
       Entry: 3
       Data: 0
+    - Name: Children
+      Entry: 6
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -672,6 +696,27 @@ MonoBehaviour:
     - Name: 
       Entry: 13
       Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 8
       Data: 
