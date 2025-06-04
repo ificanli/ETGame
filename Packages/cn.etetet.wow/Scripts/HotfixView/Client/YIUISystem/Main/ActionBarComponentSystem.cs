@@ -21,8 +21,8 @@ namespace ET.Client
             self.UISlot2.RefreshInfo("2", 100010);
             self.UISlot3.RefreshInfo("3", 100020);
             self.UISlot4.RefreshInfo("4", 100030);
-            self.UISlot5.RefreshInfo("5", 0);
-            self.UISlot6.RefreshInfo("6", 0);
+            self.UISlot5.RefreshInfo("5", 100040);
+            self.UISlot6.RefreshInfo("6", 100050);
             self.UISlot7.RefreshInfo("7", 0);
             self.UISlot8.RefreshInfo("8", 0);
             self.UISlot9.RefreshInfo("9", 0);
