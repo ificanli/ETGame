@@ -13,22 +13,20 @@ using Luban;
 namespace ET
 {
     [EnableClass]
-    public sealed partial class UnitConfig : Luban.BeanBase
+    public sealed partial class MapUnitConfig : Luban.BeanBase
     {
-        public UnitConfig(ByteBuf _buf) 
+        public MapUnitConfig(ByteBuf _buf) 
         {
             Id = _buf.ReadInt();
-            UnitType = (ET.UnitType)_buf.ReadInt();
-            Name = _buf.ReadString();
-            HeadIcon = _buf.ReadString();
-            ClassType = (ET.EClassType)_buf.ReadInt();
+            UnitConfigId = _buf.ReadInt();
+            MapName = _buf.ReadString();
 
             EndInit();
         }
 
-        public static UnitConfig DeserializeUnitConfig(ByteBuf _buf)
+        public static MapUnitConfig DeserializeMapUnitConfig(ByteBuf _buf)
         {
-            return new ET.UnitConfig(_buf);
+            return new ET.MapUnitConfig(_buf);
         }
 
         /// <summary>
@@ -36,23 +34,15 @@ namespace ET
         /// </summary>
         public readonly int Id;
         /// <summary>
-        /// Type
+        /// UnitConfigId
         /// </summary>
-        public readonly ET.UnitType UnitType;
+        public readonly int UnitConfigId;
         /// <summary>
-        /// 名字
+        /// 所在地图
         /// </summary>
-        public readonly string Name;
-        /// <summary>
-        /// 头像图片
-        /// </summary>
-        public readonly string HeadIcon;
-        /// <summary>
-        /// 职业
-        /// </summary>
-        public readonly ET.EClassType ClassType;
+        public readonly string MapName;
     
-        public const int __ID__ = 1859130533;
+        public const int __ID__ = -2012370621;
         public override int GetTypeId() => __ID__;
 
         public  void ResolveRef()
@@ -64,10 +54,8 @@ namespace ET
         {
             return "{ "
             + "Id:" + Id + ","
-            + "UnitType:" + UnitType + ","
-            + "Name:" + Name + ","
-            + "headIcon:" + HeadIcon + ","
-            + "classType:" + ClassType + ","
+            + "UnitConfigId:" + UnitConfigId + ","
+            + "MapName:" + MapName + ","
             + "}";
         }
 

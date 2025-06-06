@@ -29,19 +29,16 @@ namespace ET.Server
             
             root = rootRef;
             unitComponent = unitComponentRef;
-            
-            foreach ((int _, UnitConfig unitConfig) in UnitConfigCategory.Instance.GetAll())
+
+            foreach (var kv in MapUnitConfigCategory.Instance.GetAll())
             {
-                if (mapName != unitConfig.MapName)
+                if (mapName != kv.Value.MapName)
                 {
                     continue;
                 }
-
-                
-                Unit unit = UnitFactory.Create(root, IdGenerater.Instance.GenerateId(), unitConfig.Id);
+                Unit unit = UnitFactory.Create(root, kv.Key, kv.Value.UnitConfigId);
                 unitComponent.Add(unit);
             }
-
             await ETTask.CompletedTask;
         }
     }

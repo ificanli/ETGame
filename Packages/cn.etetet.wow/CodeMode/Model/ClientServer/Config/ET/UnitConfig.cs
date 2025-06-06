@@ -20,7 +20,6 @@ namespace ET
             Id = _buf.ReadInt();
             UnitType = (ET.UnitType)_buf.ReadInt();
             Name = _buf.ReadString();
-            MapName = _buf.ReadString();
             HeadIcon = _buf.ReadString();
             ClassType = (ET.EClassType)_buf.ReadInt();
             {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);KV = new System.Collections.Generic.Dictionary<int, long>(n0 * 3 / 2);for(var i0 = 0 ; i0 < n0 ; i0++) { int _k0;  _k0 = _buf.ReadInt(); long _v0;  _v0 = _buf.ReadLong();     KV.Add(_k0, _v0);}}
@@ -46,10 +45,6 @@ namespace ET
         /// </summary>
         public readonly string Name;
         /// <summary>
-        /// 所在地图
-        /// </summary>
-        public readonly string MapName;
-        /// <summary>
         /// 头像图片
         /// </summary>
         public readonly string HeadIcon;
@@ -58,7 +53,7 @@ namespace ET
         /// </summary>
         public readonly ET.EClassType ClassType;
         /// <summary>
-        /// 出生X坐标
+        /// 速度Base
         /// </summary>
         public readonly System.Collections.Generic.Dictionary<int, long> KV;
     
@@ -76,7 +71,6 @@ namespace ET
             + "Id:" + Id + ","
             + "UnitType:" + UnitType + ","
             + "Name:" + Name + ","
-            + "MapName:" + MapName + ","
             + "headIcon:" + HeadIcon + ","
             + "classType:" + ClassType + ","
             + "KV:" + Luban.StringUtil.CollectionToString(KV) + ","

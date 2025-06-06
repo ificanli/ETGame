@@ -13,22 +13,21 @@ using Luban;
 namespace ET
 {
     [EnableClass]
-    public sealed partial class UnitConfig : Luban.BeanBase
+    public sealed partial class MapUnitConfig : Luban.BeanBase
     {
-        public UnitConfig(ByteBuf _buf) 
+        public MapUnitConfig(ByteBuf _buf) 
         {
             Id = _buf.ReadInt();
-            UnitType = (ET.UnitType)_buf.ReadInt();
-            Name = _buf.ReadString();
-            ClassType = (ET.EClassType)_buf.ReadInt();
+            UnitConfigId = _buf.ReadInt();
+            MapName = _buf.ReadString();
             {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);KV = new System.Collections.Generic.Dictionary<int, long>(n0 * 3 / 2);for(var i0 = 0 ; i0 < n0 ; i0++) { int _k0;  _k0 = _buf.ReadInt(); long _v0;  _v0 = _buf.ReadLong();     KV.Add(_k0, _v0);}}
 
             EndInit();
         }
 
-        public static UnitConfig DeserializeUnitConfig(ByteBuf _buf)
+        public static MapUnitConfig DeserializeMapUnitConfig(ByteBuf _buf)
         {
-            return new ET.UnitConfig(_buf);
+            return new ET.MapUnitConfig(_buf);
         }
 
         /// <summary>
@@ -36,23 +35,19 @@ namespace ET
         /// </summary>
         public readonly int Id;
         /// <summary>
-        /// Type
+        /// UnitConfigId
         /// </summary>
-        public readonly ET.UnitType UnitType;
+        public readonly int UnitConfigId;
         /// <summary>
-        /// 名字
+        /// 所在地图
         /// </summary>
-        public readonly string Name;
+        public readonly string MapName;
         /// <summary>
-        /// 职业
-        /// </summary>
-        public readonly ET.EClassType ClassType;
-        /// <summary>
-        /// 速度Base
+        /// 出生X坐标
         /// </summary>
         public readonly System.Collections.Generic.Dictionary<int, long> KV;
     
-        public const int __ID__ = 1859130533;
+        public const int __ID__ = -2012370621;
         public override int GetTypeId() => __ID__;
 
         public  void ResolveRef()
@@ -64,9 +59,8 @@ namespace ET
         {
             return "{ "
             + "Id:" + Id + ","
-            + "UnitType:" + UnitType + ","
-            + "Name:" + Name + ","
-            + "classType:" + ClassType + ","
+            + "UnitConfigId:" + UnitConfigId + ","
+            + "MapName:" + MapName + ","
             + "KV:" + Luban.StringUtil.CollectionToString(KV) + ","
             + "}";
         }

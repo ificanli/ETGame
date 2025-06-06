@@ -11,12 +11,21 @@ namespace ET.Server
             
             Unit unit = unitComponent.AddChildWithId<Unit, int>(id, configId);
             UnitConfig unitConfig = unit.Config();
-            
-            
+
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
             foreach ((int k, long v) in unitConfig.KV)
             {
                 numericComponent.SetNoEvent(k, v);
+            }
+            
+            // 地图配置数据覆盖UnitConfig中的数据
+            MapUnitConfig mapUnitConfig = MapUnitConfigCategory.Instance.Get((int)id);
+            if (mapUnitConfig != null)
+            {
+                foreach ((int k, long v) in mapUnitConfig.KV)
+                {
+                    numericComponent.SetNoEvent(k, v);
+                }
             }
 
             // 设置面向
