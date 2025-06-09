@@ -9,7 +9,7 @@ namespace ET.Client
     }
     
     [ComponentOf(typeof(Unit))]
-    public partial class InputSystemComponent: Entity, IAwake, IUpdate
+    public partial class InputSystemComponent: Entity, IAwake, IUpdate, IDestroy
     {
         public InputSystem InputSystem;
         public long PressTime;
