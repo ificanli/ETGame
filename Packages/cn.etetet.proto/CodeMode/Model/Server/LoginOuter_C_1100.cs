@@ -53,7 +53,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(LoginOuter.NetClient2Main_Login)]
-    public  partial class NetClient2Main_Login : MessageObject, IResponse
+    public partial class NetClient2Main_Login : MessageObject, IResponse
     {
         public static NetClient2Main_Login Create(bool isFromPool = false)
         {

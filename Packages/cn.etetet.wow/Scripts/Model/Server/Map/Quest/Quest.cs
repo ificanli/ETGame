@@ -1,6 +1,7 @@
 namespace ET.Server
 {
-    public class Quest: Entity
+    [ChildOf(typeof(QuestComponent))]
+    public class Quest: Entity, IAwake<int>
     {
         
     }

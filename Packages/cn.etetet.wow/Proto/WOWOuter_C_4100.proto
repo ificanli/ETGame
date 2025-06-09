@@ -300,3 +300,52 @@ message G2C_Logout // ISessionResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+// 接任务
+// ResponseType M2C_AcceptQuest
+message C2M_AcceptQuest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 QuestId = 2;
+	int64 NPCId = 3;
+}
+
+message M2C_AcceptQuest // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 交任务
+// ResponseType M2C_SubmitQuest
+message C2M_SubmitQuest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 QuestId = 2;
+	int64 NPCId = 3;
+}
+
+message M2C_SubmitQuest // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 更新任务目标
+message M2C_UpdateQuestObjective // IMessage
+{
+	int64 Id = 1; // 任务目标Id
+	int32 Type = 2; // 任务目标类型
+	int32 Progress = 3; // 当前进度
+	int32 TargetCount = 4; // 目标数量
+}
+
+// 更新任务信息
+message M2C_UpdateQuest // IMessage
+{
+	int64 QuestId = 1;
+	int32 State = 2; // 0:未接, 1:进行中, 2:已完成
+	int32 Progress = 3; // 进度
+}

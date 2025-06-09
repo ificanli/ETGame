@@ -1383,6 +1383,232 @@ namespace ET
         }
     }
 
+    // 接任务
+    [MemoryPackable]
+    [Message(WOWOuter.C2M_AcceptQuest)]
+    [ResponseType(nameof(M2C_AcceptQuest))]
+    public partial class C2M_AcceptQuest : MessageObject, ILocationRequest
+    {
+        public static C2M_AcceptQuest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_AcceptQuest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long QuestId { get; set; }
+
+        [MemoryPackOrder(2)]
+        public long NPCId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.QuestId = default;
+            this.NPCId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_AcceptQuest)]
+    public partial class M2C_AcceptQuest : MessageObject, ILocationResponse
+    {
+        public static M2C_AcceptQuest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_AcceptQuest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 交任务
+    [MemoryPackable]
+    [Message(WOWOuter.C2M_SubmitQuest)]
+    [ResponseType(nameof(M2C_SubmitQuest))]
+    public partial class C2M_SubmitQuest : MessageObject, ILocationRequest
+    {
+        public static C2M_SubmitQuest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_SubmitQuest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long QuestId { get; set; }
+
+        [MemoryPackOrder(2)]
+        public long NPCId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.QuestId = default;
+            this.NPCId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_SubmitQuest)]
+    public partial class M2C_SubmitQuest : MessageObject, ILocationResponse
+    {
+        public static M2C_SubmitQuest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_SubmitQuest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 更新任务目标
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_UpdateQuestObjective)]
+    public partial class M2C_UpdateQuestObjective : MessageObject, IMessage
+    {
+        public static M2C_UpdateQuestObjective Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_UpdateQuestObjective>(isFromPool);
+        }
+
+        /// <summary>
+        /// 任务目标Id
+        /// </summary>
+        [MemoryPackOrder(0)]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// 任务目标类型
+        /// </summary>
+        [MemoryPackOrder(1)]
+        public int Type { get; set; }
+
+        /// <summary>
+        /// 当前进度
+        /// </summary>
+        [MemoryPackOrder(2)]
+        public int Progress { get; set; }
+
+        /// <summary>
+        /// 目标数量
+        /// </summary>
+        [MemoryPackOrder(3)]
+        public int TargetCount { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.Id = default;
+            this.Type = default;
+            this.Progress = default;
+            this.TargetCount = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 更新任务信息
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_UpdateQuest)]
+    public partial class M2C_UpdateQuest : MessageObject, IMessage
+    {
+        public static M2C_UpdateQuest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_UpdateQuest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long QuestId { get; set; }
+
+        /// <summary>
+        /// 0:未接, 1:进行中, 2:已完成
+        /// </summary>
+        [MemoryPackOrder(1)]
+        public int State { get; set; }
+
+        /// <summary>
+        /// 进度
+        /// </summary>
+        [MemoryPackOrder(2)]
+        public int Progress { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.QuestId = default;
+            this.State = default;
+            this.Progress = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static class WOWOuter
     {
         public const ushort RouterSync = 4101;
@@ -1428,5 +1654,11 @@ namespace ET
         public const ushort M2C_UpdateCD = 4141;
         public const ushort C2G_Logout = 4142;
         public const ushort G2C_Logout = 4143;
+        public const ushort C2M_AcceptQuest = 4144;
+        public const ushort M2C_AcceptQuest = 4145;
+        public const ushort C2M_SubmitQuest = 4146;
+        public const ushort M2C_SubmitQuest = 4147;
+        public const ushort M2C_UpdateQuestObjective = 4148;
+        public const ushort M2C_UpdateQuest = 4149;
     }
 }

@@ -16,5 +16,7 @@ namespace ET
 
 		public const int SpellCast_TargetNotInFrontOfCaster = 10006;
 
+		public const int Quest_NPCTooFar = 10007;
+
 	}
 }

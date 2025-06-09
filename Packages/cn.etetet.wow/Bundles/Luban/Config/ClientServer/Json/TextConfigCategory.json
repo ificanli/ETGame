@@ -40,5 +40,11 @@
     "Name": "SpellCast_TargetNotInFrontOfCaster",
     "CN": "目标不在前方",
     "EN": ""
+  },
+  {
+    "Id": 10007,
+    "Name": "Quest_NPCTooFar",
+    "CN": "任务目标距离太远！",
+    "EN": ""
   }
 ]
