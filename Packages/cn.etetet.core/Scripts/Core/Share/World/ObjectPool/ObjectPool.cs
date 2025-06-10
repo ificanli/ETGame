@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -7,13 +8,13 @@ namespace ET
 {
     public class ObjectPool: Singleton<ObjectPool>, ISingletonAwake
     {
-        private ConcurrentDictionary<Type, Pool> objPool;
+        private ConcurrentDictionary<Type, Pool> typePool;
 
-        private readonly Func<Type, Pool> AddPoolFunc = type => new Pool(type, 1000);
+        private readonly Func<Type, Pool> AddPoolFunc = _ => new Pool();
 
         public void Awake()
         {
-            objPool = new ConcurrentDictionary<Type, Pool>();
+            this.typePool = new ConcurrentDictionary<Type, Pool>();
         }
 
         public static T Fetch<T>(bool isFromPool = true) where T : class, IPool
@@ -35,7 +36,7 @@ namespace ET
             }
             
             Pool pool = Instance.GetPool(type);
-            object obj = pool.Get();
+            object obj = pool.Get(type);
             if (obj is IPool p)
             {
                 p.IsFromPool = true;
@@ -46,7 +47,7 @@ namespace ET
         public static void Recycle<T>(ref T obj) where T : class, IPool
         {
             Recycle(obj);
-            obj = default;
+            obj = null;
         }
 
         public static void Recycle(object obj)
@@ -63,8 +64,9 @@ namespace ET
                     return;
                 }
 
+                // 这里注释掉，是为了早点发现重复入池的问题
                 // 防止多次入池
-                p.IsFromPool = false;
+                // p.IsFromPool = false;
             }
 
             Type type = obj.GetType();
@@ -75,38 +77,79 @@ namespace ET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Pool GetPool(Type type)
         {
-            return this.objPool.GetOrAdd(type, AddPoolFunc);
+            return this.typePool.GetOrAdd(type, AddPoolFunc);
         }
+
+        
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// 编辑器模式下会检测对象是否已经在池中，防止不小心多次入池,方便查找问题
+        /// </summary>
+        private class Pool
+        {
+            private const int MaxNum = 1000;
+
+            private readonly System.Collections.Generic.HashSet<object> items = new();
+
+            public object Get(Type type)
+            {
+                lock (this)
+                {
+                    if (this.items.Count <= 0)
+                    {
+                        return Activator.CreateInstance(type);
+                    }
+
+                    object obj = this.items.First();
+                    this.items.Remove(obj);
+                    return obj;
+                }
+            }
+
+            public void Return(object obj)
+            {
+                lock (this)
+                {
+                    if (this.items.Count >= MaxNum)
+                    {
+                        return;
+                    }
+                    
+                    if (!this.items.Add(obj))
+                    {
+                        throw new Exception("object already in pool: " + obj.GetType().FullName);
+                    }
+                }
+            }
+        }
+
+#else
 
         /// <summary>
         /// 线程安全的无锁对象池
         /// </summary>
         private class Pool
         {
-            private readonly Type ObjectType;
-            private readonly int MaxCapacity;
-            private int NumItems;
-            private readonly ConcurrentQueue<object> _items = new();
-            private object FastItem;
+            private const int MaxNum = 1000;
+            
+            private int numItems;
+            private readonly ConcurrentQueue<object> items = new();
+            private object fastItem;
 
-            public Pool(Type objectType, int maxCapacity)
-            {
-                ObjectType = objectType;
-                MaxCapacity = maxCapacity;
-            }
 
-            public object Get()
+            public object Get(Type type)
             {
-                object item = FastItem;
-                if (item == null || Interlocked.CompareExchange(ref FastItem, null, item) != item)
+                object item = this.fastItem;
+                if (item == null || Interlocked.CompareExchange(ref this.fastItem, null, item) != item)
                 {
-                    if (_items.TryDequeue(out item))
+                    if (this.items.TryDequeue(out item))
                     {
-                        Interlocked.Decrement(ref NumItems);
+                        Interlocked.Decrement(ref this.numItems);
                         return item;
                     }
 
-                    return Activator.CreateInstance(this.ObjectType);
+                    return Activator.CreateInstance(type);
                 }
 
                 return item;
@@ -114,17 +157,18 @@ namespace ET
 
             public void Return(object obj)
             {
-                if (FastItem != null || Interlocked.CompareExchange(ref FastItem, obj, null) != null)
+                if (this.fastItem != null || Interlocked.CompareExchange(ref this.fastItem, obj, null) != null)
                 {
-                    if (Interlocked.Increment(ref NumItems) <= MaxCapacity)
+                    if (Interlocked.Increment(ref this.numItems) <= MaxNum)
                     {
-                        _items.Enqueue(obj);
+                        this.items.Enqueue(obj);
                         return;
                     }
 
-                    Interlocked.Decrement(ref NumItems);
+                    Interlocked.Decrement(ref this.numItems);
                 }
             }
         }
+#endif
     }
 }
