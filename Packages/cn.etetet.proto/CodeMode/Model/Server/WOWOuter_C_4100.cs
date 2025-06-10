@@ -1398,7 +1398,7 @@ namespace ET
         public int RpcId { get; set; }
 
         [MemoryPackOrder(1)]
-        public long QuestId { get; set; }
+        public int QuestId { get; set; }
 
         [MemoryPackOrder(2)]
         public long NPCId { get; set; }
@@ -1466,7 +1466,7 @@ namespace ET
         public int RpcId { get; set; }
 
         [MemoryPackOrder(1)]
-        public long QuestId { get; set; }
+        public int QuestId { get; set; }
 
         [MemoryPackOrder(2)]
         public long NPCId { get; set; }
@@ -1519,6 +1519,69 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(WOWOuter.QuestObjectiveInfo)]
+    public partial class QuestObjectiveInfo : MessageObject
+    {
+        public static QuestObjectiveInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<QuestObjectiveInfo>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int QuestObjectiveId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Count { get; set; }
+
+        [MemoryPackOrder(2)]
+        public int NeedCount { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.QuestObjectiveId = default;
+            this.Count = default;
+            this.NeedCount = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 更新任务信息
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_CreateQuest)]
+    public partial class M2C_CreateQuest : MessageObject, IMessage
+    {
+        public static M2C_CreateQuest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_CreateQuest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long QuestId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public List<QuestObjectiveInfo> QuestObjective { get; set; } = new();
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.QuestId = default;
+            this.QuestObjective.Clear();
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     // 更新任务目标
     [MemoryPackable]
     [Message(WOWOuter.M2C_UpdateQuestObjective)]
@@ -1530,28 +1593,13 @@ namespace ET
         }
 
         /// <summary>
-        /// 任务目标Id
+        /// 任务Id
         /// </summary>
         [MemoryPackOrder(0)]
-        public long Id { get; set; }
+        public long QuestId { get; set; }
 
-        /// <summary>
-        /// 任务目标类型
-        /// </summary>
         [MemoryPackOrder(1)]
-        public int Type { get; set; }
-
-        /// <summary>
-        /// 当前进度
-        /// </summary>
-        [MemoryPackOrder(2)]
-        public int Progress { get; set; }
-
-        /// <summary>
-        /// 目标数量
-        /// </summary>
-        [MemoryPackOrder(3)]
-        public int TargetCount { get; set; }
+        public List<QuestObjectiveInfo> QuestObjective { get; set; } = new();
 
         public override void Dispose()
         {
@@ -1560,10 +1608,8 @@ namespace ET
                 return;
             }
 
-            this.Id = default;
-            this.Type = default;
-            this.Progress = default;
-            this.TargetCount = default;
+            this.QuestId = default;
+            this.QuestObjective.Clear();
 
             ObjectPool.Recycle(this);
         }
@@ -1583,16 +1629,10 @@ namespace ET
         public long QuestId { get; set; }
 
         /// <summary>
-        /// 0:未接, 1:进行中, 2:已完成
+        /// 1:进行中, 2:已完成
         /// </summary>
         [MemoryPackOrder(1)]
         public int State { get; set; }
-
-        /// <summary>
-        /// 进度
-        /// </summary>
-        [MemoryPackOrder(2)]
-        public int Progress { get; set; }
 
         public override void Dispose()
         {
@@ -1603,7 +1643,6 @@ namespace ET
 
             this.QuestId = default;
             this.State = default;
-            this.Progress = default;
 
             ObjectPool.Recycle(this);
         }
@@ -1658,7 +1697,9 @@ namespace ET
         public const ushort M2C_AcceptQuest = 4145;
         public const ushort C2M_SubmitQuest = 4146;
         public const ushort M2C_SubmitQuest = 4147;
-        public const ushort M2C_UpdateQuestObjective = 4148;
-        public const ushort M2C_UpdateQuest = 4149;
+        public const ushort QuestObjectiveInfo = 4148;
+        public const ushort M2C_CreateQuest = 4149;
+        public const ushort M2C_UpdateQuestObjective = 4150;
+        public const ushort M2C_UpdateQuest = 4151;
     }
 }

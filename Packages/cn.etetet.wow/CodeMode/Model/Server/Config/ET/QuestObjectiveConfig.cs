@@ -21,6 +21,7 @@ namespace ET
             Name = _buf.ReadString();
             Desc = _buf.ReadString();
             Type = (ET.QuestObjectiveType)_buf.ReadInt();
+            NeedCount = _buf.ReadInt();
 
             EndInit();
         }
@@ -46,6 +47,10 @@ namespace ET
         /// 任务类型
         /// </summary>
         public readonly ET.QuestObjectiveType Type;
+        /// <summary>
+        /// 需要的数量
+        /// </summary>
+        public readonly int NeedCount;
     
         public const int __ID__ = -70847336;
         public override int GetTypeId() => __ID__;
@@ -62,6 +67,7 @@ namespace ET
             + "Name:" + Name + ","
             + "Desc:" + Desc + ","
             + "Type:" + Type + ","
+            + "NeedCount:" + NeedCount + ","
             + "}";
         }
 

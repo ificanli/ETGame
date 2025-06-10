@@ -18,7 +18,6 @@ namespace ET
         public QuestObjectiveParams_KillMonster(ByteBuf _buf)  : base(_buf) 
         {
             MonsterId = _buf.ReadInt();
-            Count = _buf.ReadInt();
 
             EndInit();
         }
@@ -32,10 +31,6 @@ namespace ET
         /// 击杀的怪物Id
         /// </summary>
         public readonly int MonsterId;
-        /// <summary>
-        /// 击杀数量
-        /// </summary>
-        public readonly int Count;
     
         public const int __ID__ = -933968487;
         public override int GetTypeId() => __ID__;
@@ -50,7 +45,6 @@ namespace ET
         {
             return "{ "
             + "MonsterId:" + MonsterId + ","
-            + "Count:" + Count + ","
             + "}";
         }
 

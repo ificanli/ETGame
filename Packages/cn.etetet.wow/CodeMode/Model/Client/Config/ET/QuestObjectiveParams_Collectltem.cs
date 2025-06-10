@@ -18,7 +18,6 @@ namespace ET
         public QuestObjectiveParams_Collectltem(ByteBuf _buf)  : base(_buf) 
         {
             ItemId = _buf.ReadInt();
-            Count = _buf.ReadInt();
 
             EndInit();
         }
@@ -32,10 +31,6 @@ namespace ET
         /// 道具Id
         /// </summary>
         public readonly int ItemId;
-        /// <summary>
-        /// 道具数量
-        /// </summary>
-        public readonly int Count;
     
         public const int __ID__ = -1135305897;
         public override int GetTypeId() => __ID__;
@@ -50,7 +45,6 @@ namespace ET
         {
             return "{ "
             + "ItemId:" + ItemId + ","
-            + "Count:" + Count + ","
             + "}";
         }
 

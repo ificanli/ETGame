@@ -18,5 +18,9 @@ namespace ET
 
 		public const int Quest_NPCTooFar = 10007;
 
+		public const int Quest_NotFinish = 10008;
+
+		public const int Quest_NotFoundNPC = 10009;
+
 	}
 }

@@ -11,6 +11,7 @@ namespace ET.Server
             Unit npc = unit.GetParent<UnitComponent>().Get(request.NPCId);
             if (npc == null)
             {
+                response.Error = TextConstDefine.Quest_NotFoundNPC;
                 return;
             }
             
@@ -23,7 +24,13 @@ namespace ET.Server
             
             // 获取QuestComponent
             QuestComponent questComponent = unit.GetComponent<QuestComponent>();
+            // 判断NPC是否可接该任务
+            if (questComponent.IsPreQuestFinished(request.QuestId))
+            {
+                return;
+            }
             
+            QuestHelper.AddQuest(unit, request.QuestId);
             await ETTask.CompletedTask;
         }
     }
