@@ -1,0 +1,30 @@
+{
+    "name": "ET.YIUI.LubanTools.Editor",
+    "rootNamespace": "",
+    "references": [
+        "ET.Core",
+        "ET.Core.Editor",
+        "ET.YIUIFramework",
+        "ET.YIUIFramework.Editor",
+        "ET.YIUI.Luban.Editor",
+        "ET.Model",
+        "ET.ModelView",
+        "ET.Hotfix",
+        "ET.HotfixView",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "YIUI",
+        "ODIN_INSPECTOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

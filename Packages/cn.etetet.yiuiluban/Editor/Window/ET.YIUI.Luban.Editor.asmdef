@@ -2,7 +2,13 @@
     "name": "ET.YIUI.Luban.Editor",
     "rootNamespace": "",
     "references": [
-        "ET.Core"
+        "ET.Core",
+        "ET.Core.Editor",
+        "ET.Model",
+        "ET.Hotfix",
+        "ET.ModelView",
+        "ET.HotfixView",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [
         "Editor"

@@ -137,7 +137,7 @@ namespace YIUI.Luban.Editor
             File.WriteAllText(path, $"{{ \"reference\": \"ET.{modelDir}\" }}");
         }
 
-        static void ReGenerateProjectAssemblyReference()
+        public static void ReGenerateProjectAssemblyReference()
         {
             // ! 这里直接读取Loader包里面Resources文件夹的GlobalConfig.asset文件文本内容解析,避免报错导致Loader包还没能正确序列化读取不到这个类.
             string globalConfigPath = Path.Combine("Packages/cn.etetet.loader/Resources", "GlobalConfig.asset");

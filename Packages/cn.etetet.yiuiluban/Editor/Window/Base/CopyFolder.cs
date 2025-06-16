@@ -38,7 +38,7 @@ namespace YIUI.Luban.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"{targetFolder} 创建错误 {e.Message}");
+                    Debug.LogError($"{targetFolder} 创建错误 {e}");
                 }
 
                 return false;

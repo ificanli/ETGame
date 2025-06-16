@@ -1,0 +1,273 @@
+{
+    "$id": 0,
+    "$type": "0|YIUILuban.Editor.LubanEditorSerializationData, ET.YIUI.LubanTools.Editor",
+    "RootShowAllConfig": true,
+    "m_MinWindowSize": {
+        "$type": "1|UnityEngine.Vector2, UnityEngine.CoreModule",
+        1000,
+        600
+    },
+    "InvalidFileNameRegex": "^[\\.\\\\\\\\/~#\\$%]",
+    "ValidFileSuffixRegex": "\\.(xlsx|xlsm|xml|json|txt)$",
+    "LubanEditorPackageSettings": {
+        "$id": 1,
+        "$type": "2|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[YIUILuban.Editor.LubanPackageEditorData, ET.YIUI.LubanTools.Editor]], mscorlib",
+        "comparer": {
+            "$id": 2,
+            "$type": "3|System.Collections.Generic.GenericEqualityComparer`1[[System.String, mscorlib]], mscorlib"
+        },
+        "$rlength": 3,
+        "$rcontent": [
+            {
+                "$k": "startconfig\\Luban\\Localhost",
+                "$v": {
+                    "$id": 3,
+                    "$type": "4|YIUILuban.Editor.LubanPackageEditorData, ET.YIUI.LubanTools.Editor",
+                    "PackageName": "startconfig\\Luban\\Localhost",
+                    "Alias": null,
+                    "Desc": null
+                }
+            },
+            {
+                "$k": "startconfig\\Luban\\Release",
+                "$v": {
+                    "$id": 4,
+                    "$type": 4,
+                    "PackageName": "startconfig\\Luban\\Release",
+                    "Alias": null,
+                    "Desc": null
+                }
+            },
+            {
+                "$k": "wow\\Luban\\Config",
+                "$v": {
+                    "$id": 5,
+                    "$type": 4,
+                    "PackageName": "wow\\Luban\\Config",
+                    "Alias": null,
+                    "Desc": null
+                }
+            }
+        ]
+    },
+    "LubanEditorConfigSettings": {
+        "$id": 6,
+        "$type": "5|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[YIUILuban.Editor.LubanConfigEditorData, ET.YIUI.LubanTools.Editor]], mscorlib]], mscorlib",
+        "comparer": $iref:2,
+        "$rlength": 2,
+        "$rcontent": [
+            {
+                "$k": "xlsx",
+                "$v": {
+                    "$id": 7,
+                    "$type": "6|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[YIUILuban.Editor.LubanConfigEditorData, ET.YIUI.LubanTools.Editor]], mscorlib",
+                    "comparer": {
+                        "$id": 8,
+                        "$type": 3
+                    },
+                    "$rlength": 16,
+                    "$rcontent": [
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartMachine.xlsx",
+                            "$v": {
+                                "$id": 9,
+                                "$type": "7|YIUILuban.Editor.LubanConfigEditorData, ET.YIUI.LubanTools.Editor",
+                                "Name": "StartMachine.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartMachine.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartProcess.xlsx",
+                            "$v": {
+                                "$id": 10,
+                                "$type": 7,
+                                "Name": "StartProcess.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartProcess.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartScene.xlsx",
+                            "$v": {
+                                "$id": 11,
+                                "$type": 7,
+                                "Name": "StartScene.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartScene.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartZone.xlsx",
+                            "$v": {
+                                "$id": 12,
+                                "$type": 7,
+                                "Name": "StartZone.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartZone.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Release\\Datas\\StartMachine.xlsx",
+                            "$v": {
+                                "$id": 13,
+                                "$type": 7,
+                                "Name": "StartMachine.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Release\\Datas\\StartMachine.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Release\\Datas\\StartProcess.xlsx",
+                            "$v": {
+                                "$id": 14,
+                                "$type": 7,
+                                "Name": "StartProcess.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Release\\Datas\\StartProcess.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Release\\Datas\\StartScene.xlsx",
+                            "$v": {
+                                "$id": 15,
+                                "$type": 7,
+                                "Name": "StartScene.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Release\\Datas\\StartScene.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Release\\Datas\\StartZone.xlsx",
+                            "$v": {
+                                "$id": 16,
+                                "$type": 7,
+                                "Name": "StartZone.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Release\\Datas\\StartZone.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Map.xlsx",
+                            "$v": {
+                                "$id": 17,
+                                "$type": 7,
+                                "Name": "Map.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Map.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\MapTransferRule.xlsx",
+                            "$v": {
+                                "$id": 18,
+                                "$type": 7,
+                                "Name": "MapTransferRule.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\MapTransferRule.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\MapUnit.xlsx",
+                            "$v": {
+                                "$id": 19,
+                                "$type": 7,
+                                "Name": "MapUnit.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\MapUnit.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\NumericType.xlsx",
+                            "$v": {
+                                "$id": 20,
+                                "$type": 7,
+                                "Name": "NumericType.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\NumericType.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Quest.xlsx",
+                            "$v": {
+                                "$id": 21,
+                                "$type": 7,
+                                "Name": "Quest.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Quest.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\QuestObjective.xlsx",
+                            "$v": {
+                                "$id": 22,
+                                "$type": 7,
+                                "Name": "QuestObjective.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\QuestObjective.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Text.xlsx",
+                            "$v": {
+                                "$id": 23,
+                                "$type": 7,
+                                "Name": "Text.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Text.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Unit.xlsx",
+                            "$v": {
+                                "$id": 24,
+                                "$type": 7,
+                                "Name": "Unit.xlsx",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Unit.xlsx",
+                                "Desc": null
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "$k": "xml",
+                "$v": {
+                    "$id": 25,
+                    "$type": 6,
+                    "comparer": $iref:8,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Defines\\EnumMapper.xml",
+                            "$v": {
+                                "$id": 26,
+                                "$type": 7,
+                                "Name": "EnumMapper.xml",
+                                "Alias": null,
+                                "Path": "C:/Unity/Project/WOW/cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Defines\\EnumMapper.xml",
+                                "Desc": null
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
