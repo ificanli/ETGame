@@ -190,8 +190,14 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.7.2"
+        "cn.etetet.yiuiframework": "2.0.0"
       }
+    },
+    "cn.etetet.yiuicodeanalysis": {
+      "version": "file:cn.etetet.yiuicodeanalysis",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
     },
     "cn.etetet.yiuidamagetips": {
       "version": "file:cn.etetet.yiuidamagetips",
@@ -204,7 +210,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.7.2"
+        "cn.etetet.yiuiframework": "2.0.0"
       }
     },
     "cn.etetet.yiuiframework": {
@@ -212,8 +218,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "2.0.8",
-        "cn.etetet.yiuiinvoke": "3.0.0"
+        "cn.etetet.core": "3.0.3",
+        "cn.etetet.yiuiinvoke": "4.0.0"
       }
     },
     "cn.etetet.yiuigm": {
@@ -221,8 +227,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.7.2",
-        "cn.etetet.yiuiloopscrollrectasync": "0.7.2"
+        "cn.etetet.yiuiframework": "2.0.0",
+        "cn.etetet.yiuiloopscrollrectasync": "2.0.0"
       }
     },
     "cn.etetet.yiuiinvoke": {
@@ -231,20 +237,12 @@
       "source": "embedded",
       "dependencies": {}
     },
-    "cn.etetet.yiuilocalization": {
-      "version": "file:cn.etetet.yiuilocalization",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "cn.etetet.yiuiframework": "0.7.2"
-      }
-    },
     "cn.etetet.yiuiloopscrollrectasync": {
       "version": "file:cn.etetet.yiuiloopscrollrectasync",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.7.2"
+        "cn.etetet.yiuiframework": "2.0.0"
       }
     },
     "cn.etetet.yiuiluban": {
@@ -258,8 +256,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.7.2",
-        "cn.etetet.yiuiloopscrollrectasync": "0.7.2"
+        "cn.etetet.yiuiframework": "2.0.0",
+        "cn.etetet.yiuiloopscrollrectasync": "2.0.0"
       }
     },
     "cn.etetet.yiuitips": {
@@ -267,7 +265,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.7.2"
+        "cn.etetet.yiuiframework": "2.0.0"
       }
     },
     "cn.etetet.yiuiyooassets": {
@@ -275,7 +273,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "0.7.2"
+        "cn.etetet.yiuiframework": "2.0.0"
       }
     },
     "cn.etetet.yooassets": {

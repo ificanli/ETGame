@@ -18,7 +18,7 @@ namespace YIUIFramework
     public class UITaskEventBindClickPointerEventData : UITaskEventBindClick
     {
         [NonSerialized]
-        private List<EUIEventParamType> m_FilterParamType = new List<EUIEventParamType> { EUIEventParamType.Object };
+        private readonly List<EUIEventParamType> m_FilterParamType = new() { EUIEventParamType.Object };
 
         protected override List<EUIEventParamType> GetFilterParamType => m_FilterParamType;
 

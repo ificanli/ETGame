@@ -33,8 +33,7 @@ namespace ET.Client
 
                 try
                 {
-                    component = componentRef;
-                    await aYIUIBackCloseSystem.Run(component, addPanelInfo);
+                    await aYIUIBackCloseSystem.Run(componentRef, addPanelInfo);
                 }
                 catch (Exception e)
                 {

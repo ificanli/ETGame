@@ -3,20 +3,22 @@
 namespace ET.Client
 {
     [Invoke(EYIUIInvokeType.Sync)]
-    public class YIUIInvokeReleaseSyncHandler : AInvokeHandler<YIUIInvokeRelease>
+    public class YIUIInvokeReleaseSyncHandler : AInvokeEntityHandler<YIUIInvokeEntity_Release>
     {
-        public override void Handle(YIUIInvokeRelease args)
+        public override void Handle(Entity entity, YIUIInvokeEntity_Release args)
         {
-            YIUILoadComponent.Inst?.Release(args.obj);
+            if (entity == null || entity.IsDisposed) return;
+            entity.YIUILoad()?.Release(args.obj);
         }
     }
 
     [Invoke(EYIUIInvokeType.Sync)]
-    public class YIUIInvokeReleaseInstantiateSyncHandler : AInvokeHandler<YIUIInvokeReleaseInstantiate>
+    public class YIUIInvokeReleaseInstantiateSyncHandler : AInvokeEntityHandler<YIUIInvokeEntity_ReleaseInstantiate>
     {
-        public override void Handle(YIUIInvokeReleaseInstantiate args)
+        public override void Handle(Entity entity, YIUIInvokeEntity_ReleaseInstantiate args)
         {
-            YIUILoadComponent.Inst?.ReleaseInstantiate(args.obj);
+            if (entity == null || entity.IsDisposed) return;
+            entity.YIUILoad()?.ReleaseInstantiate(args.obj);
         }
     }
 }

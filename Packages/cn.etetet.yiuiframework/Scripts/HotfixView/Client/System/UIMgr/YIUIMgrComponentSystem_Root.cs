@@ -26,7 +26,7 @@ namespace ET.Client
             }
 
             self.UIRoot.name = self.UIRoot.name.Replace("(Clone)", "");
-            //UnityEngine.Object.DontDestroyOnLoad(self.UIRoot);
+            UnityEngine.Object.DontDestroyOnLoad(self.UIRoot);
 
             //root可修改位置防止与世界3D场景重叠导致不好编辑
             self.UIRoot.transform.position = new Vector3(YIUIConstHelper.Const.RootPosOffset, YIUIConstHelper.Const.RootPosOffset, 0);
@@ -61,7 +61,7 @@ namespace ET.Client
                 return false;
             }
 
-            canvas.renderMode  = RenderMode.ScreenSpaceCamera;
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = self.UICamera;
 
             var canvasScaler = self.UICanvasRoot.GetComponent<CanvasScaler>();
@@ -71,7 +71,7 @@ namespace ET.Client
                 return false;
             }
 
-            canvasScaler.uiScaleMode         = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = new Vector2(YIUIConstHelper.Const.DesignScreenWidth, YIUIConstHelper.Const.DesignScreenHeight);
 
             #endregion
@@ -82,13 +82,13 @@ namespace ET.Client
             for (var i = len - 1; i >= 0; i--)
             {
                 var layer = new GameObject($"Layer{i}-{(EPanelLayer)i}");
-                var rect  = layer.AddComponent<RectTransform>();
+                var rect = layer.AddComponent<RectTransform>();
                 rect.SetParent(self.UILayerRoot);
-                rect.localScale    = Vector3.one;
-                rect.pivot         = new Vector2(0.5f, 0.5f);
-                rect.anchorMax     = Vector2.one;
-                rect.anchorMin     = Vector2.zero;
-                rect.sizeDelta     = Vector2.zero;
+                rect.localScale = Vector3.one;
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchorMax = Vector2.one;
+                rect.anchorMin = Vector2.zero;
+                rect.sizeDelta = Vector2.zero;
                 rect.localRotation = Quaternion.identity;
                 rect.localPosition = new Vector3(0, 0, i * YIUIConstHelper.Const.LayerDistance);
                 var rectDic = new Dictionary<RectTransform, List<PanelInfo>> { { rect, new List<PanelInfo>() } };
@@ -100,10 +100,11 @@ namespace ET.Client
             self.InitAddUIBlock(); //所有层级初始化后添加一个终极屏蔽层 可根据API 定时屏蔽UI操作
 
             self.UICamera.transform.localPosition =
+
                     // ReSharper disable once Unity.InefficientPropertyAccess
                     new Vector3(self.UILayerRoot.localPosition.x, self.UILayerRoot.localPosition.y, -1000);
 
-            self.UICamera.clearFlags   = CameraClearFlags.Depth;
+            self.UICamera.clearFlags = CameraClearFlags.Depth;
             self.UICamera.orthographic = true;
 
             //根据需求可以修改摄像机的远裁剪平面大小 没必要设置的很大

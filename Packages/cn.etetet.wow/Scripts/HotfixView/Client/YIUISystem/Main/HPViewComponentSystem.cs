@@ -91,7 +91,7 @@ namespace ET.Client
                     return;
                 }
 
-                if (self.UIBase.OwnerRectTransform.parent == YIUIMgrComponent.Inst.UICache)
+                if (self.UIBase.OwnerRectTransform.parent == self.YIUIMgr().UICache)
                 {
                     self.DynamicEvent(new EventMain_ShowHPView
                     {
@@ -99,9 +99,9 @@ namespace ET.Client
                     }).NoContext();
                 }
 
-                if (self.UIBase.OwnerRectTransform.parent != YIUIMgrComponent.Inst.UICache)
+                if (self.UIBase.OwnerRectTransform.parent != self.YIUIMgr().UICache)
                 {
-                    RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)self.UIBase.OwnerRectTransform.parent, screenPos, YIUIMgrComponent.Inst.UICamera, out var targetLocalPosition);
+                    RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)self.UIBase.OwnerRectTransform.parent, screenPos, self.YIUIMgr().UICamera, out var targetLocalPosition);
                     self.UIBase.OwnerRectTransform.localPosition = targetLocalPosition;
                 }
             }
@@ -113,9 +113,9 @@ namespace ET.Client
 
         private static void SetUICache(this HPViewComponent self)
         {
-            if (self.UIBase.OwnerRectTransform.parent != YIUIMgrComponent.Inst.UICache)
+            if (self.UIBase.OwnerRectTransform.parent != self.YIUIMgr().UICache)
             {
-                self.UIBase.OwnerRectTransform.SetParent(YIUIMgrComponent.Inst.UICache);
+                self.UIBase.OwnerRectTransform.SetParent(self.YIUIMgr().UICache);
             }
         }
 

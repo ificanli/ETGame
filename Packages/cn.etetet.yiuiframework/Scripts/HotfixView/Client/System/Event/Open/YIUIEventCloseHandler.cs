@@ -6,14 +6,19 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelCloseBefore arg)
         {
-            EntityRef<Scene> sceneRef = scene;
-            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
-            scene = sceneRef;
-            if (scene == null)
+            if (scene == null || scene.IsDisposed)
             {
                 return;
             }
-            await scene.DynamicEvent(arg);
+
+            if (YIUIEventComponent.Inst == null) return;
+            EntityRef<Scene> sceneRef = scene;
+            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            scene = sceneRef;
+            if (scene is { IsDisposed: false })
+            {
+                await scene.DynamicEvent(arg);
+            }
         }
     }
 
@@ -23,14 +28,19 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelCloseAfter arg)
         {
-            EntityRef<Scene> sceneRef = scene;
-            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
-            scene = sceneRef;
-            if (scene == null)
+            if (scene == null || scene.IsDisposed)
             {
                 return;
             }
-            await scene.DynamicEvent(arg);
+
+            if (YIUIEventComponent.Inst == null) return;
+            EntityRef<Scene> sceneRef = scene;
+            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            scene = sceneRef;
+            if (scene is { IsDisposed: false })
+            {
+                await scene.DynamicEvent(arg);
+            }
         }
     }
 
@@ -40,14 +50,19 @@
     {
         protected override async ETTask Run(Scene scene, YIUIEventPanelDestroy arg)
         {
-            EntityRef<Scene> sceneRef = scene;
-            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
-            scene = sceneRef;
-            if (scene == null)
+            if (scene == null || scene.IsDisposed)
             {
                 return;
             }
-            await scene.DynamicEvent(arg);
+
+            if (scene.YIUILoad() == null) return;
+            EntityRef<Scene> sceneRef = scene;
+            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            scene = sceneRef;
+            if (scene is { IsDisposed: false })
+            {
+                await scene.DynamicEvent(arg);
+            }
         }
     }
 }

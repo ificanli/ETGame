@@ -186,7 +186,7 @@ MonoBehaviour:
   PkgName: DamageTips
   ResName: DamageTipsPanel
   UICodeType: 0
-  WindowOption: 1024
+  WindowOption: 386560
   PanelLayer: 4
   PanelOption: 50
   PanelStackOption: 0

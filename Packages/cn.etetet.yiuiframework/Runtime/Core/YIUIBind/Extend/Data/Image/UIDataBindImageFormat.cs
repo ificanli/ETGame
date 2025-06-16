@@ -46,7 +46,7 @@ namespace YIUIFramework
         protected override void OnRefreshData()
         {
             base.OnRefreshData();
-            m_Image = GetComponent<Image>();
+            m_Image ??= GetComponent<Image>();
             if (!m_ChangeEnabled && !m_Image.enabled)
             {
                 Logger.LogError($"{name} 当前禁止修改Enabled 且当前处于隐藏状态 可能会出现问题 请检查");
@@ -132,7 +132,7 @@ namespace YIUIFramework
 
         private async ETTask ChangeSprite(string resName)
         {
-            using var coroutineLock = await EventSystem.Instance?.YIUIInvokeAsync<YIUIInvokeCoroutineLock, ETTask<Entity>>(new YIUIInvokeCoroutineLock { Lock = this.GetHashCode() });
+            using var coroutineLock = await EventSystem.Instance?.YIUIInvokeEntityAsync<YIUIInvokeEntity_CoroutineLock, ETTask<Entity>>(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_CoroutineLock { Lock = this.GetHashCode() });
 
             if (m_LastSpriteName == resName)
             {
@@ -148,7 +148,7 @@ namespace YIUIFramework
                 return;
             }
 
-            var sprite = await EventSystem.Instance?.YIUIInvokeAsync<YIUIInvokeLoadSprite, ETTask<Sprite>>(new YIUIInvokeLoadSprite { ResName = resName });
+            var sprite = await EventSystem.Instance?.YIUIInvokeEntityAsync<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_LoadSprite { ResName = resName });
 
             if (sprite == null)
             {
@@ -159,17 +159,25 @@ namespace YIUIFramework
 
             ReleaseLastSprite();
 
-            if (gameObject == null || m_Image == null)
+            if (this == null || gameObject == null)
             {
-                EventSystem.Instance?.YIUIInvokeSync(new YIUIInvokeRelease { obj = sprite });
-                Logger.LogError($"{resName} 加载过程中 对象被摧毁了 gameObject == null || m_Image == null");
+                EventSystem.Instance?.YIUIInvokeEntitySync(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_Release { obj = sprite });
                 return;
             }
 
-            m_LastSprite   = sprite;
+            if (m_Image == null)
+            {
+                EventSystem.Instance?.YIUIInvokeEntitySync(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_Release { obj = sprite });
+                Logger.LogError($"{resName} 加载过程中 对象被摧毁了 m_Image == null");
+                return;
+            }
+
+            m_LastSprite = sprite;
             m_Image.sprite = sprite;
             if (m_SetNativeSize)
+            {
                 m_Image.SetNativeSize();
+            }
 
             SetEnabled(true);
             m_LastSpriteName = resName;
@@ -192,7 +200,7 @@ namespace YIUIFramework
         {
             if (m_LastSprite != null)
             {
-                EventSystem.Instance?.YIUIInvokeSync(new YIUIInvokeRelease { obj = m_LastSprite });
+                EventSystem.Instance?.YIUIInvokeEntitySync(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_Release { obj = m_LastSprite });
                 m_LastSprite = null;
             }
         }

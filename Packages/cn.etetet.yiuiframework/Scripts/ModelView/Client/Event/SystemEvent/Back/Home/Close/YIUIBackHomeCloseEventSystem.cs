@@ -17,8 +17,7 @@ namespace ET.Client
                 return;
             }
 
-            var iYIUIBackHomeCloseSystems
-                    = EntitySystemSingleton.Instance.TypeSystems.GetSystems(component.GetType(), typeof(IYIUIBackHomeCloseSystem));
+            var iYIUIBackHomeCloseSystems = EntitySystemSingleton.Instance.TypeSystems.GetSystems(component.GetType(), typeof(IYIUIBackHomeCloseSystem));
             if (iYIUIBackHomeCloseSystems == null)
             {
                 return;
@@ -34,8 +33,7 @@ namespace ET.Client
 
                 try
                 {
-                    component = componentRef;
-                    await aYIUIBackHomeCloseSystem.Run(component, HomeClosePanelInfo);
+                    await aYIUIBackHomeCloseSystem.Run(componentRef, HomeClosePanelInfo);
                 }
                 catch (Exception e)
                 {

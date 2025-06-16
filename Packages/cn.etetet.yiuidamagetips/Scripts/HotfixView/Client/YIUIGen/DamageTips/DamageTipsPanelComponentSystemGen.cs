@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using YIUIFramework;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace ET.Client
             self.u_UIBase = self.GetParent<YIUIChild>();
             self.u_UIWindow = self.UIBase.GetComponent<YIUIWindowComponent>();
             self.u_UIPanel = self.UIBase.GetComponent<YIUIPanelComponent>();
-            self.UIWindow.WindowOption = EWindowOption.BanCloseTween;
+            self.UIWindow.WindowOption = EWindowOption.BanOpenTween|EWindowOption.BanCloseTween|EWindowOption.BanAwaitOpenTween|EWindowOption.BanAwaitCloseTween|EWindowOption.SkipOtherOpenTween|EWindowOption.SkipOtherCloseTween|EWindowOption.AllowOptionByTween;
             self.UIPanel.Layer = EPanelLayer.Scene;
             self.UIPanel.PanelOption = EPanelOption.ForeverCache|EPanelOption.IgnoreBack|EPanelOption.IgnoreClose;
             self.UIPanel.StackOption = EPanelStackOption.None;

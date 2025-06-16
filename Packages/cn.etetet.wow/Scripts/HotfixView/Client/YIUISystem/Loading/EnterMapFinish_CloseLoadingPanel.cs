@@ -5,8 +5,10 @@
     {
         protected override async ETTask Run(Scene scene, EnterMapFinish a)
         {
+            EntityRef<Scene> sceneRef = scene;
             await scene.Root().GetComponent<TimerComponent>().WaitAsync(2000);
-            YIUIMgrComponent.Inst.ClosePanel<LoadingPanelComponent>();
+            scene = sceneRef;
+            scene.YIUIMgr().ClosePanel<LoadingPanelComponent>();
         }
     }
 }

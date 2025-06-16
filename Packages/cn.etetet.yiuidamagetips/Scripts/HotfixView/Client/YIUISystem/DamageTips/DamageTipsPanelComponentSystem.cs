@@ -14,22 +14,36 @@ namespace ET.Client
         {
             GameObject poolGameobject = new("Damage Number Pool");
             UnityEngine.Object.DontDestroyOnLoad(poolGameobject);
-            self.m_PoolParent             = poolGameobject.transform;
-            self.m_PoolParent.localScale  = Vector3.one;
+            self.m_PoolParent = poolGameobject.transform;
+            self.m_PoolParent.localScale = Vector3.one;
             self.m_PoolParent.eulerAngles = self.m_PoolParent.position = Vector3.zero;
         }
 
         [EntitySystem]
         private static void Destroy(this DamageTipsPanelComponent self)
         {
-            foreach (var pool in self.m_Pool.Values)
+            foreach (var data in self.m_Pool)
             {
-                pool.Clear((obj) => UnityEngine.Object.Destroy(obj.gameObject));
+                var pool = data.Value;
+                if (pool != null)
+                {
+                    pool.Clear((obj) =>
+                    {
+                        if (obj != null)
+                        {
+                            UnityEngine.Object.Destroy(obj.gameObject);
+                        }
+                    });
+                }
             }
 
-            foreach (var original in self.m_Original.Values)
+            foreach (var data in self.m_Original)
             {
-                UnityEngine.Object.Destroy(original.gameObject);
+                var original = data.Value;
+                if (original != null)
+                {
+                    UnityEngine.Object.Destroy(original.gameObject);
+                }
             }
 
             if (self.m_PoolParent != null)
@@ -51,10 +65,9 @@ namespace ET.Client
             EntityRef<DamageTipsPanelComponent> selfRef = self;
             if (!self.m_Pool.ContainsKey(presetName))
             {
-                using var coroutineLock = await YIUIMgrComponent.Inst?.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, presetName.GetHashCode());
-
+                using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIPackage, presetName.GetHashCode());
                 self = selfRef;
-                if (!self.m_Original.ContainsKey(presetName))
+                if (!self.m_Pool.ContainsKey(presetName))
                 {
                     var original = await BaseCreate();
                     if (original == null) return null;
@@ -63,7 +76,7 @@ namespace ET.Client
                     obj.SetActive(false);
                     self = selfRef;
                     self.m_Original.Add(presetName, original);
-                    self.m_Pool.Add(presetName, new ObjAsyncCache<DamageNumber>(Create));
+                    self.m_Pool.Add(presetName, new(self, Create));
                 }
 
                 void Put(DamageNumber damageNumber)
@@ -74,7 +87,7 @@ namespace ET.Client
 
                 async ETTask<DamageNumber> BaseCreate()
                 {
-                    var baseObj = await YIUIFactory.InstantiateGameObjectAsync(presetName);
+                    var baseObj = await YIUIFactory.InstantiateGameObjectAsync(self.Scene(), presetName);
                     if (baseObj == null) return null;
                     var damageNumber = baseObj.GetComponent<DamageNumber>();
                     if (damageNumber == null)
@@ -83,11 +96,11 @@ namespace ET.Client
                         Log.Error($"{presetName} 目标必须挂载 DamageNumber脚本 请检查 为了不泄露这里会手动挂载脚本");
                     }
 
+                    self = selfRef;
                     var rectTsf = damageNumber.GetComponent<RectTransform>();
                     if (rectTsf == null) //3D
                     {
                         //TODO 这里应该还有个2D判断 但是我们的3D游戏 所以不考虑
-                        self = selfRef;
                         damageNumber.transform.SetParent(self.m_PoolParent, true);
                     }
                     else //UI
@@ -101,9 +114,9 @@ namespace ET.Client
                 async ETTask<DamageNumber> Create()
                 {
                     var damageNumber = await BaseCreate();
-                    if (damageNumber == null) return null;
-                    damageNumber.PoolPutAction  = Put;
                     self = selfRef;
+                    if (damageNumber == null) return null;
+                    damageNumber.PoolPutAction = Put;
                     damageNumber.OriginalPrefab = self.m_Original[presetName];
                     return damageNumber;
                 }
@@ -118,7 +131,7 @@ namespace ET.Client
                 self = selfRef;
                 damageNumber = await self.Get(presetName);
             }
-#endif
+            #endif
             if (damageNumber == null)
             {
                 Log.Error($"{presetName} 错误 没有得到一个正确的对象");

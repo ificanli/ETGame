@@ -16,9 +16,6 @@ namespace ET.Client
     [ComponentOf(typeof(YIUIChild))]
     public partial class YIUIWindowComponent : Entity, IAwake, IDestroy
     {
-        public ETTask _LastOpenETTask;
-        public ETTask _LastCloseETTask;
-
         public YIUIBindVo UIBindVo;
 
         private EntityRef<YIUIChild> _uiBase;
@@ -35,6 +32,10 @@ namespace ET.Client
                     {
                         _uiBase = yiuiChild;
                     }
+                    else
+                    {
+                        _uiBase = default;
+                    }
                 }
 
                 return _UIBase;
@@ -50,7 +51,15 @@ namespace ET.Client
             {
                 if (_OwnerUIEntity == null)
                 {
-                    _ownerUIEntity = UIBase?.OwnerUIEntity;
+                    var uiEntity = UIBase?.OwnerUIEntity;
+                    if (uiEntity is { IsDisposed: false })
+                    {
+                        _ownerUIEntity = uiEntity;
+                    }
+                    else
+                    {
+                        _ownerUIEntity = default;
+                    }
                 }
 
                 return _OwnerUIEntity;

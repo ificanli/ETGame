@@ -75,44 +75,21 @@ namespace ET.Client
             await ETTask.CompletedTask;
         }
 
-        //对象池的实例化过程
-        private static async ETTask<Entity> OnCreateViewRenderer(this TipsPanelComponent self, Type uiType, Entity parent, long waitId = 0)
-        {
-            var entity = await YIUIFactory.InstantiateAsync(uiType, parent ?? YIUIMgrComponent.Inst.Root, self.UIBase.OwnerRectTransform);
-            if (entity != null)
-            {
-                var windowComponent = entity.GetParent<YIUIChild>()?.GetComponent<YIUIWindowComponent>();
-                if (windowComponent == null)
-                {
-                    Log.Error($"{uiType.Name} 实例化的对象非 YIUIWindowComponent");
-                }
-                else
-                {
-                    windowComponent.AddComponent<TipsViewComponent>();
-                    if (waitId != 0)
-                    {
-                        windowComponent.AddComponent<YIUIWaitComponent, long>(waitId);
-                    }
-                }
-            }
-
-            return entity;
-        }
-
         //打开Tips对应的View
         [EnableAccessEntiyChild]
         private static async ETTask<bool> OpenTips(this TipsPanelComponent self, Type uiType, Entity parent, ParamVo vo, long waitId = 0)
         {
             EntityRef<TipsPanelComponent> selfRef = self;
-            EntityRef<Entity> parentRef = parent;
+            EntityRef<Entity> parentRef = EntityRefHelper.GetEntityRefSafety(parent);
+
+            if (!CheckParent())
+            {
+                return self._RefCount > 0;
+            }
+
             if (!self._AllPool.ContainsKey(uiType))
             {
-                async ETTask<EntityRef<Entity>> Create()
-                {
-                    return await self.OnCreateViewRenderer(uiType, parent, waitId);
-                }
-
-                self._AllPool.Add(uiType, new ObjAsyncCache<EntityRef<Entity>>(Create));
+                self._AllPool.Add(uiType, new(self, Create));
             }
 
             self.CheckAllPoolTips();
@@ -129,6 +106,7 @@ namespace ET.Client
             if (view is not IYIUIOpen<ParamVo>)
             {
                 Debug.LogError($"{uiType.Name} 必须实现 IYIUIOpen<ParamVo> 才可用Tips");
+                view.Parent?.Dispose();
                 self._RefCount -= 1;
                 return self._RefCount > 0;
             }
@@ -137,6 +115,7 @@ namespace ET.Client
             if (uiComponent == null)
             {
                 Debug.LogError($"{uiType.Name} 实例化的对象非 YIUIChild");
+                view.Parent?.Dispose();
                 self._RefCount -= 1;
                 return self._RefCount > 0;
             }
@@ -144,36 +123,86 @@ namespace ET.Client
             var windowComponent = uiComponent.GetComponent<YIUIWindowComponent>();
             if (windowComponent != null)
             {
-                windowComponent.GetComponent<TipsViewComponent>()?.Reset();
-                windowComponent.GetComponent<YIUIWaitComponent>()?.Reset(waitId);
+                var tipsView = windowComponent.GetComponent<TipsViewComponent>() ?? windowComponent.AddComponent<TipsViewComponent>();
+                tipsView.Reset();
+
+                if (waitId != 0)
+                {
+                    var waitComponent = windowComponent.GetComponent<YIUIWaitComponent>();
+                    if (waitComponent != null)
+                    {
+                        waitComponent.Reset(waitId);
+                    }
+                    else
+                    {
+                        windowComponent.AddComponent<YIUIWaitComponent, long>(waitId);
+                    }
+                }
+                else
+                {
+                    windowComponent.GetComponent<YIUIWaitComponent>()?.Dispose();
+                }
             }
 
-            var viewComponent = uiComponent.GetComponent<YIUIViewComponent>();
-            if (viewComponent == null)
+            EntityRef<YIUIViewComponent> viewComponentRef = uiComponent.GetComponent<YIUIViewComponent>();
+            if (viewComponentRef.Entity == null)
             {
                 Debug.LogError($"{uiType.Name} 实例化的对象非 YIUIViewComponent");
+                view.Parent?.Dispose();
                 self._RefCount -= 1;
                 return self._RefCount > 0;
+            }
+
+            if (!CheckParent())
+            {
+                Log.Error($"加载完毕后 父级已被销毁 {uiType.Name}");
+                await viewComponentRef.Entity.CloseAsync(false);
+                self = selfRef;
+                return self._RefCount > 0;
+            }
+
+            var tipsRoot = self.UIBase.OwnerRectTransform;
+            var viewRoot = uiComponent.OwnerRectTransform.parent;
+            if (viewRoot != tipsRoot)
+            {
+                uiComponent.OwnerRectTransform.SetParent(tipsRoot, false);
             }
 
             uiComponent.OwnerRectTransform.SetAsLastSibling();
 
             parent = parentRef;
-            uiComponent.SetParent(parent);
+            uiComponent.SetParent(parent ?? self.YIUIRoot());
 
             self._AllRefView.Add(view);
-            
-            EntityRef<YIUIViewComponent> viewComponentRef = viewComponent;
 
-            var result = await viewComponent.Open(vo);
+            var result = await viewComponentRef.Entity.Open(vo);
             if (!result)
             {
-                viewComponent = viewComponentRef;
-                await viewComponent.CloseAsync(false);
+                await viewComponentRef.Entity.CloseAsync(false);
             }
 
             self = selfRef;
             return self._RefCount > 0;
+
+            async ETTask<EntityRef<Entity>> Create()
+            {
+                return await YIUIFactory.InstantiateAsync(self.Scene(), uiType, self.YIUIRoot(), self.UIBase.OwnerRectTransform);
+            }
+
+            bool CheckParent()
+            {
+                parent = parentRef;
+                if (parent != null)
+                {
+                    if (parent is { IsDisposed: true } || parent.IScene == null)
+                    {
+                        Log.Error($"父级必须是存在的对象 请检查");
+                        return false;
+                    }
+                }
+
+                return true;
+            }
         }
 
         //回收
@@ -181,14 +210,34 @@ namespace ET.Client
         {
             if (view == null)
             {
-                Debug.LogError($"null对象 请检查");
+                if (!destroy)
+                {
+                    Debug.LogError($"null对象 请检查");
+                }
+
+                EntityRef<TipsPanelComponent> selfRef = self;
+                self._AllRefView.RemoveWhere((v) =>
+                {
+                    if ((Entity)v == null)
+                    {
+                        if (selfRef.Entity != null)
+                        {
+                            selfRef.Entity._RefCount -= 1;
+                        }
+
+                        return true;
+                    }
+
+                    return false;
+                });
+                selfRef.Entity.CheckRefCount();
                 return;
             }
 
             if (!self._AllRefView.Remove(view))
             {
                 //如果你确定这个东西是用tips打开的 这里又报错 大概率就是你在open过程中 回收了这个对象 导致的 说明你写法有问题
-                //然后因为打开失败又会调用一次 所以重复回收也会提示 如果你open返回fase 可以不用手动回收 fase会自动回收
+                //然后因为打开失败又会调用一次 所以重复回收也会提示 如果你open返回false 可以不用手动回收 false会自动回收
                 Debug.LogError($"{view.GetType().Name} 无法回收一个不存在的对象 必须是之前打开过的对象 否则引用计数会混乱 请检查");
                 return;
             }
@@ -205,6 +254,19 @@ namespace ET.Client
                 self._AllPoolLastTime[uiType] = UnityTime.time;
                 var pool = self._AllPool[uiType];
                 pool.Put(view);
+
+                var uiComponent = view.GetParent<YIUIChild>();
+                if (uiComponent != null)
+                {
+                    var tipsRoot = self.UIBase.OwnerRectTransform;
+                    var viewRoot = uiComponent.OwnerRectTransform.parent;
+                    if (viewRoot != tipsRoot)
+                    {
+                        uiComponent.OwnerRectTransform.SetParent(tipsRoot, false);
+                    }
+
+                    uiComponent.SetParent(self.YIUIRoot());
+                }
             }
 
             self._RefCount -= 1;

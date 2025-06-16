@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if TextMeshPro
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -21,25 +22,27 @@ namespace YIUIFramework
         protected override bool IsTaskEvent => false;
 
         [NonSerialized]
-        private List<EUIEventParamType> m_FilterParamType = new List<EUIEventParamType>
-                                                            {
-                                                                EUIEventParamType.String
-                                                            };
+        private readonly List<EUIEventParamType> m_FilterParamType = new()
+        {
+            EUIEventParamType.String
+        };
 
         protected override List<EUIEventParamType> GetFilterParamType => m_FilterParamType;
 
         private void Awake()
         {
-            m_InputField = GetComponent<TMP_InputField>();
+            m_InputField ??= GetComponent<TMP_InputField>();
         }
 
         private void OnEnable()
         {
+            if (m_InputField == null) return;
             m_InputField.onValueChanged.AddListener(OnValueChanged);
         }
 
         private void OnDisable()
         {
+            if (m_InputField == null) return;
             m_InputField.onValueChanged.RemoveListener(OnValueChanged);
         }
 
@@ -57,3 +60,4 @@ namespace YIUIFramework
         }
     }
 }
+#endif

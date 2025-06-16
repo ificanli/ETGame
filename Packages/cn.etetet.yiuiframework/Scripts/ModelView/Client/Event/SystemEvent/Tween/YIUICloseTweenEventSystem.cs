@@ -7,17 +7,17 @@ namespace ET.Client
     /// </summary>
     public static partial class YIUIEventSystem
     {
-        public static async ETTask<bool> CloseTween(Entity component)
+        public static async ETTask CloseTween(Entity component)
         {
             if (component == null || component.IsDisposed)
             {
-                return true;
+                return;
             }
 
             var iYIUICloseTweenSystems = EntitySystemSingleton.Instance.TypeSystems.GetSystems(component.GetType(), typeof(IYIUICloseTweenSystem));
             if (iYIUICloseTweenSystems == null)
             {
-                return false; //没有则执行默认
+                return;
             }
 
             EntityRef<Entity> componentRef = component;
@@ -30,16 +30,13 @@ namespace ET.Client
 
                 try
                 {
-                    component = componentRef;
-                    await aYIUICloseTweenSystem.Run(component);
+                    await aYIUICloseTweenSystem.Run(componentRef);
                 }
                 catch (Exception e)
                 {
                     Log.Error(e);
                 }
             }
-
-            return true;
         }
     }
 }

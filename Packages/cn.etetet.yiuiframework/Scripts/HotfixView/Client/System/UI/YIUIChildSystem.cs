@@ -26,8 +26,8 @@ namespace ET.Client
         [EntitySystem]
         private static void Destroy(this YIUIChild self)
         {
-            if (self.OwnerGameObject != null)
-                UnityEngine.Object.Destroy(self.OwnerGameObject);
+            if (self.OwnerGameObject == null) return;
+            UnityEngine.Object.Destroy(self.OwnerGameObject);
         }
 
         //设置当前拥有的这个实际UI 之后初始化
@@ -49,22 +49,23 @@ namespace ET.Client
                 return;
             }
 
-            self.OwnerGameObject    = ownerGameObject;
+            self.OwnerGameObject = ownerGameObject;
             self.OwnerRectTransform = self.OwnerGameObject.GetComponent<RectTransform>();
-            self.CDETable           = self.OwnerGameObject.GetComponent<UIBindCDETable>();
+            self.CDETable = self.OwnerGameObject.GetComponent<UIBindCDETable>();
             if (self.CDETable == null)
             {
                 Debug.LogError($"{self.OwnerGameObject.name} 没有UIBindCDETable组件 这是必须的");
                 return;
             }
 
-            self.ComponentTable           = self.CDETable.ComponentTable;
-            self.DataTable                = self.CDETable.DataTable;
-            self.EventTable               = self.CDETable.EventTable;
-            self.m_UIBindVo               = uiBindVo;
-            self.UIResName                = uiBindVo.ResName;
-            self.m_UIBaseInit             = true;
-            self.CDETable.UIBaseStart     = self.UIBaseStart;
+            self.ComponentTable = self.CDETable.ComponentTable;
+            self.DataTable = self.CDETable.DataTable;
+            self.EventTable = self.CDETable.EventTable;
+            self.m_UIBindVo = uiBindVo;
+            self.UIResName = uiBindVo.ResName;
+            self.m_UIBaseInit = true;
+            self.CDETable.Entity = self;
+            self.CDETable.UIBaseStart = self.UIBaseStart;
             self.CDETable.UIBaseOnDestroy = self.UIBaseOnDestroy;
             self.AddUIDataComponent();
         }
@@ -147,12 +148,26 @@ namespace ET.Client
             {
                 YIUIEventSystem.Bind(self.OwnerUIEntity);
                 YIUIEventSystem.Initialize(self.OwnerUIEntity);
-                if (self.ActiveSelf)
-                    self.UIBaseOnEnable();
-                else
-                    self.UIBaseOnDisable();
-                self.CDETable.UIBaseOnEnable  = self.UIBaseOnEnable;
-                self.CDETable.UIBaseOnDisable = self.UIBaseOnDisable;
+
+                if (self.OwnerUIEntity is IYIUIEnable)
+                {
+                    if (self.ActiveSelf)
+                    {
+                        self.UIBaseOnEnable();
+                    }
+
+                    self.CDETable.UIBaseOnEnable = self.UIBaseOnEnable;
+                }
+
+                if (self.OwnerUIEntity is IYIUIDisable)
+                {
+                    if (!self.ActiveSelf)
+                    {
+                        self.UIBaseOnDisable();
+                    }
+
+                    self.CDETable.UIBaseOnDisable = self.UIBaseOnDisable;
+                }
             }
             catch (Exception e)
             {
@@ -190,12 +205,13 @@ namespace ET.Client
         private static void UIBaseOnDestroy(this YIUIChild self)
         {
             if (!self.IsDisposed)
+            {
                 self.Parent.RemoveChild(self.Id);
-
-            EventSystem.Instance?.YIUIInvokeSync(new YIUIInvokeReleaseInstantiate
-                                                 {
-                                                     obj = self.OwnerGameObject
-                                                 });
+                EventSystem.Instance?.YIUIInvokeEntitySync(self, new YIUIInvokeEntity_ReleaseInstantiate
+                {
+                    obj = self.OwnerGameObject
+                });
+            }
         }
 
         #endregion

@@ -29,12 +29,14 @@ namespace ET.Client
 
             var prefabName = paramVo.Get<string>();
 
+            EntityRef<Scene> sceneRef = clientScene;
             foreach (var child in unitComponent.Children)
             {
                 if (child.Value is Unit unit)
                 {
                     var damage = Random.Range(1, 100);
-                    await DamageTipsHelper.Show3D(prefabName, unit, damage);
+                    clientScene = sceneRef;
+                    await DamageTipsHelper.Show3D(clientScene, prefabName, unit, damage);
                 }
             }
 
@@ -55,10 +57,10 @@ namespace ET.Client
 
         public async ETTask<bool> Run(Scene clientScene, ParamVo paramVo)
         {
-            var     prefabName  = paramVo.Get<string>();
-            var     damage      = Random.Range(1, 100);
+            var prefabName = paramVo.Get<string>();
+            var damage = Random.Range(1, 100);
             Vector2 screenPoint = new(Screen.width / 2, Screen.height / 2);
-            DamageTipsHelper.ShowUI(prefabName, screenPoint, damage).NoContext();
+            DamageTipsHelper.ShowUIByScreenPoint(clientScene, prefabName, screenPoint, damage).NoContext();
             await ETTask.CompletedTask;
             return true;
         }

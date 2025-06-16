@@ -5,7 +5,7 @@
     {
         protected override async ETTask Run(Scene root, M2C_Error message)
         {
-            TipsHelper.OpenSync<TipsTextViewComponent>($"<color=red>{OutputText(message.Error, message.Values.ToArray())}</color>");
+            TipsHelper.OpenSync<TipsTextViewComponent>(root, $"<color=red>{OutputText(message.Error, message.Values.ToArray())}</color>");
             await ETTask.CompletedTask;
         }
 

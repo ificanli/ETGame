@@ -6,7 +6,7 @@
     {
         protected override async ETTask Run(Scene scene, ChangeSceneProgress a)
         {
-            YIUIMgrComponent.Inst.GetPanel<LoadingPanelComponent>()?.u_DataProgress.SetValue(a.Progress);
+            scene.YIUIMgr().GetPanel<LoadingPanelComponent>()?.u_DataProgress.SetValue(a.Progress);
             await ETTask.CompletedTask;
         }
     }

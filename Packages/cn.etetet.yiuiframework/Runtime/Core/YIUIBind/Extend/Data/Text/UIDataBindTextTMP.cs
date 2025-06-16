@@ -1,4 +1,5 @@
-﻿using Sirenix.OdinInspector;
+﻿#if TextMeshPro
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace YIUIFramework
 
         protected override void OnInit()
         {
-            m_Text = GetComponent<TextMeshProUGUI>();
+            m_Text ??= GetComponent<TextMeshProUGUI>();
             if (m_Text == null)
             {
                 Logger.LogError($"{name} 错误没有 Text 组件");
@@ -38,13 +39,14 @@ namespace YIUIFramework
 
         protected override void SetText(string value)
         {
+            if (m_Text == null) return;
             m_Text.text = value;
         }
 
         protected override bool ExistText()
         {
-            m_Text = GetComponent<TextMeshProUGUI>();
             return m_Text != null;
         }
     }
 }
+#endif

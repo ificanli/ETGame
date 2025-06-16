@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.Build;
 using UnityEngine;
+using UnityEditor.Build;
 
 namespace YIUIFramework.Editor
 {
@@ -18,8 +18,7 @@ namespace YIUIFramework.Editor
             return new List<string>(ori.Split(';'));
         }
 
-        public static void SetSymbols(List<string>     defineSymbols,
-                                      BuildTargetGroup targetGroup)
+        public static void SetSymbols(List<string> defineSymbols, BuildTargetGroup targetGroup)
         {
             PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(targetGroup), string.Join(";", defineSymbols.ToArray()));
         }

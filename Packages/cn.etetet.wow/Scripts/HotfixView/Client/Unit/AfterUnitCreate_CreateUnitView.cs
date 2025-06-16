@@ -41,7 +41,7 @@ namespace ET.Client
             {
                 //临时做法 //不是玩家的Unit，添加一个血条显示
                 //await YIUIFactory.InstantiateAsync<HPView3DComponent>(unit, go.transform);
-                await YIUIFactory.InstantiateAsync<HPViewComponent>(unit, YIUIMgrComponent.Inst.UICache);
+                await YIUIFactory.InstantiateAsync<HPViewComponent>(scene, unit, scene.YIUIMgr().UICache);
             }
             
             await ETTask.CompletedTask;

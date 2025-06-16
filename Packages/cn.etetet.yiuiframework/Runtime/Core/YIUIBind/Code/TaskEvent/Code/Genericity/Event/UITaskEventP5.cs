@@ -43,7 +43,7 @@ namespace YIUIFramework
 
             try
             {
-                await ETTask.WaitAll(list);
+                await ETTaskHelper.WaitAll(list);
             }
             catch (Exception e)
             {

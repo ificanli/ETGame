@@ -1,7 +1,7 @@
-{
+﻿{
   "name": "cn.etetet.yiuieffect",
   "displayName": "ET.YIUI.Effect",
-  "version": "0.7.2",
+  "version": "2.0.0",
   "unity": "2022.3",
   "category": "UI/YIUI",
   "description": "YIUI 特效 >>> 文档: https://lib9kmxvq7k.feishu.cn/wiki/ES7Gwz4EAiVGKSkotY5cRbTznuh",
@@ -15,10 +15,9 @@
   },
   "relatedPackages": {},
   "dependencies": {
-    "cn.etetet.yiuiframework": "0.7.2"
+    "cn.etetet.yiuiframework": "2.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
-  },
-  "_fingerprint": "4897342aca384fe39b896d92aee55d981690c6dd"
+  }
 }

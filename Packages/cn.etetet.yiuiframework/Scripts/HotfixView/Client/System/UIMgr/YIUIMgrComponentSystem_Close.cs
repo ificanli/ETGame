@@ -13,7 +13,8 @@ namespace ET.Client
         /// <param name="ignoreElse">忽略堆栈操作 -- 不要轻易忽略除非你明白 </param>
         public static async ETTask<bool> ClosePanelAsync(this YIUIMgrComponent self, string panelName, bool tween = true, bool ignoreElse = false)
         {
-            EntityRef<YIUIMgrComponent> selfRef = self;
+            if (YIUISingletonHelper.IsQuitting) return true;
+
             #if YIUIMACRO_PANEL_OPENCLOSE
             Debug.Log($"<color=yellow> 关闭UI: {panelName} </color>");
             #endif
@@ -21,15 +22,20 @@ namespace ET.Client
             self.m_PanelCfgMap.TryGetValue(panelName, out var info);
             if (info?.UIBase == null) return true; //没有也算成功关闭
 
+            EntityRef<YIUIMgrComponent> selfRef = self;
+
             var coroutineLockCode = info.PanelLayer == EPanelLayer.Panel ? YIUIConstHelper.Const.UIProjectName.GetHashCode() : panelName.GetHashCode();
 
-            using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, coroutineLockCode);
+            using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIPanel, coroutineLockCode);
+
+            if (info.UIPanel == null) return true;
 
             self = selfRef;
+
             EventSystem.Instance?.Publish(self.Root(),
                 new YIUIEventPanelCloseBefore
                 {
-                    UIPkgName  = info.PkgName, UIResName = info.ResName, UIComponentName = info.Name,
+                    UIPkgName = info.PkgName, UIResName = info.ResName, UIComponentName = info.Name,
                     PanelLayer = info.PanelLayer,
                 });
 
@@ -50,9 +56,18 @@ namespace ET.Client
                 }
             }
 
-            var successPanel = await YIUIEventSystem.Close(info.OwnerUIEntity);
+            var successPanel = true;
+
+            if (info.OwnerUIEntity is IYIUIClose)
+            {
+                successPanel = await YIUIEventSystem.Close(info.OwnerUIEntity);
+            }
+
             if (info.UIWindow is { WindowCloseTweenBefor: true })
+            {
                 await YIUIEventSystem.WindowClose(info.UIWindow, successPanel);
+            }
+
             if (!successPanel)
             {
                 Log.Info($"<color=yellow> 关闭事件返回不允许关闭Panel UI: {panelName} </color>");
@@ -60,7 +75,9 @@ namespace ET.Client
             }
 
             if (info.UIWindow is { WindowLastClose: false })
+            {
                 await info.UIWindow.InternalOnWindowCloseTween(tween);
+            }
 
             if (!ignoreElse)
             {
@@ -78,7 +95,9 @@ namespace ET.Client
             await info.UIPanel.CloseAllView(false);
 
             if (info.UIWindow is { WindowCloseTweenBefor: false })
+            {
                 await YIUIEventSystem.WindowClose(info.UIWindow, true);
+            }
 
             self = selfRef;
             self.RemoveUI(info);
@@ -103,7 +122,7 @@ namespace ET.Client
             EventSystem.Instance?.Publish(self.Root(),
                 new YIUIEventPanelCloseBefore
                 {
-                    UIPkgName  = info.PkgName, UIResName = info.ResName, UIComponentName = info.Name,
+                    UIPkgName = info.PkgName, UIResName = info.ResName, UIComponentName = info.Name,
                     PanelLayer = info.PanelLayer,
                 });
 
@@ -141,9 +160,8 @@ namespace ET.Client
         /// <param name="homeName">需要被打开的界面 且这个UI是存在的 否则无法打开</param>
         /// <param name="tween">动画</param>
         /// <param name="forceHome">如果不存在则 强制打开 被强制打开的无法触发Back Home消息 只会触发常规的open close</param>
-        public static async ETTask<bool> HomePanel(this YIUIMgrComponent self, string homeName, bool tween = true, YIUIRootComponent forceHome = null)
+        public static async ETTask<bool> HomePanel(this YIUIMgrComponent self, string homeName, bool tween = true, Scene forceHome = null)
         {
-            EntityRef<YIUIRootComponent> forceHomeRef = forceHome;
             #if YIUIMACRO_PANEL_OPENCLOSE
             Debug.Log($"<color=yellow> Home关闭其他所有Panel UI: {homeName} </color>");
             #endif
@@ -157,11 +175,10 @@ namespace ET.Client
             {
                 if (forceHome != null)
                 {
+                    EntityRef<Scene> rootRef = forceHome;
                     await self.CloseAll(EPanelLayer.Panel, EPanelOption.IgnoreClose, tween);
-                    forceHome = forceHomeRef;
-                    return await EventSystem.Instance?.YIUIInvokeAsync<YIUIInvokeRootOpenPanel, ETTask<bool>>(new YIUIInvokeRootOpenPanel
+                    return await EventSystem.Instance?.YIUIInvokeEntityAsync<YIUIInvokeEntity_SceneOpenPanel, ETTask<bool>>(rootRef, new YIUIInvokeEntity_SceneOpenPanel
                     {
-                        Root      = forceHome,
                         PanelName = homeName
                     });
                 }
@@ -170,9 +187,9 @@ namespace ET.Client
             return false;
         }
 
-        public static async ETTask HomePanel<T>(this YIUIMgrComponent self, bool tween = true, YIUIRootComponent forceHome = null) where T : Entity
+        public static async ETTask<bool> HomePanel<T>(this YIUIMgrComponent self, bool tween = true, Scene forceHome = null) where T : Entity
         {
-            await self.HomePanel(typeof(T).Name, tween, forceHome);
+            return await self.HomePanel(typeof(T).Name, tween, forceHome);
         }
     }
 }

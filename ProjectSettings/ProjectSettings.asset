@@ -141,7 +141,9 @@ PlayerSettings:
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
   bundleVersion: 1.0
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: 11400000, guid: 1a4fcb951610a3d44a29d290d6197fdf, type: 2}
+  - {fileID: 11400000, guid: 19006e4e7cc199b42840783a9d999d36, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -888,7 +890,7 @@ PlayerSettings:
     ReservedCFE: TextMeshPro
     Server: UNITY;ENABLE_VIEW
     Stadia: DOTWEEN;TextMeshPro
-    Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED;YIUI
+    Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED;YIUI;ET10
     VisionOS: DOTWEEN;TextMeshPro
     WebGL: UNITY;ENABLE_VIEW;DOTWEEN;TextMeshPro
     Windows Store Apps: DOTWEEN

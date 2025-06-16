@@ -16,8 +16,7 @@ namespace ET.Client
                 return;
             }
 
-            var iYIUIBackHomeOpenSystems
-                    = EntitySystemSingleton.Instance.TypeSystems.GetSystems(component.GetType(), typeof(IYIUIBackHomeOpenSystem));
+            var iYIUIBackHomeOpenSystems = EntitySystemSingleton.Instance.TypeSystems.GetSystems(component.GetType(), typeof(IYIUIBackHomeOpenSystem));
             if (iYIUIBackHomeOpenSystems == null)
             {
                 return;
@@ -33,8 +32,7 @@ namespace ET.Client
 
                 try
                 {
-                    component = componentRef;
-                    await aYIUIBackHomeOpenSystem.Run(component);
+                    await aYIUIBackHomeOpenSystem.Run(componentRef);
                 }
                 catch (Exception e)
                 {

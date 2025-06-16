@@ -18,17 +18,16 @@ namespace ET.Client
         {
         }
 
-        private static async ETTask<bool> CloseUI(this YIUICloseCommonComponent self, Entity parent)
+        private static async ETTask<bool> CloseUI(this YIUICloseCommonComponent self, EntityRef<Entity> parent)
         {
-            if (parent.Parent == null)
+            if (parent.Entity.Parent == null)
             {
                 Debug.LogError($"结构错误 无法找到可关闭UI {self.UIBase.OwnerGameObject}", self.UIBase.OwnerGameObject);
                 return false;
             }
 
             EntityRef<YIUICloseCommonComponent> selfRef = self;
-            EntityRef<Entity> parentRef = parent;
-            if (parent.Parent is YIUIChild yiuiChild)
+            if (parent.Entity.Parent is YIUIChild yiuiChild)
             {
                 var panelComponent = yiuiChild.GetComponent<YIUIPanelComponent>();
                 if (panelComponent != null)
@@ -44,8 +43,7 @@ namespace ET.Client
             }
 
             self = selfRef;
-            parent = parentRef;
-            return await self.CloseUI(parent.Parent);
+            return await self.CloseUI(parent.Entity.Parent);
         }
 
         #region YIUIEvent开始

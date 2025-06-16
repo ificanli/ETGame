@@ -8,6 +8,7 @@ namespace ET.Client
     /// </summary>
     public partial class GMPanelComponent : Entity, IUpdate
     {
+        public KeyCode    _OpenGMViewKey     = KeyCode.None;
         public FloatPrefs _GMBtn_Pos_X = new("GMPanelComponent_GMBtn_Pos_X");
         public FloatPrefs _GMBtn_Pos_Y = new("GMPanelComponent_GMBtn_Pos_Y");
         public Vector2    _Offset;

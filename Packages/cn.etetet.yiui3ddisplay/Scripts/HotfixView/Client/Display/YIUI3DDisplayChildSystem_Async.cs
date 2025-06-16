@@ -20,11 +20,11 @@ namespace ET.Client
             }
 
             EntityRef<YIUI3DDisplayChild> selfRef = self;
-            using var coroutineLock = await YIUIMgrComponent.Inst?.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, self.GetHashCode());
+            using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIFramework, self.GetHashCode());
             self = selfRef;
             var obj = await self.GetDisplayObjectAsync(resName);
-            if (obj == null) return null;
             self = selfRef;
+            if (obj == null) return null;
             var camera = string.IsNullOrEmpty(cameraName) ? self.UI3DDisplay.m_ShowCamera : self.GetCamera(obj, cameraName);
             if (camera == null) return obj;
             self.ShowByGameObject(obj, camera);
@@ -47,7 +47,7 @@ namespace ET.Client
 
         private static async ETTask<GameObject> CreateObjectAsync(this YIUI3DDisplayChild self, string resName)
         {
-            var obj = await YIUIFactory.InstantiateGameObjectAsync("", resName);
+            var obj = await YIUIFactory.InstantiateGameObjectAsync(self.Scene(), "", resName);
             if (obj == null) return null;
             return obj;
         }

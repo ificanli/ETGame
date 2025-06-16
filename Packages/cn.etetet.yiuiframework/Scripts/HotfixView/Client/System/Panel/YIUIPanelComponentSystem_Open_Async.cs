@@ -83,10 +83,11 @@ namespace ET.Client
                 return false;
             }
 
-            EntityRef<YIUIPanelComponent> selfRef = self;
             self.UIBase.SetActive(true);
 
             var success = false;
+
+            EntityRef<YIUIPanelComponent> selfRef = self;
 
             if (self.OwnerUIEntity is IYIUIOpen<ParamVo> _)
             {
@@ -101,7 +102,6 @@ namespace ET.Client
             }
             else
             {
-                self = selfRef;
                 success = await self.UseBaseOpen();
             }
 
@@ -119,7 +119,9 @@ namespace ET.Client
             self.UIBase.SetActive(true);
 
             var success = false;
+
             EntityRef<YIUIPanelComponent> selfRef = self;
+
             if (self.OwnerUIEntity is IYIUIOpen<P1> _)
             {
                 try
@@ -133,7 +135,6 @@ namespace ET.Client
             }
             else
             {
-                self = selfRef;
                 success = await self.UseBaseOpen();
             }
 
@@ -151,7 +152,9 @@ namespace ET.Client
             self.UIBase.SetActive(true);
 
             var success = false;
+
             EntityRef<YIUIPanelComponent> selfRef = self;
+
             if (self.OwnerUIEntity is IYIUIOpen<P1, P2> _)
             {
                 try
@@ -165,7 +168,6 @@ namespace ET.Client
             }
             else
             {
-                self = selfRef;
                 success = await self.UseBaseOpen();
             }
 
@@ -183,7 +185,9 @@ namespace ET.Client
             self.UIBase.SetActive(true);
 
             var success = false;
+
             EntityRef<YIUIPanelComponent> selfRef = self;
+
             if (self.OwnerUIEntity is IYIUIOpen<P1, P2, P3> _)
             {
                 try
@@ -197,7 +201,6 @@ namespace ET.Client
             }
             else
             {
-                self = selfRef;
                 success = await self.UseBaseOpen();
             }
 
@@ -215,7 +218,9 @@ namespace ET.Client
             self.UIBase.SetActive(true);
 
             var success = false;
+
             EntityRef<YIUIPanelComponent> selfRef = self;
+
             if (self.OwnerUIEntity is IYIUIOpen<P1, P2, P3, P4> _)
             {
                 try
@@ -229,7 +234,6 @@ namespace ET.Client
             }
             else
             {
-                self = selfRef;
                 success = await self.UseBaseOpen();
             }
 
@@ -242,13 +246,19 @@ namespace ET.Client
             return success;
         }
 
-        internal static async ETTask<bool> Open<P1, P2, P3, P4, P5>(this YIUIPanelComponent self, P1 p1, P2 p2, P3 p3, P4 p4,
-                                                                    P5                      p5)
+        internal static async ETTask<bool> Open<P1, P2, P3, P4, P5>(this YIUIPanelComponent self,
+                                                                    P1 p1,
+                                                                    P2 p2,
+                                                                    P3 p3,
+                                                                    P4 p4,
+                                                                    P5 p5)
         {
             self.UIBase.SetActive(true);
 
             var success = false;
+
             EntityRef<YIUIPanelComponent> selfRef = self;
+
             if (self.OwnerUIEntity is IYIUIOpen<P1, P2, P3, P4, P5> _)
             {
                 try
@@ -262,7 +272,6 @@ namespace ET.Client
             }
             else
             {
-                self = selfRef;
                 success = await self.UseBaseOpen();
             }
 

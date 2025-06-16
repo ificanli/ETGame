@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if TextMeshPro
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -21,25 +22,27 @@ namespace YIUIFramework
         protected override bool IsTaskEvent => false;
 
         [NonSerialized]
-        private List<EUIEventParamType> m_FilterParamType = new List<EUIEventParamType>
-                                                            {
-                                                                EUIEventParamType.Int
-                                                            };
+        private readonly List<EUIEventParamType> m_FilterParamType = new()
+        {
+            EUIEventParamType.Int
+        };
 
         protected override List<EUIEventParamType> GetFilterParamType => m_FilterParamType;
 
         private void Awake()
         {
-            m_Dropdown = GetComponent<TMP_Dropdown>();
+            m_Dropdown ??= GetComponent<TMP_Dropdown>();
         }
 
         private void OnEnable()
         {
+            if (m_Dropdown == null) return;
             m_Dropdown.onValueChanged.AddListener(OnValueChanged);
         }
 
         private void OnDisable()
         {
+            if (m_Dropdown == null) return;
             m_Dropdown.onValueChanged.RemoveListener(OnValueChanged);
         }
 
@@ -57,3 +60,4 @@ namespace YIUIFramework
         }
     }
 }
+#endif

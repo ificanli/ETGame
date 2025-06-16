@@ -6,12 +6,55 @@ using Sirenix.Serialization;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using YIUIFramework.Editor;
 
 namespace YIUIFramework
 {
-    //Editor
     public sealed partial class UIBindCDETable
     {
+        #if ENABLE_VIEW && UNITY_EDITOR
+
+        [NonSerialized]
+        private GameObject m_YIUIChildViewGO;
+
+        [PropertyOrder(int.MinValue)]
+        [ReadOnly]
+        [ShowInInspector]
+        [HideInEditorMode]
+        [LabelText("ViewGO")]
+        public GameObject YIUIChildViewGO
+        {
+            get
+            {
+                if (m_YIUIChildViewGO == null)
+                {
+                    m_YIUIChildViewGO = Entity?.ViewGO;
+                }
+
+                return m_YIUIChildViewGO;
+            }
+        }
+
+        #endif
+
+        [PropertyOrder(-1000)]
+        [GUIColor(0, 1, 0)]
+        [ButtonGroup]
+        [Button("查看Component代码", 20)]
+        private void OpenComponentScript()
+        {
+            YIUIScriptHelper.OpenScript($"{this.ResName}Component");
+        }
+
+        [PropertyOrder(-1000)]
+        [GUIColor(1, 0.6f, 0.4f)]
+        [ButtonGroup]
+        [Button("查看System代码", 20)]
+        private void OpenSystemScript()
+        {
+            YIUIScriptHelper.OpenScript($"{this.ResName}ComponentSystem");
+        }
+
         #region 界面参数
 
         [LabelText("组件类型")]
@@ -137,8 +180,7 @@ namespace YIUIFramework
         [ShowIf("ShowAutoCheckBtn")]
         private void RevertPrefabInstance()
         {
-            UnityTipsHelper.CallBack(
-                "将会重置所有子CDE 还原到预制初始状态 \n(防止嵌套预制修改)",
+            UnityTipsHelper.CallBack("将会重置所有子CDE 还原到预制初始状态 \n(防止嵌套预制修改)",
                 () =>
                 {
                     InvokeTargetMethod(CreateModuleType, "RefreshChildCdeTable", this);
@@ -316,26 +358,138 @@ namespace YIUIFramework
             EventTable     ??= GetComponent<UIBindEventTable>();
         }
 
+        #region CDE显示
+
+        private enum EYIUICDEInspectorType
+        {
+            [LabelText("[C]组件")]
+            Component,
+
+            [LabelText("[D]数据")]
+            Data,
+
+            [LabelText("[E]事件")]
+            Event,
+        }
+
+        [TitleGroup("YIUI CDE", "", alignment: TitleAlignments.Centered, horizontalLine: true, boldTitle: true, indent: false)]
+        [ShowInInspector]
+        [PropertyOrder(int.MaxValue - 100)]
+        [HideLabel]
+        [NonSerialized]
+        [EnumToggleButtons]
+        [ShowIf(nameof(ShowIfCDEInspector))]
+        [OnValueChanged(nameof(OnValueChangedCDEInspector))]
+        private EYIUICDEInspectorType _CDEInspectorType = EYIUICDEInspectorType.Data;
+
+        [TitleGroup("YIUI CDE", "", alignment: TitleAlignments.Centered, horizontalLine: true, boldTitle: true, indent: false)]
+        [ShowInInspector]
+        [PropertyOrder(int.MaxValue - 99)]
+        [InlineEditor(Expanded = true, DrawHeader = false, ObjectFieldMode = InlineEditorObjectFieldModes.CompletelyHidden)]
+        [HideLabel]
+        [NonSerialized]
+        [HideReferenceObjectPicker]
+        [ShowIf(nameof(ShowIfCDEInspector))]
+        private Component _InspectorComponent;
+
+        private bool ShowIfCDEInspector()
+        {
+            return !YIUIConstHelper.Const.DisplayOldCDEInspector;
+        }
+
+        [OnInspectorInit]
+        private void OnValueChangedCDEInspector()
+        {
+            switch (_CDEInspectorType)
+            {
+                case EYIUICDEInspectorType.Component:
+                    _InspectorComponent = ComponentTable;
+                    break;
+                case EYIUICDEInspectorType.Data:
+                    _InspectorComponent = DataTable;
+                    break;
+                case EYIUICDEInspectorType.Event:
+                    _InspectorComponent = EventTable;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        [OnInspectorInit]
+        private void YIUICDEHideInInspector()
+        {
+            if (ComponentTable != null)
+                ComponentTable.hideFlags = YIUIConstHelper.Const.DisplayOldCDEInspector ? HideFlags.None : HideFlags.HideInInspector;
+            if (DataTable != null)
+                DataTable.hideFlags = YIUIConstHelper.Const.DisplayOldCDEInspector ? HideFlags.None : HideFlags.HideInInspector;
+            if (EventTable != null)
+                EventTable.hideFlags = YIUIConstHelper.Const.DisplayOldCDEInspector ? HideFlags.None : HideFlags.HideInInspector;
+        }
+
+        [Button("添加组件表", 25, Icon = SdfIconType.Boxes, IconAlignment = IconAlignment.LeftOfText)]
+        [GUIColor(0, 1, 1)]
+        [ShowIf(nameof(ShowAddComponentTable))]
+        [TitleGroup("YIUI CDE", "", alignment: TitleAlignments.Centered, horizontalLine: true, boldTitle: true, indent: false)]
+        [PropertyOrder(int.MaxValue)]
         private void AddComponentTable()
         {
             if (!UIOperationHelper.CheckUIOperation()) return;
-
-            ComponentTable = gameObject.GetOrAddComponent<UIBindComponentTable>();
+            ComponentTable           = gameObject.GetOrAddComponent<UIBindComponentTable>();
+            ComponentTable.hideFlags = YIUIConstHelper.Const.DisplayOldCDEInspector ? HideFlags.None : HideFlags.HideInInspector;
+            OnValueChangedCDEInspector();
         }
 
+        private bool ShowAddComponentTable()
+        {
+            if (YIUIConstHelper.Const.DisplayOldCDEInspector) return ComponentTable == null;
+            if (_CDEInspectorType != EYIUICDEInspectorType.Component) return false;
+            return _InspectorComponent == null;
+        }
+
+        [Button("添加数据表", 25, Icon = SdfIconType.HddRack, IconAlignment = IconAlignment.LeftOfText)]
+        [GUIColor(1, 0, 1)]
+        [ShowIf(nameof(ShowAddDataTable))]
+        [TitleGroup("YIUI CDE", "", alignment: TitleAlignments.Centered, horizontalLine: true, boldTitle: true, indent: false)]
+        [PropertyOrder(int.MaxValue)]
         private void AddDataTable()
         {
             if (!UIOperationHelper.CheckUIOperation()) return;
+            DataTable           = gameObject.GetOrAddComponent<UIBindDataTable>();
+            DataTable.hideFlags = YIUIConstHelper.Const.DisplayOldCDEInspector ? HideFlags.None : HideFlags.HideInInspector;
 
-            DataTable = gameObject.GetOrAddComponent<UIBindDataTable>();
+            OnValueChangedCDEInspector();
         }
 
+        private bool ShowAddDataTable()
+        {
+            if (YIUIConstHelper.Const.DisplayOldCDEInspector) return DataTable == null;
+            if (_CDEInspectorType != EYIUICDEInspectorType.Data) return false;
+            return _InspectorComponent == null;
+        }
+
+        [Button("添加事件表", 25, Icon = SdfIconType.LightningCharge, IconAlignment = IconAlignment.LeftOfText)]
+        [GUIColor(0, 1, 0)]
+        [ShowIf(nameof(ShowAddEventTable))]
+        [TitleGroup("YIUI CDE", "", alignment: TitleAlignments.Centered, horizontalLine: true, boldTitle: true, indent: false)]
+        [PropertyOrder(int.MaxValue)]
         private void AddEventTable()
         {
             if (!UIOperationHelper.CheckUIOperation()) return;
+            EventTable           = gameObject.GetOrAddComponent<UIBindEventTable>();
+            EventTable.hideFlags = YIUIConstHelper.Const.DisplayOldCDEInspector ? HideFlags.None : HideFlags.HideInInspector;
 
-            EventTable = gameObject.GetOrAddComponent<UIBindEventTable>();
+            OnValueChangedCDEInspector();
         }
+
+        private bool ShowAddEventTable()
+        {
+            if (YIUIConstHelper.Const.DisplayOldCDEInspector) return EventTable == null;
+            if (_CDEInspectorType != EYIUICDEInspectorType.Event) return false;
+            return _InspectorComponent == null;
+        }
+
+        #endregion
 
         #region 反射
 

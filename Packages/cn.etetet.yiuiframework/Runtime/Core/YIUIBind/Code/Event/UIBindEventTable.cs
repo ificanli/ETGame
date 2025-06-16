@@ -4,7 +4,9 @@
 // Data: 2023年2月12日
 //------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using ET;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -12,20 +14,30 @@ using UnityEngine;
 namespace YIUIFramework
 {
     //[DetailedInfoBox("UI 事件表 点击展开详细介绍", @"李胜扬")]
-    [LabelText("UI 事件表")]
-    [AddComponentMenu("YIUIBind/★★★UI Event Table 事件表★★★")]
+    //[AddComponentMenu("YIUIBind/★★★YIUI Event Table 事件表★★★")]
+    [HideLabel]
+    [Serializable]
+    [HideMonoScript]
+    [DisallowMultipleComponent]
+    [AddComponentMenu("")]
     public sealed partial class UIBindEventTable : SerializedMonoBehaviour
     {
         [OdinSerialize]
         [ShowInInspector]
-        [LabelText("所有事件")]
+        [HideLabel]
         [Searchable]
-        [DictionaryDrawerSettings(KeyLabel = "事件名称", ValueLabel = "事件内容", IsReadOnly = true,
-                                  DisplayMode = DictionaryDisplayOptions.ExpandedFoldout)]
+        [Title("所有事件", TitleAlignment = TitleAlignments.Centered)]
+        [OnStateUpdate("@$property.State.Expanded = true")]
+        [DictionaryDrawerSettings(KeyLabel = "事件名称", ValueLabel = "事件内容", IsReadOnly = true, DisplayMode = DictionaryDisplayOptions.ExpandedFoldout)]
         [Delayed]
         private Dictionary<string, UIEventBase> m_EventDic = new Dictionary<string, UIEventBase>();
 
         public IReadOnlyDictionary<string, UIEventBase> EventDic => m_EventDic;
+
+        private void Awake()
+        {
+            InitEventTable();
+        }
 
         public UIEventBase FindEvent(string eventName)
         {
@@ -76,11 +88,6 @@ namespace YIUIFramework
             ClearAllEvents();
         }
 
-        private void Awake()
-        {
-            InitEventTable();
-        }
-
         #region 递归初始化所有绑定数据
 
         private void InitEventTable()
@@ -88,7 +95,7 @@ namespace YIUIFramework
             InitializeBinds(transform);
         }
 
-        private static void InitializeBinds(Transform transform)
+        private void InitializeBinds(Transform transform)
         {
             #if YIUIMACRO_BIND_INITIALIZE
             Logger.LogErrorContext(transform,$"{transform.name} 初始化调用所有子类 UIEventBind 绑定");
@@ -109,7 +116,7 @@ namespace YIUIFramework
             }
         }
 
-        private static void InitializeBindsDeep(Transform transform)
+        private void InitializeBindsDeep(Transform transform)
         {
             if (transform.HasComponent<UIBindEventTable>())
             {

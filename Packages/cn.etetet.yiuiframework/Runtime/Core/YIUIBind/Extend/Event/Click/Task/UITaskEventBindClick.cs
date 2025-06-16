@@ -41,6 +41,8 @@ namespace YIUIFramework
                 return;
             }
 
+            if (m_UIEvent == null) return;
+
             if (ClickTasking) return;
 
             TaskEvent(eventData).NoContext();
@@ -49,7 +51,7 @@ namespace YIUIFramework
         protected override bool IsTaskEvent => true;
 
         [NonSerialized]
-        private readonly List<EUIEventParamType> m_BaseFilterParamType = new List<EUIEventParamType> { };
+        private readonly List<EUIEventParamType> m_BaseFilterParamType = new();
 
         protected override List<EUIEventParamType> GetFilterParamType => m_BaseFilterParamType;
 
@@ -59,15 +61,12 @@ namespace YIUIFramework
         private void Awake()
         {
             m_Selectable ??= GetComponent<Selectable>();
-            ClickTasking =   false;
+            ClickTasking = false;
         }
 
         private async ETTask TaskEvent(PointerEventData eventData)
         {
-            if (m_UIEvent == null) return;
-
-            var banLayerCode = m_BanLayerOption
-                    ? ET.EventSystem.Instance?.YIUIInvokeSync<YIUIInvokeBanLayerOptionForever, long>(new YIUIInvokeBanLayerOptionForever()) ?? 0 : 0;
+            var banLayerCode = m_BanLayerOption ? ET.EventSystem.Instance?.YIUIInvokeEntitySync<YIUIInvokeEntity_BanLayerOptionForever, long>(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_BanLayerOptionForever()) ?? 0 : 0;
 
             ClickTasking = true;
 
@@ -86,7 +85,7 @@ namespace YIUIFramework
 
                 if (m_BanLayerOption)
                 {
-                    ET.EventSystem.Instance?.YIUIInvokeSync(new YIUIInvokeRecoverLayerOptionForever { ForeverCode = banLayerCode });
+                    ET.EventSystem.Instance?.YIUIInvokeEntitySync(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_RecoverLayerOptionForever { ForeverCode = banLayerCode });
                 }
             }
         }

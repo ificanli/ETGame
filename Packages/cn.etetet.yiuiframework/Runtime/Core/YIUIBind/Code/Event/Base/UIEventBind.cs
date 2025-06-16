@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using ET;
 using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
@@ -27,6 +29,8 @@ namespace YIUIFramework
         #endif
         [PropertyOrder(-99)]
         protected string m_EventName = null;
+
+        public string EventName => this.m_EventName;
 
         /// <summary>
         /// 当前的UI事件

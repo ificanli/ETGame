@@ -10,37 +10,42 @@ namespace ET.Client
     {
         #region 3D
 
-        public static async ETTask<DamageNumber> Show3D(string prefabName,
-                                                        Unit   unit,
-                                                        string newText,
-                                                        bool   follow = true)
+        public static async ETTask<DamageNumber> Show3D(Scene scene, string prefabName, Unit unit, string newText, bool follow = true)
         {
-            var unitObj = GetUnitGamobject(unit);
+            var unitObj = GetUnitGameObject(unit);
             if (unitObj == null) return null;
             var tsf = unitObj.transform;
 
-            var damageNumber = await Show3D(prefabName, tsf.position, 0, newText, follow ? tsf : null);
+            var damageNumber = await Show3D(scene, prefabName, tsf.position, 0, newText, follow ? tsf : null);
             if (damageNumber == null) return null;
             damageNumber.enableNumber = false;
             return damageNumber;
         }
 
-        public static async ETTask<DamageNumber> Show3D(string prefabName,
-                                                        Unit   unit,
-                                                        float  newNumber,
-                                                        bool   follow = true)
+        public static async ETTask<DamageNumber> Show3D(Scene scene, string prefabName, Unit unit, float newNumber, bool follow = true)
         {
-            var unitObj = GetUnitGamobject(unit);
+            var unitObj = GetUnitGameObject(unit);
             if (unitObj == null) return null;
             var tsf = unitObj.transform;
 
-            return await Show3D(prefabName, tsf.position, newNumber, null, follow ? tsf : null);
+            return await Show3D(scene, prefabName, tsf.position, newNumber, null, follow ? tsf : null);
         }
 
-        private static GameObject GetUnitGamobject(Unit unit)
+        private static GameObject GetUnitGameObject(Unit unit)
         {
+            if (unit == null)
+            {
+                Log.Error("目标为空");
+                return null;
+            }
+
             var unitObj = unit?.GetComponent<GameObjectComponent>();
-            if (unitObj == null) return null;
+            if (unitObj == null)
+            {
+                Log.Error($"{unit.GetType().Name} 目标没有 GameObjectComponent 组件");
+                return null;
+            }
+
             if (unitObj.GameObject == null)
             {
                 Log.Error($"{unit.GetType().Name} 目标没有 GameObject 实体");
@@ -50,24 +55,20 @@ namespace ET.Client
             return unitObj.GameObject;
         }
 
-        public static async ETTask<DamageNumber> Show3D(string    prefabName,
-                                                        Vector3   newPosition,
-                                                        float     newNumber,
-                                                        string    newText           = null,
-                                                        Transform followedTransform = null)
+        public static async ETTask<DamageNumber> Show3D(Scene scene, string prefabName, Vector3 newPosition, float newNumber, string newText = null, Transform followedTransform = null)
         {
-            var damageNumber = await Get(prefabName);
+            var damageNumber = await Get(scene, prefabName);
             if (damageNumber == null) return null;
 
             damageNumber.Spawn(newPosition);
 
             damageNumber.enableNumber = true;
-            damageNumber.number       = newNumber;
+            damageNumber.number = newNumber;
 
             if (!string.IsNullOrEmpty(newText))
             {
                 damageNumber.enableLeftText = true;
-                damageNumber.leftText       = newText;
+                damageNumber.leftText = newText;
             }
 
             if (followedTransform != null)
@@ -82,54 +83,55 @@ namespace ET.Client
 
         #region UI
 
-        public static async ETTask<DamageNumber> ShowUI(string prefabName, RectTransform rect, float newNumber)
+        public static async ETTask<DamageNumber> ShowUIByRectTransform(Scene scene, string prefabName, RectTransform rect, float newNumber)
         {
-            return await ShowUI(prefabName, rect.position, newNumber);
+            return await ShowUIByScreenPoint(scene, prefabName, rect.position, newNumber);
         }
 
-        public static async ETTask<DamageNumber> ShowUI(string prefabName, Vector3 worldPoint, float newNumber)
+        public static async ETTask<DamageNumber> ShowUIByWorldPoint(Scene scene, string prefabName, Vector3 worldPoint, float newNumber)
         {
-            var screenPoint = RectTransformUtility.WorldToScreenPoint(YIUIMgrComponent.Inst.UICamera, worldPoint);
-            return await ShowUI(prefabName, screenPoint, newNumber);
+            var screenPoint = Camera.main.WorldToScreenPoint(worldPoint);
+            return await ShowUIByScreenPoint(scene, prefabName, screenPoint, newNumber);
         }
 
-        public static async ETTask<DamageNumber> ShowUI(string prefabName, Vector2 screenPoint, float newNumber)
+        public static async ETTask<DamageNumber> ShowUIByScreenPoint(Scene scene, string prefabName, Vector2 screenPoint, float newNumber)
         {
-            var damageNumber = await Get(prefabName);
+            EntityRef<Scene> sceneRef = scene;
+            var damageNumber = await Get(scene, prefabName);
             if (damageNumber == null) return null;
 
             var rectTsf = damageNumber.GetComponent<RectTransform>();
-
+            scene = sceneRef;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTsf.parent.GetComponent<RectTransform>(),
                 screenPoint,
-                YIUIMgrComponent.Inst.UICamera, out var localPos);
+                scene.YIUIMgr().UICamera, out var localPos);
 
-            rectTsf.localPosition     = localPos;
+            rectTsf.localPosition = localPos;
             damageNumber.enableNumber = true;
-            damageNumber.number       = newNumber;
+            damageNumber.number = newNumber;
             return damageNumber;
         }
 
         #endregion
 
-        public static async ETTask<DamageNumber> Get(string prefabName)
+        public static async ETTask<DamageNumber> Get(Scene scene, string prefabName)
         {
-            var panel = await GetDamageTipsPanel();
+            var panel = await GetDamageTipsPanel(scene);
             if (panel == null) return null;
             return await panel.Get(prefabName);
         }
 
-        private static async ETTask<DamageTipsPanelComponent> GetDamageTipsPanel()
+        private static async ETTask<DamageTipsPanelComponent> GetDamageTipsPanel(Scene scene)
         {
-            if (YIUIMgrComponent.Inst == null)
+            if (scene.IsDisposed)
             {
                 return null;
             }
 
-            var panel = YIUIMgrComponent.Inst.GetPanel<DamageTipsPanelComponent>();
+            var panel = scene.YIUIMgr().GetPanel<DamageTipsPanelComponent>();
             if (panel == null)
             {
-                panel = await YIUIMgrComponent.Inst.Root.OpenPanelAsync<DamageTipsPanelComponent>();
+                panel = await scene.YIUIRoot().OpenPanelAsync<DamageTipsPanelComponent>();
             }
 
             return panel;

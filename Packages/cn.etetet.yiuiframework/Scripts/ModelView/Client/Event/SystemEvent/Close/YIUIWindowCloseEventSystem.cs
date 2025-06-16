@@ -50,6 +50,11 @@ namespace ET.Client
                 return;
             }
 
+            if (component is not IYIUIWindowClose)
+            {
+                return;
+            }
+
             var iYIUICloseSystems = EntitySystemSingleton.Instance.TypeSystems.GetSystems(component.GetType(), typeof(IYIUIWindowCloseSystem));
             if (iYIUICloseSystems is not { Count: > 0 }) return;
 
@@ -63,8 +68,7 @@ namespace ET.Client
 
                 try
                 {
-                    component = componentRef;
-                    await aYIUICloseSystem.Run(component, viewCloseResult);
+                    await aYIUICloseSystem.Run(componentRef, viewCloseResult);
                 }
                 catch (Exception e)
                 {

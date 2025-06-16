@@ -33,8 +33,7 @@ namespace ET.Client
 
                 try
                 {
-                    component = componentRef;
-                    return await aYIUIBanCloseSystem.Run(component);
+                    return await aYIUIBanCloseSystem.Run(componentRef);
                 }
                 catch (Exception e)
                 {

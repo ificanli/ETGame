@@ -10,7 +10,7 @@ namespace YIUIFramework
     public abstract class YIUIDisposerMonoSingleton : SerializedMonoBehaviour, IYIUIManagerAsyncInit
     {
         private bool m_Disposed;
-        public  bool Disposed => m_Disposed;
+        public bool Disposed => m_Disposed;
 
         //释放方法1: 对象释放
         public bool Dispose()

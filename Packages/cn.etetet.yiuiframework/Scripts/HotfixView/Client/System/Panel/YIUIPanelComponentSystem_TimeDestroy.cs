@@ -28,9 +28,11 @@ namespace ET.Client
         {
             try
             {
-                ETCancellationToken oldCancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
+                EntityRef<YIUIPanelComponent> selfRef = self;
 
-                await self.Root().GetComponent<TimerComponent>().WaitAsync((long)(self.CachePanelTime * 1000));
+                ETCancellationToken oldCancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
+
+                await ETTaskSafely.Await(selfRef.Entity?.Root()?.GetComponent<TimerComponent>()?.WaitAsync((long)(selfRef.Entity?.CachePanelTime * 1000 ?? 0)));
 
                 if (oldCancellationToken != null && oldCancellationToken.IsCancel()) //取消倒计时
                 {
@@ -49,7 +51,7 @@ namespace ET.Client
 
         private static void RemoveUIReset(this YIUIPanelComponent self)
         {
-            EventSystem.Instance?.YIUIInvokeSync(new YIUIInvokeRemoveUIReset
+            EventSystem.Instance?.YIUIInvokeEntitySync(self, new YIUIInvokeEntity_RemoveUIReset
             {
                 PanelName = self.UIBase.UIName
             });

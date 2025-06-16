@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace ET
 {
@@ -12,6 +13,7 @@ namespace ET
             if (component == null)
             {
                 Log.Error($"{self.GetType().Name} 目标没有这个组件 {typeof(K).Name}");
+                return default;
             }
 
             return component;
@@ -25,6 +27,28 @@ namespace ET
             if (parent == null) return;
             if (self.Parent == parent) return;
             parent.AddChild(self);
+        }
+
+        //跳过分析器用的 慎用 除非你知道你在做什么
+        public static K GetParentComponent<K>(this Entity self) where K : Entity
+        {
+            return self.Parent.GetComponent<K>();
+        }
+
+        //跳过分析器用的 慎用 除非你知道你在做什么
+        public static K GetParentChild<K>(this Entity self, int id) where K : Entity
+        {
+            return self.Parent.GetChild<K>(id);
+        }
+
+        //快捷移除所有子类
+        public static void RemoveAllChild(this Entity self)
+        {
+            if (self.ChildrenCount() <= 0) return;
+            foreach (long unitId in self.Children.Keys.ToArray())
+            {
+                self.RemoveChild(unitId);
+            }
         }
     }
 }

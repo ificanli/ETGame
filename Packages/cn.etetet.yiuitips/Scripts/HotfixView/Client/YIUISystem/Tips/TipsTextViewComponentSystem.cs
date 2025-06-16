@@ -16,14 +16,14 @@ namespace ET.Client
         private static void Destroy(this TipsTextViewComponent self)
         {
         }
-        
+
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this TipsTextViewComponent self)
         {
             await ETTask.CompletedTask;
             return true;
         }
- 
+
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this TipsTextViewComponent self, ParamVo vo)
         {
@@ -48,7 +48,6 @@ namespace ET.Client
             self = selfRef;
             await self.UIView.CloseAsync();
         }
-
 
         #region YIUIEvent开始
 

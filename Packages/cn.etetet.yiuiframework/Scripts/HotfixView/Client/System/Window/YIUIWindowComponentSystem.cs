@@ -75,12 +75,19 @@ namespace ET.Client
         //有可能没有动画 也有可能动画被跳过 反正无论如何都会有动画结束回调
         private static void OnOpenTweenEnd(this YIUIWindowComponent self)
         {
-            YIUIEventSystem.OpenTweenEnd(self.UIBase.OwnerUIEntity);
+            if (self.OpenTweenEnd)
+            {
+                YIUIEventSystem.OpenTweenEnd(self.UIBase.OwnerUIEntity);
+            }
         }
 
         private static void OnCloseTweenEnd(this YIUIWindowComponent self)
         {
-            YIUIEventSystem.CloseTweenEnd(self.UIBase.OwnerUIEntity);
+            if (self.CloseTweenEnd)
+            {
+                YIUIEventSystem.CloseTweenEnd(self.UIBase.OwnerUIEntity);
+            }
+
             self.UIBase.SetActive(false);
         }
 
@@ -92,8 +99,7 @@ namespace ET.Client
                 return;
             }
 
-            var foreverCode = self.WindowAllowOptionByTween ?
-                    0 : EventSystem.Instance?.YIUIInvokeSync<YIUIInvokeBanLayerOptionForever, long>(new YIUIInvokeBanLayerOptionForever()) ?? 0;
+            var foreverCode = self.WindowAllowOptionByTween ? 0 : EventSystem.Instance?.YIUIInvokeEntitySync<YIUIInvokeEntity_BanLayerOptionForever, long>(self, new YIUIInvokeEntity_BanLayerOptionForever()) ?? 0;
 
             try
             {
@@ -107,10 +113,10 @@ namespace ET.Client
             {
                 if (!self.WindowAllowOptionByTween)
                 {
-                    EventSystem.Instance?.YIUIInvokeSync(new YIUIInvokeRecoverLayerOptionForever
-                                                         {
-                                                             ForeverCode = foreverCode
-                                                         });
+                    EventSystem.Instance?.YIUIInvokeEntitySync(self, new YIUIInvokeEntity_RecoverLayerOptionForever
+                    {
+                        ForeverCode = foreverCode
+                    });
                 }
 
                 self.OnOpenTweenEnd();
@@ -125,8 +131,8 @@ namespace ET.Client
                 return;
             }
 
-            var foreverCode = self.WindowAllowOptionByTween ?
-                    0 : EventSystem.Instance?.YIUIInvokeSync<YIUIInvokeBanLayerOptionForever, long>(new YIUIInvokeBanLayerOptionForever()) ?? 0;
+            var foreverCode = self.WindowAllowOptionByTween ? 0 : EventSystem.Instance?.YIUIInvokeEntitySync<YIUIInvokeEntity_BanLayerOptionForever, long>(self, new YIUIInvokeEntity_BanLayerOptionForever()) ?? 0;
+
             try
             {
                 await self.OnCloseTween();
@@ -139,10 +145,10 @@ namespace ET.Client
             {
                 if (!self.WindowAllowOptionByTween)
                 {
-                    EventSystem.Instance?.YIUIInvokeSync(new YIUIInvokeRecoverLayerOptionForever
-                                                         {
-                                                             ForeverCode = foreverCode
-                                                         });
+                    EventSystem.Instance?.YIUIInvokeEntitySync(self, new YIUIInvokeEntity_RecoverLayerOptionForever
+                    {
+                        ForeverCode = foreverCode
+                    });
                 }
 
                 self.OnCloseTweenEnd();
@@ -151,68 +157,35 @@ namespace ET.Client
 
         private static async ETTask OnOpenTween(this YIUIWindowComponent self)
         {
-            EntityRef<YIUIWindowComponent> selfRef = self;
-            if (self._LastCloseETTask != null)
+            if (self.OpenTween)
             {
-                await self._LastCloseETTask;
+                await YIUIEventSystem.OpenTween(self.UIBase.OwnerUIEntity);
             }
-
-            if (self._LastOpenETTask != null)
-            {
-                self = selfRef;
-                await self._LastOpenETTask;
-                return;
-            }
-
-            self = selfRef;
-            self._LastOpenETTask = ETTask.Create(true);
-            var tweent = await YIUIEventSystem.OpenTween(self.UIBase.OwnerUIEntity);
-            if (!tweent)
+            else
             {
                 //panel会有默认动画
                 //不要动画请在界面参数上调整 WindowBanTween
                 //需要其他动画请实现动画事件
-                self = selfRef;
                 if (self.UIBase.UIBindVo.CodeType == EUICodeType.Panel)
+                {
                     await WindowFadeAnim.In(self.UIBase?.OwnerGameObject);
+                }
             }
-
-            self = selfRef;
-            if (self.IsDisposed) return;
-            self._LastOpenETTask?.SetResult();
-            self._LastOpenETTask = null;
         }
 
         private static async ETTask OnCloseTween(this YIUIWindowComponent self)
         {
-            EntityRef<YIUIWindowComponent> selfRef = self;
-            if (self._LastOpenETTask != null)
+            if (self.CloseTween)
             {
-                await self._LastOpenETTask;
+                await YIUIEventSystem.CloseTween(self.UIBase.OwnerUIEntity);
             }
-
-            if (self._LastCloseETTask != null)
+            else
             {
-                self = selfRef;
-                await self._LastCloseETTask;
-                return;
-            }
-
-            self = selfRef;
-            self._LastCloseETTask = ETTask.Create(true);
-            self = selfRef;
-            var tweent = await YIUIEventSystem.CloseTween(self.UIBase.OwnerUIEntity);
-            if (!tweent)
-            {
-                self = selfRef;
                 if (self.UIBase.UIBindVo.CodeType == EUICodeType.Panel)
+                {
                     await WindowFadeAnim.Out(self.UIBase?.OwnerGameObject);
+                }
             }
-
-            self = selfRef;
-            if (self.IsDisposed) return;
-            self._LastCloseETTask?.SetResult();
-            self._LastCloseETTask = null;
         }
     }
 }

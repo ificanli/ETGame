@@ -22,7 +22,7 @@ namespace ET.Client
                 // 地图资源相同,则不创建Loading界面,也不需要重新加载地图
                 if (args.ChangeScene)
                 {
-                    await YIUIMgrComponent.Inst.Root.OpenPanelAsync<LoadingPanelComponent>();
+                    await root.YIUIRoot().OpenPanelAsync<LoadingPanelComponent>();
 
                     currentScenesComponent = currentScenesComponentRef;
                     currentScenesComponent.Progress = 0;
