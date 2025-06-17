@@ -193,7 +193,7 @@ MonoBehaviour:
     - line: '|   androidMinAspectRatio: 1'
     - line: '|   applicationIdentifier:'
     - line: '|     Android: com.test.ET'
-    - line: '|     Standalone: com.test.ET'
+    - line: '|     Standalone: com.---------------------------------------.ET'
     - line: '|     Tizen: com.Company.ProductName'
     - line: '|     iPhone: com.test.ET'
     - line: '|     tvOS: com.Company.ProductName'
@@ -926,7 +926,7 @@ MonoBehaviour:
     - line: '|     ReservedCFE: TextMeshPro'
     - line: '|     Server: UNITY;ENABLE_VIEW'
     - line: '|     Stadia: DOTWEEN;TextMeshPro'
-    - line: '|     Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED'
+    - line: '|     Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED;ET10'
     - line: '|     VisionOS: DOTWEEN;TextMeshPro'
     - line: '|     WebGL: UNITY;ENABLE_VIEW;DOTWEEN;TextMeshPro'
     - line: '|     Windows Store Apps: DOTWEEN'
@@ -1060,7 +1060,7 @@ MonoBehaviour:
     - line: '|   qnxGraphicConfPath: '
     - line: '|   apiCompatibilityLevel: 3'
     - line: '|   captureStartupLogs: {}'
-    - line: '|   activeInputHandler: 1'
+    - line: '|   activeInputHandler: 2'
     - line: '|   windowsGamepadBackendHint: 0'
     - line: '|   cloudProjectId: '
     - line: '|   framebufferDepthMemorylessMode: 0'
@@ -1079,8 +1079,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
     - rid: 1675342395977498624
       type: {class: WindowsPlatformSettings, ns: UnityEditor.WindowsStandalone, asm: UnityEditor.WindowsStandalone.Extensions}
       data:

@@ -193,12 +193,6 @@
         "cn.etetet.yiuiframework": "2.0.0"
       }
     },
-    "cn.etetet.yiuicodeanalysis": {
-      "version": "file:cn.etetet.yiuicodeanalysis",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "cn.etetet.yiuidamagetips": {
       "version": "file:cn.etetet.yiuidamagetips",
       "depth": 0,

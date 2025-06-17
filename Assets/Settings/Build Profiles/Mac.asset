@@ -18,7 +18,7 @@ MonoBehaviour:
   m_PlatformId: 0d2129357eac403d8b359c2dcbf82502
   m_PlatformBuildProfile:
     rid: 6418588484003954688
-  m_OverrideGlobalSceneList: 0
+  m_OverrideGlobalSceneList: 1
   m_Scenes:
   - m_enabled: 1
     m_path: Packages/cn.etetet.wow/Scenes/Init.unity
@@ -167,9 +167,9 @@ MonoBehaviour:
     - line: '|   tvOSBundleVersion: 1.0'
     - line: '|   bundleVersion: 1.0'
     - line: '|   preloadedAssets:'
-    - line: '|   - {fileID: 11400000, guid: a3fd0e56485c04d64a55eb2669d1f592, type:
+    - line: '|   - {fileID: 11400000, guid: 1a4fcb951610a3d44a29d290d6197fdf, type:
         2}'
-    - line: '|   - {fileID: 11400000, guid: f2f33702e61ad4f4aa6aec20e86762a4, type:
+    - line: '|   - {fileID: 11400000, guid: ca131d12c65614e96ad5faaa6caa66f4, type:
         2}'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
@@ -920,7 +920,7 @@ MonoBehaviour:
     - line: '|     ReservedCFE: TextMeshPro'
     - line: '|     Server: UNITY;ENABLE_VIEW'
     - line: '|     Stadia: DOTWEEN;TextMeshPro'
-    - line: '|     Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED'
+    - line: '|     Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED;ET10'
     - line: '|     VisionOS: DOTWEEN;TextMeshPro'
     - line: '|     WebGL: UNITY;ENABLE_VIEW;DOTWEEN;TextMeshPro'
     - line: '|     Windows Store Apps: DOTWEEN'
@@ -1054,7 +1054,7 @@ MonoBehaviour:
     - line: '|   qnxGraphicConfPath: '
     - line: '|   apiCompatibilityLevel: 3'
     - line: '|   captureStartupLogs: {}'
-    - line: '|   activeInputHandler: 1'
+    - line: '|   activeInputHandler: 2'
     - line: '|   windowsGamepadBackendHint: 0'
     - line: '|   cloudProjectId: '
     - line: '|   framebufferDepthMemorylessMode: 0'
@@ -1088,5 +1088,5 @@ MonoBehaviour:
         m_CompressionType: 0
         m_InstallInBuildFolder: 0
         m_MacOSXcodeBuildConfig: 1
-        m_Architecture: 2
+        m_Architecture: 1
         m_CreateXcodeProject: 0
