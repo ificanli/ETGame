@@ -2,6 +2,6 @@
 {
     public struct EventMain_ShowHPView
     {
-        public HPViewComponent HPView;
+        public EntityRef<HPViewComponent> HPView;
     }
 }

@@ -2,11 +2,11 @@
 {
     public struct MoveStart
     {
-        public Unit Unit;
+        public EntityRef<Unit> Unit;
     }
 
     public struct MoveStop
     {
-        public Unit Unit;
+        public EntityRef<Unit> Unit;
     }
 }

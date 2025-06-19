@@ -11,9 +11,8 @@
                 return;
             }
 
-            if (YIUIEventComponent.Inst == null) return;
             EntityRef<Scene> sceneRef = scene;
-            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            await YIUIEventComponent.Instance.Run(scene, arg.UIComponentName, arg);
             scene = sceneRef;
             await scene.DynamicEvent(arg);
         }
@@ -30,9 +29,8 @@
                 return;
             }
 
-            if (YIUIEventComponent.Inst == null) return;
             EntityRef<Scene> sceneRef = scene;
-            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            await YIUIEventComponent.Instance.Run(scene, arg.UIComponentName, arg);
             scene = sceneRef;
             await scene.DynamicEvent(arg);
         }

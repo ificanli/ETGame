@@ -2,13 +2,13 @@
 {
 	public struct UnitEnterSightRange
 	{
-		public AOIEntity A;
-		public AOIEntity B;
+		public EntityRef<AOIEntity> A;
+		public EntityRef<AOIEntity> B;
 	}
 
 	public struct UnitLeaveSightRange
 	{
-		public AOIEntity A;
-		public AOIEntity B;
+		public EntityRef<AOIEntity> A;
+		public EntityRef<AOIEntity> B;
 	}
 }

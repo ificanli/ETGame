@@ -4,7 +4,7 @@
     {
         public override void Handle(TimerCallback a)
         {
-            this.Run(a.Args as T);
+            this.Run(a.Args.Entity as T);
         }
 
         protected abstract void Run(T t);

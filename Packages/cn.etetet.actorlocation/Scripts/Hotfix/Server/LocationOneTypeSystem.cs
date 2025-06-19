@@ -16,7 +16,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this LockInfo self)
         {
-            self.CoroutineLock.Dispose();
+            self.CoroutineLock.Entity?.Dispose();
             self.LockActorId = default;
         }
     }

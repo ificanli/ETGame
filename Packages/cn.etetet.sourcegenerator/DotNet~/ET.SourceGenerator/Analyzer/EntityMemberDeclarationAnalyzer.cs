@@ -52,12 +52,10 @@ namespace ET
             if (baseType== Definition.EntityType)
             {
                 AnalyzeDelegateMember(context, namedTypeSymbol);
-                AnalyzeEntityMember(context, namedTypeSymbol);
                 AnalyzeComponentChildAttr(context, namedTypeSymbol);
             }else if (baseType == Definition.LSEntityType)
             {
                 AnalyzeDelegateMember(context, namedTypeSymbol);
-                AnalyzeEntityMember(context, namedTypeSymbol);
                 AnalyzeFloatMemberInLSEntity(context,namedTypeSymbol);
                 AnalyzeComponentChildAttr(context, namedTypeSymbol);
             }
@@ -94,73 +92,6 @@ namespace ET
                     Diagnostic diagnostic = Diagnostic.Create(EntityDelegateDeclarationAnalyzerRule.Rule, syntax.GetLocation(),namedTypeSymbol.Name,delegateName);
                     context.ReportDiagnostic(diagnostic);
                 }
-            }
-        }
-
-        /// <summary>
-        /// 检查实体成员
-        /// </summary>
-        private void AnalyzeEntityMember(SemanticModelAnalysisContext context, INamedTypeSymbol namedTypeSymbol)
-        {
-            foreach (var member in namedTypeSymbol.GetMembers())
-            {
-                if (member is not IFieldSymbol fieldSymbol)
-                {
-                    continue;
-                }
-
-                // 忽略静态字段 允许单例实体类
-                if (fieldSymbol.IsStatic)
-                {
-                    continue;
-                }
-
-                // 字段类型是否是实体类型数组
-                if (fieldSymbol.Type is IArrayTypeSymbol arrayTypeSymbol)
-                {
-                    if (arrayTypeSymbol.ElementType.IsETEntity())
-                    {
-                        var syntaxReference = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault();
-                        if (syntaxReference==null)
-                        {
-                            continue;
-                        }
-                        Diagnostic diagnostic = Diagnostic.Create(EntityFieldDeclarationInEntityAnalyzerRule.Rule, syntaxReference.GetSyntax().GetLocation(),namedTypeSymbol.Name,fieldSymbol.Name);
-                        context.ReportDiagnostic(diagnostic);
-                    }
-                    continue;
-                }
-
-                if (fieldSymbol.Type is not INamedTypeSymbol namedTypeSymbol2)
-                {
-                    continue;
-                }
-
-                // 字段类型是否是实体类
-                if (namedTypeSymbol2.IsETEntity())
-                {
-                    var syntaxReference = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault();
-                    if (syntaxReference==null)
-                    {
-                        continue;
-                    }
-                    Diagnostic diagnostic = Diagnostic.Create(EntityFieldDeclarationInEntityAnalyzerRule.Rule, syntaxReference.GetSyntax().GetLocation(),namedTypeSymbol.Name,fieldSymbol.Name);
-                    context.ReportDiagnostic(diagnostic);
-                    continue;
-                }
-
-                // 字段类型是否是含实体类参数的泛型类
-                if (namedTypeSymbol2.IsGenericType&&GenericTypeHasEntityTypeArgs(namedTypeSymbol2))
-                {
-                    var syntaxReference = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault();
-                    if (syntaxReference==null)
-                    {
-                        continue;
-                    }
-                    Diagnostic diagnostic = Diagnostic.Create(EntityFieldDeclarationInEntityAnalyzerRule.Rule, syntaxReference.GetSyntax().GetLocation(),namedTypeSymbol.Name,fieldSymbol.Name);
-                    context.ReportDiagnostic(diagnostic);
-                }
-                
             }
         }
 

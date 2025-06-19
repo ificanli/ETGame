@@ -30,7 +30,7 @@
     {
         public Address FromAddress;
         public MessageObject MessageObject;
-        public MailBoxComponent MailBoxComponent;
+        public EntityRef<MailBoxComponent> MailBoxComponent;
     }
     
     /// <summary>

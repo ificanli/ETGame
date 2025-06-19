@@ -183,7 +183,7 @@ namespace ET
         public bool IsDisposed => this.InstanceId == 0;
         
         [BsonIgnore]
-        private Entity parent;
+        private EntityRef<Entity> parent;
 
         // 可以改变parent，但是不能设置为null
         [MemoryPackIgnore]
@@ -218,21 +218,21 @@ namespace ET
                         return;
                     }
 
-                    this.parent.RemoveChildNoDispose(this);
+                    this.Parent.RemoveChildNoDispose(this);
                 }
 
                 this.parent = value;
                 this.IsComponent = false;
-                this.parent.AddToChildren(this);
+                this.Parent.AddToChildren(this);
 
                 if (this is IScene scene)
                 {
-                    scene.Fiber = this.parent.iScene.Fiber;
+                    scene.Fiber = this.Parent.iScene.Fiber;
                     this.IScene = scene;
                 }
                 else
                 {
-                    this.IScene = this.parent.iScene;
+                    this.IScene = this.Parent.iScene;
                 }
 
 #if ENABLE_VIEW && UNITY_EDITOR
@@ -282,21 +282,21 @@ namespace ET
                         return;
                     }
 
-                    this.parent.RemoveComponentNoDispose(this);
+                    this.Parent.RemoveComponentNoDispose(this);
                 }
 
                 this.parent = value;
                 this.IsComponent = true;
-                this.parent.AddToComponents(this);
+                this.Parent.AddToComponents(this);
                 
                 if (this is IScene scene)
                 {
-                    scene.Fiber = this.parent.iScene.Fiber;
+                    scene.Fiber = this.Parent.iScene.Fiber;
                     this.IScene = scene;
                 }
                 else
                 {
-                    this.IScene = this.parent.iScene;
+                    this.IScene = this.Parent.iScene;
                 }
             }
         }
@@ -492,15 +492,16 @@ namespace ET
 
             this.iScene = null;
 
-            if (this.parent != null && !this.parent.IsDisposed)
+            Entity parentEntity = this.Parent;
+            if (parentEntity != null)
             {
                 if (this.IsComponent)
                 {
-                    this.parent.RemoveComponentNoDispose(this);
+                    parentEntity.RemoveComponentNoDispose(this);
                 }
                 else
                 {
-                    this.parent.RemoveChildNoDispose(this);
+                    parentEntity.RemoveChildNoDispose(this);
                 }
             }
 

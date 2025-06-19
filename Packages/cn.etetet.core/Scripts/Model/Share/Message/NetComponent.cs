@@ -5,7 +5,7 @@ namespace ET
 {
     public struct NetComponentOnRead
     {
-        public Session Session;
+        public EntityRef<Session> Session;
         public object Message;
     }
     

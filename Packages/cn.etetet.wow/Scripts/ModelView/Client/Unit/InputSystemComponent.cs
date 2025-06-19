@@ -4,7 +4,7 @@ namespace ET.Client
 {
     public struct OnSpellTrigger
     {
-        public Unit Unit;
+        public EntityRef<Unit> Unit;
         public int SpellConfigId;
     }
     

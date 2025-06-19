@@ -61,7 +61,7 @@ namespace ET
 
     public struct TimerCallback
     {
-        public Entity Args;
+        public EntityRef<Entity> Args;
     }
 
     [SkipAwaitEntityCheck]

@@ -287,7 +287,11 @@ namespace ET
             self.N = 0;
             self.TurnTime = 0;
             self.IsTurnHorizontal = false;
-            self.Root().GetComponent<TimerComponent>()?.Remove(ref self.MoveTimer);
+            Scene root = self.Root();
+            if (root != null)
+            {
+                root.GetComponent<TimerComponent>()?.Remove(ref self.MoveTimer);    
+            }
 
             if (self.tcs != null)
             {

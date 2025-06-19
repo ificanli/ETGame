@@ -31,11 +31,11 @@
 
     public struct AfterUnitCreate
     {
-        public Unit Unit;
+        public EntityRef<Unit> Unit;
     }
     
     public struct AfterMyUnitCreate
     {
-        public Unit Unit;
+        public EntityRef<Unit> Unit;
     }
 }

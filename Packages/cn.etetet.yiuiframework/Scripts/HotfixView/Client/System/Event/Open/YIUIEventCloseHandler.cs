@@ -11,9 +11,8 @@
                 return;
             }
 
-            if (YIUIEventComponent.Inst == null) return;
             EntityRef<Scene> sceneRef = scene;
-            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            await YIUIEventComponent.Instance.Run(scene, arg.UIComponentName, arg);
             scene = sceneRef;
             if (scene is { IsDisposed: false })
             {
@@ -33,9 +32,8 @@
                 return;
             }
 
-            if (YIUIEventComponent.Inst == null) return;
             EntityRef<Scene> sceneRef = scene;
-            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            await YIUIEventComponent.Instance.Run(scene, arg.UIComponentName, arg);
             scene = sceneRef;
             if (scene is { IsDisposed: false })
             {
@@ -57,7 +55,7 @@
 
             if (scene.YIUILoad() == null) return;
             EntityRef<Scene> sceneRef = scene;
-            await YIUIEventComponent.Inst.Run(arg.UIComponentName, arg);
+            await YIUIEventComponent.Instance.Run(scene, arg.UIComponentName, arg);
             scene = sceneRef;
             if (scene is { IsDisposed: false })
             {

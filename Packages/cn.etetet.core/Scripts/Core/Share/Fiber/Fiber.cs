@@ -26,7 +26,19 @@ namespace ET
 
         public int Zone;
 
-        public Scene Root { get; }
+        private EntityRef<Scene> root;
+
+        public Scene Root
+        {
+            get
+            {
+                return this.root;
+            }
+            private set
+            {
+                this.root = value;
+            }
+        }
 
         public Address Address
         {

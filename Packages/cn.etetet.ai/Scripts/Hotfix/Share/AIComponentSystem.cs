@@ -48,7 +48,11 @@ namespace ET
         [EntitySystem]
         private static void Destroy(this AIComponent self)
         {
-            self.Root().GetComponent<TimerComponent>()?.Remove(ref self.Timer);
+            Scene root = self.Root();
+            if (root != null)
+            {
+                root.GetComponent<TimerComponent>()?.Remove(ref self.Timer);    
+            }
             self.CancellationToken?.Cancel();
             self.CancellationToken = null;
             self.Current = 0;

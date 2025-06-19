@@ -36,7 +36,11 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this MessageLocationSenderOneType self)
         {
-            self.Root().GetComponent<TimerComponent>()?.Remove(ref self.CheckTimer);
+            Scene root = self.Root();
+            if (root != null)
+            {
+                root.GetComponent<TimerComponent>()?.Remove(ref self.CheckTimer);    
+            }
         }
 
         private static void Check(this MessageLocationSenderOneType self)

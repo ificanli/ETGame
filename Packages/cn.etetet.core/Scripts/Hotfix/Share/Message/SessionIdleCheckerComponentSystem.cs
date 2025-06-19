@@ -30,7 +30,11 @@ namespace ET
         [EntitySystem]
         private static void Destroy(this SessionIdleCheckerComponent self)
         {
-            self.Root().GetComponent<TimerComponent>()?.Remove(ref self.RepeatedTimer);
+            Scene root = self.Root();
+            if (root != null)
+            {
+                root.GetComponent<TimerComponent>()?.Remove(ref self.RepeatedTimer);
+            }
         }
 
         private const int CheckInteral = 2000;

@@ -7,11 +7,7 @@ namespace ET.Server
     {
         public ActorId LockActorId;
 
-        public CoroutineLock CoroutineLock
-        {
-            get;
-            set;
-        }
+        public EntityRef<CoroutineLock> CoroutineLock;
     }
 
     [ChildOf(typeof(LocationManagerComoponent))]

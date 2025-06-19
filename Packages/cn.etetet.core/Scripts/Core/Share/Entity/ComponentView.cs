@@ -5,7 +5,7 @@ namespace ET
 {
     public class ComponentView: MonoBehaviour
     {
-        public Entity Component
+        public EntityRef<Entity> Component
         {
             get;
             set;

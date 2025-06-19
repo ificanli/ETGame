@@ -13,7 +13,7 @@ namespace ET
             return env;
         }
 
-        public Scene Scene { get; set; }
+        public EntityRef<Scene> Scene;
 
         public bool IsFromPool { get; set; }
         
