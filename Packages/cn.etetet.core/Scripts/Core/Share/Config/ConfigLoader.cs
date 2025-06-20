@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Luban;
 #if DOTNET || UNITY_STANDALONE
 using System.Threading.Tasks;
 #endif
 
 namespace ET
 {
+    public struct ConfigDeserialize
+    {
+        public Type Type;
+        public byte[] ConfigBytes;
+    }
+    
     public class ConfigLoader : Singleton<ConfigLoader>, ISingletonAwake
     {
         public struct ConfigGetAllConfigBytes
@@ -59,15 +64,8 @@ namespace ET
             object category = null;
             
             ConfigProcessAttribute configProcessAttribute = configType.GetCustomAttributes(typeof(ConfigProcessAttribute), false)[0] as ConfigProcessAttribute;
-            switch(configProcessAttribute.ConfigType)
-            {
-                case ConfigType.Luban:
-                    category = Activator.CreateInstance(configType, new ByteBuf(oneConfigBytes));
-                    break;
-                case ConfigType.Bson:
-                    category = MongoHelper.Deserialize(configType, oneConfigBytes);
-                    break;
-            }
+            
+            category = EventSystem.Instance.Invoke<ConfigDeserialize, object>(configProcessAttribute.ConfigType, new ConfigDeserialize() {Type = configType, ConfigBytes = oneConfigBytes});
             
             IConfig iConfig = category as IConfig;
             this.allConfig[configType] = iConfig;
