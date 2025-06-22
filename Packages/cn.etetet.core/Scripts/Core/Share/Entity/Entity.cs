@@ -492,16 +492,15 @@ namespace ET
 
             this.iScene = null;
 
-            Entity parentEntity = this.parent;
-            if (parentEntity != null)
+            if (this.parent != null && !this.parent.IsDisposed)
             {
                 if (this.IsComponent)
                 {
-                    parentEntity.RemoveComponentNoDispose(this);
+                    this.parent.RemoveComponentNoDispose(this);
                 }
                 else
                 {
-                    parentEntity.RemoveChildNoDispose(this);
+                    this.parent.RemoveChildNoDispose(this);
                 }
             }
 
