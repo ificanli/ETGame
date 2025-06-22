@@ -103,8 +103,8 @@ namespace ET
                 {
                     this.ViewGO = new UnityEngine.GameObject(this.ViewName);
                     this.ViewGO.AddComponent<ComponentView>().Component = this;
-                    this.ViewGO.transform.SetParent(this.Parent == null? 
-                            UnityEngine.GameObject.Find("Global/Scenes").transform : this.Parent.ViewGO.transform);
+                    this.ViewGO.transform.SetParent(this.parent == null? 
+                            UnityEngine.GameObject.Find("Global/Scenes").transform : this.parent.ViewGO.transform);
                 }
                 else
                 {
@@ -182,8 +182,8 @@ namespace ET
         [BsonIgnore]
         public bool IsDisposed => this.InstanceId == 0;
         
-        [BsonIgnore]
-        private EntityRef<Entity> parent;
+        [AllowEntityMember]
+        private Entity parent;
 
         // 可以改变parent，但是不能设置为null
         [MemoryPackIgnore]
@@ -218,27 +218,27 @@ namespace ET
                         return;
                     }
 
-                    this.Parent.RemoveChildNoDispose(this);
+                    this.parent.RemoveChildNoDispose(this);
                 }
 
                 this.parent = value;
                 this.IsComponent = false;
-                this.Parent.AddToChildren(this);
+                this.parent.AddToChildren(this);
 
                 if (this is IScene scene)
                 {
-                    scene.Fiber = this.Parent.iScene.Fiber;
+                    scene.Fiber = this.parent.iScene.Fiber;
                     this.IScene = scene;
                 }
                 else
                 {
-                    this.IScene = this.Parent.iScene;
+                    this.IScene = this.parent.iScene;
                 }
 
 #if ENABLE_VIEW && UNITY_EDITOR
                 this.ViewGO.GetComponent<ComponentView>().Component = this;
-                this.ViewGO.transform.SetParent(this.Parent == null ?
-                        UnityEngine.GameObject.Find("Global").transform : this.Parent.ViewGO.transform);
+                this.ViewGO.transform.SetParent(this.parent == null ?
+                        UnityEngine.GameObject.Find("Global").transform : this.parent.ViewGO.transform);
                 foreach (Entity child in this.Children.Values)
                 {
                     child.ViewGO.transform.SetParent(this.ViewGO.transform);
@@ -282,28 +282,28 @@ namespace ET
                         return;
                     }
 
-                    this.Parent.RemoveComponentNoDispose(this);
+                    this.parent.RemoveComponentNoDispose(this);
                 }
 
                 this.parent = value;
                 this.IsComponent = true;
-                this.Parent.AddToComponents(this);
+                this.parent.AddToComponents(this);
                 
                 if (this is IScene scene)
                 {
-                    scene.Fiber = this.Parent.iScene.Fiber;
+                    scene.Fiber = this.parent.iScene.Fiber;
                     this.IScene = scene;
                 }
                 else
                 {
-                    this.IScene = this.Parent.iScene;
+                    this.IScene = this.parent.iScene;
                 }
             }
         }
 
         public T GetParent<T>() where T : Entity
         {
-            return this.Parent as T;
+            return this.parent as T;
         }
 
         [BsonIgnoreIfDefault]
@@ -492,7 +492,7 @@ namespace ET
 
             this.iScene = null;
 
-            Entity parentEntity = this.Parent;
+            Entity parentEntity = this.parent;
             if (parentEntity != null)
             {
                 if (this.IsComponent)

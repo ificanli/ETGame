@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace ET.Analyzers
+namespace ET
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class EntityMemberAnalyzer : DiagnosticAnalyzer
@@ -26,6 +26,9 @@ namespace ET.Analyzers
             isEnabledByDefault: true,
             description: Description);
 
+        // 特性名称：用于标记允许引用 Entity 的字段或属性
+        private const string AllowAttributeName = "AllowEntityMemberAttribute";
+
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
             => ImmutableArray.Create(Rule);
 
@@ -38,6 +41,10 @@ namespace ET.Analyzers
 
         private static void AnalyzeMember(SymbolAnalysisContext context)
         {
+            // 如果成员上标记了 [AllowEntityMember]，则跳过诊断
+            if (HasAllowAttribute(context.Symbol))
+                return;
+
             var containingType = context.Symbol.ContainingType;
             if (containingType != null && IsEntityRef(containingType))
             {
@@ -56,20 +63,17 @@ namespace ET.Analyzers
             }
             else if (propSymbol != null)
             {
-                // 仅检测自动属性：不支持表达式体属性或带有方法体的访问器
+                // 仅检测自动属性
                 var syntaxRef = propSymbol.DeclaringSyntaxReferences.FirstOrDefault();
                 if (syntaxRef != null)
                 {
                     var propSyntax = syntaxRef.GetSyntax() as PropertyDeclarationSyntax;
-                    if (propSyntax != null)
+                    if (propSyntax != null &&
+                        (propSyntax.ExpressionBody != null || propSyntax.AccessorList == null ||
+                         propSyntax.AccessorList.Accessors.Any(a => a.Body != null || a.ExpressionBody != null)))
                     {
-                        if (propSyntax.ExpressionBody != null
-                            || propSyntax.AccessorList == null
-                            || propSyntax.AccessorList.Accessors.Any(a => a.Body != null || a.ExpressionBody != null))
-                        {
-                            // 非自动属性，跳过检测
-                            return;
-                        }
+                        // 非自动属性或有自定义访问器，跳过检查
+                        return;
                     }
                 }
 
@@ -88,9 +92,20 @@ namespace ET.Analyzers
             }
         }
 
+        private static bool HasAllowAttribute(ISymbol symbol)
+        {
+            return symbol.GetAttributes().Any(attr =>
+                attr.AttributeClass.Name == AllowAttributeName ||
+                attr.AttributeClass.ToDisplayString() == AllowAttributeName);
+        }
+
         private static bool ContainsEntity(ITypeSymbol symbol)
         {
             if (symbol == null)
+                return false;
+
+            // 跳过委托类型，如 Action<>, Func<>
+            if (symbol.TypeKind == TypeKind.Delegate)
                 return false;
 
             if (IsEntityRef(symbol))

@@ -24,7 +24,7 @@ namespace ET
 
         private static readonly Dictionary<Type, EntityDrawer> entityDrawerDict = new();
 
-        private static Action<EntityRef<Entity>> drawAction;
+        private static Action<Entity> drawAction;
 
         static ComponentViewHelper()
         {
@@ -98,9 +98,8 @@ namespace ET
             }
         }
 
-        private static void Draw(EntityRef<Entity> entityRef)
+        private static void Draw(Entity entity)
         {
-            Entity entity = entityRef.Entity;
             EditorGUILayout.BeginVertical();
 
             EditorGUILayout.LongField("InstanceId: ", entity.InstanceId);

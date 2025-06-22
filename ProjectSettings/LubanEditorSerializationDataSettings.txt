@@ -297,7 +297,7 @@
                         "$id": 30,
                         "$type": 3
                     },
-                    "$rlength": 16,
+                    "$rlength": 22,
                     "$rcontent": [
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.startconfig\\Luban\\Localhost\\Datas\\StartMachine.xlsx",
@@ -474,6 +474,72 @@
                                 "Path": "/Users/tanghai/Documents/WOW/Packages/cn.etetet.startconfig/Luban/Release/Datas/StartZone.xlsx",
                                 "Desc": null
                             }
+                        },
+                        {
+                            "$k": "cn.etetet.startconfig/Luban/Localhost/Base/__beans__.xlsx",
+                            "$v": {
+                                "$id": 47,
+                                "$type": 7,
+                                "Name": "__beans__.xlsx",
+                                "Alias": null,
+                                "Path": "/Users/tanghai/Documents/WOW/Packages/cn.etetet.startconfig/Luban/Localhost/Base/__beans__.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.startconfig/Luban/Localhost/Base/__enums__.xlsx",
+                            "$v": {
+                                "$id": 48,
+                                "$type": 7,
+                                "Name": "__enums__.xlsx",
+                                "Alias": null,
+                                "Path": "/Users/tanghai/Documents/WOW/Packages/cn.etetet.startconfig/Luban/Localhost/Base/__enums__.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.startconfig/Luban/Localhost/Base/__tables__.xlsx",
+                            "$v": {
+                                "$id": 49,
+                                "$type": 7,
+                                "Name": "__tables__.xlsx",
+                                "Alias": null,
+                                "Path": "/Users/tanghai/Documents/WOW/Packages/cn.etetet.startconfig/Luban/Localhost/Base/__tables__.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.startconfig/Luban/Release/Base/__beans__.xlsx",
+                            "$v": {
+                                "$id": 50,
+                                "$type": 7,
+                                "Name": "__beans__.xlsx",
+                                "Alias": null,
+                                "Path": "/Users/tanghai/Documents/WOW/Packages/cn.etetet.startconfig/Luban/Release/Base/__beans__.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.startconfig/Luban/Release/Base/__enums__.xlsx",
+                            "$v": {
+                                "$id": 51,
+                                "$type": 7,
+                                "Name": "__enums__.xlsx",
+                                "Alias": null,
+                                "Path": "/Users/tanghai/Documents/WOW/Packages/cn.etetet.startconfig/Luban/Release/Base/__enums__.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.startconfig/Luban/Release/Base/__tables__.xlsx",
+                            "$v": {
+                                "$id": 52,
+                                "$type": 7,
+                                "Name": "__tables__.xlsx",
+                                "Alias": null,
+                                "Path": "/Users/tanghai/Documents/WOW/Packages/cn.etetet.startconfig/Luban/Release/Base/__tables__.xlsx",
+                                "Desc": null
+                            }
                         }
                     ]
                 }
@@ -481,7 +547,7 @@
             {
                 "$k": "wow",
                 "$v": {
-                    "$id": 47,
+                    "$id": 53,
                     "$type": 6,
                     "comparer": $iref:30,
                     "$rlength": 24,
@@ -489,7 +555,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Map.xlsx",
                             "$v": {
-                                "$id": 48,
+                                "$id": 54,
                                 "$type": 7,
                                 "Name": "Map.xlsx",
                                 "Alias": null,
@@ -500,7 +566,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\MapTransferRule.xlsx",
                             "$v": {
-                                "$id": 49,
+                                "$id": 55,
                                 "$type": 7,
                                 "Name": "MapTransferRule.xlsx",
                                 "Alias": null,
@@ -511,7 +577,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\MapUnit.xlsx",
                             "$v": {
-                                "$id": 50,
+                                "$id": 56,
                                 "$type": 7,
                                 "Name": "MapUnit.xlsx",
                                 "Alias": null,
@@ -522,7 +588,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\NumericType.xlsx",
                             "$v": {
-                                "$id": 51,
+                                "$id": 57,
                                 "$type": 7,
                                 "Name": "NumericType.xlsx",
                                 "Alias": null,
@@ -533,7 +599,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Quest.xlsx",
                             "$v": {
-                                "$id": 52,
+                                "$id": 58,
                                 "$type": 7,
                                 "Name": "Quest.xlsx",
                                 "Alias": null,
@@ -544,7 +610,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\QuestObjective.xlsx",
                             "$v": {
-                                "$id": 53,
+                                "$id": 59,
                                 "$type": 7,
                                 "Name": "QuestObjective.xlsx",
                                 "Alias": null,
@@ -555,7 +621,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Text.xlsx",
                             "$v": {
-                                "$id": 54,
+                                "$id": 60,
                                 "$type": 7,
                                 "Name": "Text.xlsx",
                                 "Alias": null,
@@ -566,7 +632,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Datas\\Unit.xlsx",
                             "$v": {
-                                "$id": 55,
+                                "$id": 61,
                                 "$type": 7,
                                 "Name": "Unit.xlsx",
                                 "Alias": null,
@@ -577,7 +643,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config\\Defines\\EnumMapper.xml",
                             "$v": {
-                                "$id": 56,
+                                "$id": 62,
                                 "$type": 7,
                                 "Name": "EnumMapper.xml",
                                 "Alias": null,
@@ -588,7 +654,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config/Base\\__beans__.xlsx",
                             "$v": {
-                                "$id": 57,
+                                "$id": 63,
                                 "$type": 7,
                                 "Name": "__beans__.xlsx",
                                 "Alias": null,
@@ -599,7 +665,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config/Base\\__enums__.xlsx",
                             "$v": {
-                                "$id": 58,
+                                "$id": 64,
                                 "$type": 7,
                                 "Name": "__enums__.xlsx",
                                 "Alias": null,
@@ -610,7 +676,7 @@
                         {
                             "$k": "cn.etetet.wow.yiui/Packages/cn.etetet.wow\\Luban\\Config/Base\\__tables__.xlsx",
                             "$v": {
-                                "$id": 59,
+                                "$id": 65,
                                 "$type": 7,
                                 "Name": "__tables__.xlsx",
                                 "Alias": null,
@@ -621,7 +687,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Datas/Map.xlsx",
                             "$v": {
-                                "$id": 60,
+                                "$id": 66,
                                 "$type": 7,
                                 "Name": "Map.xlsx",
                                 "Alias": null,
@@ -632,7 +698,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Datas/MapTransferRule.xlsx",
                             "$v": {
-                                "$id": 61,
+                                "$id": 67,
                                 "$type": 7,
                                 "Name": "MapTransferRule.xlsx",
                                 "Alias": null,
@@ -643,7 +709,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Datas/MapUnit.xlsx",
                             "$v": {
-                                "$id": 62,
+                                "$id": 68,
                                 "$type": 7,
                                 "Name": "MapUnit.xlsx",
                                 "Alias": null,
@@ -654,7 +720,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Datas/NumericType.xlsx",
                             "$v": {
-                                "$id": 63,
+                                "$id": 69,
                                 "$type": 7,
                                 "Name": "NumericType.xlsx",
                                 "Alias": null,
@@ -665,7 +731,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Datas/Quest.xlsx",
                             "$v": {
-                                "$id": 64,
+                                "$id": 70,
                                 "$type": 7,
                                 "Name": "Quest.xlsx",
                                 "Alias": null,
@@ -676,7 +742,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Datas/QuestObjective.xlsx",
                             "$v": {
-                                "$id": 65,
+                                "$id": 71,
                                 "$type": 7,
                                 "Name": "QuestObjective.xlsx",
                                 "Alias": null,
@@ -687,7 +753,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Datas/Text.xlsx",
                             "$v": {
-                                "$id": 66,
+                                "$id": 72,
                                 "$type": 7,
                                 "Name": "Text.xlsx",
                                 "Alias": null,
@@ -698,7 +764,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Datas/Unit.xlsx",
                             "$v": {
-                                "$id": 67,
+                                "$id": 73,
                                 "$type": 7,
                                 "Name": "Unit.xlsx",
                                 "Alias": null,
@@ -709,7 +775,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Defines/EnumMapper.xml",
                             "$v": {
-                                "$id": 68,
+                                "$id": 74,
                                 "$type": 7,
                                 "Name": "EnumMapper.xml",
                                 "Alias": null,
@@ -720,7 +786,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Base/__beans__.xlsx",
                             "$v": {
-                                "$id": 69,
+                                "$id": 75,
                                 "$type": 7,
                                 "Name": "__beans__.xlsx",
                                 "Alias": null,
@@ -731,7 +797,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Base/__enums__.xlsx",
                             "$v": {
-                                "$id": 70,
+                                "$id": 76,
                                 "$type": 7,
                                 "Name": "__enums__.xlsx",
                                 "Alias": null,
@@ -742,7 +808,7 @@
                         {
                             "$k": "cn.etetet.wow/Luban/Config/Base/__tables__.xlsx",
                             "$v": {
-                                "$id": 71,
+                                "$id": 77,
                                 "$type": 7,
                                 "Name": "__tables__.xlsx",
                                 "Alias": null,
