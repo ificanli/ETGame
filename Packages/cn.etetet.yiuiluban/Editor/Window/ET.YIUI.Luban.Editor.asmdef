@@ -8,7 +8,15 @@
         "ET.Hotfix",
         "ET.ModelView",
         "ET.HotfixView",
-        "UnityEngine.UI"
+        "UnityEngine.UI",
+        "DamageNumbersPro",
+        "ET.HybridCLR",
+        "ET.Loader",
+        "ET.MemoryPack",
+        "ET.Recast",
+        "ET.SourceGeneratorAttribute",
+        "ET.YIUIFramework",
+        "ET.YooAssets"
     ],
     "includePlatforms": [
         "Editor"

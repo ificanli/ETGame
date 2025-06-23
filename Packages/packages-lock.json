@@ -281,6 +281,14 @@
         "com.unity.modules.unitywebrequestassetbundle": "1.0.0"
       }
     },
+    "com.boxqkrtm.ide.cursor": {
+      "version": "file:com.unity.ide.cursor-et",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.9"
+      }
+    },
     "com.etetet.init": {
       "version": "file:com.etetet.init",
       "depth": 0,
@@ -356,15 +364,6 @@
       "dependencies": {
         "com.unity.ext.nunit": "1.0.6"
       }
-    },
-    "com.unity.ide.visualstudio": {
-      "version": "2.0.22",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.test-framework": "1.1.9"
-      },
-      "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
       "version": "1.11.2",

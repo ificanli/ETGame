@@ -4,7 +4,10 @@
     "references": [
         "Unity.ScriptableBuildPipeline",
         "Unity.ScriptableBuildPipeline.Editor",
-        "ET.YooAssets"
+        "ET.YooAssets",
+        "ET.Core",
+        "ET.MemoryPack",
+        "ET.SourceGeneratorAttribute"
     ],
     "includePlatforms": [
         "Editor"

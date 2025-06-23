@@ -10,7 +10,16 @@
         "ET.Loader.Editor",
         "ET.Model",
         "ET.ModelView",
-        "ET.Core"
+        "ET.Core",
+        "DamageNumbersPro",
+        "ET.Core.Editor",
+        "ET.HybridCLR",
+        "ET.Init.Editor",
+        "ET.Loader",
+        "ET.MemoryPack",
+        "ET.Recast",
+        "ET.SourceGeneratorAttribute",
+        "ET.YIUIFramework"
     ],
     "includePlatforms": [
         "Editor"
