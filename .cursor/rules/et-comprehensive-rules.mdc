@@ -1,0 +1,889 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# ET框架完整开发规范 - AI开发助手
+
+## 最重要基础原则
+1. **语言要求**：所有AI回复和代码注释都必须使用**中文**
+2. **严禁假设性代码**：AI提供的代码必须是完整可执行的，严禁出现"假设xxx已完成"等占位符
+
+## ET框架核心架构原则
+
+### Entity-Component-System (ECS) 架构
+- **Entity**：只包含数据，不包含方法
+- **System**：只包含逻辑，不包含数据  
+- **Component**：Entity的组成部分，遵循组合优于继承
+- **分离原则**：严格分离数据定义和业务逻辑
+
+### 包结构规范
+- **所有代码文件**必须创建在 `Packages/cn.etetet.*` 目录下
+- **包命名规范**：`cn.etetet.{功能模块名}`
+  - 核心包：`cn.etetet.core`
+  - 功能包：`cn.etetet.mmo`、`cn.etetet.bag`、`cn.etetet.skill` 等
+  - UI包：`cn.etetet.yiui*` 系列
+
+### 程序集分类规范
+每个包必须支持以下四个程序集分类：
+
+#### 1. Model 程序集 (`Scripts/Model/`)
+- **用途**：服务器和客户端共享的模型层
+- **内容**：Entity定义、配置数据、共享逻辑
+- **特点**：不可热更新，稳定性高
+
+#### 2. ModelView 程序集 (`Scripts/ModelView/`)  
+- **用途**：客户端专用的视图模型层
+- **内容**：UI相关Entity、客户端专用组件
+- **特点**：不可热更新，UI底层支持
+
+#### 3. Hotfix 程序集 (`Scripts/Hotfix/`)
+- **用途**：服务器和客户端共享的热更新逻辑层
+- **内容**：System类、业务逻辑实现
+- **特点**：可热更新，核心业务逻辑
+
+#### 4. HotfixView 程序集 (`Scripts/HotfixView/`)
+- **用途**：客户端专用的热更新视图层
+- **内容**：UI System类、客户端显示逻辑
+- **特点**：可热更新，UI业务逻辑
+
+## Entity 开发规范
+
+### Entity 类定义规范
+```csharp
+// 位置：Packages/cn.etetet.{包名}/Scripts/Model/ 或 Scripts/ModelView/
+namespace ET  // 或 ET.Client, ET.Server
+{
+    /// <summary>
+    /// 详细的中文描述
+    /// </summary>
+    [ComponentOf(typeof(ParentEntityType))]  // 指定父实体类型（如适用）
+    public class ExampleComponent : Entity, IAwake, IDestroy
+    {
+        // 只包含数据字段，不包含方法
+        public int SomeValue;
+        public string SomeName;
+        public List<int> SomeList;
+    }
+}
+```
+
+### Entity 类要求
+- **必须**继承 `Entity` 基类
+- **必须**实现 `IAwake` 接口（生命周期接口）
+- **根据需要**实现其他接口：`IDestroy`、`IUpdate`、`ISerialize` 等
+- **严禁**在Entity类中定义任何方法
+- **必须**添加 `[ComponentOf]` 或 `[ChildOf]` 特性指定父级约束
+
+### 生命周期接口规范
+```csharp
+// 基础生命周期
+public interface IAwake { }                          // 初始化
+public interface IAwake<A> { }                       // 带参数初始化
+public interface IDestroy { }                        // 销毁
+public interface IUpdate : IClassEvent<UpdateEvent> { } // 更新
+public interface ISerialize { }                     // 序列化前
+public interface IDeserialize { }                   // 反序列化后
+
+// 异步生命周期
+public interface IAwakeAsync { }
+public interface IAwakeAsync<A> { }
+```
+
+### EntityRef引用管理规范
+```csharp
+/// <summary>
+/// EntityRef用于解决Entity引用必须要挂在树上的问题
+/// 提供Entity的弱引用管理机制
+/// </summary>
+
+// 1. 在Entity字段中声明EntityRef
+public class ProcessRegistryComponent : Entity, IAwake
+{
+    /// <summary>
+    /// 进程字典，使用EntityRef管理ProcessInfo引用
+    /// </summary>
+    public Dictionary<int, EntityRef<ProcessInfo>> ProcessDict { get; set; }
+    
+    /// <summary>
+    /// 机器进程映射，使用EntityRef列表
+    /// </summary>
+    public Dictionary<int, List<EntityRef<ProcessInfo>>> MachineProcessDict { get; set; }
+}
+
+// 2. 创建EntityRef引用的正确方式
+[EntitySystem]
+public static ProcessInfo RegisterProcess(this ProcessRegistryComponent self, ProcessInfo processInfo)
+{
+    // 存储到字典中
+    self.ProcessDict[processInfo.ProcessId] = process;
+    
+    return processInfo;
+}
+
+// 3. 访问EntityRef中的Entity对象
+public static ProcessInfo GetProcess(this ProcessRegistryComponent self, int processId)
+{
+    // ✅ 正确：直接赋值取出EntityRef对象返回，会自动转成ProcessInfo
+    self.ProcessDict.TryGetValue(processId, out var processRef);
+    return processRef;
+}
+
+// 4. 检查EntityRef是否有效
+public static List<ProcessInfo> GetAllValidProcesses(this ProcessRegistryComponent self)
+{
+    var validProcesses = new List<ProcessInfo>();
+    
+    // ✅ 正确：会自动转成ProcessInfo
+    foreach (ProcessInfo processInfo in self.ProcessDict.Values)
+    {
+        if (processInfo != null)
+        {
+            validProcesses.Add(processInfo);
+        }
+    }
+    
+    return validProcesses;
+}
+
+// 5. 清理无效引用
+public static void CleanupInvalidReferences(this ProcessRegistryComponent self)
+{
+    var invalidIds = new List<int>();
+    
+    foreach (var kvp in self.ProcessDict)
+    {
+        // ✅ 正确：直接赋值取出Entity对象，然后检查有效性
+        ProcessInfo processInfo = kvp.Value;
+        if (processInfo == null)
+        {
+            invalidIds.Add(kvp.Key);
+        }
+    }
+    
+    foreach (var id in invalidIds)
+    {
+        self.ProcessDict.Remove(id);
+    }
+}
+
+// ❌ 错误的用法
+// 1. 不要直接存储Entity引用，应该使用EntityRef
+public Dictionary<int, ProcessInfo> BadProcessDict;  // 错误
+
+// 2. 不要将EntityRef当作Entity使用
+// EntityRef<ProcessInfo> processRef = processInfo;
+// processRef.ProcessId;  // 错误，应该先赋值：ProcessInfo p = processRef; 然后 p.ProcessId
+
+// 3. 不要使用.Entity属性访问
+// var processInfo = processRef.Entity;  // 错误：不要用.Entity
+// if (processRef.Entity != null) { }   // 错误：不要用.Entity
+
+// 4. 不要忘记检查IsDisposed
+// ProcessInfo entity = processRef;
+// if (entity != null) { /* 使用entity */ }  // 错误：没有检查IsDisposed
+```
+
+### EntityRef使用要点
+- **用途**：解决Entity引用需要挂在Entity树上的问题
+- **创建**：直接将Entity对象赋值给EntityRef变量
+- **访问**：通过直接赋值取出对象：`Entity entity = entityRef`
+- **检查**：使用`entity != null`检查Entity是否有效
+- **集合**：在字典、列表等集合中使用EntityRef存储Entity引用
+- **生命周期**：当Entity被Dispose时，EntityRef赋值会返回null
+- **重要**：不要使用`.Entity`属性，直接赋值即可
+
+### EntityRef在async/await环境下的使用规范（重要！）
+**这是ET分析器的严格限制，必须遵循：**
+
+当某个await执行块后再调用Entity对象进行操作时，需要利用EntityRef提前引用，并且await完后在下一次调用前先获取一次。
+
+```csharp
+// ✅ 正确：await前创建EntityRef，await后重新获取Entity
+public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, UpdateTask task)
+{
+    // 1. 在async方法开始时创建所有Entity的EntityRef引用
+    EntityRef<UpdateCoordinatorComponent> selfRef = self;
+    EntityRef<UpdateTask> taskRef = task;
+    var processRegistry = self.Root().GetComponent<ProcessRegistryComponent>();
+    EntityRef<ProcessRegistryComponent> processRegistryRef = processRegistry;
+    
+    foreach (int processId in task.TargetProcessIds)
+    {
+        // 2. 在每次使用Entity前通过EntityRef重新获取
+        task = taskRef;
+        task.UpdateProcessProgress(processId, UpdateStep.Updating, UpdateStepStatus.Running);
+        
+        try
+        {
+            // 3. 在使用其他Entity前也要重新获取
+            processRegistry = processRegistryRef;
+            var processInfo = processRegistry.GetProcess(processId);
+            
+            if (processInfo != null && processInfo.IsOnline())
+            {
+                Log.Info($"检测到进程 {processId} 正在运行，准备停止进程避免文件占用");
+                
+                // 4. await操作前确保有EntityRef
+                self = selfRef;
+                bool killSuccess = await ServerProcessHelper.KillProcess(self.Scene(), processId);
+                
+                if (!killSuccess)
+                {
+                    // 5. await后立即重新获取Entity
+                    task = taskRef;
+                    task.UpdateProcessProgress(processId, UpdateStep.StoppingProcess, UpdateStepStatus.Failed, 0, "停止进程失败");
+                    return false;
+                }
+                
+                // 6. 每次await后都要重新获取
+                self = selfRef;
+                await self.Root().GetComponent<TimerComponent>().WaitAsync(3000);
+            }
+            
+            // 7. 继续业务逻辑时重新获取Entity
+            task = taskRef;
+            var success = ServerMachineHelper.InstallServer(
+                processInfo.MachineId,
+                processInfo.ProcessType,
+                processInfo.Version,
+                processInfo.InstallPath
+            );
+            
+            if (success)
+            {
+                // 8. 等待操作也要重新获取EntityRef
+                self = selfRef;
+                await self.Root().GetComponent<TimerComponent>().WaitAsync(2000);
+                
+                // 9. 最后更新状态时重新获取
+                task = taskRef;
+                task.UpdateProcessProgress(processId, UpdateStep.Updating, UpdateStepStatus.Success, 100, "更新成功");
+            }
+            else
+            {
+                task = taskRef;
+                task.UpdateProcessProgress(processId, UpdateStep.Updating, UpdateStepStatus.Failed, 0, "安装失败");
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            // 10. 异常处理中也要重新获取Entity
+            task = taskRef;
+            task.UpdateProcessProgress(processId, UpdateStep.Updating, UpdateStepStatus.Failed, 0, $"更新失败: {e.Message}");
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+// ❌ 错误：await后直接使用Entity
+public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, UpdateTask task)
+{
+    foreach (int processId in task.TargetProcessIds)
+    {
+        task.UpdateProgress(processId, "开始处理");
+        
+        // await操作
+        await SomeAsyncOperation();
+        
+        // 错误：await后直接使用Entity会导致ET分析器报错
+        task.UpdateProgress(processId, "处理完成");  // 分析器错误！
+        self.SomeMethod();  // 分析器错误！
+    }
+}
+```
+
+**EntityRef与async/await的关键要点：**
+- **分析器限制**：ET分析器会检查await后Entity的使用，违反规则会导致编译错误
+- **EntityRef创建时机**：在async方法开始时为所有可能用到的Entity创建EntityRef
+- **重新获取时机**：每次await操作后，必须通过EntityRef重新获取Entity才能使用
+- **循环中的使用**：在循环内部每次使用Entity前都要重新获取
+- **异常处理**：在catch块中使用Entity也要遵循重新获取规则
+- **性能影响**：EntityRef的赋值操作成本很低，不用担心性能问题
+
+## System 开发规范
+
+### System 类定义规范
+```csharp
+// 位置：Packages/cn.etetet.{包名}/Scripts/Hotfix/ 或 Scripts/HotfixView/
+namespace ET  // 或 ET.Client, ET.Server
+{
+    /// <summary>
+    /// 详细的中文描述
+    /// </summary>
+    [EntitySystemOf(typeof(ExampleComponent))]     // 指定对应的Entity类型
+    public static partial class ExampleComponentSystem
+    {
+        #region 生命周期方法
+
+        [EntitySystem]
+        private static void Awake(this ExampleComponent self)
+        {
+            // 初始化逻辑
+        }
+
+        [EntitySystem]
+        private static void Awake(this ExampleComponent self, int value)
+        {
+            // 带参数的初始化逻辑
+        }
+
+        [EntitySystem]
+        private static void Destroy(this ExampleComponent self)
+        {
+            // 销毁清理逻辑
+        }
+
+        #endregion
+
+        #region 业务方法
+
+        /// <summary>
+        /// 业务方法的中文描述
+        /// </summary>
+        public static void DoSomething(this ExampleComponent self, int param)
+        {
+            // 业务逻辑实现
+        }
+
+        #endregion
+    }
+}
+```
+
+### System 类要求
+- **必须**是静态类（`static`）
+- **必须**包含 `partial` 关键字
+- **必须**添加 `[EntitySystemOf(typeof(对应Entity类))]` 特性
+- **必须**实现对应Entity的 `Awake` 生命周期函数
+- **所有方法**必须是静态扩展方法
+- **生命周期方法**必须添加 `[EntitySystem]` 特性并声明为 `private static`
+
+## 命名空间规范
+
+### 基础命名空间
+- `ET`：通用命名空间，用于共享代码
+- `ET.Client`：客户端专用命名空间
+- `ET.Server`：服务器专用命名空间
+
+### 命名空间选择原则
+```csharp
+// Model/Hotfix 程序集 - 共享代码
+namespace ET { }
+
+// ModelView/HotfixView 程序集 - 客户端代码  
+namespace ET.Client { }
+
+// 服务器专用代码
+namespace ET.Server { }
+```
+
+## 特性使用规范
+
+### 核心特性说明
+```csharp
+// Entity组件约束
+[ComponentOf(typeof(ParentType))]  // 指定唯一父级类型
+[ComponentOf]                      // 允许多种父级类型
+[ChildOf(typeof(ParentType))]      // 指定子实体父级类型
+[ChildOf]                          // 允许多种父级类型
+
+// System相关特性
+[EntitySystemOf(typeof(EntityType))]        // 标记System对应的Entity
+[EntitySystem]                               // 标记生命周期方法
+
+// 生成器相关特性
+[EnableAccessEntiyChildAttribute]           // 允许访问Entity的child和component
+[EnableMethodAttribute]                      // 启用方法增强
+```
+
+## 文件组织结构规范
+
+### 标准包结构
+```
+Packages/cn.etetet.{包名}/
+├── packagegit.json                    # 包配置文件
+├── Editor/                            # 编辑器代码
+├── Runtime/                           # 运行时代码
+└── Scripts/
+    ├── Model/                         # Model程序集
+    │   ├── Share/                     # 共享代码
+    │   ├── Client/                    # 客户端专用
+    │   └── Server/                    # 服务器专用
+    ├── ModelView/                     # ModelView程序集
+    │   └── Client/                    # 客户端视图模型
+    ├── Hotfix/                        # Hotfix程序集
+    │   ├── Share/                     # 共享逻辑
+    │   ├── Client/                    # 客户端逻辑
+    │   └── Server/                    # 服务器逻辑
+    └── HotfixView/                    # HotfixView程序集
+        └── Client/                    # 客户端视图逻辑
+```
+
+### 文件命名规范
+- Entity文件：`{功能名}Component.cs`
+- System文件：`{功能名}ComponentSystem.cs`  
+- 配置文件：`{功能名}Config.cs`
+- 协议文件：`{协议名}.proto`
+
+## 代码质量规范
+
+### 注释规范
+```csharp
+/// <summary>
+/// 类的详细中文描述
+/// 说明功能、用途和注意事项
+/// </summary>
+public class ExampleComponent : Entity, IAwake
+{
+    /// <summary>
+    /// 字段的中文描述
+    /// </summary>
+    public int Value;
+}
+
+/// <summary>
+/// 方法的详细中文描述
+/// </summary>
+/// <param name="self">当前组件实例</param>
+/// <param name="value">参数的中文描述</param>
+/// <returns>返回值的中文描述</returns>
+public static bool DoSomething(this ExampleComponent self, int value)
+{
+    // 重要逻辑的中文注释
+    return true;
+}
+```
+
+### 编码风格
+```csharp
+// 命名规范
+public class PlayerComponent        // 类名：PascalCase
+public static void GetItem()       // 方法名：PascalCase  
+public string playerName;          // 字段名：camelCase
+private string _internalField;     // 私有字段：_camelCase
+public const int MAX_PLAYERS = 100; // 常量：UPPER_SNAKE_CASE
+
+// 代码格式
+if (condition) 
+{
+    // tab缩进
+}
+```
+
+## 异步编程规范
+
+### ETTask使用
+```csharp
+// 使用ETTask代替Task
+public static async ETTask DoAsyncWork(this ExampleComponent self)
+{
+    await ETTask.CompletedTask;
+}
+
+// 带返回值的异步方法
+public static async ETTask<bool> TryDoWork(this ExampleComponent self)
+{
+    await SomeAsyncOperation();
+    return true;
+}
+
+// 异常处理
+public static async ETTask SafeAsyncWork(this ExampleComponent self)
+{
+    try
+    {
+        await DoAsyncWork(self);
+    }
+    catch (Exception e)
+    {
+        Log.Error($"异步操作失败: {e}");
+    }
+}
+```
+
+## UI框架 (YIUI) 规范
+
+### YIUI Entity规范
+```csharp
+// UI Entity必须继承特定接口
+public class ExamplePanelComponent : Entity, IAwake, IDestroy,
+    IYIUIBind,          // UI绑定
+    IYIUIInitialize,    // UI初始化  
+    IYIUIOpen,          // UI打开
+    IYIUIClose          // UI关闭
+{
+    // UI相关数据字段
+}
+```
+
+### YIUI System规范
+```csharp
+[FriendOf(typeof(ExamplePanelComponent))]
+[EntitySystemOf(typeof(ExamplePanelComponent))]
+public static partial class ExamplePanelComponentSystem
+{
+    [EntitySystem]
+    private static void YIUIBind(this ExamplePanelComponent self)
+    {
+        // UI组件绑定逻辑
+    }
+
+    [EntitySystem]
+    private static void YIUIInitialize(this ExamplePanelComponent self)
+    {
+        // UI初始化逻辑
+    }
+
+    [EntitySystem]
+    private static async ETTask<bool> YIUIOpen(this ExamplePanelComponent self)
+    {
+        // UI打开逻辑
+        return true;
+    }
+
+    [EntitySystem]
+    private static async ETTask<bool> YIUIClose(this ExamplePanelComponent self)
+    {
+        // UI关闭逻辑
+        return true;
+    }
+}
+```
+
+## 网络协议规范
+
+### 协议命名规范
+- 请求协议：`C2X_` 开头（客户端到服务器）
+- 响应协议：`X2C_` 开头（服务器到客户端）
+- 服务器间：`G2M_`、`M2G_` 等（网关到地图等）
+
+### HTTP消息类规范
+```csharp
+// HTTP请求消息类 - 字段必须使用PascalCase
+public class WebMachineRequestJson_CreateUpdateTask
+{
+    // ✅ 正确：使用PascalCase
+    public string ProcessId { get; set; }
+    public string Version { get; set; }
+    public string UpdateUrl { get; set; }
+    
+    // ❌ 错误：使用camelCase
+    // public string processId { get; set; }
+    // public string version { get; set; }
+}
+
+// HTTP响应消息类 - 与请求类保持一致的命名
+public class WebMachineResponseJson_CreateUpdateTask
+{
+    public bool Success { get; set; }
+    public string Message { get; set; }
+    public string TaskId { get; set; }
+}
+```
+
+### 协议文件组织
+```
+Packages/cn.etetet.proto/
+├── Proto/
+│   ├── Common/          # 通用协议
+│   ├── Login/           # 登录协议
+│   ├── Game/            # 游戏协议
+│   └── Battle/          # 战斗协议
+└── Scripts/
+    └── Model/
+        └── Generate/     # 自动生成的协议代码
+```
+
+## 配置数据规范
+
+### 配置类定义
+```csharp
+// 单个配置项
+public class ExampleConfig : AConfig
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Value { get; set; }
+}
+
+// 配置容器
+[ConfigProcess]
+public class ExampleConfigCategory : AConfigCategory<ExampleConfig>
+{
+    public static ExampleConfigCategory Instance => ConfigComponent.Instance.GetCategory<ExampleConfigCategory>();
+}
+```
+
+## 错误处理和日志规范
+
+### 日志使用
+```csharp
+// 日志级别选择
+Log.Debug("调试信息，仅开发时使用");
+Log.Info("重要的业务信息");
+Log.Warning("可能的问题，但不影响运行");
+Log.Error("错误信息，需要关注");
+Log.Error(exception); // 异常对象
+
+// 日志格式
+Log.Info($"玩家{playerId}完成了任务{taskId}");
+```
+
+### 异常处理
+```csharp
+public static bool TryDoSomething(this ExampleComponent self)
+{
+    try
+    {
+        // 可能抛出异常的代码
+        return true;
+    }
+    catch (Exception e)
+    {
+        Log.Error($"操作失败: {e}");
+        return false;
+    }
+    finally
+    {
+        // 清理代码
+    }
+}
+```
+
+## 性能优化规范
+
+### 对象池使用
+```csharp
+// 从对象池获取对象
+var obj = ObjectPool.Fetch<SomeClass>();
+
+// 使用完毕归还对象池
+obj.Dispose(); // 如果实现了IDisposable
+// 或
+ObjectPool.Return(obj);
+```
+
+### 内存管理
+```csharp
+// 避免频繁装箱
+public static void ProcessValue(this ExampleComponent self, object value)
+{
+    // 错误：会产生装箱
+    // if (value.Equals(0)) { }
+    
+    // 正确：使用泛型避免装箱
+    if (value is int intValue && intValue == 0) { }
+}
+```
+
+## 常见问题和解决方案
+
+### 1. Entity字段访问权限问题
+```csharp
+// 问题：无法访问Entity的private字段
+// 解决：在System类上添加FriendOf特性
+[FriendOf(typeof(ExampleComponent))]
+public static partial class ExampleComponentSystem
+{
+    public static void AccessField(this ExampleComponent self)
+    {
+        self.privateField = 100; // 现在可以访问了
+    }
+}
+```
+
+### 2. 生命周期方法缺失
+```csharp
+// 问题：Entity没有对应的System生命周期方法
+// 解决：确保System中实现了对应的生命周期方法
+[EntitySystem]
+private static void Awake(this ExampleComponent self)
+{
+    // 必须实现，即使是空方法
+}
+```
+
+### 3. 程序集引用错误
+```csharp
+// 问题：无法访问其他程序集的类型
+// 解决：检查packagegit.json中的ScriptsReferences配置
+{
+    "ScriptsReferences": {
+        "Model": ["ET.Core"],
+        "Hotfix": ["ET.Core", "ET.Model"],
+        "ModelView": ["ET.Core", "ET.Model", "ET.YIUIFramework"],
+        "HotfixView": ["ET.Core", "ET.Model", "ET.ModelView", "ET.Hotfix"]
+    }
+}
+```
+
+## 代码一致性检查规范
+
+### 必须遵循的一致性原则
+
+#### 1. 字段命名一致性
+```csharp
+// ✅ 正确：所有C#类字段使用PascalCase
+public class ProcessInfo : Entity, IAwake
+{
+    public string ProcessId;     // 正确
+    public string Version;       // 正确 
+    public string InstallPath;   // 正确
+}
+
+// ❌ 错误：字段使用camelCase
+public class ProcessInfo : Entity, IAwake
+{
+    public string processId;     // 错误
+    public string version;       // 错误
+}
+```
+
+#### 2. Entity与System一致性
+```csharp
+// Entity定义必须包含System中使用的所有字段
+public class ProcessInfo : Entity, IAwake
+{
+    public string ProcessId;
+    public string Version;
+    public string InstallPath;    // 如果System中使用，Entity中必须定义
+    public int Port;             // 如果System中使用，Entity中必须定义
+}
+
+// System中使用的字段必须在Entity中存在
+public static void UpdateInfo(this ProcessInfo self, string installPath)
+{
+    self.InstallPath = installPath;  // InstallPath必须在Entity中定义
+}
+```
+
+#### 3. 避免重复定义
+```csharp
+// ❌ 错误：同一个类在多个文件中定义
+// 文件1：WebMachineMessages.cs
+public class WebMachineRequestJson_Response { }
+
+// 文件2：另一个文件.cs  
+public class WebMachineRequestJson_Response { }  // 重复定义
+
+// ✅ 正确：一个类只在一个文件中定义，其他地方引用
+```
+
+#### 4. HTTP消息类与Handler一致性
+```csharp
+// 消息类定义
+public class WebMachineRequestJson_CreateUpdateTask
+{
+    public string ProcessId { get; set; }    // 注意字段名
+    public string Version { get; set; }
+}
+
+// HttpHandler中的使用必须匹配
+public async ETTask Handle(Scene scene, HttpListenerContext context)
+{
+    var req = MongoHelper.FromJson<WebMachineRequestJson_CreateUpdateTask>(postData);
+    
+    // 使用字段名必须与消息类定义一致
+    string processId = req.ProcessId;  // 必须匹配消息类中的字段名
+    string version = req.Version;      // 必须匹配消息类中的字段名
+}
+```
+
+### 生成代码前必做检查
+
+#### 1. 字段名检查清单
+- [ ] 所有C#类字段使用PascalCase（包括消息类、Entity类）
+- [ ] 字段命名在整个项目中保持一致
+- [ ] HTTP消息类字段符合C#命名规范
+
+#### 2. Entity完整性检查
+- [ ] Entity包含所有System方法中引用的字段
+- [ ] Entity字段类型与System中使用的类型一致
+- [ ] Entity实现了所有必要的生命周期接口
+
+#### 3. 重复定义检查
+- [ ] 搜索项目中是否已有同名类
+- [ ] 确认消息类没有在多个文件中重复定义
+- [ ] 检查命名空间中是否有冲突的类名
+
+#### 4. 消息一致性检查
+- [ ] HTTP请求/响应消息类字段名与Handler中使用保持一致
+- [ ] 消息类字段类型与序列化/反序列化时的期望类型匹配
+- [ ] 请求消息类与响应消息类命名规范一致
+
+## AI开发助手使用指南
+
+### 推荐的AI提示词模板
+```
+请帮我在ET框架中创建一个[功能描述]的Entity和对应的System：
+- Entity名称：[EntityName]Component
+- 主要功能：[详细功能描述]
+- 父级Entity：[ParentEntityType]（如果有）
+- 生命周期需求：[IAwake, IDestroy等]
+- 程序集位置：[Model/ModelView]
+- 命名空间：[ET/ET.Client/ET.Server]
+
+请确保：
+1. 严格遵循ET框架规范
+2. 添加详细的中文注释
+3. 正确使用特性标签
+4. 实现必要的生命周期方法
+5. **检查字段命名一致性（使用PascalCase）**
+6. **确保Entity包含所有System中使用的字段**
+7. **避免重复定义已存在的类**
+8. **保持消息类与Handler使用的一致性**
+9. **正确使用EntityRef管理Entity引用**
+10. **用直接赋值取出Entity对象，然后检查null和IsDisposed状态**
+11. **集合中存储Entity引用时使用EntityRef<T>**
+12. **不使用.Entity属性，直接赋值访问**
+```
+
+### 代码审查检查清单
+- [ ] Entity类继承Entity并实现IAwake
+- [ ] Entity类不包含任何方法
+- [ ] System类是静态partial类
+- [ ] System类添加了正确的特性标签
+- [ ] 实现了必要的生命周期方法
+- [ ] 添加了详细的中文注释
+- [ ] 文件放置在正确的目录和程序集中
+- [ ] 使用了正确的命名空间
+- [ ] 遵循了代码格式规范
+- [ ] **字段命名一致性**：所有类字段使用PascalCase，特别是消息类
+- [ ] **Entity完整性**：Entity包含所有System中引用的字段
+- [ ] **避免重复定义**：确认没有重复定义同名类
+- [ ] **消息类一致性**：HTTP消息类字段与Handler使用保持匹配
+- [ ] **EntityRef使用正确**：集合中存储Entity引用时使用EntityRef
+- [ ] **EntityRef访问安全**：用直接赋值取出Entity对象，然后检查null和IsDisposed
+- [ ] **EntityRef创建规范**：直接将Entity赋值给EntityRef变量
+- [ ] **EntityRef访问规范**：不使用.Entity属性，直接赋值取出
+- [ ] **EntityRef与async/await合规**：await前创建EntityRef，await后重新获取Entity（ET分析器严格限制）
+
+## 总结
+
+严格遵循以上规范，确保：
+1. **架构清晰**：Entity负责数据，System负责逻辑
+2. **模块化**：功能按包组织，程序集合理分离
+3. **可维护**：代码规范统一，注释详细
+4. **可扩展**：遵循框架设计原则，易于扩展
+5. **高质量**：充分的错误处理和性能优化
+6. **代码一致性**：字段命名统一、Entity完整性、无重复定义
+7. **消息完整性**：HTTP消息类与Handler使用保持匹配
+
+### 关键质量检查点
+- ✅ 所有字段使用PascalCase命名
+- ✅ Entity包含System中引用的所有字段
+- ✅ 避免类的重复定义
+- ✅ HTTP消息类与Handler使用一致
+- ✅ 特性标签正确使用
+- ✅ 生命周期方法完整实现
+- ✅ EntityRef正确管理Entity引用
+- ✅ EntityRef用直接赋值取出对象再检查null和IsDisposed
+- ✅ 集合中使用EntityRef存储Entity引用
+- ✅ 不使用.Entity属性，直接赋值访问
+- ✅ EntityRef在async/await环境下使用合规（ET分析器限制）
+
+这些规范是ET框架高效开发的基础，请AI严格遵循执行。**特别注意代码一致性检查，这是避免运行时错误的关键。**

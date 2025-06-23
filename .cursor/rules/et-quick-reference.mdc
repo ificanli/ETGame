@@ -1,0 +1,177 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# ET框架快速参考指南
+
+## 核心原则
+- **中文**：所有注释和AI回复都用中文
+- **ECS架构**：Entity(数据) + System(逻辑)
+- **禁止假设性代码**：必须是完整可执行的代码
+
+## 目录结构快速模板
+```
+Packages/cn.etetet.{包名}/
+└── Scripts/
+    ├── Model/        # Entity定义 (不可热更)
+    ├── ModelView/    # UI Entity (不可热更) 
+    ├── Hotfix/       # System逻辑 (可热更)
+    └── HotfixView/   # UI System (可热更)
+```
+
+## Entity快速模板
+```csharp
+namespace ET.Client  // 或 ET, ET.Server
+{
+    /// <summary>
+    /// [功能的中文描述]
+    /// </summary>
+    [ComponentOf(typeof(ParentType))]  // 父级约束
+    public class ExampleComponent : Entity, IAwake, IDestroy
+    {
+        // 只能有数据字段，不能有方法
+        public int Value;
+        public string Name;
+    }
+}
+```
+
+## System快速模板
+```csharp
+namespace ET.Client  // 或 ET, ET.Server
+{
+    /// <summary>
+    /// [System的中文描述]
+    /// </summary>
+    [FriendOf(typeof(ExampleComponent))]
+    [EntitySystemOf(typeof(ExampleComponent))]
+    public static partial class ExampleComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this ExampleComponent self)
+        {
+            // 初始化逻辑
+        }
+
+        [EntitySystem]
+        private static void Destroy(this ExampleComponent self)
+        {
+            // 清理逻辑
+        }
+
+        public static void DoSomething(this ExampleComponent self)
+        {
+            // 业务方法
+        }
+    }
+}
+```
+
+## 关键特性
+- `[ComponentOf(typeof(Parent))]` - Entity父级约束
+- `[EntitySystemOf(typeof(Entity))]` - System对应Entity
+- `[EntitySystem]` - 生命周期方法标记
+
+## 命名空间规则
+- `ET` - 共享代码
+- `ET.Client` - 客户端代码  
+- `ET.Server` - 服务器代码
+
+## 生命周期接口
+- `IAwake` - 初始化
+- `IAwake<A>` - 带参数初始化
+- `IDestroy` - 销毁
+- `IUpdate` - 更新循环
+
+## EntityRef使用规范
+```csharp
+// Entity字段中使用EntityRef
+public Dictionary<int, EntityRef<ProcessInfo>> ProcessDict { get; set; }
+
+// 创建EntityRef引用
+EntityRef<ProcessInfo> processRef = processInfo;
+
+// 正确的Entity对象访问和检查方式
+ProcessInfo entity = processRef;  // 直接赋值，不用.Entity
+if (entity != null)
+{
+    // 安全使用Entity
+}
+
+// 错误方式
+// var entity = processRef.Entity;  // 错误：不要用.Entity
+// if (processRef.Entity != null) { /* 使用 */ }  // 错误：多次访问
+```
+
+## EntityRef在async/await环境下的使用规范（重要！）
+**这是ET分析器的严格限制，必须遵循：**
+```csharp
+// ✅ 正确：await后使用Entity需要通过EntityRef重新获取
+public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, UpdateTask task)
+{
+    // 1. 在await前创建EntityRef引用
+    EntityRef<UpdateCoordinatorComponent> selfRef = self;
+    EntityRef<UpdateTask> taskRef = task;
+    
+    foreach (int processId in task.TargetProcessIds)
+    {
+        // 2. 在每次使用前通过EntityRef重新获取Entity
+        task = taskRef;
+        task.UpdateProgress(processId, "开始处理");
+        
+        // 3. await后需要重新获取所有Entity
+        await SomeAsyncOperation();
+        
+        // 4. await后必须重新获取才能安全使用
+        self = selfRef;
+        task = taskRef;
+        
+        // 现在可以安全使用Entity
+        task.UpdateProgress(processId, "处理完成");
+    }
+}
+
+// ❌ 错误：await后直接使用Entity
+public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, UpdateTask task)
+{
+    foreach (int processId in task.TargetProcessIds)
+    {
+        task.UpdateProgress(processId, "开始处理");
+        
+        await SomeAsyncOperation();
+        
+        // 错误：await后直接使用Entity可能导致分析器报错
+        task.UpdateProgress(processId, "处理完成");  // 分析器错误
+    }
+}
+```
+
+**关键要点：**
+- await操作可能导致Entity引用失效
+- 必须在await前创建EntityRef
+- await后必须通过EntityRef重新获取Entity才能使用
+- 这是ET分析器的硬性限制，违反会导致编译错误
+
+## 常见错误避免
+1. ❌ Entity中定义方法
+2. ❌ System忘记加特性
+3. ❌ 生命周期方法不是private static
+4. ❌ 忘记实现IAwake接口
+5. ❌ 消息类字段使用camelCase（应该用PascalCase）
+6. ❌ Entity字段不完整（缺少System中使用的字段）
+7. ❌ 重复定义相同的类（检查是否已存在）
+8. ❌ HTTP消息类字段名与使用处不匹配
+9. ❌ 直接存储Entity引用（应该用EntityRef）
+10. ❌ 使用EntityRef.Entity属性访问（应该直接赋值）
+11. ❌ 不检查Entity的IsDisposed状态
+12. ❌ 将EntityRef当作Entity直接使用
+13. ❌ await后直接使用Entity（违反ET分析器规则）
+
+## 代码一致性检查要点
+- **字段命名**：所有C#类字段必须使用PascalCase（包括消息类）
+- **Entity完整性**：Entity必须包含所有System中使用的字段
+- **类定义唯一性**：生成前检查是否已有同名类存在
+- **消息结构匹配**：请求/响应消息类字段必须与Handler中的使用保持一致
+- **EntityRef使用**：用直接赋值`Entity entity = entityRef`，然后检查`!= null`
+- **EntityRef与async/await**：await前创建EntityRef，await后必须重新获取Entity（ET分析器限制）
