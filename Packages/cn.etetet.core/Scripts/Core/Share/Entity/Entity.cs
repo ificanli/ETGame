@@ -551,25 +551,27 @@ namespace ET
             return child as K;
         }
 
-        public void RemoveChild(long id)
+        public bool RemoveChild(long id)
         {
             if (this.children == null)
             {
-                return;
+                return false;
             }
 
             if (!this.children.Remove(id, out Entity child))
             {
-                return;
+                return false;
             }
             
             if (this.children.Count == 0)
             {
                 this.children.Dispose();
                 this.children = null;
+                return false;
             }
-            
+
             child.Dispose();
+            return true;
         }
 
         public void RemoveComponent<K>() where K : Entity

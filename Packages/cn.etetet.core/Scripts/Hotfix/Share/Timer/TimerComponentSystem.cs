@@ -1,9 +1,38 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ET
 {
+    [EntitySystemOf(typeof(TimerAction))]
+    public static partial class TimerActionSystem
+    {
+        [EntitySystem]
+        private static void Awake(this TimerAction self)
+        {
+        }
+
+        [EntitySystem]
+        private static void Destroy(this TimerAction self)
+        {
+            self.TimerClass = TimerClass.None;
+            self.StartTime = 0;
+            self.Time = 0;
+            self.Type = 0;
+            
+            if (self.Object is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+            self.Object = null;
+        }
+
+        public static Entity GetEntity(this TimerAction self)
+        {
+            var wrap = (ValueTypeWrap<EntityRef<Entity>>)self.Object;
+            return wrap.Value;
+        }
+    }
+
     [EntitySystemOf(typeof(TimerComponent))]
     public static partial class TimerComponentSystem
     {
@@ -59,61 +88,71 @@ namespace ET
             while (self.timeOutTimerIds.Count > 0)
             {
                 long timerId = self.timeOutTimerIds.Dequeue();
-
-                if (!self.timerActions.Remove(timerId, out TimerAction timerAction))
-                {
-                    continue;
-                }
-                
-                self.Run(timerId, ref timerAction);
+                self.Run(timerId);
             }
         }
         
-        private static long GetId(this TimerComponent self)
-        {
-            return ++self.idGenerator;
-        }
-
         private static long GetNow(this TimerComponent self)
         {
             return TimeInfo.Instance.ServerFrameTime();
         }
 
-        private static void Run(this TimerComponent self, long timerId, ref TimerAction timerAction)
+        private static void Run(this TimerComponent self, long timerId)
         {
+            TimerAction timerAction = self.GetChild<TimerAction>(timerId);
+            if (timerAction == null)
+            {
+                return;
+            }
+
             switch (timerAction.TimerClass)
             {
                 case TimerClass.OnceTimer:
                 {
                     Entity entity = timerAction.GetEntity();
-                    EventSystem.Instance.Invoke(timerAction.Type, new TimerCallback() { Args = entity });
-                    timerAction.Dispose();
+                    int timerActionType = timerAction.Type;
+                    self.RemoveChild(timerId);
+                    EventSystem.Instance.Invoke(timerActionType, new TimerCallback() { Args = entity });
                     break;
                 }
                 case TimerClass.OnceWaitTimer:
                 {
                     ETTask tcs = timerAction.Object as ETTask;
-                    tcs.SetResult();
-                    timerAction.Dispose();
+                    self.RemoveChild(timerId);
+                    tcs.SetResult();                    
                     break;
                 }
                 case TimerClass.RepeatedTimer:
-                {                    
-                    long timeNow = self.GetNow();
-                    timerAction.StartTime = timeNow;
-                    self.AddTimer(timerId, ref timerAction);
+                {
+                    int timerActionType = timerAction.Type;
                     Entity entity = timerAction.GetEntity();
-                    EventSystem.Instance.Invoke(timerAction.Type, new TimerCallback() { Args = entity });
+                    
+                    timerAction.StartTime = self.GetNow();
+                    self.AddTimer(timerAction);
+                    
+                    EventSystem.Instance.Invoke(timerActionType, new TimerCallback() { Args = entity });
                     break;
                 }
             }
         }
 
-        private static void AddTimer(this TimerComponent self, long timerId, ref TimerAction timer)
+        private static TimerAction CreateTimerAction(this TimerComponent self, TimerClass timerClass, long startTime, long time, int type, object obj)
+        {
+            TimerAction timer = self.AddChild<TimerAction>(true);
+            timer.TimerClass = timerClass;
+            timer.StartTime = startTime;
+            timer.Object = obj;
+            timer.Time = time;
+            timer.Type = type;
+
+            self.AddTimer(timer);
+            return timer;
+        }
+
+        private static void AddTimer(this TimerComponent self, TimerAction timer)
         {
             long tillTime = timer.StartTime + timer.Time;
-            self.timeId.Add(tillTime, timerId);
-            self.timerActions.Add(timerId, timer);
+            self.timeId.Add(tillTime, timer.Id);
             if (tillTime < self.minTime)
             {
                 self.minTime = tillTime;
@@ -133,12 +172,7 @@ namespace ET
             {
                 return false;
             }
-
-            if (!self.timerActions.Remove(id, out TimerAction _))
-            {
-                return false;
-            }
-            return true;
+            return self.RemoveChild(id);
         }
 
         public static async ETTask WaitTillAsync(this TimerComponent self, long tillTime)
@@ -150,16 +184,16 @@ namespace ET
             }
 
             ETTask tcs = ETTask.Create(true);
-            long timerId = self.GetId();
-            TimerAction timer = TimerAction.Create(TimerClass.OnceWaitTimer, timeNow, tillTime - timeNow, 0, tcs);
-            self.AddTimer(timerId, ref timer);
-
+            TimerAction timer = self.CreateTimerAction(TimerClass.OnceWaitTimer, timeNow, tillTime - timeNow, 0, tcs);
+            long timerId = timer.Id;
+        
             void CancelAction()
             {
-                if (self.Remove(timerId))
+                if (!self.Remove(timerId))
                 {
-                    tcs.SetResult();
-                }
+                    return;
+                }                
+                tcs.SetResult();
             }
 
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
@@ -189,16 +223,16 @@ namespace ET
             long timeNow = self.GetNow();
 
             ETTask tcs = ETTask.Create(true);
-            long timerId = self.GetId();
-            TimerAction timer = TimerAction.Create(TimerClass.OnceWaitTimer, timeNow, time, 0, tcs);
-            self.AddTimer(timerId, ref timer);
+            TimerAction timer = self.CreateTimerAction(TimerClass.OnceWaitTimer, timeNow, time, 0, tcs);
+            long timerId = timer.Id;
 
             void CancelAction()
             {
-                if (self.Remove(timerId))
+                if (!self.Remove(timerId))
                 {
-                    tcs.SetResult();
+                    return;
                 }
+                tcs.SetResult();
             }
 
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
@@ -223,12 +257,10 @@ namespace ET
             {
                 Log.Error($"new once time too small: {tillTime}");
             }
-            long timerId = self.GetId();
             EntityRef<Entity> entityRef = args;
             ValueTypeWrap<EntityRef<Entity>> wrap = ValueTypeWrap<EntityRef<Entity>>.Create(entityRef);
-            TimerAction timer = TimerAction.Create(TimerClass.OnceTimer, timeNow, tillTime - timeNow, type, wrap);
-            self.AddTimer(timerId, ref timer);
-            return timerId;
+            TimerAction timer = self.CreateTimerAction(TimerClass.OnceTimer, timeNow, tillTime - timeNow, type, wrap);
+            return timer.Id;
         }
 
         public static long NewFrameTimer(this TimerComponent self, int type, Entity args)
@@ -253,14 +285,10 @@ namespace ET
 #endif
             
             long timeNow = self.GetNow();
-            long timerId = self.GetId();
             EntityRef<Entity> entityRef = args;
             ValueTypeWrap<EntityRef<Entity>> wrap = ValueTypeWrap<EntityRef<Entity>>.Create(entityRef);
-            TimerAction timer = TimerAction.Create(TimerClass.RepeatedTimer, timeNow, time, type, wrap);
-
-            // 每帧执行的不用加到timerId中，防止遍历
-            self.AddTimer(timerId, ref timer);
-            return timerId;
+            TimerAction timer = self.CreateTimerAction(TimerClass.RepeatedTimer, timeNow, time, type, wrap);
+            return timer.Id;
         }
 
         public static long NewRepeatedTimer(this TimerComponent self, long time, int type, Entity args)
