@@ -51,4 +51,8 @@ dotnet_diagnostic.IDE0059.severity = none
 dotnet_diagnostic.IDE0060.severity = none
 dotnet_diagnostic.IDE1006.severity = none
 
+# 禁用未使用的 using 检查（适用于 Unity 项目）
+dotnet_diagnostic.IDE0005.severity = none
+resharper_unused_using_directive_highlighting = none
+
 # ---- end ----
