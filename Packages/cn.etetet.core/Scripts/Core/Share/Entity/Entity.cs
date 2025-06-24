@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using MemoryPack;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.Options;
 
 namespace ET
 {
@@ -50,10 +48,6 @@ namespace ET
 
         [BsonIgnore]
         private EntityStatus status = EntityStatus.None;
-        
-        protected Entity()
-        {
-        }
 
         [MemoryPackIgnore]
         [BsonIgnore]

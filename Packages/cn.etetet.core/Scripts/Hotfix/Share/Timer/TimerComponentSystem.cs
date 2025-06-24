@@ -18,11 +18,12 @@ namespace ET
             self.StartTime = 0;
             self.Time = 0;
             self.Type = 0;
-            
+
             if (self.Object is IDisposable disposable)
             {
                 disposable.Dispose();
             }
+
             self.Object = null;
         }
 
@@ -40,7 +41,7 @@ namespace ET
         private static void Awake(this TimerComponent self)
         {
         }
-        
+
         [EntitySystem]
         private static void Update(this TimerComponent self)
         {
@@ -77,6 +78,7 @@ namespace ET
                     long timerId = list[i];
                     self.timeOutTimerIds.Enqueue(timerId);
                 }
+
                 self.timeId.Remove(time);
             }
 
@@ -91,7 +93,7 @@ namespace ET
                 self.Run(timerId);
             }
         }
-        
+
         private static long GetNow(this TimerComponent self)
         {
             return TimeInfo.Instance.ServerFrameTime();
@@ -119,17 +121,17 @@ namespace ET
                 {
                     ETTask tcs = timerAction.Object as ETTask;
                     self.RemoveChild(timerId);
-                    tcs.SetResult();                    
+                    tcs.SetResult();
                     break;
                 }
                 case TimerClass.RepeatedTimer:
                 {
                     int timerActionType = timerAction.Type;
                     Entity entity = timerAction.GetEntity();
-                    
+
                     timerAction.StartTime = self.GetNow();
                     self.AddTimer(timerAction);
-                    
+
                     EventSystem.Instance.Invoke(timerActionType, new TimerCallback() { Args = entity });
                     break;
                 }
@@ -172,6 +174,7 @@ namespace ET
             {
                 return false;
             }
+
             return self.RemoveChild(id);
         }
 
@@ -186,15 +189,6 @@ namespace ET
             ETTask tcs = ETTask.Create(true);
             TimerAction timer = self.CreateTimerAction(TimerClass.OnceWaitTimer, timeNow, tillTime - timeNow, 0, tcs);
             long timerId = timer.Id;
-        
-            void CancelAction()
-            {
-                if (!self.Remove(timerId))
-                {
-                    return;
-                }                
-                tcs.SetResult();
-            }
 
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             try
@@ -205,6 +199,18 @@ namespace ET
             finally
             {
                 cancellationToken?.Remove(CancelAction);
+            }
+
+            return;
+
+            void CancelAction()
+            {
+                if (!self.Remove(timerId))
+                {
+                    return;
+                }
+
+                tcs.SetResult();
             }
         }
 
@@ -226,15 +232,6 @@ namespace ET
             TimerAction timer = self.CreateTimerAction(TimerClass.OnceWaitTimer, timeNow, time, 0, tcs);
             long timerId = timer.Id;
 
-            void CancelAction()
-            {
-                if (!self.Remove(timerId))
-                {
-                    return;
-                }
-                tcs.SetResult();
-            }
-
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             try
             {
@@ -244,6 +241,18 @@ namespace ET
             finally
             {
                 cancellationToken?.Remove(CancelAction);
+            }
+
+            return;
+
+            void CancelAction()
+            {
+                if (!self.Remove(timerId))
+                {
+                    return;
+                }
+
+                tcs.SetResult();
             }
         }
 
@@ -257,6 +266,7 @@ namespace ET
             {
                 Log.Error($"new once time too small: {tillTime}");
             }
+
             EntityRef<Entity> entityRef = args;
             ValueTypeWrap<EntityRef<Entity>> wrap = ValueTypeWrap<EntityRef<Entity>>.Create(entityRef);
             TimerAction timer = self.CreateTimerAction(TimerClass.OnceTimer, timeNow, tillTime - timeNow, type, wrap);
@@ -283,7 +293,7 @@ namespace ET
                 throw new Exception($"repeated timer < 100, timerType: time: {time}");
             }
 #endif
-            
+
             long timeNow = self.GetNow();
             EntityRef<Entity> entityRef = args;
             ValueTypeWrap<EntityRef<Entity>> wrap = ValueTypeWrap<EntityRef<Entity>>.Create(entityRef);
