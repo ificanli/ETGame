@@ -556,14 +556,13 @@ namespace ET
             {
                 return false;
             }
-            
+
             if (this.children.Count == 0)
             {
                 this.children.Dispose();
                 this.children = null;
-                return false;
             }
-
+            
             child.Dispose();
             return true;
         }
