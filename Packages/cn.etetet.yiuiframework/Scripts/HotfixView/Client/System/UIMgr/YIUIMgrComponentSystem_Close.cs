@@ -13,7 +13,7 @@ namespace ET.Client
         /// <param name="ignoreElse">忽略堆栈操作 -- 不要轻易忽略除非你明白 </param>
         public static async ETTask<bool> ClosePanelAsync(this YIUIMgrComponent self, string panelName, bool tween = true, bool ignoreElse = false)
         {
-            if (YIUISingletonHelper.IsQuitting) return true;
+            if (YIUISingletonHelper.IsQuitting || self.IsDisposed) return true;
 
             #if YIUIMACRO_PANEL_OPENCLOSE
             Debug.Log($"<color=yellow> 关闭UI: {panelName} </color>");
@@ -25,8 +25,8 @@ namespace ET.Client
             EntityRef<YIUIMgrComponent> selfRef = self;
 
             var coroutineLockCode = info.PanelLayer == EPanelLayer.Panel ? YIUIConstHelper.Const.UIProjectName.GetHashCode() : panelName.GetHashCode();
-
-            using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIPanel, coroutineLockCode);
+            
+            using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>()?.Wait(CoroutineLockType.YIUIPanel, coroutineLockCode);
 
             if (info.UIPanel == null) return true;
 
@@ -111,6 +111,8 @@ namespace ET.Client
         /// </summary>
         internal static bool DestroyPanel(this YIUIMgrComponent self, string panelName)
         {
+            if (YIUISingletonHelper.IsQuitting || self.IsDisposed) return true;
+
             if (!self.m_PanelCfgMap.TryGetValue(panelName, out var info)) return false;
 
             if (!self.ContainsLayerPanelInfo(info.PanelLayer, info)) return false;
@@ -126,7 +128,7 @@ namespace ET.Client
                     PanelLayer = info.PanelLayer,
                 });
 
-            self.DestroylRemoveUI(info);
+            self.DestroyRemoveUI(info);
 
             return true;
         }

@@ -13,22 +13,21 @@ namespace ET.Client
     /// <summary>
     /// UI事件分发
     /// </summary>
+    [CodeProcess]
     public partial class YIUIEventComponent : Singleton<YIUIEventComponent>, ISingletonAwake
     {
-        private Dictionary<Type, Dictionary<string, List<YIUIEventInfo>>> _AllEventInfo;
-        
+        private readonly Dictionary<Type, Dictionary<string, List<YIUIEventInfo>>> _AllEventInfo = new();
+
         public void Awake()
         {
-            this._AllEventInfo = new();
-
             var types = CodeTypes.Instance.GetTypes(typeof(YIUIEventAttribute));
             foreach (var type in types)
             {
                 var eventAttribute = type.GetCustomAttribute<YIUIEventAttribute>(false);
-                var obj = (IYIUICommonEvent)Activator.CreateInstance(type);
-                var eventType = eventAttribute.EventType;
-                var componentName = eventAttribute.ComponentType.Name;
-                var info = new YIUIEventInfo(eventType, componentName, obj);
+                var obj            = (IYIUICommonEvent)Activator.CreateInstance(type);
+                var eventType      = eventAttribute.EventType;
+                var componentName  = eventAttribute.ComponentType.Name;
+                var info           = new YIUIEventInfo(eventType, componentName, obj);
 
                 if (!this._AllEventInfo.ContainsKey(eventAttribute.EventType))
                 {

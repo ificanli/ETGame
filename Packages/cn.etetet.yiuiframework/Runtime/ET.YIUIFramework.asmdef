@@ -4,8 +4,7 @@
     "references": [
         "ET.Core",
         "Unity.TextMeshPro",
-        "ET.SourceGeneratorAttribute",
-        "ET.MemoryPack"
+        "ET.SourceGeneratorAttribute"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
