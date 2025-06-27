@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace ET
 {
@@ -64,7 +65,8 @@ namespace ET
 
         private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
         {
-            if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.AllModelHotfix))
+            var assemblyName = context.Compilation.AssemblyName;
+            if (!BusinessAssemblies.Contains(assemblyName))
             {
                 return;
             }
@@ -94,8 +96,6 @@ namespace ET
 
                 if (sourceModule != targetModule)
                 {
-                    moduleRelations.TryAdd((sourceModule, targetModule), 0);
-
                     if (fieldAccess.TryAdd((sourceModule, targetModule), 0) &&
                         fieldAccess.ContainsKey((targetModule, sourceModule)))
                     {
@@ -162,8 +162,6 @@ namespace ET
 
                 if (callerModule != calleeModule)
                 {
-                    moduleRelations.TryAdd((callerModule, calleeModule), 0);
-
                     if (methodCalls.TryAdd((callerModule, calleeModule), 0) &&
                         methodCalls.ContainsKey((calleeModule, callerModule)))
                     {
@@ -175,10 +173,14 @@ namespace ET
 
             context.RegisterCompilationEndAction(endContext =>
             {
+                var debug = Environment.GetEnvironmentVariable("DEBUG") == "1";
+                if (!debug)
+                    return;
                 var anyLocation = context.Compilation.SyntaxTrees.FirstOrDefault()?.GetRoot().GetLocation() ?? Location.None;
-
+                int count = 0;
                 foreach (var relation in moduleRelations.Keys)
                 {
+                    if (count++ >= 100) break;
                     var message = $"{relation.Source} -> {relation.Target}";
                     endContext.ReportDiagnostic(Diagnostic.Create(ModuleReportRule, anyLocation, message));
                 }
