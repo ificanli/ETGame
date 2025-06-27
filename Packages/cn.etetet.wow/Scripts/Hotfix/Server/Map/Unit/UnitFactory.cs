@@ -11,25 +11,29 @@ namespace ET.Server
             
             Unit unit = unitComponent.AddChildWithId<Unit, int>(id, configId);
             UnitConfig unitConfig = unit.Config();
-
+            
+            unit.UnitType = unitConfig.UnitType;
+            
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
             foreach ((int k, long v) in unitConfig.KV)
             {
                 numericComponent.SetNoEvent(k, v);
             }
-            
-            // 地图配置数据覆盖UnitConfig中的数据
-            MapUnitConfig mapUnitConfig = MapUnitConfigCategory.Instance.Get((int)id);
-            if (mapUnitConfig != null)
+
+            if (unit.UnitType != UnitType.Player)
             {
-                foreach ((int k, long v) in mapUnitConfig.KV)
+                // 地图配置数据覆盖UnitConfig中的数据
+                MapUnitConfig mapUnitConfig = MapUnitConfigCategory.Instance.Get((int)id);
+                if (mapUnitConfig != null)
                 {
-                    numericComponent.SetNoEvent(k, v);
+                    foreach ((int k, long v) in mapUnitConfig.KV)
+                    {
+                        numericComponent.SetNoEvent(k, v);
+                    }
                 }
             }
 
-            // 设置面向
-            unit.UnitType = unitConfig.UnitType;
+            // 设置位置面向
             unit.Position = new float3(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
             unit.Rotation = quaternion.Euler(0, math.radians(numericComponent.Get(NumericType.Yaw)), 0);
             

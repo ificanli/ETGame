@@ -141,7 +141,7 @@ namespace ET.Server
                     enter.BeSeeUnits.Add(self.Id, self);
                 }
             }
-            EventSystem.Instance.Publish(self.Scene(), new UnitEnterSightRange() { A = self, B = enter });
+            EventSystem.Instance.Publish(self.Scene(), new UnitEnterSightRange() { A = self.Unit, B = enter.Unit });
         }
 
         // leave离开self视野
@@ -169,7 +169,7 @@ namespace ET.Server
                 leave.BeSeePlayers.Remove(self.Id);
             }
 
-            EventSystem.Instance.Publish(self.Scene(), new UnitLeaveSightRange { A = self, B = leave });
+            EventSystem.Instance.Publish(self.Scene(), new UnitLeaveSightRange { A = self.Unit, B = leave.Unit });
         }
 
         /// <summary>

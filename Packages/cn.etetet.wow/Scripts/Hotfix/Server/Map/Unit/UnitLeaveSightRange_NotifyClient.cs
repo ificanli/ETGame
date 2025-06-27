@@ -6,15 +6,16 @@
     {
         protected override async ETTask Run(Scene scene, UnitLeaveSightRange args)
         {
-            await ETTask.CompletedTask;
-            AOIEntity a = args.A;
-            AOIEntity b = args.B;
-            if (a.Unit.UnitType != UnitType.Player)
+            Unit a = args.A;
+            Unit b = args.B;
+            if (a.UnitType != UnitType.Player)
             {
                 return;
             }
 
-            MapMessageHelper.NoticeUnitRemove(a.GetParent<Unit>(), b.GetParent<Unit>());
+            MapMessageHelper.NoticeUnitRemove(a, b);
+            
+            await ETTask.CompletedTask;
         }
     }
 }
