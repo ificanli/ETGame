@@ -91,6 +91,17 @@ namespace YIUIFramework.Editor
                 sb.AppendFormat("            self.{0} = self.UIBase.CDETable.FindUIOwner<{1}>(\"{2}\");\r\n", newName, $"{YIUIConstHelper.Const.UINamespace}.{resName}Component", name);
             }
         }
+        
+        public static string GetFriend(UIBindCDETable cdeTable)
+        {
+            var sb = SbPool.Get();
+            cdeTable.GeFriend(sb);
+            return SbPool.PutAndToStr(sb);
+        }
+
+        private static void GeFriend(this UIBindCDETable self, StringBuilder sb)
+        {
+        }
 
         public static string GetBase(UIBindCDETable cdeTable)
         {

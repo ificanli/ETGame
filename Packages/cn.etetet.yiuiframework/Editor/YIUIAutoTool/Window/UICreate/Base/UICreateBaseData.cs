@@ -10,6 +10,7 @@ namespace YIUIFramework.Editor
         public string      PkgName;       //包名/模块名
         public string      ResName;       //资源名 类名+Base
         public string      Variables;     //变量
+        public string      UIFriend;      //友好组件可修改的
         public string      UIBase;        //基础组件的获取
         public string      UIBind;        //绑定方法里面的东西
         public string      UIUnBind;      //解绑里面的东西
