@@ -1,5 +1,4 @@
 #nullable disable
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -15,6 +14,8 @@ namespace ET
         private static readonly LocalizableString Title = "禁止将 Entity 类型作为成员";
         private static readonly LocalizableString MessageFormat = "成员类型 '{0}' 引用了 Entity；直接使用不被允许，请使用 EntityRef";
         private static readonly LocalizableString Description = "禁止在类或结构体中直接声明 Entity 类型的字段或属性，或将其放入容器；应使用 EntityRef.";
+        private static readonly LocalizableString SingletonMessageFormat = "Singleton<T>及其子类成员类型 '{0}' 引用了 Entity 或 EntityRef；在 Singleton<T> 中禁止直接使用 Entity 或 EntityRef";
+        private static readonly LocalizableString SingletonDescription = "禁止在 Singleton<T> 及其子类中声明 Entity 或 EntityRef 类型的字段或属性，或将其放入容器。";
         private const string Category = "Usage";
 
         private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -46,6 +47,7 @@ namespace ET
                 return;
 
             var containingType = context.Symbol.ContainingType;
+            bool isInSingleton = containingType != null && IsSingletonOrDerived(containingType);
             if (containingType != null && IsEntityRef(containingType))
             {
                 return;
@@ -82,6 +84,26 @@ namespace ET
             }
             else
             {
+                return;
+            }
+
+            if (isInSingleton)
+            {
+                if (ContainsEntity(memberType) || ContainsEntityRef(memberType))
+                {
+                    var diagnostic = Diagnostic.Create(
+                        new DiagnosticDescriptor(
+                            DiagnosticId,
+                            Title,
+                            SingletonMessageFormat,
+                            Category,
+                            DiagnosticSeverity.Error,
+                            isEnabledByDefault: true,
+                            description: SingletonDescription),
+                        location,
+                        memberType.ToDisplayString());
+                    context.ReportDiagnostic(diagnostic);
+                }
                 return;
             }
 
@@ -139,6 +161,31 @@ namespace ET
                 return true;
             if (symbol is INamedTypeSymbol named && named.IsGenericType && named.Name == "EntityRef")
                 return true;
+            return false;
+        }
+
+        // 判断类型是否为Singleton<T>或其子类
+        private static bool IsSingletonOrDerived(ITypeSymbol symbol)
+        {
+            for (var current = symbol; current != null; current = current.BaseType)
+            {
+                if (current is INamedTypeSymbol named && named.IsGenericType && named.Name == "Singleton")
+                    return true;
+            }
+            return false;
+        }
+
+        // 检查类型及其嵌套是否包含EntityRef
+        private static bool ContainsEntityRef(ITypeSymbol symbol)
+        {
+            if (symbol == null)
+                return false;
+            if (IsEntityRef(symbol))
+                return true;
+            if (symbol is IArrayTypeSymbol arrayType)
+                return ContainsEntityRef(arrayType.ElementType);
+            if (symbol is INamedTypeSymbol named && named.IsGenericType)
+                return named.TypeArguments.Any(arg => ContainsEntityRef(arg));
             return false;
         }
     }
