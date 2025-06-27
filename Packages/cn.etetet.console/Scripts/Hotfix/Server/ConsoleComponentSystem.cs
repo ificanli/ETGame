@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 namespace ET.Server
 {
     [EntitySystemOf(typeof(ConsoleComponent))]
-    [FriendOf(typeof(ModeContex))]
     public static partial class ConsoleComponentSystem
     {
         [EntitySystem]

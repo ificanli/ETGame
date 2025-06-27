@@ -4,7 +4,6 @@ using YIUIFramework;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(ModelDisplayDemoViewComponent))]
     public static partial class ModelDisplayDemoViewComponentSystem
     {
         [EntitySystem]

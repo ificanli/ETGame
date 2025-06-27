@@ -28,7 +28,6 @@ namespace YIUIFramework.Editor
             ValueDic["PkgName"]       = codeData.PkgName;
             ValueDic["ResName"]       = codeData.ResName;
             ValueDic["Variables"]     = codeData.Variables;
-            ValueDic["UIFriendOf"]    = codeData.UIFriend;
             ValueDic["UIBase"]        = codeData.UIBase;
             ValueDic["UIBind"]        = codeData.UIBind;
             ValueDic["UIUnBind"]      = codeData.UIUnBind;

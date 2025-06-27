@@ -6,7 +6,6 @@ using System.Threading;
 namespace ET.Server
 {
     [Module(ModuleName.Spell)]
-    [FriendOf(typeof(BuffComponent))]
     public static class BuffHelper
     {
         [Module(ModuleName.Spell)]

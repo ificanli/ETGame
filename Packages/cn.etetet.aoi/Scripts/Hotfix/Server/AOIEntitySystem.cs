@@ -4,7 +4,6 @@ using Unity.Mathematics;
 namespace ET.Server
 {
     [EntitySystemOf(typeof(AOIEntity))]
-    [FriendOf(typeof(Cell))]
     public static partial class AOIEntitySystem2
     {
         [EntitySystem]
@@ -29,9 +28,6 @@ namespace ET.Server
         }
     }
 
-    
-    [FriendOf(typeof(Cell))]
-    [FriendOf(typeof(AOIEntity))]
     public static partial class AOIEntitySystem
     {
         // 获取在自己视野中的对象

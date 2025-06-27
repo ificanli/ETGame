@@ -10,7 +10,6 @@ namespace ET.Client
     /// Date    2024.12.9
     /// Desc
     /// </summary>
-    [FriendOf(typeof(HUDPanelComponent))]
     public static partial class HUDPanelComponentSystem
     {
         [EntitySystem]

@@ -5,7 +5,6 @@ namespace ET.Client
     /// <summary>
     /// 同步加载
     /// </summary>
-    [FriendOf(typeof(YIUILoadComponent))]
     public static partial class YIUILoadComponentSystem
     {
         /*

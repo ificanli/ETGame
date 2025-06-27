@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(GMTypeItemComponent))]
     public static partial class GMTypeItemComponentSystem
     {
         [EntitySystem]

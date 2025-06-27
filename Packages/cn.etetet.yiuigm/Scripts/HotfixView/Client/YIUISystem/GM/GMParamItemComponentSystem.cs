@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(GMParamItemComponent))]
     public static partial class GMParamItemComponentSystem
     {
         [EntitySystem]

@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [FriendOf(typeof(GateSessionKeyComponent))]
     public static partial class GateSessionKeyComponentSystem
     {
         public static void Add(this GateSessionKeyComponent self, long key, string account)

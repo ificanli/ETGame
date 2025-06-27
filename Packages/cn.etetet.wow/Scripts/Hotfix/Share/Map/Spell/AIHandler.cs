@@ -1,6 +1,5 @@
 ﻿namespace ET
 {
-    [FriendOf(typeof(AIComponent))]
     public abstract class AIHandler<T>: ABTHandler<T> where T: AINode
     {
         protected override int Run(T node, BTEnv env)

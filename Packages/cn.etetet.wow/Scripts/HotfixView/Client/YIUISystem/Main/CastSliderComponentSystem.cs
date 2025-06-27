@@ -10,7 +10,6 @@ namespace ET.Client
     /// Date    2024.12.8
     /// Desc
     /// </summary>
-    [FriendOf(typeof(CastSliderComponent))]
     public static partial class CastSliderComponentSystem
     {
         [EntitySystem]

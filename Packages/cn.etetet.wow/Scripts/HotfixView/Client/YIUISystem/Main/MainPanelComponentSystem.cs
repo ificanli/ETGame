@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(MainPanelComponent))]
     public static partial class MainPanelComponentSystem
     {
         [EntitySystem]

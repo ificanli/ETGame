@@ -10,8 +10,6 @@ namespace ET.Client
     /// Date    2024.12.8
     /// Desc
     /// </summary>
-    [FriendOf(typeof(TargetTargetInfoComponent))]
-    [FriendOf(typeof(UnitInfoComponent))]
     public static partial class TargetTargetInfoComponentSystem
     {
         [EntitySystem]

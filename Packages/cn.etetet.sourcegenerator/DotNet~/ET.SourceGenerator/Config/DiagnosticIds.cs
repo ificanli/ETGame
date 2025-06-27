@@ -4,8 +4,6 @@
     {
         public const string AddChildTypeAnalyzerRuleId = "ET0001";
 
-        public const string EntityFiledAccessAnalyzerRuleId = "ET0002";
-
         public const string EntityClassDeclarationAnalyzerRuleId = "ET0003";
 
         public const string HotfixProjectFieldDeclarationAnalyzerRuleId = "ET0004";

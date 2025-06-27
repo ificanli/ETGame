@@ -8,7 +8,6 @@ namespace ET.Client
     /// UI用 加载器
     /// 扩展 GameObject快捷方法 需成对使用
     /// </summary>
-    [FriendOf(typeof(YIUILoadComponent))]
     public static partial class YIUILoadComponentSystem
     {
         /// <summary>

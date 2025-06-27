@@ -8,8 +8,6 @@ namespace ET.Client
     /// <summary>
     /// 文档: https://lib9kmxvq7k.feishu.cn/wiki/XzyawmryHitNVNk9QVtcDAftn5O
     /// </summary>
-    [FriendOf(typeof(RedDotPanelComponent))]
-    [FriendOf(typeof(RedDotStackItemComponent))]
     public static partial class RedDotPanelComponentSystem
     {
         [EntitySystem]

@@ -92,36 +92,6 @@ namespace YIUIFramework.Editor
             }
         }
 
-        public static string GetFriend(UIBindCDETable cdeTable)
-        {
-            var sb = SbPool.Get();
-            cdeTable.GeFriend(sb);
-            return SbPool.PutAndToStr(sb);
-        }
-
-        private static void GeFriend(this UIBindCDETable self, StringBuilder sb)
-        {
-            switch (self.UICodeType)
-            {
-                case EUICodeType.Common:
-                    sb.AppendFormat("    [FriendOf(typeof(YIUIChild))]");
-                    return;
-                case EUICodeType.Panel:
-                    sb.AppendFormat("    [FriendOf(typeof(YIUIChild))]\r\n");
-                    sb.AppendFormat("    [FriendOf(typeof(YIUIWindowComponent))]\r\n");
-                    sb.AppendFormat("    [FriendOf(typeof(YIUIPanelComponent))]");
-                    break;
-                case EUICodeType.View:
-                    sb.AppendFormat("    [FriendOf(typeof(YIUIChild))]\r\n");
-                    sb.AppendFormat("    [FriendOf(typeof(YIUIWindowComponent))]\r\n");
-                    sb.AppendFormat("    [FriendOf(typeof(YIUIViewComponent))]");
-                    break;
-                default:
-                    Debug.LogError($"新增类型未实现 {self.UICodeType}");
-                    break;
-            }
-        }
-
         public static string GetBase(UIBindCDETable cdeTable)
         {
             var sb = SbPool.Get();

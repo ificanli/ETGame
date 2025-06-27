@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
-    [FriendOf(typeof(SpellComponent))]
     [Module(ModuleName.Spell)]
     public static class SpellHelper
     {

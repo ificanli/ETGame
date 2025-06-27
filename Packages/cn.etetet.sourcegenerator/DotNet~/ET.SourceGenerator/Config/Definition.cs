@@ -22,8 +22,6 @@ namespace ET
 
         public const string EnableMethodAttribute = "ET.EnableMethodAttribute";
         
-        public const string FriendOfAttribute = "ET.FriendOfAttribute";
-        
         public const string UniqueIdAttribute = "ET.UniqueIdAttribute";
 
         public const string ChildOfAttribute = "ET.ChildOfAttribute";
@@ -47,13 +45,6 @@ namespace ET
 
         public const string EntitySystemOfAttribute = "ET.EntitySystemOfAttribute";
         public const string EntitySystemInterfaceSequence = "EntitySystemInterfaceSequence";
-
-        public static string[] FriendAttributes =
-        [
-            FriendOfAttribute,
-            EntitySystemOfAttribute,
-            LSEntitySystemOfAttribute
-        ];   
 
         public const string IAwakeInterface = "ET.IAwake";
         public const string AwakeMethod = "Awake";

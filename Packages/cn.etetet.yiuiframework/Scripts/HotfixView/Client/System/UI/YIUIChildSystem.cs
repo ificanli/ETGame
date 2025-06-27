@@ -13,7 +13,6 @@ namespace ET.Client
     /// <summary>
     /// UI主体
     /// </summary>
-    [FriendOf(typeof(YIUIChild))]
     [EntitySystemOf(typeof(YIUIChild))]
     public static partial class YIUIChildSystem
     {

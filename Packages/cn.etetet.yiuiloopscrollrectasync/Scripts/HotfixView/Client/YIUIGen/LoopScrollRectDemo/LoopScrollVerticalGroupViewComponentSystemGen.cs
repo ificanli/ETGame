@@ -8,9 +8,6 @@ namespace ET.Client
     /// <summary>
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
-    [FriendOf(typeof(YIUIChild))]
-    [FriendOf(typeof(YIUIWindowComponent))]
-    [FriendOf(typeof(YIUIViewComponent))]
     [EntitySystemOf(typeof(LoopScrollVerticalGroupViewComponent))]
     public static partial class LoopScrollVerticalGroupViewComponentSystem
     {

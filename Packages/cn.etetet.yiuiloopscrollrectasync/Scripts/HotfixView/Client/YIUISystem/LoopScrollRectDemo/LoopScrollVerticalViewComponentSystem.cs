@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(LoopScrollVerticalViewComponent))]
-    [FriendOf(typeof(LoopScrollRectDemoItemComponent))]
     public static partial class LoopScrollVerticalViewComponentSystem
     {
         [EntitySystem]

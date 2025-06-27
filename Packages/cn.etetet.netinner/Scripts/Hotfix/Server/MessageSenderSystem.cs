@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-    [FriendOf(typeof(MessageSender))]
     public static partial class MessageSenderSystem
     {
         public static void Send(this MessageSender self, ActorId actorId, IMessage message)

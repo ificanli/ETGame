@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(GMViewComponent))]
     public static partial class GMViewComponentSystem
     {
         [EntitySystem]

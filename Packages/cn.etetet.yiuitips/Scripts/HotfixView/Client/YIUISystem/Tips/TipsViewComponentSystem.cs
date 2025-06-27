@@ -6,7 +6,6 @@ using UnityEngine;
 namespace ET.Client
 {
     [EntitySystemOf(typeof(TipsViewComponent))]
-    [FriendOf(typeof(TipsViewComponent))]
     public static partial class TipsViewComponentSystem
     {
         [EntitySystem]

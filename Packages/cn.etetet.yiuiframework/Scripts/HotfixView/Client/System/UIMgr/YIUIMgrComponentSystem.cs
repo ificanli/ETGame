@@ -8,7 +8,6 @@ using YIUIFramework;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(YIUIMgrComponent))]
     [EntitySystemOf(typeof(YIUIMgrComponent))]
     public static partial class YIUIMgrComponentSystem
     {

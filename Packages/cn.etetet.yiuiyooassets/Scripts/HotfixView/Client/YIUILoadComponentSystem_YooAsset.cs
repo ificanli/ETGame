@@ -6,7 +6,6 @@ namespace ET.Client
     /// <summary>
     /// YooAsset扩展  因为他不需要pkgName
     /// </summary>
-    [FriendOf(typeof(YIUILoadComponent))]
     public static partial class YIUILoadComponentSystem
     {
         internal static T LoadAsset<T>(this YIUILoadComponent self, string resName) where T : UnityObject

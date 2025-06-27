@@ -4,7 +4,6 @@ using MongoDB.Bson.Serialization.Options;
 
 namespace ET
 {
-    [FriendOf(typeof (NumericComponent))]
     public static class NumericComponentSystem
     {
         public const int Max = 10000;

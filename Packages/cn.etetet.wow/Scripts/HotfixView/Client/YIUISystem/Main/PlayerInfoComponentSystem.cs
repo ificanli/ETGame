@@ -10,8 +10,6 @@ namespace ET.Client
     /// Date    2024.12.7
     /// Desc
     /// </summary>
-    [FriendOf(typeof(PlayerInfoComponent))]
-    [FriendOf(typeof(UnitInfoComponent))]
     public static partial class PlayerInfoComponentSystem
     {
         [EntitySystem]

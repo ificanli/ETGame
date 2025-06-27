@@ -6,7 +6,6 @@ using DamageNumbersPro;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(DamageTipsPanelComponent))]
     public static partial class DamageTipsPanelComponentSystem
     {
         [EntitySystem]

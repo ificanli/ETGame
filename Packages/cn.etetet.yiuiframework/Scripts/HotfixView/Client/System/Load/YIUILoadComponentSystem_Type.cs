@@ -6,7 +6,6 @@ namespace ET.Client
     /// <summary>
     /// 不使用泛型 使用type加载的方式
     /// </summary>
-    [FriendOf(typeof(YIUILoadComponent))]
     public static partial class YIUILoadComponentSystem
     {
         public static UnityObject LoadAsset(this YIUILoadComponent self, string pkgName, string resName, Type assetType)

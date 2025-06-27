@@ -10,7 +10,6 @@ namespace ET.Client
     /// Date    2024.12.10
     /// Desc
     /// </summary>
-    [FriendOf(typeof(HPView3DComponent))]
     public static partial class HPView3DComponentSystem
     {
         [EntitySystem]

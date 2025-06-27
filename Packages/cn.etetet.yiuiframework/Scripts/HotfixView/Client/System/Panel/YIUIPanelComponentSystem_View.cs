@@ -4,7 +4,6 @@ using YIUIFramework;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(YIUIViewComponent))]
     public static partial class YIUIPanelComponentSystem
     {
         internal static void InitPanelViewData(this YIUIPanelComponent self)

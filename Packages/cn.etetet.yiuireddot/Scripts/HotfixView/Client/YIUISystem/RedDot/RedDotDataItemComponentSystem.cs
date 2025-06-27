@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(RedDotDataItemComponent))]
     public static partial class RedDotDataItemComponentSystem
     {
         [EntitySystem]

@@ -10,7 +10,6 @@ namespace ET.Client
     /// Date    2024.10.28
     /// Desc
     /// </summary>
-    [FriendOf(typeof(LoadingPanelComponent))]
     public static partial class LoadingPanelComponentSystem
     {
         [EntitySystem]

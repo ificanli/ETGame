@@ -6,7 +6,6 @@ namespace ET.Client
     /// <summary>
     /// YIUI资源管理器 yooasset扩展
     /// </summary>
-    [FriendOf(typeof(YIUIYooAssetsLoadComponent))]
     [EntitySystemOf(typeof(YIUIYooAssetsLoadComponent))]
     public static partial class YIUIYooAssetsLoadComponentSystem
     {

@@ -5,8 +5,6 @@ using System.Collections.Generic;
 
 namespace ET.Client
 {
-
-    [FriendOf(typeof(LoopScrollRectDemoItemComponent))]
     public static partial class LoopScrollRectDemoItemComponentSystem
     {
         [EntitySystem]

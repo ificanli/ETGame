@@ -7,7 +7,6 @@ namespace ET.Client
     /// 无限循环列表 (异步)
     /// 文档: https://lib9kmxvq7k.feishu.cn/wiki/HPbwwkhsKi9aDik5VEXcqPhDnIh
     /// </summary>
-    [FriendOf(typeof(YIUILoopScrollChild))]
     public static partial class YIUILoopScrollChildSystem
     {
         //在开始时用startItem填充单元格，同时清除现有的单元格

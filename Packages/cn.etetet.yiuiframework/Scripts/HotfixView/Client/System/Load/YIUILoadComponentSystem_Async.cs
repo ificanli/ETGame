@@ -7,7 +7,6 @@ namespace ET.Client
     /// <summary>
     /// 异步加载
     /// </summary>
-    [FriendOf(typeof(YIUILoadComponent))]
     public static partial class YIUILoadComponentSystem
     {
         /// <summary>

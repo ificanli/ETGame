@@ -1,6 +1,5 @@
 ﻿namespace ET.Client
 {
-    [FriendOf(typeof(LoadingPanelComponent))]
     [Event(SceneType.WOW)]
     public class ChangeSceneProgress_ShowProgress : AEvent<Scene, ChangeSceneProgress>
     {

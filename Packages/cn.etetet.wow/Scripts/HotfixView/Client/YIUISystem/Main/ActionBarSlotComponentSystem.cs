@@ -10,8 +10,6 @@ namespace ET.Client
     /// Date    2024.12.14
     /// Desc
     /// </summary>
-    [FriendOf(typeof(ActionBarSlotComponent))]
-    [FriendOf(typeof(SpellComponent))]
     public static partial class ActionBarSlotComponentSystem
     {
         [EntitySystem]

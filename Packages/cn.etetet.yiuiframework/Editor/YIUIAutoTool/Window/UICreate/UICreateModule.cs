@@ -104,7 +104,6 @@ namespace YIUIFramework.Editor
                 CodeType      = cdeTable.UICodeType,
                 PanelLayer    = cdeTable.PanelLayer,
                 Variables     = UICreateVariables.Get(cdeTable),
-                UIFriend      = UICreateBind.GetFriend(cdeTable),
                 UIBase        = UICreateBind.GetBase(cdeTable),
                 UIBind        = UICreateBind.GetBind(cdeTable),
                 UIUnBind      = UICreateBind.GetUnBind(cdeTable),

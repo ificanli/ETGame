@@ -2,7 +2,6 @@
 
 namespace ET.Client
 {
-    [FriendOf(typeof(YIUILoadComponent))]
     public static partial class YIUILoadComponentSystem
     {
         /// <summary>

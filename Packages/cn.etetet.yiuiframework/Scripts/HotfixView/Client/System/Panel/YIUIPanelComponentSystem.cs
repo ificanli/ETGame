@@ -9,7 +9,6 @@ namespace ET.Client
     /// <summary>
     /// UI面板组件
     /// </summary>
-    [FriendOf(typeof(YIUIPanelComponent))]
     [EntitySystemOf(typeof(YIUIPanelComponent))]
     public static partial class YIUIPanelComponentSystem
     {

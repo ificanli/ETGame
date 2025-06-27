@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 
 namespace ET.Client
 {
-    [FriendOf(typeof(GMPanelComponent))]
     public static partial class GMPanelComponentSystem
     {
         [EntitySystem]

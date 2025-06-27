@@ -8,7 +8,6 @@ namespace ET.Client
     /// <summary>
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
-    [FriendOf(typeof(YIUIChild))]
     [EntitySystemOf(typeof(HPView3DComponent))]
     public static partial class HPView3DComponentSystem
     {
