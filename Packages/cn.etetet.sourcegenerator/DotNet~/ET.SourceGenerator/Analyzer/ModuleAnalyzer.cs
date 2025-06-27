@@ -3,16 +3,24 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace ET
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ModuleAnalyzer : DiagnosticAnalyzer
     {
+        private static readonly HashSet<string> BusinessAssemblies = new HashSet<string>
+        {
+            "ET.Model",
+            "ET.ModelView",
+            "ET.Hotfix",
+            "ET.HotfixView"
+        };
+
         private static readonly DiagnosticDescriptor FieldWriteRule = new DiagnosticDescriptor(
             "MOD001",
             "跨模块字段写入违规",
@@ -76,6 +84,11 @@ namespace ET
                 if (accessingType == null || accessedType == null)
                     return;
 
+                var sourceAsm = accessingType.ContainingAssembly?.Name;
+                var targetAsm = accessedType.ContainingAssembly?.Name;
+                if (!BusinessAssemblies.Contains(sourceAsm) || !BusinessAssemblies.Contains(targetAsm))
+                    return;
+
                 var sourceModule = moduleHelper.GetModuleName(accessingType);
                 var targetModule = moduleHelper.GetModuleName(accessedType);
 
@@ -114,6 +127,11 @@ namespace ET
                 if (accessingType == null || accessedType == null)
                     return;
 
+                var sourceAsm = accessingType.ContainingAssembly?.Name;
+                var targetAsm = accessedType.ContainingAssembly?.Name;
+                if (!BusinessAssemblies.Contains(sourceAsm) || !BusinessAssemblies.Contains(targetAsm))
+                    return;
+
                 var sourceModule = moduleHelper.GetModuleName(accessingType);
                 var targetModule = moduleHelper.GetModuleName(accessedType);
 
@@ -132,6 +150,11 @@ namespace ET
                 var calleeType = invocation.TargetMethod?.ContainingType;
 
                 if (callerType == null || calleeType == null)
+                    return;
+
+                var callerAsm = callerType.ContainingAssembly?.Name;
+                var calleeAsm = calleeType.ContainingAssembly?.Name;
+                if (!BusinessAssemblies.Contains(callerAsm) || !BusinessAssemblies.Contains(calleeAsm))
                     return;
 
                 var callerModule = moduleHelper.GetModuleName(callerType);
