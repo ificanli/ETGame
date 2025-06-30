@@ -5,7 +5,8 @@
         "ET.Core",
         "ET.YooAssets",
         "ET.SourceGeneratorAttribute",
-        "ET.HybridCLR"
+        "ET.HybridCLR",
+        "ET.MemoryPack"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

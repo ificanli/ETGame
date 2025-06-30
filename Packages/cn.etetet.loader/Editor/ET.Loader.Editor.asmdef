@@ -6,7 +6,10 @@
         "ET.YooAssets",
         "ET.Core.Editor",
         "ET.Loader",
-        "ET.Init.Editor"
+        "ET.Init.Editor",
+        "ET.HybridCLR",
+        "ET.MemoryPack",
+        "ET.SourceGeneratorAttribute"
     ],
     "includePlatforms": [
         "Editor"

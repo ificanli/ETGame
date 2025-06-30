@@ -37,12 +37,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <None Update="Template.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-    
-    <ItemGroup>
       <Compile Include="..\Scripts\Model\Share\**\*.cs">
           <Link>Config\%(RecursiveDir)%(FileName)%(Extension)</Link>
       </Compile>
@@ -54,6 +48,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\..\cn.etetet.core\DotNet~\ET.Core.csproj" />
+      <ProjectReference Include="..\..\cn.etetet.loader\DotNet~\ET.Loader.csproj" />
     </ItemGroup>
 
 </Project>

@@ -4,7 +4,9 @@
     "references": [
         "MemoryPack",
         "Unity.Mathematics",
-        "ET.Core"
+        "ET.Core",
+        "ET.MemoryPack",
+        "ET.SourceGeneratorAttribute"
     ],
     "includePlatforms": [
         "Editor"

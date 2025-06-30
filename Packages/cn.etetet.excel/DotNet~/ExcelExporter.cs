@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using OfficeOpenXml;
-using LicenseContext = OfficeOpenXml.LicenseContext;
 
 namespace ET
 {
-    [EnableClass]
     public static class ExcelExporter
     {
         private static Dictionary<string, ExcelPackage> packages = new();

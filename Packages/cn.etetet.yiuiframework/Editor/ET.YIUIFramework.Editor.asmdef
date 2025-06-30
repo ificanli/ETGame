@@ -6,7 +6,8 @@
         "ET.Core.Editor",
         "ET.YIUIFramework",
         "Unity.TextMeshPro",
-        "ET.SourceGeneratorAttribute"
+        "ET.SourceGeneratorAttribute",
+        "ET.MemoryPack"
     ],
     "includePlatforms": [
         "Editor"
