@@ -10,8 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 必需工具版本
 - **Unity版本**: Unity 6000.0.25（严格要求此版本）
-- **IDE**: JetBrains Rider 2024.3（推荐）或Visual Studio（不推荐新手使用）
-- **.NET版本**: .NET 8（必须）
+- **.NET版本**: .NET 9（必须）
 - **PowerShell**: 必须安装，ET工具链基于PowerShell
 
 ### 常用开发命令
@@ -43,12 +42,6 @@ pwsh -ExecutionPolicy Bypass -File Scripts/Publish.ps1
 # 导出Excel配置（PowerShell脚本）
 # Unity菜单: ET -> Excel -> ExcelExport
 
-# 命令行导出Excel（支持实时输出）
-dotnet Packages/cn.etetet.excel/DotNet~/Exe/ET.ExcelExporter.dll
-
-# 导出proto文件为C#文件
-dotnet Packages/cn.etetet.proto/DotNet~/Exe/ET.Proto2CS.dll
-
 # 导出ScriptableObject配置
 # Unity菜单: ET -> WOW -> ExportScriptableObject
 
@@ -72,7 +65,6 @@ dotnet Bin/ET.App.dll --Console=1
   - 功能：导出Excel配置为Luban格式
   - 处理内容：Luban配置、游戏数据表、启动配置等
   - 特性：支持实时输出和Ctrl+C正常终止
-  - 修复：已解决PowerShell -NoExit参数导致的进程无法终止问题
 
 - **Proto导出工具**: `dotnet Packages/cn.etetet.proto/DotNet~/Exe/ET.Proto2CS.dll`
   - 功能：导出proto文件为C#文件
@@ -115,29 +107,11 @@ ET.Core (框架核心层)
 - **资源热更**: 基于YooAsset，支持资源增量更新
 - **配置热更**: 基于Luban配置系统，支持配置实时更新
 
-### 网络架构特色
-- **Fiber并发模型**: 轻量级协程，充分利用多核
-- **KCP协议**: 高性能UDP可靠传输，支持弱网环境
-- **Actor模型**: 分布式实体通信，位置透明
-- **软路由**: 防DDoS攻击，动态切换网络节点
-
-## 关键注意事项
-
-### 编译规则
-1. **Model和Hotfix程序集只能在Unity中编译**（F6），不能用IDE编译
-2. 编译前需要翻墙，确保NuGet包能正常下载
-3. 修改代码后用F7进行热重载，无需重启
 
 ### 开发工作流
 ```
-1. 修改代码 -> 2. Unity中F6编译 -> 3. F7热重载 -> 4. 测试
+1. 修改代码 -> 2. dotnet build ET.sln -> 3. 重启进程 -> 4. 测试
 ```
-
-### 常见问题解决
-- **10037错误**: 检查服务器是否以管理员权限启动
-- **MemoryPack报错**: 确保翻墙并更新NuGet包
-- **编译失败**: 确保使用指定的Unity版本6000.0.25
-- **Token问题**: 配置GitHub Token访问ET-Packages
 
 ### 文件结构说明
 - `Assets/`: Unity项目资源
@@ -145,6 +119,8 @@ ET.Core (框架核心层)
 - `Bin/`: 编译输出目录
 - `Scripts/`: 构建和发布脚本
 - `Book/`: 开发文档和教程
+- `Luban/`: Excel配置
+- `Proto/`: 消息的proto定义
 
 ### 调试技巧
 - 开启`ENABLE_VIEW`宏可在Unity Hierarchy中查看所有Entity
@@ -237,7 +213,6 @@ namespace ET  // 或 ET.Client, ET.Server
 - **严禁**在Entity类中定义任何方法
 - **必须**添加 `[ComponentOf]` 或 `[ChildOf]` 特性指定父级约束
 
-### System 开发规范
 
 #### System 类定义规范
 ```csharp
@@ -387,12 +362,12 @@ public static bool DoSomething(this ExampleComponent self, int value)
 public class PlayerComponent        // 类名：PascalCase
 public static void GetItem()       // 方法名：PascalCase  
 public string playerName;          // 字段名：camelCase
-private string _internalField;     // 私有字段：_camelCase
+private string internalField;     // 私有字段：camelCase
 public const int MAX_PLAYERS = 100; // 常量：UPPER_SNAKE_CASE
 
 // 代码格式
 if (condition) 
-{
+{   // 大括号不能省
     // tab缩进
 }
 ```
