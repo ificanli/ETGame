@@ -1,8 +1,10 @@
 <Project>
   <PropertyGroup>
     <LangVersion>11.0</LangVersion>
-    <NoWarn>0169,0649,3021,8981,2022</NoWarn>
     <DebugType>Portable</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- 全局警告抑制，会与项目级设置合并 -->
+    <NoWarn>$(NoWarn);0169;0649;3021;8981;2022;UNT0006</NoWarn>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);0169;0649;3021;8981;2022;UNT0006</WarningsNotAsErrors>
   </PropertyGroup>
 </Project>

@@ -9,6 +9,8 @@
         public const string HotfixProjectFieldDeclarationAnalyzerRuleId = "ET0004";
 
         public const string ClassDeclarationInHotfixAnalyzerRuleId = "ET0005";
+
+        public const string StructDeclarationInHotfixAnalyzerRuleId = "ET0033";
         
         public const string EntityMethodDeclarationAnalyzerRuleId = "ET0006";
 
