@@ -36,7 +36,7 @@
         /// <summary>
         /// 创建机器人，await之后，机器人则登录成功
         /// </summary>
-        public static async ETTask NewRobot(this RobotManagerComponent self, string account, bool isSubFiber = false)
+        public static async ETTask<int> NewRobot(this RobotManagerComponent self, string account, bool isSubFiber = false)
         {
             EntityRef<RobotManagerComponent> selfRef = self;
             int robot;
@@ -50,6 +50,7 @@
             }
             self = selfRef;
             self.robots.Add(account, robot);
+            return robot;
         }
     }
 }

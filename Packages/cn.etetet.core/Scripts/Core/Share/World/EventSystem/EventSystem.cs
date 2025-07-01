@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ET
 {
@@ -163,6 +164,15 @@ namespace ET
                 return null;
             }
             return aInvokeHandler;
+        }
+
+        public List<long> GetAllInvokerTypes<A>() where A : struct
+        {
+            if (!this.allInvokers.TryGetValue(typeof(A), out Dictionary<long, object> invokeHandlers))
+            {
+                return new List<long>();
+            }
+            return invokeHandlers.Keys.ToList();
         }
         
         // Invoke跟Publish的区别(特别注意)

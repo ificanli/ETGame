@@ -1,7 +1,8 @@
 namespace ET.Server
 {
-    public partial class ConsoleMode
+    public static partial class ConsoleMode
     {
         public const string RemoveRobot = "RemoveRobot";
+        public const string RobotCase = "RobotCase";
     }
 }

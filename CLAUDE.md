@@ -147,6 +147,10 @@ ET.Core (框架核心层)
 ### 信息记录规则
 当用户说"请记住"时，将信息记录在此CLAUDE.md文件中。
 
+**日志输出规范**：打印的日志请使用英文，这是项目的统一要求。
+
+**Singleton类方法规范**：Singleton类（如RobotCaseDispatcher）可以包含方法，不需要创建System类。这类似于其他单例类如HttpDispatcher的设计模式。
+
 ## ET框架开发规范
 
 ### Entity-Component-System (ECS) 架构
