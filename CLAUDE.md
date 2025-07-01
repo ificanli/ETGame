@@ -417,3 +417,37 @@ if (condition)
 7. **EntityRef安全**：正确管理Entity引用，遵循async/await规范
 
 这些规范是ET框架高效开发的基础，请严格遵循执行。
+
+
+#### 机器人测试流程
+1. 启动测试进程: dotnet ./Bin/ET.App.dll --Process=1 --SceneName=WOW --StartConfig=Localhost --Console=1
+2. 进程会输出>等待你的输入
+3. 测试所有用例: 在测试进程控制台输入Case --Id=0 //--Id=0指执行所有用例
+   输出case run success: 0，表示所有测试用例执行完成
+4. 测试指定用例X: 在测试进程控制台输入Case --Id=X   X是RobotCaseType的成员变量
+   输出"case run success: X" 表示测试用例X执行完成
+
+#### 完整的命令行执行方式
+
+**单个测试用例执行：**
+```bash
+printf "Case --Id=0\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=WOW --StartConfig=Localhost --Console=1"
+```
+
+**单进程多用例连续执行（推荐）：**
+```bash
+printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=WOW --StartConfig=Localhost --Console=1"
+```
+
+**执行流程说明：**
+- 启动测试进程，显示 `>` 等待输入
+- 依次执行多个测试用例，无需重启进程
+- 成功输出：`case run success: X` (X为用例ID)
+- 失败输出：`case run failed: X` 加详细错误信息
+- 检测到EOF时程序正常退出
+
+**优势：**
+- 一次启动多次测试，提高效率
+- 保持进程状态，减少启动开销
+- 支持连续测试不同用例
+- 实时查看每个用例的执行结果

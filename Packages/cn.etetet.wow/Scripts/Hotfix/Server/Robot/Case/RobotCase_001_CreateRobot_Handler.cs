@@ -1,7 +1,7 @@
 namespace ET.Server
 {
-    [Invoke(RobotCaseType.FirstCase)]
-    public class RobotCase_001_Test_Handler: ARobotCaseHandler
+    [Invoke(RobotCaseType.CreateRobot)]
+    public class RobotCase_001_CreateRobot_Handler: ARobotCaseHandler
     {
         protected override async ETTask<int> Run(Fiber fiber, RobotCaseArgs args)
         {

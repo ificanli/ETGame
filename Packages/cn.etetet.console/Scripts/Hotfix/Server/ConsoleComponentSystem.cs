@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,14 +31,20 @@ namespace ET.Server
                         return Console.In.ReadLine();
                     }, self.CancellationTokenSource.Token);
                     
+                    // 检测到EOF时退出循环
+                    if (line == null)
+                    {
+                        break;
+                    }
+                    
                     line = line.Trim();
 
+                    self = selfRef;
                     switch (line)
                     {
                         case "":
                             break;
                         case "exit":
-                            self = selfRef;
                             self.RemoveComponent<ModeContex>();
                             break;
                         default:

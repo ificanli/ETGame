@@ -7,14 +7,14 @@ namespace ET.Server
     /// 机器人测试用例控制台处理器
     /// 负责解析控制台命令并分发给对应的RobotCase Handler执行
     /// </summary>
-    [ConsoleHandler(ConsoleMode.RobotCase)]
+    [ConsoleHandler(ConsoleMode.Case)]
     public class RobotCaseConsoleHandler : IConsoleHandler
     {
         public async ETTask Run(Fiber fiber, ModeContex contex, string content)
         {
             try
             {
-                if (content == ConsoleMode.RobotCase)
+                if (content == ConsoleMode.Case)
                 {
                     Log.Console("RobotCase args error!");
                     return;
@@ -28,7 +28,7 @@ namespace ET.Server
                 
                 _ = fiber.Root.GetComponent<RobotManagerComponent>() ?? fiber.Root.AddComponent<RobotManagerComponent>();
 
-                if (options.All)
+                if (options.Id == 0)
                 {
                     // 执行所有注册的测试用例
                     var list = EventSystem.Instance.GetAllInvokerTypes<RobotCaseContext>();
@@ -39,36 +39,36 @@ namespace ET.Server
                             int ret = await EventSystem.Instance.Invoke<RobotCaseContext, ETTask<int>>(type, new RobotCaseContext() { Fiber = fiber, Args = options });
                             if (ret != ErrorCode.ERR_Success)
                             {
-                                Log.Console($"RobotCase Run Failed, case: {type}");
+                                Log.Console($"case run failed: {type}");
                                 return;
                             }
                         }
                         catch (Exception e)
                         {
-                            throw new Exception($"RobotCase Run Failed, case: {type}", e);
+                            throw new Exception($"case run failed: {type}", e);
                         }
                     }
 
-                    Log.Console($"RobotCase Run success, case all!");
+                    Log.Console($"case run success: 0");
                 }
                 else
                 {
-                    int type = options.Case;
+                    int type = options.Id;
                     try
                     {
                         // 执行options.Case这个测试用例
                         int ret = await EventSystem.Instance.Invoke<RobotCaseContext, ETTask<int>>(type, new RobotCaseContext() { Fiber = fiber, Args = options });
                         if (ret != ErrorCode.ERR_Success)
                         {
-                            Log.Console($"RobotCase Run Failed, case: {type}");
+                            Log.Console($"case run failed: {type}");
                         }
                     }
                     catch (Exception e)
                     {
-                        throw new Exception($"RobotCase Run Failed, case: {type}", e);
+                        throw new Exception($"case run failed: {type}", e);
                     }
 
-                    Log.Console($"RobotCase Run success, case {type}");
+                    Log.Console($"case run success: {type}");
                 }
             }
             catch (Exception e)
