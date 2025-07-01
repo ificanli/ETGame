@@ -117,7 +117,7 @@ ET.Core (框架核心层)
 - `Assets/`: Unity项目资源
 - `Packages/`: ET模块化包
 - `Bin/`: 编译输出目录
-- `Scripts/`: 构建和发布脚本
+- `Scripts/`: 游戏逻辑代码
 - `Book/`: 开发文档和教程
 - `Luban/`: Excel配置
 - `Proto/`: 消息的proto定义
@@ -317,7 +317,7 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 ```
 
 **关键要点：**
-- await操作可能导致Entity引用失效
+- await后，可能Entity已经失效
 - 必须在await前创建EntityRef
 - await后必须通过EntityRef重新获取Entity才能使用
 - 这是ET分析器的硬性限制，违反会导致编译错误
@@ -378,12 +378,11 @@ if (condition)
 - 在 async/await 环境下，任何 Entity 及其子类对象，await 之后**禁止直接访问** await 前的 Entity 变量。
 - 必须在 await 前创建 EntityRef，await 后通过 EntityRef 重新获取 Entity。
 - 只要存在执行路径可能在 await 后访问 Entity，均视为违规。
-- 支持 `[SkipAwaitEntityCheck]` 特性标记的方法或类可跳过此检查。
+- 支持 `[SkipAwaitEntityCheck]` 特性标记的方法或类可跳过此检查，但是应该避免使用`[SkipAwaitEntityCheck]`。
 
 ### Entity 成员引用规范
-- 除非加 `[AllowEntityMember]` 特性，任何类/结构体**禁止直接声明 Entity 或其子类类型的字段或属性**，包括集合类型（如 List<Entity>、Dictionary<int, Entity>）。
+- 任何类/结构体**禁止直接声明 Entity 或其子类类型的字段或属性**，包括集合类型（如 List<Entity>、Dictionary<int, Entity>）。
 - 允许声明 `EntityRef<T>` 类型字段或属性。
-- 允许委托（如 Action<Entity>、Func<Entity, Entity>）类型成员引用 Entity。
 
 ## 常见错误避免
 
@@ -400,6 +399,7 @@ if (condition)
 11. ❌ 不检查Entity的IsDisposed状态
 12. ❌ 将EntityRef当作Entity直接使用
 13. ❌ await后直接使用Entity（违反ET分析器规则）
+14. ❌ [StaticField], 静态字段容易导致多线程问题，应该尽量避免使用，如果要使用，必须需要我手动确认
 
 ## 总结
 

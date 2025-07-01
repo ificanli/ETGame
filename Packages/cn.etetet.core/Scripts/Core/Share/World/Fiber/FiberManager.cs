@@ -108,10 +108,15 @@ namespace ET
                 throw new Exception($"create fiber error: {fiberId} {sceneType}", e);
             }
         }
+
+        internal int GetFiberId()
+        {
+            return Interlocked.Increment(ref this.idGenerator);
+        }
         
         public async ETTask<int> Create(SchedulerType schedulerType, int zone, int sceneType, string name)
         {
-            int fiberId = Interlocked.Increment(ref this.idGenerator);
+            int fiberId = this.GetFiberId();
             return await this.Create(schedulerType, fiberId, zone, sceneType, name);
         }
         

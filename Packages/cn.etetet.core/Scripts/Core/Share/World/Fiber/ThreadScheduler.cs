@@ -20,7 +20,6 @@ namespace ET
         private void Loop(int fiberId)
         {
             Fiber fiber = fiberManager.Get(fiberId);
-            Fiber.Instance = fiber;
             SynchronizationContext.SetSynchronizationContext(fiber.ThreadSynchronizationContext);
             
             while (true)

@@ -48,7 +48,6 @@ namespace ET
                     continue;
                 }
                 
-                Fiber.Instance = fiber;
                 SynchronizationContext.SetSynchronizationContext(fiber.ThreadSynchronizationContext);
                 fiber.Update();
                 this.idQueue.Enqueue(id);
@@ -80,7 +79,6 @@ namespace ET
                     continue;
                 }
 
-                Fiber.Instance = fiber;
                 SynchronizationContext.SetSynchronizationContext(fiber.ThreadSynchronizationContext);
                 fiber.LateUpdate();
                 this.idQueue.Enqueue(id);

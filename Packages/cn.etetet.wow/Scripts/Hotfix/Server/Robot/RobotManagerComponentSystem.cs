@@ -33,10 +33,21 @@
             return true;
         }
 
-        public static async ETTask NewRobot(this RobotManagerComponent self, string account)
+        /// <summary>
+        /// 创建机器人，await之后，机器人则登录成功
+        /// </summary>
+        public static async ETTask NewRobot(this RobotManagerComponent self, string account, bool isSubFiber = false)
         {
             EntityRef<RobotManagerComponent> selfRef = self;
-            int robot = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Robot, account);
+            int robot;
+            if (isSubFiber)
+            {
+                robot = await self.Fiber().CreateSubFiber(SceneType.Robot, account);
+            }
+            else
+            {
+                robot = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Robot, account);
+            }
             self = selfRef;
             self.robots.Add(account, robot);
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace ET
 {
@@ -63,7 +62,10 @@ namespace ET
 
         private readonly Queue<ETTask> frameFinishTasks = new();
         
-        internal Fiber(int id, int zone, int sceneType, string name)
+        // 子Fiber, 子Fiber的Log使用父Fiber的Log, 子Fiber是由父Fiber调度
+        private readonly Dictionary<int, Fiber> subFibers = new();
+        
+        internal Fiber(int id, int zone, int sceneType, string name, ILog log = null)
         {
             this.Id = id;
             this.Zone = zone;
@@ -71,9 +73,15 @@ namespace ET
             this.Mailboxes = new Mailboxes();
             this.ThreadSynchronizationContext = new ThreadSynchronizationContext();
 
-            LogInvoker logInvoker = new()
-                    { Fiber = this.Id, Process = this.Process, SceneName = name };
-            this.Log = EventSystem.Instance.Invoke<LogInvoker, ILog>(logInvoker);
+            if (log != null)
+            {
+                this.Log = log;
+            }
+            else
+            {
+                LogInvoker logInvoker = new() { Fiber = this.Id, Process = this.Process, SceneName = name };
+                this.Log = EventSystem.Instance.Invoke<LogInvoker, ILog>(logInvoker);
+            }
             
             this.Root = new Scene(this, id, 1, sceneType, name);
         }
@@ -82,11 +90,21 @@ namespace ET
         {
             try
             {
+                Instance = this;
                 this.EntitySystem.Publish(new UpdateEvent());
+
+                foreach ((int _, Fiber fiber) in this.subFibers)
+                {
+                    fiber.Update();
+                }
             }
             catch (Exception e)
             {
                 this.Log.Error(e);
+            }
+            finally
+            {
+                Instance = null;
             }
         }
         
@@ -94,14 +112,23 @@ namespace ET
         {
             try
             {
+                Instance = this;
                 this.EntitySystem.Publish(new LateUpdateEvent());
                 FrameFinishUpdate();
-                
                 this.ThreadSynchronizationContext.Update();
+
+                foreach ((int _, Fiber fiber) in this.subFibers)
+                {
+                    fiber.LateUpdate();
+                }
             }
             catch (Exception e)
             {
                 Log.Error(e);
+            }
+            finally
+            {
+                Instance = null;
             }
         }
 
@@ -120,6 +147,39 @@ namespace ET
                 task.SetResult();
             }
         }
+        
+        public Fiber GetSubFiber(int id)
+        {
+            return this.subFibers[id];
+        }
+
+        /// <summary>
+        /// 创建子Fiber，子Fiber是由父Fiber驱动的
+        /// </summary>
+        public async ETTask<int> CreateSubFiber(int sceneType, string name)
+        {
+            if (sceneType == 0)
+            {
+                throw new Exception("sceneType is 0");
+            }
+            
+            int fiberId = FiberManager.Instance.GetFiberId();
+            try
+            {
+                Log.Info($"create sub fiber: {fiberId} {this.Zone} {sceneType} {name}, parent: {this.Id} {this.Root.SceneType} {this.Root.Name}");
+                Fiber fiber = new(fiberId, this.Zone, sceneType, name, this.Log); // 子Fiber使用父Fiber的Log
+                
+                this.subFibers.Add(fiber.Id, fiber);
+
+                await EventSystem.Instance.Invoke<FiberInit, ETTask>(sceneType, new FiberInit() {Fiber = fiber});
+                
+                return fiberId;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"create sub fiber error: {fiberId} {sceneType}", e);
+            }
+        }
 
         public void Dispose()
         {
@@ -128,8 +188,20 @@ namespace ET
                 return;
             }
             this.IsDisposed = true;
-            
-            this.Root.Dispose();
+
+            try
+            {
+                this.Root.Dispose();
+            }
+            catch (Exception e)
+            {
+                this.Log.Error(e);
+            }            
+
+            foreach ((int _, Fiber fiber) in this.subFibers)
+            {
+                fiber.Dispose();
+            }
         }
     }
 }

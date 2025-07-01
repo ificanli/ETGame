@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
 using CommandLine;
-using MongoDB.Bson;
-using Unity.Mathematics;
 
 namespace ET.Server
 {
@@ -33,11 +30,10 @@ namespace ET.Server
                         EntityRef<RobotManagerComponent> robotManagerComponentRef = robotManagerComponent;
                     
                         // 创建机器人
-                        TimerComponent timerComponent = fiber.Root.GetComponent<TimerComponent>();
                         for (int i = 0; i < options.Num; ++i)
                         {
                             robotManagerComponent = robotManagerComponentRef;
-                            await robotManagerComponent.NewRobot($"Robot_{i}");
+                            await robotManagerComponent.NewRobot($"Robot_{i}", options.IsSubFiber);
                             Log.Console($"Create Robot_{i}");
                         }
                         break;
