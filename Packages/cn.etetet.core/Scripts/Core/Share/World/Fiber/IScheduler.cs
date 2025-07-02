@@ -2,8 +2,9 @@
 
 namespace ET
 {
-    public interface IScheduler: IDisposable
+    internal interface IScheduler
     {
-        void Add(int fiberId);
+        void AddToScheduler(Fiber fiber);
+        void Dispose();
     }
 }

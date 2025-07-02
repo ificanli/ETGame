@@ -5,6 +5,7 @@ namespace ET.Server
     /// </summary>
     public struct RobotCaseContext
     {
+        public Fiber Fiber;
         public RobotCaseArgs Args;
     }
 }

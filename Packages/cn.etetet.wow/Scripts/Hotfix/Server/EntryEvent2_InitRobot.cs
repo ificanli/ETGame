@@ -13,7 +13,7 @@ namespace ET.Server
                 root.AddComponent<ConsoleComponent>();
             }
 
-            root.SceneType = SceneType.WOW;
+            root.SceneType = SceneType.Client;
             await ETTask.CompletedTask;
         }
     }

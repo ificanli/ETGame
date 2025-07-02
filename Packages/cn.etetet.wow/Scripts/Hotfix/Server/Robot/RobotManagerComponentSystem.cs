@@ -13,7 +13,7 @@
         {
             async ETTask Remove(int f)
             {
-                await FiberManager.Instance.RemoveFiber(f);
+                await self.Fiber().RemoveFiber(f);
             }
             
             foreach (int fiberId in self.robots.Values)
@@ -36,18 +36,10 @@
         /// <summary>
         /// 创建机器人，await之后，机器人则登录成功
         /// </summary>
-        public static async ETTask<int> NewRobot(this RobotManagerComponent self, string account, bool isSubFiber = false)
+        public static async ETTask<int> NewRobot(this RobotManagerComponent self, SchedulerType schedulerType, string account)
         {
             EntityRef<RobotManagerComponent> selfRef = self;
-            int robot;
-            if (isSubFiber)
-            {
-                robot = await self.Fiber().CreateFiber(SceneType.Robot, account);
-            }
-            else
-            {
-                robot = await FiberManager.Instance.CreateFiber(SchedulerType.ThreadPool, self.Zone(), SceneType.Robot, account);
-            }
+            int robot = await self.Fiber().CreateFiber(schedulerType, 0, SceneType.Robot, account);
             self = selfRef;
             self.robots.Add(account, robot);
             return robot;

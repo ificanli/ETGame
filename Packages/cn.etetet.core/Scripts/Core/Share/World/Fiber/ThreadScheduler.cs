@@ -8,29 +8,21 @@ namespace ET
     // 一个Fiber一个固定的线程
     internal class ThreadScheduler: IScheduler
     {
-        private readonly ConcurrentDictionary<int, Thread> dictionary = new();
+        private bool isDisposed;
         
-        private readonly FiberManager fiberManager;
+        private readonly ConcurrentDictionary<int, Thread> dictionary = new();
 
-        public ThreadScheduler(FiberManager fiberManager)
+        private void Update(Fiber fiber)
         {
-            this.fiberManager = fiberManager;
-        }
-
-        private void Update(int fiberId)
-        {
-            Fiber fiber = fiberManager.GetFiber(fiberId);
-            SynchronizationContext.SetSynchronizationContext(fiber.ThreadSynchronizationContext);
-            
+            int fiberId = fiber.Id;
             while (true)
             {
-                if (this.fiberManager.IsDisposed())
+                if (this.isDisposed)
                 {
                     return;
                 }
                 
-                fiber = fiberManager.GetFiber(fiberId);
-                if (fiber == null || fiber.IsDisposed)
+                if (fiber.IsDisposed)
                 {
                     this.dictionary.Remove(fiberId, out _);
                     return;
@@ -45,6 +37,12 @@ namespace ET
 
         public void Dispose()
         {
+            if (this.isDisposed)
+            {
+                return;
+            }
+            this.isDisposed = true;
+            
             foreach (var kv in this.dictionary.ToArray())
             {
                 kv.Value.Join();
@@ -52,10 +50,10 @@ namespace ET
             this.dictionary.Clear();
         }
 
-        public void Add(int fiberId)
+        public void AddToScheduler(Fiber fiber)
         {
-            Thread thread = new(() => this.Update(fiberId));
-            this.dictionary.TryAdd(fiberId, thread);
+            Thread thread = new(() => this.Update(fiber));
+            this.dictionary.TryAdd(fiber.Id, thread);
             thread.Start();
         }
     }

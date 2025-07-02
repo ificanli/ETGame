@@ -1,6 +1,6 @@
 ﻿namespace ET.Client
 {
-    [Event(SceneType.WOW)]
+    [Event(SceneType.Client)]
     public class EnterMapFinish_CloseLoadingPanel : AEvent<Scene, EnterMapFinish>
     {
         protected override async ETTask Run(Scene scene, EnterMapFinish a)

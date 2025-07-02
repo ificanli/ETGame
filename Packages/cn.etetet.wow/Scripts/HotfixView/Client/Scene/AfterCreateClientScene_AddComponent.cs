@@ -1,6 +1,6 @@
 namespace ET.Client
 {
-    [Event(SceneType.WOW)]
+    [Event(SceneType.Client)]
     public class AfterCreateClientScene_AddComponent: AEvent<Scene, AfterCreateClientScene>
     {
         protected override async ETTask Run(Scene scene, AfterCreateClientScene args)

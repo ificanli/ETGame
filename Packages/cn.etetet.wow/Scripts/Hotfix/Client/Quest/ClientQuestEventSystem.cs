@@ -10,7 +10,7 @@ namespace ET.Client
     /// <summary>
     /// 场景初始化后添加任务组件
     /// </summary>
-    [Event(SceneType.WOW)]
+    [Event(SceneType.Client)]
     public class AfterCreateCurrentScene_AddQuestComponent : AEvent<Scene, AfterCreateCurrentScene>
     {
         protected override async ETTask Run(Scene scene, AfterCreateCurrentScene args)
@@ -28,7 +28,7 @@ namespace ET.Client
     /// <summary>
     /// 登录完成后初始化任务数据
     /// </summary>
-    [Event(SceneType.WOW)]
+    [Event(SceneType.Client)]
     public class LoginFinish_InitQuestData : AEvent<Scene, LoginFinish>
     {
         protected override async ETTask Run(Scene scene, LoginFinish args)

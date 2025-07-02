@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ET.Client
 {
-	[MessageHandler(SceneType.WOW)]
+	[MessageHandler(SceneType.Client)]
 	public class M2C_StopHandler_ChangeMotionToIdel : MessageHandler<Scene, M2C_Stop>
 	{
 		protected override async ETTask Run(Scene root, M2C_Stop message)
@@ -17,7 +17,7 @@ namespace ET.Client
 			AnimatorComponent animator = unit.GetComponent<AnimatorComponent>();
 			if (animator != null)
 			{
-				animator.SetFloat(MotionType.MoveSpeed.ToString(), 0);
+				animator.SetFloat(nameof(MotionType.MoveSpeed), 0);
 			}
 			await ETTask.CompletedTask;
 		}

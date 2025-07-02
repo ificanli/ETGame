@@ -1,7 +1,7 @@
 ﻿namespace ET.Client
 {
     [Module(ModuleName.Spell)]
-    [MessageHandler(SceneType.WOW)]
+    [MessageHandler(SceneType.Client)]
     public class M2C_BuffUpdateHandler: MessageHandler<Scene, M2C_BuffUpdate>
     {
         protected override async ETTask Run(Scene root, M2C_BuffUpdate message)

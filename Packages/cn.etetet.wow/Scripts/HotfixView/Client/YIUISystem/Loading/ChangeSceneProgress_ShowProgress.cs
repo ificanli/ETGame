@@ -1,6 +1,6 @@
 ﻿namespace ET.Client
 {
-    [Event(SceneType.WOW)]
+    [Event(SceneType.Client)]
     public class ChangeSceneProgress_ShowProgress : AEvent<Scene, ChangeSceneProgress>
     {
         protected override async ETTask Run(Scene scene, ChangeSceneProgress a)

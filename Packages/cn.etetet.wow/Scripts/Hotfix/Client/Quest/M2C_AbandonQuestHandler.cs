@@ -5,7 +5,7 @@ namespace ET.Client
     /// <summary>
     /// 放弃任务响应处理器
     /// </summary>
-    [MessageHandler(SceneType.WOW)]
+    [MessageHandler(SceneType.Client)]
     public class M2C_AbandonQuestHandler : MessageHandler<Scene, M2C_AbandonQuest>
     {
         protected override async ETTask Run(Scene root, M2C_AbandonQuest message)

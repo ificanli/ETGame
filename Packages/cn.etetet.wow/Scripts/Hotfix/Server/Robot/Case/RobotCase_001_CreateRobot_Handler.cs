@@ -6,7 +6,7 @@ namespace ET.Server
         protected override async ETTask<int> Run(Fiber fiber, RobotCaseArgs args)
         {
             RobotManagerComponent robotManagerComponent = fiber.Root.GetComponent<RobotManagerComponent>();
-            await robotManagerComponent.NewRobot("Robot_001", true);
+            await robotManagerComponent.NewRobot(SchedulerType.Parent, "Robot_001");
             return ErrorCode.ERR_Success;
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace ET.Server
 {
-    [MessageHandler(SceneType.WOW)]
+    [MessageHandler(SceneType.Client)]
     public class M2C_NumericChangeHandler: MessageHandler<Scene, M2C_NumericChange>
     {
         protected override async ETTask Run(Scene root, M2C_NumericChange message)

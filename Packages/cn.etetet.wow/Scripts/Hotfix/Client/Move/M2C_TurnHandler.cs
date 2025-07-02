@@ -2,7 +2,7 @@
 
 namespace ET.Client
 {
-	[MessageHandler(SceneType.WOW)]
+	[MessageHandler(SceneType.Client)]
 	public class M2C_TurnHandler : MessageHandler<Scene, M2C_Turn>
 	{
 		protected override async ETTask Run(Scene root, M2C_Turn message)

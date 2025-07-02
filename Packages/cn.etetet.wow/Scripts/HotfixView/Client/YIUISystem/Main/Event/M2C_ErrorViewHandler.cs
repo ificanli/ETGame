@@ -1,6 +1,6 @@
 ﻿namespace ET.Client
 {
-    [MessageHandler(SceneType.WOW)]
+    [MessageHandler(SceneType.Client)]
     public class M2C_ErrorViewHandler : MessageHandler<Scene, M2C_Error>
     {
         protected override async ETTask Run(Scene root, M2C_Error message)

@@ -5,7 +5,7 @@ namespace ET.Client
     /// <summary>
     /// 同步任务数据响应处理器
     /// </summary>
-    [MessageHandler(SceneType.WOW)]
+    [MessageHandler(SceneType.Client)]
     public class M2C_SyncQuestDataHandler : MessageHandler<Scene, M2C_SyncQuestData>
     {
         protected override async ETTask Run(Scene root, M2C_SyncQuestData message)

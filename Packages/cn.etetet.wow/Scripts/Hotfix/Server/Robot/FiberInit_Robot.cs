@@ -14,7 +14,7 @@
             root.AddComponent<CurrentScenesComponent>();
             root.AddComponent<ObjectWait>();
             
-            root.SceneType = SceneType.WOW;
+            root.SceneType = SceneType.Client;
 
             EntityRef<Scene> rootRef = root;
             await EventSystem.Instance.PublishAsync(root, new AppStartInitFinish());

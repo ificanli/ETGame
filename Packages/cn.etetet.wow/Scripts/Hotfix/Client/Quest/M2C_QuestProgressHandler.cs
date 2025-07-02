@@ -5,7 +5,7 @@ namespace ET.Client
     /// <summary>
     /// 任务进度更新通知处理器
     /// </summary>
-    [MessageHandler(SceneType.WOW)]
+    [MessageHandler(SceneType.Client)]
     public class M2C_QuestProgressHandler : MessageHandler<Scene, M2C_QuestProgress>
     {
         protected override async ETTask Run(Scene root, M2C_QuestProgress message)

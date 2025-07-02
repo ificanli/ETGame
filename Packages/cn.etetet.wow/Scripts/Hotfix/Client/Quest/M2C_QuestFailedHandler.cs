@@ -5,7 +5,7 @@ namespace ET.Client
     /// <summary>
     /// 任务失败通知处理器
     /// </summary>
-    [MessageHandler(SceneType.WOW)]
+    [MessageHandler(SceneType.Client)]
     public class M2C_QuestFailedHandler : MessageHandler<Scene, M2C_QuestFailed>
     {
         protected override async ETTask Run(Scene root, M2C_QuestFailed message)

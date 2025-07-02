@@ -32,7 +32,7 @@ namespace ET.Server
                         for (int i = 0; i < options.Num; ++i)
                         {
                             robotManagerComponent = robotManagerComponentRef;
-                            await robotManagerComponent.NewRobot($"Robot_{i}", options.IsSubFiber);
+                            await robotManagerComponent.NewRobot(options.SchedulerType, $"Robot_{i}");
                             Log.Console($"Create Robot_{i}");
                         }
                         break;

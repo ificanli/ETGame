@@ -26,7 +26,7 @@ namespace ET.Client
 
             int fiberId = self.fiberId;
             self.fiberId = 0;
-            await FiberManager.Instance.RemoveFiber(fiberId);
+            await self.Fiber().RemoveFiber(fiberId);
         }
 
         public static async ETTask DisposeAsync(this ClientSenderComponent self)
@@ -40,7 +40,7 @@ namespace ET.Client
         public static async ETTask<long> LoginAsync(this ClientSenderComponent self, string address, string account, string password)
         {
             EntityRef<ClientSenderComponent> selfRef = self;
-            self.fiberId = await FiberManager.Instance.CreateFiber(SchedulerType.ThreadPool, 0, SceneType.NetClient, "NetClient");
+            self.fiberId = await self.Fiber().CreateFiber(SchedulerType.ThreadPool, 0, SceneType.NetClient, "NetClient");
             self = selfRef;
             self.netClientActorId = new ActorId(self.Fiber().Process, self.fiberId);
 

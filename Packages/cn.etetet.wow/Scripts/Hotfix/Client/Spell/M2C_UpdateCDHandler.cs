@@ -3,7 +3,7 @@
 namespace ET.Client
 {
 	[Module(ModuleName.Spell)]
-	[MessageHandler(SceneType.WOW)]
+	[MessageHandler(SceneType.Client)]
 	public class M2C_UpdateCDHandler : MessageHandler<Scene, M2C_UpdateCD>
 	{
 		protected override async ETTask Run(Scene root, M2C_UpdateCD message)

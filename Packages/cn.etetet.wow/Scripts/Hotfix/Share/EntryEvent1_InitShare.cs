@@ -1,5 +1,3 @@
-using Unity.Mathematics;
-
 namespace ET
 {
     [Event(SceneType.All)]
@@ -12,12 +10,7 @@ namespace ET
             root.AddComponent<ObjectWait>();
             root.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
             root.AddComponent<ProcessInnerSender>();
-            
-            MongoRegister.RegisterStruct<float2>();
-            MongoRegister.RegisterStruct<float3>();
-            MongoRegister.RegisterStruct<float4>();
-            MongoRegister.RegisterStruct<quaternion>();
-            
+
             await ETTask.CompletedTask;
         }
     }

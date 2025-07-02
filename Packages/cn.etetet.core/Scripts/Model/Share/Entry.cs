@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Mathematics;
 
 namespace ET
 {
@@ -37,6 +38,11 @@ namespace ET
             
             // 注册Entity序列化器
             EntitySerializeRegister.Init();
+            
+            MongoRegister.RegisterStruct<float2>();
+            MongoRegister.RegisterStruct<float3>();
+            MongoRegister.RegisterStruct<float4>();
+            MongoRegister.RegisterStruct<quaternion>();
 
             World.Instance.AddSingleton<SceneTypeSingleton, Type>(typeof(SceneType));
             World.Instance.AddSingleton<ObjectPool>();
@@ -60,7 +66,7 @@ namespace ET
             await World.Instance.AddSingleton<ConfigLoader>().LoadAsync();
             World.Instance.AddSingleton<NavmeshComponent>();
             
-            await FiberManager.Instance.CreateFiber(SchedulerType.Main, SceneType.Main, 0, SceneType.Main, "Main");
+            await FiberManager.Instance.CreateRoot(SceneType.Main);
         }
     }
 }

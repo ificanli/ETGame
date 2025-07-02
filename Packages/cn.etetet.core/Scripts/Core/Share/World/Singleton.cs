@@ -12,8 +12,6 @@
     
     public abstract class Singleton<T>: ASingleton where T: Singleton<T>
     {
-        protected bool isDisposed;
-        
         [StaticField]
         private static T instance;
         
@@ -35,11 +33,6 @@
             Instance = (T)this;
         }
 
-        public bool IsDisposed()
-        {
-            return this.isDisposed;
-        }
-
         protected virtual void Destroy()
         {
             
@@ -47,16 +40,13 @@
 
         public override void Dispose()
         {
-            if (this.isDisposed)
+            if (Instance == null)
             {
                 return;
             }
-            
-            this.isDisposed = true;
+            Instance = null;
 
             this.Destroy();
-            
-            Instance = null;
         }
     }
 }

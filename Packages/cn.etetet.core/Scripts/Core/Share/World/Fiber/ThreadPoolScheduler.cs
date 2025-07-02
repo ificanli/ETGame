@@ -7,15 +7,14 @@ namespace ET
 {
     internal class ThreadPoolScheduler: IScheduler
     {
+        private bool isDisposed;
+        
         private readonly List<Thread> threads;
 
-        private readonly ConcurrentQueue<int> idQueue = new();
-        
-        private readonly FiberManager fiberManager;
+        private readonly ConcurrentQueue<Fiber> fiberQueue = new();
 
-        public ThreadPoolScheduler(FiberManager fiberManager)
+        public ThreadPoolScheduler()
         {
-            this.fiberManager = fiberManager;
             int threadCount = Environment.ProcessorCount;
             this.threads = new List<Thread>(threadCount);
             for (int i = 0; i < threadCount; ++i)
@@ -36,23 +35,21 @@ namespace ET
                     Thread.Sleep(1);
                     
                     // count最小为1
-                    count = this.idQueue.Count / this.threads.Count + 1;
+                    count = this.fiberQueue.Count / this.threads.Count + 1;
                 }
 
                 --count;
                 
-                if (this.fiberManager.IsDisposed())
+                if (this.isDisposed)
                 {
                     return;
                 }
                 
-                if (!this.idQueue.TryDequeue(out int id))
+                if (!this.fiberQueue.TryDequeue(out Fiber fiber))
                 {
                     Thread.Sleep(1);
                     continue;
                 }
-
-                Fiber fiber = this.fiberManager.GetFiber(id);
                 if (fiber == null)
                 {
                     continue;
@@ -63,17 +60,22 @@ namespace ET
                     continue;
                 }
 
-                SynchronizationContext.SetSynchronizationContext(fiber.ThreadSynchronizationContext);
                 fiber.Update();
                 fiber.LateUpdate();
-                SynchronizationContext.SetSynchronizationContext(null);
-
-                this.idQueue.Enqueue(id);
+                
+                this.fiberQueue.Enqueue(fiber);
             }
         }
 
         public void Dispose()
         {
+            if (this.isDisposed)
+            {
+                return;
+            }
+            
+            this.isDisposed = true;
+            
             foreach (Thread thread in this.threads)
             {
                 thread.Join();
@@ -81,9 +83,9 @@ namespace ET
             this.threads.Clear();
         }
 
-        public void Add(int fiberId)
+        public void AddToScheduler(Fiber fiber)
         {
-            this.idQueue.Enqueue(fiberId);
+            this.fiberQueue.Enqueue(fiber);
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ET
 {
@@ -19,15 +22,15 @@ namespace ET
         [ThreadStatic]
         public static Fiber Instance;
         
-        public bool IsDisposed;
+        public bool IsDisposed { get; private set; }
         
-        public int Id;
+        public int Id { get; }
 
-        public int Zone;
-
-        public int Scheduler {get; internal set;}
+        public int Zone { get; }
 
         private EntityRef<Scene> root;
+        
+        public SchedulerType SchedulerType { get; }
 
         public Scene Root
         {
@@ -64,17 +67,18 @@ namespace ET
 
         private readonly Queue<ETTask> frameFinishTasks = new();
         
-        // 子Fiber, 子Fiber的Log使用父Fiber的Log, 子Fiber是由父Fiber调度
-        private readonly Queue<int> subFibers = new();
+        private readonly Queue<Fiber> schedulerQueue = new();
+
+        private readonly Dictionary<int, Fiber> children = new();
         
-        internal Fiber(int id, int zone, int sceneType, string name, int scheduler, ILog log = null)
+        internal Fiber(int id, int zone, int sceneType, string name, SchedulerType schedulerType, ILog log = null)
         {
             this.Id = id;
             this.Zone = zone;
+            this.SchedulerType = schedulerType;
             this.EntitySystem = new EntitySystem();
             this.Mailboxes = new Mailboxes();
             this.ThreadSynchronizationContext = new ThreadSynchronizationContext();
-            this.Scheduler = scheduler;
 
             if (log != null)
             {
@@ -91,22 +95,27 @@ namespace ET
 
         internal void Update()
         {
+            Fiber saveInstance = Instance;
+            Instance = this;
+            SynchronizationContext saveContext = SynchronizationContext.Current;
+            SynchronizationContext.SetSynchronizationContext(this.ThreadSynchronizationContext);
             try
             {
-                Instance = this;
                 this.EntitySystem.Publish(new UpdateEvent());
 
-                int count = this.subFibers.Count;
+                int count = this.schedulerQueue.Count;
                 while (count-- > 0)
                 {
-                    int fiberId = this.subFibers.Dequeue();
-                    this.subFibers.Enqueue(fiberId);
-
-                    Fiber fiber = FiberManager.Instance.GetFiber(fiberId);
-                    if (fiber == null)
+                    Fiber fiber = this.schedulerQueue.Dequeue();
+                    
+                    if (fiber.IsDisposed)
                     {
+                        this.children.Remove(fiber.Id);
                         continue;
                     }
+                    
+                    this.schedulerQueue.Enqueue(fiber);
+
                     fiber.Update();                    
                 }
             }
@@ -116,30 +125,37 @@ namespace ET
             }
             finally
             {
-                Instance = null;
+                Instance = saveInstance;
+                SynchronizationContext.SetSynchronizationContext(saveContext);
             }
         }
         
         internal void LateUpdate()
         {
+            Fiber saveInstance = Instance;
+            Instance = this;
+            SynchronizationContext saveContext = SynchronizationContext.Current;
+            SynchronizationContext.SetSynchronizationContext(this.ThreadSynchronizationContext);
+            
             try
             {
-                Instance = this;
                 this.EntitySystem.Publish(new LateUpdateEvent());
                 FrameFinishUpdate();
                 this.ThreadSynchronizationContext.Update();
 
-                int count = this.subFibers.Count;
+                int count = this.schedulerQueue.Count;
                 while (count-- > 0)
                 {
-                    int fiberId = this.subFibers.Dequeue();
-                    this.subFibers.Enqueue(fiberId);
+                    Fiber fiber = this.schedulerQueue.Dequeue();
                     
-                    Fiber fiber = FiberManager.Instance.GetFiber(fiberId);
-                    if (fiber == null)
+                    if (fiber.IsDisposed)
                     {
+                        this.children.Remove(fiber.Id);
                         continue;
                     }
+                    
+                    this.schedulerQueue.Enqueue(fiber);
+                    
                     fiber.LateUpdate();
                 }
             }
@@ -149,7 +165,8 @@ namespace ET
             }
             finally
             {
-                Instance = null;
+                Instance = saveInstance;
+                SynchronizationContext.SetSynchronizationContext(saveContext);
             }
         }
 
@@ -169,22 +186,77 @@ namespace ET
             }
         }
 
-        public async ETTask<int> CreateFiber(int sceneType, string name)
+        public async ETTask<int> CreateFiber(SchedulerType schedulerType, int zone, int sceneType, string name)
         {
-            return await FiberManager.Instance.CreateFiber(this.Id, this.Zone, sceneType, name, this.Log);
+            Fiber fiber = await FiberManager.Instance.CreateFiber(schedulerType, zone, sceneType, name, this);
+            this.children.Add(fiber.Id, fiber);
+            return fiber.Id;
+        }
+        
+        public async ETTask<int> CreateFiber(SchedulerType schedulerType, int fiberId, int zone, int sceneType, string name)
+        {
+            Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, schedulerType, zone, sceneType, name, this);
+            this.children.Add(fiber.Id, fiber);
+            return fiber.Id;
+        }
+        
+        public async ETTask RemoveFiber(int fiberId)
+        {
+            if (!this.children.Remove(fiberId, out Fiber fiber))
+            {
+                return;
+            }
+            
+            // 整个FiberManager释放了
+            IScheduler scheduler = fiber;
+            if (FiberManager.Instance == null)
+            {
+                scheduler.Dispose();
+                return;
+            }
+
+            if (fiber.SchedulerType == SchedulerType.Parent)
+            {
+                scheduler.Dispose();
+                return;
+            }
+            
+            TaskCompletionSource<bool> tcs = new();
+            // 要扔到fiber线程执行，否则会出现线程竞争
+            fiber.ThreadSynchronizationContext.Post(() =>
+            {
+                scheduler.Dispose();
+                tcs.SetResult(true);
+            });
+            await tcs.Task;
+        }
+
+        public async ETTask RemoveFibers()
+        {
+            foreach (int i in this.children.Keys.ToArray())
+            {
+                await this.RemoveFiber(i);
+            }
         }
         
         public Fiber GetFiber(int id)
         {
-            Fiber fiber = FiberManager.Instance.GetFiber(id);
-            if (fiber == null || fiber.Scheduler != this.Id)
+            if (!this.children.TryGetValue(id, out Fiber fiber))
             {
-                throw new Exception($"get sub fiber error: {id}, parent: {this.Id}");
+                return null;
+            }
+
+            if (fiber.SchedulerType != SchedulerType.Parent)
+            {
+                return null;
             }
             return fiber;
         }
 
-        public void Dispose()
+        /// <summary>
+        /// 禁止逻辑调用此方法，应该由Fiber.Remove去移除一个fiber
+        /// </summary>
+        void IScheduler.Dispose()
         {
             if (this.IsDisposed)
             {
@@ -200,22 +272,16 @@ namespace ET
             {
                 this.Log.Error(e);
             }
-
-            while (this.subFibers.Count > 0)
+            
+            foreach (int child in this.children.Keys.ToArray())
             {
-                int fiberId = this.subFibers.Dequeue();
-                Fiber subFiber = FiberManager.Instance.GetFiber(fiberId);
-                if (subFiber == null)
-                {
-                    continue;
-                }
-                subFiber.Dispose();
+                this.RemoveFiber(child).NoContext();
             }
         }
 
-        public void Add(int fiberId)
+        public void AddToScheduler(Fiber fiber)
         {
-            this.subFibers.Enqueue(fiberId);
+            this.schedulerQueue.Enqueue(fiber);
         }
     }
 }
