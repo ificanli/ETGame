@@ -6,33 +6,32 @@ using System.Threading.Tasks;
 
 namespace ET
 {
-    public enum SchedulerType
+    public static class SchedulerType
     {
-        Main,
-        Thread,
-        ThreadPool,
+        public const int Main = -1;
+        public const int Thread = -2;
+        public const int ThreadPool = -3;
     }
     
     public class FiberManager: Singleton<FiberManager>, ISingletonAwake, ISingletonReverseDispose
     {
-        private readonly IScheduler[] schedulers = new IScheduler[3];
+        private readonly ConcurrentDictionary<int, IScheduler> schedulers = new();
         
         private int idGenerator = 10000000; // 10000000以下为保留的用于StartSceneConfig的fiber id, 1个区配置1000个纤程，可以配置10000个区
-        private ConcurrentDictionary<int, Fiber> fibers = new();
 
         private MainThreadScheduler mainThreadScheduler;
         
         public void Awake()
         {
             this.mainThreadScheduler = new MainThreadScheduler(this);
-            this.schedulers[(int)SchedulerType.Main] = this.mainThreadScheduler;
+            this.schedulers[SchedulerType.Main] = this.mainThreadScheduler;
             
 #if (ENABLE_VIEW && UNITY_EDITOR) || UNITY_WEBGL
-            this.schedulers[(int)SchedulerType.Thread] = this.mainThreadScheduler;
-            this.schedulers[(int)SchedulerType.ThreadPool] = this.mainThreadScheduler;
+            this.schedulers[SchedulerType.Thread] = this.mainThreadScheduler;
+            this.schedulers[SchedulerType.ThreadPool] = this.mainThreadScheduler;
 #else
-            this.schedulers[(int)SchedulerType.Thread] = new ThreadScheduler(this);
-            this.schedulers[(int)SchedulerType.ThreadPool] = new ThreadPoolScheduler(this);
+            this.schedulers[SchedulerType.Thread] = new ThreadScheduler(this);
+            this.schedulers[SchedulerType.ThreadPool] = new ThreadPoolScheduler(this);
 #endif
         }
         
@@ -48,38 +47,51 @@ namespace ET
 
         protected override void Destroy()
         {
-            foreach (IScheduler scheduler in this.schedulers)
+            foreach (IScheduler scheduler in this.schedulers.Values)
             {
                 scheduler.Dispose();
             }
-            
-            foreach (var kv in this.fibers)
-            {
-                kv.Value.Dispose();
-            }
-
-            this.fibers = null;
         }
 
-        public async ETTask<int> Create(SchedulerType schedulerType, int fiberId, int zone, int sceneType, string name)
+        /// <summary>
+        /// 创建纤程
+        /// </summary>
+        /// <param name="scheduler">纤程调度器，-1: 主线程，-2: 当前线程，-3: 线程池, 其它: 纤程</param>
+        /// <param name="fiberId">纤程id</param>
+        /// <param name="zone">区</param>
+        /// <param name="sceneType">场景类型</param>
+        /// <param name="name">纤程名称</param>
+        /// <param name="iLog"></param>
+        public async ETTask<int> CreateFiber(int scheduler, int fiberId, int zone, int sceneType, string name, ILog iLog = null)
         {
             if (sceneType == 0)
             {
                 throw new Exception("fiberId is 0");
-            } 
+            }
             
             try
             {
-                Log.Debug($"create fiber: {fiberId} {zone} {sceneType} {name}");
-                Fiber fiber = new(fiberId, zone, sceneType, name);
+                Log.Debug($"create fiber: {fiberId} {zone} {sceneType} {name} {scheduler}");
+                Fiber fiber = new(fiberId, zone, sceneType, name, scheduler, iLog);
 
-                if (!this.fibers.TryAdd(fiberId, fiber))
+                if (!this.schedulers.TryAdd(fiberId, fiber))
                 {
                     throw new Exception($"same fiber already existed, if you remove, please await Remove then Create fiber! {fiberId}");
                 }
-                this.schedulers[(int) schedulerType].Add(fiberId);
                 
-                TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+                // 检查，如果是sub fiber，zone必须跟parent相同
+                if (scheduler > 0)
+                {
+                    Fiber parent = this.GetFiber(scheduler);
+                    if (parent != null && parent.Zone != zone)
+                    {
+                        throw new Exception($"sub fiber zone must be same as parent: {zone} {parent.Zone}");
+                    }
+                }
+
+                this.schedulers[scheduler].Add(fiberId);
+                
+                TaskCompletionSource<bool> tcs = new ();
 
                 fiber.ThreadSynchronizationContext.Post(() =>
                 {
@@ -109,25 +121,39 @@ namespace ET
             }
         }
 
-        internal int GetFiberId()
+        private int GetFiberId()
         {
             return Interlocked.Increment(ref this.idGenerator);
         }
-        
-        public async ETTask<int> Create(SchedulerType schedulerType, int zone, int sceneType, string name)
+
+        /// <summary>
+        /// 创建纤程
+        /// </summary>
+        /// <param name="scheduler">纤程调度器，-1: 主线程，-2: 当前线程，-3: 线程池, 其它: 纤程</param>
+        /// <param name="zone">区</param>
+        /// <param name="sceneType">场景类型</param>
+        /// <param name="name">纤程名称</param>
+        /// <param name="ilog"></param>
+        /// <returns>纤程id</returns>
+        public async ETTask<int> CreateFiber(int scheduler, int zone, int sceneType, string name, ILog ilog = null)
         {
             int fiberId = this.GetFiberId();
-            return await this.Create(schedulerType, fiberId, zone, sceneType, name);
+            return await this.CreateFiber(scheduler, fiberId, zone, sceneType, name);
         }
         
-        public async ETTask Remove(int id)
+        public async ETTask RemoveFiber(int id)
         {
-            Fiber fiber = this.Get(id);
+            if (id < 0)
+            {
+                throw new Exception($"fiber id error, {id}");
+            }
+            
+            Fiber fiber = this.GetFiber(id);
             TaskCompletionSource<bool> tcs = new();
             // 要扔到fiber线程执行，否则会出现线程竞争
             fiber.ThreadSynchronizationContext.Post(() =>
             {
-                if (this.fibers.Remove(id, out Fiber f))
+                if (this.schedulers.Remove(id, out IScheduler f))
                 {
                     f.Dispose();
                 }
@@ -137,15 +163,19 @@ namespace ET
         }
 
         // 不允许外部调用，容易出现多线程问题, 只能通过消息通信，不允许直接获取其它Fiber引用
-        internal Fiber Get(int id)
+        internal Fiber GetFiber(int id)
         {
-            this.fibers.TryGetValue(id, out Fiber fiber);
-            return fiber;
+            if (id < 0)
+            {
+                throw new Exception($"fiber id error, {id}");
+            }
+            this.schedulers.TryGetValue(id, out IScheduler fiber);
+            return fiber as Fiber;
         }
 
         public int Count()
         {
-            return this.fibers.Count;
+            return this.schedulers.Count - 3;
         }
     }
 }

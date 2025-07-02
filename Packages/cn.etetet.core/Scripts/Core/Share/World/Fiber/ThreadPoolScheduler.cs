@@ -20,13 +20,13 @@ namespace ET
             this.threads = new List<Thread>(threadCount);
             for (int i = 0; i < threadCount; ++i)
             {
-                Thread thread = new(this.Loop);
+                Thread thread = new(this.Update);
                 this.threads.Add(thread);
                 thread.Start();
             }
         }
 
-        private void Loop()
+        public void Update()
         {
             int count = 0;
             while (true)
@@ -52,7 +52,7 @@ namespace ET
                     continue;
                 }
 
-                Fiber fiber = this.fiberManager.Get(id);
+                Fiber fiber = this.fiberManager.GetFiber(id);
                 if (fiber == null)
                 {
                     continue;

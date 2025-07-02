@@ -13,7 +13,7 @@
         {
             async ETTask Remove(int f)
             {
-                await FiberManager.Instance.Remove(f);
+                await FiberManager.Instance.RemoveFiber(f);
             }
             
             foreach (int fiberId in self.robots.Values)
@@ -42,11 +42,11 @@
             int robot;
             if (isSubFiber)
             {
-                robot = await self.Fiber().CreateSubFiber(SceneType.Robot, account);
+                robot = await self.Fiber().CreateFiber(SceneType.Robot, account);
             }
             else
             {
-                robot = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Robot, account);
+                robot = await FiberManager.Instance.CreateFiber(SchedulerType.ThreadPool, self.Zone(), SceneType.Robot, account);
             }
             self = selfRef;
             self.robots.Add(account, robot);

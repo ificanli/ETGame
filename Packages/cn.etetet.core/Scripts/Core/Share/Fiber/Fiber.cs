@@ -12,7 +12,7 @@ namespace ET
         }
     }
     
-    public class Fiber: IDisposable
+    public class Fiber: IScheduler
     {
         // 该字段只能框架使用，绝对不能改成public，改了后果自负
         [StaticField]
@@ -24,6 +24,8 @@ namespace ET
         public int Id;
 
         public int Zone;
+
+        public int Scheduler {get; internal set;}
 
         private EntityRef<Scene> root;
 
@@ -63,15 +65,16 @@ namespace ET
         private readonly Queue<ETTask> frameFinishTasks = new();
         
         // 子Fiber, 子Fiber的Log使用父Fiber的Log, 子Fiber是由父Fiber调度
-        private readonly Dictionary<int, Fiber> subFibers = new();
+        private readonly Queue<int> subFibers = new();
         
-        internal Fiber(int id, int zone, int sceneType, string name, ILog log = null)
+        internal Fiber(int id, int zone, int sceneType, string name, int scheduler, ILog log = null)
         {
             this.Id = id;
             this.Zone = zone;
             this.EntitySystem = new EntitySystem();
             this.Mailboxes = new Mailboxes();
             this.ThreadSynchronizationContext = new ThreadSynchronizationContext();
+            this.Scheduler = scheduler;
 
             if (log != null)
             {
@@ -93,9 +96,18 @@ namespace ET
                 Instance = this;
                 this.EntitySystem.Publish(new UpdateEvent());
 
-                foreach ((int _, Fiber fiber) in this.subFibers)
+                int count = this.subFibers.Count;
+                while (count-- > 0)
                 {
-                    fiber.Update();
+                    int fiberId = this.subFibers.Dequeue();
+                    this.subFibers.Enqueue(fiberId);
+
+                    Fiber fiber = FiberManager.Instance.GetFiber(fiberId);
+                    if (fiber == null)
+                    {
+                        continue;
+                    }
+                    fiber.Update();                    
                 }
             }
             catch (Exception e)
@@ -117,8 +129,17 @@ namespace ET
                 FrameFinishUpdate();
                 this.ThreadSynchronizationContext.Update();
 
-                foreach ((int _, Fiber fiber) in this.subFibers)
+                int count = this.subFibers.Count;
+                while (count-- > 0)
                 {
+                    int fiberId = this.subFibers.Dequeue();
+                    this.subFibers.Enqueue(fiberId);
+                    
+                    Fiber fiber = FiberManager.Instance.GetFiber(fiberId);
+                    if (fiber == null)
+                    {
+                        continue;
+                    }
                     fiber.LateUpdate();
                 }
             }
@@ -147,38 +168,20 @@ namespace ET
                 task.SetResult();
             }
         }
-        
-        public Fiber GetSubFiber(int id)
+
+        public async ETTask<int> CreateFiber(int sceneType, string name)
         {
-            return this.subFibers[id];
+            return await FiberManager.Instance.CreateFiber(this.Id, this.Zone, sceneType, name, this.Log);
         }
-
-        /// <summary>
-        /// 创建子Fiber，子Fiber是由父Fiber驱动的
-        /// </summary>
-        public async ETTask<int> CreateSubFiber(int sceneType, string name)
+        
+        public Fiber GetFiber(int id)
         {
-            if (sceneType == 0)
+            Fiber fiber = FiberManager.Instance.GetFiber(id);
+            if (fiber == null || fiber.Scheduler != this.Id)
             {
-                throw new Exception("sceneType is 0");
+                throw new Exception($"get sub fiber error: {id}, parent: {this.Id}");
             }
-            
-            int fiberId = FiberManager.Instance.GetFiberId();
-            try
-            {
-                Log.Info($"create sub fiber: {fiberId} {this.Zone} {sceneType} {name}, parent: {this.Id} {this.Root.SceneType} {this.Root.Name}");
-                Fiber fiber = new(fiberId, this.Zone, sceneType, name, this.Log); // 子Fiber使用父Fiber的Log
-                
-                this.subFibers.Add(fiber.Id, fiber);
-
-                await EventSystem.Instance.Invoke<FiberInit, ETTask>(sceneType, new FiberInit() {Fiber = fiber});
-                
-                return fiberId;
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"create sub fiber error: {fiberId} {sceneType}", e);
-            }
+            return fiber;
         }
 
         public void Dispose()
@@ -196,12 +199,23 @@ namespace ET
             catch (Exception e)
             {
                 this.Log.Error(e);
-            }            
-
-            foreach ((int _, Fiber fiber) in this.subFibers)
-            {
-                fiber.Dispose();
             }
+
+            while (this.subFibers.Count > 0)
+            {
+                int fiberId = this.subFibers.Dequeue();
+                Fiber subFiber = FiberManager.Instance.GetFiber(fiberId);
+                if (subFiber == null)
+                {
+                    continue;
+                }
+                subFiber.Dispose();
+            }
+        }
+
+        public void Add(int fiberId)
+        {
+            this.subFibers.Enqueue(fiberId);
         }
     }
 }

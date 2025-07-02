@@ -69,7 +69,7 @@ namespace ET.Server
         public static async ETTask RemoveCopy(this MapInfo self, long id)
         {
             EntityRef<MapInfo> selfRef = self;
-            await FiberManager.Instance.Remove((int)id);
+            await FiberManager.Instance.RemoveFiber((int)id);
             self = selfRef;
             MapCopy mapCopy = self.GetChild<MapCopy>(id);
             
@@ -162,7 +162,7 @@ namespace ET.Server
             int lineNum = self.GetNotUsedLineNumber();
             EntityRef<MapInfo> selfRef = self;
             // 创建Copy Fiber
-            mapCopyId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, $"{self.MapName}@{lineNum}");
+            mapCopyId = await FiberManager.Instance.CreateFiber(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, $"{self.MapName}@{lineNum}");
             self = selfRef;
             mapCopy = self.AddChildWithId<MapCopy, int>(mapCopyId, lineNum);
             self.Lines[lineNum] = mapCopyId;

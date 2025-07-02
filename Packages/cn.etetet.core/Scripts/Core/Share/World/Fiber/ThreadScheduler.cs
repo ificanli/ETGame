@@ -17,9 +17,9 @@ namespace ET
             this.fiberManager = fiberManager;
         }
 
-        private void Loop(int fiberId)
+        private void Update(int fiberId)
         {
-            Fiber fiber = fiberManager.Get(fiberId);
+            Fiber fiber = fiberManager.GetFiber(fiberId);
             SynchronizationContext.SetSynchronizationContext(fiber.ThreadSynchronizationContext);
             
             while (true)
@@ -29,19 +29,13 @@ namespace ET
                     return;
                 }
                 
-                fiber = fiberManager.Get(fiberId);
-                if (fiber == null)
+                fiber = fiberManager.GetFiber(fiberId);
+                if (fiber == null || fiber.IsDisposed)
                 {
                     this.dictionary.Remove(fiberId, out _);
                     return;
                 }
-                
-                if (fiber.IsDisposed)
-                {
-                    this.dictionary.Remove(fiberId, out _);
-                    return;
-                }
-                
+
                 fiber.Update();
                 fiber.LateUpdate();
 
@@ -59,7 +53,7 @@ namespace ET
 
         public void Add(int fiberId)
         {
-            Thread thread = new(() => this.Loop(fiberId));
+            Thread thread = new(() => this.Update(fiberId));
             this.dictionary.TryAdd(fiberId, thread);
             thread.Start();
         }

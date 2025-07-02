@@ -37,7 +37,7 @@ namespace ET
                     continue;
                 }
 
-                Fiber fiber = this.fiberManager.Get(id);
+                Fiber fiber = this.fiberManager.GetFiber(id);
                 if (fiber == null)
                 {
                     continue;
@@ -68,7 +68,7 @@ namespace ET
                     continue;
                 }
 
-                Fiber fiber = this.fiberManager.Get(id);
+                Fiber fiber = this.fiberManager.GetFiber(id);
                 if (fiber == null)
                 {
                     continue;
@@ -99,7 +99,7 @@ namespace ET
         public void Add(int fiberId = 0)
         {
             this.addIds.Enqueue(fiberId);
-            this.firstFiber ??= this.fiberManager.Get(fiberId);
+            this.firstFiber ??= this.fiberManager.GetFiber(fiberId);
         }
     }
 }
