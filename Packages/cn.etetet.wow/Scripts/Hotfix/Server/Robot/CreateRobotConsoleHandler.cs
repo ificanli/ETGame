@@ -24,8 +24,7 @@ namespace ET.Server
                                 .WithNotParsed(error => throw new Exception($"CreateRobotArgs error!"))
                                 .WithParsed(o => { options = o; });
 
-                        RobotManagerComponent robotManagerComponent =
-                                fiber.Root.GetComponent<RobotManagerComponent>() ?? fiber.Root.AddComponent<RobotManagerComponent>();
+                        RobotManagerComponent robotManagerComponent = fiber.Root.GetComponent<RobotManagerComponent>();
 
                         EntityRef<RobotManagerComponent> robotManagerComponentRef = robotManagerComponent;
                     

@@ -49,6 +49,7 @@ namespace ET
             {
                 kv.Value.Join();
             }
+            this.dictionary.Clear();
         }
 
         public void Add(int fiberId)

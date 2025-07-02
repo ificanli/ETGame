@@ -12,7 +12,7 @@
     
     public abstract class Singleton<T>: ASingleton where T: Singleton<T>
     {
-        private bool isDisposed;
+        protected bool isDisposed;
         
         [StaticField]
         private static T instance;

@@ -36,8 +36,43 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this HttpComponent self)
         {
-            self.Listener.Stop();
-            self.Listener.Close();
+            if (self.Listener == null)
+            {
+                return;
+            }
+
+            try
+            {
+                if (self.Listener.IsListening)
+                {
+                    self.Listener.Stop();
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                // HttpListener已经被释放，忽略异常
+            }
+            catch (HttpListenerException)
+            {
+                // HttpListener状态异常，忽略
+            }
+            catch (InvalidOperationException)
+            {
+                // HttpListener操作异常，忽略
+            }
+                
+            try
+            {
+                self.Listener.Close();
+            }
+            catch (ObjectDisposedException)
+            {
+                // HttpListener已经被释放，忽略异常
+            }
+            finally
+            {
+                self.Listener = null;
+            }
         }
 
         private static async ETTask Accept(this HttpComponent self)
@@ -47,6 +82,22 @@ namespace ET.Server
             {
                 try
                 {
+                    self = selfRef;
+                    if (self == null)
+                    {
+                        return;
+                    }
+                    
+                    if (self.Listener == null)
+                    {
+                        return;
+                    }
+
+                    if (!self.Listener.IsListening)
+                    {
+                        return;
+                    }
+
                     HttpListenerContext context = await self.Listener.GetContextAsync();
                     self = selfRef;
                     if (self == null)

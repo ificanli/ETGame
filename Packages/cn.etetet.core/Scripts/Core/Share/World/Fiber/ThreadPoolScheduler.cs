@@ -78,6 +78,7 @@ namespace ET
             {
                 thread.Join();
             }
+            this.threads.Clear();
         }
 
         public void Add(int fiberId)

@@ -15,14 +15,20 @@ namespace ET
     
     public class FiberManager: Singleton<FiberManager>, ISingletonAwake, ISingletonReverseDispose
     {
+        private int idGenerator; 
+        
         private readonly ConcurrentDictionary<int, IScheduler> schedulers = new();
         
-        private int idGenerator = 10000000; // 10000000以下为保留的用于StartSceneConfig的fiber id, 1个区配置1000个纤程，可以配置10000个区
-
         private MainThreadScheduler mainThreadScheduler;
+        private ThreadPoolScheduler threadPoolScheduler;
+        private ThreadScheduler threadScheduler;
         
         public void Awake()
         {
+            this.idGenerator = 10000000; // 10000000以下为保留的用于StartSceneConfig的fiber id, 1个区配置1000个纤程，可以配置10000个区
+            
+            this.schedulers.Clear();
+            
             this.mainThreadScheduler = new MainThreadScheduler(this);
             this.schedulers[SchedulerType.Main] = this.mainThreadScheduler;
             
@@ -30,8 +36,11 @@ namespace ET
             this.schedulers[SchedulerType.Thread] = this.mainThreadScheduler;
             this.schedulers[SchedulerType.ThreadPool] = this.mainThreadScheduler;
 #else
-            this.schedulers[SchedulerType.Thread] = new ThreadScheduler(this);
-            this.schedulers[SchedulerType.ThreadPool] = new ThreadPoolScheduler(this);
+            this.threadPoolScheduler = new ThreadPoolScheduler(this);
+            this.schedulers[SchedulerType.Thread] = this.threadPoolScheduler;
+            
+            this.threadScheduler = new ThreadScheduler(this);
+            this.schedulers[SchedulerType.ThreadPool] = this.threadScheduler;
 #endif
         }
         
@@ -47,9 +56,17 @@ namespace ET
 
         protected override void Destroy()
         {
-            foreach (IScheduler scheduler in this.schedulers.Values)
+            this.mainThreadScheduler?.Dispose();
+            this.threadPoolScheduler?.Dispose();
+            this.threadScheduler?.Dispose();
+            
+            foreach ((int key, IScheduler value) in this.schedulers)
             {
-                scheduler.Dispose();
+                if (key < 0)
+                {
+                    continue;
+                }
+                value.Dispose();
             }
         }
 
@@ -68,7 +85,6 @@ namespace ET
             {
                 throw new Exception("fiberId is 0");
             }
-            
             try
             {
                 Log.Debug($"create fiber: {fiberId} {zone} {sceneType} {name} {scheduler}");
@@ -88,7 +104,6 @@ namespace ET
                         throw new Exception($"sub fiber zone must be same as parent: {zone} {parent.Zone}");
                     }
                 }
-
                 this.schedulers[scheduler].Add(fiberId);
                 
                 TaskCompletionSource<bool> tcs = new ();
@@ -97,7 +112,6 @@ namespace ET
                 {
                     Action().NoContext();
                 });
-
                 await tcs.Task;
                 return fiberId;
 
@@ -176,6 +190,28 @@ namespace ET
         public int Count()
         {
             return this.schedulers.Count - 3;
+        }
+
+        /// <summary>
+        /// 重置FiberManager，主要是给机器人测试用例重置测试环境使用
+        /// </summary>
+        private void Reset()
+        {
+            this.isDisposed = true;
+            this.Destroy();
+
+            this.isDisposed = false;
+            this.Awake();
+        }
+
+        /// <summary>
+        /// 专门为机器人测试用例提供的安全重置方法
+        /// </summary>
+        public async ETTask<Fiber> ResetAndCreateFiber(int sceneType, string name)
+        {
+            this.Reset();
+            int mainFiberId = await this.CreateFiber(SchedulerType.Main, sceneType, 0, sceneType, name);
+            return this.GetFiber(mainFiberId);
         }
     }
 }

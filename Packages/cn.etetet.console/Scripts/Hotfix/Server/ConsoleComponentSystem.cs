@@ -22,6 +22,11 @@ namespace ET.Server
             {
                 try
                 {
+                    self = selfRef;
+                    if (self == null)
+                    {
+                        return;
+                    }
                     ModeContex modeContex = self.GetComponent<ModeContex>();
                     EntityRef<ModeContex> modeContexRef = modeContex;
                     string prefix = $"{modeContex?.Mode ?? ""}> ";

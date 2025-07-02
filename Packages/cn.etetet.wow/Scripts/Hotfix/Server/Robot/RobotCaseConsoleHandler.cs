@@ -12,6 +12,7 @@ namespace ET.Server
     {
         public async ETTask Run(Fiber fiber, ModeContex contex, string content)
         {
+            EntityRef<ModeContex> modeContexRef = contex;
             try
             {
                 if (content == ConsoleMode.Case)
@@ -19,15 +20,13 @@ namespace ET.Server
                     Log.Console("RobotCase args error!");
                     return;
                 }
-
+                
                 // 解析命令行参数
                 RobotCaseArgs options = null;
                 Parser.Default.ParseArguments<RobotCaseArgs>(content.Split(' '))
                         .WithNotParsed(error => throw new Exception($"RobotCaseArgs解析错误!"))
                         .WithParsed(o => { options = o; });
                 
-                _ = fiber.Root.GetComponent<RobotManagerComponent>() ?? fiber.Root.AddComponent<RobotManagerComponent>();
-
                 if (options.Id == 0)
                 {
                     // 执行所有注册的测试用例
@@ -36,7 +35,7 @@ namespace ET.Server
                     {
                         try
                         {
-                            int ret = await EventSystem.Instance.Invoke<RobotCaseContext, ETTask<int>>(type, new RobotCaseContext() { Fiber = fiber, Args = options });
+                            int ret = await EventSystem.Instance.Invoke<RobotCaseContext, ETTask<int>>(type, new RobotCaseContext() { Args = options });
                             if (ret != ErrorCode.ERR_Success)
                             {
                                 Log.Console($"case run failed: {type}");
@@ -57,7 +56,7 @@ namespace ET.Server
                     try
                     {
                         // 执行options.Case这个测试用例
-                        int ret = await EventSystem.Instance.Invoke<RobotCaseContext, ETTask<int>>(type, new RobotCaseContext() { Fiber = fiber, Args = options });
+                        int ret = await EventSystem.Instance.Invoke<RobotCaseContext, ETTask<int>>(type, new RobotCaseContext() { Args = options });
                         if (ret != ErrorCode.ERR_Success)
                         {
                             Log.Console($"case run failed: {type}");
@@ -77,7 +76,11 @@ namespace ET.Server
             }
             finally
             {
-                contex.Parent.RemoveComponent<ModeContex>();
+                contex = modeContexRef;
+                if (contex != null)
+                {
+                    contex.Parent.RemoveComponent<ModeContex>();    
+                }
             }
         }
     }

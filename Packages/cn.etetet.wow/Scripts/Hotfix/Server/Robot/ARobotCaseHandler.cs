@@ -3,15 +3,6 @@ using System;
 namespace ET.Server
 {
     /// <summary>
-    /// 机器人测试用例回调参数
-    /// </summary>
-    public struct RobotCaseContext
-    {
-        public Fiber Fiber;
-        public RobotCaseArgs Args;
-    }
-
-    /// <summary>
     /// 机器人测试用例处理器抽象基类
     /// 继承自AInvokeHandler，使用Invoke机制进行分发
     /// </summary>
@@ -19,7 +10,9 @@ namespace ET.Server
     {
         public override async ETTask<int> Handle(RobotCaseContext context)
         {
-            return await this.Run(context.Fiber, context.Args);
+            // 使用安全的重置方法，直接获取新的Main Fiber
+            Fiber newMainFiber = await FiberManager.Instance.ResetAndCreateFiber(SceneType.Main, "Main");
+            return await this.Run(newMainFiber, context.Args);
         }
 
         protected abstract ETTask<int> Run(Fiber fiber, RobotCaseArgs args);
