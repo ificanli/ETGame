@@ -15,7 +15,7 @@ namespace ET.Server
             try
             {
                 // 使用安全的重置方法，直接获取新的Main Fiber
-                Fiber subFiber = await context.Fiber.CreateSubFiber(0, SceneType.RobotCase, $"{context.Args.Id}");
+                Fiber subFiber = await context.Fiber.CreateFiber(0, SceneType.RobotCase, $"{context.Args.Id}");
                 subFiberId = subFiber.Id;
                 int ret = await this.Run(subFiber, context.Args);
                 return ret;

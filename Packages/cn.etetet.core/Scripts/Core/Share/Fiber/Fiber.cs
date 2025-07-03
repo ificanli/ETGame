@@ -206,7 +206,7 @@ namespace ET
         /// <param name="sceneType"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async ETTask<Fiber> CreateSubFiber(int zone, int sceneType, string name)
+        public async ETTask<Fiber> CreateFiber(int zone, int sceneType, string name)
         {
             Fiber fiber = await FiberManager.Instance.CreateFiber(SchedulerType.Parent, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
@@ -221,7 +221,7 @@ namespace ET
         /// <param name="sceneType"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async ETTask<Fiber> CreateSubFiber(int fiberId, int zone, int sceneType, string name)
+        public async ETTask<Fiber> CreateFiberWithId(int fiberId, int zone, int sceneType, string name)
         {
             Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, SchedulerType.Parent, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
@@ -235,7 +235,7 @@ namespace ET
             return fiber.Id;
         }
         
-        public async ETTask<int> CreateFiber(int fiberId, SchedulerType schedulerType, int zone, int sceneType, string name)
+        public async ETTask<int> CreateFiberWithId(int fiberId, SchedulerType schedulerType, int zone, int sceneType, string name)
         {
             Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, schedulerType, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
