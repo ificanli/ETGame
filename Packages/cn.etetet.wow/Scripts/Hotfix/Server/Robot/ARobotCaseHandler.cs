@@ -11,7 +11,7 @@ namespace ET.Server
         public override async ETTask<int> Handle(RobotCaseContext context)
         {
             // 使用安全的重置方法，直接获取新的Main Fiber
-            Fiber fiber = await FiberManager.Instance.CreateRoot(SceneType.Main);
+            Fiber fiber = await FiberManager.CreateRoot(SceneType.Main);
             return await this.Run(fiber, context.Args);
         }
 

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ET
 {
-    public class World: IDisposable
+    public class World : IDisposable
     {
         [StaticField]
         private static World instance;
@@ -17,33 +18,28 @@ namespace ET
             }
         }
 
-        private readonly Stack<Type> stack = new();
+        private int idGenerator;
+
+        private readonly SortedDictionary<int, ASingleton> idSingletons = new();
         private readonly Dictionary<Type, ASingleton> singletons = new();
-        
+
         private World()
         {
         }
-        
+
         public void Dispose()
         {
             instance = null;
-            
+
             lock (this)
             {
-                while (this.stack.Count > 0)
-                {
-                    Type type = this.stack.Pop();
-                    if (this.singletons.Remove(type, out ASingleton singleton))
-                    {
-                        singleton.Dispose();
-                    }
-                }
-
                 // dispose剩下的singleton，主要为了把instance置空
-                foreach (var kv in this.singletons)
+                foreach (var kv in this.idSingletons.Reverse())
                 {
                     kv.Value.Dispose();
                 }
+                idSingletons.Clear();
+                singletons.Clear();
             }
         }
 
@@ -55,7 +51,7 @@ namespace ET
             AddSingleton(singleton);
             return singleton;
         }
-        
+
         public T AddSingleton<T, A>(A a) where T : ASingleton, ISingletonAwake<A>, new()
         {
             T singleton = new();
@@ -64,7 +60,7 @@ namespace ET
             AddSingleton(singleton);
             return singleton;
         }
-        
+
         public T AddSingleton<T, A, B>(A a, B b) where T : ASingleton, ISingletonAwake<A, B>, new()
         {
             T singleton = new();
@@ -73,7 +69,7 @@ namespace ET
             AddSingleton(singleton);
             return singleton;
         }
-        
+
         public T AddSingleton<T, A, B, C>(A a, B b, C c) where T : ASingleton, ISingletonAwake<A, B, C>, new()
         {
             T singleton = new();
@@ -88,14 +84,26 @@ namespace ET
             lock (this)
             {
                 Type type = singleton.GetType();
-                if (singleton is ISingletonReverseDispose)
-                {
-                    this.stack.Push(type);
-                }
+                int id = idGenerator++;
                 singletons[type] = singleton;
-            }
+                idSingletons[id] = singleton;
+                singleton.Register(id);
+            }            
+        }
 
-            singleton.Register();
+        public void RemoveSingleton<T>() where T : ASingleton
+        {
+            lock (this)
+            {
+                Type type = typeof(T);
+                if (!this.singletons.Remove(type, out ASingleton singleton))
+                {
+                    return;
+                }
+
+                this.idSingletons.Remove(singleton.Id);
+                singleton.Dispose();
+            }
         }
     }
 }

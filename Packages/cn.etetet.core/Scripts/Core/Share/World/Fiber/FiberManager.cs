@@ -12,7 +12,7 @@ namespace ET
         ThreadPool = 2,
     }
     
-    public class FiberManager: Singleton<FiberManager>, ISingletonAwake, ISingletonReverseDispose
+    public class FiberManager: Singleton<FiberManager>, ISingletonAwake
     {
         private int idGenerator; 
         
@@ -55,14 +55,20 @@ namespace ET
             {
                 scheduler.Dispose();
             }
-            
             ((IScheduler)this.root).Dispose();
         }
 
-        public async ETTask<Fiber> CreateRoot(int sceneType)
+        public static async ETTask<Fiber> CreateRoot(int sceneType)
         {
-            this.root = await this.CreateFiber(SchedulerType.Main, 0, sceneType, "Root", null);
-            return this.root;
+            FiberManager fiberManager = Instance;
+            if (fiberManager.root != null)
+            {
+                World.Instance.RemoveSingleton<FiberManager>();
+                fiberManager = World.Instance.AddSingleton<FiberManager>();
+            }
+
+            fiberManager.root = await fiberManager.CreateFiber(SchedulerType.Main, 0, sceneType, "Root", null);
+            return fiberManager.root;
         }
         
         /// <summary>

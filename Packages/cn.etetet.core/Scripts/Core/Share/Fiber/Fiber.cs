@@ -263,7 +263,6 @@ namespace ET
                 return;
             }
             this.IsDisposed = true;
-
             try
             {
                 this.Root.Dispose();
