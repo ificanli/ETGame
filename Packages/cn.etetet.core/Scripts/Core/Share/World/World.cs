@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ET
 {
-    public class World : IDisposable
+    public class World: IDisposable
     {
         [StaticField]
         private static World instance;
@@ -18,28 +17,48 @@ namespace ET
             }
         }
 
-        private int idGenerator;
-
-        private readonly SortedDictionary<int, ASingleton> idSingletons = new();
+        private readonly SortedDictionary<int, HashSet<ASingleton>> removeOrder = new();
         private readonly Dictionary<Type, ASingleton> singletons = new();
-
+        
         private World()
         {
         }
-
+        
         public void Dispose()
         {
             instance = null;
-
+            
             lock (this)
             {
-                // dispose剩下的singleton，主要为了把instance置空
-                foreach (var kv in this.idSingletons.Reverse())
+                foreach (var kv in this.removeOrder)
                 {
-                    kv.Value.Dispose();
+                    foreach (ASingleton singleton in kv.Value)
+                    {
+                        singleton.Dispose();
+                    }
                 }
-                idSingletons.Clear();
-                singletons.Clear();
+                this.removeOrder.Clear();
+                this.singletons.Clear();
+            }
+        }
+        
+        private void AddToOrder(ASingleton singleton)
+        {
+            int order = singleton.RemoveOrder();
+            if (!this.removeOrder.TryGetValue(order, out HashSet<ASingleton> set))            
+            {
+                set = new HashSet<ASingleton>();
+                this.removeOrder[order] = set;
+            }
+            set.Add(singleton);
+        }
+
+        private void RemoveFromOrder(ASingleton singleton)
+        {
+            int order = singleton.RemoveOrder();
+            if (this.removeOrder.TryGetValue(order, out HashSet<ASingleton> set))
+            {
+                set.Remove(singleton);
             }
         }
 
@@ -51,7 +70,7 @@ namespace ET
             AddSingleton(singleton);
             return singleton;
         }
-
+        
         public T AddSingleton<T, A>(A a) where T : ASingleton, ISingletonAwake<A>, new()
         {
             T singleton = new();
@@ -60,7 +79,7 @@ namespace ET
             AddSingleton(singleton);
             return singleton;
         }
-
+        
         public T AddSingleton<T, A, B>(A a, B b) where T : ASingleton, ISingletonAwake<A, B>, new()
         {
             T singleton = new();
@@ -69,7 +88,7 @@ namespace ET
             AddSingleton(singleton);
             return singleton;
         }
-
+        
         public T AddSingleton<T, A, B, C>(A a, B b, C c) where T : ASingleton, ISingletonAwake<A, B, C>, new()
         {
             T singleton = new();
@@ -83,27 +102,25 @@ namespace ET
         {
             lock (this)
             {
-                Type type = singleton.GetType();
-                int id = idGenerator++;
-                singletons[type] = singleton;
-                idSingletons[id] = singleton;
-                singleton.Register(id);
+                this.AddToOrder(singleton);
+                this.singletons[singleton.GetType()] = singleton;
             }            
+            singleton.Register();
         }
 
-        public void RemoveSingleton<T>() where T : ASingleton
+        public void RemoveSingleton<T>()
         {
+            ASingleton singleton = null;
             lock (this)
             {
                 Type type = typeof(T);
-                if (!this.singletons.Remove(type, out ASingleton singleton))
+                if (!this.singletons.Remove(type, out singleton))
                 {
-                    return;
+                  return;
                 }
-
-                this.idSingletons.Remove(singleton.Id);
-                singleton.Dispose();
+                this.RemoveFromOrder(singleton);
             }
+            singleton?.Dispose();
         }
     }
 }

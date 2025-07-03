@@ -66,7 +66,7 @@ namespace ET
             await World.Instance.AddSingleton<ConfigLoader>().LoadAsync();
             World.Instance.AddSingleton<NavmeshComponent>();
             
-            await FiberManager.CreateRoot(SceneType.Main);
+            await FiberManager.CreateMainFiber(SceneType.Main);
         }
     }
 }

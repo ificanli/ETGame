@@ -8,6 +8,8 @@ namespace ET
     {
         private readonly ConcurrentQueue<Fiber> fiberQueue = new();
         private readonly ConcurrentQueue<Fiber> addQueue = new();
+
+        // Fiber还没创建之前需要同步上下文，否则MainFiber task无法回调
         private readonly ThreadSynchronizationContext threadSynchronizationContext = new();
 
         public MainThreadScheduler()
@@ -23,7 +25,7 @@ namespace ET
 
         public void Update()
         {
-            this.threadSynchronizationContext.Update();
+            threadSynchronizationContext.Update();
             
             int count = this.fiberQueue.Count;
             while (count-- > 0)
@@ -41,10 +43,13 @@ namespace ET
                 {
                     continue;
                 }
+                this.fiberQueue.Enqueue(fiber);
                 
                 fiber.Update();
-                this.fiberQueue.Enqueue(fiber);
             }
+            
+            // 还原成原始上下文，unity的回调可能用到
+            SynchronizationContext.SetSynchronizationContext(this.threadSynchronizationContext);
         }
 
         public void LateUpdate()
@@ -66,8 +71,9 @@ namespace ET
                     continue;
                 }
 
-                fiber.LateUpdate();
                 this.fiberQueue.Enqueue(fiber);
+                
+                fiber.LateUpdate();
             }
 
             while (this.addQueue.Count > 0)
@@ -75,6 +81,9 @@ namespace ET
                 this.addQueue.TryDequeue(out Fiber fiber);
                 this.fiberQueue.Enqueue(fiber);
             }
+            
+            // 还原成原始上下文，unity的回调可能用到
+            SynchronizationContext.SetSynchronizationContext(this.threadSynchronizationContext);
         }
 
 

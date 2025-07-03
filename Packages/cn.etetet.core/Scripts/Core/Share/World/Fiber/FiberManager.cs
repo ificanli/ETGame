@@ -20,7 +20,7 @@ namespace ET
         
         private MainThreadScheduler mainThreadScheduler;
 
-        private Fiber root;
+        private Fiber mainFiber;
         
         public void Awake()
         {
@@ -36,6 +36,11 @@ namespace ET
             this.schedulers[(int)SchedulerType.Thread] = new ThreadScheduler();
             this.schedulers[(int)SchedulerType.ThreadPool] = new ThreadPoolScheduler();
 #endif
+        }
+
+        public override int RemoveOrder()
+        {
+            return 0;
         }
         
         public void Update()
@@ -55,20 +60,20 @@ namespace ET
             {
                 scheduler.Dispose();
             }
-            ((IScheduler)this.root).Dispose();
+            ((IScheduler)this.mainFiber).Dispose();
         }
 
-        public static async ETTask<Fiber> CreateRoot(int sceneType)
+        public static async ETTask<Fiber> CreateMainFiber(int sceneType)
         {
             FiberManager fiberManager = Instance;
-            if (fiberManager.root != null)
+            if (fiberManager.mainFiber != null)
             {
                 World.Instance.RemoveSingleton<FiberManager>();
                 fiberManager = World.Instance.AddSingleton<FiberManager>();
             }
 
-            fiberManager.root = await fiberManager.CreateFiber(SchedulerType.Main, 0, sceneType, "Root", null);
-            return fiberManager.root;
+            fiberManager.mainFiber = await fiberManager.CreateFiber(SchedulerType.Main, 0, sceneType, "Main", null);
+            return fiberManager.mainFiber;
         }
         
         /// <summary>
@@ -92,8 +97,7 @@ namespace ET
                 Log.Debug($"create fiber: {fiberId} {zone} {sceneType} {name} {schedulerType} {parentId}");
                 
                 // 如果调度器是父fiber，那么日志也是父fiber的日志
-                ILog log = schedulerType == SchedulerType.Parent ? parent.Log : null;
-                Fiber fiber = new(fiberId, zone, sceneType, name, schedulerType, log);
+                Fiber fiber = new(fiberId, zone, sceneType, name, schedulerType, parent);
 
                 IScheduler iScheduler = schedulerType == SchedulerType.Parent ? parent : this.schedulers[(int)schedulerType];
                 iScheduler.AddToScheduler(fiber);

@@ -20,7 +20,25 @@ namespace ET
         // 该字段只能框架使用，绝对不能改成public，改了后果自负
         [StaticField]
         [ThreadStatic]
-        public static Fiber Instance;
+        private static Fiber instance;
+
+        [StaticField]
+        public static Fiber Instance
+        {
+            get
+            {
+                return instance;
+            }
+            private set
+            {
+                instance = value;
+                
+                if (instance != null)
+                {
+                    SynchronizationContext.SetSynchronizationContext(instance.ThreadSynchronizationContext);
+                }
+            }
+        }
         
         public bool IsDisposed { get; private set; }
         
@@ -71,7 +89,7 @@ namespace ET
 
         private readonly Dictionary<int, Fiber> children = new();
         
-        internal Fiber(int id, int zone, int sceneType, string name, SchedulerType schedulerType, ILog log = null)
+        internal Fiber(int id, int zone, int sceneType, string name, SchedulerType schedulerType, Fiber parent)
         {
             this.Id = id;
             this.Zone = zone;
@@ -79,10 +97,10 @@ namespace ET
             this.EntitySystem = new EntitySystem();
             this.Mailboxes = new Mailboxes();
             this.ThreadSynchronizationContext = new ThreadSynchronizationContext();
-
-            if (log != null)
+            
+            if (schedulerType == SchedulerType.Parent)
             {
-                this.Log = log;
+                this.Log = parent.Log;
             }
             else
             {
@@ -97,8 +115,7 @@ namespace ET
         {
             Fiber saveInstance = Instance;
             Instance = this;
-            SynchronizationContext saveContext = SynchronizationContext.Current;
-            SynchronizationContext.SetSynchronizationContext(this.ThreadSynchronizationContext);
+            
             try
             {
                 this.EntitySystem.Publish(new UpdateEvent());
@@ -126,7 +143,6 @@ namespace ET
             finally
             {
                 Instance = saveInstance;
-                SynchronizationContext.SetSynchronizationContext(saveContext);
             }
         }
         
@@ -134,8 +150,6 @@ namespace ET
         {
             Fiber saveInstance = Instance;
             Instance = this;
-            SynchronizationContext saveContext = SynchronizationContext.Current;
-            SynchronizationContext.SetSynchronizationContext(this.ThreadSynchronizationContext);
             
             try
             {
@@ -166,7 +180,6 @@ namespace ET
             finally
             {
                 Instance = saveInstance;
-                SynchronizationContext.SetSynchronizationContext(saveContext);
             }
         }
 

@@ -2,9 +2,12 @@
 {    
     public abstract class ASingleton: DisposeObject
     {
-        internal abstract void Register(int id);
+        internal abstract void Register();
 
-        public int Id { get; protected set; }
+        public virtual int RemoveOrder()
+        {
+            return 10000;
+        }
     }
     
     public abstract class Singleton<T>: ASingleton where T: Singleton<T>
@@ -25,10 +28,9 @@
             }
         }
 
-        internal override void Register(int id)
+        internal override void Register()
         {
             Instance = (T)this;
-            Id = id;
         }
 
         protected virtual void Destroy()
