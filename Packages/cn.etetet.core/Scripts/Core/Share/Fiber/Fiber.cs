@@ -199,6 +199,35 @@ namespace ET
             }
         }
 
+        /// <summary>
+        /// 创建的fiber在由该fiber调度，所以可以返回Fiber，父Fiber可以直接操作子Fiber
+        /// </summary>
+        /// <param name="zone"></param>
+        /// <param name="sceneType"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async ETTask<Fiber> CreateSubFiber(int zone, int sceneType, string name)
+        {
+            Fiber fiber = await FiberManager.Instance.CreateFiber(SchedulerType.Parent, zone, sceneType, name, this);
+            this.children.Add(fiber.Id, fiber);
+            return fiber;
+        }
+
+        /// <summary>
+        /// 这个会跟parent fiber在同一线程调度，所以可以返回Fiber，父Fiber可以直接操作子Fiber
+        /// </summary>
+        /// <param name="fiberId"></param>
+        /// <param name="zone"></param>
+        /// <param name="sceneType"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async ETTask<Fiber> CreateSubFiber(int fiberId, int zone, int sceneType, string name)
+        {
+            Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, SchedulerType.Parent, zone, sceneType, name, this);
+            this.children.Add(fiber.Id, fiber);
+            return fiber;
+        }
+
         public async ETTask<int> CreateFiber(SchedulerType schedulerType, int zone, int sceneType, string name)
         {
             Fiber fiber = await FiberManager.Instance.CreateFiber(schedulerType, zone, sceneType, name, this);
@@ -206,7 +235,7 @@ namespace ET
             return fiber.Id;
         }
         
-        public async ETTask<int> CreateFiber(SchedulerType schedulerType, int fiberId, int zone, int sceneType, string name)
+        public async ETTask<int> CreateFiber(int fiberId, SchedulerType schedulerType, int zone, int sceneType, string name)
         {
             Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, schedulerType, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);

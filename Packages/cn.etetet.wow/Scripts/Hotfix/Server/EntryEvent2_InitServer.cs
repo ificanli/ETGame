@@ -12,7 +12,7 @@
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(process);
             if (startProcessConfig.Port != 0)
             {
-                await fiber.CreateFiber(SchedulerType.ThreadPool, SceneType.NetInner, 0, SceneType.NetInner, "NetInner");
+                await fiber.CreateFiber(SceneType.NetInner, SchedulerType.ThreadPool, 0, SceneType.NetInner, "NetInner");
             }
 
             // 根据配置创建纤程
@@ -21,11 +21,10 @@
             foreach (StartSceneConfig startConfig in scenes)
             {
                 int sceneType = SceneTypeSingleton.Instance.GetSceneType(startConfig.SceneType);
-                await fiber.CreateFiber(SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
+                await fiber.CreateFiber(startConfig.Id, SchedulerType.ThreadPool, startConfig.Zone, sceneType, startConfig.Name);
             }
             
             root = rootRef;
-            root.AddComponent<RobotManagerComponent>();
             if (Options.Instance.Console == 1)
             {
                 root = rootRef;

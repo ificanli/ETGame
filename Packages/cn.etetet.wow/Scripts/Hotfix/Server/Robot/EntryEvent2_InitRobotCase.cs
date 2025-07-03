@@ -1,10 +1,7 @@
-﻿using MongoDB.Bson;
-using Unity.Mathematics;
-
-namespace ET.Server
+﻿namespace ET.Server
 {
-    [Event(SceneType.Robot)]
-    public class EntryEvent2_InitRobot: AEvent<Scene, EntryEvent2>
+    [Event(SceneType.RobotCase)]
+    public class EntryEvent2_InitRobotCase: AEvent<Scene, EntryEvent2>
     {
         protected override async ETTask Run(Scene root, EntryEvent2 args)
         {
@@ -12,8 +9,6 @@ namespace ET.Server
             {
                 root.AddComponent<ConsoleComponent>();
             }
-
-            root.SceneType = SceneType.Client;
             await ETTask.CompletedTask;
         }
     }

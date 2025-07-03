@@ -6,6 +6,7 @@
         public const int Map = PackageType.WOW * 1000 + 2;
         public const int Robot = PackageType.WOW * 1000 + 3;
         public const int MapManager = PackageType.WOW * 1000 + 4;
+        public const int RobotCase = PackageType.WOW * 1000 + 5;
 
         // 客户端
         public const int Client = PackageType.WOW * 1000 + 20;

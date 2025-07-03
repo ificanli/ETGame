@@ -431,12 +431,12 @@ if (condition)
 
 **单个测试用例执行：**
 ```bash
-printf "Case --Id=0\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=WOW --StartConfig=Localhost --Console=1"
+printf "Case --Id=0\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1"
 ```
 
 **单进程多用例连续执行（推荐）：**
 ```bash
-printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=WOW --StartConfig=Localhost --Console=1"
+printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1"
 ```
 
 **执行流程说明：**

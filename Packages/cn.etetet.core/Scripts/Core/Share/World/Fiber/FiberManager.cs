@@ -63,17 +63,10 @@ namespace ET
             ((IScheduler)this.mainFiber).Dispose();
         }
 
-        public static async ETTask<Fiber> CreateMainFiber(int sceneType)
+        public async ETTask<int> CreateMainFiber(int sceneType)
         {
-            FiberManager fiberManager = Instance;
-            if (fiberManager.mainFiber != null)
-            {
-                World.Instance.RemoveSingleton<FiberManager>();
-                fiberManager = World.Instance.AddSingleton<FiberManager>();
-            }
-
-            fiberManager.mainFiber = await fiberManager.CreateFiber(SchedulerType.Main, 0, sceneType, "Main", null);
-            return fiberManager.mainFiber;
+            this.mainFiber = await this.CreateFiber(SchedulerType.Main, 0, sceneType, "Main", null);
+            return this.mainFiber.Id;
         }
         
         /// <summary>

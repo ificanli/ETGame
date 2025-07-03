@@ -44,7 +44,7 @@ namespace ET.Server
                         }
                         catch (Exception e)
                         {
-                            throw new Exception($"case run failed: {type}", e);
+                            Log.Console($"case run failed: {type}\n{e}");
                         }
                     }
 
@@ -64,7 +64,7 @@ namespace ET.Server
                     }
                     catch (Exception e)
                     {
-                        throw new Exception($"case run failed: {type}", e);
+                        Log.Console($"case run failed: {type}\n{e}");
                     }
 
                     Log.Console($"case run success: {type}");
