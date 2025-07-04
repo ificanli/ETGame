@@ -26,5 +26,8 @@ namespace ET
         
         [Option("Console", Required = false, Default = 0)]
         public int Console { get; set; }
+        
+        [Option("SingleThread", Required = false, Default = 0)]
+        public int SingleThread { get; set; }
     }
 }

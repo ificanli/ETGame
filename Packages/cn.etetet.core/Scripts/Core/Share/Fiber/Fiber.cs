@@ -257,6 +257,13 @@ namespace ET
                 return;
             }
 
+            // 单线程模式,可以直接删除
+            if (Options.Instance.SingleThread == 1)
+            {
+                scheduler.Dispose();
+                return;
+            }
+
             if (fiber.SchedulerType == SchedulerType.Parent)
             {
                 scheduler.Dispose();
