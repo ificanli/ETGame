@@ -330,6 +330,7 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 - 必须在await前创建EntityRef
 - await后必须通过EntityRef重新获取Entity才能使用
 - 这是ET分析器的硬性限制，违反会导致编译错误
+- 函数参数只允许传Entity，不允许传EntityRef
 
 ### 命名空间规范
 - `ET`：通用命名空间，用于共享代码
@@ -481,6 +482,8 @@ printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --P
 QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); // json写在代码中
 ```
 5.日志目录是Logs，测试前请删除，方便查找问题
+6.写用例的时候应该尽量调用客户端跟服务端已有的代码
+7.测试用例要检查返回的数据或者客户端的数据是否与预期一致
 
 
 ##### 绝对禁止的行为

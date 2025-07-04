@@ -12,10 +12,10 @@ namespace ET.Server
                 // 创建机器人子Fiber
                 Fiber robot = await fiber.CreateFiber(0, SceneType.Robot, "RobotCase_003_QuestTest");
                 
-                Log.Debug("Quest robot test started - Using existing network connection");
+                Log.Debug("Quest robot test started - Using ClientQuestHelper");
                 
                 // 执行Quest测试流程
-                await TestQuestFlow(robot);
+                await TestQuestFlowWithClientHelper(robot);
                 
                 Log.Debug("Quest robot test completed successfully");
                 return ErrorCode.ERR_Success;
@@ -28,17 +28,18 @@ namespace ET.Server
         }
 
         /// <summary>
-        /// 测试Quest系统完整流程
+        /// 使用ClientQuestHelper测试Quest系统完整流程
         /// </summary>
-        private async ETTask TestQuestFlow(Fiber robot)
+        private async ETTask TestQuestFlowWithClientHelper(Fiber robot)
         {
-            Log.Debug("Starting Quest system test");
+            Log.Debug("Starting Quest system test with ClientQuestHelper");
             
             try
             {
                 Scene robotScene = robot.Root;
+                EntityRef<Scene> robotSceneRef = robotScene;
                 
-                // 机器人已经通过FiberInit_Robot建立了连接，直接获取ClientSenderComponent
+                // 验证机器人连接状态
                 ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
                 if (clientSender == null)
                 {
@@ -46,13 +47,12 @@ namespace ET.Server
                     return;
                 }
                 
-                EntityRef<ClientSenderComponent> clientSenderRef = clientSender;
-                
                 // 初始化Quest测试环境
-                await InitializeQuestTestEnvironment(clientSenderRef);
+                await InitializeQuestTestEnvironment(robotScene);
                 
                 // 执行完整的Quest流程测试
-                await ExecuteQuestFlowTest(clientSenderRef);
+                robotScene = robotSceneRef; // await后重新获取
+                await ExecuteQuestFlowWithClientHelper(robotScene);
                 
                 Log.Debug("Quest system test completed");
             }
@@ -65,7 +65,7 @@ namespace ET.Server
         /// <summary>
         /// 通过网络消息初始化Quest测试环境
         /// </summary>
-        private static async ETTask InitializeQuestTestEnvironment(EntityRef<ClientSenderComponent> clientSenderRef)
+        private static async ETTask InitializeQuestTestEnvironment(Scene robotScene)
         {
             Log.Debug("Initializing Quest test environment via network");
             
@@ -77,8 +77,12 @@ namespace ET.Server
                 Log.Debug("Sending Quest test data preparation request to server");
                 
                 // 发送真实的网络消息
-                ClientSenderComponent clientSender = clientSenderRef;
+                EntityRef<Scene> robotSceneRef = robotScene;
+                ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
                 M2C_RobotCase_PrepareData_003_Response prepareResponse = await clientSender.Call(prepareRequest) as M2C_RobotCase_PrepareData_003_Response;
+                
+                // await后重新获取Entity
+                robotScene = robotSceneRef;
                 
                 if (prepareResponse.Error == ErrorCode.ERR_Success)
                 {
@@ -98,34 +102,50 @@ namespace ET.Server
         }
 
         /// <summary>
-        /// 执行完整的Quest流程测试
+        /// 使用ClientQuestHelper执行完整的Quest流程测试
         /// </summary>
-        private static async ETTask ExecuteQuestFlowTest(EntityRef<ClientSenderComponent> clientSenderRef)
+        private static async ETTask ExecuteQuestFlowWithClientHelper(Scene robotScene)
         {
-            Log.Debug("Executing complete Quest flow test");
+            Log.Debug("Executing complete Quest flow test with ClientQuestHelper");
             
             try
             {
-                // 测试参数
-                const int testQuestId = 1001;
-                const long testNPCId = 20001;
+                // 测试参数 - 使用准备的测试数据
+                const int testQuestId = 1001;  // 测试Quest ID (与服务器准备的数据一致)
+                const int testNPCId = 20001;
+                
+                EntityRef<Scene> robotSceneRef = robotScene;
                 
                 // 步骤1：查询可接取任务
-                await TestQueryAvailableQuests(clientSenderRef, testNPCId);
+                Log.Debug("Step 1: Querying available quests");
+                AvailableQuestInfo[] availableQuests = await ClientQuestHelper.QueryAvailableQuests(robotScene, testNPCId);
+                Log.Debug($"Found {availableQuests.Length} available quests");
                 
                 // 步骤2：接取任务
-                await TestAcceptQuest(clientSenderRef, testQuestId, testNPCId);
+                Log.Debug("Step 2: Accepting quest");
+                robotScene = robotSceneRef; // await后重新获取
+                bool acceptResult = await ClientQuestHelper.AcceptQuest(robotScene, testQuestId, testNPCId);
+                Log.Debug($"Accept quest result: {acceptResult}");
                 
                 // 步骤3：同步任务数据（检查任务是否已接取）
-                await TestSyncQuestData(clientSenderRef);
+                Log.Debug("Step 3: Syncing quest data");
+                robotScene = robotSceneRef; // await后重新获取
+                bool syncResult = await ClientQuestHelper.SyncQuestData(robotScene);
+                Log.Debug($"Sync quest data result: {syncResult}");
                 
                 // 步骤4：提交任务（如果任务已完成）
-                await TestSubmitQuest(clientSenderRef, testQuestId, testNPCId);
+                Log.Debug("Step 4: Submitting quest");
+                robotScene = robotSceneRef; // await后重新获取
+                bool submitResult = await ClientQuestHelper.SubmitQuest(robotScene, testQuestId, testNPCId);
+                Log.Debug($"Submit quest result: {submitResult}");
                 
                 // 步骤5：再次同步任务数据（检查任务是否已完成）
-                await TestSyncQuestDataAfterSubmit(clientSenderRef);
+                Log.Debug("Step 5: Final sync quest data");
+                robotScene = robotSceneRef; // await后重新获取
+                bool finalSyncResult = await ClientQuestHelper.SyncQuestData(robotScene);
+                Log.Debug($"Final sync quest data result: {finalSyncResult}");
                 
-                Log.Debug("Complete Quest flow test executed successfully");
+                Log.Debug("Complete Quest flow test executed successfully using ClientQuestHelper");
             }
             catch (System.Exception e)
             {
@@ -133,187 +153,5 @@ namespace ET.Server
             }
         }
 
-        /// <summary>
-        /// 测试查询可接取任务
-        /// </summary>
-        private static async ETTask TestQueryAvailableQuests(EntityRef<ClientSenderComponent> clientSenderRef, long npcId)
-        {
-            Log.Debug($"Testing query available quests for NPC: {npcId}");
-            
-            try
-            {
-                C2M_QueryAvailableQuests request = C2M_QueryAvailableQuests.Create();
-                request.NPCId = npcId;
-                
-                Log.Debug("Sending QueryAvailableQuests request to server");
-                
-                // 发送真实的网络消息
-                ClientSenderComponent clientSender = clientSenderRef;
-                M2C_QueryAvailableQuests response = await clientSender.Call(request) as M2C_QueryAvailableQuests;
-                
-                if (response.Error == ErrorCode.ERR_Success)
-                {
-                    int questCount = response.AvailableQuests?.Count ?? 0;
-                    Log.Debug($"Query available quests successful, Found {questCount} available quests");
-                }
-                else
-                {
-                    Log.Error($"Query available quests failed, Error: {response.Error}, Message: {response.Message}");
-                }
-                
-                response.Dispose();
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"TestQueryAvailableQuests exception: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 测试接取任务
-        /// </summary>
-        private static async ETTask TestAcceptQuest(EntityRef<ClientSenderComponent> clientSenderRef, int questId, long npcId)
-        {
-            Log.Debug($"Testing accept quest: QuestId={questId}, NPCId={npcId}");
-            
-            try
-            {
-                C2M_AcceptQuest request = C2M_AcceptQuest.Create();
-                request.QuestId = questId;
-                request.NPCId = npcId;
-                
-                Log.Debug("Sending AcceptQuest request to server");
-                
-                // 发送真实的网络消息
-                ClientSenderComponent clientSender = clientSenderRef;
-                M2C_AcceptQuest response = await clientSender.Call(request) as M2C_AcceptQuest;
-                
-                if (response.Error == ErrorCode.ERR_Success)
-                {
-                    Log.Debug($"Accept quest successful: QuestId={questId}");
-                }
-                else
-                {
-                    Log.Error($"Accept quest failed, Error: {response.Error}, Message: {response.Message}");
-                }
-                
-                response.Dispose();
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"TestAcceptQuest exception: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 测试同步任务数据
-        /// </summary>
-        private static async ETTask TestSyncQuestData(EntityRef<ClientSenderComponent> clientSenderRef)
-        {
-            Log.Debug("Testing sync quest data");
-            
-            try
-            {
-                C2M_SyncQuestData request = C2M_SyncQuestData.Create();
-                
-                Log.Debug("Sending SyncQuestData request to server");
-                
-                // 发送真实的网络消息
-                ClientSenderComponent clientSender = clientSenderRef;
-                M2C_SyncQuestData response = await clientSender.Call(request) as M2C_SyncQuestData;
-                
-                if (response.Error == ErrorCode.ERR_Success)
-                {
-                    int questCount = response.QuestList?.Count ?? 0;
-                    Log.Debug($"Sync quest data successful, Found {questCount} active quests");
-                }
-                else
-                {
-                    Log.Error($"Sync quest data failed, Error: {response.Error}, Message: {response.Message}");
-                }
-                
-                response.Dispose();
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"TestSyncQuestData exception: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 测试提交任务
-        /// </summary>
-        private static async ETTask TestSubmitQuest(EntityRef<ClientSenderComponent> clientSenderRef, int questId, long npcId)
-        {
-            Log.Debug($"Testing submit quest: QuestId={questId}, NPCId={npcId}");
-            
-            try
-            {
-                C2M_SubmitQuest request = C2M_SubmitQuest.Create();
-                request.QuestId = questId;
-                request.NPCId = npcId;
-                
-                Log.Debug("Sending SubmitQuest request to server");
-                
-                // 发送真实的网络消息
-                ClientSenderComponent clientSender = clientSenderRef;
-                M2C_SubmitQuest response = await clientSender.Call(request) as M2C_SubmitQuest;
-                
-                if (response.Error == ErrorCode.ERR_Success)
-                {
-                    Log.Debug($"Submit quest successful: QuestId={questId}");
-                }
-                else
-                {
-                    Log.Error($"Submit quest failed, Error: {response.Error}, Message: {response.Message}");
-                }
-                
-                response.Dispose();
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"TestSubmitQuest exception: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 提交后再次同步任务数据
-        /// </summary>
-        private static async ETTask TestSyncQuestDataAfterSubmit(EntityRef<ClientSenderComponent> clientSenderRef)
-        {
-            Log.Debug("Testing sync quest data after submit");
-            
-            try
-            {
-                C2M_SyncQuestData request = C2M_SyncQuestData.Create();
-                
-                Log.Debug("Sending final SyncQuestData request to server");
-                
-                // 发送真实的网络消息
-                ClientSenderComponent clientSender = clientSenderRef;
-                M2C_SyncQuestData response = await clientSender.Call(request) as M2C_SyncQuestData;
-                
-                if (response.Error == ErrorCode.ERR_Success)
-                {
-                    int questCount = response.QuestList?.Count ?? 0;
-                    Log.Debug($"Final sync quest data successful, Found {questCount} active quests");
-                    
-                    if (questCount == 0)
-                    {
-                        Log.Debug("Quest successfully completed and removed from active list");
-                    }
-                }
-                else
-                {
-                    Log.Error($"Final sync quest data failed, Error: {response.Error}, Message: {response.Message}");
-                }
-                
-                response.Dispose();
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"TestSyncQuestDataAfterSubmit exception: {e.Message}");
-            }
-        }
     }
 }
