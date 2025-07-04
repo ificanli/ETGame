@@ -125,7 +125,7 @@ ET.Core (框架核心层)
 ### 调试技巧
 - 开启`ENABLE_VIEW`宏可在Unity Hierarchy中查看所有Entity
 - 使用Unity Profiler监控性能
-- 查看`Logs/`目录获取详细日志信息
+- 查看`Logs/`目录获取详细日志信息，运行前记得删除Logs目录
 - 服务端支持REPL模式进行动态调试
 
 ## 特别提醒
@@ -147,9 +147,14 @@ ET.Core (框架核心层)
 ### 信息记录规则
 当用户说"请记住"时，将信息记录在此CLAUDE.md文件中。
 
-**日志输出规范**：打印的日志请使用英文，这是项目的统一要求。
+### 日志输出规范
+1. 打印的日志请使用英文，这是项目的统一要求。
+2. 一般不允许使用Log.Info，Log.Info输出重要运营日志使用的
+3. 打印普通日志只需要使用Log.Debug, 打印错误使用Log.Error
+4. 如果测试用例需要输出日志到Console，可以使用Log.Console, 注意进程启动参数需要Console=1才能起效
 
-**Singleton类方法规范**：Singleton类（如RobotCaseDispatcher）可以包含方法，不需要创建System类。这类似于其他单例类如HttpDispatcher的设计模式。
+### Singleton类方法规范
+Singleton类（如RobotCaseDispatcher）可以包含方法，不需要创建System类。这类似于其他单例类如HttpDispatcher的设计模式。
 
 ## ET框架开发规范
 
@@ -360,6 +365,21 @@ public static bool DoSomething(this ExampleComponent self, int value)
 }
 ```
 
+### 消息规范
+1.客户端发送消息到服务器
+```CSharp
+// Send不需要等待返回
+C2M_TestRobotCase1 message1 = C2M_TestRobotCase1.Create();
+fiber.Root.GetComponent<ClientSenderComponent>().Send(message1);
+
+// Call，可以等待返回值
+C2M_TestRobotCase2 message2 = C2M_TestRobotCase2.Create();
+var response = await fiber.Root.GetComponent<ClientSenderComponent>().Call(message2);
+```
+
+2.消息一般不需要使用对象池,也不需要调用消息的Dispose方法，如果要优化，可以让用户自己优化
+
+
 #### 编码风格
 ```csharp
 // 命名规范
@@ -420,7 +440,7 @@ if (condition)
 
 
 #### 机器人测试流程
-1. 启动测试进程: dotnet ./Bin/ET.App.dll --Process=1 --SceneName=WOW --StartConfig=Localhost --Console=1
+1. 启动测试进程: dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1
 2. 进程会输出>等待你的输入
 3. 测试所有用例: 在测试进程控制台输入Case --Id=0 //--Id=0指执行所有用例
    输出case run success: 0，表示所有测试用例执行完成
@@ -451,3 +471,17 @@ printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --P
 - 保持进程状态，减少启动开销
 - 支持连续测试不同用例
 - 实时查看每个用例的执行结果
+
+#### 机器人测试用例编写流程
+1.ARobotCaseHandler是测试用例的父类，继承它来写一个用例，用例名参考RobotCase_001_CreateRobot_Handler
+2.每个用例运行之前都创建了服务端环境，用例使用真实的消息与服务端交互
+3.假如需要准备测试数据，可以自己新定义一个消息，每个用例使用自己的数据准备消息（例如C2M_RobotCase_PrepareData_001），发送到服务端，服务端写对应的C2M_RobotCase_PrepareData_001_Handler来准备数据,注意参考命名格式，准备测试数据的消息请放到RobotCase_C_5000.proto中
+4.如果需要准备配置文件，请自己在代码中写json串，然后使用MongoHelper.FromJson来反序列化成配置数据，不要修改已有的json或者excel，例如
+```CSharp
+QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); // json写在代码中
+```
+5.日志目录是Logs，测试前请删除，方便查找问题
+
+
+##### 绝对禁止的行为
+1.不允许修改cn.etetet.wow目录以外的地方的代码

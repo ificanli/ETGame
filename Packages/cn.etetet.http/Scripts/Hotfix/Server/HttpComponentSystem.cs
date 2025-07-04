@@ -40,7 +40,6 @@ namespace ET.Server
             {
                 return;
             }
-
             try
             {
                 if (self.Listener.IsListening)
@@ -48,19 +47,11 @@ namespace ET.Server
                     self.Listener.Stop();
                 }
             }
-            catch (ObjectDisposedException)
+            catch (Exception)
             {
-                // HttpListener已经被释放，忽略异常
+                // ignored
             }
-            catch (HttpListenerException)
-            {
-                // HttpListener状态异常，忽略
-            }
-            catch (InvalidOperationException)
-            {
-                // HttpListener操作异常，忽略
-            }
-                
+            
             try
             {
                 self.Listener.Close();

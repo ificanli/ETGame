@@ -15,7 +15,7 @@ namespace ET.Server
     }
 
     [ComponentOf(typeof(Scene))]
-    public class ConsoleComponent: Entity, IAwake
+    public class ConsoleComponent: Entity, IAwake, IDestroy
     {
         public CancellationTokenSource CancellationTokenSource;
 

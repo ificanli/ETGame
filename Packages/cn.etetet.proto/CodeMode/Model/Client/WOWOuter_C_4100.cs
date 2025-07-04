@@ -743,6 +743,65 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(WOWOuter.C2M_RobotCase_PrepareData_003_Request)]
+    [ResponseType(nameof(M2C_RobotCase_PrepareData_003_Response))]
+    public partial class C2M_RobotCase_PrepareData_003_Request : MessageObject, ILocationRequest
+    {
+        public static C2M_RobotCase_PrepareData_003_Request Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_RobotCase_PrepareData_003_Request>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(WOWOuter.M2C_RobotCase_PrepareData_003_Response)]
+    public partial class M2C_RobotCase_PrepareData_003_Response : MessageObject, ILocationResponse
+    {
+        public static M2C_RobotCase_PrepareData_003_Response Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_RobotCase_PrepareData_003_Response>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(WOWOuter.C2M_TransferMap)]
     [ResponseType(nameof(M2C_TransferMap))]
     public partial class C2M_TransferMap : MessageObject, ILocationRequest
@@ -2229,46 +2288,48 @@ namespace ET
         public const ushort M2C_TestRobotCase = 4122;
         public const ushort C2M_TestRobotCase2 = 4123;
         public const ushort M2C_TestRobotCase2 = 4124;
-        public const ushort C2M_TransferMap = 4125;
-        public const ushort M2C_TransferMap = 4126;
-        public const ushort C2G_Benchmark = 4127;
-        public const ushort G2C_Benchmark = 4128;
-        public const ushort C2M_SpellCast = 4129;
-        public const ushort M2C_SpellAdd = 4130;
-        public const ushort M2C_SpellRemove = 4131;
-        public const ushort SpellTarget = 4132;
-        public const ushort M2C_BuffAdd = 4133;
-        public const ushort M2C_BuffUpdate = 4134;
-        public const ushort M2C_BuffRemove = 4135;
-        public const ushort M2C_Error = 4136;
-        public const ushort M2C_NumericChange = 4137;
-        public const ushort C2M_SelectTarget = 4138;
-        public const ushort M2C_Turn = 4139;
-        public const ushort C2M_PetAttack = 4140;
-        public const ushort M2C_UpdateCD = 4141;
-        public const ushort C2G_Logout = 4142;
-        public const ushort G2C_Logout = 4143;
-        public const ushort C2M_AcceptQuest = 4144;
-        public const ushort M2C_AcceptQuest = 4145;
-        public const ushort C2M_SubmitQuest = 4146;
-        public const ushort M2C_SubmitQuest = 4147;
-        public const ushort QuestObjectiveInfo = 4148;
-        public const ushort M2C_CreateQuest = 4149;
-        public const ushort M2C_UpdateQuestObjective = 4150;
-        public const ushort M2C_UpdateQuest = 4151;
-        public const ushort C2M_SyncQuestData = 4152;
-        public const ushort QuestInfo = 4153;
-        public const ushort M2C_SyncQuestData = 4154;
-        public const ushort C2M_AbandonQuest = 4155;
-        public const ushort M2C_AbandonQuest = 4156;
-        public const ushort C2M_QueryAvailableQuests = 4157;
-        public const ushort AvailableQuestInfo = 4158;
-        public const ushort M2C_QueryAvailableQuests = 4159;
-        public const ushort M2C_QuestComplete = 4160;
-        public const ushort M2C_QuestFailed = 4161;
-        public const ushort M2C_QuestProgress = 4162;
-        public const ushort C2M_GetQuestDetail = 4163;
-        public const ushort QuestDetailInfo = 4164;
-        public const ushort M2C_GetQuestDetail = 4165;
+        public const ushort C2M_RobotCase_PrepareData_003_Request = 4125;
+        public const ushort M2C_RobotCase_PrepareData_003_Response = 4126;
+        public const ushort C2M_TransferMap = 4127;
+        public const ushort M2C_TransferMap = 4128;
+        public const ushort C2G_Benchmark = 4129;
+        public const ushort G2C_Benchmark = 4130;
+        public const ushort C2M_SpellCast = 4131;
+        public const ushort M2C_SpellAdd = 4132;
+        public const ushort M2C_SpellRemove = 4133;
+        public const ushort SpellTarget = 4134;
+        public const ushort M2C_BuffAdd = 4135;
+        public const ushort M2C_BuffUpdate = 4136;
+        public const ushort M2C_BuffRemove = 4137;
+        public const ushort M2C_Error = 4138;
+        public const ushort M2C_NumericChange = 4139;
+        public const ushort C2M_SelectTarget = 4140;
+        public const ushort M2C_Turn = 4141;
+        public const ushort C2M_PetAttack = 4142;
+        public const ushort M2C_UpdateCD = 4143;
+        public const ushort C2G_Logout = 4144;
+        public const ushort G2C_Logout = 4145;
+        public const ushort C2M_AcceptQuest = 4146;
+        public const ushort M2C_AcceptQuest = 4147;
+        public const ushort C2M_SubmitQuest = 4148;
+        public const ushort M2C_SubmitQuest = 4149;
+        public const ushort QuestObjectiveInfo = 4150;
+        public const ushort M2C_CreateQuest = 4151;
+        public const ushort M2C_UpdateQuestObjective = 4152;
+        public const ushort M2C_UpdateQuest = 4153;
+        public const ushort C2M_SyncQuestData = 4154;
+        public const ushort QuestInfo = 4155;
+        public const ushort M2C_SyncQuestData = 4156;
+        public const ushort C2M_AbandonQuest = 4157;
+        public const ushort M2C_AbandonQuest = 4158;
+        public const ushort C2M_QueryAvailableQuests = 4159;
+        public const ushort AvailableQuestInfo = 4160;
+        public const ushort M2C_QueryAvailableQuests = 4161;
+        public const ushort M2C_QuestComplete = 4162;
+        public const ushort M2C_QuestFailed = 4163;
+        public const ushort M2C_QuestProgress = 4164;
+        public const ushort C2M_GetQuestDetail = 4165;
+        public const ushort QuestDetailInfo = 4166;
+        public const ushort M2C_GetQuestDetail = 4167;
     }
 }

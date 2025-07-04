@@ -1,5 +1,7 @@
 using Luban;
 using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 {{ 
     key_type = __table.key_ttype
     value_type =  __table.value_ttype
@@ -39,6 +41,8 @@ using System.Collections.Generic;
     public partial class {{__name}} : Singleton<{{__name}}>, IConfig
     {
         {{~if __table.is_map_table ~}}
+        [BsonElement]
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<{{declaring_type_name key_type}}, {{declaring_type_name value_type}}> _dataMap;
         private readonly List<{{declaring_type_name value_type}}> _dataList;
         

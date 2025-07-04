@@ -85,7 +85,7 @@ namespace ET.Server
             // self.GetComponent<LevelComponent>()?.AddExp(questConfig.ExpReward);
             // self.GetComponent<BagComponent>()?.AddGold(questConfig.GoldReward);
             
-            Log.Info($"Quest {questId} rewards granted to player {self.Id}");
+            Log.Debug($"Quest {questId} rewards granted to player {self.Id}");
         }
 
         /// <summary>
@@ -398,7 +398,7 @@ namespace ET.Server
             // - RewardGold: 金币奖励  
             // - RewardItems: 物品奖励列表
             
-            Log.Info($"给予玩家 {unit.Id} 任务 {questId} 奖励 (暂时未实现具体奖励)");
+            Log.Debug($"给予玩家 {unit.Id} 任务 {questId} 奖励 (暂时未实现具体奖励)");
 
             await ETTask.CompletedTask;
         }
@@ -417,7 +417,7 @@ namespace ET.Server
             // TODO: 移除任务物品
             // 当前QuestConfig没有QuestItems字段
             // 需要配置表设计师添加任务物品字段
-            Log.Info($"移除玩家 {unit.Id} 任务 {questId} 相关物品 (暂时未实现)");
+            Log.Debug($"移除玩家 {unit.Id} 任务 {questId} 相关物品 (暂时未实现)");
 
             await ETTask.CompletedTask;
         }
@@ -443,9 +443,89 @@ namespace ET.Server
             // TODO: 检查奖励物品所需空间
             // 当前QuestConfig没有RewardItems字段
             // 需要配置表设计师添加奖励物品字段
-            Log.Info($"检查玩家 {unit.Id} 背包空间 (暂时未实现具体检查)");
+            Log.Debug($"检查玩家 {unit.Id} 背包空间 (暂时未实现具体检查)");
 
             return true; // 暂时返回true
+        }
+
+        #endregion
+
+        #region 机器人测试所需方法
+
+        /// <summary>
+        /// 获取可接取任务列表（按NPC ID过滤）
+        /// </summary>
+        public static List<AvailableQuestInfo> GetAvailableQuests(Unit unit, long npcId)
+        {
+            QuestComponent questComponent = unit.GetComponent<QuestComponent>();
+            List<AvailableQuestInfo> availableQuests = new List<AvailableQuestInfo>();
+            
+            foreach (int questId in questComponent.AvailableQuests)
+            {
+                if (CheckQuestAcceptable(unit, questId))
+                {
+                    // 如果指定了NPC ID，只返回该NPC的任务
+                    if (npcId != 0 && !IsCorrectAcceptNPC(questId, (int)npcId))
+                    {
+                        continue;
+                    }
+                    
+                    var questConfig = QuestConfigCategory.Instance.Get(questId);
+                    if (questConfig != null)
+                    {
+                        AvailableQuestInfo questInfo = AvailableQuestInfo.Create();
+                        questInfo.QuestId = questId;
+                        questInfo.QuestName = questConfig.Name ?? $"Quest {questId}";
+                        questInfo.QuestDesc = questConfig.Desc ?? "No description";
+                        questInfo.QuestType = 1; // 默认任务类型
+                        // TODO: 添加奖励信息
+                        questInfo.RewardExp = 0;
+                        questInfo.RewardGold = 0;
+                        availableQuests.Add(questInfo);
+                    }
+                }
+            }
+            
+            return availableQuests;
+        }
+
+        /// <summary>
+        /// 获取玩家任务列表
+        /// </summary>
+        public static List<QuestInfo> GetPlayerQuestList(Unit unit)
+        {
+            QuestComponent questComponent = unit.GetComponent<QuestComponent>();
+            List<QuestInfo> questList = new List<QuestInfo>();
+            
+            foreach (var kvp in questComponent.ActiveQuests)
+            {
+                Quest quest = kvp.Value;
+                if (quest != null)
+                {
+                    QuestInfo questInfo = QuestInfo.Create();
+                    questInfo.QuestId = quest.Id;
+                    questInfo.Status = (int)quest.Status;
+                    questInfo.AcceptTime = 0; // TODO: 添加AcceptTime字段到Quest
+                    questInfo.CompleteTime = 0; // TODO: 添加CompleteTime字段到Quest
+                    
+                    // 添加任务目标信息
+                    foreach (var child in quest.Children.Values)
+                    {
+                        if (child is QuestObjective objective)
+                        {
+                            QuestObjectiveInfo objInfo = QuestObjectiveInfo.Create();
+                            objInfo.QuestObjectiveId = objective.ConfigId;
+                            objInfo.Count = objective.Progress;
+                            objInfo.NeedCount = objective.TargetCount;
+                            questInfo.Objectives.Add(objInfo);
+                        }
+                    }
+                    
+                    questList.Add(questInfo);
+                }
+            }
+            
+            return questList;
         }
 
         #endregion

@@ -24,14 +24,55 @@ namespace ET.Server
             
             // 获取QuestComponent
             QuestComponent questComponent = unit.GetComponent<QuestComponent>();
-            // 判断NPC是否可接该任务
-            if (questComponent.IsPreQuestFinished(request.QuestId))
+            if (questComponent == null)
             {
+                questComponent = unit.AddComponent<QuestComponent>();
+            }
+            
+            // 检查是否可以接取这个任务
+            if (!questComponent.AvailableQuests.Contains(request.QuestId))
+            {
+                response.Error = TextConstDefine.Quest_NotAvailable;
                 return;
             }
             
-            QuestHelper.AddQuest(unit, request.QuestId);
+            // 检查是否已经接取过这个任务
+            if (questComponent.ActiveQuests.ContainsKey(request.QuestId))
+            {
+                response.Error = TextConstDefine.Quest_AlreadyAccepted;
+                return;
+            }
+            
+            // 接取任务 - 创建Quest实体
+            AddQuestToPlayer(unit, request.QuestId);
+            
+            Log.Debug($"Player {unit.Id} accepted quest {request.QuestId}");
             await ETTask.CompletedTask;
+        }
+
+        /// <summary>
+        /// 为玩家添加任务
+        /// </summary>
+        private static void AddQuestToPlayer(Unit unit, int questId)
+        {
+            QuestComponent questComponent = unit.GetComponent<QuestComponent>();
+            
+            // 创建Quest实体
+            Quest quest = questComponent.AddChild<Quest, int>(questId);
+            quest.ConfigId = questId;
+            quest.Status = QuestStatus.InProgress;
+            
+            // 添加到活跃任务列表
+            EntityRef<Quest> questRef = quest;
+            questComponent.ActiveQuests[questId] = questRef;
+            
+            // 从可接取列表中移除
+            questComponent.AvailableQuests.Remove(questId);
+            
+            // 模拟任务直接完成（为了测试）
+            quest.Status = QuestStatus.CanSubmit;
+            
+            Log.Debug($"Quest {questId} added to player and marked as can submit for testing");
         }
     }
 }

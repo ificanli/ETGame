@@ -9,6 +9,8 @@
 
 using Luban;
 using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 
 namespace ET.Server
 {
@@ -16,6 +18,8 @@ namespace ET.Server
     [ConfigProcess]
     public partial class StartSceneConfigCategory : Singleton<StartSceneConfigCategory>, IConfig
     {
+        [BsonElement]
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.Server.StartSceneConfig> _dataMap;
         private readonly List<ET.Server.StartSceneConfig> _dataList;
         

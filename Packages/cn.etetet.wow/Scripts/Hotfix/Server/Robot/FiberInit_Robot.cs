@@ -13,6 +13,8 @@
             root.AddComponent<PlayerComponent>();
             root.AddComponent<CurrentScenesComponent>();
             root.AddComponent<ObjectWait>();
+            root.AddComponent<ClientQuestComponent>();
+            
             root.SceneType = SceneType.Client;
 
             EntityRef<Scene> rootRef = root;

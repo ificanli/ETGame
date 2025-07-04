@@ -23,7 +23,7 @@ namespace ET.Server
             // 触发任务事件
             QuestEventSystem.OnMonsterKilled(killer, (int)monster.Id, monsterConfigId);
             
-            Log.Info($"Player {killer.Id} killed monster {monsterConfigId}, quest progress updated");
+            Log.Debug($"Player {killer.Id} killed monster {monsterConfigId}, quest progress updated");
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace ET.Server
             // 触发任务事件
             QuestEventSystem.OnItemCollected(player, itemId, count);
             
-            Log.Info($"Player {player.Id} obtained {count} of item {itemId}, quest progress updated");
+            Log.Debug($"Player {player.Id} obtained {count} of item {itemId}, quest progress updated");
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace ET.Server
             // 触发任务事件
             QuestEventSystem.OnPlayerLevelUp(player, newLevel);
             
-            Log.Info($"Player {player.Id} leveled up from {oldLevel} to {newLevel}, quest progress updated");
+            Log.Debug($"Player {player.Id} leveled up from {oldLevel} to {newLevel}, quest progress updated");
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace ET.Server
             // 触发任务事件
             QuestEventSystem.OnEnterMap(player, mapId);
             
-            Log.Info($"Player {player.Id} entered map {mapId}, quest progress updated");
+            Log.Debug($"Player {player.Id} entered map {mapId}, quest progress updated");
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace ET.Server
             Quest quest = questComponent.AcceptQuest(questConfigId);
             if (quest != null)
             {
-                Log.Info($"Player {player.Id} accepted quest {questConfigId}");
+                Log.Debug($"Player {player.Id} accepted quest {questConfigId}");
                 
                 // 通知客户端
                 QuestHelper.AddQuest(player, questConfigId);
@@ -133,7 +133,7 @@ namespace ET.Server
             // 完成任务
             if (questComponent.CompleteQuest(questConfigId))
             {
-                Log.Info($"Player {player.Id} completed quest {questConfigId}");
+                Log.Debug($"Player {player.Id} completed quest {questConfigId}");
                 
                 // 发放奖励
                 QuestHelper.GrantQuestReward(player, questConfigId);
@@ -155,23 +155,23 @@ namespace ET.Server
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
             if (questComponent == null)
             {
-                Log.Info($"Player {player.Id} has no quests");
+                Log.Debug($"Player {player.Id} has no quests");
                 return;
             }
 
             // 获取可接取的任务
             var availableQuests = QuestHelper.GetAvailableQuests(player);
-            Log.Info($"Player {player.Id} has {availableQuests.Count} available quests");
+            Log.Debug($"Player {player.Id} has {availableQuests.Count} available quests");
 
             // 获取进行中的任务
             var activeQuests = QuestHelper.GetActiveQuests(player);
-            Log.Info($"Player {player.Id} has {activeQuests.Count} active quests");
+            Log.Debug($"Player {player.Id} has {activeQuests.Count} active quests");
 
             // 打印每个进行中任务的详细信息
             foreach (Quest quest in activeQuests)
             {
                 QuestConfig config = quest.GetConfig();
-                Log.Info($"Active Quest: {config.Name} (ID: {quest.ConfigId}), Status: {quest.Status}");
+                Log.Debug($"Active Quest: {config.Name} (ID: {quest.ConfigId}), Status: {quest.Status}");
                 
                 // 打印任务目标进度
                 foreach (var child in quest.Children.Values)
@@ -179,7 +179,7 @@ namespace ET.Server
                     if (child is QuestObjective objective)
                     {
                         QuestObjectiveConfig objConfig = objective.GetConfig();
-                        Log.Info($"  Objective: {objConfig.Name}, Progress: {objective.Progress}/{objective.TargetCount}");
+                        Log.Debug($"  Objective: {objConfig.Name}, Progress: {objective.Progress}/{objective.TargetCount}");
                     }
                 }
             }

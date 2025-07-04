@@ -24,16 +24,63 @@ namespace ET.Server
             
             // 获取QuestComponent
             QuestComponent questComponent = unit.GetComponent<QuestComponent>();
-            Quest quest = questComponent.GetQuest(request.QuestId);
+            if (questComponent == null)
+            {
+                response.Error = TextConstDefine.Quest_ComponentNotFound;
+                return;
+            }
+            
+            // 检查任务是否存在
+            if (!questComponent.ActiveQuests.TryGetValue(request.QuestId, out EntityRef<Quest> questRef))
+            {
+                response.Error = TextConstDefine.Quest_NotFound;
+                return;
+            }
+            
+            Quest quest = questRef;
+            if (quest == null)
+            {
+                response.Error = TextConstDefine.Quest_NotFound;
+                return;
+            }
 
-            if (!quest.IsFinished())
+            // 检查任务是否可以提交
+            if (quest.Status != QuestStatus.CanSubmit)
             {
                 response.Error = TextConstDefine.Quest_NotFinish;
                 return;
             }
             
-            QuestHelper.FinishQuest(unit, request.QuestId);
+            // 完成任务
+            FinishQuestForPlayer(unit, request.QuestId);
+            
+            Log.Debug($"Player {unit.Id} submitted quest {request.QuestId}");
             await ETTask.CompletedTask;
+        }
+
+        /// <summary>
+        /// 完成玩家任务
+        /// </summary>
+        private static void FinishQuestForPlayer(Unit unit, int questId)
+        {
+            QuestComponent questComponent = unit.GetComponent<QuestComponent>();
+            
+            // 从活跃任务中移除
+            if (questComponent.ActiveQuests.TryGetValue(questId, out EntityRef<Quest> questRef))
+            {
+                Quest quest = questRef;
+                if (quest != null)
+                {
+                    quest.Status = QuestStatus.Finished;
+                    quest.Dispose(); // 释放Quest实体
+                }
+                questComponent.ActiveQuests.Remove(questId);
+            }
+            
+            // 添加到已完成任务列表
+            questComponent.FinishedQuests.Add(questId);
+            
+            Log.Debug($"Quest {questId} finished for player {unit.Id}");
         }
     }
 }

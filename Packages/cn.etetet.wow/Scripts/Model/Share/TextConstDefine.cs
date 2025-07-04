@@ -22,5 +22,13 @@ namespace ET
 
 		public const int Quest_NotFoundNPC = 10009;
 
+		public const int Quest_NotAvailable = 10010;
+
+		public const int Quest_AlreadyAccepted = 10011;
+
+		public const int Quest_ComponentNotFound = 10012;
+
+		public const int Quest_NotFound = 10013;
+
 	}
 }

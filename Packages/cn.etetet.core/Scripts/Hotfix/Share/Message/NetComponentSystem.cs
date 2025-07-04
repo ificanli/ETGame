@@ -63,7 +63,17 @@ namespace ET
             
             (ActorId _, object message) = MessageSerializeHelper.ToMessage(self.AService, memoryBuffer);
             self.AService.Recycle(memoryBuffer);
-            
+
+            // 只有机器人测试才能处理大于5000的消息
+            if (Options.Instance.SceneName != "RobotCase")
+            {
+                ushort opcode = OpcodeType.Instance.GetOpcode(message.GetType());
+                if (opcode > 5000)
+                {
+                    return;
+                }
+            }
+
             EventSystem.Instance.Invoke(self.IScene.SceneType, new NetComponentOnRead() {Session = session, Message = message});
         }
         

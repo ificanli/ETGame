@@ -7,6 +7,8 @@ namespace ET.Server
 
         public const int SecondCase = 2;
 
+        public const int QuestTest = 3;
+
         public const int MaxCaseType = 10000;
     }
 }
