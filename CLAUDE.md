@@ -427,6 +427,7 @@ if (condition)
 - A模块调用B模块的方法，那么B模块就不能调用A模块的方法
 - A模块不能访问B模块的字段
 - ModuleName定义是patial，每个Package可以定义自己的Module
+- 如果没有Module标签，那么该类属于Global模块，那么该类可以被其它Module调用，也可以调用其它Module
 
 ## 常见错误避免
 

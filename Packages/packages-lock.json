@@ -160,6 +160,14 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "cn.etetet.spell": {
+      "version": "file:cn.etetet.spell",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "1.0.0"
+      }
+    },
     "cn.etetet.startconfig": {
       "version": "file:cn.etetet.startconfig",
       "depth": 0,

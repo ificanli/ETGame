@@ -41,7 +41,7 @@ namespace ET
         private static readonly DiagnosticDescriptor MethodCallRule = new DiagnosticDescriptor(
             "MOD002",
             "跨模块方法调用双向引用违规",
-            "模块 '{0}' 已调用模块 '{1}'，禁止模块 '{1}' 再调用模块 '{0}'",
+            "模块 '{0}' 已调用模块 '{1}'，禁止模块 '{1}' 再调用模块 '{0}' (Global模块除外)",
             "ModuleEnforcement",
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
@@ -162,10 +162,14 @@ namespace ET
 
                 if (callerModule != calleeModule)
                 {
-                    if (methodCalls.TryAdd((callerModule, calleeModule), 0) &&
-                        methodCalls.ContainsKey((calleeModule, callerModule)))
+                    // Global模块可以调用任何模块，也可以被任何模块调用，不检查双向违规
+                    if (callerModule != "Global" && calleeModule != "Global")
                     {
-                        opContext.ReportDiagnostic(Diagnostic.Create(MethodCallRule, invocation.Syntax.GetLocation(), calleeModule, callerModule));
+                        if (methodCalls.TryAdd((callerModule, calleeModule), 0) &&
+                            methodCalls.ContainsKey((calleeModule, callerModule)))
+                        {
+                            opContext.ReportDiagnostic(Diagnostic.Create(MethodCallRule, invocation.Syntax.GetLocation(), calleeModule, callerModule));
+                        }
                     }
                 }
 
