@@ -1,0 +1,84 @@
+syntax = "proto3";
+package ET;
+
+// Spell相关消息定义
+
+message C2M_SpellCast // ILocationMessage
+{
+	int32 RpcId = 1;
+	int32 SpellConfigId = 2;	
+	Unity.Mathematics.float3 TargetPosition = 3;
+}
+
+message M2C_SpellAdd // IMessage
+{
+	int64 UnitId = 1;
+	int64 SpellId = 2;
+	int32 SpellConfigId = 3;
+
+	repeated int64 TargetUnitId = 3;
+	Unity.Mathematics.float3 TargetPosition = 4;
+}
+
+message M2C_SpellRemove // IMessage
+{
+	int64 UnitId = 1;
+	int64 SpellId = 2;
+	int32 RemoveType = 3;
+}
+
+message SpellTarget
+{
+	repeated int64 TargetUnitId = 3;
+	Unity.Mathematics.float3 TargetPosition = 4;
+}
+
+// Buff相关消息定义
+
+message M2C_BuffAdd // IMessage
+{
+	int64 UnitId = 1;
+	int64 BuffId = 2;
+	int32 BuffConfigId = 3;
+	int64 CreateTime = 4;
+	int32 TickTime = 5;
+	int64 ExpireTime = 6;
+	int64 CasterId = 7;
+	int32 Stack = 8;
+	SpellTarget SpellTarget = 9;
+}
+
+message M2C_BuffUpdate // IMessage
+{
+	int64 UnitId = 1;
+	int64 BuffId = 2;
+	int32 TickTime = 5;
+	int64 ExpireTime = 6;
+	int32 Stack = 7;
+}
+
+message M2C_BuffRemove // IMessage
+{
+	int64 UnitId = 1;
+	int64 BuffId = 2;
+	int32 BuffConfigId = 3;
+	int32 RemoveType = 4;
+}
+
+// CD相关消息定义
+
+message M2C_UpdateCD // IMessage
+{
+	int32 RpcId = 1;
+	int64 UnitId = 2;
+	int32 SpellConfigId = 3; // 0表示公共CD
+	int64 Time = 4;
+}
+
+// Pet攻击相关消息定义
+
+message C2M_PetAttack // ILocationMessage
+{
+	int32 RpcId = 1;
+	int64 UnitId = 2;
+}
