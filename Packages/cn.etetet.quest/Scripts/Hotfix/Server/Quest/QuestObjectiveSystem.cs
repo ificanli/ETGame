@@ -1,5 +1,6 @@
 namespace ET.Server
 {
+    [Module(ModuleName.Quest)]
     [EntitySystemOf(typeof(QuestObjective))]
     public static partial class QuestObjectiveSystem
     {

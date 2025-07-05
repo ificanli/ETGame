@@ -4,5 +4,6 @@ namespace ET
     {
         public const string Spell = "Spell";
         public const string AI = "AI";
+        public const string Quest = "Quest";
     }
 }

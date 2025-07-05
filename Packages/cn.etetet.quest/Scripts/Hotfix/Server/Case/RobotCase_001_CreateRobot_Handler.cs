@@ -3,6 +3,7 @@ using ET.Client;
 
 namespace ET.Server
 {
+    [Module(ModuleName.Quest)]
     [Invoke(RobotCaseType.CreateRobot)]
     public class RobotCase_001_CreateRobot_Handler: ARobotCaseHandler
     {

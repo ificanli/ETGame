@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-    
+    [Module(ModuleName.Quest)]
     [ChildOf(typeof(QuestComponent))]
     public class Quest: Entity, IAwake<int>
     {

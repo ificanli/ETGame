@@ -1,5 +1,6 @@
 namespace ET.Server
 {
+    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Map)]
     public class C2M_QueryAvailableQuestsHandler : MessageLocationHandler<Unit, C2M_QueryAvailableQuests, M2C_QueryAvailableQuests>
     {

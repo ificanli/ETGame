@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
+    [Module(ModuleName.Quest)]
     [CodeProcess]
     public class QuestObjectiveDispatcher: Singleton<QuestObjectiveDispatcher>, ISingletonAwake
     {

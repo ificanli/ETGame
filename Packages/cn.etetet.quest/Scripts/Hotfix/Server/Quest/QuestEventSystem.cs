@@ -5,6 +5,7 @@ namespace ET.Server
     /// <summary>
     /// 任务事件系统 - 处理各种游戏事件对任务进度的影响
     /// </summary>
+    [Module(ModuleName.Quest)]
     public static class QuestEventSystem
     {
         /// <summary>

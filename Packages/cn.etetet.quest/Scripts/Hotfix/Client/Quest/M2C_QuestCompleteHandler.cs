@@ -5,6 +5,7 @@ namespace ET.Client
     /// <summary>
     /// 任务完成通知处理器
     /// </summary>
+    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Client)]
     public class M2C_QuestCompleteHandler : MessageHandler<Scene, M2C_QuestComplete>
     {

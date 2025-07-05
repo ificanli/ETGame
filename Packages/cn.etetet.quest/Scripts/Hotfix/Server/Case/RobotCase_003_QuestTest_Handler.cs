@@ -2,6 +2,7 @@ using ET.Client;
 
 namespace ET.Server
 {
+    [Module(ModuleName.Quest)]
     [Invoke(RobotCaseType.QuestTest)]
     public class RobotCase_003_QuestTest_Handler : ARobotCaseHandler
     {

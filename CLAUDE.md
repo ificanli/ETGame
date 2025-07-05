@@ -421,6 +421,13 @@ if (condition)
 - 任何类/结构体**禁止直接声明 Entity 或其子类类型的字段或属性**，包括集合类型（如 List<Entity>、Dictionary<int, Entity>）。
 - 允许声明 `EntityRef<T>` 类型字段或属性。
 
+### Module分析器规范
+- Model, ModelView, Hotfix, HotifxView中的类可以指定模块
+- Module(ModuleName.A),这个加在类上，表示是属于A模块
+- A模块调用B模块的方法，那么B模块就不能调用A模块的方法
+- A模块不能访问B模块的字段
+- ModuleName定义是patial，每个Package可以定义自己的Module
+
 ## 常见错误避免
 
 1. ❌ Entity中定义方法

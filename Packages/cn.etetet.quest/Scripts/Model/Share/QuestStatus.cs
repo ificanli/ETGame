@@ -3,6 +3,7 @@ namespace ET
     /// <summary>
     /// 任务状态枚举（前后端共享）
     /// </summary>
+    [Module(ModuleName.Quest)]
     public enum QuestStatus
     {
         None = 0,           // 未接取

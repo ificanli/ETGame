@@ -3,6 +3,7 @@ namespace ET.Client
     /// <summary>
     /// 客户端任务帮助类
     /// </summary>
+    [Module(ModuleName.Quest)]
     public static class ClientQuestHelper
     {
         /// <summary>

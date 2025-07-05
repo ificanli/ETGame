@@ -1,5 +1,6 @@
 namespace ET.Server
 {
+    [Module(ModuleName.Quest)]
     [QuestObjective(QuestObjectiveType.KillMonster)]
     public class KillMonsterHandler : IQuestObjectiveHandler
     {

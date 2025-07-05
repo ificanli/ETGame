@@ -1,5 +1,6 @@
 namespace ET.Server
 {
+    [Module(ModuleName.Quest)]
     public class QuestObjectiveAttribute: BaseAttribute
     {
         public QuestObjectiveType QuestObjectiveType;

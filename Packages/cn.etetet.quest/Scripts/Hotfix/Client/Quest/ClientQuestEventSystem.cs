@@ -10,6 +10,7 @@ namespace ET.Client
     /// <summary>
     /// 场景初始化后添加任务组件
     /// </summary>
+    [Module(ModuleName.Quest)]
     [Event(SceneType.Client)]
     public class AfterCreateCurrentScene_AddQuestComponent : AEvent<Scene, AfterCreateCurrentScene>
     {
@@ -28,6 +29,7 @@ namespace ET.Client
     /// <summary>
     /// 登录完成后初始化任务数据
     /// </summary>
+    [Module(ModuleName.Quest)]
     [Event(SceneType.Client)]
     public class LoginFinish_InitQuestData : AEvent<Scene, LoginFinish>
     {
@@ -88,6 +90,7 @@ namespace ET.Client
     /// <summary>
     /// 任务NPC交互事件
     /// </summary>
+    [Module(ModuleName.Quest)]
     public static class QuestNPCInteractionEvent
     {
         /// <summary>
@@ -175,6 +178,7 @@ namespace ET.Client
     /// <summary>
     /// 任务进度提示系统
     /// </summary>
+    [Module(ModuleName.Quest)]
     public static class QuestProgressNotification
     {
         /// <summary>

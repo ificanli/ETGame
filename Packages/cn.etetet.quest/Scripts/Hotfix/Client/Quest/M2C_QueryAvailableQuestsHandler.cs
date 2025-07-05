@@ -5,6 +5,7 @@ namespace ET.Client
     /// <summary>
     /// 查询可接取任务响应处理器
     /// </summary>
+    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Client)]
     public class M2C_QueryAvailableQuestsHandler : MessageHandler<Scene, M2C_QueryAvailableQuests>
     {
