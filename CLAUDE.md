@@ -495,8 +495,8 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 ```
 5.日志目录是Logs，测试前请删除，方便查找问题
 6.写用例的时候应该尽量调用客户端跟服务端已有的代码
-7.测试用例要检查返回的数据或者客户端的数据是否与预期一致
+7.测试用例要检查返回的数据或者客户端的数据是否与预期一致,如果与预期不一致需要抛出异常，用例的上层会打印异常
 
 
 ##### 绝对禁止的行为
-1.不允许修改cn.etetet.wow目录以外的地方的代码
+1.不允许修改Packages/cn.etetet.wow目录以外的地方的代码

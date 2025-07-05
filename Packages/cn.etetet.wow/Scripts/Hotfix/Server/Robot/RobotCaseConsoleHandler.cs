@@ -39,16 +39,17 @@ namespace ET.Server
                             if (ret != ErrorCode.ERR_Success)
                             {
                                 Log.Console($"case run failed: {type}");
-                                return;
+                                continue;
                             }
                         }
                         catch (Exception e)
                         {
-                            Log.Console($"case run failed: {type}\n{e}");
+                            Log.Console($"{e}");
+                            Log.Console($"case run failed: {type}");
+                            continue;
                         }
+                        Log.Console($"case run success: {type}");
                     }
-
-                    Log.Console($"case run success: 0");
                 }
                 else
                 {

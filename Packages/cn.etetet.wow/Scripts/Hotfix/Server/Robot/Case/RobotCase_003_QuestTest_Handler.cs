@@ -202,35 +202,24 @@ namespace ET.Server
         {
             Log.Debug($"Validating client quest data - {context}");
             
-            try
+            ClientQuestComponent questComponent = robotScene.GetComponent<ClientQuestComponent>();
+            if (questComponent == null)
             {
-                ClientQuestComponent questComponent = robotScene.GetComponent<ClientQuestComponent>();
-                if (questComponent == null)
-                {
-                    Log.Error($"ClientQuestComponent not found - {context}");
-                    return;
-                }
-                
-                ClientQuestData questData = questComponent.GetQuestData(questId);
-                if (questData == null)
-                {
-                    Log.Error($"Quest data not found for questId {questId} - {context}");
-                    return;
-                }
-                
-                if (questData.Status != expectedStatus)
-                {
-                    Log.Error($"Quest status mismatch - Expected: {expectedStatus}, Actual: {questData.Status} - {context}");
-                    return;
-                }
-                
-                Log.Debug($"Client quest data validation successful - QuestId: {questId}, Status: {questData.Status} - {context}");
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"Failed to validate client quest data: {e.Message} - {context}");
+                throw new System.Exception($"ClientQuestComponent not found - {context}");
             }
             
+            ClientQuestData questData = questComponent.GetQuestData(questId);
+            if (questData == null)
+            {
+                throw new System.Exception($"Quest data not found for questId {questId} - {context}");
+            }
+            
+            if (questData.Status != expectedStatus)
+            {
+                throw new System.Exception($"Quest status mismatch - Expected: {expectedStatus}, Actual: {questData.Status} - {context}");
+            }
+            
+            Log.Debug($"Client quest data validation successful - QuestId: {questId}, Status: {questData.Status} - {context}");
             await ETTask.CompletedTask;
         }
         
@@ -241,29 +230,19 @@ namespace ET.Server
         {
             Log.Debug($"Validating quest removed - {context}");
             
-            try
+            ClientQuestComponent questComponent = robotScene.GetComponent<ClientQuestComponent>();
+            if (questComponent == null)
             {
-                ClientQuestComponent questComponent = robotScene.GetComponent<ClientQuestComponent>();
-                if (questComponent == null)
-                {
-                    Log.Error($"ClientQuestComponent not found - {context}");
-                    return;
-                }
-                
-                bool hasQuest = questComponent.HasQuest(questId);
-                if (hasQuest)
-                {
-                    Log.Error($"Quest {questId} still exists but should be removed - {context}");
-                    return;
-                }
-                
-                Log.Debug($"Quest removal validation successful - QuestId: {questId} - {context}");
-            }
-            catch (System.Exception e)
-            {
-                Log.Error($"Failed to validate quest removal: {e.Message} - {context}");
+                throw new System.Exception($"ClientQuestComponent not found - {context}");
             }
             
+            bool hasQuest = questComponent.HasQuest(questId);
+            if (hasQuest)
+            {
+                throw new System.Exception($"Quest {questId} still exists but should be removed - {context}");
+            }
+            
+            Log.Debug($"Quest removal validation successful - QuestId: {questId} - {context}");
             await ETTask.CompletedTask;
         }
 
