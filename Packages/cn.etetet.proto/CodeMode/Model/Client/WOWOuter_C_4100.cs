@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ET
 {
     [MemoryPackable]
-    [Message(WOWOuter.RouterSync)]
+    [Message(Opcode.RouterSync)]
     public partial class RouterSync : MessageObject
     {
         public static RouterSync Create(bool isFromPool = false)
@@ -33,7 +33,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_TestRequest)]
+    [Message(Opcode.C2M_TestRequest)]
     [ResponseType(nameof(M2C_TestResponse))]
     public partial class C2M_TestRequest : MessageObject, ILocationRequest
     {
@@ -63,7 +63,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_TestResponse)]
+    [Message(Opcode.M2C_TestResponse)]
     public partial class M2C_TestResponse : MessageObject, IResponse
     {
         public static M2C_TestResponse Create(bool isFromPool = false)
@@ -100,7 +100,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2G_EnterMap)]
+    [Message(Opcode.C2G_EnterMap)]
     [ResponseType(nameof(G2C_EnterMap))]
     public partial class C2G_EnterMap : MessageObject, ISessionRequest
     {
@@ -126,7 +126,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.G2C_EnterMap)]
+    [Message(Opcode.G2C_EnterMap)]
     public partial class G2C_EnterMap : MessageObject, ISessionResponse
     {
         public static G2C_EnterMap Create(bool isFromPool = false)
@@ -166,7 +166,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.MoveInfo)]
+    [Message(Opcode.MoveInfo)]
     public partial class MoveInfo : MessageObject
     {
         public static MoveInfo Create(bool isFromPool = false)
@@ -199,7 +199,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.PetInfo)]
+    [Message(Opcode.PetInfo)]
     public partial class PetInfo : MessageObject
     {
         public static PetInfo Create(bool isFromPool = false)
@@ -224,7 +224,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.UnitInfo)]
+    [Message(Opcode.UnitInfo)]
     public partial class UnitInfo : MessageObject
     {
         public static UnitInfo Create(bool isFromPool = false)
@@ -277,7 +277,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_CreateUnits)]
+    [Message(Opcode.M2C_CreateUnits)]
     public partial class M2C_CreateUnits : MessageObject, IMessage
     {
         public static M2C_CreateUnits Create(bool isFromPool = false)
@@ -302,7 +302,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_CreateMyUnit)]
+    [Message(Opcode.M2C_CreateMyUnit)]
     public partial class M2C_CreateMyUnit : MessageObject, IMessage
     {
         public static M2C_CreateMyUnit Create(bool isFromPool = false)
@@ -327,7 +327,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_StartSceneChange)]
+    [Message(Opcode.M2C_StartSceneChange)]
     public partial class M2C_StartSceneChange : MessageObject, IMessage
     {
         public static M2C_StartSceneChange Create(bool isFromPool = false)
@@ -356,7 +356,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_RemoveUnits)]
+    [Message(Opcode.M2C_RemoveUnits)]
     public partial class M2C_RemoveUnits : MessageObject, IMessage
     {
         public static M2C_RemoveUnits Create(bool isFromPool = false)
@@ -381,7 +381,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_PathfindingResult)]
+    [Message(Opcode.C2M_PathfindingResult)]
     public partial class C2M_PathfindingResult : MessageObject, ILocationMessage
     {
         public static C2M_PathfindingResult Create(bool isFromPool = false)
@@ -410,7 +410,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_Stop)]
+    [Message(Opcode.C2M_Stop)]
     public partial class C2M_Stop : MessageObject, ILocationMessage
     {
         public static C2M_Stop Create(bool isFromPool = false)
@@ -435,7 +435,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_PathfindingResult)]
+    [Message(Opcode.M2C_PathfindingResult)]
     public partial class M2C_PathfindingResult : MessageObject, IMessage
     {
         public static M2C_PathfindingResult Create(bool isFromPool = false)
@@ -468,7 +468,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_Stop)]
+    [Message(Opcode.M2C_Stop)]
     public partial class M2C_Stop : MessageObject, IMessage
     {
         public static M2C_Stop Create(bool isFromPool = false)
@@ -505,7 +505,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.G2C_Test)]
+    [Message(Opcode.G2C_Test)]
     public partial class G2C_Test : MessageObject, ISessionMessage
     {
         public static G2C_Test Create(bool isFromPool = false)
@@ -526,7 +526,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_Reload)]
+    [Message(Opcode.C2M_Reload)]
     [ResponseType(nameof(M2C_Reload))]
     public partial class C2M_Reload : MessageObject, ISessionRequest
     {
@@ -560,7 +560,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_Reload)]
+    [Message(Opcode.M2C_Reload)]
     public partial class M2C_Reload : MessageObject, ISessionResponse
     {
         public static M2C_Reload Create(bool isFromPool = false)
@@ -593,7 +593,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.G2C_TestHotfixMessage)]
+    [Message(Opcode.G2C_TestHotfixMessage)]
     public partial class G2C_TestHotfixMessage : MessageObject, ISessionMessage
     {
         public static G2C_TestHotfixMessage Create(bool isFromPool = false)
@@ -618,7 +618,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_TestRobotCase)]
+    [Message(Opcode.C2M_TestRobotCase)]
     [ResponseType(nameof(M2C_TestRobotCase))]
     public partial class C2M_TestRobotCase : MessageObject, ILocationRequest
     {
@@ -648,7 +648,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_TestRobotCase)]
+    [Message(Opcode.M2C_TestRobotCase)]
     public partial class M2C_TestRobotCase : MessageObject, ILocationResponse
     {
         public static M2C_TestRobotCase Create(bool isFromPool = false)
@@ -685,7 +685,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_TestRobotCase2)]
+    [Message(Opcode.C2M_TestRobotCase2)]
     public partial class C2M_TestRobotCase2 : MessageObject, ILocationMessage
     {
         public static C2M_TestRobotCase2 Create(bool isFromPool = false)
@@ -714,7 +714,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_TestRobotCase2)]
+    [Message(Opcode.M2C_TestRobotCase2)]
     public partial class M2C_TestRobotCase2 : MessageObject, ILocationMessage
     {
         public static M2C_TestRobotCase2 Create(bool isFromPool = false)
@@ -743,7 +743,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_RobotCase_PrepareData_003_Request)]
+    [Message(Opcode.C2M_RobotCase_PrepareData_003_Request)]
     [ResponseType(nameof(M2C_RobotCase_PrepareData_003_Response))]
     public partial class C2M_RobotCase_PrepareData_003_Request : MessageObject, ILocationRequest
     {
@@ -769,7 +769,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_RobotCase_PrepareData_003_Response)]
+    [Message(Opcode.M2C_RobotCase_PrepareData_003_Response)]
     public partial class M2C_RobotCase_PrepareData_003_Response : MessageObject, ILocationResponse
     {
         public static M2C_RobotCase_PrepareData_003_Response Create(bool isFromPool = false)
@@ -802,7 +802,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_TransferMap)]
+    [Message(Opcode.C2M_TransferMap)]
     [ResponseType(nameof(M2C_TransferMap))]
     public partial class C2M_TransferMap : MessageObject, ILocationRequest
     {
@@ -828,7 +828,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_TransferMap)]
+    [Message(Opcode.M2C_TransferMap)]
     public partial class M2C_TransferMap : MessageObject, ILocationResponse
     {
         public static M2C_TransferMap Create(bool isFromPool = false)
@@ -861,7 +861,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2G_Benchmark)]
+    [Message(Opcode.C2G_Benchmark)]
     [ResponseType(nameof(G2C_Benchmark))]
     public partial class C2G_Benchmark : MessageObject, ISessionRequest
     {
@@ -887,7 +887,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.G2C_Benchmark)]
+    [Message(Opcode.G2C_Benchmark)]
     public partial class G2C_Benchmark : MessageObject, ISessionResponse
     {
         public static G2C_Benchmark Create(bool isFromPool = false)
@@ -920,7 +920,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_Error)]
+    [Message(Opcode.M2C_Error)]
     public partial class M2C_Error : MessageObject, IMessage
     {
         public static M2C_Error Create(bool isFromPool = false)
@@ -949,7 +949,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_NumericChange)]
+    [Message(Opcode.M2C_NumericChange)]
     public partial class M2C_NumericChange : MessageObject, IMessage
     {
         public static M2C_NumericChange Create(bool isFromPool = false)
@@ -982,7 +982,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2M_SelectTarget)]
+    [Message(Opcode.C2M_SelectTarget)]
     public partial class C2M_SelectTarget : MessageObject, ILocationMessage
     {
         public static C2M_SelectTarget Create(bool isFromPool = false)
@@ -1011,7 +1011,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.M2C_Turn)]
+    [Message(Opcode.M2C_Turn)]
     public partial class M2C_Turn : MessageObject, IMessage
     {
         public static M2C_Turn Create(bool isFromPool = false)
@@ -1044,7 +1044,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.C2G_Logout)]
+    [Message(Opcode.C2G_Logout)]
     [ResponseType(nameof(G2C_Logout))]
     public partial class C2G_Logout : MessageObject, ISessionRequest
     {
@@ -1070,7 +1070,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWOuter.G2C_Logout)]
+    [Message(Opcode.G2C_Logout)]
     public partial class G2C_Logout : MessageObject, ISessionResponse
     {
         public static G2C_Logout Create(bool isFromPool = false)
@@ -1102,7 +1102,7 @@ namespace ET
         }
     }
 
-    public static class WOWOuter
+    public static partial class Opcode
     {
         public const ushort RouterSync = 4101;
         public const ushort C2M_TestRequest = 4102;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ET
 {
     [MemoryPackable]
-    [Message(RouterProto.HttpGetRouterResponse)]
+    [Message(Opcode.HttpGetRouterResponse)]
     public partial class HttpGetRouterResponse : MessageObject
     {
         public static HttpGetRouterResponse Create(bool isFromPool = false)
@@ -32,7 +32,7 @@ namespace ET
         }
     }
 
-    public static class RouterProto
+    public static partial class Opcode
     {
         public const ushort HttpGetRouterResponse = 2001;
     }

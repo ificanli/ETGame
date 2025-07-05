@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ET
 {
     [MemoryPackable]
-    [Message(RobotCase.C2M_RobotCase_PrepareData_001_Request)]
+    [Message(Opcode.C2M_RobotCase_PrepareData_001_Request)]
     [ResponseType(nameof(C2M_RobotCase_PrepareData_001_Response))]
     public partial class C2M_RobotCase_PrepareData_001_Request : MessageObject, ILocationRequest
     {
@@ -30,7 +30,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(RobotCase.C2M_RobotCase_PrepareData_001_Response)]
+    [Message(Opcode.C2M_RobotCase_PrepareData_001_Response)]
     public partial class C2M_RobotCase_PrepareData_001_Response : MessageObject, ILocationResponse
     {
         public static C2M_RobotCase_PrepareData_001_Response Create(bool isFromPool = false)
@@ -62,7 +62,7 @@ namespace ET
         }
     }
 
-    public static class RobotCase
+    public static partial class Opcode
     {
         public const ushort C2M_RobotCase_PrepareData_001_Request = 60001;
         public const ushort C2M_RobotCase_PrepareData_001_Response = 60002;

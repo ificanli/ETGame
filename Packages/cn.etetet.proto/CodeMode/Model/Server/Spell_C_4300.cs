@@ -5,7 +5,7 @@ namespace ET
 {
     // Spell相关消息定义
     [MemoryPackable]
-    [Message(Spell.C2M_SpellCast)]
+    [Message(Opcode.C2M_SpellCast)]
     public partial class C2M_SpellCast : MessageObject, ILocationMessage
     {
         public static C2M_SpellCast Create(bool isFromPool = false)
@@ -38,7 +38,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Spell.M2C_SpellAdd)]
+    [Message(Opcode.M2C_SpellAdd)]
     public partial class M2C_SpellAdd : MessageObject, IMessage
     {
         public static M2C_SpellAdd Create(bool isFromPool = false)
@@ -79,7 +79,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Spell.M2C_SpellRemove)]
+    [Message(Opcode.M2C_SpellRemove)]
     public partial class M2C_SpellRemove : MessageObject, IMessage
     {
         public static M2C_SpellRemove Create(bool isFromPool = false)
@@ -112,7 +112,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Spell.SpellTarget)]
+    [Message(Opcode.SpellTarget)]
     public partial class SpellTarget : MessageObject
     {
         public static SpellTarget Create(bool isFromPool = false)
@@ -142,7 +142,7 @@ namespace ET
 
     // Buff相关消息定义
     [MemoryPackable]
-    [Message(Spell.M2C_BuffAdd)]
+    [Message(Opcode.M2C_BuffAdd)]
     public partial class M2C_BuffAdd : MessageObject, IMessage
     {
         public static M2C_BuffAdd Create(bool isFromPool = false)
@@ -199,7 +199,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Spell.M2C_BuffUpdate)]
+    [Message(Opcode.M2C_BuffUpdate)]
     public partial class M2C_BuffUpdate : MessageObject, IMessage
     {
         public static M2C_BuffUpdate Create(bool isFromPool = false)
@@ -240,7 +240,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Spell.M2C_BuffRemove)]
+    [Message(Opcode.M2C_BuffRemove)]
     public partial class M2C_BuffRemove : MessageObject, IMessage
     {
         public static M2C_BuffRemove Create(bool isFromPool = false)
@@ -278,7 +278,7 @@ namespace ET
 
     // CD相关消息定义
     [MemoryPackable]
-    [Message(Spell.M2C_UpdateCD)]
+    [Message(Opcode.M2C_UpdateCD)]
     public partial class M2C_UpdateCD : MessageObject, IMessage
     {
         public static M2C_UpdateCD Create(bool isFromPool = false)
@@ -319,7 +319,7 @@ namespace ET
 
     // Pet攻击相关消息定义
     [MemoryPackable]
-    [Message(Spell.C2M_PetAttack)]
+    [Message(Opcode.C2M_PetAttack)]
     public partial class C2M_PetAttack : MessageObject, ILocationMessage
     {
         public static C2M_PetAttack Create(bool isFromPool = false)
@@ -347,7 +347,7 @@ namespace ET
         }
     }
 
-    public static class Spell
+    public static partial class Opcode
     {
         public const ushort C2M_SpellCast = 4301;
         public const ushort M2C_SpellAdd = 4302;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ET
 {
     [MemoryPackable]
-    [Message(ActorLocation.ObjectAddRequest)]
+    [Message(Opcode.ObjectAddRequest)]
     [ResponseType(nameof(ObjectAddResponse))]
     public partial class ObjectAddRequest : MessageObject, IRequest
     {
@@ -42,7 +42,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectAddResponse)]
+    [Message(Opcode.ObjectAddResponse)]
     public partial class ObjectAddResponse : MessageObject, IResponse
     {
         public static ObjectAddResponse Create(bool isFromPool = false)
@@ -75,7 +75,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectLockRequest)]
+    [Message(Opcode.ObjectLockRequest)]
     [ResponseType(nameof(ObjectLockResponse))]
     public partial class ObjectLockRequest : MessageObject, IRequest
     {
@@ -117,7 +117,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectLockResponse)]
+    [Message(Opcode.ObjectLockResponse)]
     public partial class ObjectLockResponse : MessageObject, IResponse
     {
         public static ObjectLockResponse Create(bool isFromPool = false)
@@ -150,7 +150,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectUnLockRequest)]
+    [Message(Opcode.ObjectUnLockRequest)]
     [ResponseType(nameof(ObjectUnLockResponse))]
     public partial class ObjectUnLockRequest : MessageObject, IRequest
     {
@@ -192,7 +192,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectUnLockResponse)]
+    [Message(Opcode.ObjectUnLockResponse)]
     public partial class ObjectUnLockResponse : MessageObject, IResponse
     {
         public static ObjectUnLockResponse Create(bool isFromPool = false)
@@ -225,7 +225,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectRemoveRequest)]
+    [Message(Opcode.ObjectRemoveRequest)]
     [ResponseType(nameof(ObjectRemoveResponse))]
     public partial class ObjectRemoveRequest : MessageObject, IRequest
     {
@@ -259,7 +259,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectRemoveResponse)]
+    [Message(Opcode.ObjectRemoveResponse)]
     public partial class ObjectRemoveResponse : MessageObject, IResponse
     {
         public static ObjectRemoveResponse Create(bool isFromPool = false)
@@ -292,7 +292,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectGetRequest)]
+    [Message(Opcode.ObjectGetRequest)]
     [ResponseType(nameof(ObjectGetResponse))]
     public partial class ObjectGetRequest : MessageObject, IRequest
     {
@@ -326,7 +326,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(ActorLocation.ObjectGetResponse)]
+    [Message(Opcode.ObjectGetResponse)]
     public partial class ObjectGetResponse : MessageObject, IResponse
     {
         public static ObjectGetResponse Create(bool isFromPool = false)
@@ -366,7 +366,7 @@ namespace ET
         }
     }
 
-    public static class ActorLocation
+    public static partial class Opcode
     {
         public const ushort ObjectAddRequest = 3001;
         public const ushort ObjectAddResponse = 3002;

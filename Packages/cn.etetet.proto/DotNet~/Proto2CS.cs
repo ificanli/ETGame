@@ -136,7 +136,7 @@ namespace ET
                     msgOpcode.Add(new OpcodeInfo() { Name = msgName, Opcode = ++startOpcode });
 
                     sb.Append($"\t[MemoryPackable]\n");
-                    sb.Append($"\t[Message({protoName}.{msgName})]\n");
+                    sb.Append($"\t[Message(Opcode.{msgName})]\n");
                     if (!string.IsNullOrEmpty(responseType))
                     {
                         sb.Append($"\t[ResponseType(nameof({responseType}))]\n");
@@ -222,7 +222,7 @@ namespace ET
                 }
             }
 
-            sb.Append("\tpublic static class " + protoName + "\n\t{\n");
+            sb.Append("\tpublic static partial class Opcode" + "\n\t{\n");
             foreach (OpcodeInfo info in msgOpcode)
             {
                 sb.Append($"\t\tpublic const ushort {info.Name} = {info.Opcode};\n");

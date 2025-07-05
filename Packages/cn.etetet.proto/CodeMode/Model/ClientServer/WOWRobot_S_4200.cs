@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ET
 {
     [MemoryPackable]
-    [Message(WOWRobot.Console2Robot_LogoutRequest)]
+    [Message(Opcode.Console2Robot_LogoutRequest)]
     [ResponseType(nameof(Console2Robot_LogoutResponse))]
     public partial class Console2Robot_LogoutRequest : MessageObject, IRequest
     {
@@ -30,7 +30,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWRobot.Console2Robot_LogoutResponse)]
+    [Message(Opcode.Console2Robot_LogoutResponse)]
     public partial class Console2Robot_LogoutResponse : MessageObject, IResponse
     {
         public static Console2Robot_LogoutResponse Create(bool isFromPool = false)
@@ -62,7 +62,7 @@ namespace ET
         }
     }
 
-    public static class WOWRobot
+    public static partial class Opcode
     {
         public const ushort Console2Robot_LogoutRequest = 4201;
         public const ushort Console2Robot_LogoutResponse = 4202;

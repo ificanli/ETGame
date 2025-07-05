@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ET
 {
     [MemoryPackable]
-    [Message(LoginOuter.Main2NetClient_Login)]
+    [Message(Opcode.Main2NetClient_Login)]
     [ResponseType(nameof(NetClient2Main_Login))]
     public partial class Main2NetClient_Login : MessageObject, IRequest
     {
@@ -52,7 +52,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(LoginOuter.NetClient2Main_Login)]
+    [Message(Opcode.NetClient2Main_Login)]
     public partial class NetClient2Main_Login : MessageObject, IResponse
     {
         public static NetClient2Main_Login Create(bool isFromPool = false)
@@ -89,7 +89,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(LoginOuter.C2G_Ping)]
+    [Message(Opcode.C2G_Ping)]
     [ResponseType(nameof(G2C_Ping))]
     public partial class C2G_Ping : MessageObject, ISessionRequest
     {
@@ -115,7 +115,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(LoginOuter.G2C_Ping)]
+    [Message(Opcode.G2C_Ping)]
     public partial class G2C_Ping : MessageObject, ISessionResponse
     {
         public static G2C_Ping Create(bool isFromPool = false)
@@ -152,7 +152,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(LoginOuter.C2R_Login)]
+    [Message(Opcode.C2R_Login)]
     [ResponseType(nameof(R2C_Login))]
     public partial class C2R_Login : MessageObject, ISessionRequest
     {
@@ -192,7 +192,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(LoginOuter.R2C_Login)]
+    [Message(Opcode.R2C_Login)]
     public partial class R2C_Login : MessageObject, ISessionResponse
     {
         public static R2C_Login Create(bool isFromPool = false)
@@ -237,7 +237,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(LoginOuter.C2G_LoginGate)]
+    [Message(Opcode.C2G_LoginGate)]
     [ResponseType(nameof(G2C_LoginGate))]
     public partial class C2G_LoginGate : MessageObject, ISessionRequest
     {
@@ -274,7 +274,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(LoginOuter.G2C_LoginGate)]
+    [Message(Opcode.G2C_LoginGate)]
     public partial class G2C_LoginGate : MessageObject, ISessionResponse
     {
         public static G2C_LoginGate Create(bool isFromPool = false)
@@ -310,7 +310,7 @@ namespace ET
         }
     }
 
-    public static class LoginOuter
+    public static partial class Opcode
     {
         public const ushort Main2NetClient_Login = 1101;
         public const ushort NetClient2Main_Login = 1102;

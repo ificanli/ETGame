@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ET
 {
     [MemoryPackable]
-    [Message(WOWInner.M2A_Reload)]
+    [Message(Opcode.M2A_Reload)]
     [ResponseType(nameof(A2M_Reload))]
     public partial class M2A_Reload : MessageObject, IRequest
     {
@@ -30,7 +30,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.A2M_Reload)]
+    [Message(Opcode.A2M_Reload)]
     public partial class A2M_Reload : MessageObject, IResponse
     {
         public static A2M_Reload Create(bool isFromPool = false)
@@ -63,7 +63,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.M2M_UnitTransferRequest)]
+    [Message(Opcode.M2M_UnitTransferRequest)]
     [ResponseType(nameof(M2M_UnitTransferResponse))]
     public partial class M2M_UnitTransferRequest : MessageObject, IRequest
     {
@@ -105,7 +105,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.M2M_UnitTransferResponse)]
+    [Message(Opcode.M2M_UnitTransferResponse)]
     public partial class M2M_UnitTransferResponse : MessageObject, IResponse
     {
         public static M2M_UnitTransferResponse Create(bool isFromPool = false)
@@ -142,7 +142,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.A2MapManager_GetMapRequest)]
+    [Message(Opcode.A2MapManager_GetMapRequest)]
     [ResponseType(nameof(A2MapManager_GetMapResponse))]
     public partial class A2MapManager_GetMapRequest : MessageObject, IRequest
     {
@@ -180,7 +180,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.A2MapManager_GetMapResponse)]
+    [Message(Opcode.A2MapManager_GetMapResponse)]
     public partial class A2MapManager_GetMapResponse : MessageObject, IResponse
     {
         public static A2MapManager_GetMapResponse Create(bool isFromPool = false)
@@ -225,7 +225,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.A2MapManager_NotifyPlayerAlreadyEnterMapRequest)]
+    [Message(Opcode.A2MapManager_NotifyPlayerAlreadyEnterMapRequest)]
     [ResponseType(nameof(A2MapManager_NotifyPlayerAlreadyEnterMapResponse))]
     public partial class A2MapManager_NotifyPlayerAlreadyEnterMapRequest : MessageObject, IRequest
     {
@@ -263,7 +263,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.A2MapManager_NotifyPlayerAlreadyEnterMapResponse)]
+    [Message(Opcode.A2MapManager_NotifyPlayerAlreadyEnterMapResponse)]
     public partial class A2MapManager_NotifyPlayerAlreadyEnterMapResponse : MessageObject, IResponse
     {
         public static A2MapManager_NotifyPlayerAlreadyEnterMapResponse Create(bool isFromPool = false)
@@ -296,7 +296,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.MapManager2Map_NotifyPlayerTransferRequest)]
+    [Message(Opcode.MapManager2Map_NotifyPlayerTransferRequest)]
     [ResponseType(nameof(MapManager2Map_NotifyPlayerTransferResponse))]
     public partial class MapManager2Map_NotifyPlayerTransferRequest : MessageObject, ILocationRequest
     {
@@ -330,7 +330,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.MapManager2Map_NotifyPlayerTransferResponse)]
+    [Message(Opcode.MapManager2Map_NotifyPlayerTransferResponse)]
     public partial class MapManager2Map_NotifyPlayerTransferResponse : MessageObject, ILocationResponse
     {
         public static MapManager2Map_NotifyPlayerTransferResponse Create(bool isFromPool = false)
@@ -363,7 +363,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.Map2MapManager_LogoutRequest)]
+    [Message(Opcode.Map2MapManager_LogoutRequest)]
     [ResponseType(nameof(Map2MapManager_LogoutResponse))]
     public partial class Map2MapManager_LogoutRequest : MessageObject, IRequest
     {
@@ -401,7 +401,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.Map2MapManager_LogoutResponse)]
+    [Message(Opcode.Map2MapManager_LogoutResponse)]
     public partial class Map2MapManager_LogoutResponse : MessageObject, IResponse
     {
         public static Map2MapManager_LogoutResponse Create(bool isFromPool = false)
@@ -434,7 +434,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.G2Map_Logout)]
+    [Message(Opcode.G2Map_Logout)]
     [ResponseType(nameof(Map2G_Logout))]
     public partial class G2Map_Logout : MessageObject, ILocationRequest
     {
@@ -460,7 +460,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(WOWInner.Map2G_Logout)]
+    [Message(Opcode.Map2G_Logout)]
     public partial class Map2G_Logout : MessageObject, ILocationResponse
     {
         public static Map2G_Logout Create(bool isFromPool = false)
@@ -492,7 +492,7 @@ namespace ET
         }
     }
 
-    public static class WOWInner
+    public static partial class Opcode
     {
         public const ushort M2A_Reload = 4001;
         public const ushort A2M_Reload = 4002;

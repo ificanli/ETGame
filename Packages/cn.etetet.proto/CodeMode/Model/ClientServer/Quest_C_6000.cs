@@ -5,7 +5,7 @@ namespace ET
 {
     // 接任务
     [MemoryPackable]
-    [Message(Quest.C2M_AcceptQuest)]
+    [Message(Opcode.C2M_AcceptQuest)]
     [ResponseType(nameof(M2C_AcceptQuest))]
     public partial class C2M_AcceptQuest : MessageObject, ILocationRequest
     {
@@ -39,7 +39,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.M2C_AcceptQuest)]
+    [Message(Opcode.M2C_AcceptQuest)]
     public partial class M2C_AcceptQuest : MessageObject, ILocationResponse
     {
         public static M2C_AcceptQuest Create(bool isFromPool = false)
@@ -73,7 +73,7 @@ namespace ET
 
     // 交任务
     [MemoryPackable]
-    [Message(Quest.C2M_SubmitQuest)]
+    [Message(Opcode.C2M_SubmitQuest)]
     [ResponseType(nameof(M2C_SubmitQuest))]
     public partial class C2M_SubmitQuest : MessageObject, ILocationRequest
     {
@@ -107,7 +107,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.M2C_SubmitQuest)]
+    [Message(Opcode.M2C_SubmitQuest)]
     public partial class M2C_SubmitQuest : MessageObject, ILocationResponse
     {
         public static M2C_SubmitQuest Create(bool isFromPool = false)
@@ -140,7 +140,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.QuestObjectiveInfo)]
+    [Message(Opcode.QuestObjectiveInfo)]
     public partial class QuestObjectiveInfo : MessageObject
     {
         public static QuestObjectiveInfo Create(bool isFromPool = false)
@@ -174,7 +174,7 @@ namespace ET
 
     // 更新任务信息
     [MemoryPackable]
-    [Message(Quest.M2C_CreateQuest)]
+    [Message(Opcode.M2C_CreateQuest)]
     public partial class M2C_CreateQuest : MessageObject, IMessage
     {
         public static M2C_CreateQuest Create(bool isFromPool = false)
@@ -204,7 +204,7 @@ namespace ET
 
     // 更新任务目标
     [MemoryPackable]
-    [Message(Quest.M2C_UpdateQuestObjective)]
+    [Message(Opcode.M2C_UpdateQuestObjective)]
     public partial class M2C_UpdateQuestObjective : MessageObject, IMessage
     {
         public static M2C_UpdateQuestObjective Create(bool isFromPool = false)
@@ -237,7 +237,7 @@ namespace ET
 
     // 更新任务信息
     [MemoryPackable]
-    [Message(Quest.M2C_UpdateQuest)]
+    [Message(Opcode.M2C_UpdateQuest)]
     public partial class M2C_UpdateQuest : MessageObject, IMessage
     {
         public static M2C_UpdateQuest Create(bool isFromPool = false)
@@ -270,7 +270,7 @@ namespace ET
 
     // 同步任务数据请求
     [MemoryPackable]
-    [Message(Quest.C2M_SyncQuestData)]
+    [Message(Opcode.C2M_SyncQuestData)]
     [ResponseType(nameof(M2C_SyncQuestData))]
     public partial class C2M_SyncQuestData : MessageObject, ILocationRequest
     {
@@ -296,7 +296,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.QuestInfo)]
+    [Message(Opcode.QuestInfo)]
     public partial class QuestInfo : MessageObject
     {
         public static QuestInfo Create(bool isFromPool = false)
@@ -346,7 +346,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.M2C_SyncQuestData)]
+    [Message(Opcode.M2C_SyncQuestData)]
     public partial class M2C_SyncQuestData : MessageObject, ILocationResponse
     {
         public static M2C_SyncQuestData Create(bool isFromPool = false)
@@ -384,7 +384,7 @@ namespace ET
 
     // 放弃任务
     [MemoryPackable]
-    [Message(Quest.C2M_AbandonQuest)]
+    [Message(Opcode.C2M_AbandonQuest)]
     [ResponseType(nameof(M2C_AbandonQuest))]
     public partial class C2M_AbandonQuest : MessageObject, ILocationRequest
     {
@@ -414,7 +414,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.M2C_AbandonQuest)]
+    [Message(Opcode.M2C_AbandonQuest)]
     public partial class M2C_AbandonQuest : MessageObject, ILocationResponse
     {
         public static M2C_AbandonQuest Create(bool isFromPool = false)
@@ -448,7 +448,7 @@ namespace ET
 
     // 查询可接取任务
     [MemoryPackable]
-    [Message(Quest.C2M_QueryAvailableQuests)]
+    [Message(Opcode.C2M_QueryAvailableQuests)]
     [ResponseType(nameof(M2C_QueryAvailableQuests))]
     public partial class C2M_QueryAvailableQuests : MessageObject, ILocationRequest
     {
@@ -481,7 +481,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.AvailableQuestInfo)]
+    [Message(Opcode.AvailableQuestInfo)]
     public partial class AvailableQuestInfo : MessageObject
     {
         public static AvailableQuestInfo Create(bool isFromPool = false)
@@ -533,7 +533,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.M2C_QueryAvailableQuests)]
+    [Message(Opcode.M2C_QueryAvailableQuests)]
     public partial class M2C_QueryAvailableQuests : MessageObject, ILocationResponse
     {
         public static M2C_QueryAvailableQuests Create(bool isFromPool = false)
@@ -571,7 +571,7 @@ namespace ET
 
     // 任务完成通知
     [MemoryPackable]
-    [Message(Quest.M2C_QuestComplete)]
+    [Message(Opcode.M2C_QuestComplete)]
     public partial class M2C_QuestComplete : MessageObject, IMessage
     {
         public static M2C_QuestComplete Create(bool isFromPool = false)
@@ -609,7 +609,7 @@ namespace ET
 
     // 任务失败通知
     [MemoryPackable]
-    [Message(Quest.M2C_QuestFailed)]
+    [Message(Opcode.M2C_QuestFailed)]
     public partial class M2C_QuestFailed : MessageObject, IMessage
     {
         public static M2C_QuestFailed Create(bool isFromPool = false)
@@ -639,7 +639,7 @@ namespace ET
 
     // 任务进度提示
     [MemoryPackable]
-    [Message(Quest.M2C_QuestProgress)]
+    [Message(Opcode.M2C_QuestProgress)]
     public partial class M2C_QuestProgress : MessageObject, IMessage
     {
         public static M2C_QuestProgress Create(bool isFromPool = false)
@@ -672,7 +672,7 @@ namespace ET
 
     // 获取任务详情
     [MemoryPackable]
-    [Message(Quest.C2M_GetQuestDetail)]
+    [Message(Opcode.C2M_GetQuestDetail)]
     [ResponseType(nameof(M2C_GetQuestDetail))]
     public partial class C2M_GetQuestDetail : MessageObject, ILocationRequest
     {
@@ -702,7 +702,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.QuestDetailInfo)]
+    [Message(Opcode.QuestDetailInfo)]
     public partial class QuestDetailInfo : MessageObject
     {
         public static QuestDetailInfo Create(bool isFromPool = false)
@@ -787,7 +787,7 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Quest.M2C_GetQuestDetail)]
+    [Message(Opcode.M2C_GetQuestDetail)]
     public partial class M2C_GetQuestDetail : MessageObject, ILocationResponse
     {
         public static M2C_GetQuestDetail Create(bool isFromPool = false)
@@ -823,7 +823,7 @@ namespace ET
         }
     }
 
-    public static class Quest
+    public static partial class Opcode
     {
         public const ushort C2M_AcceptQuest = 6001;
         public const ushort M2C_AcceptQuest = 6002;
