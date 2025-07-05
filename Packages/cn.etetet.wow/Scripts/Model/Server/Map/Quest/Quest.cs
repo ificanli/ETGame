@@ -2,18 +2,6 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-    /// <summary>
-    /// 任务状态
-    /// </summary>
-    public enum QuestStatus
-    {
-        None,           // 未接取
-        InProgress,     // 进行中
-        CanSubmit,      // 可提交
-        Finished,       // 已完成
-        Failed,         // 失败
-        Abandoned,      // 已放弃
-    }
     
     [ChildOf(typeof(QuestComponent))]
     public class Quest: Entity, IAwake<int>

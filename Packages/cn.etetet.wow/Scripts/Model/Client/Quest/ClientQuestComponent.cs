@@ -11,7 +11,7 @@ namespace ET.Client
         /// <summary>
         /// 所有任务数据字典（任务配置ID -> 客户端任务数据）
         /// </summary>
-        public Dictionary<int, ClientQuestData> QuestDict = new Dictionary<int, ClientQuestData>();
+        public Dictionary<int, EntityRef<ClientQuestData>> QuestDict = new Dictionary<int, EntityRef<ClientQuestData>>();
 
         /// <summary>
         /// 当前跟踪的任务ID
@@ -22,8 +22,8 @@ namespace ET.Client
     /// <summary>
     /// 客户端任务数据
     /// </summary>
-    [EnableClass]
-    public class ClientQuestData
+    [ChildOf(typeof(ClientQuestComponent))]
+    public class ClientQuestData : Entity, IAwake, IDestroy
     {
         /// <summary>
         /// 任务配置ID
@@ -38,7 +38,7 @@ namespace ET.Client
         /// <summary>
         /// 任务目标数据列表
         /// </summary>
-        public List<ClientQuestObjectiveData> Objectives = new List<ClientQuestObjectiveData>();
+        public List<EntityRef<ClientQuestObjectiveData>> Objectives = new List<EntityRef<ClientQuestObjectiveData>>();
 
         /// <summary>
         /// 是否是当前跟踪的任务
@@ -59,8 +59,8 @@ namespace ET.Client
     /// <summary>
     /// 客户端任务目标数据
     /// </summary>
-    [EnableClass]
-    public class ClientQuestObjectiveData
+    [ChildOf(typeof(ClientQuestData))]
+    public class ClientQuestObjectiveData : Entity, IAwake, IDestroy
     {
         /// <summary>
         /// 目标配置ID
@@ -87,38 +87,6 @@ namespace ET.Client
         /// </summary>
         public string Description;
 
-        /// <summary>
-        /// 获取进度百分比
-        /// </summary>
-        public float GetProgressPercent()
-        {
-            if (RequiredCount <= 0)
-            {
-                return 0f;
-            }
-            return (float)CurrentCount / RequiredCount;
-        }
-
-        /// <summary>
-        /// 获取进度文本
-        /// </summary>
-        public string GetProgressText()
-        {
-            return $"{CurrentCount}/{RequiredCount}";
-        }
     }
 
-    /// <summary>
-    /// 任务状态枚举（客户端副本）
-    /// </summary>
-    public enum QuestStatus
-    {
-        None = 0,           // 未接取
-        Available = 1,      // 可接取
-        InProgress = 2,     // 进行中
-        CanSubmit = 3,      // 可提交
-        Completed = 4,      // 已完成
-        Failed = 5,         // 失败
-        Abandoned = 6,      // 已放弃
-    }
 }

@@ -12,6 +12,9 @@ namespace ET.Client
         {
             try
             {
+                // 在await前创建EntityRef
+                EntityRef<Scene> sceneRef = scene;
+                
                 C2M_AcceptQuest request = C2M_AcceptQuest.Create();
                 request.QuestId = questId;
                 request.NPCId = npcId;
@@ -24,7 +27,17 @@ namespace ET.Client
                     return false;
                 }
 
-                Log.Info($"成功接取任务: {questId}");
+                // await后重新获取Scene
+                scene = sceneRef;
+                
+                // 更新客户端任务数据 - 任务接取成功，状态为进行中
+                ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+                if (questComponent != null)
+                {
+                    questComponent.UpdateQuestData(questId, QuestStatus.InProgress);
+                }
+
+                Log.Debug($"成功接取任务: {questId}");
                 return true;
             }
             catch (System.Exception e)
@@ -41,6 +54,9 @@ namespace ET.Client
         {
             try
             {
+                // 在await前创建EntityRef
+                EntityRef<Scene> sceneRef = scene;
+                
                 C2M_SubmitQuest request = C2M_SubmitQuest.Create();
                 request.QuestId = questId;
                 request.NPCId = npcId;
@@ -53,7 +69,17 @@ namespace ET.Client
                     return false;
                 }
 
-                Log.Info($"成功提交任务: {questId}");
+                // await后重新获取Scene
+                scene = sceneRef;
+                
+                // 更新客户端任务数据 - 移除已完成的任务
+                ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+                if (questComponent != null)
+                {
+                    questComponent.RemoveQuest(questId);
+                }
+
+                Log.Debug($"成功提交任务: {questId}");
                 return true;
             }
             catch (System.Exception e)
@@ -80,7 +106,7 @@ namespace ET.Client
                     return false;
                 }
 
-                Log.Info("成功同步任务数据");
+                Log.Debug("成功同步任务数据");
                 return true;
             }
             catch (System.Exception e)
@@ -97,6 +123,9 @@ namespace ET.Client
         {
             try
             {
+                // 在await前创建EntityRef
+                EntityRef<Scene> sceneRef = scene;
+                
                 C2M_AbandonQuest request = C2M_AbandonQuest.Create();
                 request.QuestId = questId;
 
@@ -108,7 +137,17 @@ namespace ET.Client
                     return false;
                 }
 
-                Log.Info($"成功放弃任务: {questId}");
+                // await后重新获取Scene
+                scene = sceneRef;
+                
+                // 更新客户端任务数据 - 移除放弃的任务
+                ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+                if (questComponent != null)
+                {
+                    questComponent.RemoveQuest(questId);
+                }
+
+                Log.Debug($"成功放弃任务: {questId}");
                 return true;
             }
             catch (System.Exception e)
@@ -136,7 +175,7 @@ namespace ET.Client
                     return new AvailableQuestInfo[0];
                 }
 
-                Log.Info($"查询到 {response.AvailableQuests.Count} 个可接取任务");
+                Log.Debug($"查询到 {response.AvailableQuests.Count} 个可接取任务");
                 return response.AvailableQuests.ToArray();
             }
             catch (System.Exception e)
@@ -164,7 +203,7 @@ namespace ET.Client
                     return null;
                 }
 
-                Log.Info($"成功获取任务详情: {response.QuestDetail.QuestName}");
+                Log.Debug($"成功获取任务详情: {response.QuestDetail.QuestName}");
                 return response.QuestDetail;
             }
             catch (System.Exception e)

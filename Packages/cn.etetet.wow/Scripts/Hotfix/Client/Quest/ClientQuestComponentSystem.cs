@@ -25,15 +25,18 @@ namespace ET.Client
         {
             if (!self.QuestDict.ContainsKey(questId))
             {
-                self.QuestDict[questId] = new ClientQuestData
-                {
-                    QuestId = questId,
-                    Status = status
-                };
+                ClientQuestData questData = self.AddChild<ClientQuestData>();
+                questData.QuestId = questId;
+                questData.Status = status;
+                self.QuestDict[questId] = questData;
             }
             else
             {
-                self.QuestDict[questId].Status = status;
+                ClientQuestData questData = self.QuestDict[questId];
+                if (questData != null)
+                {
+                    questData.Status = status;
+                }
             }
 
             // 发布任务状态更新事件
@@ -43,18 +46,21 @@ namespace ET.Client
         /// <summary>
         /// 更新任务目标进度
         /// </summary>
-        public static void UpdateQuestObjective(this ClientQuestComponent self, int questId, List<ClientQuestObjectiveData> objectives)
+        public static void UpdateQuestObjective(this ClientQuestComponent self, int questId, List<EntityRef<ClientQuestObjectiveData>> objectives)
         {
             if (!self.QuestDict.ContainsKey(questId))
             {
-                self.QuestDict[questId] = new ClientQuestData
-                {
-                    QuestId = questId,
-                    Status = QuestStatus.InProgress
-                };
+                ClientQuestData questData = self.AddChild<ClientQuestData>();
+                questData.QuestId = questId;
+                questData.Status = QuestStatus.InProgress;
+                self.QuestDict[questId] = questData;
             }
 
-            self.QuestDict[questId].Objectives = objectives;
+            ClientQuestData quest = self.QuestDict[questId];
+            if (quest != null)
+            {
+                quest.Objectives = objectives;
+            }
 
             // 发布任务目标更新事件
             EventSystem.Instance.Publish(self.Scene(), new ET.ClientQuestObjectiveChanged { QuestId = questId });
@@ -65,8 +71,11 @@ namespace ET.Client
         /// </summary>
         public static ClientQuestData GetQuestData(this ClientQuestComponent self, int questId)
         {
-            self.QuestDict.TryGetValue(questId, out ClientQuestData questData);
-            return questData;
+            if (self.QuestDict.TryGetValue(questId, out EntityRef<ClientQuestData> questRef))
+            {
+                return questRef;
+            }
+            return null;
         }
 
         /// <summary>
@@ -74,9 +83,16 @@ namespace ET.Client
         /// </summary>
         public static List<ClientQuestData> GetActiveQuests(this ClientQuestComponent self)
         {
-            return self.QuestDict.Values
-                .Where(quest => quest.Status == QuestStatus.InProgress)
-                .ToList();
+            List<ClientQuestData> activeQuests = new List<ClientQuestData>();
+            foreach (var questRef in self.QuestDict.Values)
+            {
+                ClientQuestData quest = questRef;
+                if (quest != null && quest.Status == QuestStatus.InProgress)
+                {
+                    activeQuests.Add(quest);
+                }
+            }
+            return activeQuests;
         }
 
         /// <summary>
@@ -84,9 +100,16 @@ namespace ET.Client
         /// </summary>
         public static List<ClientQuestData> GetSubmittableQuests(this ClientQuestComponent self)
         {
-            return self.QuestDict.Values
-                .Where(quest => quest.Status == QuestStatus.CanSubmit)
-                .ToList();
+            List<ClientQuestData> submittableQuests = new List<ClientQuestData>();
+            foreach (var questRef in self.QuestDict.Values)
+            {
+                ClientQuestData quest = questRef;
+                if (quest != null && quest.Status == QuestStatus.CanSubmit)
+                {
+                    submittableQuests.Add(quest);
+                }
+            }
+            return submittableQuests;
         }
 
         /// <summary>
@@ -102,8 +125,14 @@ namespace ET.Client
         /// </summary>
         public static void RemoveQuest(this ClientQuestComponent self, int questId)
         {
-            if (self.QuestDict.Remove(questId))
+            if (self.QuestDict.TryGetValue(questId, out EntityRef<ClientQuestData> questRef))
             {
+                ClientQuestData quest = questRef;
+                if (quest != null)
+                {
+                    quest.Dispose();
+                }
+                self.QuestDict.Remove(questId);
                 EventSystem.Instance.Publish(self.Scene(), new ET.ClientQuestRemoved { QuestId = questId });
             }
         }

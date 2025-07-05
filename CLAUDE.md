@@ -147,6 +147,7 @@ ET.Core (框架核心层)
 ### 信息记录规则
 当用户说"请记住"时，将信息记录在此CLAUDE.md文件中。
 
+
 ### 日志输出规范
 1. 打印的日志请使用英文，这是项目的统一要求。
 2. 一般不允许使用Log.Info，Log.Info输出重要运营日志使用的
@@ -201,6 +202,14 @@ Singleton类（如RobotCaseDispatcher）可以包含方法，不需要创建Syst
 // 位置：Packages/cn.etetet.{包名}/Scripts/Model/ 或 Scripts/ModelView/
 namespace ET  // 或 ET.Client, ET.Server
 {
+    public class AA // 错误，逻辑类必须继承Entity
+    {
+    }
+    
+    public class BB: Entity // 正确
+    {
+    }
+    
     /// <summary>
     /// 详细的中文描述
     /// </summary>
@@ -211,6 +220,8 @@ namespace ET  // 或 ET.Client, ET.Server
         public int SomeValue;
         public string SomeName;
         public List<int> SomeList;
+        public AA aa;  // 错误，Entity类不能管理非Entity类
+        public List<AA> aas;  // 错误，Entity类不能管理非Entity类
     }
 }
 ```
@@ -221,6 +232,7 @@ namespace ET  // 或 ET.Client, ET.Server
 - **根据需要**实现其他接口：`IDestroy`、`IUpdate`、`ISerialize` 等
 - **严禁**在Entity类中定义任何方法
 - **必须**添加 `[ComponentOf]` 或 `[ChildOf]` 特性指定父级约束
+- **Entity只能管理Entity跟struct，不允许管理非Entity class
 
 
 #### System 类定义规范

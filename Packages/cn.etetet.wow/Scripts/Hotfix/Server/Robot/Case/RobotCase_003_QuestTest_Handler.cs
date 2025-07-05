@@ -93,7 +93,6 @@ namespace ET.Server
                     Log.Error($"Quest test data preparation failed: {prepareResponse.Error}, {prepareResponse.Message}");
                 }
                 
-                prepareResponse.Dispose();
             }
             catch (System.Exception e)
             {
@@ -121,11 +120,28 @@ namespace ET.Server
                 AvailableQuestInfo[] availableQuests = await ClientQuestHelper.QueryAvailableQuests(robotScene, testNPCId);
                 Log.Debug($"Found {availableQuests.Length} available quests");
                 
+                // 验证可接取任务列表
+                if (availableQuests.Length == 0)
+                {
+                    Log.Error("No available quests found, test failed");
+                    return;
+                }
+                
                 // 步骤2：接取任务
                 Log.Debug("Step 2: Accepting quest");
                 robotScene = robotSceneRef; // await后重新获取
                 bool acceptResult = await ClientQuestHelper.AcceptQuest(robotScene, testQuestId, testNPCId);
                 Log.Debug($"Accept quest result: {acceptResult}");
+                
+                if (!acceptResult)
+                {
+                    Log.Error("Failed to accept quest, test failed");
+                    return;
+                }
+                
+                // 验证客户端任务数据 - 检查任务是否已接取
+                robotScene = robotSceneRef; // await后重新获取
+                await ValidateClientQuestData(robotScene, testQuestId, QuestStatus.InProgress, "接取任务后");
                 
                 // 步骤3：同步任务数据（检查任务是否已接取）
                 Log.Debug("Step 3: Syncing quest data");
@@ -133,11 +149,31 @@ namespace ET.Server
                 bool syncResult = await ClientQuestHelper.SyncQuestData(robotScene);
                 Log.Debug($"Sync quest data result: {syncResult}");
                 
+                if (!syncResult)
+                {
+                    Log.Error("Failed to sync quest data, test failed");
+                    return;
+                }
+                
+                // 再次验证客户端任务数据 - 确认同步后数据正确
+                robotScene = robotSceneRef; // await后重新获取
+                await ValidateClientQuestData(robotScene, testQuestId, QuestStatus.InProgress, "同步任务数据后");
+                
                 // 步骤4：提交任务（如果任务已完成）
                 Log.Debug("Step 4: Submitting quest");
                 robotScene = robotSceneRef; // await后重新获取
                 bool submitResult = await ClientQuestHelper.SubmitQuest(robotScene, testQuestId, testNPCId);
                 Log.Debug($"Submit quest result: {submitResult}");
+                
+                if (!submitResult)
+                {
+                    Log.Error("Failed to submit quest, test failed");
+                    return;
+                }
+                
+                // 验证客户端任务数据 - 检查任务是否已被移除
+                robotScene = robotSceneRef; // await后重新获取
+                await ValidateQuestRemoved(robotScene, testQuestId, "提交任务后");
                 
                 // 步骤5：再次同步任务数据（检查任务是否已完成）
                 Log.Debug("Step 5: Final sync quest data");
@@ -145,12 +181,90 @@ namespace ET.Server
                 bool finalSyncResult = await ClientQuestHelper.SyncQuestData(robotScene);
                 Log.Debug($"Final sync quest data result: {finalSyncResult}");
                 
+                if (!finalSyncResult)
+                {
+                    Log.Error("Failed to final sync quest data, test failed");
+                    return;
+                }
+                
                 Log.Debug("Complete Quest flow test executed successfully using ClientQuestHelper");
             }
             catch (System.Exception e)
             {
                 Log.Error($"Quest flow test failed: {e.Message}");
             }
+        }
+        
+        /// <summary>
+        /// 验证客户端任务数据
+        /// </summary>
+        private static async ETTask ValidateClientQuestData(Scene robotScene, int questId, QuestStatus expectedStatus, string context)
+        {
+            Log.Debug($"Validating client quest data - {context}");
+            
+            try
+            {
+                ClientQuestComponent questComponent = robotScene.GetComponent<ClientQuestComponent>();
+                if (questComponent == null)
+                {
+                    Log.Error($"ClientQuestComponent not found - {context}");
+                    return;
+                }
+                
+                ClientQuestData questData = questComponent.GetQuestData(questId);
+                if (questData == null)
+                {
+                    Log.Error($"Quest data not found for questId {questId} - {context}");
+                    return;
+                }
+                
+                if (questData.Status != expectedStatus)
+                {
+                    Log.Error($"Quest status mismatch - Expected: {expectedStatus}, Actual: {questData.Status} - {context}");
+                    return;
+                }
+                
+                Log.Debug($"Client quest data validation successful - QuestId: {questId}, Status: {questData.Status} - {context}");
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to validate client quest data: {e.Message} - {context}");
+            }
+            
+            await ETTask.CompletedTask;
+        }
+        
+        /// <summary>
+        /// 验证任务已被移除
+        /// </summary>
+        private static async ETTask ValidateQuestRemoved(Scene robotScene, int questId, string context)
+        {
+            Log.Debug($"Validating quest removed - {context}");
+            
+            try
+            {
+                ClientQuestComponent questComponent = robotScene.GetComponent<ClientQuestComponent>();
+                if (questComponent == null)
+                {
+                    Log.Error($"ClientQuestComponent not found - {context}");
+                    return;
+                }
+                
+                bool hasQuest = questComponent.HasQuest(questId);
+                if (hasQuest)
+                {
+                    Log.Error($"Quest {questId} still exists but should be removed - {context}");
+                    return;
+                }
+                
+                Log.Debug($"Quest removal validation successful - QuestId: {questId} - {context}");
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to validate quest removal: {e.Message} - {context}");
+            }
+            
+            await ETTask.CompletedTask;
         }
 
     }
