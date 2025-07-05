@@ -131,6 +131,15 @@
         "cn.etetet.core": "2.0.0"
       }
     },
+    "cn.etetet.quest": {
+      "version": "file:cn.etetet.quest",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "2.0.8",
+        "cn.etetet.sourcegenerator": "0.0.5"
+      }
+    },
     "cn.etetet.recast": {
       "version": "file:cn.etetet.recast",
       "depth": 0,
@@ -177,7 +186,9 @@
       "version": "file:cn.etetet.wow",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {}
+      "dependencies": {
+        "cn.etetet.quest": "1.0.0"
+      }
     },
     "cn.etetet.yiui": {
       "version": "file:cn.etetet.yiui",

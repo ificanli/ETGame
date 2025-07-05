@@ -13,7 +13,9 @@
     "url": "https://github.com/ET-Packages/cn.etetet.yiuistatesync"
   },
   "relatedPackages": {},
-  "dependencies": {},
+  "dependencies": {
+    "cn.etetet.quest": "1.0.0"
+  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
   },

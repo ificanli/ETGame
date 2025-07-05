@@ -68,7 +68,7 @@ namespace ET
             if (Options.Instance.SceneName != "RobotCase")
             {
                 ushort opcode = OpcodeType.Instance.GetOpcode(message.GetType());
-                if (opcode > 5000)
+                if (opcode > 60000)
                 {
                     return;
                 }

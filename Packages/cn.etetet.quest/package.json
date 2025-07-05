@@ -1,0 +1,22 @@
+{
+  "name": "cn.etetet.quest",
+  "displayName": "ET.Quest",
+  "version": "1.0.0",
+  "description": "ET框架任务系统模块，提供完整的任务管理、目标追踪和进度监控功能",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.core": "2.0.8",
+    "cn.etetet.sourcegenerator": "0.0.5"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}

@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 #### 编译相关
 ```powershell
 # 编译整个解决方案（需翻墙下载NuGet包）
-dotnet build ET.sln
+dotnet build DotNet.sln
 
 # 发布Linux版本
 pwsh -ExecutionPolicy Bypass -File Scripts/Publish.ps1
@@ -110,7 +110,7 @@ ET.Core (框架核心层)
 
 ### 开发工作流
 ```
-1. 修改代码 -> 2. dotnet build ET.sln -> 3. 重启进程 -> 4. 测试
+1. 修改代码 -> 2. dotnet build DotNet.sln -> 3. 重启进程 -> 4. 测试
 ```
 
 ### 文件结构说明

@@ -64,7 +64,7 @@ namespace ET
 
     public static class RobotCase
     {
-        public const ushort C2M_RobotCase_PrepareData_001_Request = 5001;
-        public const ushort C2M_RobotCase_PrepareData_001_Response = 5002;
+        public const ushort C2M_RobotCase_PrepareData_001_Request = 60001;
+        public const ushort C2M_RobotCase_PrepareData_001_Response = 60002;
     }
 }
