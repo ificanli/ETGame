@@ -25,7 +25,7 @@ namespace ET
         private static readonly DiagnosticDescriptor FieldWriteRule = new DiagnosticDescriptor(
             "MOD001",
             "跨模块字段写入违规",
-            "不能跨模块修改字段，当前模块 '{0}'，被访问模块 '{1}'",
+            "不能跨模块修改字段，当前模块 '{0}'，被访问模块 '{1}' (Global模块除外)",
             "ModuleEnforcement",
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
@@ -33,7 +33,7 @@ namespace ET
         private static readonly DiagnosticDescriptor FieldAccessRule = new DiagnosticDescriptor(
             "MOD003",
             "跨模块字段访问双向违规",
-            "模块 '{0}' 已访问模块 '{1}' 字段，禁止模块 '{1}' 再访问模块 '{0}' 字段",
+            "模块 '{0}' 已访问模块 '{1}' 字段，禁止模块 '{1}' 再访问模块 '{0}' 字段 (Global模块除外)",
             "ModuleEnforcement",
             DiagnosticSeverity.Error,
             isEnabledByDefault: true);
@@ -96,10 +96,14 @@ namespace ET
 
                 if (sourceModule != targetModule)
                 {
-                    if (fieldAccess.TryAdd((sourceModule, targetModule), 0) &&
-                        fieldAccess.ContainsKey((targetModule, sourceModule)))
+                    // Global模块可以访问任何模块的字段，也可以被任何模块访问，不检查双向违规
+                    if (sourceModule != "Global" && targetModule != "Global")
                     {
-                        opContext.ReportDiagnostic(Diagnostic.Create(FieldAccessRule, fieldAccessOp.Syntax.GetLocation(), targetModule, sourceModule));
+                        if (fieldAccess.TryAdd((sourceModule, targetModule), 0) &&
+                            fieldAccess.ContainsKey((targetModule, sourceModule)))
+                        {
+                            opContext.ReportDiagnostic(Diagnostic.Create(FieldAccessRule, fieldAccessOp.Syntax.GetLocation(), targetModule, sourceModule));
+                        }
                     }
                 }
             }, OperationKind.FieldReference);
@@ -138,7 +142,11 @@ namespace ET
                 if (sourceModule != targetModule)
                 {
                     moduleRelations.TryAdd((sourceModule, targetModule), 0);
-                    opContext.ReportDiagnostic(Diagnostic.Create(FieldWriteRule, opContext.Operation.Syntax.GetLocation(), sourceModule, targetModule));
+                    // Global模块可以修改任何模块的字段，任何模块也可以修改Global模块的字段
+                    if (sourceModule != "Global" && targetModule != "Global")
+                    {
+                        opContext.ReportDiagnostic(Diagnostic.Create(FieldWriteRule, opContext.Operation.Syntax.GetLocation(), sourceModule, targetModule));
+                    }
                 }
 
             }, OperationKind.SimpleAssignment, OperationKind.CompoundAssignment, OperationKind.Increment, OperationKind.Decrement);

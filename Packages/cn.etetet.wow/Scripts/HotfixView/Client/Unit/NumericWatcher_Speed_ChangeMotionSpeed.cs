@@ -1,6 +1,4 @@
-﻿using ET.Client;
-
-namespace ET
+﻿namespace ET.Client
 {
 	/// <summary>
 	/// 客户端监视speed数值变化，改变血条值
@@ -10,7 +8,7 @@ namespace ET
 	{
 		public void Run(Unit unit, NumbericChange args)
 		{
-			unit.GetComponent<AnimatorComponent>().SetFloat(MotionType.MoveSpeed.ToString(), args.New / 1000f);
+			unit.GetComponent<AnimatorComponent>().SetFloat(nameof(MotionType.MoveSpeed), args.New / 1000f);
 		}
 	}
 }

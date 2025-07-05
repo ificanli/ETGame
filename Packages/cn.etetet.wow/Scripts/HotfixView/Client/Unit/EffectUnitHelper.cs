@@ -10,7 +10,7 @@ namespace ET.Client
             GameObjectComponent gameObjectComponent = unit.GetComponent<GameObjectComponent>();
             BindPointComponent bindPointComponent = gameObjectComponent.GameObject.GetComponent<BindPointComponent>();
 
-            Transform bindPointTransform = bindPointComponent.BindPoints[bindPoint];
+            Transform bindPointTransform = bindPointComponent.GetBindPoints()[bindPoint];
 
             GameObject effect;
             if (worldPositionStays)

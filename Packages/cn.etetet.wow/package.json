@@ -14,7 +14,8 @@
   },
   "relatedPackages": {},
   "dependencies": {
-    "cn.etetet.quest": "1.0.0"
+    "cn.etetet.quest": "1.0.0",
+    "cn.etetet.spell": "1.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"

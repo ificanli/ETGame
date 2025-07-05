@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "unity": "2022.3",
   "dependencies": {
-    "cn.etetet.core": "1.0.0"
+    "cn.etetet.core": "1.0.0",
+    "cn.etetet.behaviortree": "1.0.0"
   },
   "description": "ET Framework Spell System Package"
 }

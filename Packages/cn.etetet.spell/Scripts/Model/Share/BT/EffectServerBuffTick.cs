@@ -1,0 +1,25 @@
+﻿using Sirenix.OdinInspector;
+
+namespace ET
+{
+    //[LabelText("效果Buff每帧 (服务器)")]
+    //[HideReferenceObjectPicker]
+    [Module(ModuleName.Spell)]
+    public class EffectServerBuffTick: EffectNode
+    {
+        [BTOutput(typeof(Buff))]
+        [ReadOnly]
+        [BoxGroup("输出参数")]
+        public string Buff = "Buff";
+        
+        [BTOutput(typeof(Unit))]
+        //[Sirenix.OdinInspector.ReadOnly]
+        [Sirenix.OdinInspector.BoxGroup("输出参数")]
+        public string Unit = "Unit";
+        
+        [BTOutput(typeof(Unit))]
+        //[Sirenix.OdinInspector.ReadOnly]
+        [Sirenix.OdinInspector.BoxGroup("输出参数")]
+        public string Caster = "Caster";
+    }
+}

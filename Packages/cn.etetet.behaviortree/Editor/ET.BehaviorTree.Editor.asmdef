@@ -1,0 +1,35 @@
+{
+    "name": "ET.BehaviorTree.Editor",
+    "rootNamespace": "",
+    "references": [
+        "ET.YooAssets",
+        "ET.YooAssets.Editor",
+        "Unity.TextMeshPro",
+        "ET.HybridCLR.Editor",
+        "ET.Proto.Editor",
+        "ET.Loader.Editor",
+        "ET.Model",
+        "ET.ModelView",
+        "ET.Core",
+        "DamageNumbersPro",
+        "ET.Core.Editor",
+        "ET.HybridCLR",
+        "ET.Init.Editor",
+        "ET.Loader",
+        "ET.MemoryPack",
+        "ET.Recast",
+        "ET.SourceGeneratorAttribute",
+        "ET.YIUIFramework"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

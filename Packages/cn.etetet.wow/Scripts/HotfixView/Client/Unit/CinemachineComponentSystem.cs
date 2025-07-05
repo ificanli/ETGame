@@ -17,7 +17,7 @@ namespace ET.Client
             self.VirtualCamera = cinemachineVirtualCamera;
             
             // 创建跟踪的GameObject
-            Transform headbone = gameObjectComponent.GameObject.GetComponent<BindPointComponent>().BindPoints[BindPoint.Head];
+            Transform headbone = gameObjectComponent.GameObject.GetComponent<BindPointComponent>().GetBindPoints()[BindPoint.Head];
             self.Head = headbone;
             self.Follow = new GameObject("CameraFollow").transform;
             Transform followTransform = self.Follow;

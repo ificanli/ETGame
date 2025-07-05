@@ -24,6 +24,14 @@
         "cn.etetet.unit": "2.0.0"
       }
     },
+    "cn.etetet.behaviortree": {
+      "version": "file:cn.etetet.behaviortree",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "1.0.0"
+      }
+    },
     "cn.etetet.console": {
       "version": "file:cn.etetet.console",
       "depth": 0,
@@ -165,7 +173,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "1.0.0"
+        "cn.etetet.core": "1.0.0",
+        "cn.etetet.behaviortree": "1.0.0"
       }
     },
     "cn.etetet.startconfig": {
@@ -195,7 +204,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.quest": "1.0.0"
+        "cn.etetet.quest": "1.0.0",
+        "cn.etetet.spell": "1.0.0"
       }
     },
     "cn.etetet.yiui": {
