@@ -2,9 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Luban;
 
-namespace ET
+namespace ET.Server
 {
     [Invoke]
     public class ConfigGetAllConfigBytesServer : AInvokeHandler<ConfigLoader.ConfigGetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>

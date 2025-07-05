@@ -1,4 +1,4 @@
-﻿namespace ET.Server
+﻿namespace ET.Client
 {
     [MessageHandler(SceneType.Client)]
     public class M2C_NumericChangeHandler: MessageHandler<Scene, M2C_NumericChange>

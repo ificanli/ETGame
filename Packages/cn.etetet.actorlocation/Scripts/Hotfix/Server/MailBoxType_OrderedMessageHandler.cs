@@ -1,4 +1,4 @@
-﻿namespace ET
+﻿namespace ET.Server
 {
     [Invoke(MailBoxType.OrderedMessage)]
     public class MailBoxType_OrderedMessageHandler: AInvokeHandler<MailBoxInvoker>

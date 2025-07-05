@@ -1,6 +1,4 @@
-﻿using ET.Server;
-
-namespace ET.Server
+﻿namespace ET.Server
 {
     [Module(ModuleName.Spell)]
     [EntitySystemOf(typeof(BuffChildrenComponent))]

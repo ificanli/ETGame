@@ -1,6 +1,6 @@
 using System;
 
-namespace ET.Server
+namespace ET
 {
     [Flags]
     public enum PhaseType: long

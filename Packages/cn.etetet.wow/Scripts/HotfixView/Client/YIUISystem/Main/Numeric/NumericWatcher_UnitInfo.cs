@@ -1,6 +1,4 @@
-﻿using ET.Client;
-
-namespace ET
+﻿namespace ET.Client
 {
     [NumericWatcher(SceneType.Current, (int)NumericType.HP)]
     public class NumericWatcher_UnitInfo_Hp : INumericWatcher

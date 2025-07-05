@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 using Sirenix.Serialization;
 using UnityEngine;
 
-namespace ET
+namespace ET.Client
 {
     [EnableClass]
     [Module(ModuleName.Spell)]

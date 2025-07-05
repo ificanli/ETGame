@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ET
+namespace ET.Client
 {
     [EntitySystemOf(typeof(GlobalComponent))]
     public static partial class GlobalComponentSystem

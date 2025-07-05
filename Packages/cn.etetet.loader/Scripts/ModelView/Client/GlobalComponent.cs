@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ET
+namespace ET.Client
 {
     [ComponentOf(typeof(Scene))]
     public class GlobalComponent: Entity, IAwake

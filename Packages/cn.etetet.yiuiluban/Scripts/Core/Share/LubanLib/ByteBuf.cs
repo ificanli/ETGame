@@ -1,4 +1,3 @@
-using ET;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -16,7 +15,6 @@ namespace Luban
         // UNMARSHAL_ERR,
     }
 
-    [EnableClass]
     public class SerializationException : Exception
     {
         public SerializationException() { }
@@ -40,7 +38,6 @@ namespace Luban
         public int WriterIndex { get; }
     }
 
-    [EnableClass]
     public sealed class ByteBuf : ICloneable, IEquatable<ByteBuf>
     {
         public ByteBuf()
@@ -1041,7 +1038,7 @@ namespace Luban
         }
 
         // byte[], [start, end)
-        [StaticField]
+        [ET.StaticField]
         public static Func<byte[], int, int, string> StringCacheFinder { get; set; }
 
         public string ReadString()

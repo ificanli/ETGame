@@ -8,7 +8,7 @@ namespace ET
     {
         public override object Handle(ConfigDeserialize args)
         {
-            return Activator.CreateInstance(args.Type, new ByteBuf(args.ConfigBytes));
+            return Activator.CreateInstance(args.Type, new Luban.ByteBuf(args.ConfigBytes));
         }
     }
     

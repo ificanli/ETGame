@@ -1,4 +1,4 @@
-﻿namespace ET
+﻿namespace ET.Client
 {
     [ComponentOf(typeof(Scene))]
     public class FiberParentComponent: Entity, IAwake

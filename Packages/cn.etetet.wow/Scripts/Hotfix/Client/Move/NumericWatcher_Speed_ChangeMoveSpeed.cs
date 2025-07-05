@@ -1,4 +1,4 @@
-﻿namespace ET
+﻿namespace ET.Client
 {
 	/// <summary>
 	/// 客户端监视speed数值变化，改变血条值

@@ -1,4 +1,4 @@
-﻿namespace ET.Server
+﻿namespace ET
 {
     [Module(ModuleName.Spell)]
     public class BTPhaseAdd: BTAction

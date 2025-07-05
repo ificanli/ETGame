@@ -1,4 +1,4 @@
-﻿namespace ET
+﻿namespace ET.Server
 {
     [EntitySystemOf(typeof(PetComponent))]
     public static partial class PetComponentSystem

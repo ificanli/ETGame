@@ -4,7 +4,7 @@ using System.IO;
 using Luban;
 using UnityEngine;
 
-namespace ET
+namespace ET.Client
 {
     [Invoke]
     public class ConfigGetAllConfigBytesClient : AInvokeHandler<ConfigLoader.ConfigGetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>
