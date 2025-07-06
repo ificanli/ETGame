@@ -1,0 +1,197 @@
+syntax = "proto3";
+package ET;
+
+// 接任务
+// ResponseType M2C_AcceptQuest
+message C2M_AcceptQuest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 QuestId = 2;
+	int64 NPCId = 3;
+}
+
+message M2C_AcceptQuest // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 交任务
+// ResponseType M2C_SubmitQuest
+message C2M_SubmitQuest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 QuestId = 2;
+	int64 NPCId = 3;
+}
+
+message M2C_SubmitQuest // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message QuestObjectiveInfo
+{
+	int32 QuestObjectiveId = 1;
+	int32 Count = 2;
+	int32 NeedCount = 3;
+}
+
+// 更新任务信息
+message M2C_CreateQuest // IMessage
+{
+	int64 QuestId = 1;
+	repeated QuestObjectiveInfo QuestObjective = 2;
+}
+
+// 更新任务目标
+message M2C_UpdateQuestObjective // IMessage
+{
+	int64 QuestId = 1; // 任务Id
+	repeated QuestObjectiveInfo QuestObjective = 2;
+}
+
+// 更新任务信息
+message M2C_UpdateQuest // IMessage
+{
+	int64 QuestId = 1;
+	int32 State = 2; // 1:进行中, 2:已完成
+}
+
+// 同步任务数据请求
+// ResponseType M2C_SyncQuestData
+message C2M_SyncQuestData // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message QuestInfo
+{
+	int64 QuestId = 1;
+	int32 Status = 2; // 任务状态
+	repeated QuestObjectiveInfo Objectives = 3;
+	int64 AcceptTime = 4; // 接取时间
+	int64 CompleteTime = 5; // 完成时间
+}
+
+message M2C_SyncQuestData // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated QuestInfo QuestList = 4;
+}
+
+// 放弃任务
+// ResponseType M2C_AbandonQuest
+message C2M_AbandonQuest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 QuestId = 2;
+}
+
+message M2C_AbandonQuest // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 查询可接取任务
+// ResponseType M2C_QueryAvailableQuests
+message C2M_QueryAvailableQuests // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 NPCId = 2; // NPC ID，为0时查询所有可接取任务
+}
+
+message AvailableQuestInfo
+{
+	int32 QuestId = 1;
+	string QuestName = 2;
+	string QuestDesc = 3;
+	int32 QuestType = 4;
+	int32 RewardExp = 5;
+	int32 RewardGold = 6;
+	repeated int32 RewardItems = 7; // 奖励道具ID列表
+}
+
+message M2C_QueryAvailableQuests // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated AvailableQuestInfo AvailableQuests = 4;
+}
+
+// 任务完成通知
+message M2C_QuestComplete // IMessage
+{
+	int32 QuestId = 1;
+	int32 RewardExp = 2;
+	int32 RewardGold = 3;
+	repeated int32 RewardItems = 4;
+}
+
+// 任务失败通知
+message M2C_QuestFailed // IMessage
+{
+	int32 QuestId = 1;
+	string Reason = 2;
+}
+
+// 任务进度提示
+message M2C_QuestProgress // IMessage
+{
+	int32 QuestId = 1;
+	string ProgressText = 2; // 进度描述文本
+}
+
+// 获取任务详情
+// ResponseType M2C_GetQuestDetail
+message C2M_GetQuestDetail // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 QuestId = 2;
+}
+
+message QuestDetailInfo
+{
+	int32 QuestId = 1;
+	string QuestName = 2;
+	string QuestDesc = 3;
+	string QuestStory = 4; // 任务背景故事
+	int32 QuestType = 5;
+	int32 AcceptNPC = 6;
+	int32 SubmitNPC = 7;
+	int32 RewardExp = 8;
+	int32 RewardGold = 9;
+	repeated int32 RewardItems = 10;
+	repeated int32 PreQuests = 11; // 前置任务列表
+	int32 MinLevel = 12; // 最低等级要求
+	int32 MaxLevel = 13; // 最高等级限制
+}
+
+message M2C_GetQuestDetail // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	QuestDetailInfo QuestDetail = 4;
+}
+
+// ResponseType M2C_RobotCase_PrepareData_003_Response
+message C2M_RobotCase_PrepareData_003_Request // ILocationRequest, IRobotCaseMessage
+{
+	int32 RpcId = 1;
+}
+
+message M2C_RobotCase_PrepareData_003_Response // ILocationResponse, IRobotCaseMessage
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}

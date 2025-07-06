@@ -71,9 +71,6 @@
 	  <Folder Include="..\..\..\cn.etetet.startconfig\">
 	    <Link>cn.etetet.startconfig</Link>
 	  </Folder>
-	  <Folder Include="..\..\Scripts\Model\Client\Robot\">
-	    <Link>cn.etetet.wow\Scripts\Model\Client\Robot</Link>
-	  </Folder>
 	</ItemGroup>
 
 </Project>

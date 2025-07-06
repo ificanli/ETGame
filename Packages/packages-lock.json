@@ -154,6 +154,22 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "cn.etetet.robot": {
+      "version": "file:cn.etetet.robot",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "2.0.0"
+      }
+    },
+    "cn.etetet.robotcase": {
+      "version": "file:cn.etetet.robotcase",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "2.0.0"
+      }
+    },
     "cn.etetet.router": {
       "version": "file:cn.etetet.router",
       "depth": 0,

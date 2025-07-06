@@ -20,7 +20,7 @@ namespace ET.Server
                 switch(configProcessAttribute.ConfigType)
                 {
                     case ConfigType.Luban:
-                        if (LubanHelper.StartConfigs.Contains(configType.Name))
+                        if (StartConfigHelper.StartConfigs.Contains(configType.Name))
                         {
                             configFilePath = Path.Combine($"Packages/cn.etetet.startconfig/Bundles/Luban/{Options.Instance.StartConfig}/Server/Binary/{configType.Name}.bytes");
                         }

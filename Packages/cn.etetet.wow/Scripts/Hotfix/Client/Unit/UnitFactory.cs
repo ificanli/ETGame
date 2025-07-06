@@ -33,7 +33,6 @@ namespace ET.Client
 
 	        unit.AddComponent<BuffComponent>();
 	        unit.AddComponent<ObjectWait>();
-	        unit.AddComponent<XunLuoPathComponent>();
 	        
 	        EventSystem.Instance.Publish(unit.Scene(), new AfterUnitCreate() {Unit = unit});
             return unit;

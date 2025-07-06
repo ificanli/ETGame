@@ -1,4 +1,6 @@
-﻿namespace ET
+﻿using MemoryPack;
+
+namespace ET
 {
     // 不需要返回消息
     public interface IMessage
