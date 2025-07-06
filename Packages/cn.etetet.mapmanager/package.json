@@ -1,0 +1,22 @@
+{
+  "name": "cn.etetet.mapmanager",
+  "displayName": "ET.MapManager",
+  "version": "1.0.0",
+  "description": "ET框架地图管理系统模块，提供地图加载、切换、管理和场景控制功能",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.core": "2.0.8",
+    "cn.etetet.sourcegenerator": "0.0.5"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}
