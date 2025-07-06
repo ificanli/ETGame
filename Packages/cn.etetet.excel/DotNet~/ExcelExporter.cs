@@ -13,7 +13,7 @@ namespace ET
         {
             if (!packages.TryGetValue(filePath, out var package))
             {
-                using Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
                 package = new ExcelPackage(stream);
                 packages[filePath] = package;
             }
