@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ET
+namespace ET.Client
 {
     [Module(ModuleName.Spell)]
     public class TargetSelectHandlerAttribute: BaseAttribute
