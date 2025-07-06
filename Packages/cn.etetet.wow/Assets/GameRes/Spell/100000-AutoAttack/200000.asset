@@ -298,7 +298,16 @@ MonoBehaviour:
       Entry: 3
       Data: 3
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6
@@ -335,12 +344,21 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 16|ET.BTRemoveBuff, ET.Model
+      Data: 17|ET.BTRemoveBuff, ET.Model
     - Name: Id
       Entry: 3
       Data: 4
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6

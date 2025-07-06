@@ -9,6 +9,8 @@
 
 using Luban;
 using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 
 namespace ET
 {
@@ -16,6 +18,8 @@ namespace ET
     [ConfigProcess]
     public partial class UnitConfigCategory : Singleton<UnitConfigCategory>, IConfig
     {
+        [BsonElement]
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.UnitConfig> _dataMap;
         private readonly List<ET.UnitConfig> _dataList;
         

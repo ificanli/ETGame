@@ -13,16 +13,15 @@ namespace ET
                 {
                     Log.Console(e.ExceptionObject.ToString());
                 };
-				
+                
                 // 命令行参数
                 Parser.Default.ParseArguments<Options>(Environment.GetCommandLineArgs())
                         .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
                         .WithParsed((o)=>World.Instance.AddSingleton(o));
-				Options.Instance.Console = 1;
+                Options.Instance.Console = 1;
                 World.Instance.AddSingleton<Logger>().Log = new NLogger("ExcelExporter", 1, 0);
                 
-                LubanGen.CreateLubanConf();
-
+                
                 foreach (Type type in typeof(Program).Assembly.GetTypes())
                 {
                     if (!typeof(IExcelHandler).IsAssignableFrom(type))
@@ -38,6 +37,8 @@ namespace ET
                     IExcelHandler iExcelHandler = Activator.CreateInstance(type) as IExcelHandler;
                     iExcelHandler.Run();
                 }
+                
+                LubanGen.CreateLubanConf();
             }
             catch (Exception e)
             {

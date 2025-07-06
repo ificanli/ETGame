@@ -3,7 +3,7 @@
 namespace ET.Server
 {
     [Module(ModuleName.Spell)]
-    [NumericWatcher(SceneType.Map, (int)NumericType.HP)]
+    [NumericWatcher(SceneType.Map, NumericType.HP)]
     public class NumericChange_DamageRemoveBuff: INumericWatcher
     {
         public void Run(Unit unit, NumbericChange args)

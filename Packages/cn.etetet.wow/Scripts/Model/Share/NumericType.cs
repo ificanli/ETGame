@@ -1,78 +1,65 @@
 namespace ET
 {
-	public enum NumericType
+	/// <summary>
+	/// cn.etetet.wow Numeric Type Constants (Runtime)
+	/// </summary>
+	public static partial class NumericType
 	{
-		Speed = 1000,
-		SpeedBase = 10001,
-		SpeedAdd = 10002,
-		SpeedPct = 10003,
-		SpeedFinalAdd = 10004,
-		SpeedFinalPct = 10005,
-
-		HP = 1001,
-
-		MaxHP = 1002,
-		MaxHPBase = 10021,
-		MaxHPAdd = 10022,
-		MaxHPPct = 10023,
-		MaxHPFinalAdd = 10024,
-		MaxHPFinalPct = 10025,
-
-		MP = 1003,
-
-		MaxMP = 1004,
-		MaxMPBase = 10041,
-		MaxMPAdd = 10042,
-		MaxMPPct = 10043,
-		MaxMPFinalAdd = 10044,
-		MaxMPFinalPct = 10045,
-
-		Radius = 1005,
-		RadiusBase = 10051,
-		RadiusAdd = 10052,
-		RadiusPct = 10053,
-		RadiusFinalAdd = 10054,
-		RadiusFinalPct = 10055,
-
-		AOI = 1006,
-		AOIBase = 10061,
-		AOIAdd = 10062,
-		AOIPct = 10063,
-		AOIFinalAdd = 10064,
-		AOIFinalPct = 10065,
-
-		Height = 1007,
-		HeightBase = 10071,
-		HeightAdd = 10072,
-		HeightPct = 10073,
-		HeightFinalAdd = 10074,
-		HeightFinalPct = 10075,
-
-		Weight = 1008,
-		WeightBase = 10081,
-		WeightAdd = 10082,
-		WeightPct = 10083,
-		WeightFinalAdd = 10084,
-		WeightFinalPct = 10085,
-
-		AI = 1009,
-
-		X = 1010,
-
-		Y = 1011,
-
-		Z = 1012,
-
-		Stun = 1013,
-		StunBase = 10131,
-		StunAdd = 10132,
-		StunPct = 10133,
-		StunFinalAdd = 10134,
-		StunFinalPct = 10135,
-
-		Yaw = 1014,
-
-		Phase = 1015,
-
+		public const int Speed = 1000;
+		public const int SpeedBase = 10001;
+		public const int SpeedAdd = 10002;
+		public const int SpeedPct = 10003;
+		public const int SpeedFinalAdd = 10004;
+		public const int SpeedFinalPct = 10005;
+		public const int HP = 1001;
+		public const int MaxHP = 1002;
+		public const int MaxHPBase = 10021;
+		public const int MaxHPAdd = 10022;
+		public const int MaxHPPct = 10023;
+		public const int MaxHPFinalAdd = 10024;
+		public const int MaxHPFinalPct = 10025;
+		public const int MP = 1003;
+		public const int MaxMP = 1004;
+		public const int MaxMPBase = 10041;
+		public const int MaxMPAdd = 10042;
+		public const int MaxMPPct = 10043;
+		public const int MaxMPFinalAdd = 10044;
+		public const int MaxMPFinalPct = 10045;
+		public const int Radius = 1005;
+		public const int RadiusBase = 10051;
+		public const int RadiusAdd = 10052;
+		public const int RadiusPct = 10053;
+		public const int RadiusFinalAdd = 10054;
+		public const int RadiusFinalPct = 10055;
+		public const int AOI = 1006;
+		public const int AOIBase = 10061;
+		public const int AOIAdd = 10062;
+		public const int AOIPct = 10063;
+		public const int AOIFinalAdd = 10064;
+		public const int AOIFinalPct = 10065;
+		public const int Height = 1007;
+		public const int HeightBase = 10071;
+		public const int HeightAdd = 10072;
+		public const int HeightPct = 10073;
+		public const int HeightFinalAdd = 10074;
+		public const int HeightFinalPct = 10075;
+		public const int Weight = 1008;
+		public const int WeightBase = 10081;
+		public const int WeightAdd = 10082;
+		public const int WeightPct = 10083;
+		public const int WeightFinalAdd = 10084;
+		public const int WeightFinalPct = 10085;
+		public const int AI = 1009;
+		public const int X = 1010;
+		public const int Y = 1011;
+		public const int Z = 1012;
+		public const int Stun = 1013;
+		public const int StunBase = 10131;
+		public const int StunAdd = 10132;
+		public const int StunPct = 10133;
+		public const int StunFinalAdd = 10134;
+		public const int StunFinalPct = 10135;
+		public const int Yaw = 1014;
+		public const int Phase = 1015;
 	}
 }

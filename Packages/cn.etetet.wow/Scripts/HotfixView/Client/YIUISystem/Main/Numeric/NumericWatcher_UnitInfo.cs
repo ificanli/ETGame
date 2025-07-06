@@ -1,6 +1,6 @@
 ﻿namespace ET.Client
 {
-    [NumericWatcher(SceneType.Current, (int)NumericType.HP)]
+    [NumericWatcher(SceneType.Current, NumericType.HP)]
     public class NumericWatcher_UnitInfo_Hp : INumericWatcher
     {
         public void Run(Unit unit, NumbericChange args)
@@ -21,7 +21,7 @@
         }
     }
 
-    [NumericWatcher(SceneType.Current, (int)NumericType.MaxHP)]
+    [NumericWatcher(SceneType.Current, NumericType.MaxHP)]
     public class NumericWatcher_UnitInfo_HPMax : INumericWatcher
     {
         public void Run(Unit unit, NumbericChange args)
@@ -33,7 +33,7 @@
         }
     }
 
-    [NumericWatcher(SceneType.Current, (int)NumericType.MP)]
+    [NumericWatcher(SceneType.Current, NumericType.MP)]
     public class NumericWatcher_UnitInfo_MP : INumericWatcher
     {
         public void Run(Unit unit, NumbericChange args)
@@ -45,7 +45,7 @@
         }
     }
 
-    [NumericWatcher(SceneType.Current, (int)NumericType.MaxMP)]
+    [NumericWatcher(SceneType.Current, NumericType.MaxMP)]
     public class NumericWatcher_UnitInfo_MPMax : INumericWatcher
     {
         public void Run(Unit unit, NumbericChange args)

@@ -12,6 +12,11 @@ namespace ET
         {
             return (float)self.GetByKey(numericType) / 1000;
         }
+        
+        public static int Get(this NumericComponent self, int numericType)
+        {
+            return (int)self.GetByKey(numericType);
+        }
 
         public static int GetAsInt(this NumericComponent self, int numericType)
         {

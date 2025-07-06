@@ -78,27 +78,6 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 1
-    - Name: Desc
-      Entry: 6
-      Data: 
-    - Name: IsCollapsed
-      Entry: 5
-      Data: false
-    - Name: ChildrenCollapsed
-      Entry: 5
-      Data: false
-    - Name: Position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: Children
       Entry: 7
       Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -111,6 +90,18 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 2
+    - Name: Children
+      Entry: 7
+      Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -147,24 +138,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 6|ET.EffectServerBuffRemove, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 0
     - Name: Desc
       Entry: 6
       Data: 
@@ -186,18 +159,48 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 7|ET.EffectServerBuffRemove, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 1
     - Name: Children
       Entry: 7
-      Data: 7|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 8|ET.BTGetSpellTargetUnit, ET.Model
+      Data: 9|ET.BTGetSpellTargetUnit, ET.Model
     - Name: Id
       Entry: 3
+      Data: 2
+    - Name: Children
+      Entry: 7
+      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
       Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -230,43 +233,34 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 9|ET.BTSelector, ET.Model
+      Data: 11|ET.BTSelector, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
-    - Name: Desc
-      Entry: 6
-      Data: 
-    - Name: IsCollapsed
-      Entry: 5
-      Data: false
-    - Name: ChildrenCollapsed
-      Entry: 5
-      Data: false
-    - Name: Position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 300
-    - Name: 
-      Entry: 4
-      Data: 100
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 3
     - Name: Children
       Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 11|ET.BTCreateSpell, ET.Model
+      Data: 13|ET.BTCreateSpell, ET.Model
     - Name: Id
       Entry: 3
+      Data: 4
+    - Name: Children
+      Entry: 7
+      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
       Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -302,10 +296,22 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 12|ET.BTRemoveBuff, ET.Model
+      Data: 15|ET.BTRemoveBuff, ET.Model
     - Name: Id
       Entry: 3
+      Data: 5
+    - Name: Children
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
       Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: Desc
       Entry: 6
       Data: 
@@ -345,12 +351,54 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 300
+    - Name: 
+      Entry: 4
+      Data: 100
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 13
       Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
     - Name: 
       Entry: 8
       Data: 

@@ -21,15 +21,15 @@
 
             for (int i = 0; i < self.Records.Count; i += 2)
             {
-                NumericType numericType = (NumericType)self.Records[i];
+                int numericType = (int)self.Records[i];
                 long value = self.Records[i + 1];
                 numericComponent.Set(numericType, numericComponent.GetAsLong(numericType) - value);
             }
         }
 
-        public static void Add(this BuffChangeNumericRecordComponent self, NumericType numericType, long value)
+        public static void Add(this BuffChangeNumericRecordComponent self, int numericType, long value)
         {
-            self.Records.Add((int)numericType);
+            self.Records.Add(numericType);
             self.Records.Add(value);
         }
     }

@@ -10,7 +10,6 @@ namespace ET
         [BTInput(typeof(Buff))]
         [BoxGroup("输入参数")]
         [ReadOnly]
-        [ShowIf("@ShowInInspector.Value")]
         public string Buff = "Buff";
 
         [LabelText("是否增加施法进度条")]

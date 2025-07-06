@@ -241,7 +241,16 @@ MonoBehaviour:
       Entry: 3
       Data: 2
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6
@@ -317,24 +326,33 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 12|ET.EffectClientBuffAdd, ET.Model
+      Data: 13|ET.EffectClientBuffAdd, ET.Model
     - Name: Id
       Entry: 3
       Data: 25
     - Name: Children
       Entry: 7
-      Data: 13|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 2
     - Name: 
       Entry: 7
-      Data: 14|ET.BTAnimatorSetBool, ET.Model
+      Data: 15|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
       Data: 29
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6
@@ -371,12 +389,21 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 15|ET.BTShowCastSlider, ET.Model
+      Data: 17|ET.BTShowCastSlider, ET.Model
     - Name: Id
       Entry: 3
       Data: 28
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6
@@ -410,7 +437,7 @@ MonoBehaviour:
       Data: Blizzard
     - Name: Icon
       Entry: 7
-      Data: 16|ET.OdinUnityObject, ET.Model
+      Data: 19|ET.OdinUnityObject, ET.Model
     - Name: Name
       Entry: 1
       Data: Spell_Frost_IceStorm
@@ -461,24 +488,33 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 17|ET.EffectClientBuffRemove, ET.Model
+      Data: 20|ET.EffectClientBuffRemove, ET.Model
     - Name: Id
       Entry: 3
       Data: 1
     - Name: Children
       Entry: 7
-      Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 21|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 19|ET.BTAnimatorSetBool, ET.Model
+      Data: 22|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
       Data: 2
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 23|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6
@@ -554,24 +590,33 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 20|ET.EffectServerBuffHitted, ET.Model
+      Data: 24|ET.EffectServerBuffHitted, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: Children
       Entry: 7
-      Data: 21|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 25|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 22|ET.BTBuffAddExpireTime, ET.Model
+      Data: 26|ET.BTBuffAddExpireTime, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 2
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 27|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6
