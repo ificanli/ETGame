@@ -92,7 +92,8 @@
       "source": "embedded",
       "dependencies": {
         "cn.etetet.core": "2.0.8",
-        "cn.etetet.sourcegenerator": "0.0.5"
+        "cn.etetet.sourcegenerator": "0.0.5",
+        "cn.etetet.actorlocation": "1.0.0"
       }
     },
     "cn.etetet.mathematics": {

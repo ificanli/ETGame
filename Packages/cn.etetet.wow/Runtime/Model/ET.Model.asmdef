@@ -8,8 +8,7 @@
         "ET.Recast",
         "ET.SourceGeneratorAttribute",
         "ET.YooAssets",
-        "Unity.Mathematics",
-        "ET.HybridCLR"
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

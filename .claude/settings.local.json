@@ -11,7 +11,8 @@
       "Bash(pwsh:*)",
       "Bash(Remove-Item \"/Users/tanghai/Documents/WOW/CLAUDE_BACKUP.md\" -Force)",
       "mcp__ide__getDiagnostics",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }
