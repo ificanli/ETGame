@@ -4,7 +4,6 @@ using UnityEngine;
 namespace ET.Client
 {
     [ComponentOf(typeof(Unit))]
-    [Module(ModuleName.Spell)]
     public class SpellIndicatorComponent: Entity, IAwake, IUpdate
     {
         public Dictionary<int, GameObject> Cache = new();

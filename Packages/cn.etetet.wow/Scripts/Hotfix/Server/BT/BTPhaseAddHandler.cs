@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTPhaseAddHandler: ABTHandler<BTPhaseAdd>
     {
         protected override int Run(BTPhaseAdd node, BTEnv env)

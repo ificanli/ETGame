@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTAnimatorSetInt: BTAction
     {
         [BTInput(typeof(Unit))]

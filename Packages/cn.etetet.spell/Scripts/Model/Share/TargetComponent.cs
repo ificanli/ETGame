@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     [ComponentOf(typeof(Unit))]
     public class TargetComponent: Entity, IAwake
     {

@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTCreateBuffUnitHandler: ABTHandler<BTCreateBuffUnit>
     {
         protected override int Run(BTCreateBuffUnit node, BTEnv env)

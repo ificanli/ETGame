@@ -4,7 +4,6 @@ namespace ET.Server
     /// 任务系统使用示例
     /// 展示如何在游戏中集成和使用魔兽世界风格的任务系统
     /// </summary>
-    [Module(ModuleName.Quest)]
     public static class QuestUsageExample
     {
         /// <summary>

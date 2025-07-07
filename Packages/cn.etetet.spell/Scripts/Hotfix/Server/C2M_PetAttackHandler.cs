@@ -2,7 +2,6 @@
 namespace ET.Server
 {
 	[MessageHandler(SceneType.Map)]
-    [Module(ModuleName.Spell)]
 	public class C2M_PetAttackHandler : MessageLocationHandler<Unit, C2M_PetAttack>
 	{
 		protected override async ETTask Run(Unit unit, C2M_PetAttack message)

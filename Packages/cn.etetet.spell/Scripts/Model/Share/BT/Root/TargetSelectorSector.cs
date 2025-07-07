@@ -3,7 +3,6 @@
 namespace ET
 {
     [System.Serializable]
-    [Module(ModuleName.Spell)]
     public class TargetSelectorSector : TargetSelector
     {
         [InlineProperty] // 去掉折叠和标题

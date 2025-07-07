@@ -5,7 +5,6 @@ namespace ET.Client
     /// <summary>
     /// 获取任务详情响应处理器
     /// </summary>
-    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Client)]
     public class M2C_GetQuestDetailHandler : MessageHandler<Scene, M2C_GetQuestDetail>
     {

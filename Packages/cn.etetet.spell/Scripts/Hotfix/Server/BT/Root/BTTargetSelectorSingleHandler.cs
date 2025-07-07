@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTTargetSelectorSingleHandler: ABTHandler<TargetSelectorSingle>
     {
         protected override int Run(TargetSelectorSingle node, BTEnv env)

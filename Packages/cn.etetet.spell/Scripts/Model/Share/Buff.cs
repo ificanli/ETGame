@@ -1,6 +1,5 @@
 ﻿namespace ET
 {
-    [Module(ModuleName.Spell)]
     [ChildOf(typeof(BuffComponent))]
     public class Buff: Entity, IAwake<int>, IDestroy
     {

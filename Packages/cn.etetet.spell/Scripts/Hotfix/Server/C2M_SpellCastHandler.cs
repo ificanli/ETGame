@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     [MessageHandler(SceneType.Map)]
     public class C2M_SpellCastHandler: MessageLocationHandler<Unit, C2M_SpellCast>
     {

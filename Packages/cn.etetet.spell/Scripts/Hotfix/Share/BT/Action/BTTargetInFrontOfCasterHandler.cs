@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTTargetInFrontOfCasterHandler: ABTHandler<BTTargetInFrontOfCaster>
     {
         protected override int Run(BTTargetInFrontOfCaster node, BTEnv env)

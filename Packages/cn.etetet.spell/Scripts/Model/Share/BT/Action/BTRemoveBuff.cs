@@ -1,6 +1,5 @@
 ﻿namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTRemoveBuff: BTAction
     {
         [Sirenix.OdinInspector.BoxGroup("输入参数")]

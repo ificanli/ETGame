@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTCreateEffectOnPos: BTNode
     {
         [BTInput(typeof(float3))]

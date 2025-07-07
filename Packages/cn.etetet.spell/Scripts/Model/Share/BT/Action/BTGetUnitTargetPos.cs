@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTGetUnitTargetPos: BTAction
     {
         [BTInput(typeof(Unit))]

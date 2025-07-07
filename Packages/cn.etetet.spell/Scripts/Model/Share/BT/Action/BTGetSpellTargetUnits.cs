@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTGetSpellTargetUnits: BTAction
     {
         [BTInput(typeof(Buff))]

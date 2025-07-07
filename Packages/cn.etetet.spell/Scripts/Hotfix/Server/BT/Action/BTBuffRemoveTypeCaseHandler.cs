@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTBuffRemoveTypeCaseHandler: ABTHandler<BTBuffRemoveTypeCase>
     {
         protected override int Run(BTBuffRemoveTypeCase node, BTEnv env)

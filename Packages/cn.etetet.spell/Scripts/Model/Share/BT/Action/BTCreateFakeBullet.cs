@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTCreateFakeBullet: BTAction
     {
         [BTInput(typeof(Unit))]

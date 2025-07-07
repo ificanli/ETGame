@@ -2,11 +2,6 @@ namespace ET.Server
 {
     public static class PhaseHelper
     {
-        public static bool SamePhase(this AOIEntity a, AOIEntity b)
-        {
-            return (a.Phase & b.Phase) != 0;
-        }
-        
         public static bool IsPhase(this Unit self, PhaseType phaseType)
         {
             AOIEntity aoiEntity = self.GetComponent<AOIEntity>();

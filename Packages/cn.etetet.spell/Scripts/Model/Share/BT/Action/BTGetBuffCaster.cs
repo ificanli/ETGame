@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTGetBuffCaster: BTAction
     {
         [BTInput(typeof(Buff))]

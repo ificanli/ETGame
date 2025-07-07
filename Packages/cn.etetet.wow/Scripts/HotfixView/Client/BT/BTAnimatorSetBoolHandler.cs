@@ -1,6 +1,5 @@
 ﻿namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     public class BTAnimatorSetBoolHandler: ABTHandler<BTAnimatorSetBool>
     {
         protected override int Run(BTAnimatorSetBool node, BTEnv env)

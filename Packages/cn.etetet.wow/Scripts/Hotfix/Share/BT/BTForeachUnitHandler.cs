@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.BehaviorTree)]
     public class BTForeachUnitHandler: ABTHandler<BTForeachUnit>
     {
         protected override int Run(BTForeachUnit node, BTEnv env)

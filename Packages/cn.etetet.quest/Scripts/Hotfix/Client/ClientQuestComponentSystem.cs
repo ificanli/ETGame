@@ -3,7 +3,6 @@ using System.Linq;
 
 namespace ET.Client
 {
-    [Module(ModuleName.Quest)]
     [EntitySystemOf(typeof(ClientQuestComponent))]
     public static partial class ClientQuestComponentSystem
     {

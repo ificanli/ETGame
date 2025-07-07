@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace ET
 {
-    [Module(ModuleName.BehaviorTree)]
     public class BTEnv: DisposeObject, IPool
     {
         public static BTEnv Create(Scene scene, bool isFromPool = true)

@@ -3,7 +3,6 @@
 namespace ET.Server
 {
     [ComponentOf(typeof(Buff))]
-    [Module(ModuleName.Spell)]
     public class BuffParentComponent: Entity, IAwake, IDestroy
     {
         public EntityRef<Buff> RootBuff { get; set; }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-	[Module(ModuleName.Quest)]
 	[MessageHandler(SceneType.Map)]
 	public class C2M_RobotCase_PrepareData_003_Handler : MessageLocationHandler<Unit, C2M_RobotCase_PrepareData_003_Request, M2C_RobotCase_PrepareData_003_Response>
 	{

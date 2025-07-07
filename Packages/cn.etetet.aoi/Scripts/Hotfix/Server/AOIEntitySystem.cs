@@ -86,6 +86,11 @@ namespace ET.Server
 
             cell.SubsLeaveEntities.Remove(self.Id);
         }
+        
+        public static bool SamePhase(this AOIEntity a, AOIEntity b)
+        {
+            return (a.Phase & b.Phase) != 0;
+        }
 
         // enter进入self视野
         public static void EnterSight(this AOIEntity self, AOIEntity enter)

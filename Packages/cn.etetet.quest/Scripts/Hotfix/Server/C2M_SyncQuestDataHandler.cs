@@ -1,6 +1,5 @@
 namespace ET.Server
 {
-    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Map)]
     public class C2M_SyncQuestDataHandler : MessageLocationHandler<Unit, C2M_SyncQuestData, M2C_SyncQuestData>
     {

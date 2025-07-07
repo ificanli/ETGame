@@ -3,12 +3,10 @@ using System.Collections.Generic;
 
 namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     public class TargetSelectHandlerAttribute: BaseAttribute
     {
     }
     
-    [Module(ModuleName.Spell)]
     public interface ITargetSelectHandler
     {
         ETTask<int> Handle(TargetSelector node, Unit unit, SpellConfig spellConfig);
@@ -16,7 +14,6 @@ namespace ET.Client
     }
     
     [TargetSelectHandler]
-    [Module(ModuleName.Spell)]
     public abstract class TargetSelectHandler<Node>: HandlerObject, ITargetSelectHandler where Node : TargetSelector
     {
         protected abstract ETTask<int> Run(Node node, Unit unit, SpellConfig spellConfig);
@@ -41,7 +38,6 @@ namespace ET.Client
     /// 分发组件
     /// </summary>
     [CodeProcess]
-    [Module(ModuleName.Spell)]
     public class TargetSelectDispatcher: Singleton<TargetSelectDispatcher>, ISingletonAwake
     {
         private readonly Dictionary<Type, ITargetSelectHandler> handlers = new();

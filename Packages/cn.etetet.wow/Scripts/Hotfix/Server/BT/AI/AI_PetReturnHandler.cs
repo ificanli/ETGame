@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
-    [Module(ModuleName.AI)]
     public class AI_PetReturnHandler: AIHandler<AI_PetReturn>
     {
         protected override int Check(Unit unit, AI_PetReturn node, BTEnv env)

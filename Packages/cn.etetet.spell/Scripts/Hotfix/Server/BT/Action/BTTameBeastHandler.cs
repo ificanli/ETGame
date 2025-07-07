@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTTameBeastHandler: ABTHandler<BTTameBeast>
     {
         protected override int Run(BTTameBeast node, BTEnv env)

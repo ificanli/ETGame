@@ -2,7 +2,6 @@
 
 namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTTurnToUnitHandler: ABTHandler<BTTurnToUnit>
     {
         protected override int Run(BTTurnToUnit node, BTEnv env)

@@ -4,7 +4,6 @@ namespace ET
 {
     //[LabelText("效果Buff每帧 (服务器)")]
     //[HideReferenceObjectPicker]
-    [Module(ModuleName.Spell)]
     public class EffectServerBuffTick: EffectNode
     {
         [BTOutput(typeof(Buff))]

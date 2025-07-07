@@ -8,7 +8,6 @@ using UnityEngine;
 namespace ET.Client
 {
     [EnableClass]
-    [Module(ModuleName.Spell)]
     public class BindPointComparer : IEqualityComparer<BindPoint>
     {
         public bool Equals(BindPoint x, BindPoint y) => x == y;
@@ -19,7 +18,6 @@ namespace ET.Client
     
     [EnableClass]
     [Serializable]
-    [Module(ModuleName.Spell)]
     public class BindPointComponent : SerializedMonoBehaviour
     {
         [ShowInInspector]

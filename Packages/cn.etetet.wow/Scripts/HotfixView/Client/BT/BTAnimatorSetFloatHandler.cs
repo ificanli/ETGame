@@ -1,6 +1,5 @@
 ﻿namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     public class BTAnimatorSetFloatHandler: ABTHandler<BTAnimatorSetFloat>
     {
         protected override int Run(BTAnimatorSetFloat node, BTEnv env)

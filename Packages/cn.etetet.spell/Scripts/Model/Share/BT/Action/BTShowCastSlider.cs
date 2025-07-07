@@ -4,7 +4,6 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTShowCastSlider : BTAction
     {
         [BTInput(typeof(Buff))]
@@ -29,7 +28,6 @@ namespace ET
 #endif
     }
     
-    [Module(ModuleName.Spell)]
     public struct BTEvent_ShowCastSlider
     {
         public EntityRef<Unit>   Unit;

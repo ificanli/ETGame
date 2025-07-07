@@ -12,7 +12,8 @@
       "Bash(Remove-Item \"/Users/tanghai/Documents/WOW/CLAUDE_BACKUP.md\" -Force)",
       "mcp__ide__getDiagnostics",
       "Bash(mkdir:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(LC_ALL=C find /Users/tanghai/Documents/WOW/Packages -name \"*.cs\" -exec sed -i '' '/^[[:space:]]*\\[Module([^]]*)\\][[:space:]]*$/d' {} \\;)"
     ],
     "deny": []
   }

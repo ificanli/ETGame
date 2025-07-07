@@ -1,6 +1,5 @@
 ﻿namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTGetSpellTargetUnitHandler: ABTHandler<BTGetSpellTargetUnit>
     {
         protected override int Run(BTGetSpellTargetUnit node, BTEnv env)

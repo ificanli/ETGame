@@ -37,7 +37,6 @@ namespace ET
         SPELLMOD_SPELL_COST_REFUND_ON_FAIL = 40
     };
     
-    [Module(ModuleName.Spell)]
     [ComponentOf(typeof(Unit))]
     public class SpellComponent: Entity, IAwake, ITransfer
     {

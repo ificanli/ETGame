@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public static class SpellHelper
     {
         public static int Cast(Unit unit, int spellConfigId, Buff parent = null)

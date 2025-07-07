@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     [NumericWatcher(SceneType.Map, NumericType.Stun)]
     public class NumericChange_Stun_StartOrStopAI: INumericWatcher
     {

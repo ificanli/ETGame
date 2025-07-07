@@ -1,6 +1,5 @@
 namespace ET.Client
 {
-    [Module(ModuleName.Quest)]
     [EntitySystemOf(typeof(ClientQuestObjectiveData))]
     public static partial class ClientQuestObjectiveDataSystem
     {

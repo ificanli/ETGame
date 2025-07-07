@@ -4,7 +4,6 @@ namespace ET
 {
     //[LabelText("添加Buff效果 (客户端)")]
     //[HideReferenceObjectPicker]
-    [Module(ModuleName.Spell)]
     public class EffectClientBuffAdd: EffectNode
     {
         [BTOutput(typeof(Buff))]

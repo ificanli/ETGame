@@ -3,7 +3,6 @@
 namespace ET
 {
     [EnableClass]
-    [Module(ModuleName.BehaviorTree)]
     public class BTInput: Attribute
     {
         public Type Type { get; }

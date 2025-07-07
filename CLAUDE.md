@@ -151,6 +151,9 @@ ET.Core (框架核心层)
 3. 打印普通日志只需要使用Log.Debug，打印错误使用Log.Error
 4. 如果测试用例需要输出日志到Console，可以使用Log.Console，注意进程启动参数需要Console=1才能起效
 
+### 分析器编译规范
+分析器编译要使用ET.sln，不是DotNet.sln
+
 ### Singleton类方法规范
 Singleton类（如RobotCaseDispatcher）可以包含方法，不需要创建System类。这类似于其他单例类如HttpDispatcher的设计模式。
 

@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public abstract class TargetSelector : BTRoot
     {
         //[Sirenix.OdinInspector.ReadOnly]

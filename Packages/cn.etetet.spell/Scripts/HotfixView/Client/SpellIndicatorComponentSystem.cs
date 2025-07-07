@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 namespace ET.Client
 {
     [EntitySystemOf(typeof(SpellIndicatorComponent))]
-    [Module(ModuleName.Spell)]
     public static partial class SpellIndicatorComponentSystem
     {
         [EntitySystem]

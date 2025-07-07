@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTTargetSelectorCasterHandler: ABTHandler<TargetSelectorCaster>
     {
         protected override int Run(TargetSelectorCaster node, BTEnv env)

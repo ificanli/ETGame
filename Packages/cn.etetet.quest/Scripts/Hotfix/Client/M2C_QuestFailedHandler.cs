@@ -5,7 +5,6 @@ namespace ET.Client
     /// <summary>
     /// 任务失败通知处理器
     /// </summary>
-    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Client)]
     public class M2C_QuestFailedHandler : MessageHandler<Scene, M2C_QuestFailed>
     {

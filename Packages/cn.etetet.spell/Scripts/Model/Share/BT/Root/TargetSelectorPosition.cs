@@ -5,7 +5,6 @@ using Sirenix.OdinInspector;
 namespace ET
 {
     [System.Serializable]
-    [Module(ModuleName.Spell)]
     public class TargetSelectorPosition : TargetSelector
     {
         [Sirenix.OdinInspector.BoxGroup("输出参数")]

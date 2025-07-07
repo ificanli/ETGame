@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTNumericChangeHandler: ABTHandler<BTNumericChange>
     {
         protected override int Run(BTNumericChange node, BTEnv env)

@@ -1,6 +1,5 @@
 ﻿namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     public class TargetSelectorPositionHandler: TargetSelectHandler<TargetSelectorPosition>
     {
         protected override async ETTask<int> Run(TargetSelectorPosition node, Unit unit, SpellConfig spellConfig)

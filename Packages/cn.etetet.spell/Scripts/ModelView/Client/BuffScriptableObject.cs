@@ -12,7 +12,6 @@ namespace ET.Client
     [CreateAssetMenu(menuName = "ET/BuffScriptableObject")]
     [EnableClass]
     [HideMonoScript]
-    [Module(ModuleName.Spell)]
     public class BuffScriptableObject : SerializedScriptableObject
     {
         [Title("Buff 配置", TitleAlignment = TitleAlignments.Centered)]

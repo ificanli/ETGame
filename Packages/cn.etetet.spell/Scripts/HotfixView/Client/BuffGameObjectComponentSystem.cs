@@ -3,7 +3,6 @@
 namespace ET.Client
 {
     [EntitySystemOf(typeof(BuffGameObjectComponent))]
-    [Module(ModuleName.Spell)]
     public static partial class BuffGameObjectComponentSystem
     {
         [EntitySystem]

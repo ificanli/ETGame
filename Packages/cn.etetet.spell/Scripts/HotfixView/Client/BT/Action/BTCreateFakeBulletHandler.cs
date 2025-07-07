@@ -2,7 +2,6 @@
 
 namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     public class BTCreateFakeBulletHandler: ABTHandler<BTCreateFakeBullet>
     {
         protected override int Run(BTCreateFakeBullet node, BTEnv env)

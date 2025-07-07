@@ -1,6 +1,5 @@
 ﻿namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     public static class BuffHelper
     {
         public static Buff CreateBuff(Unit unit, M2C_BuffAdd buffAdd)

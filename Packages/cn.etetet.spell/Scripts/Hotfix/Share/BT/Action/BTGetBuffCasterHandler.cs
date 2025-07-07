@@ -1,6 +1,5 @@
 ﻿namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTGetBuffCasterHandler: ABTHandler<BTGetBuffCaster>
     {
         protected override int Run(BTGetBuffCaster node, BTEnv env)

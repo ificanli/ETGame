@@ -11,7 +11,6 @@ namespace ET.Client
     [CreateAssetMenu(menuName = "ET/SpellScriptableObject")]
     [EnableClass]
     [HideMonoScript]
-    [Module(ModuleName.Spell)]
     public class SpellScriptableObject : SerializedScriptableObject
     {
         [Title("技能 配置", TitleAlignment = TitleAlignments.Centered)]

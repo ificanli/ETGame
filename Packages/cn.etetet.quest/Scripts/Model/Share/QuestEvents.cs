@@ -5,7 +5,6 @@ namespace ET
     /// <summary>
     /// 客户端任务数据变更事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct ClientQuestDataChanged
     {
         public int QuestId;
@@ -15,7 +14,6 @@ namespace ET
     /// <summary>
     /// 客户端任务目标变更事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct ClientQuestObjectiveChanged
     {
         public int QuestId;
@@ -24,7 +22,6 @@ namespace ET
     /// <summary>
     /// 客户端任务移除事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct ClientQuestRemoved
     {
         public int QuestId;
@@ -33,7 +30,6 @@ namespace ET
     /// <summary>
     /// 任务数据同步完成事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct QuestDataSyncedEvent
     {
         public Dictionary<int, int> QuestStatusMap; // 简化为任务ID和状态的映射
@@ -42,7 +38,6 @@ namespace ET
     /// <summary>
     /// 任务目标进度更新事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct QuestObjectiveProgressUpdatedEvent
     {
         public int QuestId;
@@ -55,7 +50,6 @@ namespace ET
     /// <summary>
     /// 任务失败事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct QuestFailedEvent
     {
         public int QuestId;
@@ -65,7 +59,6 @@ namespace ET
     /// <summary>
     /// 任务完成事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct QuestCompletedEvent
     {
         public int QuestId;
@@ -76,7 +69,6 @@ namespace ET
     /// <summary>
     /// 客户端任务奖励结构体
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct ClientQuestReward
     {
         public int Experience;
@@ -87,7 +79,6 @@ namespace ET
     /// <summary>
     /// 查询可接取任务失败事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct QueryAvailableQuestsFailedEvent
     {
         public int NPCId;
@@ -97,7 +88,6 @@ namespace ET
     /// <summary>
     /// 可接取任务查询完成事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct AvailableQuestsQueriedEvent
     {
         public int NPCId;
@@ -107,7 +97,6 @@ namespace ET
     /// <summary>
     /// 获取任务详情失败事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct GetQuestDetailFailedEvent
     {
         public int QuestId;
@@ -117,7 +106,6 @@ namespace ET
     /// <summary>
     /// 任务详情接收事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct QuestDetailReceivedEvent
     {
         public int QuestId;
@@ -128,7 +116,6 @@ namespace ET
     /// <summary>
     /// 任务操作失败事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct QuestOperationFailedEvent
     {
         public int QuestId;
@@ -139,7 +126,6 @@ namespace ET
     /// <summary>
     /// 任务放弃事件
     /// </summary>
-    [Module(ModuleName.Quest)]
     public struct QuestAbandonedEvent
     {
         public int QuestId;

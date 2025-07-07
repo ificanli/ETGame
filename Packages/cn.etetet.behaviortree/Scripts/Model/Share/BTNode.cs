@@ -5,7 +5,6 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
-    [Module(ModuleName.BehaviorTree)]
     [System.Serializable]
     public abstract class BTNode : Object
     {

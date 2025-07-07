@@ -5,7 +5,6 @@ namespace ET.Client
     /// <summary>
     /// 放弃任务响应处理器
     /// </summary>
-    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Client)]
     public class M2C_AbandonQuestHandler : MessageHandler<Scene, M2C_AbandonQuest>
     {

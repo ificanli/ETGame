@@ -1,7 +1,6 @@
 ﻿namespace ET.Server
 {
     [EntitySystemOf(typeof(BuffUnitComponent))]
-    [Module(ModuleName.Spell)]
     public static partial class BuffUnitComponentSystem
     {
         [EntitySystem]

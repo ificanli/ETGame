@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     public class BTCreateEffectOnPosHandler: ABTHandler<BTCreateEffectOnPos>
     {
         protected override int Run(BTCreateEffectOnPos node, BTEnv env)

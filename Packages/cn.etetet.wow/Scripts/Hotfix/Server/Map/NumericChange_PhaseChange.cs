@@ -1,7 +1,6 @@
 ﻿namespace ET.Server
 {
     [NumericWatcher(SceneType.Map, NumericType.Phase)]
-    [Module(ModuleName.Spell)]
     public class NumericChange_PhaseChange: INumericWatcher
     {
         public void Run(Unit unit, NumbericChange args)

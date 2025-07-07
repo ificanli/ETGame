@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTEffectClientBuffAddHandler: ABTHandler<EffectClientBuffAdd>
     {
         protected override int Run(EffectClientBuffAdd node, BTEnv env)

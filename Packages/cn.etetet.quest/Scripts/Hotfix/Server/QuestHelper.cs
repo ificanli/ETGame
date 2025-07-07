@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 namespace ET.Server
 {
-    [Module(ModuleName.Quest)]
     public static class QuestHelper
     {
         public static void AddQuest(Unit self, int configId)

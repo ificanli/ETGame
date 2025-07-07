@@ -3,7 +3,6 @@
 namespace ET.Client
 {
     [Event(SceneType.Current)]
-    [Module(ModuleName.Spell)]
     public class OnSpellTriggerEvent: AEvent<Scene, OnSpellTrigger>
     {
         protected override async ETTask Run(Scene scene, OnSpellTrigger args)

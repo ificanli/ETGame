@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTCostNodeHandler: ABTHandler<CostNode>
     {
         protected override int Run(CostNode node, BTEnv env)

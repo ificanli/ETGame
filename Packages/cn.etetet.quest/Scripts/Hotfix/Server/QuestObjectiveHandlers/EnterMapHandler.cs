@@ -1,6 +1,5 @@
 namespace ET.Server
 {
-    [Module(ModuleName.Quest)]
     [QuestObjective(QuestObjectiveType.EnterMap)]
     public class EnterMapHandler : IQuestObjectiveHandler
     {

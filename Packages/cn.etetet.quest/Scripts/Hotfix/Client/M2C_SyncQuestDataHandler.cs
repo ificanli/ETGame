@@ -5,7 +5,6 @@ namespace ET.Client
     /// <summary>
     /// 同步任务数据响应处理器
     /// </summary>
-    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Client)]
     public class M2C_SyncQuestDataHandler : MessageHandler<Scene, M2C_SyncQuestData>
     {

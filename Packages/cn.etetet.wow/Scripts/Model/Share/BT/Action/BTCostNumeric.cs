@@ -1,6 +1,5 @@
 ﻿namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class BTCostNumeric: BTAction
     {
         [BTInput(typeof(Unit))]

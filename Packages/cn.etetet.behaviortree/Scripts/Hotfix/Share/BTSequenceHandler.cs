@@ -1,6 +1,5 @@
 ﻿namespace ET
 {
-    [Module(ModuleName.BehaviorTree)]
     public class BTSequenceHandler: ABTHandler<BTSequence>
     {
         protected override int Run(BTSequence node, BTEnv env)

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-    [Module(ModuleName.Quest)]
     [ChildOf(typeof(Quest))]
     public class QuestObjective: Entity, IAwake<int>, IDestroy
     {

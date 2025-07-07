@@ -5,7 +5,6 @@ namespace ET.Client
     /// <summary>
     /// 客户端任务组件 - 管理玩家的任务数据和UI显示
     /// </summary>
-    [Module(ModuleName.Quest)]
     [ComponentOf(typeof(Scene))]
     public class ClientQuestComponent : Entity, IAwake, IDestroy
     {
@@ -23,7 +22,6 @@ namespace ET.Client
     /// <summary>
     /// 客户端任务数据
     /// </summary>
-    [Module(ModuleName.Quest)]
     [ChildOf(typeof(ClientQuestComponent))]
     public class ClientQuestData : Entity, IAwake, IDestroy
     {
@@ -61,7 +59,6 @@ namespace ET.Client
     /// <summary>
     /// 客户端任务目标数据
     /// </summary>
-    [Module(ModuleName.Quest)]
     [ChildOf(typeof(ClientQuestData))]
     public class ClientQuestObjectiveData : Entity, IAwake, IDestroy
     {

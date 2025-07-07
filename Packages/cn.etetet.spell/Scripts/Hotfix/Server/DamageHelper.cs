@@ -2,7 +2,6 @@
 
 namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public static class DamageHelper
     {
         public static void Damage(Unit attacker, Unit target, Buff damageBuff, int value)

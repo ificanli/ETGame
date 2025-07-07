@@ -1,7 +1,6 @@
 ﻿namespace ET
 {
     [System.Serializable]
-    [Module(ModuleName.Spell)]
     public class TargetSelectorSingle : TargetSelector
     {
         [Sirenix.OdinInspector.BoxGroup("输出参数")]

@@ -3,7 +3,6 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ET.Server
 {
-    [Module(ModuleName.Quest)]
     [ComponentOf(typeof(Unit))]
     public class QuestComponent: Entity, IAwake, IDestroy, IScene
     {

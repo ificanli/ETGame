@@ -2,7 +2,6 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
-    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Map)]
     public class C2M_SubmitQuestHandler : MessageLocationHandler<Unit, C2M_SubmitQuest, M2C_SubmitQuest>
     {

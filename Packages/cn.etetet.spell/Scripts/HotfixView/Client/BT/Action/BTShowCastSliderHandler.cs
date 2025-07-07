@@ -2,7 +2,6 @@
 
 namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     public class BTShowCastSliderHandler : ABTHandler<BTShowCastSlider>
     {
         protected override int Run(BTShowCastSlider node, BTEnv env)

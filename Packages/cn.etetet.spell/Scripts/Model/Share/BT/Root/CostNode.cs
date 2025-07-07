@@ -1,6 +1,5 @@
 ﻿namespace ET
 {
-    [Module(ModuleName.Spell)]
     public class CostNode: BTRoot
     {
         [Sirenix.OdinInspector.BoxGroup("输出参数")]

@@ -1,6 +1,5 @@
 ﻿namespace ET.Client
 {
-    [Module(ModuleName.Spell)]
     [MessageHandler(SceneType.Client)]
     public class M2C_BuffRemoveHandler: MessageHandler<Scene, M2C_BuffRemove>
     {

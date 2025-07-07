@@ -2,7 +2,6 @@
 
 namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTTurnToPosHandler: ABTHandler<BTTurnToPos>
     {
         protected override int Run(BTTurnToPos node, BTEnv env)

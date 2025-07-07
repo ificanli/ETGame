@@ -4,7 +4,6 @@ namespace ET
 {
     //[LabelText("移除BUFF效果 (服务器)")]
     //[HideReferenceObjectPicker]
-    [Module(ModuleName.Spell)]
     public class EffectServerBuffRemove: EffectNode
     {
         [BTOutput(typeof(Buff))]

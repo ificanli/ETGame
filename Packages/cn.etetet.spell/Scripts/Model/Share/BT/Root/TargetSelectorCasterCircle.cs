@@ -3,7 +3,6 @@
 namespace ET
 {
     [System.Serializable]
-    [Module(ModuleName.Spell)]
     public class TargetSelectorCasterCircle : TargetSelector
     {
         [Sirenix.OdinInspector.BoxGroup("输出参数")]

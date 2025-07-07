@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     [Event(SceneType.Map)]
     public class ChangePosition_RemoveBuff: AEvent<Scene, ChangePosition>
     {

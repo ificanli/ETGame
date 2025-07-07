@@ -5,10 +5,8 @@ using System.Threading;
 
 namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public static class BuffHelper
     {
-        [Module(ModuleName.Spell)]
         [Invoke(TimerInvokeType.BuffTimeoutTimer)]
         public class BuffTimeoutTimer: ATimer<Buff>
         {

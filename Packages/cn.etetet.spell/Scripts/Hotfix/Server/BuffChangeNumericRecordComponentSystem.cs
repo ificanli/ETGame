@@ -1,6 +1,5 @@
 ﻿namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     [EntitySystemOf(typeof(BuffChangeNumericRecordComponent))]
     public static partial class BuffChangeNumericRecordComponentSystem
     {

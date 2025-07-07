@@ -3,7 +3,6 @@ using Sirenix.OdinInspector;
 
 namespace ET
 {
-    [Module(ModuleName.BehaviorTree)]
     public abstract class BTRoot: BTNode
     {
 #if UNITY_EDITOR

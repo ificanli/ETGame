@@ -1,6 +1,5 @@
 namespace ET.Client
 {
-    [Module(ModuleName.Quest)]
     [MessageHandler(SceneType.Client)]
     public class M2C_UpdateQuestHandler : MessageHandler<Scene, M2C_UpdateQuest>
     {

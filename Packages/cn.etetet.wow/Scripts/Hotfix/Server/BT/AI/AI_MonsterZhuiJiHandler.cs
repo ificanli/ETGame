@@ -2,7 +2,6 @@
 
 namespace ET.Server
 {
-    [Module(ModuleName.AI)]
     public class AI_MonsterZhuiJiHandler: AIHandler<AI_MonsterZhuiJi>
     {
         protected override int Check(Unit unit, AI_MonsterZhuiJi node, BTEnv env)

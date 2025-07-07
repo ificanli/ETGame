@@ -2,7 +2,6 @@
 
 namespace ET.Server
 {
-    [Module(ModuleName.Spell)]
     public class BTAddFakeBulletBuffHandler: ABTHandler<BTAddFakeBulletBuff>
     {
         protected override int Run(BTAddFakeBulletBuff node, BTEnv env)

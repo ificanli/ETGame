@@ -2,7 +2,6 @@
 
 namespace ET
 {
-    [Module(ModuleName.BehaviorTree)]
     public class BTForeachUnit: BTDecorate
     {
         [BTInput(typeof(List<long>))]

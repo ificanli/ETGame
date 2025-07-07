@@ -4,7 +4,6 @@ namespace ET
 {
     //[LabelText("Buff被攻击时触发 (客户端)")]
     //[HideReferenceObjectPicker]
-    [Module(ModuleName.Spell)]
     public class EffectClientBuffHitted: EffectNode
     {
         [BTOutput(typeof(Buff))]

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-    [Module(ModuleName.Quest)]
     [EntitySystemOf(typeof(QuestComponent))]
     public static partial class QuestComponentSystem
     {

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 
 namespace ET
 {
-    [Module(ModuleName.BehaviorTree)]
     public class BTHandlerAttribute: BaseAttribute
     {
     }
     
-    [Module(ModuleName.BehaviorTree)]
     public interface IBTHandler
     {
         int Handle(BTNode node, BTEnv env);
@@ -16,7 +14,6 @@ namespace ET
     }
     
     [BTHandler]
-    [Module(ModuleName.BehaviorTree)]
     public abstract class ABTHandler<Node>: HandlerObject, IBTHandler where Node : BTNode
     {
         protected abstract int Run(Node node, BTEnv env);
@@ -41,7 +38,6 @@ namespace ET
     /// Actor消息分发组件
     /// </summary>
     [CodeProcess]
-    [Module(ModuleName.BehaviorTree)]
     public class BTDispatcher: Singleton<BTDispatcher>, ISingletonAwake
     {
         private readonly Dictionary<Type, IBTHandler> btHandlers = new();

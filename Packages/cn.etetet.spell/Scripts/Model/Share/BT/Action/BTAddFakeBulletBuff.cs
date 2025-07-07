@@ -1,7 +1,6 @@
 ﻿namespace ET
 {
     [System.Serializable]
-    [Module(ModuleName.Spell)]
     public class BTAddFakeBulletBuff: BTAction
     {
         [Sirenix.OdinInspector.BoxGroup("输入参数")]
