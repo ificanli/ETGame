@@ -15,7 +15,8 @@
       "Bash(cp:*)",
       "Bash(LC_ALL=C find /Users/tanghai/Documents/WOW/Packages -name \"*.cs\" -exec sed -i '' '/^[[:space:]]*\\[Module([^]]*)\\][[:space:]]*$/d' {} \\;)",
       "Bash(ls:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(pwsh -Command \"dotnet build ET.sln 2>&1 | grep TargetComponent\")"
     ],
     "deny": []
   }

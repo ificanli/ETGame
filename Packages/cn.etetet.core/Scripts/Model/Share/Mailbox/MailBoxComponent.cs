@@ -28,9 +28,9 @@
 
     public struct MailBoxInvoker
     {
-        public Address FromAddress;
-        public MessageObject MessageObject;
-        public EntityRef<MailBoxComponent> MailBoxComponent;
+        public Address FromAddress { get; set; }
+        public MessageObject MessageObject { get; set; }
+        public EntityRef<MailBoxComponent> MailBoxComponent { get; set; }
     }
     
     /// <summary>

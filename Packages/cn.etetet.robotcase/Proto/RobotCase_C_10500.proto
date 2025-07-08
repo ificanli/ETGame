@@ -2,7 +2,7 @@ syntax = "proto3";
 package ET;
 
 // ResponseType C2M_RobotCase_PrepareData_001_Response
-message C2M_RobotCase_PrepareData_001_Request // ILocationRequest, IRobotCaseMessage
+message C2M_RobotCase_PrepareData_001_Request // ILocationRequest
 {
 	int32 RpcId = 1;
 }

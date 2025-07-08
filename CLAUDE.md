@@ -514,49 +514,65 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 3. 包中的方法可以访问依赖包的方法
 4. 包中的方法只能访问自己包的字段，不能访问其它包的字段
 5. 假如A包中的packagegit.json中配置了"AllowAccessField": true, 则允许依赖A包的包访问A包内的字段
-6. 目前各包的层级关系如下
+6. 目前各包的层级关系如下:
    
-  第11层
-  ├── cn.etetet.wow         (游戏主逻辑)
+  第12层
+  ├── cn.etetet.wow           (游戏入口) 依赖quest,spell,main
+  ├── cn.etetet.btnode        (btnode) 依赖quest,spell,main
  
+  第11层
+  ├── cn.etetet.quest         (任务系统) 依赖main,spell
+
   第10层
-  ├── cn.etetet.quest       (任务系统) 依赖spell
+  ├── cn.etetet.spell         (技能系统) 依赖main
 
   第9层
-  ├── cn.etetet.spell       (技能系统) 依赖map robotcase
+  ├── cn.etetet.main          (主逻辑) 依赖robot,robotcase,login,map
 
   第8层
-  ├── cn.etetet.robotcase   (机器人用例系统) 依赖robot
+  ├── cn.etetet.robotcase     (机器人用例系统) 依赖robot
 
   第7层
-  ├── cn.etetet.robot       (机器人系统) 依赖login
+  ├── cn.etetet.robot         (机器人系统) 依赖login，console
 
   第6层
-  ├── cn.etetet.login       (登录系统) 依赖map
+  ├── cn.etetet.login         (登录系统) 依赖map
 
   第5层
-  ├── cn.etetet.map         (地图系统) 依赖actorlocation
+  ├── cn.etetet.map           (地图系统) 依赖actorlocation
 
   第4层
   ├── cn.etetet.actorlocation (location消息系统) 依赖netinner
-  ├── cn.etetet.aoi         (数值系统) 依赖unit，numeric
-  ├── cn.etetet.ai          (AI系统) 依赖unit
+  ├── cn.etetet.aoi           (数值系统) 依赖unit，numeric
+  ├── cn.etetet.ai            (AI系统) 依赖unit,behaviortree
   
   第3层  
-  ├── cn.etetet.numeric     (数值系统) 依赖unit
-  ├── cn.etetet.move        (移动系统) 依赖unit
-  ├── cn.etetet.recast      (寻路系统) 依赖unit
-  ├── cn.etetet.netinner    (内网消息系统)  依赖startconfig
-  ├── cn.etetet.router      (软路由系统)  依赖startconfig,需要知道realm，gate地址
+  ├── cn.etetet.numeric       (数值系统) 依赖unit
+  ├── cn.etetet.move          (移动系统) 依赖unit
+  ├── cn.etetet.recast        (寻路系统) 依赖unit
+  ├── cn.etetet.netinner      (内网消息系统) 依赖startconfig
+  ├── cn.etetet.router        (软路由系统) 依赖startconfig,http
+  ├── cn.etetet.watcher       (watcher系统) 依赖console，startconfig
 
   第2层
-  ├── cn.etetet.unit        (单位系统)
-  ├── cn.etetet.behaviortree(行为树系统)
-  ├── cn.etetet.http        (http系统)
-  ├── cn.etetet.startconfig (服务器配置系统)
+  ├── cn.etetet.unit          (单位系统)
+  ├── cn.etetet.behaviortree  (行为树系统)
+  ├── cn.etetet.http          (http系统)
+  ├── cn.etetet.startconfig   (服务器配置系统)
+  ├── cn.etetet.console       (控制台系统)
+  ├── cn.etetet.yooassets     (资源加载系统)
 
   第1层
-  ├── cn.etetet.core        (核心框架)
-  ├── cn.etetet.excel       (协议定义)
-  ├── cn.etetet.proto       (协议定义)
-  ├── cn.etetet.loader      (加载器)
+  ├── cn.etetet.core          (核心框架)
+  ├── cn.etetet.excel         (协议定义)
+  ├── cn.etetet.proto         (协议定义)
+  ├── cn.etetet.loader        (加载器)
+
+7. 请注意要递归依赖，修改依赖的时候要把依赖的依赖，全部递归加上去
+8. 包的依赖关系直接读取所有包的package.json,
+9. 刷新包的时候请根据第6点中的层级关系，以及每个包后面说明的依赖包，来配置package.json，不在层级关系中的包不用处理
+10. 请不要读packages-lock.json
+11. 只能高层包依赖低层包，禁止依赖同层包，禁止依赖比自己高层的包
+
+# 绝对禁止hard code
+# 项目只有一个编译 dotnet build ET.sln，无论什么东西都是用这个编译

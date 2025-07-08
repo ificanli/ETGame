@@ -1,0 +1,46 @@
+{
+  "name": "cn.etetet.btnode",
+  "displayName": "ET.BTNode",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "description": "ET\u6846\u67b6\u884c\u4e3a\u6811\u8282\u70b9\u6269\u5c55\u6a21\u5757\uff0c\u63d0\u4f9b\u6e38\u620f\u4e1a\u52a1\u76f8\u5173\u7684\u884c\u4e3a\u6811\u8282\u70b9\u5b9e\u73b0",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.console": "4.0.0",
+    "cn.etetet.numeric": "4.0.0",
+    "cn.etetet.move": "4.0.0",
+    "cn.etetet.recast": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.router": "4.0.0",
+    "cn.etetet.actorlocation": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.ai": "4.0.0",
+    "cn.etetet.map": "4.0.0",
+    "cn.etetet.login": "4.0.0",
+    "cn.etetet.robot": "4.0.0",
+    "cn.etetet.robotcase": "4.0.0",
+    "cn.etetet.main": "4.0.0",
+    "cn.etetet.spell": "4.0.0",
+    "cn.etetet.quest": "4.0.0",
+    "cn.etetet.wow": "4.0.0",
+    "cn.etetet.yooassets": "4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}

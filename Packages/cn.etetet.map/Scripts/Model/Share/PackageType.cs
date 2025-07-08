@@ -2,6 +2,6 @@ namespace ET
 {
     public static partial class PackageType
     {
-        public const int MapManager = 39;
+        public const int Map = 39;
     }
 }

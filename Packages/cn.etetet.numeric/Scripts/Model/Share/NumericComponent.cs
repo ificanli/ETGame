@@ -133,10 +133,10 @@ namespace ET
     
     public struct NumbericChange
     {
-        public EntityRef<Unit> Unit;
-        public int NumericType;
-        public long Old;
-        public long New;
+        public EntityRef<Unit> Unit { get; set; }
+        public int NumericType {get; set;}
+        public long Old  {get; set;}
+        public long New  {get; set;}
     }
 
     [ComponentOf(typeof (Unit))]

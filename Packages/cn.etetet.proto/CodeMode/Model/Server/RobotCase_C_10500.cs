@@ -6,7 +6,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.C2M_RobotCase_PrepareData_001_Request)]
     [ResponseType(nameof(C2M_RobotCase_PrepareData_001_Response))]
-    public partial class C2M_RobotCase_PrepareData_001_Request : MessageObject, ILocationRequest, IRobotCaseMessage
+    public partial class C2M_RobotCase_PrepareData_001_Request : MessageObject, ILocationRequest
     {
         public static C2M_RobotCase_PrepareData_001_Request Create(bool isFromPool = false)
         {

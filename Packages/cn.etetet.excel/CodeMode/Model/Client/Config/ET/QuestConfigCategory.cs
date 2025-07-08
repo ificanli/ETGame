@@ -50,8 +50,7 @@ namespace ET
             {
                 return v;
             }
-            LubanLog.Error(this,key);
-            return default;
+            throw new System.Exception($"not found config: {this.GetType().FullName}, key: {key}");
         }
 
         public void ResolveRef()

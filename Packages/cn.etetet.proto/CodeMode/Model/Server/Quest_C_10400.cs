@@ -826,7 +826,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.C2M_RobotCase_PrepareData_003_Request)]
     [ResponseType(nameof(M2C_RobotCase_PrepareData_003_Response))]
-    public partial class C2M_RobotCase_PrepareData_003_Request : MessageObject, ILocationRequest, IRobotCaseMessage
+    public partial class C2M_RobotCase_PrepareData_003_Request : MessageObject, ILocationRequest
     {
         public static C2M_RobotCase_PrepareData_003_Request Create(bool isFromPool = false)
         {
@@ -851,7 +851,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.M2C_RobotCase_PrepareData_003_Response)]
-    public partial class M2C_RobotCase_PrepareData_003_Response : MessageObject, ILocationResponse, IRobotCaseMessage
+    public partial class M2C_RobotCase_PrepareData_003_Response : MessageObject, ILocationResponse
     {
         public static M2C_RobotCase_PrepareData_003_Response Create(bool isFromPool = false)
         {

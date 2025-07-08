@@ -71,6 +71,9 @@
 	  <Folder Include="..\..\..\cn.etetet.startconfig\">
 	    <Link>cn.etetet.startconfig</Link>
 	  </Folder>
+	  <Folder Include="..\..\..\cn.etetet.yiuiluban\Scripts\Model\Share\">
+	    <Link>cn.etetet.yiuiluban\Scripts\Model\Share</Link>
+	  </Folder>
 	</ItemGroup>
 
 </Project>
