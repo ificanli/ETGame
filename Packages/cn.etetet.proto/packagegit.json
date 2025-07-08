@@ -1,6 +1,7 @@
 {
 "Id": 12,
 "Name": "Proto",
+"OtherPackageAccessField": true,
 "ScriptsReferences": {
   "Model": [
     "ET.MemoryPack"

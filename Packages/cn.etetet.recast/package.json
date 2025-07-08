@@ -1,9 +1,9 @@
-﻿{
+{
   "name": "cn.etetet.recast",
   "displayName": "ET.Recast",
   "version": "2.0.0",
   "unity": "2022.3",
-  "description": "3d recast寻路库",
+  "description": "3d recast\u5bfb\u8def\u5e93",
   "author": {
     "name": "tanghai",
     "url": "https://github.com/egametang/ET"
@@ -16,5 +16,13 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
   },
-  "dependencies": {}
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0"
+  }
 }

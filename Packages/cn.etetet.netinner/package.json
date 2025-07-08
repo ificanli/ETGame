@@ -14,7 +14,13 @@
   "relatedPackages": {},
   "dependencies": {
     "cn.etetet.proto": "2.0.1",
-    "cn.etetet.sourcegenerator": "0.0.5"
+    "cn.etetet.sourcegenerator": "0.0.5",
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"

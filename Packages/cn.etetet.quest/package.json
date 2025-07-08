@@ -1,8 +1,8 @@
 {
   "name": "cn.etetet.quest",
   "displayName": "ET.Quest",
-  "version": "1.0.0",
-  "description": "ET框架任务系统模块，提供完整的任务管理、目标追踪和进度监控功能",
+  "version": "4.0.0",
+  "description": "ET\u6846\u67b6\u4efb\u52a1\u7cfb\u7edf\u6a21\u5757\uff0c\u63d0\u4f9b\u5b8c\u6574\u7684\u4efb\u52a1\u7ba1\u7406\u3001\u76ee\u6807\u8ffd\u8e2a\u548c\u8fdb\u5ea6\u76d1\u63a7\u529f\u80fd",
   "author": {
     "name": "tanghai",
     "url": "https://github.com/egametang/ET"
@@ -12,11 +12,31 @@
     "url": "https://github.com/egametang/ET"
   },
   "relatedPackages": {},
-  "dependencies": {
-    "cn.etetet.core": "2.0.8",
-    "cn.etetet.sourcegenerator": "0.0.5"
-  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
+  },
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.ai": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.numeric": "4.0.0",
+    "cn.etetet.move": "4.0.0",
+    "cn.etetet.recast": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.router": "4.0.0",
+    "cn.etetet.actorlocation": "4.0.0",
+    "cn.etetet.map": "4.0.0",
+    "cn.etetet.login": "4.0.0",
+    "cn.etetet.robot": "4.0.0",
+    "cn.etetet.robotcase": "4.0.0",
+    "cn.etetet.spell": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.ai": "4.0.0"
   }
 }

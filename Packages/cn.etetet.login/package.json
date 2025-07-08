@@ -1,9 +1,9 @@
-﻿{
+{
   "name": "cn.etetet.login",
   "displayName": "ET.Login",
   "version": "2.0.1",
   "unity": "2022.3",
-  "description": "实现前后端登录流程，客户端网络是独立的纤程，服务端提供了realm gate scene",
+  "description": "\u5b9e\u73b0\u524d\u540e\u7aef\u767b\u5f55\u6d41\u7a0b\uff0c\u5ba2\u6237\u7aef\u7f51\u7edc\u662f\u72ec\u7acb\u7684\u7ea4\u7a0b\uff0c\u670d\u52a1\u7aef\u63d0\u4f9b\u4e86realm gate scene",
   "author": {
     "name": "tanghai",
     "url": "https://github.com/egametang/ET"
@@ -13,10 +13,27 @@
     "url": "https://github.com/egametang/ET"
   },
   "relatedPackages": {},
-  "dependencies": {
-    "cn.etetet.router": "2.0.1"
-  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
+  },
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.ai": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.numeric": "4.0.0",
+    "cn.etetet.move": "4.0.0",
+    "cn.etetet.recast": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.router": "4.0.0",
+    "cn.etetet.actorlocation": "4.0.0",
+    "cn.etetet.map": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.ai": "4.0.0"
   }
 }

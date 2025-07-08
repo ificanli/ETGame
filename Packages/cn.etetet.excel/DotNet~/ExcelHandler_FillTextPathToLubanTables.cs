@@ -63,7 +63,7 @@ namespace ET
         
         private void UpdateTablesExcel(List<string> textExcelPaths)
         {
-            string tablesExcelPath = Path.GetFullPath("Packages/cn.etetet.wow/Luban/Config/Base/__tables__.xlsx");
+            string tablesExcelPath = Path.GetFullPath("Packages/cn.etetet.excel/Luban/Config/Base/__tables__.xlsx");
             
             if (!File.Exists(tablesExcelPath))
             {

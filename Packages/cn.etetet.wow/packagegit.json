@@ -1,6 +1,7 @@
 {
     "Id": 100,
     "Name": "WOW",
+    "OtherPackageAccessField": true,
 
     "ScriptsReferences": {
         "ModelView": [

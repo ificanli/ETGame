@@ -1,0 +1,37 @@
+{
+  "name": "cn.etetet.map",
+  "displayName": "ET.Map",
+  "version": "1.0.0",
+  "description": "ET\u6846\u67b6\u5730\u56fe\u7ba1\u7406\u7cfb\u7edf\u6a21\u5757\uff0c\u63d0\u4f9b\u5730\u56fe\u52a0\u8f7d\u3001\u5207\u6362\u3001\u7ba1\u7406\u548c\u573a\u666f\u63a7\u5236\u529f\u80fd",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.ai": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.numeric": "4.0.0",
+    "cn.etetet.move": "4.0.0",
+    "cn.etetet.recast": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.router": "4.0.0",
+    "cn.etetet.actorlocation": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.ai": "4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}

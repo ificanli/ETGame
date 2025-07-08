@@ -13,7 +13,9 @@
       "mcp__ide__getDiagnostics",
       "Bash(mkdir:*)",
       "Bash(cp:*)",
-      "Bash(LC_ALL=C find /Users/tanghai/Documents/WOW/Packages -name \"*.cs\" -exec sed -i '' '/^[[:space:]]*\\[Module([^]]*)\\][[:space:]]*$/d' {} \\;)"
+      "Bash(LC_ALL=C find /Users/tanghai/Documents/WOW/Packages -name \"*.cs\" -exec sed -i '' '/^[[:space:]]*\\[Module([^]]*)\\][[:space:]]*$/d' {} \\;)",
+      "Bash(ls:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }

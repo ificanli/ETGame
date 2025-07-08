@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "Name": "GateMap",
+    "Desc": "GateMap",
+    "CopyType": 1,
+    "MaxLineNum": 1,
+    "MaxPlayerNum": 1,
+    "RecommendPlayerNum": 1,
+    "MapResName": ""
+  },
+  {
+    "Id": 2,
+    "Name": "Map1",
+    "Desc": "Map1",
+    "CopyType": 1,
+    "MaxLineNum": 1,
+    "MaxPlayerNum": 10,
+    "RecommendPlayerNum": 8,
+    "MapResName": "Map1"
+  },
+  {
+    "Id": 3,
+    "Name": "Map2",
+    "Desc": "Map2",
+    "CopyType": 2,
+    "MaxLineNum": 1000,
+    "MaxPlayerNum": 5,
+    "RecommendPlayerNum": 4,
+    "MapResName": "Map1"
+  },
+  {
+    "Id": 4,
+    "Name": "Lordaeron",
+    "Desc": "Lordaeron",
+    "CopyType": 3,
+    "MaxLineNum": 1000,
+    "MaxPlayerNum": 1,
+    "RecommendPlayerNum": 1,
+    "MapResName": "Lordaeron"
+  }
+]

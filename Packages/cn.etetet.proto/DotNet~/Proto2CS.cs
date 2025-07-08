@@ -36,8 +36,12 @@ namespace ET
             msgOpcode.Clear();
 
             PackagesLock packagesLock = PackageHelper.LoadEtPackagesLock("./");
+            PackageInfo protoPackage = packagesLock.dependencies["cn.etetet.proto"];
+            clientMessagePath = Path.Combine(protoPackage.dir, "CodeMode/Model/Client");
+            serverMessagePath = Path.Combine(protoPackage.dir, "CodeMode/Model/Server");
+            clientServerMessagePath = Path.Combine(protoPackage.dir, "CodeMode/Model/ClientServer");
             
-            List<(string, string, string)> list = new ();
+            List<(string, string)> list = new ();
             foreach ((string key, PackageInfo packageInfo) in packagesLock.dependencies)
             {
                 string p = Path.Combine(packageInfo.dir, "Proto");
@@ -48,11 +52,11 @@ namespace ET
                 
                 foreach (var f in FileHelper.GetAllFiles(p, "*.proto"))
                 {
-                    list.Add((f, packageInfo.module, packageInfo.dir));
+                    list.Add((f, packageInfo.module));
                 }
             }
             
-            foreach ((string s, string module, string packageDir) in list)
+            foreach ((string s, string module) in list)
             {
                 if (!s.EndsWith(".proto"))
                 {
@@ -64,12 +68,6 @@ namespace ET
                 string protoName = ss2[0];
                 string cs = ss2[1];
                 int startOpcode = int.Parse(ss2[2]);
-                
-                // 为每个包设置不同的输出路径
-                clientMessagePath = Path.Combine(packageDir, "CodeMode/Model/Client");
-                serverMessagePath = Path.Combine(packageDir, "CodeMode/Model/Server");
-                clientServerMessagePath = Path.Combine(packageDir, "CodeMode/Model/ClientServer");
-                
                 ProtoFile2CS(s, module, protoName, cs, startOpcode);
             }
         }

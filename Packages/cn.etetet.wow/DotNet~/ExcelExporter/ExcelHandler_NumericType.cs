@@ -97,6 +97,8 @@ namespace ET
             sb.Append("\t/// <summary>\n");
             sb.Append($"\t/// {packageName} Numeric Type Constants (Runtime)\n");
             sb.Append("\t/// </summary>\n");
+            
+            // 为每个包生成partial class，使用各自的NumericType.xlsx定义
             sb.Append("\tpublic static partial class NumericType\n");
             sb.Append("\t{\n");
 
@@ -130,5 +132,19 @@ namespace ET
             Log.Console($"Generated {outputPath} with {entries.Count} entries");
         }
         
+        private string GetNumericTypeClassName(string packageName)
+        {
+            // 将包名转换为类名，例如 cn.etetet.wow -> WowNumericType
+            if (packageName.StartsWith("cn.etetet."))
+            {
+                string suffix = packageName.Substring("cn.etetet.".Length);
+                // 首字母大写
+                string className = char.ToUpper(suffix[0]) + suffix.Substring(1).ToLower() + "NumericType";
+                return className;
+            }
+            
+            // 如果不是标准包名格式，使用默认格式
+            return packageName.Replace(".", "") + "NumericType";
+        }
     }
 }

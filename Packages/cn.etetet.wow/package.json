@@ -1,7 +1,7 @@
 {
   "name": "cn.etetet.wow",
   "displayName": "ET.WOW",
-  "version": "0.0.0",
+  "version": "4.0.0",
   "unity": "2022.3",
   "category": "Demo/YIUI|UI/YIUI",
   "author": {
@@ -13,12 +13,35 @@
     "url": "https://github.com/ET-Packages/cn.etetet.yiuistatesync"
   },
   "relatedPackages": {},
-  "dependencies": {
-    "cn.etetet.quest": "1.0.0",
-    "cn.etetet.spell": "1.0.0"
-  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
   },
-  "description": "WOW"
+  "description": "WOW",
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.ai": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.numeric": "4.0.0",
+    "cn.etetet.move": "4.0.0",
+    "cn.etetet.recast": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.router": "4.0.0",
+    "cn.etetet.actorlocation": "4.0.0",
+    "cn.etetet.map": "4.0.0",
+    "cn.etetet.login": "4.0.0",
+    "cn.etetet.robot": "4.0.0",
+    "cn.etetet.robotcase": "4.0.0",
+    "cn.etetet.spell": "4.0.0",
+    "cn.etetet.quest": "4.0.0",
+    "cn.etetet.yiuiframework": "4.0.0",
+    "cn.etetet.yooassets": "4.0.0",
+    "cn.etetet.yiuitips": "4.0.0",
+    "cn.etetet.yiuidamagetips": "4.0.0"
+  }
 }

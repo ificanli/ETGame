@@ -1,9 +1,9 @@
-﻿{
+{
   "name": "cn.etetet.aoi",
-  "displayName": "ET.Aoi",
-  "version": "2.0.0",
+  "displayName": "ET.AOI",
+  "version": "4.0.0",
   "unity": "2022.3",
-  "description": "一个九宫格的aoi实现",
+  "description": "\u4e00\u4e2a\u4e5d\u5bab\u683c\u7684aoi\u5b9e\u73b0",
   "author": {
     "name": "tanghai",
     "url": "https://github.com/egametang/ET"
@@ -14,7 +14,19 @@
   },
   "relatedPackages": {},
   "dependencies": {
-    "cn.etetet.unit": "2.0.0"
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.ai": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.numeric": "4.0.0",
+    "cn.etetet.move": "4.0.0",
+    "cn.etetet.recast": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.router": "4.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"

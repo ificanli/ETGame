@@ -1,6 +1,7 @@
 {
 "Id": 13,
 "Name": "Excel",
+"AllowAccessField": true,
 "GitDependencies": {
 }
 }
