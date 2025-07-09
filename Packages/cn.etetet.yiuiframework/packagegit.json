@@ -1,6 +1,7 @@
 {
     "Id": 1001,
     "Name": "YIUI.Framework",
+    "Level": 4,
     "ScriptsReferences": 
     {
       "ModelView": [

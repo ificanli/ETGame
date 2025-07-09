@@ -2,6 +2,6 @@ namespace ET
 {
     public static partial class CoroutineLockType
     {
-        public const int SceneChange = PackageType.WOW * 1000 + 1;                  // location进程上使用
+        public const int SceneChange = PackageType.Main * 1000 + 1;                  // location进程上使用
     }
 }
