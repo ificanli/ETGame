@@ -1,5 +1,6 @@
 {
   "Id": 39,
   "Name": "Map",
-  "Level": 5
+  "Level": 5,
+  "AllowSameLevelAccess": true
 }

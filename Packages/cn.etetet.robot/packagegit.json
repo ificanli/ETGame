@@ -1,5 +1,6 @@
 {
   "Id": 35,
   "Name": "Robot",
-  "Level": 7
+  "Level": 5,
+  "AllowSameLevelAccess": true
 }

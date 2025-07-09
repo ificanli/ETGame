@@ -511,35 +511,19 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 # 包的依赖规范
 1. 依赖的配置在包的package.json中
 2. 包之间不能相互依赖，只能单向依赖
-3. 包中的方法可以访问依赖包的方法
-4. 包中的方法只能访问自己包的字段，不能访问其它包的字段
-5. 假如A包中的packagegit.json中配置了"AllowAccessField": true, 则允许依赖A包的包访问A包内的字段
-6. 目前各包的层级关系如下:
+3. 包中只能访问自己包或者依赖包的符号
+4. 目前各包的层级关系如下:
    
-  第12层
-  ├── cn.etetet.wow           (游戏入口) 依赖quest,spell,main
-  ├── cn.etetet.btnode        (btnode) 依赖quest,spell,main
- 
-  第11层
-  ├── cn.etetet.quest         (任务系统) 依赖main,spell
-
-  第10层
-  ├── cn.etetet.spell         (技能系统) 依赖main
-
-  第9层
-  ├── cn.etetet.main          (主逻辑) 依赖robot,robotcase,login,map
-
-  第8层
-  ├── cn.etetet.robotcase     (机器人用例系统) 依赖robot
-
-  第7层
-  ├── cn.etetet.robot         (机器人系统) 依赖login，console
-
-  第6层
-  ├── cn.etetet.login         (登录系统) 依赖map
-
   第5层
-  ├── cn.etetet.map           (地图系统) 依赖actorlocation
+  ├── cn.etetet.wow           (游戏入口)          AllowSameLevelAccess 依赖quest,spell,main
+  ├── cn.etetet.btnode        (btnode)           AllowSameLevelAccess 依赖quest,spell,main
+  ├── cn.etetet.quest         (任务系统)          AllowSameLevelAccess 依赖main,spell
+  ├── cn.etetet.spell         (技能系统)          AllowSameLevelAccess 依赖main
+  ├── cn.etetet.main          (主逻辑)            AllowSameLevelAccess 依赖robot,robotcase,login,map
+  ├── cn.etetet.robotcase     (机器人用例系统)     AllowSameLevelAccess 依赖robot
+  ├── cn.etetet.robot         (机器人系统)        AllowSameLevelAccess 依赖login，console
+  ├── cn.etetet.login         (登录系统)          AllowSameLevelAccess 依赖map
+  ├── cn.etetet.map           (地图系统)          AllowSameLevelAccess 依赖actorlocation
 
   第4层
   ├── cn.etetet.actorlocation (location消息系统) 依赖netinner
@@ -576,3 +560,4 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 
 # 绝对禁止hard code
 # 项目只有一个编译 dotnet build ET.sln，无论什么东西都是用这个编译
+# 每次做出决定之前先检查是否是否违反规定，执行完任务之后再次检查是否违反规定

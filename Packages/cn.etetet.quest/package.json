@@ -31,12 +31,6 @@
     "cn.etetet.router": "4.0.0",
     "cn.etetet.actorlocation": "4.0.0",
     "cn.etetet.aoi": "4.0.0",
-    "cn.etetet.ai": "4.0.0",
-    "cn.etetet.map": "4.0.0",
-    "cn.etetet.login": "4.0.0",
-    "cn.etetet.robot": "4.0.0",
-    "cn.etetet.robotcase": "4.0.0",
-    "cn.etetet.main": "4.0.0",
-    "cn.etetet.spell": "4.0.0"
+    "cn.etetet.ai": "4.0.0"
   }
 }

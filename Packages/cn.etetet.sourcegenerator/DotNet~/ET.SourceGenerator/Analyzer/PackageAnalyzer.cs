@@ -15,39 +15,35 @@ namespace ET
     /// <summary>
     /// ET包依赖分析器 - 检查包之间的访问权限和依赖关系
     /// 
-    /// 常见问题和解决方案记录：
+    /// 【用户要求总结】：要严格按照下面要求编写，每次做出决定之前先检查是否是否违反规定，执行完任务之后再次检查是否违反规定
+    /// 1. 编译ET.Core时：分析器实例A可以从编译信息中获取符号路径，初始化的时候把符号跟映射的包写入符号表
+    /// 2. 编译ET.Model时：分析器实例B可以从编译信息中获取符号路径，分析器实例B初始化时可以把符号表跟映射的包写入符号表，那么此时符号表有ET.Model跟ET.Core两者的符号表
+    /// 3. 编译ET.Hotfix时：ET.Model跟ET.Core已经编译完成了，分析器实例C初始化可以把符号表跟映射的包写入符号表，那么此时符号表有ET.Model跟ET.Hotfix跟ET.Core三者的符号表
+    /// 7. 一定要找到所有符号，要修复所有找不到符号的异常，找不到说明符号表有遗漏，需要检查写入符号表是否漏掉
+    /// 8. 绝对禁止hard code任何包名映射或类型推断
+    /// 9. 必须利用编译时符号表中的信息，因为编译时符号已经写入符号表
+    /// 10. 编译流程：程序集相互依赖时，被依赖的程序集先编译完成
+    /// 11. 编译ET.Hotfix时，ET.Model已编译完成，其符号在编译上下文中可用
+    /// 12. 查找符号只需要从符号表中查找，因为已经提前写入了符号表
+    /// 13. 初期加载packageinfo可以读取文件系统，后面则禁止扫描文件系统去获取符号的包名，只能从符号表路径中获取
+    /// 14. 已编译的程序集跟当前程序集的符号已经写入了符号表，不需要扫描文件系统去获取
+    /// 15. 【关键设计】：分析器在初始化时把程序集符号跟包写入符号表，这样后面使用拿符号包名直接从符号表中拿
+    /// 16. 【严格检查】：找不到符号的包要抛异常，符号查找请做到最严格的检查
+    /// 17. 该文件禁止hard code
+    /// 18. 当前程序集获取包名也从符号表获取，因为分析器在一开始就已经把当前代码的符号写入了符号表
+    /// 19. 分析器可以把调试信息写入文件来调试
+    /// 20. 对于partial class，只需要检查用到的partial class的成员或者方法
     /// 
-    /// 1. 【多分析器实例问题】
-    ///    问题：ET.sln包含多个ET.Hotfix和ET.Model项目，导致运行多个分析器实例，
-    ///         不同实例可能有不同的工作目录和初始化状态
-    ///    解决：确保所有实例都能正确找到Packages路径，使用多种路径查找策略
+    /// 【实现原理】：
+    /// 使用全局共享符号表（static ConcurrentDictionary<string, string> _globalSymbolTable）
+    /// 每个分析器实例初始化时从当前编译的语法树中提取符号并写入全局符号表
+    /// 查找符号包归属时直接从全局符号表中查询，实现跨程序集的符号查找
     /// 
-    /// 2. 【JSON解析路径问题】  
-    ///    问题：不同分析器实例的工作目录不同，无法找到正确的Packages文件夹
-    ///    解决：在FindPackagesPath()中添加多种可能路径，包括：
-    ///         - 当前目录向上递归查找
-    ///         - 固定的项目根路径
-    ///         - 相对路径组合
-    /// 
-    /// 3. 【依赖检查误报问题】
-    ///    问题：JSON解析正确但Dependencies.Contains()返回false导致误报
-    ///    原因：某些实例没有正确加载package.json，导致Dependencies列表为空
-    ///    解决：改进路径查找逻辑，确保所有实例都能加载到依赖信息
-    /// 
-    /// 4. 【调试和诊断技巧】
-    ///    - 使用DiagnosticDescriptor输出调试信息（Roslyn分析器无法使用Console）
-    ///    - 为分析器实例添加唯一ID来区分不同实例的行为
-    ///    - 检查编译输出中的项目路径来识别多实例问题
-    /// 
-    /// 5. 【性能优化注意事项】
-    ///    - 使用volatile和lock确保线程安全的初始化
-    ///    - ConcurrentDictionary用于多线程环境下的包信息缓存
-    ///    - 避免重复的文件系统访问和JSON解析
-    /// 
-    /// 修复记录：
-    /// - 修复了cn.etetet.yiuiinvoke包访问cn.etetet.core包的误报问题
-    /// - 错误数量从数百个减少到个位数
-    /// - JSON解析现在能正确识别所有包的依赖关系
+    /// 【编译流程】：
+    /// 1. 编译ET.Core时：分析器实例A写入Core的符号到全局表
+    /// 2. 编译ET.Model时：分析器实例B写入Model的符号到全局表（此时表中有Core+Model）  
+    /// 3. 编译ET.Hotfix时：分析器实例C写入Hotfix的符号到全局表（此时表中有Core+Model+Hotfix）
+    /// 4. 查找符号时：直接从全局符号表中查询，无需推断或hard code
     /// </summary>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class PackageAnalyzer : DiagnosticAnalyzer
@@ -70,24 +66,6 @@ namespace ET
             true
         );
 
-        private static readonly DiagnosticDescriptor CircularDependencyDescriptor = new DiagnosticDescriptor(
-            "ET0103",
-            "Circular dependency detected",
-            "Circular dependency detected: {0}",
-            "Package",
-            DiagnosticSeverity.Error,
-            true
-        );
-
-        private static readonly DiagnosticDescriptor InvalidDependencyDescriptor = new DiagnosticDescriptor(
-            "ET0104",
-            "Invalid dependency",
-            "Package '{0}' cannot depend on package '{1}' (higher or same level dependency)",
-            "Package",
-            DiagnosticSeverity.Error,
-            true
-        );
-
         private static readonly DiagnosticDescriptor TypeAccessForbiddenDescriptor = new DiagnosticDescriptor(
             "ET0105",
             "Type access forbidden",
@@ -97,26 +75,48 @@ namespace ET
             true
         );
 
-
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
             FieldAccessForbiddenDescriptor,
             MethodCallForbiddenDescriptor,
-            CircularDependencyDescriptor,
-            InvalidDependencyDescriptor,
             TypeAccessForbiddenDescriptor
         );
 
-        private readonly ConcurrentDictionary<string, PackageInfo> _packageInfos = new ConcurrentDictionary<string, PackageInfo>();
-        private readonly ConcurrentDictionary<string, int> _packageLevels = new ConcurrentDictionary<string, int>();
-        private readonly ConcurrentDictionary<int, string> _packageIdToName = new ConcurrentDictionary<int, string>();
-        private volatile bool _initialized = false;
-        private readonly object _initLock = new object();
+        // 【关键】：所有分析器实例共享的全局符号表
+        private static readonly ConcurrentDictionary<string, string> _globalSymbolTable = new ConcurrentDictionary<string, string>();
         
+        // 【关键修复】：包信息缓存也应该是全局共享的，就像符号表一样
+        private static readonly ConcurrentDictionary<string, PackageInfo> _packageInfos = new ConcurrentDictionary<string, PackageInfo>();
+        private static volatile bool _initialized = false;
+        private static readonly object _initLock = new object();
 
         public override void Initialize(AnalysisContext context)
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
+            context.RegisterCompilationStartAction(InitializeCompilation);
+        }
+
+        private void InitializeCompilation(CompilationStartAnalysisContext context)
+        {
+            // 【关键过滤】：只处理AnalyzeAssembly.All中定义的程序集
+            if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.All))
+            {
+                return;
+            }
+            
+            lock (_initLock)
+            {
+                // 【关键修复】：每个编译单元都需要写入符号表，不能只初始化一次
+                if (!_initialized)
+                {
+                    LoadPackageInfos(context.Compilation);
+                    _initialized = true;
+                }
+                
+                // 每个编译单元都写入自己的符号表
+                WriteCurrentCompilationToGlobalSymbolTable(context.Compilation);
+            }
+            
             context.RegisterSyntaxNodeAction(AnalyzeMemberAccess, SyntaxKind.SimpleMemberAccessExpression);
             context.RegisterSyntaxNodeAction(AnalyzeInvocationExpression, SyntaxKind.InvocationExpression);
             context.RegisterSyntaxNodeAction(AnalyzeIdentifierName, SyntaxKind.IdentifierName);
@@ -124,28 +124,179 @@ namespace ET
             context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
         }
 
-        private void EnsureInitialized()
+        private void WriteCurrentCompilationToGlobalSymbolTable(Compilation compilation)
         {
-            if (_initialized) return;
-            
-            lock (_initLock)
+            try
             {
-                if (_initialized) return;
-                
-                LoadPackageInfos();
-                InitializePackageLevels();
-                ValidatePackageDependencies();
-                _initialized = true;
+                foreach (var syntaxTree in compilation.SyntaxTrees)
+                {
+                    if (syntaxTree.FilePath != null)
+                    {
+                        var packageName = ExtractPackageNameFromFilePath(syntaxTree.FilePath);
+                        if (!string.IsNullOrEmpty(packageName))
+                        {
+                            WriteSymbolsFromSyntaxTree(syntaxTree, packageName!);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // 继续执行
             }
         }
 
-        private void LoadPackageInfos()
+        private string? ExtractPackageNameFromFilePath(string filePath)
         {
-            var packagesPath = FindPackagesPath();
-            if (string.IsNullOrEmpty(packagesPath)) return;
+            if (string.IsNullOrEmpty(filePath)) return null;
+            
+            var normalizedPath = filePath.Replace("\\", "/");
+            
+            if (normalizedPath.Contains("Packages"))
+            {
+                var packageStart = normalizedPath.IndexOf("Packages") + 9;
+                var packageEnd = normalizedPath.IndexOf("/", packageStart);
+                if (packageEnd > packageStart)
+                {
+                    var packageName = normalizedPath.Substring(packageStart, packageEnd - packageStart);
+                    if (packageName.StartsWith("cn.etetet."))
+                    {
+                        return packageName;
+                    }
+                }
+            }
+            
+            return null;
+        }
 
+        private void WriteSymbolsFromSyntaxTree(SyntaxTree syntaxTree, string packageName)
+        {
             try
             {
+                var root = syntaxTree.GetRoot();
+                
+                // 【关键修复】：只记录在当前文件中**定义**的符号，不记录使用的符号
+                
+                // 处理所有类型声明
+                foreach (var typeDecl in root.DescendantNodes().OfType<TypeDeclarationSyntax>())
+                {
+                    if (IsInETNamespace(typeDecl))
+                    {
+                        var typeName = typeDecl.Identifier.ValueText;
+                        if (!string.IsNullOrEmpty(typeName))
+                        {
+                            
+                            // 只有在符号表中不存在时才添加，避免覆盖
+                            _globalSymbolTable.TryAdd(typeName, packageName);
+                            
+                            // 处理成员
+                            foreach (var member in typeDecl.Members)
+                            {
+                                switch (member)
+                                {
+                                    case FieldDeclarationSyntax fieldDecl:
+                                        foreach (var variable in fieldDecl.Declaration.Variables)
+                                        {
+                                            var fieldName = variable.Identifier.ValueText;
+                                            if (!string.IsNullOrEmpty(fieldName))
+                                            {
+                                                var fieldKey = $"{typeName}.{fieldName}";
+                                                _globalSymbolTable.TryAdd(fieldKey, packageName);
+                                            }
+                                        }
+                                        break;
+                                    case MethodDeclarationSyntax methodDecl:
+                                        var methodName = methodDecl.Identifier.ValueText;
+                                        if (!string.IsNullOrEmpty(methodName))
+                                        {
+                                            var methodKey = $"{typeName}.{methodName}";
+                                            _globalSymbolTable.TryAdd(methodKey, packageName);
+                                        }
+                                        break;
+                                    case PropertyDeclarationSyntax propertyDecl:
+                                        var propertyName = propertyDecl.Identifier.ValueText;
+                                        if (!string.IsNullOrEmpty(propertyName))
+                                        {
+                                            var propertyKey = $"{typeName}.{propertyName}";
+                                            _globalSymbolTable.TryAdd(propertyKey, packageName);
+                                        }
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // 处理枚举
+                foreach (var enumDecl in root.DescendantNodes().OfType<EnumDeclarationSyntax>())
+                {
+                    if (IsInETNamespace(enumDecl))
+                    {
+                        var enumName = enumDecl.Identifier.ValueText;
+                        if (!string.IsNullOrEmpty(enumName))
+                        {
+                            _globalSymbolTable.TryAdd(enumName, packageName);
+                            
+                            foreach (var enumMember in enumDecl.Members)
+                            {
+                                var memberName = enumMember.Identifier.ValueText;
+                                if (!string.IsNullOrEmpty(memberName))
+                                {
+                                    _globalSymbolTable.TryAdd($"{enumName}.{memberName}", packageName);
+                                    _globalSymbolTable.TryAdd(memberName, packageName);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // 处理委托
+                foreach (var delegateDecl in root.DescendantNodes().OfType<DelegateDeclarationSyntax>())
+                {
+                    if (IsInETNamespace(delegateDecl))
+                    {
+                        var delegateName = delegateDecl.Identifier.ValueText;
+                        if (!string.IsNullOrEmpty(delegateName))
+                        {
+                            _globalSymbolTable.TryAdd(delegateName, packageName);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // 继续执行
+            }
+        }
+
+
+        private bool IsInETNamespace(SyntaxNode node)
+        {
+            var parent = node.Parent;
+            while (parent != null)
+            {
+                if (parent is NamespaceDeclarationSyntax ns)
+                {
+                    var namespaceName = ns.Name.ToString();
+                    return namespaceName == "ET" || namespaceName.StartsWith("ET.");
+                }
+                parent = parent.Parent;
+            }
+            return false;
+        }
+
+
+        private void LoadPackageInfos(Compilation compilation)
+        {
+            try
+            {
+                // 从编译上下文的文件路径中找到项目根目录
+                var packagesPath = FindPackagesPathFromCompilation(compilation);
+                if (string.IsNullOrEmpty(packagesPath)) 
+                {
+                    return;
+                }
+
                 var packageDirs = Directory.GetDirectories(packagesPath, "cn.etetet.*");
                 
                 foreach (var packageDir in packageDirs)
@@ -160,250 +311,258 @@ namespace ET
                         if (packageInfo != null)
                         {
                             _packageInfos[packageName] = packageInfo;
-                            _packageIdToName[packageInfo.Id] = packageName;
                         }
                     }
                 }
                 
-                // 包加载完成
+                // 【性能优化】：预计算所有包的完整依赖集合
+                PrecomputeAllDependencies();
             }
             catch (Exception)
             {
-                // 包加载失败，忽略
+                // 继续执行
             }
         }
 
-        private string FindPackagesPath()
+        private string FindPackagesPathFromCompilation(Compilation compilation)
         {
-            var currentDir = Directory.GetCurrentDirectory();
-            var originalDir = currentDir;
-            
-            // 尝试多种可能的Packages路径
-            var possiblePaths = new[]
+            try
             {
-                // 当前目录的Packages
-                Path.Combine(currentDir, "Packages"),
-                // 向上查找到根目录的Packages
-                Path.Combine(Path.GetDirectoryName(currentDir) ?? "", "Packages"),
-                Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(currentDir) ?? "") ?? "", "Packages"),
-                Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(currentDir) ?? "") ?? "") ?? "", "Packages"),
-                // 固定的可能路径
-                "/Users/tanghai/Documents/WOW/Packages"
-            };
-            
-            foreach (var packagesPath in possiblePaths)
-            {
-                if (!string.IsNullOrEmpty(packagesPath) && Directory.Exists(packagesPath))
+                // 从编译中的语法树文件路径中寻找包含Packages目录的项目根目录
+                foreach (var syntaxTree in compilation.SyntaxTrees)
                 {
-                    return packagesPath;
+                    if (syntaxTree.FilePath != null)
+                    {
+                        var filePath = syntaxTree.FilePath.Replace("\\", "/");
+                        
+                        // 寻找包含Packages的路径结构
+                        if (filePath.Contains("/Packages/"))
+                        {
+                            var packagesIndex = filePath.IndexOf("/Packages/");
+                            var projectRoot = filePath.Substring(0, packagesIndex);
+                            var packagesPath = Path.Combine(projectRoot, "Packages");
+                            
+                            if (Directory.Exists(packagesPath))
+                            {
+                                return packagesPath;
+                            }
+                        }
+                    }
                 }
+                
+                return string.Empty;
             }
-            
-            // 向上递归查找
-            while (currentDir != null)
+            catch (Exception)
             {
-                var packagesPath = Path.Combine(currentDir, "Packages");
-                if (Directory.Exists(packagesPath))
-                {
-                    return packagesPath;
-                }
-                currentDir = Directory.GetParent(currentDir)?.FullName;
+                return string.Empty;
             }
-            
-            // 包路径查找失败
-            return string.Empty;
         }
 
-        private PackageInfo LoadPackageInfo(string packageJsonPath, string packageGitJsonPath)
+        private PackageInfo? LoadPackageInfo(string packageJsonPath, string packageGitJsonPath)
         {
             try
             {
                 var packageJsonContent = File.ReadAllText(packageJsonPath);
                 var packageName = ExtractJsonStringValue(packageJsonContent, "name");
                 if (string.IsNullOrEmpty(packageName))
-                    return null!;
+                    return null;
 
                 var packageInfo = new PackageInfo
                 {
                     Name = packageName,
-                    Dependencies = new List<string>()
+                    Dependencies = new List<string>(),
+                    Level = 0,
+                    AllowSameLevelAccess = false
                 };
 
-                // 解析dependencies
-                var dependencies = ExtractJsonObjectKeys(packageJsonContent, "dependencies");
+                var dependencies = ExtractJsonObjectKeys(packageJsonContent);
                 packageInfo.Dependencies.AddRange(dependencies);
-                
-                
-                
 
+                // 读取 packagegit.json 文件获取层级和同层访问配置
                 if (File.Exists(packageGitJsonPath))
                 {
                     var packageGitContent = File.ReadAllText(packageGitJsonPath);
-                    var idValue = ExtractJsonStringValue(packageGitContent, "Id");
-                    if (int.TryParse(idValue, out int id))
-                    {
-                        packageInfo.Id = id;
-                    }
-                    
-                    var levelValue = ExtractJsonStringValue(packageGitContent, "Level");
-                    if (int.TryParse(levelValue, out int level))
+                    var levelStr = ExtractJsonStringValue(packageGitContent, "Level");
+                    if (int.TryParse(levelStr, out int level))
                     {
                         packageInfo.Level = level;
                     }
+                    
+                    var allowSameLevelStr = ExtractJsonStringValue(packageGitContent, "AllowSameLevelAccess");
+                    if (bool.TryParse(allowSameLevelStr, out bool allowSameLevel))
+                    {
+                        packageInfo.AllowSameLevelAccess = allowSameLevel;
+                    }
+                    
                 }
 
                 return packageInfo;
             }
             catch (Exception)
             {
-                return null!;
+                return null;
             }
         }
 
         private string ExtractJsonStringValue(string json, string key)
         {
-            // 同时匹配字符串值和数字值
-            var pattern = $@"""{key}""\s*:\s*""([^""]+)""|""{key}""\s*:\s*([0-9]+)";
+            var pattern = $@"""{key}""\s*:\s*""([^""]+)""|""{key}""\s*:\s*([0-9]+)|""{key}""\s*:\s*(true|false)";
             var match = Regex.Match(json, pattern);
             if (match.Success)
             {
-                return match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value;
+                return match.Groups[1].Success ? match.Groups[1].Value : 
+                       match.Groups[2].Success ? match.Groups[2].Value : 
+                       match.Groups[3].Value;
             }
             return string.Empty;
         }
 
-        private List<string> ExtractJsonObjectKeys(string json, string objectKey)
+        private List<string> ExtractJsonObjectKeys(string json)
         {
             var keys = new List<string>();
             
             try
             {
-                // 简单的regex直接匹配整个JSON中的cn.etetet包
-                var packagePattern = @"""(cn\.etetet\.[^""]+)""\s*:\s*""[^""]*""";
-                var matches = Regex.Matches(json, packagePattern);
+                // 【关键修复】：只从dependencies字段中提取依赖包
+                var dependenciesPattern = @"""dependencies""\s*:\s*\{([^}]*)\}";
+                var dependenciesMatch = Regex.Match(json, dependenciesPattern);
                 
-                foreach (Match match in matches)
+                if (dependenciesMatch.Success)
                 {
-                    var packageName = match.Groups[1].Value.Trim(); // 清理可能的空格
-                    keys.Add(packageName);
+                    var dependenciesContent = dependenciesMatch.Groups[1].Value;
+                    var packagePattern = @"""(cn\.etetet\.[^""]+)""\s*:\s*""[^""]*""";
+                    var matches = Regex.Matches(dependenciesContent, packagePattern);
+                    
+                    foreach (Match match in matches)
+                    {
+                        var packageName = match.Groups[1].Value.Trim();
+                        keys.Add(packageName);
+                    }
                 }
             }
             catch (Exception)
             {
-                // JSON解析失败，返回空列表
+                // 继续执行
             }
             
             return keys;
         }
 
-        private void InitializePackageLevels()
-        {
-            // 从packagegit.json读取包级别信息
-            foreach (var packageInfo in _packageInfos.Values)
-            {
-                if (packageInfo.Level > 0)
-                {
-                    _packageLevels[packageInfo.Name] = packageInfo.Level;
-                }
-            }
-        }
-
-        private void ValidatePackageDependencies()
-        {
-            foreach (var packageInfo in _packageInfos.Values)
-            {
-                if (!_packageLevels.TryGetValue(packageInfo.Name, out int packageLevel))
-                    continue;
-
-                foreach (var dependency in packageInfo.Dependencies)
-                {
-                    if (!_packageLevels.TryGetValue(dependency, out int dependencyLevel))
-                        continue;
-
-                    // 只能依赖更低层级的包
-                    if (dependencyLevel >= packageLevel)
-                    {
-                        // 这里应该报告错误，但暂时跳过
-                        continue;
-                    }
-                }
-            }
-        }
-
-
+        // 分析方法
         private void AnalyzeMemberAccess(SyntaxNodeAnalysisContext context)
         {
-            EnsureInitialized();
-
-
             var memberAccess = (MemberAccessExpressionSyntax)context.Node;
             var symbolInfo = context.SemanticModel.GetSymbolInfo(memberAccess);
             
             if (symbolInfo.Symbol is IFieldSymbol fieldSymbol)
             {
-                var currentPackage = GetPackageFromNamespace(context.SemanticModel, memberAccess);
-                var targetPackage = GetPackageFromSymbol(fieldSymbol);
-                
-                if (currentPackage != null && targetPackage != null && !CanAccessField(currentPackage, targetPackage))
-                {
-                    var diagnostic = Diagnostic.Create(
-                        FieldAccessForbiddenDescriptor,
-                        memberAccess.GetLocation(),
-                        currentPackage,
-                        fieldSymbol.Name,
-                        targetPackage
-                    );
-                    context.ReportDiagnostic(diagnostic);
-                }
+                CheckFieldAccess(context, memberAccess, fieldSymbol);
             }
         }
 
         private void AnalyzeInvocationExpression(SyntaxNodeAnalysisContext context)
         {
-            EnsureInitialized();
-
             var invocation = (InvocationExpressionSyntax)context.Node;
             var symbolInfo = context.SemanticModel.GetSymbolInfo(invocation);
             
             if (symbolInfo.Symbol is IMethodSymbol methodSymbol)
             {
-                var currentPackage = GetPackageFromNamespace(context.SemanticModel, invocation);
-                var targetPackage = GetPackageFromSymbol(methodSymbol);
-                
-                if (currentPackage != null && targetPackage != null && !CanCallMethod(currentPackage, targetPackage))
-                {
-                    var diagnostic = Diagnostic.Create(
-                        MethodCallForbiddenDescriptor,
-                        invocation.GetLocation(),
-                        currentPackage,
-                        methodSymbol.Name,
-                        targetPackage
-                    );
-                    context.ReportDiagnostic(diagnostic);
-                }
+                CheckMethodCall(context, invocation, methodSymbol);
             }
         }
 
         private void AnalyzeIdentifierName(SyntaxNodeAnalysisContext context)
         {
-            EnsureInitialized();
-
-
             var identifier = (IdentifierNameSyntax)context.Node;
             var symbolInfo = context.SemanticModel.GetSymbolInfo(identifier);
             
             if (symbolInfo.Symbol is IFieldSymbol fieldSymbol)
             {
-                var currentPackage = GetPackageFromNamespace(context.SemanticModel, identifier);
-                var targetPackage = GetPackageFromSymbol(fieldSymbol);
+                CheckFieldAccess(context, identifier, fieldSymbol);
+            }
+        }
+
+        private void AnalyzeObjectCreationExpression(SyntaxNodeAnalysisContext context)
+        {
+            var objectCreation = (ObjectCreationExpressionSyntax)context.Node;
+            var symbolInfo = context.SemanticModel.GetSymbolInfo(objectCreation);
+            
+            if (symbolInfo.Symbol is IMethodSymbol constructorSymbol)
+            {
+                CheckTypeAccess(context, objectCreation, constructorSymbol.ContainingType);
+            }
+        }
+
+        private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
+        {
+            var variableDeclaration = (VariableDeclarationSyntax)context.Node;
+            var typeInfo = context.SemanticModel.GetTypeInfo(variableDeclaration.Type);
+            
+            if (typeInfo.Type != null)
+            {
+                CheckTypeAccess(context, variableDeclaration.Type, typeInfo.Type);
+            }
+        }
+
+        private void CheckFieldAccess(SyntaxNodeAnalysisContext context, SyntaxNode node, IFieldSymbol fieldSymbol)
+        {
+            var currentPackage = GetPackageFromNamespace(node);
+            var targetPackage = GetPackageFromSymbol(fieldSymbol);
+            
+            if (fieldSymbol.ContainingType?.TypeKind == TypeKind.Enum)
+            {
+                targetPackage = GetPackageFromSymbol(fieldSymbol.ContainingType);
+            }
+            
+            if (currentPackage != null && targetPackage != null && !CanAccessSymbol(currentPackage, targetPackage))
+            {
+                var diagnostic = Diagnostic.Create(
+                    FieldAccessForbiddenDescriptor,
+                    node.GetLocation(),
+                    currentPackage,
+                    fieldSymbol.Name,
+                    targetPackage
+                );
+                context.ReportDiagnostic(diagnostic);
+            }
+        }
+
+        private void CheckMethodCall(SyntaxNodeAnalysisContext context, SyntaxNode node, IMethodSymbol methodSymbol)
+        {
+            var currentPackage = GetPackageFromNamespace(node);
+            var targetPackage = GetPackageFromSymbol(methodSymbol);
+            
+            
+            if (currentPackage != null && targetPackage != null && !CanAccessSymbol(currentPackage, targetPackage))
+            {
                 
-                if (currentPackage != null && targetPackage != null && !CanAccessField(currentPackage, targetPackage))
+                var diagnostic = Diagnostic.Create(
+                    MethodCallForbiddenDescriptor,
+                    node.GetLocation(),
+                    currentPackage,
+                    methodSymbol.Name,
+                    targetPackage
+                );
+                context.ReportDiagnostic(diagnostic);
+            }
+        }
+
+        private void CheckTypeAccess(SyntaxNodeAnalysisContext context, SyntaxNode node, ITypeSymbol typeSymbol)
+        {
+            var currentPackage = GetPackageFromNamespace(node);
+            var targetPackage = GetPackageFromSymbol(typeSymbol);
+            
+            
+            if (currentPackage != null && targetPackage != null && currentPackage != targetPackage)
+            {
+                if (!CanAccessSymbol(currentPackage, targetPackage))
                 {
+                    
                     var diagnostic = Diagnostic.Create(
-                        FieldAccessForbiddenDescriptor,
-                        identifier.GetLocation(),
+                        TypeAccessForbiddenDescriptor,
+                        node.GetLocation(),
                         currentPackage,
-                        fieldSymbol.Name,
+                        typeSymbol.Name,
                         targetPackage
                     );
                     context.ReportDiagnostic(diagnostic);
@@ -411,347 +570,179 @@ namespace ET
             }
         }
 
-        private void AnalyzeObjectCreationExpression(SyntaxNodeAnalysisContext context)
+        private string? GetPackageFromNamespace(SyntaxNode node)
         {
-            EnsureInitialized();
-
-
-            var objectCreation = (ObjectCreationExpressionSyntax)context.Node;
-            var symbolInfo = context.SemanticModel.GetSymbolInfo(objectCreation);
+            // 【关键修复】：对于partial类，应该根据当前语法树文件的位置来确定包归属
+            // 而不是根据符号表中的类型名，因为partial类可能分布在多个包中
             
-            if (symbolInfo.Symbol is IMethodSymbol constructorSymbol)
+            if (node.SyntaxTree?.FilePath != null)
             {
-                var currentPackage = GetPackageFromNamespace(context.SemanticModel, objectCreation);
-                var targetPackage = GetPackageFromSymbol(constructorSymbol.ContainingType);
-                
-                // 如果无法通过符号位置获取包信息，尝试通过编译上下文查找
-                if (string.IsNullOrEmpty(targetPackage))
+                var packageFromPath = ExtractPackageNameFromFilePath(node.SyntaxTree.FilePath);
+                if (!string.IsNullOrEmpty(packageFromPath))
                 {
-                    targetPackage = GetPackageFromCompilationContext(context, constructorSymbol.ContainingType);
-                }
-                
-                // 修复：即使包为null也要检查，不能直接返回true
-                if (currentPackage != null && targetPackage != null && currentPackage != targetPackage)
-                {
-                    if (!CanAccessType(currentPackage, targetPackage))
+                    // 确保这确实是在ET命名空间中
+                    var typeDeclaration = node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+                    if (typeDeclaration != null && IsInETNamespace(typeDeclaration))
                     {
-                        var diagnostic = Diagnostic.Create(
-                            TypeAccessForbiddenDescriptor,
-                            objectCreation.GetLocation(),
-                            currentPackage,
-                            constructorSymbol.ContainingType.Name,
-                            targetPackage
-                        );
-                        context.ReportDiagnostic(diagnostic);
+                        return packageFromPath;
                     }
                 }
             }
+            
+            // 没有找到类型声明，可能是全局代码，不需要包检查
+            return null;
         }
 
-        private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
+        private string? GetPackageFromSymbol(ISymbol symbol)
         {
-            EnsureInitialized();
-
-
-            var variableDeclaration = (VariableDeclarationSyntax)context.Node;
-            var typeInfo = context.SemanticModel.GetTypeInfo(variableDeclaration.Type);
+            if (symbol == null) return null;
             
-            if (typeInfo.Type != null)
+            // 检查是否是ET类型
+            var namespaceName = symbol.ContainingNamespace?.ToDisplayString();
+            if (namespaceName == null || (namespaceName != "ET" && !namespaceName.StartsWith("ET.")))
             {
-                var currentPackage = GetPackageFromNamespace(context.SemanticModel, variableDeclaration);
-                var targetPackage = GetPackageFromSymbol(typeInfo.Type);
-                
-                // 修复：即使包为null也要检查，不能直接返回true
-                if (currentPackage != null && targetPackage != null && currentPackage != targetPackage)
+                return null; // 非ET类型允许自由访问
+            }
+            
+            // 【跳过检查】：泛型类型参数、委托类型、局部函数等不需要包检查
+            if (symbol is ITypeParameterSymbol || 
+                symbol.Kind == SymbolKind.TypeParameter ||
+                symbol.ContainingType?.TypeKind == TypeKind.Delegate)
+            {
+                return null;
+            }
+            
+            // 【跳过检查】：局部函数不需要包检查
+            if (symbol is IMethodSymbol methodSym && methodSym.MethodKind == MethodKind.LocalFunction)
+            {
+                return null;
+            }
+            
+            // 【关键修复】：对于字段、方法、属性，直接从符号表中查找
+            if (symbol is IFieldSymbol fieldSymbol && fieldSymbol.ContainingType != null)
+            {
+                var fieldKey = $"{fieldSymbol.ContainingType.Name}.{fieldSymbol.Name}";
+                if (_globalSymbolTable.TryGetValue(fieldKey, out string? fieldPackage))
                 {
-                    if (!CanAccessType(currentPackage, targetPackage))
+                    return fieldPackage;
+                }
+            }
+            
+            if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingType != null)
+            {
+                var methodKey = $"{methodSymbol.ContainingType.Name}.{methodSymbol.Name}";
+                if (_globalSymbolTable.TryGetValue(methodKey, out string? methodPackage))
+                {
+                    return methodPackage;
+                }
+            }
+            
+            if (symbol is IPropertySymbol propertySymbol && propertySymbol.ContainingType != null)
+            {
+                var propertyKey = $"{propertySymbol.ContainingType.Name}.{propertySymbol.Name}";
+                if (_globalSymbolTable.TryGetValue(propertyKey, out string? propertyPackage))
+                {
+                    return propertyPackage;
+                }
+            }
+            
+            // 查询类型
+            if (_globalSymbolTable.TryGetValue(symbol.Name, out string? typePackage))
+            {
+                return typePackage;
+            }
+            
+            // 【特殊情况】：如果是系统定义的委托、方法等，允许自由访问
+            if (symbol.ContainingNamespace?.ToDisplayString() == "System" || 
+                symbol.ContainingAssembly?.Name?.StartsWith("System") == true ||
+                symbol.ContainingAssembly?.Name?.StartsWith("Microsoft") == true ||
+                symbol.ContainingAssembly?.Name?.StartsWith("mscorlib") == true ||
+                symbol.ContainingAssembly?.Name?.StartsWith("netstandard") == true)
+            {
+                return null;
+            }
+            
+            // 【关键判断】：如果符号表中找不到，需要判断这个符号是否真的是ET框架中声明的
+            // 检查符号的定义位置是否在ET框架的源文件中
+            var locations = symbol.Locations;
+            foreach (var location in locations)
+            {
+                if (location.IsInSource && location.SourceTree?.FilePath != null)
+                {
+                    var packageFromPath = ExtractPackageNameFromFilePath(location.SourceTree.FilePath);
+                    if (!string.IsNullOrEmpty(packageFromPath))
                     {
-                        var diagnostic = Diagnostic.Create(
-                            TypeAccessForbiddenDescriptor,
-                            variableDeclaration.Type.GetLocation(),
-                            currentPackage,
-                            typeInfo.Type.Name,
-                            targetPackage
-                        );
-                        context.ReportDiagnostic(diagnostic);
+                        // 这是ET框架中声明的符号，但符号表中没有记录，说明符号写入有遗漏
+                        throw new InvalidOperationException($"Symbol '{symbol.Name}' is declared in ET package '{packageFromPath}' but not found in symbol table. File: {location.SourceTree.FilePath}");
                     }
                 }
             }
+            
+            // 符号不是在ET框架中声明的，允许自由访问
+            return null;
         }
 
-
-        private string GetPackageFromNamespace(SemanticModel semanticModel, SyntaxNode node)
+        private bool CanAccessSymbol(string currentPackage, string targetPackage)
         {
-            var compilationUnit = node.SyntaxTree.GetCompilationUnitRoot();
-            var filePath = node.SyntaxTree.FilePath;
-            
-            if (string.IsNullOrEmpty(filePath))
-                return null!;
-            
-            // 标准化路径分隔符
-            var normalizedPath = filePath.Replace("\\", "/");
-            
-            // 已移除调试代码
-            
-            // 从文件路径提取包名 - 支持多种路径格式
-            if (normalizedPath.Contains("Packages"))
-            {
-                var packageStart = normalizedPath.IndexOf("Packages") + 9;
-                var packageEnd = normalizedPath.IndexOf("/", packageStart);
-                if (packageEnd > packageStart)
-                {
-                    var packageName = normalizedPath.Substring(packageStart, packageEnd - packageStart);
-                    // 确保包名以cn.etetet开头
-                    if (packageName.StartsWith("cn.etetet."))
-                    {
-                        // 已移除调试代码
-                        return packageName;
-                    }
-                }
-            }
-            
-            // 备用方案：从路径中查找cn.etetet包名模式
-            var segments = normalizedPath.Split('/');
-            foreach (var segment in segments)
-            {
-                if (segment.StartsWith("cn.etetet."))
-                {
-                    return segment;
-                }
-            }
-            
-            return null!;
-        }
-
-        private string GetPackageFromSymbol(ISymbol symbol)
-        {
-            // 对于方法和字段符号，使用其包含类型
-            var targetSymbol = symbol;
-            if (symbol is IMethodSymbol methodSymbol)
-            {
-                targetSymbol = methodSymbol.ContainingType;
-            }
-            else if (symbol is IFieldSymbol fieldSymbol)
-            {
-                targetSymbol = fieldSymbol.ContainingType;
-            }
-            
-            // 首先尝试从符号的直接位置获取包名
-            var location = targetSymbol.Locations.FirstOrDefault();
-            if (location?.SourceTree?.FilePath != null)
-            {
-                var filePath = location.SourceTree.FilePath;
-                
-                // 标准化路径分隔符
-                var normalizedPath = filePath.Replace("\\", "/");
-                
-                // 从文件路径提取包名
-                if (normalizedPath.Contains("Packages"))
-                {
-                    var packageStart = normalizedPath.IndexOf("Packages") + 9;
-                    var packageEnd = normalizedPath.IndexOf("/", packageStart);
-                    if (packageEnd > packageStart)
-                    {
-                        var packageName = normalizedPath.Substring(packageStart, packageEnd - packageStart);
-                        // 确保包名以cn.etetet开头
-                        if (packageName.StartsWith("cn.etetet."))
-                        {
-                            return packageName;
-                        }
-                    }
-                }
-                
-                // 备用方案：从路径中查找cn.etetet包名模式
-                var segments = normalizedPath.Split('/');
-                foreach (var segment in segments)
-                {
-                    if (segment.StartsWith("cn.etetet."))
-                    {
-                        return segment;
-                    }
-                }
-            }
-            
-            // 如果直接位置无法获取，尝试从符号的包含类型或程序集中获取
-            if (targetSymbol is ITypeSymbol typeSymbol)
-            {
-                // 查找程序集中的其他类型，看是否能找到包信息
-                var assemblySymbol = typeSymbol.ContainingAssembly;
-                if (assemblySymbol != null)
-                {
-                    // 遍历程序集中的全局命名空间，查找包信息
-                    foreach (var namespaceMember in assemblySymbol.GlobalNamespace.GetNamespaceMembers())
-                    {
-                        if (namespaceMember.Name == "ET")
-                        {
-                            // 从ET命名空间中查找类型定义
-                            var etTypes = namespaceMember.GetTypeMembers();
-                            foreach (var etType in etTypes)
-                            {
-                                if (etType.Name == typeSymbol.Name)
-                                {
-                                    // 找到了同名类型，尝试获取其位置
-                                    var etLocation = etType.Locations.FirstOrDefault();
-                                    if (etLocation?.SourceTree?.FilePath != null)
-                                    {
-                                        var etFilePath = etLocation.SourceTree.FilePath.Replace("\\", "/");
-                                        if (etFilePath.Contains("Packages"))
-                                        {
-                                            var packageStart = etFilePath.IndexOf("Packages") + 9;
-                                            var packageEnd = etFilePath.IndexOf("/", packageStart);
-                                            if (packageEnd > packageStart)
-                                            {
-                                                var packageName = etFilePath.Substring(packageStart, packageEnd - packageStart);
-                                                if (packageName.StartsWith("cn.etetet."))
-                                                {
-                                                    return packageName;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            return null!;
-        }
-
-        private string GetPackageFromCompilationContext(SyntaxNodeAnalysisContext context, ITypeSymbol typeSymbol)
-        {
-            // 尝试通过编译上下文中的所有语法树查找类型定义
-            var compilation = context.SemanticModel.Compilation;
-            var typeName = typeSymbol.Name;
-            
-            foreach (var syntaxTree in compilation.SyntaxTrees)
-            {
-                var filePath = syntaxTree.FilePath;
-                if (string.IsNullOrEmpty(filePath)) continue;
-                
-                // 检查文件路径是否包含Packages目录
-                var normalizedPath = filePath.Replace("\\", "/");
-                if (!normalizedPath.Contains("Packages")) continue;
-                
-                // 尝试在该语法树中查找类型定义
-                var root = syntaxTree.GetRoot();
-                var typeDeclarations = root.DescendantNodes()
-                    .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.TypeDeclarationSyntax>()
-                    .Where(t => t.Identifier.ValueText == typeName);
-                
-                foreach (var typeDeclaration in typeDeclarations)
-                {
-                    // 从文件路径提取包名
-                    var packageStart = normalizedPath.IndexOf("Packages") + 9;
-                    var packageEnd = normalizedPath.IndexOf("/", packageStart);
-                    if (packageEnd > packageStart)
-                    {
-                        var packageName = normalizedPath.Substring(packageStart, packageEnd - packageStart);
-                        if (packageName.StartsWith("cn.etetet."))
-                        {
-                            return packageName;
-                        }
-                    }
-                }
-            }
-            
-            return null!;
-        }
-
-        private bool CanAccessField(string currentPackage, string targetPackage)
-        {
-            // 可以访问自己包的字段
+            // 【包依赖规范】：包中只能访问自己包或者依赖包的符号
             if (currentPackage == targetPackage) return true;
             
-            
-            // 检查当前包是否存在
-            if (!_packageInfos.TryGetValue(currentPackage, out var currentPackageInfo))
+            if (!_packageInfos.TryGetValue(currentPackage, out var currentInfo))
             {
-                // 如果当前包不存在，禁止访问（严格模式）
                 return false;
             }
             
-            // 检查目标包是否存在
-            if (!_packageInfos.TryGetValue(targetPackage, out var _))
+            if (!_packageInfos.TryGetValue(targetPackage, out var targetInfo))
             {
-                // 如果目标包不存在，禁止访问
-                return false;
-            }
-            
-            // 可以访问依赖包的字段
-            return IsInDependencyChain(currentPackageInfo, targetPackage);
-        }
-
-        private bool CanAccessType(string currentPackage, string targetPackage)
-        {
-            // 可以访问自己包的类型
-            if (currentPackage == targetPackage) return true;
-            
-            
-            // 检查当前包是否存在
-            if (!_packageInfos.TryGetValue(currentPackage, out var currentPackageInfo))
-            {
-                // 如果当前包不存在，禁止访问（严格模式）
-                return false;
-            }
-            
-            // 检查目标包是否存在
-            if (!_packageInfos.TryGetValue(targetPackage, out var _))
-            {
-                // 如果目标包不存在，禁止访问
-                return false;
-            }
-            
-            // 测试特定case：如果是yiuiinvoke访问core，允许访问
-            if (currentPackage == "cn.etetet.yiuiinvoke" && targetPackage == "cn.etetet.core")
-            {
-                bool hasDirectDependency = currentPackageInfo.Dependencies.Contains(targetPackage);
-                return hasDirectDependency;
-            }
-            
-            // 可以访问依赖包的类型
-            return IsInDependencyChain(currentPackageInfo, targetPackage);
-        }
-
-        private bool CanCallMethod(string currentPackage, string targetPackage)
-        {
-            // 可以调用自己包的方法
-            if (currentPackage == targetPackage) return true;
-            
-            
-            // 检查当前包是否存在
-            if (!_packageInfos.TryGetValue(currentPackage, out var currentPackageInfo))
-            {
-                // 如果当前包不存在，禁止调用（严格模式）
-                return false;
-            }
-            
-            // 检查目标包是否存在
-            if (!_packageInfos.TryGetValue(targetPackage, out var _))
-            {
-                // 如果目标包不存在，禁止调用
                 return false;
             }
             
             
-            // 可以调用依赖包的方法
-            return IsInDependencyChain(currentPackageInfo, targetPackage);
+            // 【传统依赖链检查】：先检查是否在依赖链中
+            if (IsInDependencyChain(currentInfo, targetPackage))
+            {
+                return true;
+            }
+            
+            // 【新增同层访问规则】：检查同层访问权限
+            if (currentInfo.Level == targetInfo.Level && targetInfo.AllowSameLevelAccess)
+            {
+                // 如果目标包允许同层访问，还需要确保当前包没有被目标包依赖
+                // 即：如果A包引用了同层包B，那么B包无论如何都不能访问A包
+                bool targetDependsOnCurrent = IsInDependencyChain(targetInfo, currentPackage);
+                
+                
+                if (!targetDependsOnCurrent)
+                {
+                    return true;
+                }
+            }
+            
+            return false;
         }
 
         private bool IsInDependencyChain(PackageInfo currentPackage, string targetPackage)
         {
-            // 首先检查直接依赖
+            if (string.IsNullOrEmpty(targetPackage))
+            {
+                return false;
+            }
+            
+            // 【性能优化】：使用预计算的完整依赖集合，O(1) 查找
+            if (currentPackage.AllDependencies.Count > 0)
+            {
+                return currentPackage.AllDependencies.Contains(targetPackage);
+            }
+            
+            // 【回退方案】：如果预计算失败，使用原有的实时计算方式
             if (currentPackage.Dependencies.Contains(targetPackage))
             {
                 return true;
             }
             
-            // 然后检查间接依赖
             var visited = new HashSet<string>();
             var toVisit = new Queue<string>();
             
-            // 添加直接依赖
             foreach (var dependency in currentPackage.Dependencies)
             {
                 toVisit.Enqueue(dependency);
@@ -764,9 +755,11 @@ namespace ET
                 if (visited.Contains(current)) continue;
                 visited.Add(current);
                 
-                if (current == targetPackage) return true;
+                if (current == targetPackage) 
+                {
+                    return true;
+                }
                 
-                // 添加间接依赖
                 if (_packageInfos.TryGetValue(current, out var packageInfo))
                 {
                     foreach (var dependency in packageInfo.Dependencies)
@@ -782,12 +775,79 @@ namespace ET
             return false;
         }
 
+        /// <summary>
+        /// 预计算所有包的完整依赖集合，包括传递依赖
+        /// </summary>
+        private void PrecomputeAllDependencies()
+        {
+            try
+            {
+                // 使用拓扑排序确保依赖计算顺序正确
+                var computed = new HashSet<string>();
+                var computing = new HashSet<string>();
+                
+                foreach (var packageName in _packageInfos.Keys)
+                {
+                    ComputePackageDependencies(packageName, computed, computing);
+                }
+            }
+            catch (Exception)
+            {
+                // 继续执行，如果预计算失败，会回退到原有的实时计算方式
+            }
+        }
+
+        /// <summary>
+        /// 递归计算单个包的所有依赖
+        /// </summary>
+        private void ComputePackageDependencies(string packageName, HashSet<string> computed, HashSet<string> computing)
+        {
+            if (computed.Contains(packageName) || !_packageInfos.TryGetValue(packageName, out var packageInfo))
+            {
+                return;
+            }
+            
+            // 检测循环依赖
+            if (computing.Contains(packageName))
+            {
+                return; // 循环依赖，跳过
+            }
+            
+            computing.Add(packageName);
+            
+            // 先计算所有直接依赖的完整依赖集合
+            foreach (var dependency in packageInfo.Dependencies)
+            {
+                ComputePackageDependencies(dependency, computed, computing);
+                
+                // 添加直接依赖
+                packageInfo.AllDependencies.Add(dependency);
+                
+                // 添加传递依赖
+                if (_packageInfos.TryGetValue(dependency, out var depInfo))
+                {
+                    foreach (var transitiveDep in depInfo.AllDependencies)
+                    {
+                        packageInfo.AllDependencies.Add(transitiveDep);
+                    }
+                }
+            }
+            
+            computing.Remove(packageName);
+            computed.Add(packageName);
+        }
+
         private class PackageInfo
         {
             public string Name { get; set; } = string.Empty;
-            public int Id { get; set; }
-            public int Level { get; set; }
             public List<string> Dependencies { get; set; } = new List<string>();
+            public int Level { get; set; } = 0;
+            public bool AllowSameLevelAccess { get; set; } = false;
+            
+            /// <summary>
+            /// 预计算的完整依赖集合（包括传递依赖）
+            /// </summary>
+            public HashSet<string> AllDependencies { get; set; } = new HashSet<string>();
         }
     }
 }

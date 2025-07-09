@@ -1,5 +1,6 @@
 {
   "Id": 36,
   "Name": "RobotCase",
-  "Level": 8
+  "Level": 5,
+  "AllowSameLevelAccess": true
 }

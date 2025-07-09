@@ -20,7 +20,16 @@
       "Bash(touch:*)",
       "Bash(/dev/null)",
       "Bash(echo:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(for pkg in core excel proto unit ai behaviortree http startconfig aoi numeric move recast netinner router actorlocation map)",
+      "Bash(do)",
+      "Bash(if [ -f \"/Users/tanghai/Documents/WOW/Packages/cn.etetet.$pkg/package.json\" ])",
+      "Bash(then)",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(timeout:*)"
     ],
     "deny": []
   }
