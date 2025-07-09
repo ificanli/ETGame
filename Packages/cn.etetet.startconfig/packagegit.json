@@ -1,4 +1,5 @@
 {
 "Id": 29,
-"Name": "StartConfig"
+"Name": "StartConfig",
+"AllowAccessField": true
 }

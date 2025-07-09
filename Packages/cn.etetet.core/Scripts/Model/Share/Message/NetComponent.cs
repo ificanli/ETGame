@@ -5,8 +5,8 @@ namespace ET
 {
     public struct NetComponentOnRead
     {
-        public EntityRef<Session> Session;
-        public object Message;
+        public EntityRef<Session> Session { get; set; }
+        public object Message { get; set; }
     }
     
     [ComponentOf(typeof(Scene))]
