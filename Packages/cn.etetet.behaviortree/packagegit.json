@@ -1,5 +1,6 @@
 {
 "Id": 40,
 "Name": "BehaviorTree", 
-"AllowAccessField": true
+"AllowAccessField": true,
+"Level": 2
 }

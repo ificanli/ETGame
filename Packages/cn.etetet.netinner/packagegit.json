@@ -1,6 +1,7 @@
 {
 "Id": 28,
 "Name": "NetInner",
+"Level": 3,
 "ScriptsReferences": {
   "ModelView": [
     "ET.Core"

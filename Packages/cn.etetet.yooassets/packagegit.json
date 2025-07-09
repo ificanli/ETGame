@@ -1,6 +1,7 @@
 {
 "Id": 7,
 "Name": "YooAssets",
+"Level": 2,
 "ScriptsReferences": {
     "ModelView": [
       "ET.YooAssets"

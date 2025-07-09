@@ -1,6 +1,7 @@
 {
 "Id": 2,
 "Name": "Loader",
+"Level": 1,
 "ScriptsReferences": {
   "ModelView": [
     "ET.Loader"

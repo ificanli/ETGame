@@ -1,5 +1,6 @@
 {
 "Id": 1,
+"Level": 1,
 "Name": "Core",
 "ScriptsReferences": {
   "ModelView": [
