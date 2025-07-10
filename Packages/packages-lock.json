@@ -143,7 +143,8 @@
         "cn.etetet.recast": "4.0.0",
         "cn.etetet.netinner": "4.0.0",
         "cn.etetet.router": "4.0.0",
-        "cn.etetet.actorlocation": "4.0.0"
+        "cn.etetet.actorlocation": "4.0.0",
+        "cn.etetet.loader": "4.0.0"
       }
     },
     "cn.etetet.map": {

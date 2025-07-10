@@ -553,9 +553,10 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 
 1. 请注意要递归依赖，修改依赖的时候要把依赖的依赖，全部递归加上去
 2. 包的依赖关系直接读取所有包的package.json,
-3. 刷新包的时候请根据第6点中的层级关系，以及每个包后面说明的依赖包，来配置package.json，不在层级关系中的包不用处理
-4.  请不要读packages-lock.json
-5.  只能高层包依赖低层包，禁止依赖同层包，禁止依赖比自己高层的包
+3. 刷新包的时候请根据第6点中的层级关系，以及每个包后面说明的依赖包，来配置package.json，不在层级关系中的包不用处理，清理多余的依赖，比如已经递归依赖了，就不需要再加上直接依赖了
+4. 请不要读packages-lock.json
+5. 通常只能高层包依赖低层包，但是假如A包的packagegit.json中加了"AllowSameLevelAccess": true,那么允许没有被A包依赖的同层包访问
+6. 假如A包依赖了B包，那么B包永远不能访问A包，这样可以强制处理逻辑相互依赖的问题，比如任务包依赖道具包，那么道具包永远不能直接调用任务包中的方法，可以抛出事件，任务包订阅道具包的事件
 
 # 绝对禁止hard code
 # 项目只有一个编译 dotnet build ET.sln，无论什么东西都是用这个编译
