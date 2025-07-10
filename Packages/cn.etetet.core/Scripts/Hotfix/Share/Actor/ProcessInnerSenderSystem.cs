@@ -28,7 +28,6 @@ namespace ET
 
             foreach (MessageInfo actorMessageInfo in self.list)
             {
-                Log.Debug($"11111111111111111111111111111111111: {actorMessageInfo.MessageObject}");
                 self.HandleMessage(fiber, actorMessageInfo);
             }
         }
