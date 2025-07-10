@@ -172,11 +172,16 @@ namespace ET
                 {
                     var from = cycle[i];
                     var to = cycle[(i + 1) % cycle.Count];
-                    var edge = graph[from].FirstOrDefault(e => SymbolEqualityComparer.Default.Equals(e.CalleeType, to));
-                    if (edge != null)
+                    
+                    // 安全地获取边信息，避免空引用异常
+                    if (graph.TryGetValue(from, out var fromEdges))
                     {
-                        steps.Add($"{edge.CallerType.Name}.{edge.CallerMethod.Name}() -> {edge.CalleeType.Name}.{edge.CalleeMethod.Name}()");
-                        edges.Add(edge);
+                        var edge = fromEdges.FirstOrDefault(e => SymbolEqualityComparer.Default.Equals(e.CalleeType, to));
+                        if (edge != null)
+                        {
+                            steps.Add($"{edge.CallerType.Name}.{edge.CallerMethod.Name}() -> {edge.CalleeType.Name}.{edge.CalleeMethod.Name}()");
+                            edges.Add(edge);
+                        }
                     }
                 }
                 var msg = string.Join(" | ", steps);

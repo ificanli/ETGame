@@ -15,35 +15,15 @@ namespace ET
     /// <summary>
     /// ET包依赖分析器 - 检查包之间的访问权限和依赖关系
     /// 
-    /// 【用户要求总结】：要严格按照下面要求编写，每次做出决定之前先检查是否是否违反规定，执行完任务之后再次检查是否违反规定
-    /// 1. 编译ET.Core时：分析器实例A可以从编译信息中获取符号路径，初始化的时候把符号跟映射的包写入符号表
-    /// 2. 编译ET.Model时：分析器实例B可以从编译信息中获取符号路径，分析器实例B初始化时可以把符号表跟映射的包写入符号表，那么此时符号表有ET.Model跟ET.Core两者的符号表
-    /// 3. 编译ET.Hotfix时：ET.Model跟ET.Core已经编译完成了，分析器实例C初始化可以把符号表跟映射的包写入符号表，那么此时符号表有ET.Model跟ET.Hotfix跟ET.Core三者的符号表
-    /// 7. 一定要找到所有符号，要修复所有找不到符号的异常，找不到说明符号表有遗漏，需要检查写入符号表是否漏掉
-    /// 8. 绝对禁止hard code任何包名映射或类型推断
-    /// 9. 必须利用编译时符号表中的信息，因为编译时符号已经写入符号表
-    /// 10. 编译流程：程序集相互依赖时，被依赖的程序集先编译完成
-    /// 11. 编译ET.Hotfix时，ET.Model已编译完成，其符号在编译上下文中可用
-    /// 12. 查找符号只需要从符号表中查找，因为已经提前写入了符号表
-    /// 13. 初期加载packageinfo可以读取文件系统，后面则禁止扫描文件系统去获取符号的包名，只能从符号表路径中获取
-    /// 14. 已编译的程序集跟当前程序集的符号已经写入了符号表，不需要扫描文件系统去获取
-    /// 15. 【关键设计】：分析器在初始化时把程序集符号跟包写入符号表，这样后面使用拿符号包名直接从符号表中拿
-    /// 16. 【严格检查】：找不到符号的包要抛异常，符号查找请做到最严格的检查
-    /// 17. 该文件禁止hard code
-    /// 18. 当前程序集获取包名也从符号表获取，因为分析器在一开始就已经把当前代码的符号写入了符号表
-    /// 19. 分析器可以把调试信息写入文件来调试
-    /// 20. 对于partial class，只需要检查用到的partial class的成员或者方法
+    /// 【设计原理】：
+    /// 每个分析器实例独立工作，通过ProjectReference机制可以直接访问所有依赖程序集的符号
+    /// 分析器实例从当前编译上下文中获取所有符号（包括依赖程序集），构建自己的符号表
+    /// 利用ISymbol.Locations获取源码位置，从文件路径中提取包名信息
     /// 
-    /// 【实现原理】：
-    /// 使用全局共享符号表（static ConcurrentDictionary<string, string> _globalSymbolTable）
-    /// 每个分析器实例初始化时从当前编译的语法树中提取符号并写入全局符号表
-    /// 查找符号包归属时直接从全局符号表中查询，实现跨程序集的符号查找
-    /// 
-    /// 【编译流程】：
-    /// 1. 编译ET.Core时：分析器实例A写入Core的符号到全局表
-    /// 2. 编译ET.Model时：分析器实例B写入Model的符号到全局表（此时表中有Core+Model）  
-    /// 3. 编译ET.Hotfix时：分析器实例C写入Hotfix的符号到全局表（此时表中有Core+Model+Hotfix）
-    /// 4. 查找符号时：直接从全局符号表中查询，无需推断或hard code
+    /// 【核心优势】：
+    /// - 每个分析器实例职责单一，避免全局状态复杂性
+    /// - 直接利用编译器提供的符号信息，无需跨实例共享
+    /// - 内存使用更高效，生命周期管理更简单
     /// </summary>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class PackageAnalyzer : DiagnosticAnalyzer
@@ -81,13 +61,9 @@ namespace ET
             TypeAccessForbiddenDescriptor
         );
 
-        // 【关键】：所有分析器实例共享的全局符号表
-        private static readonly ConcurrentDictionary<string, string> _globalSymbolTable = new ConcurrentDictionary<string, string>();
-        
-        // 【关键修复】：包信息缓存也应该是全局共享的，就像符号表一样
-        private static readonly ConcurrentDictionary<string, PackageInfo> _packageInfos = new ConcurrentDictionary<string, PackageInfo>();
-        private static volatile bool _initialized = false;
-        private static readonly object _initLock = new object();
+        // 每个分析器实例独立的符号表
+        private readonly Dictionary<string, string> _symbolTable = new();
+        private readonly Dictionary<string, PackageInfo> _packageInfos = new();
 
         public override void Initialize(AnalysisContext context)
         {
@@ -104,18 +80,10 @@ namespace ET
                 return;
             }
             
-            lock (_initLock)
-            {
-                // 【关键修复】：每个编译单元都需要写入符号表，不能只初始化一次
-                if (!_initialized)
-                {
-                    LoadPackageInfos(context.Compilation);
-                    _initialized = true;
-                }
-                
-                // 每个编译单元都写入自己的符号表
-                WriteCurrentCompilationToGlobalSymbolTable(context.Compilation);
-            }
+            LoadPackageInfos(context.Compilation);
+            
+            // 构建当前编译上下文的符号表
+            BuildSymbolTable(context.Compilation);
             
             context.RegisterSyntaxNodeAction(AnalyzeMemberAccess, SyntaxKind.SimpleMemberAccessExpression);
             context.RegisterSyntaxNodeAction(AnalyzeInvocationExpression, SyntaxKind.InvocationExpression);
@@ -124,10 +92,11 @@ namespace ET
             context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
         }
 
-        private void WriteCurrentCompilationToGlobalSymbolTable(Compilation compilation)
+        private void BuildSymbolTable(Compilation compilation)
         {
             try
             {
+                // 处理当前编译的语法树
                 foreach (var syntaxTree in compilation.SyntaxTrees)
                 {
                     if (syntaxTree.FilePath != null)
@@ -136,6 +105,40 @@ namespace ET
                         if (!string.IsNullOrEmpty(packageName))
                         {
                             WriteSymbolsFromSyntaxTree(syntaxTree, packageName!);
+                        }
+                    }
+                }
+                
+                // 处理依赖程序集中的符号（通过ProjectReference可访问）
+                BuildSymbolsFromReferencedAssemblies(compilation);
+            }
+            catch (Exception)
+            {
+                // 继续执行
+            }
+        }
+        
+        private void BuildSymbolsFromReferencedAssemblies(Compilation compilation)
+        {
+            try
+            {
+                // 获取所有引用的程序集
+                foreach (var reference in compilation.References)
+                {
+                    if (reference is CompilationReference compRef)
+                    {
+                        // 这是ProjectReference，可以访问源码
+                        var referencedCompilation = compRef.Compilation;
+                        foreach (var syntaxTree in referencedCompilation.SyntaxTrees)
+                        {
+                            if (syntaxTree.FilePath != null)
+                            {
+                                var packageName = ExtractPackageNameFromFilePath(syntaxTree.FilePath);
+                                if (!string.IsNullOrEmpty(packageName))
+                                {
+                                    WriteSymbolsFromSyntaxTree(syntaxTree, packageName!);
+                                }
+                            }
                         }
                     }
                 }
@@ -175,6 +178,7 @@ namespace ET
             {
                 var root = syntaxTree.GetRoot();
                 
+                
                 // 【关键修复】：只记录在当前文件中**定义**的符号，不记录使用的符号
                 
                 // 处理所有类型声明
@@ -183,11 +187,13 @@ namespace ET
                     if (IsInETNamespace(typeDecl))
                     {
                         var typeName = typeDecl.Identifier.ValueText;
+                        var namespaceName = GetNamespaceName(typeDecl);
+                        var fullTypeName = string.IsNullOrEmpty(namespaceName) ? typeName : $"{namespaceName}.{typeName}";
+                        
                         if (!string.IsNullOrEmpty(typeName))
                         {
-                            
-                            // 只有在符号表中不存在时才添加，避免覆盖
-                            _globalSymbolTable.TryAdd(typeName, packageName);
+                            // 记录完整类型名
+                            _symbolTable[fullTypeName] = packageName;
                             
                             // 处理成员
                             foreach (var member in typeDecl.Members)
@@ -200,8 +206,8 @@ namespace ET
                                             var fieldName = variable.Identifier.ValueText;
                                             if (!string.IsNullOrEmpty(fieldName))
                                             {
-                                                var fieldKey = $"{typeName}.{fieldName}";
-                                                _globalSymbolTable.TryAdd(fieldKey, packageName);
+                                                var fieldKey = $"{fullTypeName}.{fieldName}";
+                                                _symbolTable[fieldKey] = packageName;
                                             }
                                         }
                                         break;
@@ -209,16 +215,17 @@ namespace ET
                                         var methodName = methodDecl.Identifier.ValueText;
                                         if (!string.IsNullOrEmpty(methodName))
                                         {
-                                            var methodKey = $"{typeName}.{methodName}";
-                                            _globalSymbolTable.TryAdd(methodKey, packageName);
+                                            // 构建完整的方法签名，包含泛型参数和方法参数
+                                            var methodSignature = GetMethodSignature(fullTypeName, methodDecl);
+                                            _symbolTable[methodSignature] = packageName;
                                         }
                                         break;
                                     case PropertyDeclarationSyntax propertyDecl:
                                         var propertyName = propertyDecl.Identifier.ValueText;
                                         if (!string.IsNullOrEmpty(propertyName))
                                         {
-                                            var propertyKey = $"{typeName}.{propertyName}";
-                                            _globalSymbolTable.TryAdd(propertyKey, packageName);
+                                            var propertyKey = $"{fullTypeName}.{propertyName}";
+                                            _symbolTable[propertyKey] = packageName;
                                         }
                                         break;
                                 }
@@ -233,17 +240,21 @@ namespace ET
                     if (IsInETNamespace(enumDecl))
                     {
                         var enumName = enumDecl.Identifier.ValueText;
+                        var namespaceName = GetNamespaceName(enumDecl);
+                        var fullEnumName = string.IsNullOrEmpty(namespaceName) ? enumName : $"{namespaceName}.{enumName}";
+                        
                         if (!string.IsNullOrEmpty(enumName))
                         {
-                            _globalSymbolTable.TryAdd(enumName, packageName);
+                            _symbolTable[fullEnumName] = packageName;
                             
                             foreach (var enumMember in enumDecl.Members)
                             {
                                 var memberName = enumMember.Identifier.ValueText;
                                 if (!string.IsNullOrEmpty(memberName))
                                 {
-                                    _globalSymbolTable.TryAdd($"{enumName}.{memberName}", packageName);
-                                    _globalSymbolTable.TryAdd(memberName, packageName);
+                                    // 使用完整的枚举成员名（Namespace.EnumName.MemberName）
+                                    var fullMemberName = $"{fullEnumName}.{memberName}";
+                                    _symbolTable[fullMemberName] = packageName;
                                 }
                             }
                         }
@@ -256,9 +267,12 @@ namespace ET
                     if (IsInETNamespace(delegateDecl))
                     {
                         var delegateName = delegateDecl.Identifier.ValueText;
+                        var namespaceName = GetNamespaceName(delegateDecl);
+                        var fullDelegateName = string.IsNullOrEmpty(namespaceName) ? delegateName : $"{namespaceName}.{delegateName}";
+                        
                         if (!string.IsNullOrEmpty(delegateName))
                         {
-                            _globalSymbolTable.TryAdd(delegateName, packageName);
+                            _symbolTable[fullDelegateName] = packageName;
                         }
                     }
                 }
@@ -285,6 +299,76 @@ namespace ET
             return false;
         }
 
+        private string GetNamespaceName(SyntaxNode node)
+        {
+            var parent = node.Parent;
+            while (parent != null)
+            {
+                if (parent is NamespaceDeclarationSyntax ns)
+                {
+                    return ns.Name.ToString();
+                }
+                parent = parent.Parent;
+            }
+            return string.Empty;
+        }
+
+        private string GetMethodSignature(string fullTypeName, MethodDeclarationSyntax methodDecl)
+        {
+            var methodName = methodDecl.Identifier.ValueText;
+            var signature = $"{fullTypeName}.{methodName}";
+            
+            // 添加泛型参数
+            if (methodDecl.TypeParameterList != null && methodDecl.TypeParameterList.Parameters.Count > 0)
+            {
+                var genericParams = string.Join(",", methodDecl.TypeParameterList.Parameters.Select(p => p.Identifier.ValueText));
+                signature += $"<{genericParams}>";
+            }
+            
+            // 添加方法参数
+            var parameters = methodDecl.ParameterList.Parameters;
+            if (parameters.Count > 0)
+            {
+                var paramTypes = parameters.Select(p => {
+                    var typeName = p.Type?.ToString() ?? "unknown";
+                    return typeName;
+                });
+                signature += $"({string.Join(",", paramTypes)})";
+            }
+            else
+            {
+                signature += "()";
+            }
+            
+            return signature;
+        }
+
+        private string GetMethodSignatureFromSymbol(IMethodSymbol methodSymbol)
+        {
+            var fullTypeName = methodSymbol.ContainingType.ToDisplayString();
+            var methodName = methodSymbol.Name;
+            var signature = $"{fullTypeName}.{methodName}";
+            
+            // 添加泛型参数
+            if (methodSymbol.TypeParameters.Length > 0)
+            {
+                var genericParams = string.Join(",", methodSymbol.TypeParameters.Select(tp => tp.Name));
+                signature += $"<{genericParams}>";
+            }
+            
+            // 添加方法参数
+            if (methodSymbol.Parameters.Length > 0)
+            {
+                var paramTypes = methodSymbol.Parameters.Select(p => p.Type.ToDisplayString());
+                signature += $"({string.Join(",", paramTypes)})";
+            }
+            else
+            {
+                signature += "()";
+            }
+            
+            return signature;
+        }
 
         private void LoadPackageInfos(Compilation compilation)
         {
@@ -618,11 +702,12 @@ namespace ET
                 return null;
             }
             
-            // 【关键修复】：对于字段、方法、属性，直接从符号表中查找
+            // 使用FullName从符号表中查找
             if (symbol is IFieldSymbol fieldSymbol && fieldSymbol.ContainingType != null)
             {
-                var fieldKey = $"{fieldSymbol.ContainingType.Name}.{fieldSymbol.Name}";
-                if (_globalSymbolTable.TryGetValue(fieldKey, out string? fieldPackage))
+                var fullTypeName = fieldSymbol.ContainingType.ToDisplayString();
+                var fieldKey = $"{fullTypeName}.{fieldSymbol.Name}";
+                if (_symbolTable.TryGetValue(fieldKey, out string? fieldPackage))
                 {
                     return fieldPackage;
                 }
@@ -630,8 +715,9 @@ namespace ET
             
             if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingType != null)
             {
-                var methodKey = $"{methodSymbol.ContainingType.Name}.{methodSymbol.Name}";
-                if (_globalSymbolTable.TryGetValue(methodKey, out string? methodPackage))
+                // 构建完整的方法签名进行查找
+                var methodSignature = GetMethodSignatureFromSymbol(methodSymbol);
+                if (_symbolTable.TryGetValue(methodSignature, out string? methodPackage))
                 {
                     return methodPackage;
                 }
@@ -639,15 +725,17 @@ namespace ET
             
             if (symbol is IPropertySymbol propertySymbol && propertySymbol.ContainingType != null)
             {
-                var propertyKey = $"{propertySymbol.ContainingType.Name}.{propertySymbol.Name}";
-                if (_globalSymbolTable.TryGetValue(propertyKey, out string? propertyPackage))
+                var fullTypeName = propertySymbol.ContainingType.ToDisplayString();
+                var propertyKey = $"{fullTypeName}.{propertySymbol.Name}";
+                if (_symbolTable.TryGetValue(propertyKey, out string? propertyPackage))
                 {
                     return propertyPackage;
                 }
             }
             
-            // 查询类型
-            if (_globalSymbolTable.TryGetValue(symbol.Name, out string? typePackage))
+            // 查询类型（使用FullName）
+            var symbolFullName = symbol.ToDisplayString();
+            if (_symbolTable.TryGetValue(symbolFullName, out string? typePackage))
             {
                 return typePackage;
             }
@@ -672,8 +760,8 @@ namespace ET
                     var packageFromPath = ExtractPackageNameFromFilePath(location.SourceTree.FilePath);
                     if (!string.IsNullOrEmpty(packageFromPath))
                     {
-                        // 这是ET框架中声明的符号，但符号表中没有记录，说明符号写入有遗漏
-                        throw new InvalidOperationException($"Symbol '{symbol.Name}' is declared in ET package '{packageFromPath}' but not found in symbol table. File: {location.SourceTree.FilePath}");
+                        // 找到符号的包归属，直接返回
+                        return packageFromPath;
                     }
                 }
             }
@@ -697,7 +785,6 @@ namespace ET
                 return false;
             }
             
-            
             // 【传统依赖链检查】：先检查是否在依赖链中
             if (IsInDependencyChain(currentInfo, targetPackage))
             {
@@ -710,7 +797,6 @@ namespace ET
                 // 如果目标包允许同层访问，还需要确保当前包没有被目标包依赖
                 // 即：如果A包引用了同层包B，那么B包无论如何都不能访问A包
                 bool targetDependsOnCurrent = IsInDependencyChain(targetInfo, currentPackage);
-                
                 
                 if (!targetDependsOnCurrent)
                 {

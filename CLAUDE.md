@@ -515,14 +515,13 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 4. 目前各包的层级关系如下:
    
   第5层
-  ├── cn.etetet.wow           (游戏入口)          AllowSameLevelAccess 依赖quest,spell,main
-  ├── cn.etetet.btnode        (btnode)           AllowSameLevelAccess 依赖quest,spell,main
-  ├── cn.etetet.quest         (任务系统)          AllowSameLevelAccess 依赖main,spell
-  ├── cn.etetet.spell         (技能系统)          AllowSameLevelAccess 依赖main
-  ├── cn.etetet.main          (主逻辑)            AllowSameLevelAccess 依赖robot,robotcase,login,map
-  ├── cn.etetet.robotcase     (机器人用例系统)     AllowSameLevelAccess 依赖robot
-  ├── cn.etetet.robot         (机器人系统)        AllowSameLevelAccess 依赖login，console
-  ├── cn.etetet.login         (登录系统)          AllowSameLevelAccess 依赖map
+  ├── cn.etetet.wow           (游戏入口)          AllowSameLevelAccess
+  ├── cn.etetet.btnode        (btnode)           AllowSameLevelAccess
+  ├── cn.etetet.quest         (任务系统)          AllowSameLevelAccess
+  ├── cn.etetet.spell         (技能系统)          AllowSameLevelAccess
+  ├── cn.etetet.robotcase     (机器人用例系统)     AllowSameLevelAccess
+  ├── cn.etetet.robot         (机器人系统)        AllowSameLevelAccess 依赖console
+  ├── cn.etetet.login         (登录系统)          AllowSameLevelAccess
   ├── cn.etetet.map           (地图系统)          AllowSameLevelAccess 依赖actorlocation
 
   第4层
@@ -552,11 +551,11 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
   ├── cn.etetet.proto         (协议定义)
   ├── cn.etetet.loader        (加载器)
 
-7. 请注意要递归依赖，修改依赖的时候要把依赖的依赖，全部递归加上去
-8. 包的依赖关系直接读取所有包的package.json,
-9. 刷新包的时候请根据第6点中的层级关系，以及每个包后面说明的依赖包，来配置package.json，不在层级关系中的包不用处理
-10. 请不要读packages-lock.json
-11. 只能高层包依赖低层包，禁止依赖同层包，禁止依赖比自己高层的包
+1. 请注意要递归依赖，修改依赖的时候要把依赖的依赖，全部递归加上去
+2. 包的依赖关系直接读取所有包的package.json,
+3. 刷新包的时候请根据第6点中的层级关系，以及每个包后面说明的依赖包，来配置package.json，不在层级关系中的包不用处理
+4.  请不要读packages-lock.json
+5.  只能高层包依赖低层包，禁止依赖同层包，禁止依赖比自己高层的包
 
 # 绝对禁止hard code
 # 项目只有一个编译 dotnet build ET.sln，无论什么东西都是用这个编译
