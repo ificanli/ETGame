@@ -14,11 +14,6 @@
     "url": "https://github.com/ET-Packages/cn.etetet.yiuireddot"
   },
   "relatedPackages": {},
-  "dependencies": {
-    "cn.etetet.yiuiframework": "2.0.0",
-    "cn.etetet.yiuiloopscrollrectasync": "2.0.0",
-    "cn.etetet.yiuigm": "2.0.0"
-  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
   }

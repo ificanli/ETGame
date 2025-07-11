@@ -30,7 +30,10 @@
       "Bash(pkill:*)",
       "Bash(true)",
       "Bash(timeout:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(chmod:*)",
+      "Bash(./view_analyzer_log.sh:*)",
+      "Bash(bash:*)"
     ],
     "deny": []
   }

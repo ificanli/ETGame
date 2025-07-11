@@ -1,6 +1,8 @@
 ﻿{
     "Id": 1807,
     "Name": "YIUI.DamageTips",
+    "Level": 2,
+    "AllowSameLevelAccess": true,
     "ScriptsReferences": 
       {
         "ModelView": [

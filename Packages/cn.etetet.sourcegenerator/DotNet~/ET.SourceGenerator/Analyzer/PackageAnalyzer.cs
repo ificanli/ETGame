@@ -58,18 +58,129 @@ namespace ET
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(
             FieldAccessForbiddenDescriptor,
             MethodCallForbiddenDescriptor,
-            TypeAccessForbiddenDescriptor
+            TypeAccessForbiddenDescriptor,
+            DebugInfoDescriptor,
+            CircularDependencyDescriptor
         );
 
         // 每个分析器实例独立的符号表
         private readonly Dictionary<string, string> _symbolTable = new();
         private readonly Dictionary<string, PackageInfo> _packageInfos = new();
+        
+        // 【性能优化】：预计算的扁平化依赖关系，O(1)查找
+        private readonly Dictionary<string, HashSet<string>> _flatDependencies = new();
+        
+        // 【循环依赖检测】：记录检测到的循环依赖包，避免重复报错
+        private readonly HashSet<string> _circularDependencyPackages = new();
+        
+        // 【性能优化】：预编译正则表达式
+        private static readonly Regex DependenciesRegex = new(
+            @"""dependencies""\s*:\s*\{([^}]*)\}",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant);
+            
+        private static readonly Regex PackageNameRegex = new(
+            @"""(cn\.etetet\.[^""]+)""\s*:\s*""[^""]*""",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+        // 【分析器日志】：用于调试的诊断报告
+        private static readonly DiagnosticDescriptor DebugInfoDescriptor = new DiagnosticDescriptor(
+            "ET9999",
+            "PackageAnalyzer Debug Info",
+            "Debug: {0}",
+            "Debug",
+            DiagnosticSeverity.Info,
+            true
+        );
+
+        // 【循环依赖错误】：检测到循环依赖时立即报错
+        private static readonly DiagnosticDescriptor CircularDependencyDescriptor = new DiagnosticDescriptor(
+            "ET0103",
+            "Circular dependency detected",
+            "Package '{0}' has circular dependency. This violates ET framework architecture rules.",
+            "Package",
+            DiagnosticSeverity.Error,
+            true
+        );
+
+        /// <summary>
+        /// 【改进】：在分析器中输出调试信息的正确方式
+        /// </summary>
+        private void LogDebugInfo(SyntaxNodeAnalysisContext context, string message)
+        {
+#if DEBUG
+            // 方案1：通过诊断报告输出（会在编译输出中显示）
+            var diagnostic = Diagnostic.Create(
+                DebugInfoDescriptor,
+                Location.None,
+                message
+            );
+            context.ReportDiagnostic(diagnostic);
+#endif
+        }
+
+        /// <summary>
+        /// 【简化】：只使用临时目录写入日志
+        /// </summary>
+        private static void LogToFile(string message)
+        {
+#if DEBUG
+            try
+            {
+                var logMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}{Environment.NewLine}";
+                var tempLogPath = Path.Combine(Path.GetTempPath(), "PackageAnalyzer.log");
+                File.AppendAllText(tempLogPath, logMessage);
+            }
+            catch
+            {
+                // 静默失败，避免影响分析器正常工作
+            }
+#endif
+        }
+
+
+        /// <summary>
+        /// 【循环依赖检查】：独立的编译动作，检查并报告循环依赖
+        /// </summary>
+        private void CheckCircularDependencies(CompilationAnalysisContext context)
+        {
+            try
+            {
+                // 【关键过滤】：只处理需要分析的程序集
+                if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.All))
+                {
+                    return;
+                }
+
+                // 重新加载包信息并检测循环依赖
+                var packageInfos = new Dictionary<string, PackageInfo>();
+                var circularPackages = new HashSet<string>();
+                
+                LoadPackageInfosForCheck(context.Compilation, packageInfos);
+                DetectCircularDependencies(packageInfos, circularPackages);
+                
+                // 报告所有循环依赖错误
+                foreach (var packageName in circularPackages)
+                {
+                    var diagnostic = Diagnostic.Create(
+                        CircularDependencyDescriptor,
+                        Location.None,
+                        packageName
+                    );
+                    context.ReportDiagnostic(diagnostic);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogToFile($"CheckCircularDependencies error: {ex.Message}");
+            }
+        }
 
         public override void Initialize(AnalysisContext context)
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterCompilationStartAction(InitializeCompilation);
+            context.RegisterCompilationAction(CheckCircularDependencies);
         }
 
         private void InitializeCompilation(CompilationStartAnalysisContext context)
@@ -112,9 +223,13 @@ namespace ET
                 // 处理依赖程序集中的符号（通过ProjectReference可访问）
                 BuildSymbolsFromReferencedAssemblies(compilation);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // 继续执行
+                // 【改进错误处理】：使用分析器专用日志方式
+                LogToFile($"BuildSymbolTable error: {ex.Message}");
+#if DEBUG
+                LogToFile($"Stack trace: {ex.StackTrace}");
+#endif
             }
         }
         
@@ -143,9 +258,10 @@ namespace ET
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // 继续执行
+                // 【改进错误处理】：记录错误但继续执行
+                LogToFile($"BuildSymbolsFromReferencedAssemblies error: {ex.Message}");
             }
         }
 
@@ -277,9 +393,10 @@ namespace ET
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // 继续执行
+                // 【改进错误处理】：记录错误但继续执行
+                LogToFile($"WriteSymbolsFromSyntaxTree error in file {syntaxTree.FilePath}: {ex.Message}");
             }
         }
 
@@ -399,12 +516,13 @@ namespace ET
                     }
                 }
                 
-                // 【性能优化】：预计算所有包的完整依赖集合
-                PrecomputeAllDependencies();
+                // 【性能优化】：预计算所有包的完整依赖集合（不检测循环依赖）
+                PrecomputeAllDependenciesFlat();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // 继续执行
+                // 【改进错误处理】：记录错误但继续执行
+                LogToFile($"LoadPackageInfos error: {ex.Message}");
             }
         }
 
@@ -488,45 +606,66 @@ namespace ET
             }
         }
 
+        /// <summary>
+        /// 【优化】：改进JSON值提取的错误处理
+        /// </summary>
         private string ExtractJsonStringValue(string json, string key)
         {
-            var pattern = $@"""{key}""\s*:\s*""([^""]+)""|""{key}""\s*:\s*([0-9]+)|""{key}""\s*:\s*(true|false)";
-            var match = Regex.Match(json, pattern);
-            if (match.Success)
+            if (string.IsNullOrEmpty(json) || string.IsNullOrEmpty(key))
+                return string.Empty;
+                
+            try
             {
-                return match.Groups[1].Success ? match.Groups[1].Value : 
-                       match.Groups[2].Success ? match.Groups[2].Value : 
-                       match.Groups[3].Value;
+                var pattern = $@"""{key}""\s*:\s*""([^""]+)""|""{key}""\s*:\s*([0-9]+)|""{key}""\s*:\s*(true|false)";
+                var match = Regex.Match(json, pattern);
+                if (match.Success)
+                {
+                    return match.Groups[1].Success ? match.Groups[1].Value : 
+                           match.Groups[2].Success ? match.Groups[2].Value : 
+                           match.Groups[3].Value;
+                }
             }
+            catch (Exception ex)
+            {
+                LogToFile($"ExtractJsonStringValue error for key '{key}': {ex.Message}");
+            }
+            
             return string.Empty;
         }
 
+        /// <summary>
+        /// 【优化】：使用预编译正则表达式提取依赖包列表
+        /// </summary>
         private List<string> ExtractJsonObjectKeys(string json)
         {
             var keys = new List<string>();
             
+            if (string.IsNullOrEmpty(json))
+                return keys;
+            
             try
             {
-                // 【关键修复】：只从dependencies字段中提取依赖包
-                var dependenciesPattern = @"""dependencies""\s*:\s*\{([^}]*)\}";
-                var dependenciesMatch = Regex.Match(json, dependenciesPattern);
+                // 使用预编译的正则表达式
+                var dependenciesMatch = DependenciesRegex.Match(json);
                 
                 if (dependenciesMatch.Success)
                 {
                     var dependenciesContent = dependenciesMatch.Groups[1].Value;
-                    var packagePattern = @"""(cn\.etetet\.[^""]+)""\s*:\s*""[^""]*""";
-                    var matches = Regex.Matches(dependenciesContent, packagePattern);
+                    var matches = PackageNameRegex.Matches(dependenciesContent);
                     
                     foreach (Match match in matches)
                     {
                         var packageName = match.Groups[1].Value.Trim();
-                        keys.Add(packageName);
+                        if (!string.IsNullOrEmpty(packageName))
+                        {
+                            keys.Add(packageName);
+                        }
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // 继续执行
+                LogToFile($"ExtractJsonObjectKeys error: {ex.Message}");
             }
             
             return keys;
@@ -785,10 +924,13 @@ namespace ET
                 return false;
             }
             
-            // 【传统依赖链检查】：先检查是否在依赖链中
-            if (IsInDependencyChain(currentInfo, targetPackage))
+            // 【性能优化】：使用预计算的扁平化依赖关系，O(1)查找
+            if (_flatDependencies.TryGetValue(currentPackage, out var dependencies))
             {
-                return true;
+                if (dependencies.Contains(targetPackage))
+                {
+                    return true;
+                }
             }
             
             // 【新增同层访问规则】：检查同层访问权限
@@ -796,127 +938,182 @@ namespace ET
             {
                 // 如果目标包允许同层访问，还需要确保当前包没有被目标包依赖
                 // 即：如果A包引用了同层包B，那么B包无论如何都不能访问A包
-                bool targetDependsOnCurrent = IsInDependencyChain(targetInfo, currentPackage);
-                
-                if (!targetDependsOnCurrent)
+                if (_flatDependencies.TryGetValue(targetPackage, out var targetDeps))
                 {
-                    return true;
+                    return !targetDeps.Contains(currentPackage);
                 }
-            }
-            
-            return false;
-        }
-
-        private bool IsInDependencyChain(PackageInfo currentPackage, string targetPackage)
-        {
-            if (string.IsNullOrEmpty(targetPackage))
-            {
-                return false;
-            }
-            
-            // 【性能优化】：使用预计算的完整依赖集合，O(1) 查找
-            if (currentPackage.AllDependencies.Count > 0)
-            {
-                return currentPackage.AllDependencies.Contains(targetPackage);
-            }
-            
-            // 【回退方案】：如果预计算失败，使用原有的实时计算方式
-            if (currentPackage.Dependencies.Contains(targetPackage))
-            {
                 return true;
-            }
-            
-            var visited = new HashSet<string>();
-            var toVisit = new Queue<string>();
-            
-            foreach (var dependency in currentPackage.Dependencies)
-            {
-                toVisit.Enqueue(dependency);
-            }
-            
-            while (toVisit.Count > 0)
-            {
-                var current = toVisit.Dequeue();
-                
-                if (visited.Contains(current)) continue;
-                visited.Add(current);
-                
-                if (current == targetPackage) 
-                {
-                    return true;
-                }
-                
-                if (_packageInfos.TryGetValue(current, out var packageInfo))
-                {
-                    foreach (var dependency in packageInfo.Dependencies)
-                    {
-                        if (!visited.Contains(dependency))
-                        {
-                            toVisit.Enqueue(dependency);
-                        }
-                    }
-                }
             }
             
             return false;
         }
 
         /// <summary>
-        /// 预计算所有包的完整依赖集合，包括传递依赖
+        /// 【废弃方法】：已由PrecomputeAllDependenciesFlat和扁平化依赖关系替代
         /// </summary>
-        private void PrecomputeAllDependencies()
+        [Obsolete("Use _flatDependencies for O(1) lookup instead")]
+        private bool IsInDependencyChain(PackageInfo currentPackage, string targetPackage)
+        {
+            // 兼容性保留，但建议使用_flatDependencies
+            if (_flatDependencies.TryGetValue(currentPackage.Name, out var dependencies))
+            {
+                return dependencies.Contains(targetPackage);
+            }
+            
+            // 回退到原有逻辑
+            return currentPackage.AllDependencies.Contains(targetPackage);
+        }
+
+        /// <summary>
+        /// 【性能优化】：预计算所有包的完整依赖集合，使用扁平化HashSet实现O(1)查找
+        /// </summary>
+        private void PrecomputeAllDependenciesFlat()
         {
             try
             {
-                // 使用拓扑排序确保依赖计算顺序正确
+                // 先初始化所有包的依赖集合
+                foreach (var packageName in _packageInfos.Keys)
+                {
+                    _flatDependencies[packageName] = new HashSet<string>();
+                }
+                
+                // 使用拓扑排序计算传递依赖（不检测循环依赖）
                 var computed = new HashSet<string>();
                 var computing = new HashSet<string>();
                 
                 foreach (var packageName in _packageInfos.Keys)
                 {
-                    ComputePackageDependencies(packageName, computed, computing);
+                    ComputePackageDependenciesFlatSafe(packageName, computed, computing);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // 继续执行，如果预计算失败，会回退到原有的实时计算方式
+                // 【改进错误处理】：记录错误但继续执行
+                LogToFile($"PrecomputeAllDependenciesFlat failed: {ex.Message}");
+#if DEBUG
+                // Debug模式下输出更详细信息
+                LogToFile($"Stack trace: {ex.StackTrace}");
+#endif
             }
         }
 
         /// <summary>
-        /// 递归计算单个包的所有依赖
+        /// 递归计算单个包的所有依赖（安全版本，忽略循环依赖）
         /// </summary>
-        private void ComputePackageDependencies(string packageName, HashSet<string> computed, HashSet<string> computing)
+        private void ComputePackageDependenciesFlatSafe(string packageName, HashSet<string> computed, HashSet<string> computing)
         {
             if (computed.Contains(packageName) || !_packageInfos.TryGetValue(packageName, out var packageInfo))
-            {
                 return;
-            }
             
-            // 检测循环依赖
             if (computing.Contains(packageName))
             {
-                return; // 循环依赖，跳过
+                // 静默跳过循环依赖，不影响性能计算
+                return;
             }
             
             computing.Add(packageName);
             
-            // 先计算所有直接依赖的完整依赖集合
+            var dependencies = _flatDependencies[packageName];
+            
             foreach (var dependency in packageInfo.Dependencies)
             {
-                ComputePackageDependencies(dependency, computed, computing);
+                // 递归计算依赖的依赖
+                ComputePackageDependenciesFlatSafe(dependency, computed, computing);
                 
                 // 添加直接依赖
-                packageInfo.AllDependencies.Add(dependency);
+                dependencies.Add(dependency);
                 
                 // 添加传递依赖
-                if (_packageInfos.TryGetValue(dependency, out var depInfo))
+                if (_flatDependencies.TryGetValue(dependency, out var transitiveDeps))
                 {
-                    foreach (var transitiveDep in depInfo.AllDependencies)
+                    dependencies.UnionWith(transitiveDeps);
+                }
+            }
+            
+            computing.Remove(packageName);
+            computed.Add(packageName);
+        }
+
+        /// <summary>
+        /// 【循环依赖检测】：加载包信息用于循环依赖检查
+        /// </summary>
+        private void LoadPackageInfosForCheck(Compilation compilation, Dictionary<string, PackageInfo> packageInfos)
+        {
+            try
+            {
+                var packagesPath = FindPackagesPathFromCompilation(compilation);
+                if (string.IsNullOrEmpty(packagesPath)) 
+                {
+                    return;
+                }
+
+                var packageDirs = Directory.GetDirectories(packagesPath, "cn.etetet.*");
+                
+                foreach (var packageDir in packageDirs)
+                {
+                    var packageName = Path.GetFileName(packageDir);
+                    var packageJsonPath = Path.Combine(packageDir, "package.json");
+                    var packageGitJsonPath = Path.Combine(packageDir, "packagegit.json");
+
+                    if (File.Exists(packageJsonPath))
                     {
-                        packageInfo.AllDependencies.Add(transitiveDep);
+                        var packageInfo = LoadPackageInfo(packageJsonPath, packageGitJsonPath);
+                        if (packageInfo != null)
+                        {
+                            packageInfos[packageName] = packageInfo;
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                LogToFile($"LoadPackageInfosForCheck error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 【循环依赖检测】：检测所有包的循环依赖
+        /// </summary>
+        private void DetectCircularDependencies(Dictionary<string, PackageInfo> packageInfos, HashSet<string> circularPackages)
+        {
+            try
+            {
+                var computed = new HashSet<string>();
+                var computing = new HashSet<string>();
+                
+                foreach (var packageName in packageInfos.Keys)
+                {
+                    DetectCircularDependenciesRecursive(packageName, packageInfos, computed, computing, circularPackages);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogToFile($"DetectCircularDependencies error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 【循环依赖检测】：递归检测单个包的循环依赖
+        /// </summary>
+        private void DetectCircularDependenciesRecursive(string packageName, Dictionary<string, PackageInfo> packageInfos, 
+            HashSet<string> computed, HashSet<string> computing, HashSet<string> circularPackages)
+        {
+            if (computed.Contains(packageName) || !packageInfos.TryGetValue(packageName, out var packageInfo))
+                return;
+            
+            if (computing.Contains(packageName))
+            {
+                // 发现循环依赖
+                circularPackages.Add(packageName);
+                LogToFile($"DETECTED: Circular dependency for package: {packageName}");
+                return;
+            }
+            
+            computing.Add(packageName);
+            
+            foreach (var dependency in packageInfo.Dependencies)
+            {
+                DetectCircularDependenciesRecursive(dependency, packageInfos, computed, computing, circularPackages);
             }
             
             computing.Remove(packageName);

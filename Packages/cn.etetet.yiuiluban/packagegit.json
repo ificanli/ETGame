@@ -1,4 +1,6 @@
 ﻿{
     "Id": 1204,
-    "Name": "YIUI.Luban"
+    "Name": "YIUI.Luban",
+    "Level": 2,
+    "AllowSameLevelAccess": true
 }
