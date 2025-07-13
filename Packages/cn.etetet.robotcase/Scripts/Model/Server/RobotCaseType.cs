@@ -9,6 +9,16 @@ namespace ET.Server
 
         public const int QuestTest = 3;
 
+        public const int AchievementTest = 4;
+
+        public const int AchievementProgressTest = 5;
+
+        public const int AchievementTriggerTest = 6;
+
+        public const int AchievementCategoryTest = 7;
+
+        public const int AchievementExceptionTest = 8;
+
         public const int MaxCaseType = 10000;
     }
 }

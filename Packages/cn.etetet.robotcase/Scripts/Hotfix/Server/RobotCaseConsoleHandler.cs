@@ -61,11 +61,13 @@ namespace ET.Server
                         if (ret != ErrorCode.ERR_Success)
                         {
                             Log.Console($"case run failed: {type}");
+                            return;
                         }
                     }
                     catch (Exception e)
                     {
                         Log.Console($"case run failed: {type}\n{e}");
+                        throw;
                     }
 
                     Log.Console($"case run success: {type}");

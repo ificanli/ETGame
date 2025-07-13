@@ -35,24 +35,36 @@ namespace ET
             
             msgOpcode.Clear();
 
-            PackagesLock packagesLock = PackageHelper.LoadEtPackagesLock("./");
-            PackageInfo protoPackage = packagesLock.dependencies["cn.etetet.proto"];
-            clientMessagePath = Path.Combine(protoPackage.dir, "CodeMode/Model/Client");
-            serverMessagePath = Path.Combine(protoPackage.dir, "CodeMode/Model/Server");
-            clientServerMessagePath = Path.Combine(protoPackage.dir, "CodeMode/Model/ClientServer");
+            // 直接扫描 Packages 目录获取包信息
+            string packagesDir = Path.Combine("./", "Packages");
+            string protoPackageDir = Path.Combine(packagesDir, "cn.etetet.proto");
+            
+            if (!Directory.Exists(protoPackageDir))
+            {
+                throw new Exception($"Proto package not found: {protoPackageDir}");
+            }
+            
+            clientMessagePath = Path.Combine(protoPackageDir, "CodeMode/Model/Client");
+            serverMessagePath = Path.Combine(protoPackageDir, "CodeMode/Model/Server");
+            clientServerMessagePath = Path.Combine(protoPackageDir, "CodeMode/Model/ClientServer");
             
             List<(string, string)> list = new ();
-            foreach ((string key, PackageInfo packageInfo) in packagesLock.dependencies)
+            
+            // 扫描所有 cn.etetet.* 包目录
+            foreach (string packageDir in Directory.GetDirectories(packagesDir, "cn.etetet.*"))
             {
-                string p = Path.Combine(packageInfo.dir, "Proto");
-                if (!Directory.Exists(p))
+                string packageName = Path.GetFileName(packageDir);
+                string moduleName = packageName.Replace("cn.etetet.", "");
+                string protoDir = Path.Combine(packageDir, "Proto");
+                
+                if (!Directory.Exists(protoDir))
                 {
                     continue;
                 }
                 
-                foreach (var f in FileHelper.GetAllFiles(p, "*.proto"))
+                foreach (var f in FileHelper.GetAllFiles(protoDir, "*.proto"))
                 {
-                    list.Add((f, packageInfo.module));
+                    list.Add((f, moduleName));
                 }
             }
             

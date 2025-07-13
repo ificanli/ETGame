@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 #### 编译相关
 ```powershell
 # 编译整个解决方案（需翻墙下载NuGet包）
-dotnet build DotNet.sln
+dotnet build ET.sln
 
 # 发布Linux版本
 pwsh -ExecutionPolicy Bypass -File Scripts/Publish.ps1
@@ -70,6 +70,8 @@ dotnet Bin/ET.App.dll --Console=1
   - 功能：导出proto文件为C#文件
   - 处理内容：Protocol Buffers消息定义转换为C#类
   - 用途：网络通信协议、数据序列化结构
+  - proto生成文件会生成在proto包中
+  - proto文件名带的编号是唯一的，是100的倍数
 
 ### 开发工作流
 ```
@@ -152,7 +154,7 @@ ET.Core (框架核心层)
 4. 如果测试用例需要输出日志到Console，可以使用Log.Console，注意进程启动参数需要Console=1才能起效
 
 ### 分析器编译规范
-分析器编译要使用ET.sln，不是DotNet.sln
+分析器编译要使用ET.sln
 
 ### Singleton类方法规范
 Singleton类（如RobotCaseDispatcher）可以包含方法，不需要创建System类。这类似于其他单例类如HttpDispatcher的设计模式。
@@ -473,9 +475,11 @@ printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --P
 ```csharp
 QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); // json写在代码中
 ```
-5. 日志目录是Logs，测试前请删除，方便查找问题
+5. 日志目录是Logs，测试前请删除，方便查找问题，All.log是整个用例的日志
 6. 写用例的时候应该尽量调用客户端跟服务端已有的代码
 7. 测试用例要检查返回的数据或者客户端的数据是否与预期一致，如果与预期不一致需要抛出异常，用例的上层会打印异常
+8. 测试跑成功之后，应该去检查All.log，看日志是否与预期一致
+9. 如果是跑单个用例，看到输出case run success则表示用例成功，可以立即结束用例进程，如果看到case run fail，则表示失败，可以立即结束用例进程
 
 ## 常见错误避免
 

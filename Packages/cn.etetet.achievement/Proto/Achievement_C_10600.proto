@@ -1,0 +1,188 @@
+syntax = "proto3";
+package ET;
+
+// 获取成就列表
+// ResponseType M2C_GetAchievements
+message C2M_GetAchievements // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 CategoryId = 2; // 分类ID，0表示获取所有
+}
+
+message AchievementInfo
+{
+	int32 AchievementId = 1;
+	int32 Status = 2; // 成就状态：0=未开始，1=进行中，2=已完成，3=已领取
+	int32 Progress = 3; // 当前进度
+	int32 MaxProgress = 4; // 最大进度
+	int64 CompleteTime = 5; // 完成时间
+	int64 ClaimTime = 6; // 领取时间
+}
+
+message M2C_GetAchievements // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated AchievementInfo Achievements = 4;
+}
+
+// 领取成就奖励
+// ResponseType M2C_ClaimAchievement
+message C2M_ClaimAchievement // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 AchievementId = 2;
+}
+
+message AchievementReward
+{
+	int32 Type = 1; // 奖励类型：1=经验，2=金币，3=道具
+	int32 ItemId = 2; // 道具ID（奖励类型为道具时使用）
+	int32 Count = 3; // 数量
+}
+
+message M2C_ClaimAchievement // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated AchievementReward Rewards = 4;
+}
+
+// 成就进度更新通知
+message M2C_AchievementProgress // IMessage
+{
+	int32 AchievementId = 1;
+	int32 Progress = 2;
+	int32 MaxProgress = 3;
+}
+
+// 成就完成通知
+message M2C_AchievementComplete // IMessage
+{
+	int32 AchievementId = 1;
+	string AchievementName = 2;
+	int64 CompleteTime = 3;
+}
+
+// 获取成就详情
+// ResponseType M2C_GetAchievementDetail
+message C2M_GetAchievementDetail // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 AchievementId = 2;
+}
+
+message AchievementDetailInfo
+{
+	int32 AchievementId = 1;
+	string AchievementName = 2;
+	string Description = 3;
+	string Icon = 4;
+	int32 CategoryId = 5;
+	int32 Type = 6; // 成就类型
+	int32 MaxProgress = 7;
+	repeated AchievementReward Rewards = 8;
+	repeated int32 PreAchievements = 9; // 前置成就
+	int32 Points = 10; // 成就点数
+}
+
+message M2C_GetAchievementDetail // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	AchievementDetailInfo Detail = 4;
+}
+
+// 获取成就分类
+// ResponseType M2C_GetAchievementCategories
+message C2M_GetAchievementCategories // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message AchievementCategoryInfo
+{
+	int32 CategoryId = 1;
+	string CategoryName = 2;
+	string Icon = 3;
+	int32 Order = 4; // 排序
+	int32 TotalCount = 5; // 该分类下总成就数
+	int32 CompletedCount = 6; // 已完成数量
+}
+
+message M2C_GetAchievementCategories // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated AchievementCategoryInfo Categories = 4;
+}
+
+// 成就统计信息
+// ResponseType M2C_GetAchievementStats
+message C2M_GetAchievementStats // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message AchievementStatsInfo
+{
+	int32 TotalAchievements = 1; // 总成就数
+	int32 CompletedAchievements = 2; // 已完成数
+	int32 TotalPoints = 3; // 总成就点数
+	int32 EarnedPoints = 4; // 已获得点数
+	repeated int32 RecentAchievements = 5; // 最近完成的成就ID列表
+}
+
+message M2C_GetAchievementStats // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	AchievementStatsInfo Stats = 4;
+}
+
+// ResponseType M2C_RobotCase_PrepareData_004_Response
+message C2M_RobotCase_PrepareData_004_Request // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message M2C_RobotCase_PrepareData_004_Response // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType M2C_RobotCase_PrepareData_006_Response
+message C2M_RobotCase_PrepareData_006_Request // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message M2C_RobotCase_PrepareData_006_Response // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType M2C_RobotCase_TriggerAchievementEvent_Response
+message C2M_RobotCase_TriggerAchievementEvent_Request // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 EventType = 2; // 事件类型：1=击杀，2=升级，3=任务完成，4=道具收集，5=地图探索
+	int32 ParamId = 3; // 参数ID（怪物ID、等级、任务ID、道具ID、地图ID）
+	int32 Count = 4; // 数量（击杀数量、道具数量等）
+}
+
+message M2C_RobotCase_TriggerAchievementEvent_Response // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}

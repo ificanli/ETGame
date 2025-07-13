@@ -28,3 +28,17 @@ message M2C_TestRobotCase // ILocationResponse
 	string Message = 3;
 	int32 N = 4;
 }
+
+// ResponseType M2C_RobotCase_PrepareData_005_Response
+message C2M_RobotCase_PrepareData_005_Request // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message M2C_RobotCase_PrepareData_005_Response // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
