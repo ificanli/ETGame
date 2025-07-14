@@ -75,7 +75,7 @@ dotnet Bin/ET.App.dll --Console=1
 
 ### 开发工作流
 ```
-1. 修改代码 -> 2. dotnet build DotNet.sln -> 3. 重启进程 -> 4. 测试
+1. 修改代码 -> 2. dotnet build ET.sln -> 3. 重启进程 -> 4. 测试
 ```
 
 ### 文件结构说明
