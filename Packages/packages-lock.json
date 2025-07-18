@@ -512,7 +512,9 @@
       "version": "file:cn.etetet.yiuireddot",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {}
+      "dependencies": {
+        "cn.etetet.core": "4.0.0"
+      }
     },
     "cn.etetet.yiuitips": {
       "version": "file:cn.etetet.yiuitips",

@@ -906,7 +906,7 @@ namespace ET
             bool ret = base.AddIfNotPresent(item);
             if (!ret)
             {
-                throw new ArgumentException($"SR.Argument_AddingDuplicate, {item}");
+                throw new ArgumentException($"SR.Argument_AddingDuplicate, {typeof(T).FullName}");
             }
             return ret;
         }
