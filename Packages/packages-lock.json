@@ -349,6 +349,12 @@
         "cn.etetet.http": "4.0.0"
       }
     },
+    "cn.etetet.scripts": {
+      "version": "file:cn.etetet.scripts",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "cn.etetet.sourcegenerator": {
       "version": "file:cn.etetet.sourcegenerator",
       "depth": 0,
@@ -439,7 +445,8 @@
         "cn.etetet.yiuidamagetips": "4.0.0",
         "cn.etetet.yiuigm": "4.0.0",
         "cn.etetet.loader": "4.0.0",
-        "cn.etetet.yiuiyooassets": "4.0.0"
+        "cn.etetet.yiuiyooassets": "4.0.0",
+        "cn.etetet.scripts": "4.0.0"
       }
     },
     "cn.etetet.yiui": {

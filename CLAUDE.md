@@ -563,9 +563,10 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 
   第1层
   ├── cn.etetet.core          (核心框架)
-  ├── cn.etetet.excel         (协议定义)
+  ├── cn.etetet.excel         (excel)
   ├── cn.etetet.proto         (协议定义)
   ├── cn.etetet.loader        (加载器)
+  ├── cn.etetet.scripts       (scripts)
 
 1. 请注意要递归依赖，修改依赖的时候要把依赖的依赖，全部递归加上去
 2. 包的依赖关系直接读取所有包的package.json,
