@@ -37,7 +37,7 @@ namespace Hibzz.DependencyResolver
         
             Debug.Log($"move package: {packageName}");
             Process process = ProcessHelper.PowerShell($"-NoExit -ExecutionPolicy Bypass -File ./Packages/com.etetet.init/{moveFileName}.ps1 {package} {version}", waitExit: true);
-            Debug.Log(process.StandardOutput.ReadToEnd());
+            process.WaitForExit();
         }
         
         static DependencyResolver()

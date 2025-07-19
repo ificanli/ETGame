@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Debug = UnityEngine.Debug;
 using Path = System.IO.Path;
 
 namespace ET
 {
     internal static class ProcessHelper
     {
-        public static System.Diagnostics.Process PowerShell(string arguments, string workingDirectory = ".", bool waitExit = false)
+        public static Process PowerShell(string arguments, string workingDirectory = ".", bool waitExit = false)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 return Run("powershell.exe", arguments, workingDirectory, waitExit);
             }
-            else
-            {
-                return Run("/usr/local/bin/pwsh", arguments, workingDirectory, waitExit);
-            }
+
+            return Run("/usr/local/bin/pwsh", arguments, workingDirectory, waitExit);
         }
 
-        public static System.Diagnostics.Process Run(string exe, string arguments, string workingDirectory = ".", bool waitExit = false)
+        private static Process Run(string exe, string arguments, string workingDirectory = ".", bool waitExit = false)
         {
             //Log.Debug($"Process Run exe:{exe} ,arguments:{arguments} ,workingDirectory:{workingDirectory}");
             try
@@ -37,7 +33,7 @@ namespace ET
                     useShellExecute = false;
                 }
                 
-                ProcessStartInfo info = new ProcessStartInfo
+                ProcessStartInfo info = new()
                 {
                     FileName = exe,
                     Arguments = arguments,
@@ -48,11 +44,29 @@ namespace ET
                     RedirectStandardError = redirectStandardError,
                 };
 
-                System.Diagnostics.Process process = System.Diagnostics.Process.Start(info);
+                Process process = Process.Start(info);
 
                 if (waitExit)
                 {
-                    process.WaitForExit();
+                    // 异步读取标准输出
+                    process.OutputDataReceived += (sender, args) =>
+                    {
+                        if (!string.IsNullOrEmpty(args.Data))
+                        {
+                            UnityEngine.Debug.Log(args.Data);
+                        }
+                    };
+            
+                    // 异步读取错误输出
+                    process.ErrorDataReceived += (sender, args) =>
+                    {
+                        if (!string.IsNullOrEmpty(args.Data))
+                        {
+                            UnityEngine.Debug.LogError(args.Data);
+                        }
+                    };
+                    process.BeginOutputReadLine();
+                    process.BeginErrorReadLine();
                 }
 
                 return process;
