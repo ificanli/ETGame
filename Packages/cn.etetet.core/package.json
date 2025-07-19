@@ -14,7 +14,8 @@
   "relatedPackages": {},
   "dependencies": {
     "cn.etetet.sourcegenerator": "0.0.5",
-    "cn.etetet.memorypack": "1.10.0"
+    "cn.etetet.memorypack": "1.10.0",
+    "cn.etetet.scripts": "4.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"

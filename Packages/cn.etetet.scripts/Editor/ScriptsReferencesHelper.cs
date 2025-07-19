@@ -72,7 +72,7 @@ namespace ET
             foreach ((string assName, HashSet<string> refAss) in refs)
             {
                 findRet.Clear();
-                FileHelper.GetAllFiles(findRet, fourAssemblyDir, $"ET.{assName}.asmdef");
+                GetAllFiles(findRet, fourAssemblyDir, $"ET.{assName}.asmdef");
                 string p = findRet[0];
                 if (!File.Exists(p))
                 {
@@ -91,6 +91,28 @@ namespace ET
             
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
+        }
+        
+        public static List<string> GetAllFiles(string dir, string searchPattern = "*")
+        {
+            List<string> list = new List<string>();
+            GetAllFiles(list, dir, searchPattern);
+            return list;
+        }
+		
+        public static void GetAllFiles(List<string> files, string dir, string searchPattern = "*")
+        {
+            string[] fls = Directory.GetFiles(dir, searchPattern);
+            foreach (string fl in fls)
+            {
+                files.Add(fl);
+            }
+
+            string[] subDirs = Directory.GetDirectories(dir);
+            foreach (string subDir in subDirs)
+            {
+                GetAllFiles(files, subDir, searchPattern);
+            }
         }
     }
 }

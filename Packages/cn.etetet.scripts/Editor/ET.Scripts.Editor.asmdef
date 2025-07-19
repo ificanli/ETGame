@@ -2,8 +2,7 @@
     "name": "ET.Scripts.Editor",
     "rootNamespace": "",
     "references": [
-        "ET.Init.Editor",
-        "ET.Core"
+        "ET.Init.Editor"
     ],
     "includePlatforms": [
         "Editor"
