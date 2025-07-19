@@ -46,6 +46,14 @@
       "scopes": [
         "cn.etetet"
       ]
+    },
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.littlebigfun.addressable-importer"
+      ],
+      "overrideBuiltIns": false
     }
   ]
 }

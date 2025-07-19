@@ -2,5 +2,10 @@
   "Id": 39,
   "Name": "Map",
   "Level": 5,
-  "AllowSameLevelAccess": true
+  "AllowSameLevelAccess": true,
+  "ScriptsReferences": {
+  "ModelView": [
+    "Cinemachine"
+  ]
+}
 }

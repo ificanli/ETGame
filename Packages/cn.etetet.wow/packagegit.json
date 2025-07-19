@@ -3,7 +3,7 @@
     "Name": "WOW",
     "OtherPackageAccessField": true,
     "Level": 5,
-    "AllowSameLevelAccess": true
+    "AllowSameLevelAccess": true,
 
     "ScriptsReferences": {
         "ModelView": [

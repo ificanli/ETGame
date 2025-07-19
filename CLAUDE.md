@@ -575,5 +575,5 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 6. 假如A包依赖了B包，那么B包永远不能访问A包，这样可以强制处理逻辑相互依赖的问题，比如任务包依赖道具包，那么道具包永远不能直接调用任务包中的方法，可以抛出事件，任务包订阅道具包的事件
 
 # 绝对禁止hard code
-# 项目只有一个编译 dotnet build ET.sln，无论什么东西都是用这个编译
+# 项目只有一个编译 dotnet build ET.sln 无论什么东西都是用这个编译
 # 每次做出决定之前先检查是否是否违反规定，执行完任务之后再次检查是否违反规定

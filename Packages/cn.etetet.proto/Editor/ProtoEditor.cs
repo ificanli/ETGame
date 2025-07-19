@@ -8,9 +8,7 @@ namespace ET
         [MenuItem("ET/Proto/Proto2CS")]
         public static void Run()
         {
-            Process process = ProcessHelper.DotNet("./Packages/cn.etetet.proto/DotNet~/Exe/ET.Proto2CS.dll", "./", true);
-
-            UnityEngine.Debug.Log(process.StandardOutput.ReadToEnd());
+            ProcessHelper.DotNet("./Packages/cn.etetet.proto/DotNet~/Exe/ET.Proto2CS.dll", "./", true);
         }
         
         public static void Init()

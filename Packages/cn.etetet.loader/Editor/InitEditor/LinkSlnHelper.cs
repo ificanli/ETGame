@@ -25,8 +25,7 @@ namespace ET
                 throw new Exception("not found ET.sln in et packages!");
             }
             
-            Process process = ProcessHelper.PowerShell($"-c New-Item -ItemType HardLink -Target {slns[0]} ./ET.sln", waitExit: true);
-            UnityEngine.Debug.Log(process.StandardOutput.ReadToEnd());
+            ProcessHelper.PowerShell($"-c New-Item -ItemType HardLink -Target {slns[0]} ./ET.sln", waitExit: true);
             
             
             // link xml
@@ -35,8 +34,7 @@ namespace ET
             if (File.Exists(xmlFile))
             {
                 UnityEngine.Debug.LogWarning("not found link.xml !!!!");
-                Process process2 = ProcessHelper.PowerShell($"-c New-Item -ItemType HardLink -Target {xmlFile} ./Assets/link.xml", waitExit: true);
-                UnityEngine.Debug.Log(process2.StandardOutput.ReadToEnd());
+                ProcessHelper.PowerShell($"-c New-Item -ItemType HardLink -Target {xmlFile} ./Assets/link.xml", waitExit: true);
             }
         }
     }
