@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 常用开发命令
 
-**重要提醒：所有命令行操作都使用PowerShell执行**
+### Claude命令行操作都要使用PowerShell执行
 
 #### 编译相关
 ```powershell
