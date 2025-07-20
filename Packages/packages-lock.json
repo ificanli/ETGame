@@ -553,14 +553,6 @@
         "cn.etetet.core": "1.0.0"
       }
     },
-    "com.boxqkrtm.ide.cursor": {
-      "version": "file:com.unity.ide.cursor-et",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.unity.test-framework": "1.1.9"
-      }
-    },
     "com.etetet.init": {
       "version": "file:com.etetet.init",
       "depth": 0,
@@ -629,12 +621,28 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.ide.cursor-et": {
+      "version": "file:com.unity.ide.cursor-et",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.9"
+      }
+    },
     "com.unity.ide.rider": {
       "version": "file:com.unity.ide.rider",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
         "com.unity.ext.nunit": "1.0.6"
+      }
+    },
+    "com.unity.ide.vscode-et": {
+      "version": "file:com.unity.ide.vscode-et",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.9"
       }
     },
     "com.unity.inputsystem": {
