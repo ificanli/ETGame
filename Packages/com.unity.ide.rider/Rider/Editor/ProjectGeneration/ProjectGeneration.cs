@@ -421,9 +421,9 @@ namespace Packages.Rider.Editor.ProjectGeneration
 
     private void SyncSolutionFileIfNotChanged(string path, string newContents, Type[] types)
     {
-      newContents = OnGeneratedSlnSolution(path, newContents, types);
+      //newContents = OnGeneratedSlnSolution(path, newContents, types);
 
-      SyncFileIfNotChanged(path, newContents);
+      //SyncFileIfNotChanged(path, newContents);
     }
 
     private static void OnGeneratedCSProjectFiles(Type[] types)
@@ -643,7 +643,7 @@ namespace Packages.Rider.Editor.ProjectGeneration
 
     public string SolutionFile()
     {
-      return Path.Combine(ProjectDirectory, $"Unity.sln");
+      return Path.Combine(ProjectDirectory, $"ET.sln");
     }
 
     private void ProjectHeader(StringBuilder stringBuilder, ProjectPart assembly, List<ResponseFileData> responseFilesData)

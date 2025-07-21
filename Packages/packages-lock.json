@@ -621,8 +621,8 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.ide.cursor-et": {
-      "version": "file:com.unity.ide.cursor-et",
+    "com.unity.ide.cursor": {
+      "version": "file:com.unity.ide.cursor",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
@@ -638,16 +638,7 @@
       }
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.23",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.test-framework": "1.1.9"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.ide.vscode-et": {
-      "version": "file:com.unity.ide.vscode-et",
+      "version": "file:com.unity.ide.visualstudio",
       "depth": 0,
       "source": "embedded",
       "dependencies": {

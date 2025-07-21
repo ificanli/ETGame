@@ -1,5 +1,6 @@
 {
-    "name": "Unity.VSCode.Editor",
+    "name": "ET.Cursor.Editor",
+    "rootNamespace": "",
     "references": [],
     "includePlatforms": [
         "Editor"

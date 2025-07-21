@@ -12,7 +12,10 @@
         "ET.YooAssets",
         "Unity.InputSystem",
         "Unity.Mathematics",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "ET.HybridCLR",
+        "ET.MemoryPack",
+        "ET.Recast"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

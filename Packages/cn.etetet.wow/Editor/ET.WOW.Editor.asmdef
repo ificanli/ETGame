@@ -19,7 +19,8 @@
         "ET.MemoryPack",
         "ET.Recast",
         "ET.SourceGeneratorAttribute",
-        "ET.YIUIFramework"
+        "ET.YIUIFramework",
+        "ET.Scripts.Editor"
     ],
     "includePlatforms": [
         "Editor"
