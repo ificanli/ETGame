@@ -1,5 +1,5 @@
 {
-    "name": "Unity.Rider.Editor",
+    "name": "ET.Rider.Editor",
     "rootNamespace": "Packages",
     "references": [
         "GUID:0acc523941302664db1f4e527237feb3",

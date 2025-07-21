@@ -421,7 +421,8 @@ namespace Packages.Rider.Editor.ProjectGeneration
 
     private void SyncSolutionFileIfNotChanged(string path, string newContents, Type[] types)
     {
-      //newContents = OnGeneratedSlnSolution(path, newContents, types);
+      // 这里会调用到OnGenerateCSProjectProcessor里面的OnGeneratedSlnSolution，用来删除Ignore开头的csproj文件，所以不要注释
+      newContents = OnGeneratedSlnSolution(path, newContents, types);
 
       //SyncFileIfNotChanged(path, newContents);
     }
