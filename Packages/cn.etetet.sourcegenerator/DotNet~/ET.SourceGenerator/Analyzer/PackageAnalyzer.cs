@@ -203,6 +203,9 @@ namespace ET
             context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
         }
 
+        // 【修复重复处理】：记录已处理的文件路径，避免重复处理
+        private readonly HashSet<string> _processedFiles = new();
+        
         private void BuildSymbolTable(Compilation compilation)
         {
             try
@@ -308,6 +311,46 @@ namespace ET
                         
                         if (!string.IsNullOrEmpty(typeName))
                         {
+                            // 【修复partial类问题】：对于partial类，只有主要定义才记录到符号表
+                            // 检查是否为partial类
+                            bool isPartial = typeDecl.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
+                            
+                            if (isPartial)
+                            {
+                                // 【特殊处理partial static class】：如PackageType, MailBoxType等
+                                // 这些类的成员（常量字段）应该归属到定义它们的包，而不是某个"主要"包
+                                bool isStaticClass = typeDecl.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
+                                
+                                if (isStaticClass && (typeName == "PackageType" || typeName == "MailBoxType" || 
+                                                     typeName == "SceneType" || typeName == "TimerInvokeType" ||
+                                                     typeName == "ErrorCode"))
+                                {
+                                    // 对于partial static class，每个包都可以定义自己的成员
+                                    // 不记录类型本身到符号表，但记录成员到当前包
+                                    ProcessPartialStaticClassMembers(typeDecl, fullTypeName, packageName);
+                                    continue;
+                                }
+                                
+                                // 对于普通partial类，只有主要包才能拥有该类型
+                                // 判断标准：如果该类型已经在符号表中存在，且不是当前包，则跳过类型记录
+                                if (_symbolTable.TryGetValue(fullTypeName, out string existingPackage) && existingPackage != packageName)
+                                {
+                                    // 已经有其他包定义了这个partial类，跳过类型记录
+                                    // 但仍需要处理成员，且成员归属到当前包（定义成员的包）
+                                    ProcessPartialClassMembers(typeDecl, fullTypeName, packageName);
+                                    continue;
+                                }
+                                
+                                // 检查是否为核心包或主要定义包
+                                // Entity类应该只属于core包
+                                if (typeName == "Entity" && packageName != "cn.etetet.core")
+                                {
+                                    // 非core包的Entity partial定义，跳过类型记录，但处理成员
+                                    ProcessPartialClassMembers(typeDecl, fullTypeName, "cn.etetet.core");
+                                    continue;
+                                }
+                            }
+                            
                             // 记录完整类型名
                             _symbolTable[fullTypeName] = packageName;
                             
@@ -428,6 +471,88 @@ namespace ET
                 parent = parent.Parent;
             }
             return string.Empty;
+        }
+
+        /// <summary>
+        /// 处理partial static类的成员，将成员归属到当前包
+        /// </summary>
+        private void ProcessPartialStaticClassMembers(TypeDeclarationSyntax typeDecl, string fullTypeName, string currentPackage)
+        {
+            // 对于partial static类（如PackageType），每个包的成员都归属到当前包
+            foreach (var member in typeDecl.Members)
+            {
+                switch (member)
+                {
+                    case FieldDeclarationSyntax fieldDecl:
+                        foreach (var variable in fieldDecl.Declaration.Variables)
+                        {
+                            var fieldName = variable.Identifier.ValueText;
+                            if (!string.IsNullOrEmpty(fieldName))
+                            {
+                                var fieldKey = $"{fullTypeName}.{fieldName}";
+                                _symbolTable[fieldKey] = currentPackage;
+                            }
+                        }
+                        break;
+                    case PropertyDeclarationSyntax propertyDecl:
+                        var propertyName = propertyDecl.Identifier.ValueText;
+                        if (!string.IsNullOrEmpty(propertyName))
+                        {
+                            var propertyKey = $"{fullTypeName}.{propertyName}";
+                            _symbolTable[propertyKey] = currentPackage;
+                        }
+                        break;
+                    case MethodDeclarationSyntax methodDecl:
+                        var methodName = methodDecl.Identifier.ValueText;
+                        if (!string.IsNullOrEmpty(methodName))
+                        {
+                            var methodSignature = GetMethodSignature(fullTypeName, methodDecl);
+                            _symbolTable[methodSignature] = currentPackage;
+                        }
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 处理partial类的成员，将成员归属到定义它们的包
+        /// </summary>
+        private void ProcessPartialClassMembers(TypeDeclarationSyntax typeDecl, string fullTypeName, string memberPackage)
+        {
+            // 处理partial类的成员，将它们归属到定义成员的包
+            foreach (var member in typeDecl.Members)
+            {
+                switch (member)
+                {
+                    case FieldDeclarationSyntax fieldDecl:
+                        foreach (var variable in fieldDecl.Declaration.Variables)
+                        {
+                            var fieldName = variable.Identifier.ValueText;
+                            if (!string.IsNullOrEmpty(fieldName))
+                            {
+                                var fieldKey = $"{fullTypeName}.{fieldName}";
+                                _symbolTable[fieldKey] = memberPackage;
+                            }
+                        }
+                        break;
+                    case MethodDeclarationSyntax methodDecl:
+                        var methodName = methodDecl.Identifier.ValueText;
+                        if (!string.IsNullOrEmpty(methodName))
+                        {
+                            var methodSignature = GetMethodSignature(fullTypeName, methodDecl);
+                            _symbolTable[methodSignature] = memberPackage;
+                        }
+                        break;
+                    case PropertyDeclarationSyntax propertyDecl:
+                        var propertyName = propertyDecl.Identifier.ValueText;
+                        if (!string.IsNullOrEmpty(propertyName))
+                        {
+                            var propertyKey = $"{fullTypeName}.{propertyName}";
+                            _symbolTable[propertyKey] = memberPackage;
+                        }
+                        break;
+                }
+            }
         }
 
         private string GetMethodSignature(string fullTypeName, MethodDeclarationSyntax methodDecl)
