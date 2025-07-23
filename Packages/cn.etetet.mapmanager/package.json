@@ -1,0 +1,31 @@
+{
+  "name": "cn.etetet.mapmanager",
+  "displayName": "ET.MapManager",
+  "version": "1.0.0",
+  "description": "ET\u6846\u67b6\u5730\u56fe\u7ba1\u7406\u5668\u6a21\u5757\uff0c\u63d0\u4f9b\u5730\u56fe\u6c60\u7ba1\u7406\u3001\u5730\u56fe\u5b9e\u4f8b\u5206\u914d\u3001\u5730\u56fe\u751f\u547d\u5468\u671f\u7ba1\u7406\u548c\u591a\u5730\u56fe\u534f\u8c03\u529f\u80fd",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.loader": "4.0.0",
+    "cn.etetet.scripts": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.console": "4.0.0",
+    "cn.etetet.actorlocation": "4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}
