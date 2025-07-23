@@ -29,7 +29,7 @@ namespace ET
             {
                 return instance;
             }
-            private set
+            internal set
             {
                 instance = value;
                 

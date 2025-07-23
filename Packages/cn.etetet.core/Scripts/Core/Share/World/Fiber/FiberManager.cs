@@ -14,7 +14,7 @@ namespace ET
     
     public class FiberManager: Singleton<FiberManager>, ISingletonAwake
     {
-        private int idGenerator; 
+        private int idGenerator;
         
         private readonly IScheduler[] schedulers = new IScheduler[3];
         
@@ -22,8 +22,12 @@ namespace ET
 
         private Fiber mainFiber;
         
+        private readonly ThreadSynchronizationContext context = new();
+        
         public void Awake()
         {
+            SynchronizationContext.SetSynchronizationContext(context);
+            
             this.idGenerator = 10000000; // 10000000以下为保留的用于StartSceneConfig的fiber id, 1个区配置1000个纤程，可以配置10000个区
             
             this.mainThreadScheduler = new MainThreadScheduler();
@@ -48,12 +52,17 @@ namespace ET
         
         public void Update()
         {
+            this.context.Update();
+            
             this.mainThreadScheduler.Update();
         }
 
         public void LateUpdate()
         {
             this.mainThreadScheduler.LateUpdate();
+            
+            // unity的回调需要用到Instance
+            Fiber.Instance = this.mainFiber;
         }
 
         protected override void Destroy()
@@ -68,6 +77,10 @@ namespace ET
 
         public async ETTask<int> CreateMainFiber(int sceneType)
         {
+            if (this.mainFiber != null)
+            {
+                throw new Exception("FiberManager is already created");
+            }
             this.mainFiber = await this.CreateFiber(SchedulerType.Main, 0, sceneType, "Main", null);
             return this.mainFiber.Id;
         }
