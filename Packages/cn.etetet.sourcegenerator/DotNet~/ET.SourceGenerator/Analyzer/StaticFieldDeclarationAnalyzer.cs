@@ -35,6 +35,18 @@ namespace ET
                 return;
             }
 
+            // 【扩展检查范围】：检查ET命名空间和YIUIFramework命名空间
+            string? namespaceName = namedTypeSymbol.ContainingNamespace?.ToDisplayString();
+            bool shouldAnalyze = namespaceName == "ET" || 
+                               namespaceName?.StartsWith("ET.") == true ||
+                               namespaceName == "YIUIFramework" ||
+                               namespaceName?.StartsWith("YIUIFramework.") == true;
+            
+            if (!shouldAnalyze)
+            {
+                return;
+            }
+
             foreach (ISymbol? memberSymbol in namedTypeSymbol.GetMembers())
             {
                 if (memberSymbol is IFieldSymbol { IsConst: false,IsStatic:true } or IPropertySymbol { IsStatic: true })
