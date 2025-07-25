@@ -1,4 +1,4 @@
-namespace ET
+﻿namespace ET
 {
     /// <summary>
     /// 特殊情况下使用的 提前检查一个Invoke是否存在

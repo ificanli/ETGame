@@ -8,7 +8,8 @@ using TMPro;
 using DamageNumbersPro;
 using UnityEngine.Rendering;
 
-namespace DamageNumbersPro.Internal {
+namespace DamageNumbersPro.Internal
+{
     public static class DNPEditorInternal
     {
         //Public:
@@ -23,7 +24,7 @@ namespace DamageNumbersPro.Internal {
         static Transform[] meshBs;
 
         //Presets:
-        static Dictionary<string,DNPPreset[]> allPresets;
+        static Dictionary<string, DNPPreset[]> allPresets;
 
         //GUI Resources:
         public static GUIStyle labelStyle;
@@ -72,7 +73,7 @@ namespace DamageNumbersPro.Internal {
             textMeshPros = new TextMeshPro[damageNumbers.Length];
             meshAs = new Transform[damageNumbers.Length];
             meshBs = new Transform[damageNumbers.Length];
-            if(isMesh)
+            if (isMesh)
             {
                 for (int n = 0; n < damageNumbers.Length; n++)
                 {
@@ -105,6 +106,7 @@ namespace DamageNumbersPro.Internal {
             {
                 pixels[n] = Color.white;
             }
+
             whiteBoxTexture = new Texture2D(2, 2);
             whiteBoxTexture.SetPixels(pixels);
             whiteBoxTexture.Apply();
@@ -133,6 +135,7 @@ namespace DamageNumbersPro.Internal {
         }
 
         #region Inspector Top
+
         public static void DrawInspectorTop(bool isMesh)
         {
             //Banner:
@@ -144,6 +147,7 @@ namespace DamageNumbersPro.Internal {
             //Distance:
             EditorGUILayout.Space(42);
         }
+
         static Rect DrawBanner(bool isMesh)
         {
             Rect bannerRect = default;
@@ -151,7 +155,7 @@ namespace DamageNumbersPro.Internal {
             {
                 //Banner:
                 EditorGUILayout.BeginVertical();
-                GUILayout.Label("", GUILayout.Height(100 + 0.38f * Mathf.Min(0,EditorGUIUtility.currentViewWidth - 430)));
+                GUILayout.Label("", GUILayout.Height(100 + 0.38f * Mathf.Min(0, EditorGUIUtility.currentViewWidth - 430)));
                 bannerRect = GUILayoutUtility.GetLastRect();
                 float ratio = (bannerRect.width / bannerRect.height) / 8f;
                 Rect clipRect = new Rect((1 - ratio) * 0.5f, 0, ratio, 1);
@@ -178,6 +182,7 @@ namespace DamageNumbersPro.Internal {
                 {
                     Application.OpenURL("https://ekincantas.com/damage-numbers-pro/");
                 }
+
                 documentationRect.y += 21;
                 if (GUI.Button(documentationRect, "<b>Discord</b>", buttonStyle))
                 {
@@ -191,7 +196,7 @@ namespace DamageNumbersPro.Internal {
 
                 //Calculate Width for GUI Scaling:
                 float newWidth = GUILayoutUtility.GetLastRect().width;
-                if(newWidth > 50)
+                if (newWidth > 50)
                 {
                     currentWidth = newWidth;
                 }
@@ -199,6 +204,7 @@ namespace DamageNumbersPro.Internal {
 
             return bannerRect;
         }
+
         static void DrawTabs(Rect lastRect)
         {
             //Position:
@@ -213,18 +219,18 @@ namespace DamageNumbersPro.Internal {
             BoxRect(lastRect);
 
             string rotAndScaleText = "旋转/大小";
-            if(currentWidth < 388)
+            if (currentWidth < 388)
             {
                 rotAndScaleText = "<size=11>旋转/大小</size>";
 
-                if(currentWidth < 356)
+                if (currentWidth < 356)
                 {
                     rotAndScaleText = "<size=10>旋转/大小</size>";
 
                     if (currentWidth < 324)
                     {
                         rotAndScaleText = "<size=9>旋转/大小</size>";
-                        
+
                         if (currentWidth < 303)
                         {
                             rotAndScaleText = "<size=8>旋转/大小</size>";
@@ -239,7 +245,7 @@ namespace DamageNumbersPro.Internal {
             }
 
             string spamText = "分组控制";
-            if(currentWidth < 340)
+            if (currentWidth < 340)
             {
                 spamText = "<size=11>分组控制</size>";
 
@@ -260,7 +266,7 @@ namespace DamageNumbersPro.Internal {
             }
 
             string performanceText = "表演";
-            if(currentWidth < 336)
+            if (currentWidth < 336)
             {
                 performanceText = "<size=11>表演</size>";
 
@@ -276,7 +282,7 @@ namespace DamageNumbersPro.Internal {
             }
 
             string movementText = "运动";
-            if(currentWidth < 293)
+            if (currentWidth < 293)
             {
                 movementText = "<size=11>运动</size>";
 
@@ -307,9 +313,11 @@ namespace DamageNumbersPro.Internal {
             //Box:
             BoxRect(lastRect, true, false);
         }
+
         #endregion
 
         #region Special Sections
+
         public static void FinalInformation()
         {
             Color finalInformationColor = new Color(0.93f, 0.95f, 1);
@@ -323,9 +331,9 @@ namespace DamageNumbersPro.Internal {
             EditorGUILayout.BeginVertical();
 
             GUI.color = new Color(1, 1, 1f, 0.75f);
-            if(currentWidth < 285)
+            if (currentWidth < 285)
             {
-                if(currentWidth < 265)
+                if (currentWidth < 265)
                 {
                     Label("<size=10><b>Thank you for using Damage Numbers Pro.</b></size>");
                 }
@@ -338,6 +346,7 @@ namespace DamageNumbersPro.Internal {
             {
                 Label("<b>Thank you for using Damage Numbers Pro.</b>");
             }
+
             Label("<b>Contact me if you need any help.</b>");
             EditorGUILayout.Space(8);
 
@@ -346,7 +355,7 @@ namespace DamageNumbersPro.Internal {
 
             //Link Shrinking:
             string docLink = "https://ekincantas.com/damage-numbers-pro/";
-            if(currentWidth < 420f)
+            if (currentWidth < 420f)
             {
                 docLink = "https://ekincantas.com/damage-numbers...";
 
@@ -358,13 +367,14 @@ namespace DamageNumbersPro.Internal {
                     {
                         docLink = "https://ekincantas.com/...";
 
-                        if(currentWidth < 293)
+                        if (currentWidth < 293)
                         {
                             docLink = "Open Link";
                         }
                     }
                 }
             }
+
             string discordLink = "https://discord.gg/nWbRkN8Zxr";
             if (currentWidth < 335f)
             {
@@ -381,6 +391,7 @@ namespace DamageNumbersPro.Internal {
             {
                 Application.OpenURL("https://ekincantas.com/damage-numbers-pro/");
             }
+
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
@@ -390,18 +401,18 @@ namespace DamageNumbersPro.Internal {
             {
                 Application.OpenURL("https://discord.gg/nWbRkN8Zxr");
             }
+
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             GUI.color = new Color(1, 1, 1, 1);
 
-
             string emailPrefix = "<b>Email:</b>";
-            if(currentWidth < 259)
+            if (currentWidth < 259)
             {
                 emailPrefix = "<size=11><b>Email:</b></size>";
 
-                if(currentWidth < 256)
+                if (currentWidth < 256)
                 {
                     emailPrefix = "<size=10><b>Email:</b></size>";
 
@@ -412,7 +423,7 @@ namespace DamageNumbersPro.Internal {
                 }
             }
 
-            EditorGUILayout.LabelField(emailPrefix, labelStyle, GUILayout.Width(100 + Mathf.Min(0,(currentWidth - 320))));
+            EditorGUILayout.LabelField(emailPrefix, labelStyle, GUILayout.Width(100 + Mathf.Min(0, (currentWidth - 320))));
             EditorGUILayout.SelectableLabel("<b>ekincantascontact@gmail.com</b>", linkStyle, GUILayout.Height(16));
             EditorGUILayout.EndHorizontal();
 
@@ -449,7 +460,8 @@ namespace DamageNumbersPro.Internal {
                 textMeshProTab = damageNumbers.Length + " 文本网格";
                 materialTab = "材质";
             }
-            if(currentWidth < 266)
+
+            if (currentWidth < 266)
             {
                 textMeshProTab = "<size=11>" + textMeshProTab + "</size>";
             }
@@ -466,7 +478,7 @@ namespace DamageNumbersPro.Internal {
             tabRect.height = 25;
 
             //Draw Tab:
-            currentEditor = GUI.Toolbar(tabRect, currentEditor, new string[] { "预设", materialTab , textMeshProTab });
+            currentEditor = GUI.Toolbar(tabRect, currentEditor, new string[] { "预设", materialTab, textMeshProTab });
 
             //Box Tab Rect:
             tabRect.y += 23;
@@ -512,6 +524,7 @@ namespace DamageNumbersPro.Internal {
                         {
                             Object.DestroyImmediate(textMeshProEditor);
                         }
+
                         textMeshProEditor = Editor.CreateEditor(textMeshPros, null);
                     }
 
@@ -540,11 +553,11 @@ namespace DamageNumbersPro.Internal {
                         }
 
                         TextMeshProUGUI[] tmps = new TextMeshProUGUI[damageNumbers.Length];
-                        for(int i = 0; i < damageNumbers.Length; i++)
+                        for (int i = 0; i < damageNumbers.Length; i++)
                         {
                             TMP_Text tmpText = damageNumbers[i].GetTextMesh();
 
-                            if(tmpText.GetType() == typeof(TextMeshProUGUI))
+                            if (tmpText.GetType() == typeof(TextMeshProUGUI))
                             {
                                 tmps[i] = (TextMeshProUGUI)tmpText;
                             }
@@ -571,10 +584,10 @@ namespace DamageNumbersPro.Internal {
                         }
 
                         //Match both TMPs:
-                        foreach(DamageNumber dn in damageNumbers)
+                        foreach (DamageNumber dn in damageNumbers)
                         {
                             TMP_Text[] tmps = dn.GetTextMeshs();
-                            if(tmps.Length > 1)
+                            if (tmps.Length > 1)
                             {
                                 EditorUtility.CopySerialized(((TextMeshProUGUI)tmps[0]), ((TextMeshProUGUI)tmps[1]));
                             }
@@ -599,6 +612,7 @@ namespace DamageNumbersPro.Internal {
             DrawBox(tabRect);
             GUI.color = Color.white;
         }
+
         public static void ResetMaterials()
         {
             List<Material> allMaterials = new List<Material>();
@@ -639,6 +653,7 @@ namespace DamageNumbersPro.Internal {
             EditorGUILayout.Space(12);
             PresetCategory("行为", isMesh);
         }
+
         static void PresetCategory(string category, bool isMesh)
         {
             GUI.color = new Color(1, 1, 1, 0.7f);
@@ -647,7 +662,7 @@ namespace DamageNumbersPro.Internal {
 
             DNPPreset[] presets = allPresets[category];
 
-            if(presets == null || presets.Length == 0)
+            if (presets == null || presets.Length == 0)
             {
                 GUI.color = new Color(1, 1, 1, 0.7f);
                 Label("无法加载预设。");
@@ -657,11 +672,11 @@ namespace DamageNumbersPro.Internal {
             }
 
             int buttonsPerRow = 4;
-            if(EditorGUIUtility.currentViewWidth < 440)
+            if (EditorGUIUtility.currentViewWidth < 440)
             {
                 buttonsPerRow = 3;
 
-                if(EditorGUIUtility.currentViewWidth < 375)
+                if (EditorGUIUtility.currentViewWidth < 375)
                 {
                     buttonsPerRow = 2;
                 }
@@ -674,13 +689,14 @@ namespace DamageNumbersPro.Internal {
                 bool isApplied = true;
                 foreach (DamageNumber dn in damageNumbers)
                 {
-                    if(!preset.IsApplied(dn))
+                    if (!preset.IsApplied(dn))
                     {
                         isApplied = false;
                         break;
                     }
                 }
-                if(isApplied)
+
+                if (isApplied)
                 {
                     GUI.enabled = false;
                 }
@@ -689,7 +705,7 @@ namespace DamageNumbersPro.Internal {
                 currentCount++;
                 if (currentCount % buttonsPerRow == 1)
                 {
-                    if(currentCount > 1)
+                    if (currentCount > 1)
                     {
                         EditorGUILayout.EndHorizontal();
                     }
@@ -701,13 +717,14 @@ namespace DamageNumbersPro.Internal {
                 //Apply Button:
                 if (GUILayout.Button(preset.name))
                 {
-                    if(isMesh)
+                    if (isMesh)
                     {
                         Object[] undoObjects = new Object[damageNumbers.Length + textMeshPros.Length];
                         for (int i = 0; i < damageNumbers.Length; i++)
                         {
                             undoObjects[i] = damageNumbers[i];
                         }
+
                         for (int i = 0; i < textMeshPros.Length; i++)
                         {
                             undoObjects[i + damageNumbers.Length] = textMeshPros[i];
@@ -728,12 +745,12 @@ namespace DamageNumbersPro.Internal {
                         Undo.RecordObjects(undoObjects, "Applied the [" + preset.name + "] " + category + " Preset.");
                     }
 
-                    foreach(DamageNumber dn in damageNumbers)
+                    foreach (DamageNumber dn in damageNumbers)
                     {
                         preset.Apply(dn);
                     }
 
-                    foreach(DamageNumber dn in damageNumbers)
+                    foreach (DamageNumber dn in damageNumbers)
                     {
                         dn.UpdateText();
                     }
@@ -746,30 +763,34 @@ namespace DamageNumbersPro.Internal {
             GUI.enabled = false;
             GUI.color = new Color(0, 0, 0, 0);
             int modulo = currentCount % buttonsPerRow;
-            if(modulo > 0)
+            if (modulo > 0)
             {
                 for (int n = 0; n < buttonsPerRow - modulo; n++)
                 {
                     GUILayout.Button("- - - - -");
                 }
             }
+
             GUI.color = Color.white;
             GUI.enabled = true;
 
             EditorGUILayout.EndHorizontal();
         }
+
         #endregion
 
         #region Structure
+
         public static bool CheckStructure(DamageNumberEditor damageNumberEditor)
         {
             //Type:
-            bool isMesh = damageNumbers[0].IsMesh(); ;
+            bool isMesh = damageNumbers[0].IsMesh();
+            ;
 
             //Check if structure is flawed.
             bool isStructureFlawed = false;
             bool isOutdated = false;
-            if(isMesh)
+            if (isMesh)
             {
                 for (int n = 0; n < damageNumbers.Length; n++)
                 {
@@ -816,7 +837,7 @@ namespace DamageNumbersPro.Internal {
                 GUI.color = new Color(1, 1, 0.8f);
                 if (GUILayout.Button(isOutdated ? "Upgrade Structure" : "Build Structure", GUILayout.Width(140)))
                 {
-                    if(isMesh)
+                    if (isMesh)
                     {
                         foreach (DamageNumber dn in damageNumbers)
                         {
@@ -857,6 +878,7 @@ namespace DamageNumbersPro.Internal {
                 return false;
             }
         }
+
         public static void PrepareMeshStructure(GameObject go)
         {
             //Add Sorting Group:
@@ -899,6 +921,7 @@ namespace DamageNumbersPro.Internal {
             //Undo:
             Undo.RegisterCreatedObjectUndo(go, "创建新的伤害数(网格)。");
         }
+
         public static void PrepareGUIStructure(GameObject go)
         {
             //Create TMP:
@@ -906,13 +929,14 @@ namespace DamageNumbersPro.Internal {
             {
                 NewTextGUI("TMPA", go.transform);
             }
+
             if (go.transform.Find("TMPB") == null)
             {
                 NewTextGUI("TMPB", go.transform);
             }
 
             //Add Rect Component:
-            if(go.GetComponent<RectTransform>() == null)
+            if (go.GetComponent<RectTransform>() == null)
             {
                 go.AddComponent<RectTransform>();
             }
@@ -933,7 +957,11 @@ namespace DamageNumbersPro.Internal {
             tmp.verticalAlignment = VerticalAlignmentOptions.Middle;
             tmp.horizontalAlignment = HorizontalAlignmentOptions.Center;
             tmp.text = "1";
+            #if ET10
             tmp.textWrappingMode = TextWrappingModes.Normal;
+            #else
+            tmp.enableWordWrapping = false;
+            #endif
 
             //Size Delta:
             RectTransform rectTransform = tmp.GetComponent<RectTransform>();
@@ -963,7 +991,11 @@ namespace DamageNumbersPro.Internal {
             tmp.verticalAlignment = VerticalAlignmentOptions.Middle;
             tmp.horizontalAlignment = HorizontalAlignmentOptions.Center;
             tmp.text = "1";
+            #if ET10
             tmp.textWrappingMode = TextWrappingModes.NoWrap;
+            #else
+            tmp.enableWordWrapping = false;
+            #endif
             tmp.raycastTarget = false;
 
             //Size Delta:
@@ -981,6 +1013,7 @@ namespace DamageNumbersPro.Internal {
 
             return newTM;
         }
+
         public static void FixTextMeshPro()
         {
             bool destroyedSomething = false;
@@ -995,15 +1028,16 @@ namespace DamageNumbersPro.Internal {
                     Object.DestroyImmediate(tmp.GetChild(n).gameObject);
                     destroyedSomething = true;
                 }
+
                 tmp.gameObject.SetActive(false);
             }
-            
-            foreach(Transform meshA in meshAs)
+
+            foreach (Transform meshA in meshAs)
             {
-                for(int n = 0; n < meshA.childCount; n++)
+                for (int n = 0; n < meshA.childCount; n++)
                 {
                     Transform child = meshA.GetChild(n);
-                    if(child.GetComponent<MeshRenderer>() != null)
+                    if (child.GetComponent<MeshRenderer>() != null)
                     {
                         destroyedSomething = true;
                         Object.DestroyImmediate(child.gameObject);
@@ -1024,31 +1058,35 @@ namespace DamageNumbersPro.Internal {
                 }
             }
 
-            if(destroyedSomething)
+            if (destroyedSomething)
             {
-                foreach(DamageNumber dn in damageNumbers)
+                foreach (DamageNumber dn in damageNumbers)
                 {
                     dn.GetReferences();
                 }
             }
         }
+
         #endregion
 
         #region Miscellaneous
+
         public static void BeginInspector()
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.BeginVertical();
         }
+
         public static void EndInspector()
         {
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space(2);
             EditorGUILayout.EndHorizontal();
         }
+
         static void PrepareStyles()
         {
-            if(generatedGUIStyles)
+            if (generatedGUIStyles)
             {
                 return;
             }
@@ -1081,13 +1119,13 @@ namespace DamageNumbersPro.Internal {
             //White Box:
             whiteBoxStyle = new GUIStyle(GUI.skin.box);
             whiteBoxStyle.normal.background = whiteBoxStyle.onNormal.background = whiteBoxStyle.active.background =
-            whiteBoxStyle.onActive.background = whiteBoxStyle.focused.background = whiteBoxStyle.onFocused.background =
-            whiteBoxStyle.hover.background = whiteBoxStyle.onHover.background = whiteBoxTexture;
+                    whiteBoxStyle.onActive.background = whiteBoxStyle.focused.background = whiteBoxStyle.onFocused.background =
+                            whiteBoxStyle.hover.background = whiteBoxStyle.onHover.background = whiteBoxTexture;
 
             //Rich Everything:
-            for(int n = 0; n < GUI.skin.customStyles.Length; n++)
+            for (int n = 0; n < GUI.skin.customStyles.Length; n++)
             {
-                if(GUI.skin.customStyles[n] != null)
+                if (GUI.skin.customStyles[n] != null)
                 {
                     GUI.skin.customStyles[n].richText = true;
                 }
@@ -1096,6 +1134,7 @@ namespace DamageNumbersPro.Internal {
             //Finish:
             generatedGUIStyles = true;
         }
+
         public static bool HintButton(string category)
         {
             bool toggled = hints.Contains(category);
@@ -1125,20 +1164,24 @@ namespace DamageNumbersPro.Internal {
 
             return toggled;
         }
+
         public static void RepaintInspector()
         {
             repaintViews = true;
             GUI.FocusControl("");
         }
+
         #endregion
 
         #region Label Utility
+
         public static void Lines()
         {
             GUI.color = new Color(1, 1, 1, 0.5f);
             EditorGUILayout.LabelField("− − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − − −", GUILayout.Height(7f));
             GUI.color = new Color(1, 1, 1, 1f);
         }
+
         public static void Label(string text)
         {
             EditorGUILayout.LabelField(text, labelStyle);
@@ -1152,7 +1195,7 @@ namespace DamageNumbersPro.Internal {
 
         public static string CheckmarkString(bool state)
         {
-            if(EditorGUIUtility.isProSkin)
+            if (EditorGUIUtility.isProSkin)
             {
                 return state ? "<size=15><b><color=#00FF00>✓</color></b></size>" : "<size=16><b><color=#FF0000>✗</color></b></size>";
             }
@@ -1161,15 +1204,18 @@ namespace DamageNumbersPro.Internal {
                 return state ? "<size=15><b><color=#00BB00>✓</color></b></size>" : "<size=16><b><color=#BB0000>✗</color></b></size>";
             }
         }
+
         #endregion
 
         #region Box Utility
+
         public static void StartBox(Color color, bool isActivated = true)
         {
             GUI.color = color;
             StartBox(isActivated);
             GUI.color = Color.white;
         }
+
         public static void StartBox(bool isActivated = true)
         {
             //Start Box:
@@ -1195,18 +1241,21 @@ namespace DamageNumbersPro.Internal {
                     GUI.backgroundColor = new Color(0.72f, 0.72f, 0.72f, 1);
                 }
             }
+
             GUILayout.BeginHorizontal(whiteBoxStyle);
             GUILayout.Space(5);
             GUILayout.BeginVertical();
             GUILayout.Space(5);
             GUI.backgroundColor = Color.white;
         }
+
         public static void CloseBox(Color color, bool isActivated = true)
         {
             GUI.color = color;
             CloseBox(isActivated);
             GUI.color = Color.white;
         }
+
         public static void CloseBox(bool isActivated = true)
         {
             GUILayout.Space(5);
@@ -1217,11 +1266,13 @@ namespace DamageNumbersPro.Internal {
             lastRect.width -= 2;
             BoxLastRect(isActivated);
         }
+
         static void BoxLastRect(bool isActivated = true)
         {
             Rect lastRect = GUILayoutUtility.GetLastRect();
             BoxRect(lastRect, isActivated);
         }
+
         static void BoxRect(Rect targetRect, bool isActivated = true, bool withTop = true)
         {
             Rect leftBar = new Rect(targetRect);
@@ -1258,6 +1309,7 @@ namespace DamageNumbersPro.Internal {
                 DrawBox(topBar, isActivated);
             }
         }
+
         static void DrawBox(Rect rectPosition, bool isActivated = true)
         {
             Color boxColor = default;
@@ -1287,12 +1339,14 @@ namespace DamageNumbersPro.Internal {
 
             DrawBox(rectPosition, boxColor);
         }
+
         static void DrawBox(Rect rectPosition, Color boxColor)
         {
             GUI.backgroundColor = boxColor;
             GUI.Box(rectPosition, "", whiteBoxStyle);
             GUI.backgroundColor = Color.white;
         }
+
         static void DrawOutlineBox(Rect rectPosition, bool isActivated = true)
         {
             //Adjust Position:
@@ -1323,6 +1377,7 @@ namespace DamageNumbersPro.Internal {
                 }
             }
         }
+
         #endregion
     }
 }

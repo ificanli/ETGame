@@ -9,6 +9,7 @@ namespace ET.Client
     /// <summary>
     /// UI面板组件
     /// </summary>
+    [FriendOf(typeof(YIUIPanelComponent))]
     [EntitySystemOf(typeof(YIUIPanelComponent))]
     public static partial class YIUIPanelComponentSystem
     {
@@ -29,7 +30,7 @@ namespace ET.Client
         {
             self.StopCountDownDestroyPanel();
 
-            EventSystem.Instance?.YIUIInvokeEntitySync(self, new YIUIInvokeEntity_DestroyPanel
+            EventSystem.Instance?.YIUIInvokeEntitySyncSafety(self, new YIUIInvokeEntity_DestroyPanel
             {
                 PanelName = self.UIBindVo.ComponentType.Name
             });

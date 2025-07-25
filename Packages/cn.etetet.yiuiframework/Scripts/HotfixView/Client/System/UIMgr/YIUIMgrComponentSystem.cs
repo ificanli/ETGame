@@ -8,6 +8,7 @@ using YIUIFramework;
 
 namespace ET.Client
 {
+    [FriendOf(typeof(YIUIMgrComponent))]
     [EntitySystemOf(typeof(YIUIMgrComponent))]
     public static partial class YIUIMgrComponentSystem
     {
@@ -21,7 +22,6 @@ namespace ET.Client
         private static void Destroy(this YIUIMgrComponent self)
         {
             self.Root()?.RemoveComponent<YIUIRootComponent>();
-            YIUIBindHelper.Reset();
             YIUISingletonHelper.DisposeAll();
             self.ResetRoot();
         }

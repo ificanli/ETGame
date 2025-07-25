@@ -58,7 +58,7 @@ namespace ET.Client
 
                 self = selfRef;
 
-                EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseBefore
+                await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelCloseBefore
                 {
                     UIPkgName = child.PkgName,
                     UIResName = child.ResName,
@@ -83,11 +83,11 @@ namespace ET.Client
                     case EPanelStackOption.Omit:
                         if (skipTween)
                         {
-                            child.UIPanel.Close(true, true);
+                            child.UIPanel.Close(true, true, true);
                         }
                         else
                         {
-                            await child.UIPanel.CloseAsync(true, true);
+                            await child.UIPanel.CloseAsync(true, true, true);
                         }
 
                         break;
@@ -112,7 +112,7 @@ namespace ET.Client
 
                 self = selfRef;
 
-                EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseAfter
+                await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelCloseAfter
                 {
                     UIPkgName = child.PkgName,
                     UIResName = child.ResName,
@@ -151,7 +151,7 @@ namespace ET.Client
 
                 self = selfRef;
 
-                EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelOpenBefore
+                await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelOpenBefore
                 {
                     UIPkgName = child.PkgName,
                     UIResName = child.ResName,
@@ -198,7 +198,7 @@ namespace ET.Client
 
                 self = selfRef;
 
-                EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelOpenAfter
+                await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelOpenAfter
                 {
                     UIPkgName = child.PkgName,
                     UIResName = child.ResName,
@@ -234,7 +234,7 @@ namespace ET.Client
                 {
                     self = selfRef;
 
-                    EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseBefore
+                    await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelCloseBefore
                     {
                         UIPkgName = child.PkgName,
                         UIResName = child.ResName,
@@ -269,11 +269,11 @@ namespace ET.Client
 
                     if (skipOtherCloseTween)
                     {
-                        self.ClosePanel(child.Name, false, true);
+                        self.ClosePanel(child.Name, false, true, true);
                     }
                     else
                     {
-                        var success = await self.ClosePanelAsync(child.Name, tween, true);
+                        var success = await self.ClosePanelAsync(child.Name, tween, true, true);
                         if (!success)
                         {
                             return false;
@@ -282,7 +282,7 @@ namespace ET.Client
 
                     self = selfRef;
 
-                    EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelCloseAfter
+                    await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelCloseAfter
                     {
                         UIPkgName = child.PkgName,
                         UIResName = child.ResName,
@@ -294,7 +294,7 @@ namespace ET.Client
                     continue;
                 }
 
-                EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelOpenBefore
+                await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelOpenBefore
                 {
                     UIPkgName = child.PkgName,
                     UIResName = child.ResName,
@@ -342,7 +342,7 @@ namespace ET.Client
 
                 self = selfRef;
 
-                EventSystem.Instance?.Publish(self.Root(), new YIUIEventPanelOpenAfter
+                await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelOpenAfter
                 {
                     UIPkgName = child.PkgName,
                     UIResName = child.ResName,

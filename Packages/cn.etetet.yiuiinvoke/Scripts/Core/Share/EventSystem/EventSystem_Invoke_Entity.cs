@@ -14,6 +14,7 @@ namespace ET
             {
                 throw new Exception($"Invoke error3, not AInvokeHandler: {type} {typeof(A).FullName}");
             }
+
             aInvokeHandler.Handle(entity, args);
         }
 

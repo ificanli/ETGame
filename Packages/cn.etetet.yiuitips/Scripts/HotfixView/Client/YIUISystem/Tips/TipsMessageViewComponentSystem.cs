@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace ET.Client
 {
+    [FriendOf(typeof(TipsMessageViewComponent))]
     public static partial class TipsMessageViewComponentSystem
     {
         [EntitySystem]

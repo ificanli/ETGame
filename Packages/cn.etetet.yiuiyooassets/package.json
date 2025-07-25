@@ -1,10 +1,10 @@
-{
+﻿{
   "name": "cn.etetet.yiuiyooassets",
   "displayName": "ET.YIUI.YooAssets",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "unity": "2022.3",
   "category": "UI/YIUI",
-  "description": "YIUI YooAssets >>> \u6587\u6863: https://lib9kmxvq7k.feishu.cn/wiki/ES7Gwz4EAiVGKSkotY5cRbTznuh",
+  "description": "YIUI YooAssets >>> 文档: https://lib9kmxvq7k.feishu.cn/wiki/ES7Gwz4EAiVGKSkotY5cRbTznuh",
   "author": {
     "name": "YIYI",
     "url": "https://github.com/LiShengYang-yiyi/YIUI/tree/YIUI-ET9.0"
@@ -15,7 +15,7 @@
   },
   "relatedPackages": {},
   "dependencies": {
-    "cn.etetet.core": "2.0.0"
+    "cn.etetet.core": "4.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"

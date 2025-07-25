@@ -41,13 +41,23 @@ namespace YIUILuban.Editor
             EditorApplication.ExecuteMenuItem("Assets/Refresh");
         }
 
+        private FloatPrefs m_MenuWidthPrefs = new("YIUILubanTool_MenuWidth", null, 400f);
+
+        private float m_MenuWidth = 400f;
+
+        public override float MenuWidth
+        {
+            get { return m_MenuWidth; }
+            set { m_MenuWidth = value; }
+        }
+
         private OdinMenuTree m_OdinMenuTree;
 
         private readonly List<BaseTreeMenuItem> m_AllMenuItem = new();
 
         protected override OdinMenuTree BuildMenuTree()
         {
-            m_OdinMenuTree                            =  new OdinMenuTree();
+            m_OdinMenuTree = new OdinMenuTree();
             m_OdinMenuTree.Selection.SelectionChanged += OnSelectionChanged;
 
             m_AllMenuItem.Clear();
@@ -61,8 +71,8 @@ namespace YIUILuban.Editor
                 m_AllMenuItem.Add(new TreeMenuItem<LubanToolModule>(this, m_OdinMenuTree, LubanToolRoot.m_LubanName, EditorIcons.UnityFolderIcon));
             }
 
-            var    assembly = AssemblyHelper.GetAssembly("ET.YIUI.LubanTools.Editor");
-            Type[] types    = assembly.GetTypes();
+            var assembly = AssemblyHelper.GetAssembly("ET.YIUI.LubanTools.Editor");
+            Type[] types = assembly.GetTypes();
 
             var allAutoMenus = new List<YIUIAutoMenuData>();
 
@@ -73,9 +83,9 @@ namespace YIUILuban.Editor
                     YIUIAutoMenuAttribute attribute = (YIUIAutoMenuAttribute)Attribute.GetCustomAttribute(type, typeof(YIUIAutoMenuAttribute));
                     allAutoMenus.Add(new YIUIAutoMenuData
                     {
-                        Type     = type,
+                        Type = type,
                         MenuName = attribute.MenuName,
-                        Order    = attribute.Order
+                        Order = attribute.Order
                     });
                 }
             }
@@ -115,8 +125,9 @@ namespace YIUILuban.Editor
             return (BaseTreeMenuItem)treeMenuItem;
         }
 
-        private bool        m_FirstInit           = true;
+        private bool m_FirstInit = true;
         private StringPrefs m_LastSelectMenuPrefs = new("YIUILubanTool_LastSelectMenu", null, "全局设置");
+        private readonly HashSet<OdinMenuItem> m_FirstSelect = new();
 
         private void OnSelectionChanged(SelectionChangedType obj)
         {
@@ -133,15 +144,33 @@ namespace YIUILuban.Editor
                 {
                     if (menu.Name != m_LastSelectMenuPrefs.Value) continue;
                     menu.Select();
-                    return;
+                    menu.Toggled = true;
+                    break;
                 }
 
                 return;
             }
 
-            if (m_OdinMenuTree.Selection.SelectedValue is BaseTreeMenuItem menuItem)
+            if (m_OdinMenuTree.Selection.Count > 1)
+            {
+                Debug.LogError($"不可能同时选多个: {m_OdinMenuTree.Selection.Count}");
+                return;
+            }
+
+            var selectedMenuItem = m_OdinMenuTree.Selection[0];
+
+            if (selectedMenuItem.Value is BaseTreeMenuItem menuItem)
             {
                 menuItem.SelectionMenu();
+            }
+
+            if (m_FirstSelect.Add(selectedMenuItem))
+            {
+                selectedMenuItem.Toggled = true;
+            }
+            else
+            {
+                selectedMenuItem.Toggled = !selectedMenuItem.Toggled;
             }
 
             foreach (var menu in m_OdinMenuTree.MenuItems)
@@ -216,16 +245,18 @@ namespace YIUILuban.Editor
 
         protected override void Initialize()
         {
-            LubanTools.CloseWindow        = CloseWindow;
+            LubanTools.CloseWindow = CloseWindow;
             LubanTools.CloseWindowRefresh = CloseWindowRefresh;
             base.Initialize();
             m_Author = UserNamePrefs.Value;
+            m_MenuWidth = MathF.Max(m_MenuWidthPrefs.Value, LubanEditorData.MenuWidth);
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
             UserNamePrefs.Value = Author;
+            m_MenuWidthPrefs.Value = MathF.Min(MathF.Max(m_MenuWidth, 200f), position.width - 100f);
 
             foreach (var menuItem in m_AllMenuItem)
             {

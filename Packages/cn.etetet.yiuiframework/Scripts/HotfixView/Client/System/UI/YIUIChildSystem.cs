@@ -13,6 +13,7 @@ namespace ET.Client
     /// <summary>
     /// UI主体
     /// </summary>
+    [FriendOf(typeof(YIUIChild))]
     [EntitySystemOf(typeof(YIUIChild))]
     public static partial class YIUIChildSystem
     {
@@ -206,7 +207,7 @@ namespace ET.Client
             if (!self.IsDisposed)
             {
                 self.Parent.RemoveChild(self.Id);
-                EventSystem.Instance?.YIUIInvokeEntitySync(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_ReleaseInstantiate
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_ReleaseInstantiate
                 {
                     obj = self.OwnerGameObject
                 });

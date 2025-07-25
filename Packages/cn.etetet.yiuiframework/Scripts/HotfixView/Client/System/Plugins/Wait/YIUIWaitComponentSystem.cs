@@ -6,6 +6,7 @@ namespace ET.Client
     /// <summary>
     /// UI通用等待
     /// </summary>
+    [FriendOf(typeof(YIUIWaitComponent))]
     [EntitySystemOf(typeof(YIUIWaitComponent))]
     public static partial class YIUIWaitComponentSystem
     {

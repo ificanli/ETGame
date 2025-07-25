@@ -1,10 +1,10 @@
-{
+﻿{
   "name": "cn.etetet.yiuidamagetips",
   "displayName": "ET.YIUI.DamageTips",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "unity": "2022.3",
   "category": "UI/YIUI",
-  "description": "\u4f24\u5bb3\u63d0\u793a >>> \u6587\u6863: https://lib9kmxvq7k.feishu.cn/wiki/Yt8PwrobfiYijDkuZTWcsGyJnFh",
+  "description": "伤害提示 >>> 文档: https://lib9kmxvq7k.feishu.cn/wiki/Yt8PwrobfiYijDkuZTWcsGyJnFh",
   "author": {
     "name": "YIYI",
     "url": "https://github.com/LiShengYang-yiyi/YIUI/tree/YIUI-ET9.0"
@@ -12,7 +12,8 @@
   "repository": {},
   "relatedPackages": {},
   "dependencies": {
-    "cn.etetet.core": "4.0.0"
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.map": "1.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"

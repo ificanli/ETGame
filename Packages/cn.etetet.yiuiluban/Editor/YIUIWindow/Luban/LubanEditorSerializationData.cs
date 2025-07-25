@@ -37,6 +37,24 @@ namespace YIUILuban.Editor
 
         [ShowInInspector]
         [OdinSerialize]
+        [LabelText("窗口菜单宽度")]
+        private float m_MenuWidth = 400;
+
+        public float MenuWidth
+        {
+            get
+            {
+                if (m_MenuWidth <= 0)
+                {
+                    m_MenuWidth = 400;
+                }
+
+                return m_MenuWidth;
+            }
+        }
+
+        [ShowInInspector]
+        [OdinSerialize]
         [LabelText("文件排除(正则表达式)")]
         public string InvalidFileNameRegex = @"^[\.\\\\/~#\$%]"; //正则表达式 建议问AI 你提需求让AI写
 

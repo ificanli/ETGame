@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace ET.Client
 {
+    [FriendOf(typeof(GMCommandItemComponent))]
     public static partial class GMCommandItemComponentSystem
     {
         [EntitySystem]

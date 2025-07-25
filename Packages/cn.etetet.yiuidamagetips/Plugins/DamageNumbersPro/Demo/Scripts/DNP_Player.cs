@@ -10,11 +10,13 @@ namespace DamageNumbersPro.Demo
 
         [Header("Settings:")]
         public float speed = 5f;
+
         public float acceleration = 8f;
         public float jumpStrength = 5f;
 
         [Header("Sprite Sheets:")]
         public List<Sprite> idle;
+
         public List<Sprite> run;
         public List<Sprite> jump;
         public List<Sprite> land;
@@ -53,7 +55,8 @@ namespace DamageNumbersPro.Demo
             if (currentAnimation == idle || currentAnimation == jump)
             {
                 Invoke("IncreaseIndex", 0.06f);
-            }else if (currentAnimation == land)
+            }
+            else if (currentAnimation == land)
             {
                 Invoke("IncreaseIndex", 0.06f);
             }
@@ -70,14 +73,14 @@ namespace DamageNumbersPro.Demo
 
             currentIndex++;
 
-            if(currentIndex > currentAnimation.Count - 1)
+            if (currentIndex > currentAnimation.Count - 1)
             {
-                if(currentAnimation == land)
+                if (currentAnimation == land)
                 {
                     currentAnimation = idle;
                 }
 
-                if(currentAnimation == jump)
+                if (currentAnimation == jump)
                 {
                     currentIndex = currentAnimation.Count - 1;
                 }
@@ -113,15 +116,20 @@ namespace DamageNumbersPro.Demo
             {
                 horizontal -= 1;
             }
+
             if (DNP_InputHandler.GetRight())
             {
                 horizontal += 1;
             }
 
             if (currentAnimation == land) horizontal = 0;
-
+            #if ET10
             Vector2 desiredSpeed = new Vector2(horizontal * speed, rig.linearVelocity.y);
             rig.linearVelocity = Vector2.Lerp(rig.linearVelocity, desiredSpeed, Time.deltaTime * acceleration);
+            #else
+            Vector2 desiredSpeed = new Vector2(horizontal * speed, rig.velocity.y);
+            rig.velocity = Vector2.Lerp(rig.velocity, desiredSpeed, Time.deltaTime * acceleration);
+            #endif
 
             if (horizontal > 0)
             {
@@ -132,12 +140,16 @@ namespace DamageNumbersPro.Demo
                 transform.eulerAngles = new Vector3(0, 180, 0);
             }
 
-            if(DNP_InputHandler.GetUp() || DNP_InputHandler.GetJump() || DNP_InputHandler.GetForward())
+            if (DNP_InputHandler.GetUp() || DNP_InputHandler.GetJump() || DNP_InputHandler.GetForward())
             {
-                if(Time.time > lastJumpTime + 0.2f && Time.time > lastAirTime + 0.1f)
+                if (Time.time > lastJumpTime + 0.2f && Time.time > lastAirTime + 0.1f)
                 {
                     lastJumpTime = Time.time;
+                    #if ET10
                     rig.linearVelocity = new Vector2(rig.linearVelocity.x, jumpStrength);
+                    #else
+                    rig.velocity = new Vector2(rig.velocity.x, jumpStrength);
+                    #endif
 
                     //Jump:
                     currentAnimation = jump;
@@ -146,14 +158,15 @@ namespace DamageNumbersPro.Demo
             }
         }
 
-        void CheckGrounded(){
+        void CheckGrounded()
+        {
             Vector2 position = transform.position;
 
             gameObject.layer = 2; //Ignore Raycast
             RaycastHit2D hit = Physics2D.Raycast(position + Vector2.down * cc.size.y * 0.49f, Vector2.down, 0.04f);
             gameObject.layer = 0;
 
-            if(hit.collider != null)
+            if (hit.collider != null)
             {
                 isGrounded = true;
             }
@@ -170,15 +183,15 @@ namespace DamageNumbersPro.Demo
 
             if (isGrounded)
             {
-                if(currentAnimation == jump && Time.time > lastJumpTime + 0.3f)
+                if (currentAnimation == jump && Time.time > lastJumpTime + 0.3f)
                 {
                     newAnimation = land;
                 }
-                else if(currentAnimation == land)
+                else if (currentAnimation == land)
                 {
                     //Nothing:
                 }
-                else if(Time.time > lastJumpTime + 0.2f)
+                else if (Time.time > lastJumpTime + 0.2f)
                 {
                     if (horizontal == 0)
                     {
@@ -191,12 +204,11 @@ namespace DamageNumbersPro.Demo
                 }
             }
 
-            if(newAnimation != currentAnimation && newAnimation != null)
+            if (newAnimation != currentAnimation && newAnimation != null)
             {
                 currentAnimation = newAnimation;
                 currentIndex = 0;
             }
         }
     }
-
 }

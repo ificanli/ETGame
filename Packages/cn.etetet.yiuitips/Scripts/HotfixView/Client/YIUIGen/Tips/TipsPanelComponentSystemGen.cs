@@ -8,6 +8,9 @@ namespace ET.Client
     /// <summary>
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
+    [FriendOf(typeof(YIUIChild))]
+    [FriendOf(typeof(YIUIWindowComponent))]
+    [FriendOf(typeof(YIUIPanelComponent))]
     [EntitySystemOf(typeof(TipsPanelComponent))]
     public static partial class TipsPanelComponentSystem
     {

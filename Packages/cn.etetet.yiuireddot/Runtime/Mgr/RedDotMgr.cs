@@ -20,11 +20,11 @@ namespace YIUIFramework
     public partial class RedDotMgr : YIUISingleton<RedDotMgr>
     {
         //实时修改红点还是异步脏标定时修改
-        private static bool SyncSetCount = false; //默认异步
+        private static readonly bool SyncSetCount = false; //默认异步
 
         private const string RedDotConfigAssetName = "RedDotConfigAsset";
 
-        private Dictionary<int, RedDotData> m_AllRedDotData = new Dictionary<int, RedDotData>();
+        private readonly Dictionary<int, RedDotData> m_AllRedDotData = new();
 
         public IReadOnlyDictionary<int, RedDotData> AllRedDotData => m_AllRedDotData;
 
@@ -57,7 +57,7 @@ namespace YIUIFramework
         /// </summary>
         private async ETTask<bool> LoadConfigAsset()
         {
-            var loadResult = await ET.EventSystem.Instance?.YIUIInvokeEntityAsync<YIUIInvokeEntity_Load, ETTask<UnityObject>>(Entity, new YIUIInvokeEntity_Load
+            var loadResult = await ET.EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_Load, ETTask<UnityObject>>(Entity, new YIUIInvokeEntity_Load
             {
                 LoadType = typeof(RedDotConfigAsset),
                 ResName = RedDotConfigAssetName
@@ -74,7 +74,7 @@ namespace YIUIFramework
             InitNewAllData();
             InitLinkData();
 
-            ET.EventSystem.Instance?.YIUIInvokeEntitySync(Entity, new YIUIInvokeEntity_Release
+            ET.EventSystem.Instance?.YIUIInvokeEntitySyncSafety(Entity, new YIUIInvokeEntity_Release
             {
                 obj = loadResult
             });

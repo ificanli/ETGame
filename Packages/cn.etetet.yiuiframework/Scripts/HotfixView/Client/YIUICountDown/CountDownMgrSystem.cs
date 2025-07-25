@@ -1,5 +1,6 @@
 ﻿namespace ET.Client
 {
+    [FriendOf(typeof(CountDownMgr))]
     [EntitySystemOf(typeof(CountDownMgr))]
     public static partial class CountDownMgrSystem
     {

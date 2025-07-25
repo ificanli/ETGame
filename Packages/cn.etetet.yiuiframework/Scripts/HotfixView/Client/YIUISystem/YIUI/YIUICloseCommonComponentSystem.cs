@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace ET.Client
 {
+    [FriendOf(typeof(YIUICloseCommonComponent))]
     public static partial class YIUICloseCommonComponentSystem
     {
         [EntitySystem]

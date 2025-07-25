@@ -9,6 +9,7 @@ namespace ET.Client
     /// 3DDisplay的扩展组件
     /// 文档: https://lib9kmxvq7k.feishu.cn/wiki/FhGGwVZSyiCqHCkTVQYcKHQCnKf
     /// </summary>
+    [FriendOf(typeof(YIUI3DDisplayChild))]
     [EntitySystemOf(typeof(YIUI3DDisplayChild))]
     public static partial class YIUI3DDisplayChildSystem
     {

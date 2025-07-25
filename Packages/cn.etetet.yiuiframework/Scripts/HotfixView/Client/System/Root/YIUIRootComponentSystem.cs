@@ -6,6 +6,7 @@
 
 namespace ET.Client
 {
+    [FriendOf(typeof(YIUIRootComponent))]
     [EntitySystemOf(typeof(YIUIRootComponent))]
     public static partial class YIUIRootComponentSystem
     {

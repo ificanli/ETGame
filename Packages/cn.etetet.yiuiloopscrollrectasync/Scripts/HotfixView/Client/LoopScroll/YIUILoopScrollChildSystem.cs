@@ -10,6 +10,7 @@ namespace ET.Client
     /// 无限循环列表 (异步)
     /// 文档: https://lib9kmxvq7k.feishu.cn/wiki/HPbwwkhsKi9aDik5VEXcqPhDnIh
     /// </summary>
+    [FriendOf(typeof(YIUILoopScrollChild))]
     [EntitySystemOf(typeof(YIUILoopScrollChild))]
     public static partial class YIUILoopScrollChildSystem
     {
@@ -55,7 +56,7 @@ namespace ET.Client
 
         public static void Initialize(this YIUILoopScrollChild self, LoopScrollRect owner, Type itemType)
         {
-            var data = YIUIBindHelper.GetBindVoByType(itemType);
+            var data = self.YIUIBind().GetBindVoByType(itemType);
             if (data == null) return;
             self.m_Owner = owner;
             self.m_ItemType = itemType;
@@ -225,6 +226,27 @@ namespace ET.Client
             var item = self.GetItemRendererByDic(transform);
             if (item == null) return;
             self.ResetItemIndex(transform, index);
+
+            var select = self.m_OnClickItemHashSet.Contains(index);
+            if (self.Data == null)
+            {
+                Debug.LogError($"{self.Parent.GetType().Name} {self.m_Owner.name}当前没有设定数据 m_Data == null");
+                return;
+            }
+
+            YIUILoopHelper.Renderer(self.m_LoopRendererSystemType, self.OwnerEntity, item, self.Data[index], index, select);
+        }
+
+        //原地刷新 重新触发一次可见的Item 时候数据变化 但是长度不变
+        //又不想全刷新也不想改变当前滑动位置,选中状态等等, 纯只刷新状态用
+        private static void UpdateRenderer(this YIUILoopScrollChild self, int index)
+        {
+            var item = self.GetItemByIndex(index);
+            if (item == null)
+            {
+                Debug.LogError($"没有找到 {index} 对应的item");
+                return;
+            }
 
             var select = self.m_OnClickItemHashSet.Contains(index);
             if (self.Data == null)

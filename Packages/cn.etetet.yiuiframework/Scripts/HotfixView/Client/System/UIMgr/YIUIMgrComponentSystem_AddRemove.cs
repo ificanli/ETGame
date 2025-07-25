@@ -3,6 +3,7 @@ using YIUIFramework;
 
 namespace ET.Client
 {
+    [FriendOf(typeof(YIUIPanelComponent))]
     public static partial class YIUIMgrComponentSystem
     {
         /// <summary>

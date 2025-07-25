@@ -1,10 +1,10 @@
-{
+﻿{
   "name": "cn.etetet.yiuiinvoke",
   "displayName": "ET.YIUI.Invoke",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "unity": "2022.3",
   "category": "UI/YIUI|Extend/Event",
-  "description": "\u72ec\u7acb\u529f\u80fd\u4e0d\u4f9d\u8d56YIUI \u6846\u67b6 >>> \u6587\u6863: https://lib9kmxvq7k.feishu.cn/wiki/TpyYwbWIUizhfKkcubocTZgInse",
+  "description": "独立功能不依赖YIUI 框架 >>> 文档: https://lib9kmxvq7k.feishu.cn/wiki/TpyYwbWIUizhfKkcubocTZgInse",
   "author": {
     "name": "YIYI",
     "url": "https://github.com/LiShengYang-yiyi/YIUI/tree/YIUI-ET9.0"

@@ -5,6 +5,7 @@ namespace ET.Client
     /// <summary>
     /// 同步加载
     /// </summary>
+    [FriendOf(typeof(YIUILoadComponent))]
     public static partial class YIUILoadComponentSystem
     {
         /*
@@ -21,7 +22,15 @@ namespace ET.Client
             var loadObj = load.Object;
             if (loadObj != null)
             {
-                return (T)loadObj;
+                if (loadObj is T assetLoadObj)
+                {
+                    return assetLoadObj;
+                }
+                else
+                {
+                    Log.Error($"资源类型不匹配, 期望类型: {typeof(T).Name}, 实际类型 {loadObj.GetType().Name} ,请检查资源, {pkgName},{resName}");
+                    return null;
+                }
             }
 
             var (obj, hashCode) = YIUILoadDI.LoadAssetFunc(pkgName, resName, typeof(T));
@@ -38,7 +47,16 @@ namespace ET.Client
             }
 
             load.ResetHandle(obj, hashCode);
-            return (T)obj;
+
+            if (obj is T assetObj)
+            {
+                return assetObj;
+            }
+            else
+            {
+                Log.Error($"资源类型不匹配, 期望类型: {typeof(T).Name}, 实际类型 {obj.GetType().Name} ,请检查资源, {pkgName},{resName}");
+                return null;
+            }
         }
     }
 }

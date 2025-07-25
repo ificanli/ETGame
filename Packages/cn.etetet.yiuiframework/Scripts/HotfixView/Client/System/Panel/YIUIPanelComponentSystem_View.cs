@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using YIUIFramework;
 
 namespace ET.Client
 {
+    [FriendOf(typeof(YIUIViewComponent))]
     public static partial class YIUIPanelComponentSystem
     {
         internal static void InitPanelViewData(this YIUIPanelComponent self)
@@ -40,7 +41,7 @@ namespace ET.Client
                     continue;
                 }
 
-                var data = YIUIBindHelper.GetBindVoByResName(viewName);
+                var data = self.YIUIBind().GetBindVoByResName(viewName);
                 if (data == null) return;
                 var vo = data.Value;
                 if (vo.CodeType != EUICodeType.View)
@@ -78,7 +79,8 @@ namespace ET.Client
 
             using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIPanel, resName.GetHashCode());
 
-            var data = YIUIBindHelper.GetBindVoByResName(resName);
+            self = selfRef;
+            var data = self.YIUIBind().GetBindVoByResName(resName);
             if (data == null) return null;
             var vo = data.Value;
             if (vo.CodeType != EUICodeType.View)
@@ -86,6 +88,14 @@ namespace ET.Client
                 Log.Error($"打开错误必须是一个view类型");
                 return null;
             }
+
+            self = selfRef;
+            await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventViewOpenBefore
+            {
+                UIPkgName = vo.PkgName,
+                UIResName = vo.ResName,
+                UIComponentName = vo.ComponentType.Name,
+            });
 
             self = selfRef;
             var viewParent = self.GetViewParent(resName);
@@ -119,9 +129,19 @@ namespace ET.Client
 
             using var coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIPanel, typeof(T).GetHashCode());
 
-            var data = YIUIBindHelper.GetBindVoByType<T>();
+            self = selfRef;
+            var data = self.YIUIBind().GetBindVoByType<T>();
             if (data == null) return null;
             var vo = data.Value;
+
+            self = selfRef;
+            await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventViewOpenBefore
+            {
+                UIPkgName = vo.PkgName,
+                UIResName = vo.ResName,
+                UIComponentName = vo.ComponentType.Name,
+            });
+
             if (vo.CodeType != EUICodeType.View)
             {
                 Log.Error($"打开错误必须是一个view类型");
@@ -157,7 +177,7 @@ namespace ET.Client
                 return (false, null);
             }
 
-            var data = YIUIBindHelper.GetBindVoByType<T>();
+            var data = self.YIUIBind().GetBindVoByType<T>();
             if (data == null) return (false, null);
             var vo = data.Value;
             if (vo.CodeType != EUICodeType.View)
@@ -190,7 +210,7 @@ namespace ET.Client
                 return (false, null);
             }
 
-            var data = YIUIBindHelper.GetBindVoByResName(resName);
+            var data = self.YIUIBind().GetBindVoByResName(resName);
             if (data == null) return (false, null);
             var vo = data.Value;
             if (vo.CodeType != EUICodeType.View)
