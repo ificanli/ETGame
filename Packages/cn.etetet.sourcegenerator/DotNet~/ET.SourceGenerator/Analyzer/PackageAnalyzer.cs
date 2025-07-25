@@ -340,15 +340,6 @@ namespace ET
                                     ProcessPartialClassMembers(typeDecl, fullTypeName, packageName);
                                     continue;
                                 }
-                                
-                                // 检查是否为核心包或主要定义包
-                                // Entity类应该只属于core包
-                                if (typeName == "Entity" && packageName != "cn.etetet.core")
-                                {
-                                    // 非core包的Entity partial定义，跳过类型记录，但处理成员
-                                    ProcessPartialClassMembers(typeDecl, fullTypeName, "cn.etetet.core");
-                                    continue;
-                                }
                             }
                             
                             // 记录完整类型名
@@ -1061,11 +1052,14 @@ namespace ET
             // 【新增同层访问规则】：检查同层访问权限
             if (currentInfo.Level == targetInfo.Level && targetInfo.AllowSameLevelAccess)
             {
-                // 如果目标包允许同层访问，还需要确保当前包没有被目标包依赖
-                // 即：如果A包引用了同层包B，那么B包无论如何都不能访问A包
-                if (_flatDependencies.TryGetValue(targetPackage, out var targetDeps))
+                // 修复：只检查直接依赖，而不是扁平化依赖
+                // 扁平化依赖可能包含传递依赖，导致误判
+                if (_packageInfos.TryGetValue(targetPackage, out var targetInfo2) && 
+                    targetInfo2.Dependencies != null)
                 {
-                    return !targetDeps.Contains(currentPackage);
+                    // 只检查直接依赖，不检查传递依赖
+                    bool hasDirectDependency = targetInfo2.Dependencies.Contains(currentPackage);
+                    return !hasDirectDependency;
                 }
                 return true;
             }

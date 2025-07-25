@@ -480,7 +480,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "2.0.0"
+        "cn.etetet.yiuiframework": "2.0.4"
       }
     },
     "cn.etetet.yiuidamagetips": {
@@ -488,7 +488,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0"
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.map": "1.0.0"
       }
     },
     "cn.etetet.yiuieffect": {
@@ -502,7 +503,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0"
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.yiuiinvoke": "4.0.1"
       }
     },
     "cn.etetet.yiuigm": {
@@ -510,7 +512,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "2.0.0"
+        "cn.etetet.core": "4.0.0"
       }
     },
     "cn.etetet.yiuiinvoke": {
@@ -526,7 +528,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "2.0.0"
+        "cn.etetet.core": "4.0.0"
       }
     },
     "cn.etetet.yiuiluban": {
@@ -548,7 +550,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "2.0.0"
+        "cn.etetet.core": "4.0.0"
       }
     },
     "cn.etetet.yiuiyooassets": {
@@ -556,7 +558,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "2.0.0"
+        "cn.etetet.core": "4.0.0"
       }
     },
     "cn.etetet.yooassets": {
