@@ -166,6 +166,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
+      - CollectPath: Assets/GameRes/YIUI/YIUISettings/YIUIConstAsset.txt
+        CollectorGUID: 0e1c18410eb58524b8d983b5f0a0fd5e
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
     - GroupName: Recast
       GroupDesc: 
       AssetTags: 
