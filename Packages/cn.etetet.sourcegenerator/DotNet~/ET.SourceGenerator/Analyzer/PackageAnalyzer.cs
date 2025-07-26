@@ -74,9 +74,6 @@ namespace ET
         // 【性能优化】：预计算的扁平化依赖关系，O(1)查找
         private readonly Dictionary<string, HashSet<string>> _flatDependencies = new();
         
-        // 【循环依赖检测】：记录检测到的循环依赖包，避免重复报错
-        private readonly HashSet<string> _circularDependencyPackages = new();
-        
         // 【性能优化】：预编译正则表达式
         private static readonly Regex DependenciesRegex = new(
             @"""dependencies""\s*:\s*\{([^}]*)\}",
@@ -143,39 +140,61 @@ namespace ET
 
 
         /// <summary>
-        /// 【循环依赖检查】：独立的编译动作，检查并报告循环依赖
+        /// 【循环依赖检查】：检查循环依赖，如果发现则抛出异常
         /// </summary>
-        private void CheckCircularDependencies(CompilationAnalysisContext context)
+        private void CheckAndReportCircularDependencies(CompilationStartAnalysisContext context)
         {
             try
             {
-                // 【关键过滤】：只处理需要分析的程序集
-                if (!AnalyzerHelper.IsAssemblyNeedAnalyze(context.Compilation.AssemblyName, AnalyzeAssembly.All))
-                {
-                    return;
-                }
-
-                // 重新加载包信息并检测循环依赖
-                var packageInfos = new Dictionary<string, PackageInfo>();
                 var circularPackages = new HashSet<string>();
+                DetectCircularDependencies(_packageInfos, circularPackages);
                 
-                LoadPackageInfosForCheck(context.Compilation, packageInfos);
-                DetectCircularDependencies(packageInfos, circularPackages);
-                
-                // 报告所有循环依赖错误
-                foreach (var packageName in circularPackages)
+                // 如果有循环依赖，记录错误信息并注册检查action
+                if (circularPackages.Count > 0)
                 {
-                    var diagnostic = Diagnostic.Create(
-                        CircularDependencyDescriptor,
-                        Location.None,
-                        packageName
-                    );
-                    context.ReportDiagnostic(diagnostic);
+                    foreach (var packageName in circularPackages)
+                    {
+                        string errorMessage = packageName;
+                        
+                        // 如果有循环路径信息，包含在错误消息中
+                        if (_packageInfos.TryGetValue(packageName, out var packageInfo) && packageInfo.CircularPath != null)
+                        {
+                            var pathStr = string.Join(" -> ", packageInfo.CircularPath);
+                            errorMessage = $"{packageName}. Circular dependency path: {pathStr}";
+                            LogToFile($"CIRCULAR DEPENDENCY DETECTED: {errorMessage}");
+                        }
+                    }
+                    
+                    // 必须注册一个非CompilationEndAction的操作来满足分析器框架要求
+                    // 同时注册CompilationEndAction来报告错误
+                    context.RegisterSyntaxNodeAction(_ => { }, SyntaxKind.CompilationUnit);
+                    
+                    var circularPackagesList = circularPackages.ToList();
+                    context.RegisterCompilationEndAction(compilationContext =>
+                    {
+                        foreach (var packageName in circularPackagesList)
+                        {
+                            string errorMessage = packageName;
+                            
+                            if (_packageInfos.TryGetValue(packageName, out var packageInfo) && packageInfo.CircularPath != null)
+                            {
+                                var pathStr = string.Join(" -> ", packageInfo.CircularPath);
+                                errorMessage = $"{packageName}. Circular dependency path: {pathStr}";
+                            }
+                            
+                            var diagnostic = Diagnostic.Create(
+                                CircularDependencyDescriptor,
+                                Location.None,
+                                errorMessage
+                            );
+                            compilationContext.ReportDiagnostic(diagnostic);
+                        }
+                    });
                 }
             }
             catch (Exception ex)
             {
-                LogToFile($"CheckCircularDependencies error: {ex.Message}");
+                LogToFile($"CheckAndReportCircularDependencies error: {ex.Message}");
             }
         }
 
@@ -184,7 +203,6 @@ namespace ET
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
             context.RegisterCompilationStartAction(InitializeCompilation);
-            context.RegisterCompilationAction(CheckCircularDependencies);
         }
 
         private void InitializeCompilation(CompilationStartAnalysisContext context)
@@ -200,7 +218,7 @@ namespace ET
             {
                 if (!_isInitialized)
                 {
-                    LoadPackageInfos(context.Compilation);
+                    LoadPackageInfos(context.Compilation, context);
                     
                     // 构建当前编译上下文的符号表
                     BuildSymbolTable(context.Compilation);
@@ -616,7 +634,7 @@ namespace ET
             return signature;
         }
 
-        private void LoadPackageInfos(Compilation compilation)
+        private void LoadPackageInfos(Compilation compilation, CompilationStartAnalysisContext context)
         {
             try
             {
@@ -645,7 +663,10 @@ namespace ET
                     }
                 }
                 
-                // 【性能优化】：预计算所有包的完整依赖集合（不检测循环依赖）
+                // 【循环依赖检查】：在包信息加载完成后立即检查循环依赖
+                CheckAndReportCircularDependencies(context);
+                
+                // 【性能优化】：预计算所有包的完整依赖集合（循环依赖检查通过后才进行）
                 PrecomputeAllDependenciesFlat();
             }
             catch (Exception ex)
@@ -1166,42 +1187,6 @@ namespace ET
             computed.Add(packageName);
         }
 
-        /// <summary>
-        /// 【循环依赖检测】：加载包信息用于循环依赖检查
-        /// </summary>
-        private void LoadPackageInfosForCheck(Compilation compilation, Dictionary<string, PackageInfo> packageInfos)
-        {
-            try
-            {
-                var packagesPath = FindPackagesPathFromCompilation(compilation);
-                if (string.IsNullOrEmpty(packagesPath)) 
-                {
-                    return;
-                }
-
-                var packageDirs = Directory.GetDirectories(packagesPath, "cn.etetet.*");
-                
-                foreach (var packageDir in packageDirs)
-                {
-                    var packageName = Path.GetFileName(packageDir);
-                    var packageJsonPath = Path.Combine(packageDir, "package.json");
-                    var packageGitJsonPath = Path.Combine(packageDir, "packagegit.json");
-
-                    if (File.Exists(packageJsonPath))
-                    {
-                        var packageInfo = LoadPackageInfo(packageJsonPath, packageGitJsonPath);
-                        if (packageInfo != null)
-                        {
-                            packageInfos[packageName] = packageInfo;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogToFile($"LoadPackageInfosForCheck error: {ex.Message}");
-            }
-        }
 
         /// <summary>
         /// 【循环依赖检测】：检测所有包的循环依赖
@@ -1211,11 +1196,23 @@ namespace ET
             try
             {
                 var computed = new HashSet<string>();
-                var computing = new HashSet<string>();
+                var circularPaths = new Dictionary<string, List<string>>();
                 
                 foreach (var packageName in packageInfos.Keys)
                 {
-                    DetectCircularDependenciesRecursive(packageName, packageInfos, computed, computing, circularPackages);
+                    var path = new List<string>();
+                    DetectCircularDependenciesRecursive(packageName, packageInfos, computed, path, circularPaths);
+                }
+                
+                // 将检测到的循环依赖路径信息添加到circularPackages
+                foreach (var kvp in circularPaths)
+                {
+                    circularPackages.Add(kvp.Key);
+                    // 将循环路径信息存储到PackageInfo中，以便后续报告时使用
+                    if (packageInfos.TryGetValue(kvp.Key, out var packageInfo))
+                    {
+                        packageInfo.CircularPath = kvp.Value;
+                    }
                 }
             }
             catch (Exception ex)
@@ -1228,27 +1225,36 @@ namespace ET
         /// 【循环依赖检测】：递归检测单个包的循环依赖
         /// </summary>
         private void DetectCircularDependenciesRecursive(string packageName, Dictionary<string, PackageInfo> packageInfos, 
-            HashSet<string> computed, HashSet<string> computing, HashSet<string> circularPackages)
+            HashSet<string> computed, List<string> currentPath, Dictionary<string, List<string>> circularPaths)
         {
             if (computed.Contains(packageName) || !packageInfos.TryGetValue(packageName, out var packageInfo))
                 return;
             
-            if (computing.Contains(packageName))
+            // 检查当前路径中是否已经包含此包（形成循环）
+            var cycleStartIndex = currentPath.IndexOf(packageName);
+            if (cycleStartIndex >= 0)
             {
-                // 发现循环依赖
-                circularPackages.Add(packageName);
-                LogToFile($"DETECTED: Circular dependency for package: {packageName}");
+                // 发现循环依赖，提取循环路径
+                var cyclePath = new List<string>();
+                for (int i = cycleStartIndex; i < currentPath.Count; i++)
+                {
+                    cyclePath.Add(currentPath[i]);
+                }
+                cyclePath.Add(packageName); // 添加回到起点的包名，形成完整循环
+                
+                circularPaths[packageName] = cyclePath;
+                LogToFile($"DETECTED: Circular dependency path: {string.Join(" -> ", cyclePath)}");
                 return;
             }
             
-            computing.Add(packageName);
+            currentPath.Add(packageName);
             
             foreach (var dependency in packageInfo.Dependencies)
             {
-                DetectCircularDependenciesRecursive(dependency, packageInfos, computed, computing, circularPackages);
+                DetectCircularDependenciesRecursive(dependency, packageInfos, computed, currentPath, circularPaths);
             }
             
-            computing.Remove(packageName);
+            currentPath.RemoveAt(currentPath.Count - 1);
             computed.Add(packageName);
         }
 
@@ -1263,6 +1269,11 @@ namespace ET
             /// 预计算的完整依赖集合（包括传递依赖）
             /// </summary>
             public HashSet<string> AllDependencies { get; set; } = new HashSet<string>();
+            
+            /// <summary>
+            /// 循环依赖路径（如果存在循环依赖）
+            /// </summary>
+            public List<string>? CircularPath { get; set; }
         }
     }
 }
