@@ -67,6 +67,10 @@ namespace ET
         private readonly Dictionary<string, string> _symbolTable = new();
         private readonly Dictionary<string, PackageInfo> _packageInfos = new();
         
+        // 初始化锁，确保符号表构建完成后再开始分析
+        private readonly object _initLock = new object();
+        private volatile bool _isInitialized = false;
+        
         // 【性能优化】：预计算的扁平化依赖关系，O(1)查找
         private readonly Dictionary<string, HashSet<string>> _flatDependencies = new();
         
@@ -191,10 +195,19 @@ namespace ET
                 return;
             }
             
-            LoadPackageInfos(context.Compilation);
-            
-            // 构建当前编译上下文的符号表
-            BuildSymbolTable(context.Compilation);
+            // 确保符号表完全构建完成后再注册分析动作
+            lock (_initLock)
+            {
+                if (!_isInitialized)
+                {
+                    LoadPackageInfos(context.Compilation);
+                    
+                    // 构建当前编译上下文的符号表
+                    BuildSymbolTable(context.Compilation);
+                    
+                    _isInitialized = true;
+                }
+            }
             
             context.RegisterSyntaxNodeAction(AnalyzeMemberAccess, SyntaxKind.SimpleMemberAccessExpression);
             context.RegisterSyntaxNodeAction(AnalyzeInvocationExpression, SyntaxKind.InvocationExpression);
