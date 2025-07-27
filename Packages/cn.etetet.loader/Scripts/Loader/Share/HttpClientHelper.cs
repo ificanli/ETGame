@@ -3,7 +3,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 
-namespace ET.Client
+namespace ET
 {
     public static partial class HttpClientHelper
     {
@@ -11,7 +11,7 @@ namespace ET.Client
         {
             try
             {
-#if UNITY_WEBGL
+#if UNITY
                 UnityEngine.Networking.UnityWebRequest req = UnityEngine.Networking.UnityWebRequest.Get(link);
                 await req.SendWebRequest();
                 return req.downloadHandler.text;

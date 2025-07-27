@@ -1,5 +1,4 @@
-﻿#if DOTNET
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using NLog;
@@ -111,4 +110,3 @@ namespace ET
         }
     }
 }
-#endif
