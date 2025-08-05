@@ -24,18 +24,6 @@ namespace ET
                         .WithParsed((o)=>World.Instance.AddSingleton(o));
                 Options.Instance.Console = 1;
                 
-                // 设置NLog配置和currentDir变量
-                string configPath = "Packages/cn.etetet.loader/Scripts/Loader/Server/NLog.config";
-                if (File.Exists(configPath))
-                {
-                    // 确保Logs目录存在
-                    string logsDir = Path.Combine(Environment.CurrentDirectory, "Logs");
-                    if (!Directory.Exists(logsDir))
-                    {
-                        Directory.CreateDirectory(logsDir);
-                    }
-                }
-                
                 World.Instance.AddSingleton<Logger>().Log = new NLogger("ExcelExporter", 1, 0);
                 
                 
