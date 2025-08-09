@@ -27,7 +27,7 @@ namespace ET
 
         public void OnEnable()
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo("Packages/cn.etetet.startconfig/Assets/Config/Binary/Server/StartConfig");
+            DirectoryInfo directoryInfo = new DirectoryInfo("Packages/cn.etetet.startconfig/Bundles/Luban");
             this.startConfigs = directoryInfo.GetDirectories().Select(x => x.Name).ToArray();
         }
 
@@ -40,13 +40,13 @@ namespace ET
 
             if (GUILayout.Button("Start Server(Single Process)"))
             {
-                string arguments = $"Bin/ET.App.dll --SceneName={globalConfig.SceneName} --Process=1 --StartConfig=StartConfig/{this.startConfig} --Console=1";
+                string arguments = $"Bin/ET.App.dll --SceneName={globalConfig.SceneName} --Process=1 --StartConfig={this.startConfig} --Console=1";
                 ProcessHelper.DotNet(arguments, "./");
             }
 
             if (GUILayout.Button("Start Watcher"))
             {
-                string arguments = $"Bin/ET.App.dll --SceneName=Watcher --StartConfig=StartConfig/{this.startConfig} --Console=1";
+                string arguments = $"Bin/ET.App.dll --SceneName=Watcher --StartConfig={this.startConfig} --Console=1";
                 ProcessHelper.DotNet(arguments, "./");
             }
 
