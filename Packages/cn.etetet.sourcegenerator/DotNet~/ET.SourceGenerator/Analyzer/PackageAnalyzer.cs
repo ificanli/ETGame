@@ -746,6 +746,12 @@ namespace ET
                         packageInfo.AllowSameLevelAccess = allowSameLevel;
                     }
                     
+                    var allowAnyAccessStr = ExtractJsonStringValue(packageGitContent, "AllowAnyPackageAccess");
+                    if (bool.TryParse(allowAnyAccessStr, out bool allowAnyAccess))
+                    {
+                        packageInfo.AllowAnyPackageAccess = allowAnyAccess;
+                    }
+                    
                 }
 
                 return packageInfo;
@@ -1082,6 +1088,12 @@ namespace ET
                     return true;
                 }
             }
+
+            // 新增：如果目标包设置了 AllowAnyPackageAccess，则允许任何包访问（但仍禁止循环依赖）
+            if (targetInfo.AllowAnyPackageAccess)
+            {
+                return true;
+            }
             
             // 【新增同层访问规则】：检查同层访问权限
             if (currentInfo.Level == targetInfo.Level && targetInfo.AllowSameLevelAccess)
@@ -1264,6 +1276,7 @@ namespace ET
             public List<string> Dependencies { get; set; } = new List<string>();
             public int Level { get; set; } = 0;
             public bool AllowSameLevelAccess { get; set; } = false;
+            public bool AllowAnyPackageAccess { get; set; } = false;
             
             /// <summary>
             /// 预计算的完整依赖集合（包括传递依赖）
