@@ -1,9 +1,9 @@
 namespace ET.Server
 {
     [MessageHandler(SceneType.Map)]
-    public class C2M_RobotCase_TriggerAchievementEvent_Handler : MessageLocationHandler<Unit, C2M_RobotCase_TriggerAchievementEvent_Request, M2C_RobotCase_TriggerAchievementEvent_Response>
+    public class RobotCase_TriggerAchievementEvent_Handler : MessageLocationHandler<Unit, RobotCase_TriggerAchievementEvent_Request, RobotCase_TriggerAchievementEvent_Response>
     {
-        protected override async ETTask Run(Unit unit, C2M_RobotCase_TriggerAchievementEvent_Request request, M2C_RobotCase_TriggerAchievementEvent_Response response)
+        protected override async ETTask Run(Unit unit, RobotCase_TriggerAchievementEvent_Request request, RobotCase_TriggerAchievementEvent_Response response)
         {
             try
             {

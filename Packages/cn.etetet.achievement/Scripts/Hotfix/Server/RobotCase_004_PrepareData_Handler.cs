@@ -1,9 +1,9 @@
 namespace ET.Server
 {
     [MessageHandler(SceneType.Map)]
-    public class C2M_RobotCase_PrepareData_004_Handler : MessageLocationHandler<Unit, C2M_RobotCase_PrepareData_004_Request, M2C_RobotCase_PrepareData_004_Response>
+    public class RobotCase_004_PrepareData_Handler : MessageLocationHandler<Unit, RobotCase_004_PrepareData_Request, RobotCase_004_PrepareData_Response>
     {
-        protected override async ETTask Run(Unit unit, C2M_RobotCase_PrepareData_004_Request request, M2C_RobotCase_PrepareData_004_Response response)
+        protected override async ETTask Run(Unit unit, RobotCase_004_PrepareData_Request request, RobotCase_004_PrepareData_Response response)
         {
             try
             {

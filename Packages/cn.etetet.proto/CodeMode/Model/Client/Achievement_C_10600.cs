@@ -689,13 +689,13 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.C2M_RobotCase_PrepareData_004_Request)]
-    [ResponseType(nameof(M2C_RobotCase_PrepareData_004_Response))]
-    public partial class C2M_RobotCase_PrepareData_004_Request : MessageObject, ILocationRequest
+    [Message(Opcode.RobotCase_004_PrepareData_Request)]
+    [ResponseType(nameof(RobotCase_004_PrepareData_Response))]
+    public partial class RobotCase_004_PrepareData_Request : MessageObject, ILocationRequest
     {
-        public static C2M_RobotCase_PrepareData_004_Request Create(bool isFromPool = false)
+        public static RobotCase_004_PrepareData_Request Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<C2M_RobotCase_PrepareData_004_Request>(isFromPool);
+            return ObjectPool.Fetch<RobotCase_004_PrepareData_Request>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -715,71 +715,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.M2C_RobotCase_PrepareData_004_Response)]
-    public partial class M2C_RobotCase_PrepareData_004_Response : MessageObject, ILocationResponse
+    [Message(Opcode.RobotCase_004_PrepareData_Response)]
+    public partial class RobotCase_004_PrepareData_Response : MessageObject, ILocationResponse
     {
-        public static M2C_RobotCase_PrepareData_004_Response Create(bool isFromPool = false)
+        public static RobotCase_004_PrepareData_Response Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<M2C_RobotCase_PrepareData_004_Response>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-
-        [MemoryPackOrder(1)]
-        public int Error { get; set; }
-
-        [MemoryPackOrder(2)]
-        public string Message { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.Error = default;
-            this.Message = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.C2M_RobotCase_PrepareData_006_Request)]
-    [ResponseType(nameof(M2C_RobotCase_PrepareData_006_Response))]
-    public partial class C2M_RobotCase_PrepareData_006_Request : MessageObject, ILocationRequest
-    {
-        public static C2M_RobotCase_PrepareData_006_Request Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<C2M_RobotCase_PrepareData_006_Request>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.M2C_RobotCase_PrepareData_006_Response)]
-    public partial class M2C_RobotCase_PrepareData_006_Response : MessageObject, ILocationResponse
-    {
-        public static M2C_RobotCase_PrepareData_006_Response Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<M2C_RobotCase_PrepareData_006_Response>(isFromPool);
+            return ObjectPool.Fetch<RobotCase_004_PrepareData_Response>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -807,13 +748,72 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.C2M_RobotCase_TriggerAchievementEvent_Request)]
-    [ResponseType(nameof(M2C_RobotCase_TriggerAchievementEvent_Response))]
-    public partial class C2M_RobotCase_TriggerAchievementEvent_Request : MessageObject, ILocationRequest
+    [Message(Opcode.RobotCase_006_PrepareData_Request)]
+    [ResponseType(nameof(RobotCase_006_PrepareData_Response))]
+    public partial class RobotCase_006_PrepareData_Request : MessageObject, ILocationRequest
     {
-        public static C2M_RobotCase_TriggerAchievementEvent_Request Create(bool isFromPool = false)
+        public static RobotCase_006_PrepareData_Request Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<C2M_RobotCase_TriggerAchievementEvent_Request>(isFromPool);
+            return ObjectPool.Fetch<RobotCase_006_PrepareData_Request>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.RobotCase_006_PrepareData_Response)]
+    public partial class RobotCase_006_PrepareData_Response : MessageObject, ILocationResponse
+    {
+        public static RobotCase_006_PrepareData_Response Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<RobotCase_006_PrepareData_Response>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.RobotCase_TriggerAchievementEvent_Request)]
+    [ResponseType(nameof(RobotCase_TriggerAchievementEvent_Response))]
+    public partial class RobotCase_TriggerAchievementEvent_Request : MessageObject, ILocationRequest
+    {
+        public static RobotCase_TriggerAchievementEvent_Request Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<RobotCase_TriggerAchievementEvent_Request>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -854,12 +854,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.M2C_RobotCase_TriggerAchievementEvent_Response)]
-    public partial class M2C_RobotCase_TriggerAchievementEvent_Response : MessageObject, ILocationResponse
+    [Message(Opcode.RobotCase_TriggerAchievementEvent_Response)]
+    public partial class RobotCase_TriggerAchievementEvent_Response : MessageObject, ILocationResponse
     {
-        public static M2C_RobotCase_TriggerAchievementEvent_Response Create(bool isFromPool = false)
+        public static RobotCase_TriggerAchievementEvent_Response Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<M2C_RobotCase_TriggerAchievementEvent_Response>(isFromPool);
+            return ObjectPool.Fetch<RobotCase_TriggerAchievementEvent_Response>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -905,11 +905,11 @@ namespace ET
         public const ushort C2M_GetAchievementStats = 10615;
         public const ushort AchievementStatsInfo = 10616;
         public const ushort M2C_GetAchievementStats = 10617;
-        public const ushort C2M_RobotCase_PrepareData_004_Request = 10618;
-        public const ushort M2C_RobotCase_PrepareData_004_Response = 10619;
-        public const ushort C2M_RobotCase_PrepareData_006_Request = 10620;
-        public const ushort M2C_RobotCase_PrepareData_006_Response = 10621;
-        public const ushort C2M_RobotCase_TriggerAchievementEvent_Request = 10622;
-        public const ushort M2C_RobotCase_TriggerAchievementEvent_Response = 10623;
+        public const ushort RobotCase_004_PrepareData_Request = 10618;
+        public const ushort RobotCase_004_PrepareData_Response = 10619;
+        public const ushort RobotCase_006_PrepareData_Request = 10620;
+        public const ushort RobotCase_006_PrepareData_Response = 10621;
+        public const ushort RobotCase_TriggerAchievementEvent_Request = 10622;
+        public const ushort RobotCase_TriggerAchievementEvent_Response = 10623;
     }
 }

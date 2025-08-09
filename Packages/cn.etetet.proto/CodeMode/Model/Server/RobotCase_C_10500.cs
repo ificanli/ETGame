@@ -4,13 +4,13 @@ using System.Collections.Generic;
 namespace ET
 {
     [MemoryPackable]
-    [Message(Opcode.C2M_RobotCase_PrepareData_001_Request)]
-    [ResponseType(nameof(C2M_RobotCase_PrepareData_001_Response))]
-    public partial class C2M_RobotCase_PrepareData_001_Request : MessageObject, ILocationRequest
+    [Message(Opcode.RobotCase_001_PrepareData_Request)]
+    [ResponseType(nameof(RobotCase_001_PrepareData_Response))]
+    public partial class RobotCase_001_PrepareData_Request : MessageObject, ILocationRequest
     {
-        public static C2M_RobotCase_PrepareData_001_Request Create(bool isFromPool = false)
+        public static RobotCase_001_PrepareData_Request Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<C2M_RobotCase_PrepareData_001_Request>(isFromPool);
+            return ObjectPool.Fetch<RobotCase_001_PrepareData_Request>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -30,12 +30,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.C2M_RobotCase_PrepareData_001_Response)]
-    public partial class C2M_RobotCase_PrepareData_001_Response : MessageObject, ILocationResponse
+    [Message(Opcode.RobotCase_001_PrepareData_Response)]
+    public partial class RobotCase_001_PrepareData_Response : MessageObject, ILocationResponse
     {
-        public static C2M_RobotCase_PrepareData_001_Response Create(bool isFromPool = false)
+        public static RobotCase_001_PrepareData_Response Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<C2M_RobotCase_PrepareData_001_Response>(isFromPool);
+            return ObjectPool.Fetch<RobotCase_001_PrepareData_Response>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -130,13 +130,13 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.C2M_RobotCase_PrepareData_005_Request)]
-    [ResponseType(nameof(M2C_RobotCase_PrepareData_005_Response))]
-    public partial class C2M_RobotCase_PrepareData_005_Request : MessageObject, ILocationRequest
+    [Message(Opcode.RobotCase_005_PrepareData_Request)]
+    [ResponseType(nameof(RobotCase_005_PrepareData_Response))]
+    public partial class RobotCase_005_PrepareData_Request : MessageObject, ILocationRequest
     {
-        public static C2M_RobotCase_PrepareData_005_Request Create(bool isFromPool = false)
+        public static RobotCase_005_PrepareData_Request Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<C2M_RobotCase_PrepareData_005_Request>(isFromPool);
+            return ObjectPool.Fetch<RobotCase_005_PrepareData_Request>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -156,12 +156,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.M2C_RobotCase_PrepareData_005_Response)]
-    public partial class M2C_RobotCase_PrepareData_005_Response : MessageObject, ILocationResponse
+    [Message(Opcode.RobotCase_005_PrepareData_Response)]
+    public partial class RobotCase_005_PrepareData_Response : MessageObject, ILocationResponse
     {
-        public static M2C_RobotCase_PrepareData_005_Response Create(bool isFromPool = false)
+        public static RobotCase_005_PrepareData_Response Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<M2C_RobotCase_PrepareData_005_Response>(isFromPool);
+            return ObjectPool.Fetch<RobotCase_005_PrepareData_Response>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -190,11 +190,11 @@ namespace ET
 
     public static partial class Opcode
     {
-        public const ushort C2M_RobotCase_PrepareData_001_Request = 10501;
-        public const ushort C2M_RobotCase_PrepareData_001_Response = 10502;
+        public const ushort RobotCase_001_PrepareData_Request = 10501;
+        public const ushort RobotCase_001_PrepareData_Response = 10502;
         public const ushort C2M_TestRobotCase = 10503;
         public const ushort M2C_TestRobotCase = 10504;
-        public const ushort C2M_RobotCase_PrepareData_005_Request = 10505;
-        public const ushort M2C_RobotCase_PrepareData_005_Response = 10506;
+        public const ushort RobotCase_005_PrepareData_Request = 10505;
+        public const ushort RobotCase_005_PrepareData_Response = 10506;
     }
 }

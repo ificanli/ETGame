@@ -72,14 +72,14 @@ namespace ET.Server
             try
             {
                 // 发送专用的Quest测试数据准备消息到服务器
-                C2M_RobotCase_PrepareData_003_Request prepareRequest = C2M_RobotCase_PrepareData_003_Request.Create();
+                RobotCase_003_PrepareData_Request prepareRequest = RobotCase_003_PrepareData_Request.Create();
                 
                 Log.Debug("Sending Quest test data preparation request to server");
                 
                 // 发送真实的网络消息
                 EntityRef<Scene> robotSceneRef = robotScene;
                 ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
-                M2C_RobotCase_PrepareData_003_Response prepareResponse = await clientSender.Call(prepareRequest) as M2C_RobotCase_PrepareData_003_Response;
+                RobotCase_003_PrepareData_Response prepareResponse = await clientSender.Call(prepareRequest) as RobotCase_003_PrepareData_Response;
                 
                 // await后重新获取Entity
                 robotScene = robotSceneRef;

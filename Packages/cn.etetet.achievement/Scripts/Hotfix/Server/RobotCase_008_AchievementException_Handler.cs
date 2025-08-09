@@ -93,14 +93,14 @@ namespace ET.Server
             try
             {
                 // 使用基础的成就测试数据准备消息
-                C2M_RobotCase_PrepareData_004_Request prepareRequest = C2M_RobotCase_PrepareData_004_Request.Create();
+                RobotCase_004_PrepareData_Request prepareRequest = RobotCase_004_PrepareData_Request.Create();
                 
                 Log.Debug("Sending Achievement exception test data preparation request to server");
                 
                 // 发送真实的网络消息
                 EntityRef<Scene> robotSceneRef = robotScene;
                 ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
-                M2C_RobotCase_PrepareData_004_Response prepareResponse = await clientSender.Call(prepareRequest) as M2C_RobotCase_PrepareData_004_Response;
+                RobotCase_004_PrepareData_Response prepareResponse = await clientSender.Call(prepareRequest) as RobotCase_004_PrepareData_Response;
                 
                 // await后重新获取Entity
                 robotScene = robotSceneRef;
@@ -277,12 +277,12 @@ namespace ET.Server
             ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
             // 测试无效的事件类型
-            C2M_RobotCase_TriggerAchievementEvent_Request request = C2M_RobotCase_TriggerAchievementEvent_Request.Create();
+            RobotCase_TriggerAchievementEvent_Request request = RobotCase_TriggerAchievementEvent_Request.Create();
             request.EventType = 999; // 无效的事件类型
             request.ParamId = 1001;
             request.Count = 1;
             
-            M2C_RobotCase_TriggerAchievementEvent_Response response = await clientSender.Call(request) as M2C_RobotCase_TriggerAchievementEvent_Response;
+            RobotCase_TriggerAchievementEvent_Response response = await clientSender.Call(request) as RobotCase_TriggerAchievementEvent_Response;
             
             robotScene = robotSceneRef; // await后重新获取
             
@@ -296,12 +296,12 @@ namespace ET.Server
             
             // 测试负数参数
             clientSender = robotScene.GetComponent<ClientSenderComponent>();
-            C2M_RobotCase_TriggerAchievementEvent_Request request2 = C2M_RobotCase_TriggerAchievementEvent_Request.Create();
+            RobotCase_TriggerAchievementEvent_Request request2 = RobotCase_TriggerAchievementEvent_Request.Create();
             request2.EventType = 1; // 有效的事件类型
             request2.ParamId = -1; // 无效的参数
             request2.Count = -1; // 无效的数量
             
-            M2C_RobotCase_TriggerAchievementEvent_Response response2 = await clientSender.Call(request2) as M2C_RobotCase_TriggerAchievementEvent_Response;
+            RobotCase_TriggerAchievementEvent_Response response2 = await clientSender.Call(request2) as RobotCase_TriggerAchievementEvent_Response;
             
             robotScene = robotSceneRef; // await后重新获取
             

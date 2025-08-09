@@ -15,7 +15,7 @@ namespace ET.Server
             
             // 调用机器人的发送消息方法，注意这里是父fiber调用了子fiber的call方法，按理来说，孩子的Call方法返回的时候，同步上下文会变成孩子的上下文
             // 由于这里父子fiber的同步上下文一样，所以没有问题
-            C2M_RobotCase_PrepareData_001_Request prepareData001Request = C2M_RobotCase_PrepareData_001_Request.Create();
+            RobotCase_001_PrepareData_Request prepareData001Request = RobotCase_001_PrepareData_Request.Create();
             await robot.Root.GetComponent<ClientSenderComponent>().Call(prepareData001Request);
             
             return ErrorCode.ERR_Success;

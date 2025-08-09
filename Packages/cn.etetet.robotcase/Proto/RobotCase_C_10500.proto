@@ -1,13 +1,13 @@
 syntax = "proto3";
 package ET;
 
-// ResponseType C2M_RobotCase_PrepareData_001_Response
-message C2M_RobotCase_PrepareData_001_Request // ILocationRequest
+// ResponseType RobotCase_001_PrepareData_Response
+message RobotCase_001_PrepareData_Request // ILocationRequest
 {
 	int32 RpcId = 1;
 }
 
-message C2M_RobotCase_PrepareData_001_Response // ILocationResponse
+message RobotCase_001_PrepareData_Response // ILocationResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;
@@ -29,13 +29,13 @@ message M2C_TestRobotCase // ILocationResponse
 	int32 N = 4;
 }
 
-// ResponseType M2C_RobotCase_PrepareData_005_Response
-message C2M_RobotCase_PrepareData_005_Request // ILocationRequest
+// ResponseType RobotCase_005_PrepareData_Response
+message RobotCase_005_PrepareData_Request // ILocationRequest
 {
 	int32 RpcId = 1;
 }
 
-message M2C_RobotCase_PrepareData_005_Response // ILocationResponse
+message RobotCase_005_PrepareData_Response // ILocationResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;

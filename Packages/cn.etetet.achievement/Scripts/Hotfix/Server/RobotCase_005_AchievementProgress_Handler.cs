@@ -90,14 +90,14 @@ namespace ET.Server
             try
             {
                 // 发送专用的成就进度测试数据准备消息到服务器
-                C2M_RobotCase_PrepareData_005_Request prepareRequest = C2M_RobotCase_PrepareData_005_Request.Create();
+                RobotCase_005_PrepareData_Request prepareRequest = RobotCase_005_PrepareData_Request.Create();
                 
                 Log.Debug("Sending Achievement progress test data preparation request to server");
                 
                 // 发送真实的网络消息
                 EntityRef<Scene> robotSceneRef = robotScene;
                 ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
-                M2C_RobotCase_PrepareData_005_Response prepareResponse = await clientSender.Call(prepareRequest) as M2C_RobotCase_PrepareData_005_Response;
+                RobotCase_005_PrepareData_Response prepareResponse = await clientSender.Call(prepareRequest) as RobotCase_005_PrepareData_Response;
                 
                 // await后重新获取Entity
                 robotScene = robotSceneRef;
@@ -166,12 +166,12 @@ namespace ET.Server
                 clientSender = robotScene.GetComponent<ClientSenderComponent>();
                 
                 // 触发击杀事件
-                C2M_RobotCase_TriggerAchievementEvent_Request triggerRequest = C2M_RobotCase_TriggerAchievementEvent_Request.Create();
+                RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
                 triggerRequest.EventType = 1; // 击杀事件
                 triggerRequest.ParamId = 1001; // 怪物ID
                 triggerRequest.Count = 1; // 击杀数量
                 
-                M2C_RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as M2C_RobotCase_TriggerAchievementEvent_Response;
+                RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
                 
                 robotScene = robotSceneRef; // await后重新获取
                 
@@ -225,12 +225,12 @@ namespace ET.Server
             Log.Debug($"Before completion: Progress={beforeAchievement.Progress}/{beforeAchievement.MaxProgress}, Status={beforeAchievement.Status}");
             
             // 触发等级提升事件，应该完成成就
-            C2M_RobotCase_TriggerAchievementEvent_Request triggerRequest = C2M_RobotCase_TriggerAchievementEvent_Request.Create();
+            RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
             triggerRequest.EventType = 2; // 等级提升事件
             triggerRequest.ParamId = 10; // 等级
             triggerRequest.Count = 1;
             
-            M2C_RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as M2C_RobotCase_TriggerAchievementEvent_Response;
+            RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
             
             robotScene = robotSceneRef; // await后重新获取
             

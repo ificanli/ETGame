@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace ET.Server
 {
 	[MessageHandler(SceneType.Map)]
-	public class C2M_RobotCase_PrepareData_003_Handler : MessageLocationHandler<Unit, C2M_RobotCase_PrepareData_003_Request, M2C_RobotCase_PrepareData_003_Response>
+	public class RobotCase_003_PrepareData_Handler : MessageLocationHandler<Unit, RobotCase_003_PrepareData_Request, RobotCase_003_PrepareData_Response>
 	{
-		protected override async ETTask Run(Unit unit, C2M_RobotCase_PrepareData_003_Request request, M2C_RobotCase_PrepareData_003_Response response)
+		protected override async ETTask Run(Unit unit, RobotCase_003_PrepareData_Request request, RobotCase_003_PrepareData_Response response)
 		{
 			// 创建EntityRef以便在await后安全使用
 			EntityRef<Unit> unitRef = unit;
