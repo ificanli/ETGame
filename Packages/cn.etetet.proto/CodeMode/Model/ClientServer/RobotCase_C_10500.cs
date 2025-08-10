@@ -6,7 +6,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.RobotCase_001_PrepareData_Request)]
     [ResponseType(nameof(RobotCase_001_PrepareData_Response))]
-    public partial class RobotCase_001_PrepareData_Request : MessageObject, ILocationRequest
+    public partial class RobotCase_001_PrepareData_Request : MessageObject, ILocationRequest, IRobotCaseMessage
     {
         public static RobotCase_001_PrepareData_Request Create(bool isFromPool = false)
         {
@@ -31,7 +31,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.RobotCase_001_PrepareData_Response)]
-    public partial class RobotCase_001_PrepareData_Response : MessageObject, ILocationResponse
+    public partial class RobotCase_001_PrepareData_Response : MessageObject, ILocationResponse, IRobotCaseMessage
     {
         public static RobotCase_001_PrepareData_Response Create(bool isFromPool = false)
         {
@@ -65,7 +65,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.C2M_TestRobotCase)]
     [ResponseType(nameof(M2C_TestRobotCase))]
-    public partial class C2M_TestRobotCase : MessageObject, ILocationRequest
+    public partial class C2M_TestRobotCase : MessageObject, ILocationRequest, IRobotCaseMessage
     {
         public static C2M_TestRobotCase Create(bool isFromPool = false)
         {
@@ -94,7 +94,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.M2C_TestRobotCase)]
-    public partial class M2C_TestRobotCase : MessageObject, ILocationResponse
+    public partial class M2C_TestRobotCase : MessageObject, ILocationResponse, IRobotCaseMessage
     {
         public static M2C_TestRobotCase Create(bool isFromPool = false)
         {
@@ -132,7 +132,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.RobotCase_005_PrepareData_Request)]
     [ResponseType(nameof(RobotCase_005_PrepareData_Response))]
-    public partial class RobotCase_005_PrepareData_Request : MessageObject, ILocationRequest
+    public partial class RobotCase_005_PrepareData_Request : MessageObject, ILocationRequest, IRobotCaseMessage
     {
         public static RobotCase_005_PrepareData_Request Create(bool isFromPool = false)
         {
@@ -157,7 +157,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.RobotCase_005_PrepareData_Response)]
-    public partial class RobotCase_005_PrepareData_Response : MessageObject, ILocationResponse
+    public partial class RobotCase_005_PrepareData_Response : MessageObject, ILocationResponse, IRobotCaseMessage
     {
         public static RobotCase_005_PrepareData_Response Create(bool isFromPool = false)
         {

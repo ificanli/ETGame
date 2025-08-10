@@ -691,7 +691,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.RobotCase_004_PrepareData_Request)]
     [ResponseType(nameof(RobotCase_004_PrepareData_Response))]
-    public partial class RobotCase_004_PrepareData_Request : MessageObject, ILocationRequest
+    public partial class RobotCase_004_PrepareData_Request : MessageObject, ILocationRequest, IRobotCaseMessage
     {
         public static RobotCase_004_PrepareData_Request Create(bool isFromPool = false)
         {
@@ -716,7 +716,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.RobotCase_004_PrepareData_Response)]
-    public partial class RobotCase_004_PrepareData_Response : MessageObject, ILocationResponse
+    public partial class RobotCase_004_PrepareData_Response : MessageObject, ILocationResponse, IRobotCaseMessage
     {
         public static RobotCase_004_PrepareData_Response Create(bool isFromPool = false)
         {
@@ -750,7 +750,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.RobotCase_006_PrepareData_Request)]
     [ResponseType(nameof(RobotCase_006_PrepareData_Response))]
-    public partial class RobotCase_006_PrepareData_Request : MessageObject, ILocationRequest
+    public partial class RobotCase_006_PrepareData_Request : MessageObject, ILocationRequest, IRobotCaseMessage
     {
         public static RobotCase_006_PrepareData_Request Create(bool isFromPool = false)
         {
@@ -775,7 +775,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.RobotCase_006_PrepareData_Response)]
-    public partial class RobotCase_006_PrepareData_Response : MessageObject, ILocationResponse
+    public partial class RobotCase_006_PrepareData_Response : MessageObject, ILocationResponse, IRobotCaseMessage
     {
         public static RobotCase_006_PrepareData_Response Create(bool isFromPool = false)
         {
@@ -809,7 +809,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.RobotCase_TriggerAchievementEvent_Request)]
     [ResponseType(nameof(RobotCase_TriggerAchievementEvent_Response))]
-    public partial class RobotCase_TriggerAchievementEvent_Request : MessageObject, ILocationRequest
+    public partial class RobotCase_TriggerAchievementEvent_Request : MessageObject, ILocationRequest, IRobotCaseMessage
     {
         public static RobotCase_TriggerAchievementEvent_Request Create(bool isFromPool = false)
         {
@@ -855,7 +855,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.RobotCase_TriggerAchievementEvent_Response)]
-    public partial class RobotCase_TriggerAchievementEvent_Response : MessageObject, ILocationResponse
+    public partial class RobotCase_TriggerAchievementEvent_Response : MessageObject, ILocationResponse, IRobotCaseMessage
     {
         public static RobotCase_TriggerAchievementEvent_Response Create(bool isFromPool = false)
         {

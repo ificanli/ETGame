@@ -184,12 +184,12 @@ message M2C_GetQuestDetail // ILocationResponse
 }
 
 // ResponseType RobotCase_003_PrepareData_Response
-message RobotCase_003_PrepareData_Request // ILocationRequest
+message RobotCase_003_PrepareData_Request // ILocationRequest, IRobotCaseMessage
 {
 	int32 RpcId = 1;
 }
 
-message RobotCase_003_PrepareData_Response // ILocationResponse
+message RobotCase_003_PrepareData_Response // ILocationResponse, IRobotCaseMessage
 {
 	int32 RpcId = 1;
 	int32 Error = 2;

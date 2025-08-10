@@ -68,7 +68,18 @@ namespace ET
             ushort opcode = OpcodeType.Instance.GetOpcode(message.GetType());
             if (opcode is > 20000 or < 10000)
             {
+                Log.Error($"client message must in (10000, 20000), opcode: {opcode}");
                 return;
+            }
+
+            // 机器人消息只在RobotCase场景中处理
+            if (message is IRobotCaseMessage)
+            {
+                if (Options.Instance.SceneName != "RobotCase")
+                {
+                    Log.Error($"RobotCase message received in non-RobotCase scene: {message.GetType().Name}");
+                    return;
+                }
             }
 
             EventSystem.Instance.Invoke(self.IScene.SceneType, new NetComponentOnRead() {Session = session, Message = message});
