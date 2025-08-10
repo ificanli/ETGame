@@ -236,6 +236,14 @@ namespace ET
 
         public async ETTask<int> CreateFiber(SchedulerType schedulerType, int zone, int sceneType, string name)
         {
+            // RobotCase场景的调度器是父fiber
+            // 这样可以保证RobotCase的测试用例在同一个线程中执行，
+            // 也可以保证RobotCase的测试用例可以访问父fiber的日志
+            if (Options.Instance.SceneName == "RobotCase")
+            {
+                schedulerType = SchedulerType.Parent;
+            }
+            
             Fiber fiber = await FiberManager.Instance.CreateFiber(schedulerType, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
             return fiber.Id;
@@ -243,6 +251,14 @@ namespace ET
         
         public async ETTask<int> CreateFiberWithId(int fiberId, SchedulerType schedulerType, int zone, int sceneType, string name)
         {
+            // RobotCase场景的调度器是父fiber
+            // 这样可以保证RobotCase的测试用例在同一个线程中执行，
+            // 也可以保证RobotCase的测试用例可以访问父fiber的日志
+            if (Options.Instance.SceneName == "RobotCase")
+            {
+                schedulerType = SchedulerType.Parent;
+            }
+            
             Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, schedulerType, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
             return fiber.Id;
@@ -306,6 +322,24 @@ namespace ET
                 return null;
             }
             return fiber;
+        }
+        
+        public Fiber GetFiber(string name)
+        {
+            foreach (Fiber fiber in this.children.Values)
+            {
+                if (fiber.SchedulerType != SchedulerType.Parent)
+                {
+                    continue;
+                }
+                if (fiber.Root.Name != name)
+                {
+                    continue;
+                }
+
+                return fiber;
+            }
+            return null;
         }
 
         /// <summary>

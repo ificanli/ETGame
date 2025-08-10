@@ -17,6 +17,14 @@ namespace ET.Server
             // 由于这里父子fiber的同步上下文一样，所以没有问题
             RobotCase_001_PrepareData_Request prepareData001Request = RobotCase_001_PrepareData_Request.Create();
             await robot.Root.GetComponent<ClientSenderComponent>().Call(prepareData001Request);
+
+            // 也可以直接访问服务器的数据，直接设置数据
+            string mapName = robot.Root.CurrentScene().Name;
+            Fiber map = fiber.GetFiber("MapManager").GetFiber(mapName);
+            if (map == null)
+            {
+                Log.Error($"not found robot map {mapName}");
+            }
             
             return ErrorCode.ERR_Success;
         }
