@@ -31,6 +31,7 @@ namespace ET.Server
                 {
                     // 执行所有注册的测试用例
                     var list = EventSystem.Instance.GetAllInvokerTypes<RobotCaseContext>();
+                    list.Sort();
                     foreach (long type in list)
                     {
                         try
