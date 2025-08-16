@@ -81,6 +81,8 @@ namespace ET
                     return;
                 }
             }
+            
+            LogMsg.Instance.Recv(self.Fiber(), message);
 
             EventSystem.Instance.Invoke(self.IScene.SceneType, new NetComponentOnRead() {Session = session, Message = message});
         }
