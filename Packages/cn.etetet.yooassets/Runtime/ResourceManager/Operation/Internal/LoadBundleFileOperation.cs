@@ -9,11 +9,12 @@ namespace YooAsset
         private enum ESteps
         {
             None,
-            LoadFile,
+            CheckConcurrency,
+            LoadBundleFile,
             Done,
         }
 
-        private readonly ResourceManager _resourceManager;
+        private readonly ResourceManager _resManager;
         private readonly List<ProviderOperation> _providers = new List<ProviderOperation>(100);
         private readonly List<ProviderOperation> _removeList = new List<ProviderOperation>(100);
         private FSLoadBundleOperation _loadBundleOp;
@@ -52,22 +53,37 @@ namespace YooAsset
 
         internal LoadBundleFileOperation(ResourceManager resourceManager, BundleInfo bundleInfo)
         {
-            _resourceManager = resourceManager;
+            _resManager = resourceManager;
             LoadBundleInfo = bundleInfo;
         }
         internal override void InternalStart()
         {
-            _steps = ESteps.LoadFile;
+            _steps = ESteps.CheckConcurrency;
         }
         internal override void InternalUpdate()
         {
             if (_steps == ESteps.None || _steps == ESteps.Done)
                 return;
 
-            if (_steps == ESteps.LoadFile)
+            if (_steps == ESteps.CheckConcurrency)
+            {
+                if (IsWaitForAsyncComplete)
+                {
+                    _steps = ESteps.LoadBundleFile;
+                }
+                else
+                {
+                    if (_resManager.BundleLoadingIsBusy())
+                        return;
+                    _steps = ESteps.LoadBundleFile;
+                }
+            }
+
+            if (_steps == ESteps.LoadBundleFile)
             {
                 if (_loadBundleOp == null)
                 {
+                    _resManager.BundleLoadingCounter++;
                     _loadBundleOp = LoadBundleInfo.LoadBundleFile();
                     _loadBundleOp.StartOperation();
                     AddChildOperation(_loadBundleOp);
@@ -103,6 +119,9 @@ namespace YooAsset
                     Status = EOperationStatus.Failed;
                     Error = _loadBundleOp.Error;
                 }
+
+                // 统计计数减少
+                _resManager.BundleLoadingCounter--;
             }
         }
         internal override void InternalWaitForAsyncComplete()
@@ -172,7 +191,7 @@ namespace YooAsset
             {
                 foreach (var bundleID in LoadBundleInfo.Bundle.ReferenceBundleIDs)
                 {
-                    if (_resourceManager.CheckBundleDestroyed(bundleID) == false)
+                    if (_resManager.CheckBundleDestroyed(bundleID) == false)
                         return false;
                 }
             }
@@ -214,7 +233,7 @@ namespace YooAsset
             // 移除资源提供者
             if (_removeList.Count > 0)
             {
-                _resourceManager.RemoveBundleProviders(_removeList);
+                _resManager.RemoveBundleProviders(_removeList);
                 _removeList.Clear();
             }
         }

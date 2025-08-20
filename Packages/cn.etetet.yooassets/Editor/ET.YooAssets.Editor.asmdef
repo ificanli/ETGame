@@ -6,8 +6,7 @@
         "Unity.ScriptableBuildPipeline.Editor",
         "ET.YooAssets",
         "ET.Core",
-        "ET.MemoryPack",
-        "ET.SourceGeneratorAttribute"
+        "ET.MemoryPack"
     ],
     "includePlatforms": [
         "Editor"
