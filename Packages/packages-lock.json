@@ -145,7 +145,7 @@
       "source": "embedded",
       "dependencies": {
         "cn.etetet.core": "2.0.8",
-        "cn.etetet.yooassets": "2.1.4",
+        "cn.etetet.yooassets": "2.3.14",
         "cn.etetet.scripts": "4.0.0"
       }
     },
