@@ -20,11 +20,18 @@ namespace ET.Server
 
             // 也可以直接访问服务器的数据，直接设置数据
             string mapName = robot.Root.CurrentScene().Name;
+            
             Fiber map = fiber.GetFiber("MapManager").GetFiber(mapName);
             if (map == null)
             {
                 Log.Error($"not found robot map {mapName}");
             }
+            
+            // 获取Unit的Id
+            Client.PlayerComponent playerComponent = robot.Root.GetComponent<Client.PlayerComponent>();
+            
+            // 获取服务端Unit
+            Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
             
             return ErrorCode.ERR_Success;
         }
