@@ -78,7 +78,7 @@ namespace ET
         
         public static void Console(string msg)
         {
-            if (Options.Instance.Console == 1)
+            if (Options.Instance.Console)
             {
                 System.Console.WriteLine(msg);
             }

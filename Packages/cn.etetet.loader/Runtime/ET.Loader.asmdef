@@ -4,9 +4,9 @@
     "references": [
         "ET.Core",
         "ET.YooAssets",
-        "ET.SourceGeneratorAttribute",
         "ET.HybridCLR",
-        "ET.MemoryPack"
+        "ET.MemoryPack",
+        "ET.Init"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

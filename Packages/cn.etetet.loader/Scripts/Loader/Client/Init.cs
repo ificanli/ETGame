@@ -31,7 +31,7 @@ namespace ET
             
             // 编辑器模式下如果开启了ENABLE_VIEW使用单线程，WEBGL模式也使用单线程
 #if (ENABLE_VIEW && UNITY_EDITOR) || UNITY_WEBGL
-            Options.Instance.SingleThread = 1;
+            Options.Instance.SingleThread = true;
 #endif
             
             World.Instance.AddSingleton<Logger>().Log = new UnityLogger("None");

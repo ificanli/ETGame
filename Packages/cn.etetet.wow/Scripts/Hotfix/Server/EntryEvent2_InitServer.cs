@@ -25,7 +25,7 @@
             }
             
             root = rootRef;
-            if (Options.Instance.Console == 1)
+            if (Options.Instance.Console)
             {
                 root = rootRef;
                 root.AddComponent<ConsoleComponent>();

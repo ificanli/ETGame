@@ -32,7 +32,7 @@ MonoBehaviour:
       - CollectPath: Packages/cn.etetet.loader/Bundles/AotDlls
         CollectorGUID: 5edf4794c66cecc4f808f8db8d9206b7
         CollectorType: 0
-        AddressRuleName: AddressByFolderAndFileName
+        AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 
@@ -43,9 +43,9 @@ MonoBehaviour:
       ActiveRuleName: EnableGroup
       Collectors:
       - CollectPath: Packages/cn.etetet.loader/Bundles/Code
-        CollectorGUID: 750bf868de4ad9a4aae2958c57b5bb16
+        CollectorGUID: 608fad4e65a7849aca0ef76beee300c3
         CollectorType: 0
-        AddressRuleName: AddressByFolderAndFileName
+        AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
         FilterRuleName: CollectAll
         AssetTags: 

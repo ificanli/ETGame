@@ -33,7 +33,7 @@ namespace ET
             this.mainThreadScheduler = new MainThreadScheduler();
             this.schedulers[(int)SchedulerType.Main] = this.mainThreadScheduler;
 
-            if (Options.Instance.SingleThread == 1)
+            if (Options.Instance.SingleThread)
             {
                 this.schedulers[(int)SchedulerType.Thread] = this.mainThreadScheduler;
                 this.schedulers[(int)SchedulerType.ThreadPool] = this.mainThreadScheduler;

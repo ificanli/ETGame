@@ -17,14 +17,14 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <OutputPath>./Exe</OutputPath>
+      <OutputPath>$(SolutionDir)/Bin</OutputPath>
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       <DefineConstants>DOTNET</DefineConstants>
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <OutputPath>./Exe</OutputPath>
+      <OutputPath>$(SolutionDir)/Bin</OutputPath>
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       <DefineConstants>DOTNET</DefineConstants>
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

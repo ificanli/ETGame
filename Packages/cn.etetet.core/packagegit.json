@@ -4,17 +4,5 @@
 "Name": "Core",
 "AllowAnyPackageAccess": true,
 "ScriptsReferences": {
-  "ModelView": [
-    "ET.SourceGeneratorAttribute"
-  ],
-  "Model": [
-    "ET.SourceGeneratorAttribute"
-  ],
-  "HotfixView": [
-    "ET.SourceGeneratorAttribute"
-  ],
-  "Hotfix": [
-    "ET.SourceGeneratorAttribute"
-  ]
 }
 }

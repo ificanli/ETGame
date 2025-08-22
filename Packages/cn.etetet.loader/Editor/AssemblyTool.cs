@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using UnityEditor;
@@ -27,7 +28,7 @@ namespace ET
         /// <summary>
         /// 菜单和快捷键编译按钮
         /// </summary>
-        [MenuItem("ET/Loader/Compile _F6", false, ETMenuItemPriority.Compile)]
+        [MenuItem("ET/Scripts/Compile _F6", false)]
         static void MenuItemOfCompile()
         {
             // 强制刷新一下，防止关闭auto refresh，文件修改时间不准确
@@ -39,7 +40,7 @@ namespace ET
         /// <summary>
         /// 菜单和快捷键热重载按钮
         /// </summary>
-        [MenuItem("ET/Loader/Reload _F7", false, ETMenuItemPriority.Compile)]
+        [MenuItem("ET/Scripts/Reload _F7", false)]
         static void MenuItemOfReload()
         {
             if (Application.isPlaying)
@@ -57,7 +58,8 @@ namespace ET
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
 
             GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
-            CodeModeChangeHelper.ChangeToCodeMode(globalConfig.CodeMode.ToString());
+            Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode}", ".", true);
+            process.WaitForExit();
 
             bool isCompileOk = CompileDlls();
             if (!isCompileOk)
@@ -114,6 +116,12 @@ namespace ET
         static void CopyHotUpdateDlls()
         {
             FileHelper.CleanDirectory(Define.CodeDir);
+
+            if (!Directory.Exists(Define.CodeDir))
+            {
+                Directory.CreateDirectory(Define.CodeDir);
+            }
+            
             foreach (string dllName in DllNames)
             {
                 string sourceDll = $"{Define.BuildOutputDir}/{dllName}.dll";

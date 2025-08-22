@@ -4,14 +4,14 @@
 "Level": 1,
 "ScriptsReferences": {
   "ModelView": [
-    "ET.Loader"
+    "ET.Loader",
+    "ET.Init"
   ],
   "Model": [
     "ET.Core",
     "Unity.Mathematics",
     "ET.MemoryPack",
-    "ET.YooAssets",
-    "ET.SourceGeneratorAttribute"
+    "ET.YooAssets"
   ],
   "HotfixView": [
     "ET.Core",
@@ -22,14 +22,13 @@
     "ET.Hotfix",
     "ET.ModelView",
     "ET.YooAssets",
-    "ET.SourceGeneratorAttribute"
+    "ET.Init"
   ],
   "Hotfix": [
     "ET.Core",
     "Unity.Mathematics",
     "ET.MemoryPack",
-    "ET.Model",
-    "ET.SourceGeneratorAttribute"
+    "ET.Model"
   ]
 }
 }

@@ -9,8 +9,8 @@
         "ET.Init.Editor",
         "ET.HybridCLR",
         "ET.MemoryPack",
-        "ET.SourceGeneratorAttribute",
-        "ET.Scripts.Editor"
+        "ET.Scripts.Editor",
+        "ET.Init"
     ],
     "includePlatforms": [
         "Editor"

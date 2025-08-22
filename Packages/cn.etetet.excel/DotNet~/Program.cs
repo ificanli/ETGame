@@ -22,7 +22,7 @@ namespace ET
                 Parser.Default.ParseArguments<Options>(Environment.GetCommandLineArgs())
                         .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
                         .WithParsed((o)=>World.Instance.AddSingleton(o));
-                Options.Instance.Console = 1;
+                Options.Instance.Console = true;
                 
                 World.Instance.AddSingleton<Logger>().Log = new NLogger("ExcelExporter", 1, 0);
                 

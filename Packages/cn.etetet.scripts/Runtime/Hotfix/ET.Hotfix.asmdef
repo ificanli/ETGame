@@ -7,10 +7,7 @@
         "ET.MemoryPack",
         "ET.Model",
         "ET.Recast",
-        "ET.SourceGeneratorAttribute",
-        "Unity.Mathematics",
-        "ET.HybridCLR",
-        "ET.YooAssets"
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

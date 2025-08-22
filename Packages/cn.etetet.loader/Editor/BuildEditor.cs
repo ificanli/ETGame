@@ -15,18 +15,6 @@ namespace ET
         WebGL
     }
 
-    /// <summary>
-    /// ET菜单顺序
-    /// </summary>
-    public static class ETMenuItemPriority
-    {
-        public const int BuildTool = 1001;
-        public const int ChangeDefine = 1002;
-        public const int Compile = 1003;
-        public const int Reload = 1004;
-        public const int NavMesh = 1005;
-        public const int ServerTools = 1006;
-    }
 
     public class BuildEditor : EditorWindow
     {
@@ -37,7 +25,7 @@ namespace ET
         private GlobalConfig globalConfig;
         private YooConfig yooConfig;
 
-        [MenuItem("ET/Loader/Build Tool", false, ETMenuItemPriority.BuildTool)]
+        [MenuItem("ET/Loader/Build Tool", false)]
         public static void ShowWindow()
         {
             GetWindow<BuildEditor>();

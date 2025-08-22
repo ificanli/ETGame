@@ -236,10 +236,8 @@ namespace ET
 
         public async ETTask<int> CreateFiber(SchedulerType schedulerType, int zone, int sceneType, string name)
         {
-            // RobotCase场景的调度器是父fiber
-            // 这样可以保证RobotCase的测试用例在同一个线程中执行，
-            // 也可以保证RobotCase的测试用例可以访问父fiber的日志
-            if (Options.Instance.SceneName == "RobotCase")
+            // 如果是单线程模式，强制设置为父fiber调度
+            if (Options.Instance.SingleThread)
             {
                 schedulerType = SchedulerType.Parent;
             }
@@ -251,10 +249,8 @@ namespace ET
         
         public async ETTask<int> CreateFiberWithId(int fiberId, SchedulerType schedulerType, int zone, int sceneType, string name)
         {
-            // RobotCase场景的调度器是父fiber
-            // 这样可以保证RobotCase的测试用例在同一个线程中执行，
-            // 也可以保证RobotCase的测试用例可以访问父fiber的日志
-            if (Options.Instance.SceneName == "RobotCase")
+            // 如果是单线程模式，强制设置为父fiber调度
+            if (Options.Instance.SingleThread)
             {
                 schedulerType = SchedulerType.Parent;
             }
@@ -274,13 +270,6 @@ namespace ET
             // 整个FiberManager释放了
             IScheduler scheduler = fiber;
             if (FiberManager.Instance == null)
-            {
-                scheduler.Dispose();
-                return;
-            }
-
-            // 单线程模式,可以直接删除
-            if (Options.Instance.SingleThread == 1)
             {
                 scheduler.Dispose();
                 return;

@@ -23,7 +23,7 @@ namespace ET
                 // 测试用例使用单线程模式，方便重置测试环境
                 if (Options.Instance.SceneName == "RobotCase")
                 {
-                    Options.Instance.SingleThread = 1;
+                    Options.Instance.SingleThread = true;
                 }
 				
                 World.Instance.AddSingleton<Logger>().Log = new NLogger(Options.Instance.SceneName, Options.Instance.Process, 0);

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -26,7 +27,8 @@ namespace ET
             if (globalConfig.CodeMode != this.codeMode)
             {
                 this.codeMode = globalConfig.CodeMode;
-                CodeModeChangeHelper.ChangeToCodeMode(codeMode.ToString());
+                Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode}", ".", true);
+                process.WaitForExit();
                 ReGenerateProjectFilesHelper.Run();
                 AssetDatabase.Refresh();
             }

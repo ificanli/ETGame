@@ -24,10 +24,10 @@ namespace ET
         [Option("LogLevel", Required = false, Default = 0)]
         public int LogLevel { get; set; }
         
-        [Option("Console", Required = false, Default = 0)]
-        public int Console { get; set; }
+        [Option("Console", Required = false, Default = false)]
+        public bool Console { get; set; }
         
-        [Option("SingleThread", Required = false, Default = 0)]
-        public int SingleThread { get; set; }
+        [Option("SingleThread", Required = false, Default = false)]
+        public bool SingleThread { get; set; }
     }
 }

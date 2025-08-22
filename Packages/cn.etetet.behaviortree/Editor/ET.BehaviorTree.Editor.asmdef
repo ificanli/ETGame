@@ -18,7 +18,6 @@
         "ET.Loader",
         "ET.MemoryPack",
         "ET.Recast",
-        "ET.SourceGeneratorAttribute",
         "ET.YIUIFramework"
     ],
     "includePlatforms": [
