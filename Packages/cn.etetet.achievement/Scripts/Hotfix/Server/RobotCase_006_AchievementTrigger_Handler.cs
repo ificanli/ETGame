@@ -57,19 +57,19 @@ namespace ET.Server
                 
                 // 步骤3：测试各种事件触发
                 robotScene = robotSceneRef; // await后重新获取
-                await TestKillMonsterTrigger(robotScene);
+                await TestKillMonsterTrigger(robotScene, parentFiber);
                 
                 robotScene = robotSceneRef; // await后重新获取
-                await TestLevelUpTrigger(robotScene);
+                await TestLevelUpTrigger(robotScene, parentFiber);
                 
                 robotScene = robotSceneRef; // await后重新获取
-                await TestQuestCompleteTrigger(robotScene);
+                await TestQuestCompleteTrigger(robotScene, parentFiber);
                 
                 robotScene = robotSceneRef; // await后重新获取
-                await TestItemCollectTrigger(robotScene);
+                await TestItemCollectTrigger(robotScene, parentFiber);
                 
                 robotScene = robotSceneRef; // await后重新获取
-                await TestMapExploreTrigger(robotScene);
+                await TestMapExploreTrigger(robotScene, parentFiber);
                 
                 // 步骤4：验证最终状态
                 robotScene = robotSceneRef; // await后重新获取
@@ -216,27 +216,17 @@ namespace ET.Server
         /// <summary>
         /// 测试击杀怪物触发
         /// </summary>
-        private static async ETTask TestKillMonsterTrigger(Scene robotScene)
+        private static async ETTask TestKillMonsterTrigger(Scene robotScene, Fiber parentFiber)
         {
             Log.Debug("Testing kill monster trigger");
             
             EntityRef<Scene> robotSceneRef = robotScene;
-            ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
-            // 击杀特定怪物，应该触发特定成就
-            RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
-            triggerRequest.EventType = 1; // 击杀事件
-            triggerRequest.ParamId = 1001; // 怪物ID
-            triggerRequest.Count = 2; // 击杀2个
+            // 直接操作服务器Fiber触发击杀事件
+            TriggerKillMonsterEventDirectly(robotScene, parentFiber, 1001, 2);
             
-            RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
-            
-            robotScene = robotSceneRef; // await后重新获取
-            
-            if (triggerResponse.Error != ErrorCode.ERR_Success)
-            {
-                throw new System.Exception($"Failed to trigger kill monster event: {triggerResponse.Message}");
-            }
+            // 重新获取robotScene
+            robotScene = robotSceneRef;
             
             // 验证击杀成就进度更新
             AchievementInfo[] achievements = await ClientAchievementHelper.GetAchievements(robotScene);
@@ -259,27 +249,17 @@ namespace ET.Server
         /// <summary>
         /// 测试等级提升触发
         /// </summary>
-        private static async ETTask TestLevelUpTrigger(Scene robotScene)
+        private static async ETTask TestLevelUpTrigger(Scene robotScene, Fiber parentFiber)
         {
             Log.Debug("Testing level up trigger");
             
             EntityRef<Scene> robotSceneRef = robotScene;
-            ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
-            // 提升到15级
-            RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
-            triggerRequest.EventType = 2; // 等级提升事件
-            triggerRequest.ParamId = 15; // 等级
-            triggerRequest.Count = 1;
+            // 直接操作服务器Fiber触发等级提升事件
+            TriggerLevelUpEventDirectly(robotScene, parentFiber, 15);
             
-            RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
-            
-            robotScene = robotSceneRef; // await后重新获取
-            
-            if (triggerResponse.Error != ErrorCode.ERR_Success)
-            {
-                throw new System.Exception($"Failed to trigger level up event: {triggerResponse.Message}");
-            }
+            // 重新获取robotScene
+            robotScene = robotSceneRef;
             
             // 验证等级成就完成
             AchievementInfo[] achievements = await ClientAchievementHelper.GetAchievements(robotScene);
@@ -301,27 +281,17 @@ namespace ET.Server
         /// <summary>
         /// 测试任务完成触发
         /// </summary>
-        private static async ETTask TestQuestCompleteTrigger(Scene robotScene)
+        private static async ETTask TestQuestCompleteTrigger(Scene robotScene, Fiber parentFiber)
         {
             Log.Debug("Testing quest complete trigger");
             
             EntityRef<Scene> robotSceneRef = robotScene;
-            ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
-            // 完成任务
-            RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
-            triggerRequest.EventType = 3; // 任务完成事件
-            triggerRequest.ParamId = 1001; // 任务ID
-            triggerRequest.Count = 1;
+            // 直接操作服务器Fiber触发任务完成事件
+            TriggerQuestCompleteEventDirectly(robotScene, parentFiber, 1001);
             
-            RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
-            
-            robotScene = robotSceneRef; // await后重新获取
-            
-            if (triggerResponse.Error != ErrorCode.ERR_Success)
-            {
-                throw new System.Exception($"Failed to trigger quest complete event: {triggerResponse.Message}");
-            }
+            // 重新获取robotScene
+            robotScene = robotSceneRef;
             
             // 验证任务成就进度更新
             AchievementInfo[] achievements = await ClientAchievementHelper.GetAchievements(robotScene);
@@ -343,27 +313,17 @@ namespace ET.Server
         /// <summary>
         /// 测试道具收集触发
         /// </summary>
-        private static async ETTask TestItemCollectTrigger(Scene robotScene)
+        private static async ETTask TestItemCollectTrigger(Scene robotScene, Fiber parentFiber)
         {
             Log.Debug("Testing item collect trigger");
             
             EntityRef<Scene> robotSceneRef = robotScene;
-            ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
-            // 收集道具
-            RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
-            triggerRequest.EventType = 4; // 道具收集事件
-            triggerRequest.ParamId = 2001; // 道具ID
-            triggerRequest.Count = 5; // 收集5个
+            // 直接操作服务器Fiber触发道具收集事件
+            TriggerItemCollectEventDirectly(robotScene, parentFiber, 2001, 5);
             
-            RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
-            
-            robotScene = robotSceneRef; // await后重新获取
-            
-            if (triggerResponse.Error != ErrorCode.ERR_Success)
-            {
-                throw new System.Exception($"Failed to trigger item collect event: {triggerResponse.Message}");
-            }
+            // 重新获取robotScene
+            robotScene = robotSceneRef;
             
             // 验证收集成就完成
             AchievementInfo[] achievements = await ClientAchievementHelper.GetAchievements(robotScene);
@@ -385,27 +345,17 @@ namespace ET.Server
         /// <summary>
         /// 测试地图探索触发
         /// </summary>
-        private static async ETTask TestMapExploreTrigger(Scene robotScene)
+        private static async ETTask TestMapExploreTrigger(Scene robotScene, Fiber parentFiber)
         {
             Log.Debug("Testing map explore trigger");
             
             EntityRef<Scene> robotSceneRef = robotScene;
-            ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
-            // 探索地图
-            RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
-            triggerRequest.EventType = 5; // 地图探索事件
-            triggerRequest.ParamId = 3001; // 地图ID
-            triggerRequest.Count = 1;
+            // 直接操作服务器Fiber触发地图探索事件
+            TriggerMapExploreEventDirectly(robotScene, parentFiber, 3001);
             
-            RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
-            
-            robotScene = robotSceneRef; // await后重新获取
-            
-            if (triggerResponse.Error != ErrorCode.ERR_Success)
-            {
-                throw new System.Exception($"Failed to trigger map explore event: {triggerResponse.Message}");
-            }
+            // 重新获取robotScene
+            robotScene = robotSceneRef;
             
             // 验证探索成就完成
             AchievementInfo[] achievements = await ClientAchievementHelper.GetAchievements(robotScene);
@@ -467,6 +417,201 @@ namespace ET.Server
             }
             
             Log.Debug("Trigger test validation completed");
+        }
+
+        /// <summary>
+        /// 直接操作服务器Fiber触发击杀怪物事件
+        /// </summary>
+        private static void TriggerKillMonsterEventDirectly(Scene robotScene, Fiber parentFiber, int monsterId, int count)
+        {
+            Log.Debug($"Directly triggering kill monster event: MonsterId={monsterId}, Count={count}");
+            
+            try
+            {
+                // 获取服务端环境
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                
+                if (map == null)
+                {
+                    Log.Error($"not found robot map {mapName}");
+                    return;
+                }
+                
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                if (serverUnit != null)
+                {
+                    // 直接调用成就帮助类触发事件
+                    AchievementHelper.ProcessKillMonsterAchievement(serverUnit, monsterId, count);
+                    Log.Debug($"Successfully triggered kill monster event directly on server");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to trigger kill monster event directly: {e.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 直接操作服务器Fiber触发等级提升事件
+        /// </summary>
+        private static void TriggerLevelUpEventDirectly(Scene robotScene, Fiber parentFiber, int level)
+        {
+            Log.Debug($"Directly triggering level up event: Level={level}");
+            
+            try
+            {
+                // 获取服务端环境
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                
+                if (map == null)
+                {
+                    Log.Error($"not found robot map {mapName}");
+                    return;
+                }
+                
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                if (serverUnit != null)
+                {
+                    // 直接调用成就帮助类触发事件
+                    AchievementHelper.ProcessLevelUpAchievement(serverUnit, level);
+                    Log.Debug($"Successfully triggered level up event directly on server");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to trigger level up event directly: {e.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 直接操作服务器Fiber触发任务完成事件
+        /// </summary>
+        private static void TriggerQuestCompleteEventDirectly(Scene robotScene, Fiber parentFiber, int questId)
+        {
+            Log.Debug($"Directly triggering quest complete event: QuestId={questId}");
+            
+            try
+            {
+                // 获取服务端环境
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                
+                if (map == null)
+                {
+                    Log.Error($"not found robot map {mapName}");
+                    return;
+                }
+                
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                if (serverUnit != null)
+                {
+                    // 直接调用成就帮助类触发事件
+                    AchievementHelper.ProcessQuestCompleteAchievement(serverUnit, questId);
+                    Log.Debug($"Successfully triggered quest complete event directly on server");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to trigger quest complete event directly: {e.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 直接操作服务器Fiber触发道具收集事件
+        /// </summary>
+        private static void TriggerItemCollectEventDirectly(Scene robotScene, Fiber parentFiber, int itemId, int count)
+        {
+            Log.Debug($"Directly triggering item collect event: ItemId={itemId}, Count={count}");
+            
+            try
+            {
+                // 获取服务端环境
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                
+                if (map == null)
+                {
+                    Log.Error($"not found robot map {mapName}");
+                    return;
+                }
+                
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                if (serverUnit != null)
+                {
+                    // 直接调用成就帮助类触发事件
+                    AchievementHelper.ProcessItemCollectAchievement(serverUnit, itemId, count);
+                    Log.Debug($"Successfully triggered item collect event directly on server");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to trigger item collect event directly: {e.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 直接操作服务器Fiber触发地图探索事件
+        /// </summary>
+        private static void TriggerMapExploreEventDirectly(Scene robotScene, Fiber parentFiber, int mapId)
+        {
+            Log.Debug($"Directly triggering map explore event: MapId={mapId}");
+            
+            try
+            {
+                // 获取服务端环境
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                
+                if (map == null)
+                {
+                    Log.Error($"not found robot map {mapName}");
+                    return;
+                }
+                
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                if (serverUnit != null)
+                {
+                    // 直接调用成就帮助类触发事件
+                    AchievementHelper.ProcessMapExploreAchievement(serverUnit, mapId);
+                    Log.Debug($"Successfully triggered map explore event directly on server");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to trigger map explore event directly: {e.Message}");
+                throw;
+            }
         }
     }
 }

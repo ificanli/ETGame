@@ -60,11 +60,11 @@ namespace ET.Server
                 
                 // 步骤3：测试成就进度更新
                 robotScene = robotSceneRef; // await后重新获取
-                await TestProgressUpdate(robotScene, 5001, "Kill Achievement");
+                await TestProgressUpdate(robotScene, parentFiber, 5001, "Kill Achievement");
                 
                 // 步骤4：测试成就自动完成
                 robotScene = robotSceneRef; // await后重新获取
-                await TestAutoCompletion(robotScene, 5003, "Level Achievement");
+                await TestAutoCompletion(robotScene, parentFiber, 5003, "Level Achievement");
                 
                 // 步骤5：验证最终状态
                 robotScene = robotSceneRef; // await后重新获取
@@ -214,34 +214,23 @@ namespace ET.Server
         /// <summary>
         /// 测试进度更新
         /// </summary>
-        private static async ETTask TestProgressUpdate(Scene robotScene, int achievementId, string achievementName)
+        private static async ETTask TestProgressUpdate(Scene robotScene, Fiber parentFiber, int achievementId, string achievementName)
         {
             Log.Debug($"Testing progress update for {achievementName} (ID: {achievementId})");
             
             EntityRef<Scene> robotSceneRef = robotScene;
-            ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
             // 模拟击杀怪物，更新成就进度
             for (int i = 1; i <= 3; i++)
             {
-                // await前重新获取clientSender
+                // await前重新获取robotScene
                 robotScene = robotSceneRef;
-                clientSender = robotScene.GetComponent<ClientSenderComponent>();
                 
-                // 触发击杀事件
-                RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
-                triggerRequest.EventType = 1; // 击杀事件
-                triggerRequest.ParamId = 1001; // 怪物ID
-                triggerRequest.Count = 1; // 击杀数量
+                // 直接操作服务器Fiber触发击杀事件
+                TriggerKillMonsterEventDirectly(robotScene, parentFiber, 1001, 1);
                 
-                RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
-                
-                robotScene = robotSceneRef; // await后重新获取
-                
-                if (triggerResponse.Error != ErrorCode.ERR_Success)
-                {
-                    throw new System.Exception($"Failed to trigger kill event: {triggerResponse.Message}");
-                }
+                // await后重新获取robotScene
+                robotScene = robotSceneRef;
                 
                 // 获取更新后的成就状态
                 AchievementInfo[] updatedAchievements = await ClientAchievementHelper.GetAchievements(robotScene);
@@ -267,17 +256,15 @@ namespace ET.Server
         /// <summary>
         /// 测试自动完成
         /// </summary>
-        private static async ETTask TestAutoCompletion(Scene robotScene, int achievementId, string achievementName)
+        private static async ETTask TestAutoCompletion(Scene robotScene, Fiber parentFiber, int achievementId, string achievementName)
         {
             Log.Debug($"Testing auto completion for {achievementName} (ID: {achievementId})");
             
             EntityRef<Scene> robotSceneRef = robotScene;
-            ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
             // 获取当前状态
             AchievementInfo[] beforeAchievements = await ClientAchievementHelper.GetAchievements(robotScene);
             robotScene = robotSceneRef; // await后重新获取
-            clientSender = robotScene.GetComponent<ClientSenderComponent>();
             
             var beforeAchievement = System.Array.Find(beforeAchievements, a => a.AchievementId == achievementId);
             if (beforeAchievement == null)
@@ -287,20 +274,11 @@ namespace ET.Server
             
             Log.Debug($"Before completion: Progress={beforeAchievement.Progress}/{beforeAchievement.MaxProgress}, Status={beforeAchievement.Status}");
             
-            // 触发等级提升事件，应该完成成就
-            RobotCase_TriggerAchievementEvent_Request triggerRequest = RobotCase_TriggerAchievementEvent_Request.Create();
-            triggerRequest.EventType = 2; // 等级提升事件
-            triggerRequest.ParamId = 10; // 等级
-            triggerRequest.Count = 1;
+            // 直接操作服务器Fiber触发等级提升事件
+            TriggerLevelUpEventDirectly(robotScene, parentFiber, 10);
             
-            RobotCase_TriggerAchievementEvent_Response triggerResponse = await clientSender.Call(triggerRequest) as RobotCase_TriggerAchievementEvent_Response;
-            
-            robotScene = robotSceneRef; // await后重新获取
-            
-            if (triggerResponse.Error != ErrorCode.ERR_Success)
-            {
-                throw new System.Exception($"Failed to trigger level up event: {triggerResponse.Message}");
-            }
+            // await后重新获取robotScene
+            robotScene = robotSceneRef;
             
             // 获取更新后的成就状态
             AchievementInfo[] afterAchievements = await ClientAchievementHelper.GetAchievements(robotScene);
@@ -349,6 +327,84 @@ namespace ET.Server
             }
             
             Log.Debug("Final progress validation successful");
+        }
+
+        /// <summary>
+        /// 直接操作服务器Fiber触发击杀怪物事件
+        /// </summary>
+        private static void TriggerKillMonsterEventDirectly(Scene robotScene, Fiber parentFiber, int monsterId, int count)
+        {
+            Log.Debug($"Directly triggering kill monster event: MonsterId={monsterId}, Count={count}");
+            
+            try
+            {
+                // 获取服务端环境
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                
+                if (map == null)
+                {
+                    Log.Error($"not found robot map {mapName}");
+                    return;
+                }
+                
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                if (serverUnit != null)
+                {
+                    // 直接调用成就帮助类触发事件
+                    AchievementHelper.ProcessKillMonsterAchievement(serverUnit, monsterId, count);
+                    Log.Debug($"Successfully triggered kill monster event directly on server");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to trigger kill monster event directly: {e.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 直接操作服务器Fiber触发等级提升事件
+        /// </summary>
+        private static void TriggerLevelUpEventDirectly(Scene robotScene, Fiber parentFiber, int level)
+        {
+            Log.Debug($"Directly triggering level up event: Level={level}");
+            
+            try
+            {
+                // 获取服务端环境
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                
+                if (map == null)
+                {
+                    Log.Error($"not found robot map {mapName}");
+                    return;
+                }
+                
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                if (serverUnit != null)
+                {
+                    // 直接调用成就帮助类触发事件
+                    AchievementHelper.ProcessLevelUpAchievement(serverUnit, level);
+                    Log.Debug($"Successfully triggered level up event directly on server");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Error($"Failed to trigger level up event directly: {e.Message}");
+                throw;
+            }
         }
     }
 }

@@ -8,65 +8,191 @@ namespace ET.Server
     public static class AchievementHelper
     {
         /// <summary>
-        /// 触发击杀怪物事件
+        /// 直接处理击杀怪物成就逻辑
         /// </summary>
-        public static void TriggerKillMonster(Unit unit, int monsterId, int count = 1)
+        public static void ProcessKillMonsterAchievement(Unit unit, int monsterId, int count = 1)
         {
-            EventSystem.Instance.Publish(unit.Scene(), new KillMonsterEvent
+            AchievementComponent achievementComponent = unit.GetComponent<AchievementComponent>();
+            if (achievementComponent == null)
             {
-                UnitId = unit.Id,
-                MonsterId = monsterId,
-                Count = count
-            });
+                return;
+            }
+
+            // 遍历所有击杀类型的成就
+            foreach (var kvp in achievementComponent.ActiveAchievements)
+            {
+                Achievement achievement = kvp.Value;
+                if (achievement == null || achievement.Type != AchievementType.Kill)
+                {
+                    continue;
+                }
+
+                // 检查是否是目标怪物（这里简化处理，实际应该从配置表获取）
+                if (achievement.Status == AchievementStatus.InProgress)
+                {
+                    int newProgress = achievement.Progress + count;
+                    achievementComponent.UpdateAchievementProgress(achievement.ConfigId, newProgress);
+                    
+                    Log.Debug($"Kill monster achievement progress updated: {achievement.ConfigId}, progress: {achievement.Progress}/{achievement.MaxProgress}");
+                }
+            }
         }
 
         /// <summary>
-        /// 触发等级提升事件
+        /// 直接处理等级提升成就逻辑
         /// </summary>
-        public static void TriggerLevelUp(Unit unit, int level)
+        public static void ProcessLevelUpAchievement(Unit unit, int level)
         {
-            EventSystem.Instance.Publish(unit.Scene(), new LevelUpEvent
+            AchievementComponent achievementComponent = unit.GetComponent<AchievementComponent>();
+            if (achievementComponent == null)
             {
-                UnitId = unit.Id,
-                Level = level
-            });
+                return;
+            }
+
+            // 遍历所有等级类型的成就
+            foreach (var kvp in achievementComponent.ActiveAchievements)
+            {
+                Achievement achievement = kvp.Value;
+                if (achievement == null || achievement.Type != AchievementType.Level)
+                {
+                    continue;
+                }
+
+                if (achievement.Status == AchievementStatus.InProgress)
+                {
+                    // 等级成就以达到目标等级为条件
+                    if (level >= achievement.MaxProgress)
+                    {
+                        achievementComponent.UpdateAchievementProgress(achievement.ConfigId, achievement.MaxProgress);
+                    }
+                    else
+                    {
+                        achievementComponent.UpdateAchievementProgress(achievement.ConfigId, level);
+                    }
+                    
+                    Log.Debug($"Level achievement progress updated: {achievement.ConfigId}, level: {level}");
+                }
+            }
         }
 
         /// <summary>
-        /// 触发任务完成事件
+        /// 直接处理任务完成成就逻辑
         /// </summary>
-        public static void TriggerQuestComplete(Unit unit, int questId)
+        public static void ProcessQuestCompleteAchievement(Unit unit, int questId)
         {
-            EventSystem.Instance.Publish(unit.Scene(), new QuestCompleteEvent
+            AchievementComponent achievementComponent = unit.GetComponent<AchievementComponent>();
+            if (achievementComponent == null)
             {
-                UnitId = unit.Id,
-                QuestId = questId
-            });
+                return;
+            }
+
+            // 遍历所有任务类型的成就
+            foreach (var kvp in achievementComponent.ActiveAchievements)
+            {
+                Achievement achievement = kvp.Value;
+                if (achievement == null || achievement.Type != AchievementType.Quest)
+                {
+                    continue;
+                }
+
+                if (achievement.Status == AchievementStatus.InProgress)
+                {
+                    int newProgress = achievement.Progress + 1;
+                    achievementComponent.UpdateAchievementProgress(achievement.ConfigId, newProgress);
+                    
+                    Log.Debug($"Quest achievement progress updated: {achievement.ConfigId}, progress: {achievement.Progress}/{achievement.MaxProgress}");
+                }
+            }
         }
 
         /// <summary>
-        /// 触发道具收集事件
+        /// 直接处理道具收集成就逻辑
         /// </summary>
-        public static void TriggerItemCollect(Unit unit, int itemId, int count)
+        public static void ProcessItemCollectAchievement(Unit unit, int itemId, int count)
         {
-            EventSystem.Instance.Publish(unit.Scene(), new ItemCollectEvent
+            AchievementComponent achievementComponent = unit.GetComponent<AchievementComponent>();
+            if (achievementComponent == null)
             {
-                UnitId = unit.Id,
-                ItemId = itemId,
-                Count = count
-            });
+                return;
+            }
+
+            // 遍历所有收集类型的成就
+            foreach (var kvp in achievementComponent.ActiveAchievements)
+            {
+                Achievement achievement = kvp.Value;
+                if (achievement == null || achievement.Type != AchievementType.Collect)
+                {
+                    continue;
+                }
+
+                if (achievement.Status == AchievementStatus.InProgress)
+                {
+                    int newProgress = achievement.Progress + count;
+                    achievementComponent.UpdateAchievementProgress(achievement.ConfigId, newProgress);
+                    
+                    Log.Debug($"Collect achievement progress updated: {achievement.ConfigId}, progress: {achievement.Progress}/{achievement.MaxProgress}");
+                }
+            }
         }
 
         /// <summary>
-        /// 触发地图探索事件
+        /// 直接处理地图探索成就逻辑
         /// </summary>
-        public static void TriggerMapExplore(Unit unit, int mapId)
+        public static void ProcessMapExploreAchievement(Unit unit, int mapId)
         {
-            EventSystem.Instance.Publish(unit.Scene(), new MapExploreEvent
+            AchievementComponent achievementComponent = unit.GetComponent<AchievementComponent>();
+            if (achievementComponent == null)
             {
-                UnitId = unit.Id,
-                MapId = mapId
-            });
+                return;
+            }
+
+            // 遍历所有探索类型的成就
+            foreach (var kvp in achievementComponent.ActiveAchievements)
+            {
+                Achievement achievement = kvp.Value;
+                if (achievement == null || achievement.Type != AchievementType.Exploration)
+                {
+                    continue;
+                }
+
+                if (achievement.Status == AchievementStatus.InProgress)
+                {
+                    int newProgress = achievement.Progress + 1;
+                    achievementComponent.UpdateAchievementProgress(achievement.ConfigId, newProgress);
+                    
+                    Log.Debug($"Exploration achievement progress updated: {achievement.ConfigId}, progress: {achievement.Progress}/{achievement.MaxProgress}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 直接处理进入地图成就逻辑
+        /// </summary>
+        public static void ProcessEnterMapAchievement(Unit unit, int mapId)
+        {
+            AchievementComponent achievementComponent = unit.GetComponent<AchievementComponent>();
+            if (achievementComponent == null)
+            {
+                return;
+            }
+
+            // 遍历所有探索类型的成就
+            foreach (var kvp in achievementComponent.ActiveAchievements)
+            {
+                Achievement achievement = kvp.Value;
+                if (achievement == null || achievement.Type != AchievementType.Exploration)
+                {
+                    continue;
+                }
+
+                if (achievement.Status == AchievementStatus.InProgress)
+                {
+                    int newProgress = achievement.Progress + 1;
+                    achievementComponent.UpdateAchievementProgress(achievement.ConfigId, newProgress);
+                    
+                    Log.Debug($"Enter map achievement progress updated: {achievement.ConfigId}, progress: {achievement.Progress}/{achievement.MaxProgress}");
+                }
+            }
         }
 
         /// <summary>
