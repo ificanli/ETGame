@@ -145,31 +145,6 @@ message M2C_GetAchievementStats // ILocationResponse
 	AchievementStatsInfo Stats = 4;
 }
 
-// ResponseType RobotCase_004_PrepareData_Response
-message RobotCase_004_PrepareData_Request // ILocationRequest, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-}
-
-message RobotCase_004_PrepareData_Response // ILocationResponse, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}
-
-// ResponseType RobotCase_006_PrepareData_Response
-message RobotCase_006_PrepareData_Request // ILocationRequest, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-}
-
-message RobotCase_006_PrepareData_Response // ILocationResponse, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}
 
 // ResponseType RobotCase_TriggerAchievementEvent_Response
 message RobotCase_TriggerAchievementEvent_Request // ILocationRequest, IRobotCaseMessage

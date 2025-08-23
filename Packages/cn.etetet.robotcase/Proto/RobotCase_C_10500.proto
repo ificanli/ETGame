@@ -29,16 +29,4 @@ message M2C_TestRobotCase // ILocationResponse, IRobotCaseMessage
 	int32 N = 4;
 }
 
-// ResponseType RobotCase_005_PrepareData_Response
-message RobotCase_005_PrepareData_Request // ILocationRequest, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-}
-
-message RobotCase_005_PrepareData_Response // ILocationResponse, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}
 

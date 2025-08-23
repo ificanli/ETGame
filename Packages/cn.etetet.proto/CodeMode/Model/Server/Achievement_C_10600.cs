@@ -689,124 +689,6 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.RobotCase_004_PrepareData_Request)]
-    [ResponseType(nameof(RobotCase_004_PrepareData_Response))]
-    public partial class RobotCase_004_PrepareData_Request : MessageObject, ILocationRequest, IRobotCaseMessage
-    {
-        public static RobotCase_004_PrepareData_Request Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<RobotCase_004_PrepareData_Request>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.RobotCase_004_PrepareData_Response)]
-    public partial class RobotCase_004_PrepareData_Response : MessageObject, ILocationResponse, IRobotCaseMessage
-    {
-        public static RobotCase_004_PrepareData_Response Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<RobotCase_004_PrepareData_Response>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-
-        [MemoryPackOrder(1)]
-        public int Error { get; set; }
-
-        [MemoryPackOrder(2)]
-        public string Message { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.Error = default;
-            this.Message = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.RobotCase_006_PrepareData_Request)]
-    [ResponseType(nameof(RobotCase_006_PrepareData_Response))]
-    public partial class RobotCase_006_PrepareData_Request : MessageObject, ILocationRequest, IRobotCaseMessage
-    {
-        public static RobotCase_006_PrepareData_Request Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<RobotCase_006_PrepareData_Request>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.RobotCase_006_PrepareData_Response)]
-    public partial class RobotCase_006_PrepareData_Response : MessageObject, ILocationResponse, IRobotCaseMessage
-    {
-        public static RobotCase_006_PrepareData_Response Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<RobotCase_006_PrepareData_Response>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-
-        [MemoryPackOrder(1)]
-        public int Error { get; set; }
-
-        [MemoryPackOrder(2)]
-        public string Message { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.Error = default;
-            this.Message = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
     [Message(Opcode.RobotCase_TriggerAchievementEvent_Request)]
     [ResponseType(nameof(RobotCase_TriggerAchievementEvent_Response))]
     public partial class RobotCase_TriggerAchievementEvent_Request : MessageObject, ILocationRequest, IRobotCaseMessage
@@ -905,11 +787,7 @@ namespace ET
         public const ushort C2M_GetAchievementStats = 10615;
         public const ushort AchievementStatsInfo = 10616;
         public const ushort M2C_GetAchievementStats = 10617;
-        public const ushort RobotCase_004_PrepareData_Request = 10618;
-        public const ushort RobotCase_004_PrepareData_Response = 10619;
-        public const ushort RobotCase_006_PrepareData_Request = 10620;
-        public const ushort RobotCase_006_PrepareData_Response = 10621;
-        public const ushort RobotCase_TriggerAchievementEvent_Request = 10622;
-        public const ushort RobotCase_TriggerAchievementEvent_Response = 10623;
+        public const ushort RobotCase_TriggerAchievementEvent_Request = 10618;
+        public const ushort RobotCase_TriggerAchievementEvent_Response = 10619;
     }
 }

@@ -15,7 +15,7 @@ namespace ET.Server
                 Log.Debug("Achievement trigger robot test started");
                 
                 // 执行成就触发测试流程
-                await TestAchievementTriggerFlow(robot);
+                await TestAchievementTriggerFlow(robot, fiber);
                 
                 Log.Debug("Achievement trigger robot test completed successfully");
                 return ErrorCode.ERR_Success;
@@ -30,7 +30,7 @@ namespace ET.Server
         /// <summary>
         /// 测试成就触发流程
         /// </summary>
-        private async ETTask TestAchievementTriggerFlow(Fiber robot)
+        private async ETTask TestAchievementTriggerFlow(Fiber robot, Fiber parentFiber)
         {
             Log.Debug("Starting Achievement trigger test flow");
             
@@ -48,7 +48,7 @@ namespace ET.Server
                 }
                 
                 // 步骤1：初始化测试环境
-                await InitializeTriggerTestEnvironment(robotScene);
+                InitializeTriggerTestEnvironment(robotScene, parentFiber);
                 
                 // 步骤2：获取初始成就状态
                 robotScene = robotSceneRef; // await后重新获取
@@ -86,43 +86,131 @@ namespace ET.Server
         }
 
         /// <summary>
-        /// 初始化触发测试环境
+        /// 直接访问服务器初始化成就触发测试环境
         /// </summary>
-        private static async ETTask InitializeTriggerTestEnvironment(Scene robotScene)
+        private static void InitializeTriggerTestEnvironment(Scene robotScene, Fiber parentFiber)
         {
-            Log.Debug("Initializing Achievement trigger test environment");
+            Log.Debug("Initializing Achievement trigger test environment via direct server access");
             
             try
             {
-                // 发送专用的成就触发测试数据准备消息到服务器
-                RobotCase_006_PrepareData_Request prepareRequest = RobotCase_006_PrepareData_Request.Create();
-                
-                Log.Debug("Sending Achievement trigger test data preparation request to server");
-                
-                // 发送真实的网络消息
-                EntityRef<Scene> robotSceneRef = robotScene;
-                ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
-                RobotCase_006_PrepareData_Response prepareResponse = await clientSender.Call(prepareRequest) as RobotCase_006_PrepareData_Response;
-                
-                // await后重新获取Entity
-                robotScene = robotSceneRef;
-                
-                if (prepareResponse.Error == ErrorCode.ERR_Success)
+                // 获取服务端数据
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                if (map == null)
                 {
-                    Log.Debug("Achievement trigger test data preparation successful");
-                }
-                else
-                {
-                    Log.Error($"Achievement trigger test data preparation failed: {prepareResponse.Error}, {prepareResponse.Message}");
-                    throw new System.Exception($"Failed to prepare test data: {prepareResponse.Message}");
+                    Log.Error($"not found robot map {mapName}");
+                    return;
                 }
                 
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                // 获取或添加成就组件
+                AchievementComponent achievementComponent = serverUnit.GetComponent<AchievementComponent>();
+                if (achievementComponent == null)
+                {
+                    achievementComponent = serverUnit.AddComponent<AchievementComponent>();
+                }
+                
+                // 创建触发测试数据
+                CreateTriggerTestData(achievementComponent);
+                
+                Log.Debug("Achievement trigger test data prepared successfully via direct server access");
             }
             catch (System.Exception e)
             {
-                Log.Error($"Failed to initialize Achievement trigger test environment: {e.Message}");
+                Log.Error($"Failed to initialize Achievement trigger test environment via direct access: {e.Message}");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 创建触发测试数据
+        /// </summary>
+        private static void CreateTriggerTestData(AchievementComponent achievementComponent)
+        {
+            // 首次登录成就 - 已完成
+            Achievement loginAchievement = achievementComponent.AddAchievement(6001);
+            loginAchievement.Type = AchievementType.Social;
+            loginAchievement.MaxProgress = 1;
+            loginAchievement.Progress = 1;
+            loginAchievement.Points = 5;
+            loginAchievement.CategoryId = 1;
+            loginAchievement.Status = AchievementStatus.Completed;
+            loginAchievement.CompleteTime = TimeInfo.Instance.ServerNow() - 3600000; // 1小时前
+
+            // 击杀成就 - 部分进度
+            Achievement killAchievement = achievementComponent.AddAchievement(6002);
+            killAchievement.Type = AchievementType.Kill;
+            killAchievement.MaxProgress = 10;
+            killAchievement.Progress = 2; // 已击杀2个
+            killAchievement.Points = 15;
+            killAchievement.CategoryId = 2;
+            killAchievement.Status = AchievementStatus.InProgress;
+
+            // 等级成就 - 部分进度
+            Achievement levelAchievement = achievementComponent.AddAchievement(6003);
+            levelAchievement.Type = AchievementType.Level;
+            levelAchievement.MaxProgress = 20;
+            levelAchievement.Progress = 5; // 当前5级
+            levelAchievement.Points = 20;
+            levelAchievement.CategoryId = 3;
+            levelAchievement.Status = AchievementStatus.InProgress;
+
+            // 任务成就 - 部分进度
+            Achievement questAchievement = achievementComponent.AddAchievement(6004);
+            questAchievement.Type = AchievementType.Quest;
+            questAchievement.MaxProgress = 5;
+            questAchievement.Progress = 1; // 已完成1个任务
+            questAchievement.Points = 12;
+            questAchievement.CategoryId = 4;
+            questAchievement.Status = AchievementStatus.InProgress;
+
+            // 收集成就 - 接近完成
+            Achievement collectAchievement = achievementComponent.AddAchievement(6005);
+            collectAchievement.Type = AchievementType.Collect;
+            collectAchievement.MaxProgress = 10;
+            collectAchievement.Progress = 7; // 已收集7个
+            collectAchievement.Points = 8;
+            collectAchievement.CategoryId = 5;
+            collectAchievement.Status = AchievementStatus.InProgress;
+
+            // 探索成就 - 未开始
+            Achievement exploreAchievement = achievementComponent.AddAchievement(6006);
+            exploreAchievement.Type = AchievementType.Exploration;
+            exploreAchievement.MaxProgress = 1;
+            exploreAchievement.Progress = 0; // 未开始
+            exploreAchievement.Points = 10;
+            exploreAchievement.CategoryId = 6;
+            exploreAchievement.Status = AchievementStatus.InProgress;
+
+            // 更新组件数据
+            achievementComponent.CompletedAchievements.Add(6001); // 登录成就已完成
+            achievementComponent.RecentAchievements.Add(6001);
+            achievementComponent.TotalPoints = 70; // 总成就点数
+            achievementComponent.EarnedPoints = 0; // 还没有领取奖励
+
+            // 更新类型映射
+            achievementComponent.TypeMapping.Add(AchievementType.Social, 6001);
+            achievementComponent.TypeMapping.Add(AchievementType.Kill, 6002);
+            achievementComponent.TypeMapping.Add(AchievementType.Level, 6003);
+            achievementComponent.TypeMapping.Add(AchievementType.Quest, 6004);
+            achievementComponent.TypeMapping.Add(AchievementType.Collect, 6005);
+            achievementComponent.TypeMapping.Add(AchievementType.Exploration, 6006);
+
+            // 更新进度映射
+            achievementComponent.AchievementProgress[6001] = 1;
+            achievementComponent.AchievementProgress[6002] = 2;
+            achievementComponent.AchievementProgress[6003] = 5;
+            achievementComponent.AchievementProgress[6004] = 1;
+            achievementComponent.AchievementProgress[6005] = 7;
+            achievementComponent.AchievementProgress[6006] = 0;
+
+            Log.Debug("Created 6 trigger test achievements: 6001(System,Completed), 6002(Kill,2/10), 6003(Level,5/20), 6004(Quest,1/5), 6005(Collect,7/10), 6006(Exploration,0/1)");
         }
 
         /// <summary>

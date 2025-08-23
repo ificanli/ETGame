@@ -15,7 +15,7 @@ namespace ET.Server
                 Log.Debug("Achievement exception robot test started");
                 
                 // 执行成就异常测试流程
-                await TestAchievementExceptionFlow(robot);
+                await TestAchievementExceptionFlow(robot, fiber);
                 
                 Log.Debug("Achievement exception robot test completed successfully");
                 return ErrorCode.ERR_Success;
@@ -30,7 +30,7 @@ namespace ET.Server
         /// <summary>
         /// 测试成就异常处理流程
         /// </summary>
-        private async ETTask TestAchievementExceptionFlow(Fiber robot)
+        private async ETTask TestAchievementExceptionFlow(Fiber robot, Fiber parentFiber)
         {
             Log.Debug("Starting Achievement exception test flow");
             
@@ -48,7 +48,7 @@ namespace ET.Server
                 }
                 
                 // 步骤1：初始化测试环境
-                await InitializeExceptionTestEnvironment(robotScene);
+                InitializeExceptionTestEnvironment(robotScene, parentFiber);
                 
                 // 步骤2：测试获取不存在的成就详情
                 robotScene = robotSceneRef; // await后重新获取
@@ -84,43 +84,113 @@ namespace ET.Server
         }
 
         /// <summary>
-        /// 初始化异常测试环境
+        /// 直接访问服务器初始化异常测试环境
         /// </summary>
-        private static async ETTask InitializeExceptionTestEnvironment(Scene robotScene)
+        private static void InitializeExceptionTestEnvironment(Scene robotScene, Fiber parentFiber)
         {
-            Log.Debug("Initializing Achievement exception test environment");
+            Log.Debug("Initializing Achievement exception test environment via direct server access");
             
             try
             {
-                // 使用基础的成就测试数据准备消息
-                RobotCase_004_PrepareData_Request prepareRequest = RobotCase_004_PrepareData_Request.Create();
-                
-                Log.Debug("Sending Achievement exception test data preparation request to server");
-                
-                // 发送真实的网络消息
-                EntityRef<Scene> robotSceneRef = robotScene;
-                ClientSenderComponent clientSender = robotScene.GetComponent<ClientSenderComponent>();
-                RobotCase_004_PrepareData_Response prepareResponse = await clientSender.Call(prepareRequest) as RobotCase_004_PrepareData_Response;
-                
-                // await后重新获取Entity
-                robotScene = robotSceneRef;
-                
-                if (prepareResponse.Error == ErrorCode.ERR_Success)
+                // 获取服务端数据
+                string mapName = robotScene.CurrentScene().Name;
+                Fiber map = parentFiber.GetFiber("MapManager").GetFiber(mapName);
+                if (map == null)
                 {
-                    Log.Debug("Achievement exception test data preparation successful");
-                }
-                else
-                {
-                    Log.Error($"Achievement exception test data preparation failed: {prepareResponse.Error}, {prepareResponse.Message}");
-                    throw new System.Exception($"Failed to prepare test data: {prepareResponse.Message}");
+                    Log.Error($"not found robot map {mapName}");
+                    return;
                 }
                 
+                // 获取Unit的Id
+                Client.PlayerComponent playerComponent = robotScene.GetComponent<Client.PlayerComponent>();
+                
+                // 获取服务端Unit
+                Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+                
+                // 获取或添加成就组件
+                AchievementComponent achievementComponent = serverUnit.GetComponent<AchievementComponent>();
+                if (achievementComponent == null)
+                {
+                    achievementComponent = serverUnit.AddComponent<AchievementComponent>();
+                }
+                
+                // 重用基础测试数据（与RobotCase_004相同）
+                CreateBasicExceptionTestData(achievementComponent);
+                
+                Log.Debug("Achievement exception test data prepared successfully via direct server access");
             }
             catch (System.Exception e)
             {
-                Log.Error($"Failed to initialize Achievement exception test environment: {e.Message}");
+                Log.Error($"Failed to initialize Achievement exception test environment via direct access: {e.Message}");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 创建异常测试基础数据
+        /// </summary>
+        private static void CreateBasicExceptionTestData(AchievementComponent achievementComponent)
+        {
+            // 击杀成就 - 进行中
+            Achievement killAchievement = achievementComponent.AddAchievement(1001);
+            killAchievement.Type = AchievementType.Kill;
+            killAchievement.MaxProgress = 10;
+            killAchievement.Progress = 5; // 设置为进行中
+            killAchievement.Points = 10;
+            killAchievement.CategoryId = 1;
+            killAchievement.Status = AchievementStatus.InProgress;
+
+            // 等级成就 - 已完成但未领取
+            Achievement levelAchievement = achievementComponent.AddAchievement(2001);
+            levelAchievement.Type = AchievementType.Level;
+            levelAchievement.MaxProgress = 10;
+            levelAchievement.Progress = 10; // 设置为已完成
+            levelAchievement.Points = 20;
+            levelAchievement.CategoryId = 2;
+            levelAchievement.Status = AchievementStatus.Completed;
+            levelAchievement.CompleteTime = TimeInfo.Instance.ServerNow();
+
+            // 任务成就 - 进行中
+            Achievement questAchievement = achievementComponent.AddAchievement(3001);
+            questAchievement.Type = AchievementType.Quest;
+            questAchievement.MaxProgress = 5;
+            questAchievement.Progress = 3; // 设置为进行中
+            questAchievement.Points = 15;
+            questAchievement.CategoryId = 3;
+            questAchievement.Status = AchievementStatus.InProgress;
+
+            // 探索成就 - 已领取
+            Achievement exploreAchievement = achievementComponent.AddAchievement(4001);
+            exploreAchievement.Type = AchievementType.Exploration;
+            exploreAchievement.MaxProgress = 1;
+            exploreAchievement.Progress = 1;
+            exploreAchievement.Points = 5;
+            exploreAchievement.CategoryId = 4;
+            exploreAchievement.Status = AchievementStatus.Claimed;
+            exploreAchievement.CompleteTime = TimeInfo.Instance.ServerNow() - 3600000; // 1小时前
+            exploreAchievement.ClaimTime = TimeInfo.Instance.ServerNow() - 1800000; // 30分钟前
+
+            // 更新组件数据
+            achievementComponent.CompletedAchievements.Add(2001); // 等级成就已完成
+            achievementComponent.CompletedAchievements.Add(4001); // 探索成就也已完成（领取前必须先完成）
+            achievementComponent.ClaimedAchievements.Add(4001); // 探索成就已领取
+            achievementComponent.RecentAchievements.Add(4001); // 最近完成的成就
+            achievementComponent.TotalPoints = 50; // 总成就点数
+            achievementComponent.EarnedPoints = 5; // 已获得点数（只有探索成就）
+
+            // 更新类型映射
+            achievementComponent.TypeMapping.Add(AchievementType.Kill, 1001);
+            achievementComponent.TypeMapping.Add(AchievementType.Level, 2001);
+            achievementComponent.TypeMapping.Add(AchievementType.Quest, 3001);
+            achievementComponent.TypeMapping.Add(AchievementType.Exploration, 4001);
+
+            // 更新进度映射
+            achievementComponent.AchievementProgress[1001] = 5;
+            achievementComponent.AchievementProgress[2001] = 10;
+            achievementComponent.AchievementProgress[3001] = 3;
+            achievementComponent.AchievementProgress[4001] = 1;
+
+            Log.Debug("Created 4 test achievements for exception test: 1001(Kill,InProgress), 2001(Level,Completed), 3001(Quest,InProgress), 4001(Exploration,Claimed)");
         }
 
         /// <summary>

@@ -182,16 +182,3 @@ message M2C_GetQuestDetail // ILocationResponse
 	string Message = 3;
 	QuestDetailInfo QuestDetail = 4;
 }
-
-// ResponseType RobotCase_003_PrepareData_Response
-message RobotCase_003_PrepareData_Request // ILocationRequest, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-}
-
-message RobotCase_003_PrepareData_Response // ILocationResponse, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}

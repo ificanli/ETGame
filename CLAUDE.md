@@ -558,7 +558,7 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 
 ### 机器人测试流程
 
-1. 启动测试进程: `dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1`
+1. 启动测试进程: `dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console`
 2. 进程会输出 `>`等待输入
 3. 测试所有用例: 输入 `Case --Id=0` //--Id=0指执行所有用例
 4. 测试指定用例X: 输入 `Case --Id=X` //X是RobotCaseType的成员变量
@@ -626,6 +626,7 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
 3. **结果验证**: 测试用例要检查返回的数据或者客户端的数据是否与预期一致，如果与预期不一致需要抛出异常
 4. **日志检查**: 测试跑成功后，应该去检查All.log，看日志是否与预期一致
 5. **结果判断**: 看到输出case run success则表示用例成功，看到case run fail则表示失败，可以立即结束用例进程
+6. **数据清理**: 测试用例的数据不需要清理，每个测试用例都是独立的环境
 
 ## 常见错误避免
 
