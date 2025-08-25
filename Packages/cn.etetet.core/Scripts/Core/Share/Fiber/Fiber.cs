@@ -50,6 +50,8 @@ namespace ET
         
         public SchedulerType SchedulerType { get; }
 
+        private FiberMonitorInfo fiberMonitorInfo;
+
         public Scene Root
         {
             get
@@ -124,7 +126,14 @@ namespace ET
             
             try
             {
+                this.fiberMonitorInfo = new FiberMonitorInfo(this.Root.Name);
+                
+                int t1 = Environment.TickCount;
+                
                 this.EntitySystem.Publish(new UpdateEvent());
+                
+                int t2 = Environment.TickCount;
+                this.fiberMonitorInfo.UpdateTimeUsed = t2 - t1;
 
                 int count = this.schedulerQueue.Count;
                 while (count-- > 0)
@@ -159,9 +168,16 @@ namespace ET
             
             try
             {
+                int t1 = Environment.TickCount;
+                
                 this.EntitySystem.Publish(new LateUpdateEvent());
                 FrameFinishUpdate();
                 this.ThreadSynchronizationContext.Update();
+                
+                int t2 = Environment.TickCount;
+                this.fiberMonitorInfo.LateUpdateTimeUsed = t2 - t1;
+
+                FiberManager.Instance.AddMonitor(this.Id, ref this.fiberMonitorInfo);
 
                 int count = this.schedulerQueue.Count;
                 while (count-- > 0)
@@ -266,6 +282,8 @@ namespace ET
             {
                 return;
             }
+            
+            FiberManager.Instance.RemoveMonitor(fiberId);
             
             // 整个FiberManager释放了
             IScheduler scheduler = fiber;

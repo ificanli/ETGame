@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +13,22 @@ namespace ET
         ThreadPool = 2,
     }
     
+    public struct FiberMonitorInfo
+    {
+        public string Name;
+
+        public int UpdateTimeUsed;
+        
+        public int LateUpdateTimeUsed;
+        
+        public FiberMonitorInfo(string name)
+        {
+            this.Name = name;
+            this.UpdateTimeUsed = 0;
+            this.LateUpdateTimeUsed = 0;
+        }
+    }
+    
     public class FiberManager: Singleton<FiberManager>, ISingletonAwake
     {
         private int idGenerator;
@@ -23,6 +40,22 @@ namespace ET
         private Fiber mainFiber;
         
         private readonly ThreadSynchronizationContext context = new();
+        
+        private readonly ConcurrentDictionary<int, FiberMonitorInfo> fiberMonitorInfos = new();
+        
+        public void AddMonitor(int fiberId, ref FiberMonitorInfo fiberMonitorInfo)
+        {
+            if (fiberMonitorInfo.UpdateTimeUsed + fiberMonitorInfo.LateUpdateTimeUsed > 5)
+            {
+                Log.Warning($"FiberMonitor Warn! FiberId: {fiberId} Name: {fiberMonitorInfo.Name} UpdateTimeUsed: {fiberMonitorInfo.UpdateTimeUsed} LateUpdateTimeUsed: {fiberMonitorInfo.LateUpdateTimeUsed}");
+            }
+            this.fiberMonitorInfos[fiberId] = fiberMonitorInfo;
+        }
+        
+        public void RemoveMonitor(int fiberId)
+        {
+            this.fiberMonitorInfos.TryRemove(fiberId, out _);
+        }
         
         public void Awake()
         {
