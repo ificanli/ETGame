@@ -15,12 +15,11 @@ namespace ET
             set
             {
                 this.timeZone = value;
-                dt = dt1970.AddHours(TimeZone);
             }
         }
         
         private DateTime dt1970;
-        private DateTime dt;
+        private long tick1970;
         
         // ping消息会设置该值，原子操作
         public long ServerMinusClientTime { private get; set; }
@@ -30,7 +29,8 @@ namespace ET
         public void Awake()
         {
             this.dt1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            this.dt = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            this.tick1970 = this.GetTick() - (DateTime.UtcNow.Ticks - this.dt1970.Ticks) / 10000;
+            
             this.FrameTime = this.ClientNow();
         }
 
@@ -39,19 +39,25 @@ namespace ET
             // 赋值long型是原子操作，线程安全
             this.FrameTime = this.ClientNow();
         }
-        
-        /// <summary> 
-        /// 根据时间戳获取时间 
-        /// </summary>  
-        public DateTime ToDateTime(long timeStamp)
+
+        /// <summary>
+        /// 返回毫秒数（跨平台，高性能，长时间运行安全）
+        /// </summary>
+        private long GetTick()
         {
-            return dt.AddTicks(timeStamp * 10000);
+#if UNITY
+            // Unity 下使用 realtimeSinceStartup
+            return (long)(UnityEngine.Time.realtimeSinceStartup * 1000);
+#else
+            // 服务端直接用 TickCount64，精度毫秒
+            return Environment.TickCount64;
+#endif
         }
         
         // 线程安全
         public long ClientNow()
         {
-            return (DateTime.UtcNow.Ticks - this.dt1970.Ticks) / 10000;
+            return this.GetTick() - this.tick1970;
         }
         
         public long ServerNow()
@@ -67,11 +73,6 @@ namespace ET
         public long ServerFrameTime()
         {
             return this.FrameTime + this.ServerMinusClientTime;
-        }
-        
-        public long Transition(DateTime d)
-        {
-            return (d.Ticks - dt.Ticks) / 10000;
         }
     }
 }

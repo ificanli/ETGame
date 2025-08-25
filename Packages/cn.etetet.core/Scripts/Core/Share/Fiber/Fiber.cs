@@ -283,8 +283,6 @@ namespace ET
                 return;
             }
             
-            FiberManager.Instance.RemoveMonitor(fiberId);
-            
             // 整个FiberManager释放了
             IScheduler scheduler = fiber;
             if (FiberManager.Instance == null)
@@ -292,7 +290,7 @@ namespace ET
                 scheduler.Dispose();
                 return;
             }
-
+            
             if (fiber.SchedulerType == SchedulerType.Parent)
             {
                 scheduler.Dispose();
@@ -367,6 +365,8 @@ namespace ET
             {
                 this.Log.Error(e);
             }
+            
+            FiberManager.Instance?.RemoveMonitor(this.Id);
             
             foreach (int child in this.children.Keys.ToArray())
             {
