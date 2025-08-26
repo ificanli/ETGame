@@ -11,7 +11,7 @@ namespace YIUI.Luban.Editor
         [MenuItem("ET/Excel/ExcelExporter")]
         public static void MenuLubanGen()
         {
-            ProcessHelper.DotNet("./Packages/cn.etetet.excel/DotNet~/Exe/ET.ExcelExporter.dll", "./", true).WaitForExit();
+            ProcessHelper.DotNet("./Bin/ET.ExcelExporter.dll", "./", true).WaitForExit();
         }        
     }
 }

@@ -11,11 +11,10 @@ namespace ET
         {
             try
             {
-#if UNITY
+#if UNITY_WEBGL // 这里只能限制WEBGL, 因为NetClient Fiber会调用，如果改成UNITY会导致不是在主线程使用
                 UnityEngine.Networking.UnityWebRequest req = UnityEngine.Networking.UnityWebRequest.Get(link);
                 await req.SendWebRequest();
                 return req.downloadHandler.text;
-                
 #else
                 using HttpClient httpClient = new();
                 HttpResponseMessage response =  await httpClient.GetAsync(link);

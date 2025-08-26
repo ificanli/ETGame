@@ -26,7 +26,7 @@ namespace ET.Server
                         }
                         else
                         {
-                            configFilePath = Path.Combine($"Packages/cn.etetet.wow/Bundles/Luban/Config/Server/Binary/{configType.Name}.bytes");
+                            configFilePath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/Server/Binary/{configType.Name}.bytes");
                         }
                         break;
                     case ConfigType.Bson:

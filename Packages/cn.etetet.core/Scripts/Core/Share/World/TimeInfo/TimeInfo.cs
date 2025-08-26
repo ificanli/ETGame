@@ -29,8 +29,7 @@ namespace ET
         public void Awake()
         {
             this.dt1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            this.tick1970 = this.GetTick() - (DateTime.UtcNow.Ticks - this.dt1970.Ticks) / 10000;
-            
+            this.tick1970 = GetTick() - (DateTime.UtcNow.Ticks - this.dt1970.Ticks) / 10000;
             this.FrameTime = this.ClientNow();
         }
 
@@ -41,15 +40,17 @@ namespace ET
         }
 
         /// <summary>
-        /// 返回毫秒数（跨平台，高性能，长时间运行安全）
+        /// 返回毫秒数（跨平台，无状态，超长运行）
         /// </summary>
-        private long GetTick()
+        private static long GetTick()
         {
 #if UNITY
-            // Unity 下使用 realtimeSinceStartup
-            return (long)(UnityEngine.Time.realtimeSinceStartup * 1000);
+            // Unity 下使用 Stopwatch.GetTimestamp()
+            long ticks = System.Diagnostics.Stopwatch.GetTimestamp();
+            // 换算为毫秒
+            return ticks * 1000 / System.Diagnostics.Stopwatch.Frequency;
 #else
-            // 服务端直接用 TickCount64，精度毫秒
+            // 服务端直接用 TickCount64
             return Environment.TickCount64;
 #endif
         }
@@ -57,7 +58,7 @@ namespace ET
         // 线程安全
         public long ClientNow()
         {
-            return this.GetTick() - this.tick1970;
+            return GetTick() - this.tick1970;
         }
         
         public long ServerNow()

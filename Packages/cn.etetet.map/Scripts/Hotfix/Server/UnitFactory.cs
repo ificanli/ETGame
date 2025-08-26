@@ -17,6 +17,7 @@ namespace ET.Server
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
             foreach ((int k, long v) in unitConfig.KV)
             {
+                Log.Debug($"11111111111111111111111111: {k} {v}");
                 numericComponent.SetNoEvent(k, v);
             }
 

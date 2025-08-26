@@ -169,8 +169,12 @@ MonoBehaviour:
     - line: '|   preloadedAssets:'
     - line: '|   - {fileID: 11400000, guid: 1a4fcb951610a3d44a29d290d6197fdf, type:
         2}'
-    - line: '|   - {fileID: 11400000, guid: ca131d12c65614e96ad5faaa6caa66f4, type:
+    - line: '|   - {fileID: 11400000, guid: 99d006673ff674945b7c7a0ed89e7aa1, type:
         2}'
+    - line: '|   - {fileID: 11400000, guid: 6f9fe1c16a47b854ba25d5ad9a0c5670, type:
+        2}'
+    - line: '|   - {fileID: -944628639613478452, guid: eb57a930bb50b3b408571cb8bcbf032b,
+        type: 3}'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
     - line: '|   m_HolographicPauseOnTrackingLoss: 1'
@@ -638,6 +642,7 @@ MonoBehaviour:
     - line: '|   - serializedVersion: 2'
     - line: '|     m_BuildTarget: PS4'
     - line: '|     m_EncodingQuality: 1'
+    - line: '|   m_BuildTargetGroupHDRCubemapEncodingQuality: []'
     - line: '|   m_BuildTargetGroupLightmapSettings: []'
     - line: '|   m_BuildTargetGroupLoadStoreDebugModeSettings: []'
     - line: '|   m_BuildTargetNormalMapEncoding: []'
