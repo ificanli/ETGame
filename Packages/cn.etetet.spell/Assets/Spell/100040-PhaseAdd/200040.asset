@@ -80,7 +80,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 7
-      Data: 5|ET.Server.BTPhaseAdd, ET.Model
+      Data: 5|ET.BTPhaseAdd, ET.Model
     - Name: Id
       Entry: 3
       Data: 2

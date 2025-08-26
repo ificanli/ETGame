@@ -153,12 +153,11 @@ namespace ET.Server
                 return;
             }
 
-            if (!self.SeeUnits.ContainsKey(leave.Id))
+            if (!self.SeeUnits.Remove(leave.Id))
             {
                 return;
             }
 
-            self.SeeUnits.Remove(leave.Id);
             if (leave.Unit.UnitType == UnitType.Player)
             {
                 self.SeePlayers.Remove(leave.Id);
