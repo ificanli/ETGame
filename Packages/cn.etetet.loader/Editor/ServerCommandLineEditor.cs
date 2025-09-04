@@ -40,13 +40,13 @@ namespace ET
 
             if (GUILayout.Button("Start Server(Single Process)"))
             {
-                string arguments = $"Bin/ET.App.dll --SceneName={globalConfig.SceneName} --Process=1 --StartConfig={this.startConfig} --Console=1";
+                string arguments = $"Bin/ET.App.dll --SceneName={globalConfig.SceneName} --Process=1 --StartConfig={this.startConfig} --Console";
                 ProcessHelper.DotNet(arguments, "./");
             }
 
             if (GUILayout.Button("Start Watcher"))
             {
-                string arguments = $"Bin/ET.App.dll --SceneName=Watcher --StartConfig={this.startConfig} --Console=1";
+                string arguments = $"Bin/ET.App.dll --SceneName=Watcher --StartConfig={this.startConfig} --Console";
                 ProcessHelper.DotNet(arguments, "./");
             }
 
