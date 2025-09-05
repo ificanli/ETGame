@@ -49,12 +49,16 @@ namespace ET
             {
                 Log.Warning($"FiberMonitor Warn! FiberId: {fiberId} Name: {fiberMonitorInfo.Name} UpdateTimeUsed: {fiberMonitorInfo.UpdateTimeUsed} LateUpdateTimeUsed: {fiberMonitorInfo.LateUpdateTimeUsed}");
             }
+#if !UNITY  // 仅在非Unity环境下启用纤程监控，Unity下这个方法有GC开销
             this.fiberMonitorInfos[fiberId] = fiberMonitorInfo;
+#endif
         }
         
         public void RemoveMonitor(int fiberId)
         {
+#if !UNITY
             this.fiberMonitorInfos.TryRemove(fiberId, out _);
+#endif
         }
         
         public void Awake()
