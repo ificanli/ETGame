@@ -108,6 +108,7 @@ namespace ET
         private int version;
 
         private Stack<Node> stack;
+        private Stack<Node> nodePool; // Node对象池
 
         private SerializationInfo siInfo; // A temporary variable which we need during deserialization.
 
@@ -149,7 +150,7 @@ namespace ET
                 {
                     Debug.Assert(sortedSet.root != null);
                     this.count = sortedSet.count;
-                    root = sortedSet.root.DeepClone(this.count);
+                    root = sortedSet.root.DeepClone(this.count, this);
                 }
                 return;
             }
@@ -175,7 +176,7 @@ namespace ET
                 }
 
                 count = index;
-                root = ConstructRootFromSortedArray(elements, 0, count - 1, null);
+                root = ConstructRootFromSortedArray(elements, 0, count - 1, null, this);
                 this.count = count;
             }
         }
@@ -357,7 +358,7 @@ namespace ET
             if (root == null)
             {
                 // The tree is empty and this is the first item.
-                root = new Node(item, NodeColor.Black);
+                root = CreateNode(item, NodeColor.Black);
                 count = 1;
                 version++;
                 return true;
@@ -406,7 +407,7 @@ namespace ET
 
             Debug.Assert(parent != null);
             // We're ready to insert the new node.
-            Node node = new Node(item, NodeColor.Red);
+            Node node = CreateNode(item, NodeColor.Red);
             if (order > 0)
             {
                 parent.Right = node;
@@ -551,9 +552,64 @@ namespace ET
 
         public virtual void Clear()
         {
+            if (root != null)
+            {
+                DisposeNode(root);
+            }
             root = null;
             count = 0;
             ++version;
+        }
+
+        private Node CreateNode(T item, NodeColor color)
+        {
+            if (nodePool == null)
+            {
+                nodePool = new Stack<Node>();
+            }
+            
+            Node node;
+            if (nodePool.Count > 0)
+            {
+                node = nodePool.Pop();
+                node.Item = item;
+                node.Color = color;
+                node.Left = null;
+                node.Right = null;
+            }
+            else
+            {
+                node = new Node(item, color);
+            }
+            return node;
+        }
+
+        private void RecycleNode(Node node)
+        {
+            if (node == null) return;
+            
+            if (nodePool == null)
+            {
+                nodePool = new Stack<Node>();
+            }
+            
+            if (nodePool.Count < 1000) // 限制对象池大小防止内存泄露
+            {
+                node.Item = default(T);
+                node.Left = null;
+                node.Right = null;
+                node.Color = NodeColor.Black;
+                nodePool.Push(node);
+            }
+        }
+
+        private void DisposeNode(Node node)
+        {
+            if (node == null) return;
+            
+            DisposeNode(node.Left);
+            DisposeNode(node.Right);
+            RecycleNode(node);
         }
 
         public virtual bool Contains(T item) => FindNode(item) != null;
@@ -749,6 +805,7 @@ namespace ET
             }
 
             ReplaceChildOrRoot(parentOfMatch, match, successor!);
+            RecycleNode(match); // 回收被删除的节点
         }
 
         internal virtual Node FindNode(T item)
@@ -968,7 +1025,7 @@ namespace ET
                 // safe to gc the root, we  have all the elements
                 root = null;
 
-                root = ConstructRootFromSortedArray(merged, 0, c - 1, null);
+                root = ConstructRootFromSortedArray(merged, 0, c - 1, null, this);
                 count = c;
                 version++;
             }
@@ -978,7 +1035,7 @@ namespace ET
             }
         }
 
-        private static Node ConstructRootFromSortedArray(T[] arr, int startIndex, int endIndex, Node redNode)
+        private static Node ConstructRootFromSortedArray(T[] arr, int startIndex, int endIndex, Node redNode, SortedSet<T> set)
         {
             // You're given a sorted array... say 1 2 3 4 5 6
             // There are 2 cases:
@@ -1006,15 +1063,15 @@ namespace ET
                 case 0:
                     return null;
                 case 1:
-                    root = new Node(arr[startIndex], NodeColor.Black);
+                    root = set.CreateNode(arr[startIndex], NodeColor.Black);
                     if (redNode != null)
                     {
                         root.Left = redNode;
                     }
                     break;
                 case 2:
-                    root = new Node(arr[startIndex], NodeColor.Black);
-                    root.Right = new Node(arr[endIndex], NodeColor.Black);
+                    root = set.CreateNode(arr[startIndex], NodeColor.Black);
+                    root.Right = set.CreateNode(arr[endIndex], NodeColor.Black);
                     root.Right.ColorRed();
                     if (redNode != null)
                     {
@@ -1022,9 +1079,9 @@ namespace ET
                     }
                     break;
                 case 3:
-                    root = new Node(arr[startIndex + 1], NodeColor.Black);
-                    root.Left = new Node(arr[startIndex], NodeColor.Black);
-                    root.Right = new Node(arr[endIndex], NodeColor.Black);
+                    root = set.CreateNode(arr[startIndex + 1], NodeColor.Black);
+                    root.Left = set.CreateNode(arr[startIndex], NodeColor.Black);
+                    root.Right = set.CreateNode(arr[endIndex], NodeColor.Black);
                     if (redNode != null)
                     {
                         root.Left.Left = redNode;
@@ -1032,11 +1089,11 @@ namespace ET
                     break;
                 default:
                     int midpt = ((startIndex + endIndex) / 2);
-                    root = new Node(arr[midpt], NodeColor.Black);
-                    root.Left = ConstructRootFromSortedArray(arr, startIndex, midpt - 1, redNode);
+                    root = set.CreateNode(arr[midpt], NodeColor.Black);
+                    root.Left = ConstructRootFromSortedArray(arr, startIndex, midpt - 1, redNode, set);
                     root.Right = size % 2 == 0 ?
-                        ConstructRootFromSortedArray(arr, midpt + 2, endIndex, new Node(arr[midpt + 1], NodeColor.Red)) :
-                        ConstructRootFromSortedArray(arr, midpt + 1, endIndex, null);
+                        ConstructRootFromSortedArray(arr, midpt + 2, endIndex, set.CreateNode(arr[midpt + 1], NodeColor.Red), set) :
+                        ConstructRootFromSortedArray(arr, midpt + 1, endIndex, null, set);
                     break;
 
             }
@@ -1097,7 +1154,7 @@ namespace ET
                 // safe to gc the root, we  have all the elements
                 root = null;
 
-                root = ConstructRootFromSortedArray(merged, 0, c - 1, null);
+                root = ConstructRootFromSortedArray(merged, 0, c - 1, null, this);
                 count = c;
                 version++;
             }
@@ -1660,6 +1717,11 @@ namespace ET
                 Color = color;
             }
 
+            private Node()
+            {
+            }
+
+
             public static bool IsNonNullBlack(Node node) => node != null && node.IsBlack;
 
             public static bool IsNonNullRed(Node node) => node != null && node.IsRed;
@@ -1686,12 +1748,12 @@ namespace ET
 
             public void ColorRed() => Color = NodeColor.Red;
 
-            public Node DeepClone(int count)
+            public Node DeepClone(int count, SortedSet<T> set)
             {
 #if DEBUG
                 Debug.Assert(count == GetCount());
 #endif
-                Node newRoot = ShallowClone();
+                Node newRoot = ShallowClone(set);
 
                 var pendingNodes = new Stack<(Node source, Node target)>(2 * Log2(count) + 2);
                 pendingNodes.Push((this, newRoot));
@@ -1702,14 +1764,14 @@ namespace ET
 
                     if (next.source.Left is Node left)
                     {
-                        clonedNode = left.ShallowClone();
+                        clonedNode = left.ShallowClone(set);
                         next.target.Left = clonedNode;
                         pendingNodes.Push((left, clonedNode));
                     }
 
                     if (next.source.Right is Node right)
                     {
-                        clonedNode = right.ShallowClone();
+                        clonedNode = right.ShallowClone(set);
                         next.target.Right = clonedNode;
                         pendingNodes.Push((right, clonedNode));
                     }
@@ -1745,7 +1807,7 @@ namespace ET
                 return node == Left ? Right! : Left!;
             }
 
-            public Node ShallowClone() => new Node(Item, Color);
+            public Node ShallowClone(SortedSet<T> set) => set.CreateNode(Item, Color);
 
             public void Split4Node()
             {

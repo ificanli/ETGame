@@ -36,7 +36,7 @@ namespace ET
         /// <summary>
         /// key: time, value: timer id
         /// </summary>
-        public readonly MultiMap<long, long> timeId = new();
+        public readonly MultiMap<long, long> timeId = new(1000);
 
         public readonly Queue<long> timeOutTime = new();
 
