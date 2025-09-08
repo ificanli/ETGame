@@ -8,11 +8,16 @@ namespace ET.Server
     public static partial class MapCopySystem
     {
         [EntitySystem]
-        private static void Awake(this MapCopy self, int lineNum)
+        private static void Destroy(this MapCopy self)
         {
-            self.Line = lineNum;
+            self.Fiber().RemoveFiber(self.FiberId).NoContext();
         }
-        
+        [EntitySystem]
+        private static void Awake(this MapCopy self, int fiberId)
+        {
+            self.FiberId = fiberId;
+        }
+
         public static void AddPlayer(this MapCopy self, long playerId)
         {
             if (!self.WaitEnterPlayer.Remove(playerId))
@@ -27,7 +32,7 @@ namespace ET.Server
             self.WaitEnterPlayer.Add(playerId, TimeInfo.Instance.FrameTime);
         }
     }
-    
+
     [EntitySystemOf(typeof(MapInfo))]
     public static partial class MapInfoSystem
     {
@@ -37,12 +42,12 @@ namespace ET.Server
             self.MapName = mapName;
         }
 
-        private static int GetNotUsedLineNumber(this MapInfo self)
+        private static long GetNotUsedLineNumber(this MapInfo self)
         {
-            int lineNum = 1;
-            foreach (var kv  in self.Lines)
+            long lineNum = 1;
+            foreach (long k  in self.Children.Keys)
             {
-                if (kv.Key == lineNum)
+                if (k == lineNum)
                 {
                     lineNum++;
                     continue;
@@ -52,20 +57,6 @@ namespace ET.Server
             return lineNum;
         }
         
-        public static MapCopy GetByLineNum(this MapInfo self, int lineNum)
-        {
-            if (!self.Lines.TryGetValue(lineNum, out var mapCopyId))
-            {
-                throw new Exception($"line num not found: {self.MapName} {lineNum}");
-            }
-            return self.GetChild<MapCopy>(mapCopyId);
-        }
-
-        public static MapCopy GetCopy(this MapInfo self, long id)
-        {
-            return self.GetChild<MapCopy>(id);
-        }
-        
         public static async ETTask RemoveCopy(this MapInfo self, long id)
         {
             EntityRef<MapInfo> selfRef = self;
@@ -73,76 +64,26 @@ namespace ET.Server
             self = selfRef;
             MapCopy mapCopy = self.GetChild<MapCopy>(id);
             
-            Log.Debug($"remove map copy: {self.MapName}:{mapCopy.Line}:{mapCopy.Id}");
+            Log.Debug($"remove map copy: {self.MapName}:{mapCopy.Id}");
             
-            self.Lines.Remove(mapCopy.Line);
             self.RemoveChild(id);
         }
 
-        // line2合并到line1
-        public static async ETTask MergeLines(this MapInfo self, int lineNum1, int lineNum2)
-        {
-            Log.Debug($"start merge lines: {self.MapName} {lineNum1} {lineNum2}");
-         
-            EntityRef<MapInfo> selfRef = self;
-            MapCopy mapCopy1 = self.GetByLineNum(lineNum1);
-            MapCopy mapCopy2 = self.GetByLineNum(lineNum2);
-            EntityRef<MapCopy> mapCopy1Ref = mapCopy1;
-            EntityRef<MapCopy> mapCopy2Ref = mapCopy2;
-
-            if (mapCopy1.Status != MapCopyStatus.WaitMerge || mapCopy2.Status != MapCopyStatus.WaitMerge)
-            {
-                throw new Exception($"map copy not running: {self.MapName} {lineNum1} {lineNum2}");
-            }
-            
-            MessageLocationSenderComponent messageLocationSender = self.Root().GetComponent<MessageLocationSenderComponent>();
-            MessageLocationSenderOneType messageLocationSenderOneType = messageLocationSender.Get(LocationType.Unit);
-            EntityRef<MessageLocationSenderOneType> messageLocationSenderOneTypeRef = messageLocationSenderOneType;
-            // 通知传送
-            foreach (long playerId in mapCopy2.Players.ToArray())
-            {
-                MapManager2Map_NotifyPlayerTransferRequest request = MapManager2Map_NotifyPlayerTransferRequest.Create();
-                self = selfRef;
-                mapCopy1 = mapCopy1Ref;
-                request.MapName = self.MapName;
-                request.Line = mapCopy1.Line;
-                messageLocationSenderOneType = messageLocationSenderOneTypeRef;
-                await messageLocationSenderOneType.Call(playerId, request);
-
-                self = selfRef;
-                Log.Debug($"merge lines transfer: {self.MapName} transfer {playerId} to line {lineNum1}");
-                mapCopy1 = mapCopy1Ref;
-                mapCopy2 = mapCopy2Ref;
-                mapCopy1.Players.Add(playerId);
-                mapCopy2.Players.Remove(playerId);
-            }
-
-            // 合并等待玩家
-            if (mapCopy2.Players.Count > 0)
-            {
-                Log.Error($"合并副本时，mapCopy2有玩家未传送: {mapCopy2.Players.ToList().ListToString()}");
-            }
-
-            // 设置状态
-            mapCopy1.Status = MapCopyStatus.Running;
-            mapCopy1.MergeTime = TimeInfo.Instance.FrameTime;
-
-            // 删除副本2
-            await self.RemoveCopy(mapCopy2.Id);
-        }
-
-        public static async ETTask<MapCopy> GetCopy(this MapInfo self, int line = 0)
+        public static async ETTask<MapCopy> GetCopy(this MapInfo self, long id = 0)
         {
             MapConfig mapConfig = MapConfigCategory.Instance.GetByName(self.MapName);
 
-            long mapCopyId = 0;
             MapCopy mapCopy = null;
-            if (line != 0)
+            if (id != 0)
             {
-                self.Lines.TryGetValue(line, out mapCopyId);
-                mapCopy = self.GetChild<MapCopy>(mapCopyId);
-                Log.Debug($"get map copy: {self.MapName}:{line}:{mapCopyId}");
-                return mapCopy;
+                mapCopy = self.GetChild<MapCopy>(id);
+                if (mapCopy != null)
+                {
+                    Log.Debug($"get map copy: {self.MapName}:{id}");
+                    return mapCopy;
+                }
+
+                return null;
             }
             
             foreach (var kv in self.Children)
@@ -154,20 +95,40 @@ namespace ET.Server
                 }
                 if (copy.Players.Count < mapConfig.RecommendPlayerNum)
                 {
-                    Log.Debug($"get map copy: {self.MapName}:{copy.Line}:{mapCopyId}");
+                    Log.Debug($"get map copy: {self.MapName}:{copy.Id}:");
                     return copy;
                 }
             }
+
+            long mapId = 0;
+            switch (mapConfig.CopyType)
+            {
+                case CopyType.Normal:
+                {
+                    mapId = IdGenerater.Instance.GenerateId();
+                    break;
+                }
+                case CopyType.Line:
+                {
+                    mapId = self.GetNotUsedLineNumber();
+                    break;
+                }
+                case CopyType.Copy:
+                {
+                    mapId = IdGenerater.Instance.GenerateId();
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             
-            int lineNum = self.GetNotUsedLineNumber();
             EntityRef<MapInfo> selfRef = self;
             // 创建Copy Fiber
-            mapCopyId = await self.Fiber().CreateFiber(SchedulerType.ThreadPool, self.Zone(), SceneType.Map, $"{self.MapName}@{lineNum}");
+            int fiberId = await self.Fiber().CreateFiber(SchedulerType.ThreadPool, id, self.Zone(), SceneType.Map, self.MapName);
             self = selfRef;
-            mapCopy = self.AddChildWithId<MapCopy, int>(mapCopyId, lineNum);
-            self.Lines[lineNum] = mapCopyId;
+            mapCopy = self.AddChildWithId<MapCopy, int>(mapId, fiberId);
             
-            Log.Debug($"get map copy: {self.MapName}:{lineNum}:{mapCopyId}");
+            Log.Debug($"get map copy: {self.MapName}:{mapId}");
             
             return mapCopy;
         }
@@ -196,8 +157,17 @@ namespace ET.Server
             return mapInfo;
         }
 
-        public static async ETTask<MapCopy> GetMap(this MapManagerComponent self, string mapName, int line)
+        public static async ETTask<MapCopy> GetMap(this MapManagerComponent self, string mapName, long id = 0)
         {
+            if (id != 0)
+            {
+                MapCopy mapCopy = self.FindMap(mapName, id);
+                if (mapCopy != null)
+                {
+                    return mapCopy;
+                }
+            }
+
             MapInfo mapInfo = null;
             if (!self.MapInfos.TryGetValue(mapName, out var mapInfoRef))
             {
@@ -208,7 +178,7 @@ namespace ET.Server
                 mapInfo = mapInfoRef;
             }
 
-            return await mapInfo.GetCopy(line);
+            return await mapInfo.GetCopy(id);
         }
         
         public static MapCopy FindMap(this MapManagerComponent self, string mapName, long mapId)
@@ -219,7 +189,7 @@ namespace ET.Server
             }
 
             MapInfo mapInfo = mapInfoRef;
-            MapCopy mapCopy = mapInfo.GetCopy(mapId);
+            MapCopy mapCopy = mapInfo.GetChild<MapCopy>(mapId);
             return mapCopy;
         }
     }

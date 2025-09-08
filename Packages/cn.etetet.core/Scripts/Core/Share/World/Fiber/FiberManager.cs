@@ -118,20 +118,21 @@ namespace ET
             {
                 throw new Exception("FiberManager is already created");
             }
-            this.mainFiber = await this.CreateFiber(SchedulerType.Main, 0, sceneType, "Main", null);
+            this.mainFiber = await this.CreateFiber(SchedulerType.Main, IdGenerater.Instance.GenerateId(), 0, sceneType, "Main", null);
             return this.mainFiber.Id;
         }
-        
+
         /// <summary>
         /// 创建纤程
         /// </summary>
         /// <param name="schedulerType">纤程调度器，-1: 主线程，-2: 当前线程，-3: 线程池, 其它: 纤程</param>
         /// <param name="fiberId">纤程id</param>
+        /// <param name="rootId"></param>
         /// <param name="zone">区</param>
         /// <param name="sceneType">场景类型</param>
         /// <param name="name">纤程名称</param>
         /// <param name="parent"></param>
-        internal async ETTask<Fiber> CreateFiber(int fiberId, SchedulerType schedulerType, int zone, int sceneType, string name, Fiber parent)
+        internal async ETTask<Fiber> CreateFiber(int fiberId, SchedulerType schedulerType, long rootId, int zone, int sceneType, string name, Fiber parent)
         {
             if (sceneType == 0)
             {
@@ -143,7 +144,7 @@ namespace ET
                 Log.Debug($"create fiber: {fiberId} {zone} {sceneType} {name} {schedulerType} {parentId}");
                 
                 // 如果调度器是父fiber，那么日志也是父fiber的日志
-                Fiber fiber = new(fiberId, zone, sceneType, name, schedulerType, parent);
+                Fiber fiber = new(fiberId, rootId, zone, sceneType, name, schedulerType, parent);
 
                 IScheduler iScheduler = schedulerType == SchedulerType.Parent ? parent : this.schedulers[(int)schedulerType];
                 iScheduler.AddToScheduler(fiber);
@@ -186,15 +187,16 @@ namespace ET
         /// 创建纤程
         /// </summary>
         /// <param name="schedulerType">纤程调度器，-1: 主线程，-2: 当前线程，-3: 线程池, 其它: 纤程</param>
+        /// <param name="rootId"></param>
         /// <param name="zone">区</param>
         /// <param name="sceneType">场景类型</param>
         /// <param name="name">纤程名称</param>
         /// <param name="parent"></param>
         /// <returns>纤程id</returns>
-        internal async ETTask<Fiber> CreateFiber(SchedulerType schedulerType, int zone, int sceneType, string name, Fiber parent)
+        internal async ETTask<Fiber> CreateFiber(SchedulerType schedulerType, long rootId, int zone, int sceneType, string name, Fiber parent)
         {
             int fiberId = this.GetFiberId();
-            return await this.CreateFiber(fiberId, schedulerType, zone, sceneType, name, parent);
+            return await this.CreateFiber(fiberId, schedulerType, rootId, zone, sceneType, name, parent);
         }
     }
 }

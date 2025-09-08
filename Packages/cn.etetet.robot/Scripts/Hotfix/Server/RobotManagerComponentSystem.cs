@@ -39,7 +39,7 @@
         public static async ETTask<int> NewRobot(this RobotManagerComponent self, SchedulerType schedulerType, string account)
         {
             EntityRef<RobotManagerComponent> selfRef = self;
-            int robot = await self.Fiber().CreateFiber(schedulerType, 0, SceneType.Robot, account);
+            int robot = await self.Fiber().CreateFiber(schedulerType, IdGenerater.Instance.GenerateId(), 0, SceneType.Robot, account);
             self = selfRef;
             self.robots.Add(account, robot);
             return robot;

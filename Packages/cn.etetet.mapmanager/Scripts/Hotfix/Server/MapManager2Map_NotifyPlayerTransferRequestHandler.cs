@@ -5,7 +5,7 @@ namespace ET.Server
     {
         protected override async ETTask Run(Unit unit, MapManager2Map_NotifyPlayerTransferRequest request, MapManager2Map_NotifyPlayerTransferResponse response)
         {
-            await TransferHelper.TransferLock(unit, request.MapName, request.Line, false);
+            await TransferHelper.TransferLock(unit, request.MapName, request.MapId, false);
         }
     }
 }

@@ -7,9 +7,9 @@ namespace ET
             MapConfig preMapConfig = null;
             if (preSceneName != null)
             {
-                preMapConfig = MapConfigCategory.Instance.GetByName(preSceneName.GetMapName());
+                preMapConfig = MapConfigCategory.Instance.GetByName(preSceneName);
             }
-            MapConfig mapConfig = MapConfigCategory.Instance.GetByName(nextSceneName.GetMapName());
+            MapConfig mapConfig = MapConfigCategory.Instance.GetByName(nextSceneName);
             return preMapConfig?.MapResName != mapConfig?.MapResName;
         }
     }

@@ -55,7 +55,7 @@ namespace ET.Server
                 case UnitType.Monster:
                 {
                     unit.AddComponent<ThreatComponent>();
-                    unit.AddComponent<PathfindingComponent, string>(scene.Name.GetMapName());
+                    unit.AddComponent<PathfindingComponent, string>(scene.Name);
                     break;
                 }
                 case UnitType.Virtual:

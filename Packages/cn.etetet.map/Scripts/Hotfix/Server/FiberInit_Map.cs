@@ -23,7 +23,7 @@ namespace ET.Server
             
             EntityRef<UnitComponent> unitComponentRef = unitComponent;
 
-            string mapName = root.Name.GetMapName();
+            string mapName = root.Name;
             // 加载场景寻路数据
             await NavmeshComponent.Instance.Load(mapName);
             

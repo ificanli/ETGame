@@ -91,7 +91,7 @@ namespace ET
 
         private readonly Dictionary<int, Fiber> children = new();
         
-        internal Fiber(int id, int zone, int sceneType, string name, SchedulerType schedulerType, Fiber parent)
+        internal Fiber(int id, long rootId, int zone, int sceneType, string name, SchedulerType schedulerType, Fiber parent)
         {
             this.Id = id;
             this.Zone = zone;
@@ -116,7 +116,7 @@ namespace ET
                 this.Log = EventSystem.Instance.Invoke<LogInvoker, ILog>(logInvoker);
             }
             
-            this.Root = new Scene(this, id, 1, sceneType, name);
+            this.Root = new Scene(this, rootId, 1, sceneType, name);
         }
 
         internal void Update()
@@ -228,9 +228,9 @@ namespace ET
         /// <param name="sceneType"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async ETTask<Fiber> CreateFiber(int zone, int sceneType, string name)
+        public async ETTask<Fiber> CreateFiber(long rootId, int zone, int sceneType, string name)
         {
-            Fiber fiber = await FiberManager.Instance.CreateFiber(SchedulerType.Parent, zone, sceneType, name, this);
+            Fiber fiber = await FiberManager.Instance.CreateFiber(SchedulerType.Parent, rootId, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
             return fiber;
         }
@@ -239,18 +239,19 @@ namespace ET
         /// 这个会跟parent fiber在同一线程调度，所以可以返回Fiber，父Fiber可以直接操作子Fiber
         /// </summary>
         /// <param name="fiberId"></param>
+        /// <param name="rootId"></param>
         /// <param name="zone"></param>
         /// <param name="sceneType"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async ETTask<Fiber> CreateFiberWithId(int fiberId, int zone, int sceneType, string name)
+        public async ETTask<Fiber> CreateFiberWithId(int fiberId, long rootId, int zone, int sceneType, string name)
         {
-            Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, SchedulerType.Parent, zone, sceneType, name, this);
+            Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, SchedulerType.Parent, rootId, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
             return fiber;
         }
 
-        public async ETTask<int> CreateFiber(SchedulerType schedulerType, int zone, int sceneType, string name)
+        public async ETTask<int> CreateFiber(SchedulerType schedulerType, long rootId, int zone, int sceneType, string name)
         {
             // 如果是单线程模式，强制设置为父fiber调度
             if (Options.Instance.SingleThread)
@@ -258,12 +259,12 @@ namespace ET
                 schedulerType = SchedulerType.Parent;
             }
             
-            Fiber fiber = await FiberManager.Instance.CreateFiber(schedulerType, zone, sceneType, name, this);
+            Fiber fiber = await FiberManager.Instance.CreateFiber(schedulerType, rootId, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
             return fiber.Id;
         }
         
-        public async ETTask<int> CreateFiberWithId(int fiberId, SchedulerType schedulerType, int zone, int sceneType, string name)
+        public async ETTask<int> CreateFiberWithId(int fiberId, SchedulerType schedulerType, long rootId, int zone, int sceneType, string name)
         {
             // 如果是单线程模式，强制设置为父fiber调度
             if (Options.Instance.SingleThread)
@@ -271,7 +272,7 @@ namespace ET
                 schedulerType = SchedulerType.Parent;
             }
             
-            Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, schedulerType, zone, sceneType, name, this);
+            Fiber fiber = await FiberManager.Instance.CreateFiber(fiberId, schedulerType, rootId, zone, sceneType, name, this);
             this.children.Add(fiber.Id, fiber);
             return fiber.Id;
         }

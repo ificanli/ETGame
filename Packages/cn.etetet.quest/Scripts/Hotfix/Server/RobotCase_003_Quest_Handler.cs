@@ -14,7 +14,7 @@ namespace ET.Server
                 Log.Debug("Starting Quest robot test case");
                 
                 // 创建机器人子Fiber
-                Fiber robot = await parentFiber.CreateFiber(0, SceneType.Robot, "RobotCase_003_QuestTest");
+                Fiber robot = await parentFiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.Robot, "RobotCase_003_QuestTest");
                 
                 // 执行Quest测试流程
                 await TestQuestFlow(robot, parentFiber);

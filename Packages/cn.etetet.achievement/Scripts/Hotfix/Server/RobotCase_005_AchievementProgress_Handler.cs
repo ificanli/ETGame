@@ -10,7 +10,7 @@ namespace ET.Server
             try
             {
                 // 创建机器人子Fiber
-                Fiber robot = await fiber.CreateFiber(0, SceneType.Robot, "RobotCase_005_AchievementProgress");
+                Fiber robot = await fiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.Robot, "RobotCase_005_AchievementProgress");
                 
                 Log.Debug("Achievement progress robot test started");
                 

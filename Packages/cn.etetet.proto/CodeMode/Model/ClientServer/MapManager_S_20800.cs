@@ -20,7 +20,7 @@ namespace ET
         public string MapName { get; set; }
 
         [MemoryPackOrder(2)]
-        public int Line { get; set; }
+        public long MapId { get; set; }
 
         [MemoryPackOrder(3)]
         public long UnitId { get; set; }
@@ -34,7 +34,7 @@ namespace ET
 
             this.RpcId = default;
             this.MapName = default;
-            this.Line = default;
+            this.MapId = default;
             this.UnitId = default;
 
             ObjectPool.Recycle(this);
@@ -63,7 +63,7 @@ namespace ET
         public string MapName { get; set; }
 
         [MemoryPackOrder(4)]
-        public int Line { get; set; }
+        public long MapId { get; set; }
 
         [MemoryPackOrder(5)]
         public ActorId MapActorId { get; set; }
@@ -79,7 +79,7 @@ namespace ET
             this.Error = default;
             this.Message = default;
             this.MapName = default;
-            this.Line = default;
+            this.MapId = default;
             this.MapActorId = default;
 
             ObjectPool.Recycle(this);
@@ -103,10 +103,13 @@ namespace ET
         public string MapName { get; set; }
 
         [MemoryPackOrder(2)]
-        public int Line { get; set; }
+        public long MapId { get; set; }
 
         [MemoryPackOrder(3)]
         public long UnitId { get; set; }
+
+        [MemoryPackOrder(4)]
+        public long PreMapCopyId { get; set; }
 
         public override void Dispose()
         {
@@ -117,8 +120,9 @@ namespace ET
 
             this.RpcId = default;
             this.MapName = default;
-            this.Line = default;
+            this.MapId = default;
             this.UnitId = default;
+            this.PreMapCopyId = default;
 
             ObjectPool.Recycle(this);
         }
@@ -174,7 +178,7 @@ namespace ET
         public string MapName { get; set; }
 
         [MemoryPackOrder(2)]
-        public int Line { get; set; }
+        public long MapId { get; set; }
 
         public override void Dispose()
         {
@@ -185,7 +189,7 @@ namespace ET
 
             this.RpcId = default;
             this.MapName = default;
-            this.Line = default;
+            this.MapId = default;
 
             ObjectPool.Recycle(this);
         }

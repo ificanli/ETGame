@@ -4,8 +4,8 @@ namespace ET.Server
 {
     public struct MergeLineInfo
     {
-        public int LineNum1;
-        public int LineNum2;
+        public long LineNum1;
+        public long LineNum2;
         public long Time;
     }
     
