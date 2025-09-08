@@ -73,7 +73,7 @@ message M2C_CreateMyUnit // IMessage
 
 message M2C_StartSceneChange // IMessage
 {
-	int64 SceneInstanceId = 1;
+	int64 SceneId = 1;
 	string SceneName = 2;
 }
 

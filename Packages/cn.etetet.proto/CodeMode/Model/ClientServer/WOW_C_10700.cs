@@ -336,7 +336,7 @@ namespace ET
         }
 
         [MemoryPackOrder(0)]
-        public long SceneInstanceId { get; set; }
+        public long SceneId { get; set; }
 
         [MemoryPackOrder(1)]
         public string SceneName { get; set; }
@@ -348,7 +348,7 @@ namespace ET
                 return;
             }
 
-            this.SceneInstanceId = default;
+            this.SceneId = default;
             this.SceneName = default;
 
             ObjectPool.Recycle(this);

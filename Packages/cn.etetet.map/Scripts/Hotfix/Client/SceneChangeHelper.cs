@@ -3,7 +3,7 @@
     public static partial class SceneChangeHelper
     {
         // 场景切换协程
-        public static async ETTask SceneChangeTo(Scene root, string sceneName, long sceneInstanceId)
+        public static async ETTask SceneChangeTo(Scene root, long sceneId, string sceneName)
         {
             EntityRef<Scene> rootRef = root;
             CurrentScenesComponent currentScenesComponent = root.GetComponent<CurrentScenesComponent>();
@@ -15,7 +15,7 @@
             {
                 // 先卸载当前场景
                 currentScenesComponent.Scene?.Dispose(); // 删除之前的CurrentScene，创建新的
-                Scene currentScene = CurrentSceneFactory.Create(sceneInstanceId, sceneName, currentScenesComponent);
+                Scene currentScene = CurrentSceneFactory.Create(sceneId, sceneName, currentScenesComponent);
                 currentScene.AddComponent<UnitComponent>();
                 await WaitUnitCreateFinish(root, currentScenesComponent.Scene);
             }
