@@ -35,6 +35,7 @@ namespace ET
                 
                 if (instance != null)
                 {
+                    instance.Log.SceneName = instance.Root.Name;
                     SynchronizationContext.SetSynchronizationContext(instance.ThreadSynchronizationContext);
                 }
             }

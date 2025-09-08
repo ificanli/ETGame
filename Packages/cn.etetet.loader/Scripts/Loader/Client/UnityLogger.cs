@@ -14,13 +14,15 @@ namespace ET
     
     public class UnityLogger: ILog
     {
-        private readonly string sceneName;
+        private string sceneName;
 
         public UnityLogger(string sceneName)
         {
             this.sceneName = sceneName;
         }
-        
+
+        public string SceneName { set => sceneName = value; }
+
         public void Trace(string msg)
         {
             UnityEngine.Debug.Log($"{this.sceneName} {msg}");

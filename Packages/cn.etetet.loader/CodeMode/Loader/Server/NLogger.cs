@@ -18,7 +18,9 @@ namespace ET
     {
         private readonly NLog.Logger logger;
 
-        private readonly string sceneName;
+        private string sceneName;
+        
+        public string SceneName { set => sceneName = value; }
 
         static NLogger()
         {

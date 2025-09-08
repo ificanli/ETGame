@@ -4,6 +4,8 @@ namespace ET
 {
     public interface ILog
     {
+        string SceneName { set; }
+        
         void Trace(string message);
         void Warning(string message);
         void Info(string message);
