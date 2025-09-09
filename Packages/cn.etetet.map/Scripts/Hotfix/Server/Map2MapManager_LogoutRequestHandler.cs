@@ -6,7 +6,7 @@ namespace ET.Server
         protected override async ETTask Run(Scene root, Map2MapManager_LogoutRequest request, Map2MapManager_LogoutResponse response)
         {
             MapManagerComponent mapManagerComponent = root.GetComponent<MapManagerComponent>();
-            MapCopy mapCopy = mapManagerComponent.FindMap(request.MapName, request.MapId);
+            MapCopy mapCopy = mapManagerComponent.GetMap(request.MapName, request.MapId);
             if (mapCopy == null)
             {
                 return;

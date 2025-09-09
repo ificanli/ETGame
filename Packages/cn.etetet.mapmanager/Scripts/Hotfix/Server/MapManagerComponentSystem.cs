@@ -72,14 +72,14 @@ namespace ET.Server
         public static async ETTask<MapCopy> GetCopy(this MapInfo self, long id = 0)
         {
             MapConfig mapConfig = MapConfigCategory.Instance.GetByName(self.MapName);
-
+            string mapName = self.MapName;
             MapCopy mapCopy = null;
             if (id != 0)
             {
                 mapCopy = self.GetChild<MapCopy>(id);
                 if (mapCopy != null)
                 {
-                    Log.Debug($"get map copy: {self.MapName}:{id}");
+                    Log.Debug($"get map copy: {mapName}:{id}");
                     return mapCopy;
                 }
 
@@ -95,7 +95,7 @@ namespace ET.Server
                 }
                 if (copy.Players.Count < mapConfig.RecommendPlayerNum)
                 {
-                    Log.Debug($"get map copy: {self.MapName}:{copy.Id}:");
+                    Log.Debug($"get map copy: {mapName}:{copy.Id}:");
                     return copy;
                 }
             }
@@ -121,16 +121,22 @@ namespace ET.Server
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            mapCopy = await self.AddChildWithIdAsync(mapId);
             
+            Log.Debug($"get map copy: {mapName}:{mapId}");
+            
+            return mapCopy;
+        }
+        
+        private static async ETTask<MapCopy> AddChildWithIdAsync(this MapInfo self, long id)
+        {
             EntityRef<MapInfo> selfRef = self;
+            
             // 创建Copy Fiber
             int fiberId = await self.Fiber().CreateFiber(SchedulerType.ThreadPool, id, self.Zone(), SceneType.Map, self.MapName);
             self = selfRef;
-            mapCopy = self.AddChildWithId<MapCopy, int>(mapId, fiberId);
-            
-            Log.Debug($"get map copy: {self.MapName}:{mapId}");
-            
-            return mapCopy;
+            return self.AddChildWithId<MapCopy, int>(id, fiberId);
         }
     }
     
@@ -157,11 +163,11 @@ namespace ET.Server
             return mapInfo;
         }
 
-        public static async ETTask<MapCopy> GetMap(this MapManagerComponent self, string mapName, long id = 0)
+        public static async ETTask<MapCopy> GetMapAsync(this MapManagerComponent self, string mapName, long id = 0)
         {
             if (id != 0)
             {
-                MapCopy mapCopy = self.FindMap(mapName, id);
+                MapCopy mapCopy = self.GetMap(mapName, id);
                 if (mapCopy != null)
                 {
                     return mapCopy;
@@ -181,7 +187,7 @@ namespace ET.Server
             return await mapInfo.GetCopy(id);
         }
         
-        public static MapCopy FindMap(this MapManagerComponent self, string mapName, long mapId)
+        public static MapCopy GetMap(this MapManagerComponent self, string mapName, long mapId)
         {
             if (!self.MapInfos.TryGetValue(mapName, out EntityRef<MapInfo> mapInfoRef))
             {
