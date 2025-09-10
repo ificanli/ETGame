@@ -1,7 +1,7 @@
 ﻿namespace ET
 {
     [UniqueId]
-    public static partial class ErrorCore
+    internal static partial class ErrorCore
     {
         public const int ERR_Success = 0;
         

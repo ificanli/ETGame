@@ -5,39 +5,30 @@ namespace ET.Server
     {
         protected override async ETTask Run(Unit unit, C2M_QueryAvailableQuests request, M2C_QueryAvailableQuests response)
         {
-            try
+            // 获取QuestComponent
+            QuestComponent questComponent = unit.GetComponent<QuestComponent>();
+            if (questComponent == null)
             {
-                // 获取QuestComponent
-                QuestComponent questComponent = unit.GetComponent<QuestComponent>();
-                if (questComponent == null)
-                {
-                    questComponent = unit.AddComponent<QuestComponent>();
-                }
-                
-                // 如果指定了NPC ID，检查NPC是否存在
-                if (request.NPCId != 0)
-                {
-                    Unit npc = unit.GetParent<UnitComponent>().Get(request.NPCId);
-                    if (npc == null)
-                    {
-                        response.Error = TextConstDefine.Quest_NotFoundNPC;
-                        return;
-                    }
-                }
-                
-                // 获取可接取的任务列表
-                // 为了测试，直接创建模拟数据而不依赖QuestConfigCategory
-                response.AvailableQuests = CreateMockAvailableQuests(questComponent, request.NPCId);
-                
-                Log.Debug($"Player {unit.Id} queried available quests, found {response.AvailableQuests.Count} quests");
-                await ETTask.CompletedTask;
+                questComponent = unit.AddComponent<QuestComponent>();
             }
-            catch (System.Exception e)
+
+            // 如果指定了NPC ID，检查NPC是否存在
+            if (request.NPCId != 0)
             {
-                Log.Error($"QueryAvailableQuests failed: {e.Message}");
-                response.Error = ErrorCore.ERR_WithException;
-                response.Message = e.Message;
+                Unit npc = unit.GetParent<UnitComponent>().Get(request.NPCId);
+                if (npc == null)
+                {
+                    response.Error = TextConstDefine.Quest_NotFoundNPC;
+                    return;
+                }
             }
+
+            // 获取可接取的任务列表
+            // 为了测试，直接创建模拟数据而不依赖QuestConfigCategory
+            response.AvailableQuests = CreateMockAvailableQuests(questComponent, request.NPCId);
+
+            Log.Debug($"Player {unit.Id} queried available quests, found {response.AvailableQuests.Count} quests");
+            await ETTask.CompletedTask;
         }
 
         /// <summary>
@@ -46,7 +37,7 @@ namespace ET.Server
         private System.Collections.Generic.List<AvailableQuestInfo> CreateMockAvailableQuests(QuestComponent questComponent, long npcId)
         {
             var availableQuests = new System.Collections.Generic.List<AvailableQuestInfo>();
-            
+
             // 检查玩家是否有可接取的任务
             if (questComponent.AvailableQuests.Contains(1001))
             {
@@ -60,7 +51,7 @@ namespace ET.Server
                 questInfo.RewardItems = new System.Collections.Generic.List<int> { 10001, 10002 };
                 availableQuests.Add(questInfo);
             }
-            
+
             if (questComponent.AvailableQuests.Contains(1002))
             {
                 var questInfo = AvailableQuestInfo.Create();
@@ -73,7 +64,7 @@ namespace ET.Server
                 questInfo.RewardItems = new System.Collections.Generic.List<int> { 10003 };
                 availableQuests.Add(questInfo);
             }
-            
+
             return availableQuests;
         }
     }

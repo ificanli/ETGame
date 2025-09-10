@@ -5,27 +5,18 @@ namespace ET.Server
     {
         protected override async ETTask Run(Unit unit, C2M_SyncQuestData request, M2C_SyncQuestData response)
         {
-            try
+            // 获取QuestComponent
+            QuestComponent questComponent = unit.GetComponent<QuestComponent>();
+            if (questComponent == null)
             {
-                // 获取QuestComponent
-                QuestComponent questComponent = unit.GetComponent<QuestComponent>();
-                if (questComponent == null)
-                {
-                    questComponent = unit.AddComponent<QuestComponent>();
-                }
-                
-                // 获取当前玩家的所有任务数据
-                response.QuestList = GetPlayerQuestList(questComponent);
-                
-                Log.Debug($"Player {unit.Id} synced quest data, found {response.QuestList.Count} active quests");
-                await ETTask.CompletedTask;
+                questComponent = unit.AddComponent<QuestComponent>();
             }
-            catch (System.Exception e)
-            {
-                Log.Error($"SyncQuestData failed: {e.Message}");
-                response.Error = ErrorCore.ERR_WithException;
-                response.Message = e.Message;
-            }
+
+            // 获取当前玩家的所有任务数据
+            response.QuestList = GetPlayerQuestList(questComponent);
+
+            Log.Debug($"Player {unit.Id} synced quest data, found {response.QuestList.Count} active quests");
+            await ETTask.CompletedTask;
         }
 
         /// <summary>
@@ -34,7 +25,7 @@ namespace ET.Server
         private System.Collections.Generic.List<QuestInfo> GetPlayerQuestList(QuestComponent questComponent)
         {
             var questList = new System.Collections.Generic.List<QuestInfo>();
-            
+
             // 遍历所有活跃任务
             foreach (var kvp in questComponent.ActiveQuests)
             {
@@ -47,11 +38,11 @@ namespace ET.Server
                     questInfo.Objectives = new System.Collections.Generic.List<QuestObjectiveInfo>();
                     questInfo.AcceptTime = TimeInfo.Instance.ServerNow(); // 模拟接取时间
                     questInfo.CompleteTime = 0; // 未完成
-                    
+
                     questList.Add(questInfo);
                 }
             }
-            
+
             return questList;
         }
     }
