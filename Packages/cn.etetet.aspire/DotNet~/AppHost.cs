@@ -8,6 +8,9 @@ namespace ET.Aspire
     {
         [Option("StartConfig", Required = false, Default = "Localhost")]
         public string StartConfig { get; set; }
+        
+        [Option("SceneName", Required = false, Default = "WOW", HelpText = "define in SceneType class")]
+        public string SceneName { get; set; }
     }
     
     public static class Program
@@ -45,9 +48,8 @@ namespace ET.Aspire
                 builder.AddExecutable(serviceName, "dotnet", currentDir)
                         .WithArgs("./Bin/ET.App.dll",
                             $"--Process={processId}",
-                            $"--SceneName=WOW",
-                            $"--StartConfig={AspireOptions.Instance.StartConfig}",
-                            "--Console")
+                            $"--SceneName={AspireOptions.Instance.SceneName}",
+                            $"--StartConfig={AspireOptions.Instance.StartConfig}")
                         .WithEnvironment("ASPIRE_MANAGED", "true")
                         .WithOtlpExporter();
 
