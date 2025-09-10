@@ -1,70 +1,68 @@
-using System.Text.Json;
+using CommandLine;
+using ET.Server;
+using Luban;
 
-IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
-
-// 读取ET配置参数
-string startConfigName = args.FirstOrDefault(a => a.StartsWith("--StartConfig="))?.Replace("--StartConfig=", "") ?? "Localhost";
-Console.WriteLine($"Using StartConfig: {startConfigName}");
-
-// ET配置文件路径 - 智能检测解决方案根目录
-string currentDir = Directory.GetCurrentDirectory();
-Console.WriteLine($"Current working directory: {currentDir}");
-
-string configBasePath = Path.Combine(currentDir, "Packages", "cn.etetet.startconfig", "Bundles", "Luban", startConfigName, "Server", "Json");
-string processConfigPath = Path.Combine(configBasePath, "StartProcessConfigCategory.json");
-string sceneConfigPath = Path.Combine(configBasePath, "StartSceneConfigCategory.json");
-
-Console.WriteLine($"Reading ET configs from: {configBasePath}");
-
-// 读取进程配置
-var processConfigs = JsonSerializer.Deserialize<StartProcessConfig[]>(File.ReadAllText(processConfigPath)) ?? Array.Empty<StartProcessConfig>();
-
-// 读取场景配置  
-var sceneConfigs = JsonSerializer.Deserialize<StartSceneConfig[]>(File.ReadAllText(sceneConfigPath)) ?? Array.Empty<StartSceneConfig>();
-
-Console.WriteLine($"Found {processConfigs.Length} processes and {sceneConfigs.Length} scenes");
-
-// 按进程分组场景
-var scenesByProcess = sceneConfigs.GroupBy(s => s.Process).ToDictionary(g => g.Key, g => g.ToArray());
-
-// 为每个进程创建Aspire服务
-foreach (StartProcessConfig processConfig in processConfigs)
+namespace ET.Aspire
 {
-    int processId = processConfig.Id;
-    var processScenes = scenesByProcess.GetValueOrDefault(processId, Array.Empty<StartSceneConfig>());
-
-    if (processScenes.Length == 0)
+    public class AspireOptions : Singleton<AspireOptions>
     {
-        Console.WriteLine($"Warning: Process {processId} has no scenes configured");
-        continue;
+        [Option("StartConfig", Required = false, Default = "Localhost")]
+        public string StartConfig { get; set; }
     }
-
-
-    // 创建ET进程服务
-    string serviceName = $"et-process-{processId}";
-    var etProcess = builder.AddExecutable(serviceName, "dotnet", currentDir)
-            .WithArgs("./Bin/ET.App.dll",
-                $"--Process={processId}",
-                $"--SceneName=WOW",
-                $"--StartConfig={startConfigName}",
-                "--Console")
-            .WithEnvironment("ASPIRE_MANAGED", "true")
-            .WithOtlpExporter();
-
-    // 输出该进程的所有场景信息
-    foreach (StartSceneConfig scene in processScenes)
+    
+    public static class Program
     {
-        Console.WriteLine($"  - Scene: {scene.Name} ({scene.SceneType}) Port: {scene.Port}");
+        public static void Main(string[] args)
+        {
+            IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
+
+            // 命令行参数
+            Parser.Default.ParseArguments<AspireOptions>(System.Environment.GetCommandLineArgs())
+                    .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
+                    .WithParsed((o) => World.Instance.AddSingleton(o));
+
+            // ET配置文件路径 - 智能检测解决方案根目录
+            string currentDir = Directory.GetCurrentDirectory();
+            Console.WriteLine($"Current working directory: {currentDir}");
+
+            World.Instance.AddSingleton<SceneTypeSingleton, Type>(typeof(SceneType));
+            string configBasePath = Path.Combine(currentDir, $"Packages/cn.etetet.startconfig/Bundles/Luban/{AspireOptions.Instance.StartConfig}/Server/Binary");
+            string processConfigPath = Path.Combine(configBasePath, "StartProcessConfigCategory.bytes");
+            string sceneConfigPath = Path.Combine(configBasePath, "StartSceneConfigCategory.bytes");
+
+            Console.WriteLine($"Reading ET configs from: {configBasePath}");
+
+            World.Instance.AddSingleton(new StartProcessConfigCategory(new ByteBuf(File.ReadAllBytes(processConfigPath))));
+            World.Instance.AddSingleton(new StartSceneConfigCategory(new ByteBuf(File.ReadAllBytes(sceneConfigPath))));
+
+            // 为每个进程创建Aspire服务
+            foreach ((int processId, StartProcessConfig _) in StartProcessConfigCategory.Instance.GetAll())
+            {
+                List<StartSceneConfig> processScenes = StartSceneConfigCategory.Instance.GetByProcess(processId);
+
+                // 创建ET进程服务
+                string serviceName = $"et-process-{processId}";
+                builder.AddExecutable(serviceName, "dotnet", currentDir)
+                        .WithArgs("./Bin/ET.App.dll",
+                            $"--Process={processId}",
+                            $"--SceneName=WOW",
+                            $"--StartConfig={AspireOptions.Instance.StartConfig}",
+                            "--Console")
+                        .WithEnvironment("ASPIRE_MANAGED", "true")
+                        .WithOtlpExporter();
+
+                // 输出该进程的所有场景信息
+                foreach (StartSceneConfig scene in processScenes)
+                {
+                    Console.WriteLine($"  - Scene: {scene.Name} ({scene.SceneType}) Port: {scene.Port}");
+                }
+            }
+
+            // 可以添加Redis/MongoDB等外部依赖
+            // var redis = builder.AddRedis("cache");
+            // var mongo = builder.AddMongoDB("gamedb");
+
+            builder.Build().Run();
+        }
     }
 }
-
-// 可以添加Redis/MongoDB等外部依赖
-// var redis = builder.AddRedis("cache");
-// var mongo = builder.AddMongoDB("gamedb");
-
-builder.Build().Run();
-
-// ET配置数据结构
-public record StartProcessConfig(int Id, int MachineId, int Port);
-
-public record StartSceneConfig(int Id, int Process, int Zone, string SceneType, string Name, int Port);

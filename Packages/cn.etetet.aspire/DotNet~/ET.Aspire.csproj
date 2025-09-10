@@ -19,6 +19,7 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <OutputPath>$(SolutionDir)Bin</OutputPath>
       <WorkingDirectory>$(SolutionDir)</WorkingDirectory>
+      <NoWarn>;0169;0649;3021;8981;2022;UNT0006;NU1903</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -26,6 +27,7 @@
       <WorkingDirectory>$(SolutionDir)</WorkingDirectory>
       <Optimize>false</Optimize>
       <DebugSymbols>true</DebugSymbols>
+      <NoWarn>;0169;0649;3021;8981;2022;UNT0006;NU1903</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
@@ -42,6 +44,16 @@
       <None Update="Properties\launchSettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommandLineParser" Version="2.9.1" />
+        <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+        <PackageReference Include="NLog" Version="5.3.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\cn.etetet.scripts\DotNet~\Model\ET.Model.csproj" IsAspireProjectResource="false" />
     </ItemGroup>
 
 </Project>
