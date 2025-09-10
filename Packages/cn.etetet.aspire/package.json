@@ -1,0 +1,22 @@
+{
+  "name": "cn.etetet.aspire",
+  "displayName": "ET.Aspire",
+  "version": "1.0.0",
+  "description": "ET框架与.NET Aspire整合，提供分布式应用编排和监控能力",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}

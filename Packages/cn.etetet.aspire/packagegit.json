@@ -1,0 +1,14 @@
+{
+    "Id": 101,
+    "Name": "Aspire",
+    "Level": 2,
+    "ScriptsReferences": {
+        "Model": [
+            "ET.Core"
+        ],
+        "Hotfix": [
+            "ET.Core",
+            "ET.Model"
+        ]
+    }
+}

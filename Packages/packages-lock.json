@@ -59,6 +59,15 @@
         "cn.etetet.numeric": "4.0.0"
       }
     },
+    "cn.etetet.aspire": {
+      "version": "file:cn.etetet.aspire",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.startconfig": "4.0.0"
+      }
+    },
     "cn.etetet.behaviortree": {
       "version": "file:cn.etetet.behaviortree",
       "depth": 0,
