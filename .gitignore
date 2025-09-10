@@ -1,7 +1,6 @@
 #IDE文件
 .vs/
 .idea/
-.vscode/
 _ReSharper.CSharp/
 
 #svn
