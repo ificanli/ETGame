@@ -34,7 +34,9 @@
       "Bash(chmod:*)",
       "Bash(./view_analyzer_log.sh:*)",
       "Bash(bash:*)",
-      "Bash(pwsh -Command \"New-Item -ItemType Directory -Path ''Packages/cn.etetet.achievement'' -Force\")"
+      "Bash(pwsh -Command \"New-Item -ItemType Directory -Path ''Packages/cn.etetet.achievement'' -Force\")",
+      "Bash(git add:*)",
+      "Bash(tree:*)"
     ],
     "deny": []
   }

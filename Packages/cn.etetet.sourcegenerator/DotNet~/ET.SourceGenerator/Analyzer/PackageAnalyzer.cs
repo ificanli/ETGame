@@ -202,7 +202,7 @@ namespace ET
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
-            context.RegisterCompilationStartAction(InitializeCompilation);
+            //context.RegisterCompilationStartAction(InitializeCompilation);
         }
 
         private void InitializeCompilation(CompilationStartAnalysisContext context)
@@ -212,6 +212,7 @@ namespace ET
             {
                 return;
             }
+            
             
             // 确保符号表完全构建完成后再注册分析动作
             lock (_initLock)

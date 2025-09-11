@@ -1,0 +1,8 @@
+{
+  "Id": 50,
+  "Level": 2,
+  "Name": "ServiceDiscovery",
+  "AllowSameLevelAccess": true,
+  "ScriptsReferences": {
+  }
+}

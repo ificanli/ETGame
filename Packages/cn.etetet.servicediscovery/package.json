@@ -1,0 +1,22 @@
+{
+  "name": "cn.etetet.servicediscovery",
+  "displayName": "ET.ServiceDiscovery",
+  "version": "4.0.0",
+  "description": "服务发现系统，提供微服务注册和发现功能",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.proto": "4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}
