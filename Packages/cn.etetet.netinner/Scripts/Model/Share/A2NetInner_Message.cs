@@ -12,13 +12,13 @@ namespace ET
 
         public override void Dispose()
         {
-            this.FromAddress = default;
+            this.FromFiber = 0;
             this.ActorId = default;
             
             ObjectPool.Recycle(this);
         }
         
-        public Address FromAddress;
+        public int FromFiber;
         public ActorId ActorId;
         public IMessage MessageObject;
         

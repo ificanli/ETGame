@@ -78,7 +78,7 @@ namespace ET
             this.messageHandlers[type].Add(handler);
         }
 
-        public async ETTask HandleAsync(Entity entity, Address fromAddress, MessageObject message)
+        public async ETTask HandleAsync(Entity entity, int fromFiber, MessageObject message)
         {
             List<MessageDispatcherInfo> list;
             if (!this.messageHandlers.TryGetValue(message.GetType(), out list))
@@ -96,11 +96,11 @@ namespace ET
                 }
 
                 entity = entityRef;
-                await actorMessageDispatcherInfo.IMHandler.Handle(entity, fromAddress, message);   
+                await actorMessageDispatcherInfo.IMHandler.Handle(entity, fromFiber, message);   
             }
         }
         
-        public void Handle(Entity entity, Address fromAddress, MessageObject message)
+        public void Handle(Entity entity, int fromFiber, MessageObject message)
         {
             List<MessageDispatcherInfo> list;
             if (!this.messageHandlers.TryGetValue(message.GetType(), out list))
@@ -115,7 +115,7 @@ namespace ET
                 {
                     continue;
                 }
-                actorMessageDispatcherInfo.IMHandler.Handle(entity, fromAddress, message).NoContext();   
+                actorMessageDispatcherInfo.IMHandler.Handle(entity, fromFiber, message).NoContext();   
             }
         }
     }

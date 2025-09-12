@@ -7,47 +7,53 @@ namespace ET
 {
     [MemoryPackable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public partial struct Address
+    public partial struct FiberInstanceId
     {
         [MemoryPackOrder(0)]
-        public int Process;
-        [MemoryPackOrder(1)]
         public int Fiber;
+        [MemoryPackOrder(1)]
+        public int InstanceId;
         
-        public bool Equals(Address other)
+        public bool Equals(FiberInstanceId other)
         {
-            return this.Process == other.Process && this.Fiber == other.Fiber;
+            return this.Fiber == other.Fiber && this.InstanceId == other.InstanceId;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is Address other && Equals(other);
+            return obj is FiberInstanceId other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.Process, this.Fiber);
+            return HashCode.Combine(this.Fiber, this.InstanceId);
         }
         
-        public Address(int process, int fiber)
+        public FiberInstanceId(int fiber, int instanceId)
         {
-            this.Process = process;
             this.Fiber = fiber;
+            this.InstanceId = instanceId;
         }
-
-        public static bool operator ==(Address left, Address right)
+        
+        public FiberInstanceId(int fiber)
         {
-            return left.Process == right.Process && left.Fiber == right.Fiber;
+            this.Fiber = fiber;
+            this.InstanceId = 1;
         }
 
-        public static bool operator !=(Address left, Address right)
+        public static bool operator ==(FiberInstanceId left, FiberInstanceId right)
+        {
+            return left.Fiber == right.Fiber && left.InstanceId == right.InstanceId;
+        }
+
+        public static bool operator !=(FiberInstanceId left, FiberInstanceId right)
         {
             return !(left == right);
         }
 
         public override string ToString()
         {
-            return $"{this.Process}:{this.Fiber}";
+            return $"{this.Fiber}:{this.InstanceId}";
         }
     }
     
@@ -55,9 +61,15 @@ namespace ET
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public partial struct ActorId
     {
+        [MemoryPackOrder(0)]
+        public int Process;
+        
+        [MemoryPackOrder(1)]
+        public int Fiber;
+        
         public bool Equals(ActorId other)
         {
-            return this.Address == other.Address && this.InstanceId == other.InstanceId;
+            return this.Process == other.Process && this.Fiber == other.Fiber && this.InstanceId == other.InstanceId;
         }
 
         public override bool Equals(object obj)
@@ -67,65 +79,44 @@ namespace ET
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.Address, this.InstanceId);
+            return HashCode.Combine(this.Process, this.Fiber, this.InstanceId);
         }
 
-        [MemoryPackOrder(0)]
-        public Address Address;
-        [MemoryPackOrder(1)]
-        public long InstanceId;
-
-        [BsonIgnore]
-        public int Process
-        {
-            get
-            {
-                return this.Address.Process;
-            }
-            set
-            {
-                this.Address.Process = value;
-            }
-        }
+        [MemoryPackOrder(2)]
+        public int InstanceId;
         
-        [BsonIgnore]
-        public int Fiber
+        public FiberInstanceId FiberInstanceId
         {
             get
             {
-                return this.Address.Fiber;
-            }
-            set
-            {
-                this.Address.Fiber = value;
+                return new FiberInstanceId(this.Fiber, this.InstanceId);
             }
         }
         
         public ActorId(int process, int fiber)
         {
-            this.Address = new Address(process, fiber);
+            this.Process = process;
+            this.Fiber = fiber;
             this.InstanceId = 1;
         }
         
-        public ActorId(int process, int fiber, long instanceId)
+        public ActorId(int process, int fiber, int instanceId)
         {
-            this.Address = new Address(process, fiber);
+            this.Process = process;
+            this.Fiber = fiber;
             this.InstanceId = instanceId;
         }
         
-        public ActorId(Address address): this(address, 1)
+        public ActorId(int process, FiberInstanceId fiberInstanceId)
         {
+            this.Process = process;
+            this.Fiber = fiberInstanceId.Fiber;
+            this.InstanceId = fiberInstanceId.InstanceId;
         }
         
-        public ActorId(Address address, long instanceId)
-        {
-            this.Address = address;
-            this.InstanceId = instanceId;
-        }
-
         public static bool operator ==(ActorId left, ActorId right)
         {
-            return left.InstanceId == right.InstanceId && left.Address == right.Address;
+            return left.InstanceId == right.InstanceId && left.Process == right.Process && left.Fiber == right.Fiber;
         }
 
         public static bool operator !=(ActorId left, ActorId right)

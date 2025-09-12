@@ -8,8 +8,6 @@ namespace ET.Server
     {
         public const long TIMEOUT_TIME = 40 * 1000;
 
-        public int RpcId;
-
         public readonly Dictionary<int, MessageSenderStruct> requestCallback = new();
     }
 }

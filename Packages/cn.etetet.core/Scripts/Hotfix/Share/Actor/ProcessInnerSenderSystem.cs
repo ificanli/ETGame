@@ -40,22 +40,23 @@ namespace ET
                 return;
             }
 
-            ActorId actorId = messageInfo.ActorId;
+            FiberInstanceId fiberInstanceId = messageInfo.FiberInstanceId;
             MessageObject message = messageInfo.MessageObject;
+            int fromFiber = fiberInstanceId.Fiber;
 
-            Entity entity = self.Fiber().Mailboxes.Get(actorId.InstanceId);
+            Entity entity = self.Fiber().Mailboxes.Get(fiberInstanceId.InstanceId);
             MailBoxComponent mailBoxComponent = entity as MailBoxComponent;
             if (mailBoxComponent == null)
             {
-                Log.Warning($"actor not found mailbox, from: {actorId} current: {fiber.Address} {message}");
+                Log.Warning($"actor not found mailbox, from: {fiberInstanceId} current: {fiber.Id} {message}");
                 if (message is IRequest request)
                 {
                     IResponse resp = MessageHelper.CreateResponse(request.GetType(), request.RpcId, ErrorCode.ERR_NotFoundActor);
-                    self.Reply(actorId.Address, resp);
+                    self.Reply(fromFiber, resp);
                 }
                 return;
             }
-            mailBoxComponent.Add(actorId.Address, message);
+            mailBoxComponent.Add(fromFiber, message);
         }
 
         private static void HandleIActorResponse(this ProcessInnerSender self, IResponse response)
@@ -84,26 +85,22 @@ namespace ET
             self.SetResult(response);
         }
         
-        public static void Reply(this ProcessInnerSender self, Address fromAddress, IResponse message)
+        public static void Reply(this ProcessInnerSender self, int fromFiber, IResponse message)
         {
-            self.SendInner(new ActorId(fromAddress, 0), (MessageObject)message);
+            self.SendInner(new FiberInstanceId(fromFiber, 0), (MessageObject)message);
         }
 
-        public static void Send(this ProcessInnerSender self, ActorId actorId, IMessage message)
+        public static void Send(this ProcessInnerSender self, FiberInstanceId fiberInstanceId, IMessage message)
         {
-            self.SendInner(actorId, (MessageObject)message);
+            self.SendInner(fiberInstanceId, (MessageObject)message);
         }
 
-        private static bool SendInner(this ProcessInnerSender self, ActorId actorId, MessageObject message)
+        private static bool SendInner(this ProcessInnerSender self, FiberInstanceId fiberInstanceId, MessageObject message)
         {
             Fiber fiber = self.Fiber();
             
             // 如果发向同一个进程，则扔到消息队列中
-            if (actorId.Process != fiber.Process)
-            {
-                throw new Exception($"actor inner process diff: {actorId.Process} {fiber.Process}");
-            }
-            return MessageQueue.Instance.Send(fiber, actorId, message);
+            return MessageQueue.Instance.Send(fiber, fiberInstanceId, message);
         }
 
         private static int GetRpcId(this ProcessInnerSender self)
@@ -113,7 +110,7 @@ namespace ET
 
         public static async ETTask<IResponse> Call(
                 this ProcessInnerSender self,
-                ActorId actorId,
+                FiberInstanceId fiberInstanceId,
                 IRequest request,
                 bool needException = true
         )
@@ -121,27 +118,21 @@ namespace ET
             int rpcId = self.GetRpcId();
             request.RpcId = rpcId;
             
-            if (actorId == default)
+            if (fiberInstanceId == default)
             {
-                throw new Exception($"actor id is 0: {request}");
+                throw new Exception($"FiberInstanceId id is 0: {request}");
             }
-            
             Fiber fiber = self.Fiber();
-            if (fiber.Process != actorId.Process)
-            {
-                throw new Exception($"actor inner process diff: {actorId.Process} {fiber.Process}");
-            }
-
             Type requestType = request.GetType();
             
             IResponse response;
-            if (!self.SendInner(actorId, (MessageObject)request))  // 纤程不存在
+            if (!self.SendInner(fiberInstanceId, (MessageObject)request))  // 纤程不存在
             {
                 response = MessageHelper.CreateResponse(requestType, rpcId, ErrorCode.ERR_NotFoundActor);
                 return response;
             }
             
-            MessageSenderStruct messageSenderStruct = new(actorId, requestType, needException);
+            MessageSenderStruct messageSenderStruct = new(new ActorId(fiber.Process, fiberInstanceId), requestType, needException);
             self.requestCallback.Add(rpcId, messageSenderStruct);
             
             async ETTask Timeout()

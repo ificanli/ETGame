@@ -4,7 +4,7 @@ namespace ET
 {
     public interface IMHandler
     {
-        ETTask Handle(Entity entity, Address fromAddress, MessageObject actorMessage);
+        ETTask Handle(Entity entity, int fromFiber, MessageObject actorMessage);
         Type GetRequestType();
         Type GetResponseType();
     }

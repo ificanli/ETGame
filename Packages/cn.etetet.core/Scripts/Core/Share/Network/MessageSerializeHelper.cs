@@ -52,7 +52,7 @@ namespace ET
                 case ServiceType.Inner:
                 {
                     opcode = MessageToStream(memoryBuffer, (MessageObject)message, Packet.ActorIdLength);
-                    memoryBuffer.GetBuffer().WriteTo(0, actorId);
+                    memoryBuffer.GetBuffer().WriteTo(0, actorId.FiberInstanceId);
                     break;
                 }
                 case ServiceType.Outer:
@@ -85,7 +85,7 @@ namespace ET
                     byte[] buffer = memoryStream.GetBuffer();
                     actorId.Process = BitConverter.ToInt32(buffer, Packet.ActorIdIndex);
                     actorId.Fiber = BitConverter.ToInt32(buffer, Packet.ActorIdIndex + 4);
-                    actorId.InstanceId = BitConverter.ToInt64(buffer, Packet.ActorIdIndex + 8);
+                    actorId.InstanceId = BitConverter.ToInt32(buffer, Packet.ActorIdIndex + 8);
                     ushort opcode = BitConverter.ToUInt16(buffer, Packet.ActorIdLength);
                     
                     Type type = OpcodeType.Instance.GetType(opcode);

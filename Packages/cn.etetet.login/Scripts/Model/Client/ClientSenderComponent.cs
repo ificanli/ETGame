@@ -5,6 +5,6 @@
     {
         public int fiberId;
 
-        public ActorId netClientActorId;
+        public FiberInstanceId FiberInstanceId;
     }
 }

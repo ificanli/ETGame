@@ -79,7 +79,7 @@ namespace ET.Server
                         IRequest req = (IRequest)message;
                         int rpcId = req.RpcId;
                         // 注意这里都不能抛异常，因为这里只是中转消息
-                        IResponse res = await fiber.Root.GetComponent<ProcessInnerSender>().Call(actorId, req, false);
+                        IResponse res = await fiber.Root.GetComponent<ProcessInnerSender>().Call(actorId.FiberInstanceId, req, false);
                         // 注意这里的response会在该协程执行完之后由ProcessInnerSender dispose。
                         actorId.Process = fromProcess;
                         res.RpcId = rpcId;
@@ -90,7 +90,7 @@ namespace ET.Server
                 }
                 default:
                 {
-                    fiber.Root.GetComponent<ProcessInnerSender>().Send(actorId, (IMessage)message);
+                    fiber.Root.GetComponent<ProcessInnerSender>().Send(actorId.FiberInstanceId, (IMessage)message);
                     break;
                 }
             }
@@ -187,8 +187,7 @@ namespace ET.Server
                 throw new Exception($"actor is the same process: {fiber.Process} {actorId.Process}");
             }
             
-            StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(actorId.Process);
-            Session session = self.Get(startProcessConfig.Id);
+            Session session = self.Get(actorId.Process);
             actorId.Process = fiber.Process;
             session.Send(actorId, message);
         }

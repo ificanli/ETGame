@@ -47,11 +47,18 @@ namespace ET
 
         public int Zone { get; }
 
+        private int instanceIdGenerator = 1;
+
         private EntityRef<Scene> root;
         
         public SchedulerType SchedulerType { get; }
 
         private FiberMonitorInfo fiberMonitorInfo;
+
+        public int NewInstanceId()
+        {
+            return instanceIdGenerator++;
+        }
 
         public Scene Root
         {
@@ -62,14 +69,6 @@ namespace ET
             private set
             {
                 this.root = value;
-            }
-        }
-
-        public Address Address
-        {
-            get
-            {
-                return new Address(this.Process, this.Id);
             }
         }
 
@@ -117,7 +116,7 @@ namespace ET
                 this.Log = EventSystem.Instance.Invoke<LogInvoker, ILog>(logInvoker);
             }
             
-            this.Root = new Scene(this, rootId, 1, sceneType, name);
+            this.Root = new Scene(this, rootId, sceneType, name);
         }
 
         internal void Update()

@@ -44,7 +44,7 @@ namespace ET
 
         [MemoryPackIgnore]
         [BsonIgnore]
-        public long InstanceId { get; protected set; }
+        public int InstanceId { get; protected set; }
 
         [BsonIgnore]
         private EntityStatus status = EntityStatus.None;
@@ -339,7 +339,7 @@ namespace ET
                 
                 if (this.InstanceId == 0)
                 {
-                    this.InstanceId = IdGenerater.Instance.GenerateInstanceId();
+                    this.InstanceId = iScene.Fiber.NewInstanceId();
                 }
 
                 this.IsRegister = true;

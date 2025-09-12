@@ -5,7 +5,7 @@ namespace ET
 {
     public struct MessageInfo
     {
-        public ActorId ActorId;
+        public FiberInstanceId FiberInstanceId;
         public MessageObject MessageObject;
     }
     
@@ -17,14 +17,14 @@ namespace ET
         {
         }
 
-        public bool Send(Fiber fiber, ActorId actorId, MessageObject messageObject)
+        public bool Send(Fiber fiber, FiberInstanceId fiberInstanceId, MessageObject messageObject)
         {
             LogMsg.Instance.Send(fiber, messageObject);
-            if (!this.messages.TryGetValue(actorId.Address.Fiber, out var queue))
+            if (!this.messages.TryGetValue(fiberInstanceId.Fiber, out var queue))
             {
                 return false;
             }
-            queue.Enqueue(new MessageInfo() {ActorId = new ActorId(fiber.Address, actorId.InstanceId), MessageObject = messageObject});
+            queue.Enqueue(new MessageInfo() { FiberInstanceId = new FiberInstanceId(fiber.Id, fiberInstanceId.InstanceId), MessageObject = messageObject});
             return true;
         }
         

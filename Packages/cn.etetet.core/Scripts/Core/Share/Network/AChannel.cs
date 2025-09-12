@@ -15,7 +15,7 @@ namespace ET
         public const int MinPacketSize = 2;
         public const int OpcodeLength = 2;
         public const int ActorIdIndex = 0;
-        public const int ActorIdLength = 16;
+        public const int ActorIdLength = 8;
 
         public ushort Opcode;
         public long ActorId;

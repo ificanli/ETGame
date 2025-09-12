@@ -11,22 +11,17 @@ namespace ET.Server
             // 如果发向同一个进程，则扔到消息队列中
             if (actorId.Process == fiber.Process)
             {
-                fiber.Root.GetComponent<ProcessInnerSender>().Send(actorId, message);
+                fiber.Root.GetComponent<ProcessInnerSender>().Send(actorId.FiberInstanceId, message);
                 return;
             }
             
             // 发给NetInner纤程
             A2NetInner_Message a2NetInnerMessage = A2NetInner_Message.Create();
-            a2NetInnerMessage.FromAddress = fiber.Address;
+            a2NetInnerMessage.FromFiber = fiber.Id;
             a2NetInnerMessage.ActorId = actorId;
             a2NetInnerMessage.MessageObject = message;
             
-            MessageQueue.Instance.Send(fiber, new ActorId(fiber.Process, SceneType.NetInner), a2NetInnerMessage);
-        }
-
-        private static int GetRpcId(this MessageSender self)
-        {
-            return ++self.RpcId;
+            MessageQueue.Instance.Send(fiber, new FiberInstanceId(SceneType.NetInner), a2NetInnerMessage);
         }
 
         public static async ETTask<IResponse> Call(
@@ -44,7 +39,7 @@ namespace ET.Server
             IResponse response;
             if (fiber.Process == actorId.Process)
             {
-                response = await fiber.Root.GetComponent<ProcessInnerSender>().Call(actorId, request, needException: needException);
+                response = await fiber.Root.GetComponent<ProcessInnerSender>().Call(actorId.FiberInstanceId, request, needException: needException);
             }
             else
             {
@@ -54,7 +49,7 @@ namespace ET.Server
                 a2NetInner_Request.MessageObject = request;
             
                 using A2NetInner_Response a2NetInnerResponse = await fiber.Root.GetComponent<ProcessInnerSender>().Call(
-                    new ActorId(fiber.Process, SceneType.NetInner), a2NetInner_Request) as A2NetInner_Response;
+                    new FiberInstanceId(fiber.Process, SceneType.NetInner), a2NetInner_Request) as A2NetInner_Response;
                 response = a2NetInnerResponse.MessageObject;
             }
             

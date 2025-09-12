@@ -9,7 +9,7 @@
             
             MessageObject messageObject = args.MessageObject;
             
-            MessageDispatcher.Instance.Handle(mailBoxComponent.Parent, args.FromAddress, messageObject);
+            MessageDispatcher.Instance.Handle(mailBoxComponent.Parent, args.FromFiber, messageObject);
         }
     }
 }

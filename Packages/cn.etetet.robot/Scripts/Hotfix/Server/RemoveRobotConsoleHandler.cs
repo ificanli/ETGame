@@ -34,7 +34,7 @@ namespace ET.Server
                         robotManagerComponent.GetRobotActorId(options.Account, out ActorId actorId);
                         ProcessInnerSender processInnerSender = fiber.Root.GetComponent<ProcessInnerSender>();
                         Console2Robot_LogoutRequest request = Console2Robot_LogoutRequest.Create();
-                        Console2Robot_LogoutResponse response = await processInnerSender.Call(actorId, request) as Console2Robot_LogoutResponse;
+                        Console2Robot_LogoutResponse response = await processInnerSender.Call(actorId.FiberInstanceId, request) as Console2Robot_LogoutResponse;
                         Log.Console($"Remove Robot OK: {options.Account}");
                         break;
                     }

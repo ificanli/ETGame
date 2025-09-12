@@ -22,11 +22,11 @@ namespace ET
         {
         }
 
-        public Scene(Fiber fiber, long id, long instanceId, int sceneType, string name)
+        public Scene(Fiber fiber, long id, int sceneType, string name)
         {
             this.Id = id;
             this.Name = name;
-            this.InstanceId = instanceId;
+            this.InstanceId = fiber.NewInstanceId();
             this.SceneType = sceneType;
             this.IsNew = true;
             this.Fiber = fiber;

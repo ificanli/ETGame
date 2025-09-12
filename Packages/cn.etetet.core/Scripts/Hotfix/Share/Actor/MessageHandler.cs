@@ -6,7 +6,7 @@ namespace ET
     {
         protected abstract ETTask Run(E entity, Message message);
 
-        public async ETTask Handle(Entity entity, Address fromAddress, MessageObject actorMessage)
+        public async ETTask Handle(Entity entity, int fromFiber, MessageObject actorMessage)
         {
             if (actorMessage is not Message msg)
             {
@@ -43,7 +43,7 @@ namespace ET
     {
         protected abstract ETTask Run(E unit, Request request, Response response);
 
-        public async ETTask Handle(Entity entity, Address fromAddress, MessageObject actorMessage)
+        public async ETTask Handle(Entity entity, int fromFiber, MessageObject actorMessage)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace ET
                 }
                 
                 response.RpcId = rpcId;
-                fiber.Root.GetComponent<ProcessInnerSender>().Reply(fromAddress, response);
+                fiber.Root.GetComponent<ProcessInnerSender>().Reply(fromFiber, response);
             }
             catch (Exception e)
             {
