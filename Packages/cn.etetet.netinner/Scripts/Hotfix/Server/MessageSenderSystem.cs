@@ -49,7 +49,7 @@ namespace ET.Server
                 a2NetInner_Request.MessageObject = request;
             
                 using A2NetInner_Response a2NetInnerResponse = await fiber.Root.GetComponent<ProcessInnerSender>().Call(
-                    new FiberInstanceId(fiber.Process, SceneType.NetInner), a2NetInner_Request) as A2NetInner_Response;
+                    new FiberInstanceId(SceneType.NetInner), a2NetInner_Request) as A2NetInner_Response;
                 response = a2NetInnerResponse.MessageObject;
             }
             
