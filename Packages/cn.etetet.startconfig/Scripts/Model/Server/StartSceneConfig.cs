@@ -64,9 +64,21 @@ namespace ET.Server
     
     public partial class StartSceneConfig
     {
-        public ActorId ActorId;
-        
-        public int Type;
+        public int Type
+        {
+            get
+            {
+                return SceneTypeSingleton.Instance.GetSceneType(this.SceneType);
+            }
+        }
+
+        public ActorId ActorId 
+        {
+            get
+            {
+                return new ActorId(this.StartProcessConfig.Address, new FiberInstanceId(this.Id, 1));
+            }
+        }
 
         public StartProcessConfig StartProcessConfig
         {
@@ -113,8 +125,6 @@ namespace ET.Server
 
         public override void EndInit()
         {
-            this.ActorId = new ActorId(this.Process, this.Id, 1);
-            this.Type = SceneTypeSingleton.Instance.GetSceneType(this.SceneType);
         }
     }
 }

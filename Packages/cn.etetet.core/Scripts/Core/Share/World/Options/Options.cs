@@ -18,6 +18,12 @@ namespace ET
         [Option("Process", Required = false, Default = 1)]
         public int Process { get; set; }
         
+        [Option("IP", Required = false, Default = 0)]
+        public int IP { get; set; } 
+        
+        [Option("Port", Required = false, Default = 0)]
+        public int Port { get; set; } 
+        
         [Option("Develop", Required = false, Default = 0, HelpText = "develop mode, 0正式 1开发 2压测")]
         public int Develop { get; set; }
 
@@ -29,5 +35,13 @@ namespace ET
         
         [Option("SingleThread", Required = false, Default = false)]
         public bool SingleThread { get; set; }
+        
+        public Address Address
+        {
+            get
+            {
+                return new Address(Options.Instance.IP, Options.Instance.Port);
+            }
+        }
     }
 }

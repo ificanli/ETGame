@@ -91,13 +91,13 @@ namespace ET
             self.Send(default, message);
         }
         
-        public static void Send(this Session self, ActorId actorId, IMessage message)
+        public static void Send(this Session self, FiberInstanceId fiberInstanceId, IMessage message)
         {
             LogMsg.Instance.Send(self.Fiber(), message);
             
             self.LastSendTime = TimeInfo.Instance.ClientNow();
 
-            (ushort opcode, MemoryBuffer memoryBuffer) = MessageSerializeHelper.ToMemoryBuffer(self.AService, actorId, message);
+            (ushort opcode, MemoryBuffer memoryBuffer) = MessageSerializeHelper.ToMemoryBuffer(self.AService, fiberInstanceId, message);
             
             self.AService.Send(self.Id, memoryBuffer);
         }

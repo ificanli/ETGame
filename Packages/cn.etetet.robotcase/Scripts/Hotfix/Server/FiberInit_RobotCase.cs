@@ -11,7 +11,7 @@
             Fiber fiber = fiberInit.Fiber;
             Scene root = fiber.Root;
             
-            int process = root.Fiber.Process;
+            int process = Options.Instance.Process;
 
             // 根据配置创建纤程
             var scenes = StartSceneConfigCategory.Instance.GetByProcess(process);

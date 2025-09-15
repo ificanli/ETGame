@@ -9,7 +9,7 @@ namespace ET.Server
         {
             Fiber fiber = self.Fiber();
             // 如果发向同一个进程，则扔到消息队列中
-            if (actorId.Process == fiber.Process)
+            if (actorId.Address == Options.Instance.Address)
             {
                 fiber.Root.GetComponent<ProcessInnerSender>().Send(actorId.FiberInstanceId, message);
                 return;
@@ -37,7 +37,7 @@ namespace ET.Server
             }
             Fiber fiber = self.Fiber();
             IResponse response;
-            if (fiber.Process == actorId.Process)
+            if (actorId.Address == Options.Instance.Address)
             {
                 response = await fiber.Root.GetComponent<ProcessInnerSender>().Call(actorId.FiberInstanceId, request, needException: needException);
             }

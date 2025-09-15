@@ -8,7 +8,7 @@
             Fiber fiber = root.Fiber;
             EntityRef<Scene> rootRef = root;
             
-            int process = root.Fiber.Process;
+            int process = Options.Instance.Process;
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(process);
             if (startProcessConfig.Port != 0)
             {

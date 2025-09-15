@@ -43,7 +43,7 @@ namespace ET
             return opcode;
         }
         
-        public static (ushort, MemoryBuffer) ToMemoryBuffer(AService service, ActorId actorId, object message)
+        public static (ushort, MemoryBuffer) ToMemoryBuffer(AService service, FiberInstanceId fiberInstanceId, object message)
         {
             MemoryBuffer memoryBuffer = service.Fetch();
             ushort opcode = 0;
@@ -51,8 +51,8 @@ namespace ET
             {
                 case ServiceType.Inner:
                 {
-                    opcode = MessageToStream(memoryBuffer, (MessageObject)message, Packet.ActorIdLength);
-                    memoryBuffer.GetBuffer().WriteTo(0, actorId.FiberInstanceId);
+                    opcode = MessageToStream(memoryBuffer, (MessageObject)message, Packet.FiberInstanceIdLength);
+                    memoryBuffer.GetBuffer().WriteTo(0, fiberInstanceId);
                     break;
                 }
                 case ServiceType.Outer:
@@ -65,10 +65,10 @@ namespace ET
             return (opcode, memoryBuffer);
         }
         
-        public static (ActorId, object) ToMessage(AService service, MemoryBuffer memoryStream)
+        public static (FiberInstanceId, object) ToMessage(AService service, MemoryBuffer memoryStream)
         {
             object message = null;
-            ActorId actorId = default;
+            FiberInstanceId fiberInstanceId = default;
             switch (service.ServiceType)
             {
                 case ServiceType.Outer:
@@ -81,12 +81,11 @@ namespace ET
                 }
                 case ServiceType.Inner:
                 {
-                    memoryStream.Seek(Packet.ActorIdLength + Packet.OpcodeLength, SeekOrigin.Begin);
+                    memoryStream.Seek(Packet.FiberInstanceIdLength + Packet.OpcodeLength, SeekOrigin.Begin);
                     byte[] buffer = memoryStream.GetBuffer();
-                    actorId.Process = BitConverter.ToInt32(buffer, Packet.ActorIdIndex);
-                    actorId.Fiber = BitConverter.ToInt32(buffer, Packet.ActorIdIndex + 4);
-                    actorId.InstanceId = BitConverter.ToInt32(buffer, Packet.ActorIdIndex + 8);
-                    ushort opcode = BitConverter.ToUInt16(buffer, Packet.ActorIdLength);
+                    fiberInstanceId.Fiber = BitConverter.ToInt32(buffer, Packet.FiberInstanceIdIndex);
+                    fiberInstanceId.InstanceId = BitConverter.ToInt32(buffer, Packet.FiberInstanceIdIndex + 4);
+                    ushort opcode = BitConverter.ToUInt16(buffer, Packet.FiberInstanceIdLength);
                     
                     Type type = OpcodeType.Instance.GetType(opcode);
                     message = Deserialize(type, memoryStream);
@@ -94,7 +93,7 @@ namespace ET
                 }
             }
             
-            return (actorId, message);
+            return (fiberInstanceId, message);
         }
     }
 }

@@ -7,6 +7,14 @@ namespace ET.Server
         public string InnerIP => this.StartMachineConfig.InnerIP;
 
         public string OuterIP => this.StartMachineConfig.OuterIP;
+
+        public Address Address
+        {
+            get
+            {
+                return new Address(NetworkHelper.IPStringToInt(this.InnerIP), this.Port);
+            }
+        }
         
         // 内网地址外网端口，通过防火墙映射端口过来
         private IPEndPoint ipEndPoint;

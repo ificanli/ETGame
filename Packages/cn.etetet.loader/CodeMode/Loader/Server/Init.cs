@@ -26,7 +26,7 @@ namespace ET
                     Options.Instance.SingleThread = true;
                 }
 				
-                World.Instance.AddSingleton<Logger>().Log = new NLogger(Options.Instance.SceneName, Options.Instance.Process, 0);
+                World.Instance.AddSingleton<Logger>().Log = new NLogger(Options.Instance.SceneName, 0);
 				
                 ETTask.ExceptionHandler += Log.Error;
                 World.Instance.AddSingleton<TimeInfo>();

@@ -65,7 +65,7 @@ namespace ET
             set;
         }
 
-        public IPEndPoint RemoteAddress
+        public Address RemoteAddress
         {
             get;
             set;

@@ -2,6 +2,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "ET.App Watcher",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "dotnet",
+            "args": [
+                "./Bin/ET.App.dll",
+                "--SceneName=Watcher",
+                "--StartConfig=Release",
+                "--Console"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "integratedTerminal"
+        },
+        {
             "name": "ET.App",
             "type": "coreclr",
             "request": "launch",

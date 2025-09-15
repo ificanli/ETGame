@@ -48,15 +48,5 @@
     "Id": 10,
     "MachineId": 1,
     "Port": 20010
-  },
-  {
-    "Id": 11,
-    "MachineId": 1,
-    "Port": 20011
-  },
-  {
-    "Id": 12,
-    "MachineId": 1,
-    "Port": 20012
   }
 ]

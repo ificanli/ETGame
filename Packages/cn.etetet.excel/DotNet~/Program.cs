@@ -24,7 +24,7 @@ namespace ET
                         .WithParsed((o)=>World.Instance.AddSingleton(o));
                 Options.Instance.Console = true;
                 
-                World.Instance.AddSingleton<Logger>().Log = new NLogger("ExcelExporter", 1, 0);
+                World.Instance.AddSingleton<Logger>().Log = new NLogger("ExcelExporter", 0);
                 
                 
                 foreach (Type type in typeof(Program).Assembly.GetTypes())

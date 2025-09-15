@@ -56,6 +56,40 @@ namespace ET
 			return ToIPEndPoint(host, port);
 		}
 
+		public static int IPStringToInt(string ipString)
+		{
+			IPAddress ipAddress = IPAddress.Parse(ipString);
+			byte[] bytes = ipAddress.GetAddressBytes();
+			if (bytes.Length != 4)
+			{
+				throw new ArgumentException("Only IPv4 addresses are supported");
+			}
+			return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+		}
+
+		public static string IntToIPString(int ipInt)
+		{
+			byte[] bytes = new byte[4];
+			bytes[0] = (byte)((ipInt >> 24) & 0xFF);
+			bytes[1] = (byte)((ipInt >> 16) & 0xFF);
+			bytes[2] = (byte)((ipInt >> 8) & 0xFF);
+			bytes[3] = (byte)(ipInt & 0xFF);
+			return new IPAddress(bytes).ToString();
+		}
+        
+        public static Address IPEndPointToAddress(IPEndPoint ipEndPoint)
+        {
+            int ip = IPStringToInt(ipEndPoint.Address.ToString());
+            int port = ipEndPoint.Port;
+            return new Address(ip, port);
+        }
+        
+        public static IPEndPoint AddressToIPEndPoint(Address address)
+        {
+            string ipString = IntToIPString(address.IP);
+            return new IPEndPoint(IPAddress.Parse(ipString), address.Port);
+        }
+
 		public static void SetSioUdpConnReset(Socket socket)
 		{
 			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

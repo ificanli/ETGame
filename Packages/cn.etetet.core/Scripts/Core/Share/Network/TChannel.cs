@@ -24,7 +24,7 @@ namespace ET
 
 		private readonly PacketParser parser;
 
-		private readonly byte[] sendCache = new byte[Packet.OpcodeLength + Packet.ActorIdLength];
+		private readonly byte[] sendCache = new byte[Packet.OpcodeLength + Packet.FiberInstanceIdLength];
 		
 		private void OnComplete(object sender, SocketAsyncEventArgs e)
 		{

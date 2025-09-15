@@ -51,7 +51,7 @@ namespace ET.Server
             
             session.LastRecvTime = TimeInfo.Instance.ClientFrameTime();
 
-            (ActorId actorId, object message) = MessageSerializeHelper.ToMessage(self.AService, memoryBuffer);
+            (FiberInstanceId fiberInstanceId, object message) = MessageSerializeHelper.ToMessage(self.AService, memoryBuffer);
             self.AService.Recycle(memoryBuffer);
             
             if (message is IResponse response)
@@ -61,8 +61,6 @@ namespace ET.Server
             }
             
             Fiber fiber = self.Fiber();
-            int fromProcess = actorId.Process;
-            actorId.Process = fiber.Process;
             
             EntityRef<ProcessOuterSender> selfRef = self;
 
@@ -71,26 +69,26 @@ namespace ET.Server
                 case ILocationRequest:
                 case IRequest:
                 {
+                    Address remoteAddress = session.RemoteAddress;
                     CallInner().NoContext();
                     break;
-
+                    
                     async ETTask CallInner()
                     {
                         IRequest req = (IRequest)message;
                         int rpcId = req.RpcId;
                         // 注意这里都不能抛异常，因为这里只是中转消息
-                        IResponse res = await fiber.Root.GetComponent<ProcessInnerSender>().Call(actorId.FiberInstanceId, req, false);
+                        IResponse res = await fiber.Root.GetComponent<ProcessInnerSender>().Call(fiberInstanceId, req, false);
                         // 注意这里的response会在该协程执行完之后由ProcessInnerSender dispose。
-                        actorId.Process = fromProcess;
                         res.RpcId = rpcId;
                         self = selfRef;
-                        self.Send(actorId, res);
+                        self.Send(new ActorId(remoteAddress, new FiberInstanceId(0, 0)), res);
                         ((MessageObject)res).Dispose();
                     }
                 }
                 default:
                 {
-                    fiber.Root.GetComponent<ProcessInnerSender>().Send(actorId.FiberInstanceId, (IMessage)message);
+                    fiber.Root.GetComponent<ProcessInnerSender>().Send(fiberInstanceId, (IMessage)message);
                     break;
                 }
             }
@@ -112,15 +110,15 @@ namespace ET.Server
         private static void OnAccept(this ProcessOuterSender self, long channelId, IPEndPoint ipEndPoint)
         {
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = ipEndPoint;
+            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(ipEndPoint);
             //session.AddComponent<SessionIdleCheckerComponent, int, int, int>(NetThreadComponent.checkInteral, NetThreadComponent.recvMaxIdleTime, NetThreadComponent.sendMaxIdleTime);
         }
 
         private static Session CreateInner(this ProcessOuterSender self, long channelId, IPEndPoint ipEndPoint)
         {
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = ipEndPoint;
-            self.AService.Create(channelId, session.RemoteAddress);
+            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(ipEndPoint);
+            self.AService.Create(channelId, NetworkHelper.AddressToIPEndPoint(session.RemoteAddress));
 
             //session.AddComponent<InnerPingComponent>();
             //session.AddComponent<SessionIdleCheckerComponent, int, int, int>(NetThreadComponent.checkInteral, NetThreadComponent.recvMaxIdleTime, NetThreadComponent.sendMaxIdleTime);
@@ -180,16 +178,14 @@ namespace ET.Server
                 throw new Exception($"actor id is 0: {message}");
             }
 
-            Fiber fiber = self.Fiber();
             // 如果发向同一个进程，则报错
-            if (actorId.Process == fiber.Process)
+            if (actorId.Address == Options.Instance.Address)
             {
-                throw new Exception($"actor is the same process: {fiber.Process} {actorId.Process}");
+                throw new Exception($"actor is the same process: {actorId}");
             }
             
-            Session session = self.Get(actorId.Process);
-            actorId.Process = fiber.Process;
-            session.Send(actorId, message);
+            Session session = self.Get(actorId.Address.ToLong());
+            session.Send(actorId.FiberInstanceId, message);
         }
 
         private static int GetRpcId(this ProcessOuterSender self)

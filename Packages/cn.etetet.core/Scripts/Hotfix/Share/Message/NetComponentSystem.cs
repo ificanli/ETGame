@@ -44,7 +44,7 @@ namespace ET
         private static void OnAccept(this NetComponent self, long channelId, IPEndPoint ipEndPoint)
         {
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = ipEndPoint;
+            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(ipEndPoint);
 
             // 挂上这个组件，5秒就会删除session，所以客户端验证完成要删除这个组件。该组件的作用就是防止外挂一直连接不发消息也不进行权限验证
             session.AddComponent<SessionAcceptTimeoutComponent>();
@@ -61,7 +61,7 @@ namespace ET
             }
             session.LastRecvTime = TimeInfo.Instance.ClientNow();
             
-            (ActorId _, object message) = MessageSerializeHelper.ToMessage(self.AService, memoryBuffer);
+            (FiberInstanceId _, object message) = MessageSerializeHelper.ToMessage(self.AService, memoryBuffer);
             self.AService.Recycle(memoryBuffer);
 
             // 外网消息是10000~20000
@@ -91,10 +91,10 @@ namespace ET
         {
             long channelId = NetServices.Instance.CreateConnectChannelId();
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = realIPEndPoint;
+            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(realIPEndPoint);
             session.AddComponent<SessionIdleCheckerComponent>();
             
-            self.AService.Create(session.Id, session.RemoteAddress);
+            self.AService.Create(session.Id, realIPEndPoint);
 
             return session;
         }
@@ -103,7 +103,7 @@ namespace ET
         {
             long channelId = localConn;
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = realIPEndPoint;
+            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(realIPEndPoint);
             session.AddComponent<SessionIdleCheckerComponent>();
             self.AService.Create(session.Id, routerIPEndPoint);
             return session;

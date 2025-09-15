@@ -11,7 +11,7 @@ namespace ET
         public static ActorId GetActorId(this Entity self)
         {
             Fiber root = self.Fiber();
-            return new ActorId(root.Process, root.Id, self.InstanceId);
+            return new ActorId(Options.Instance.Address, new FiberInstanceId(root.Id, self.InstanceId));
         }
     }
     
@@ -72,14 +72,6 @@ namespace ET
             }
         }
 
-        public int Process
-        {
-            get
-            {
-                return Options.Instance.Process;
-            }
-        }
-
         public EntitySystem EntitySystem { get; }
         public Mailboxes Mailboxes { get; private set; }
         public ThreadSynchronizationContext ThreadSynchronizationContext { get; }
@@ -112,7 +104,7 @@ namespace ET
             {
                 this.ThreadSynchronizationContext = new ThreadSynchronizationContext();
                 
-                LogInvoker logInvoker = new() { Fiber = this.Id, Process = this.Process, SceneName = name };
+                LogInvoker logInvoker = new() { Fiber = this.Id, SceneName = name };
                 this.Log = EventSystem.Instance.Invoke<LogInvoker, ILog>(logInvoker);
             }
             

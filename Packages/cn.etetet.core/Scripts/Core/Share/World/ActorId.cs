@@ -1,10 +1,66 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using MemoryPack;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace ET
 {
+    [MemoryPackable]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public partial struct Address
+    {
+        [MemoryPackOrder(0)]
+        public int IP;
+        [MemoryPackOrder(1)]
+        public int Port;
+        
+        public bool Equals(Address other)
+        {
+            return this.IP == other.IP && this.Port == other.Port;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Address other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.IP, this.Port);
+        }
+        
+        public Address(int ip, int port)
+        {
+            this.IP = ip;
+            this.Port = port;
+        }
+        
+        public Address(long ipPort)
+        {
+            this.IP = (int)(ipPort >> 32);
+            this.Port = (int)(ipPort & 0xffff);
+        }
+
+        public static bool operator ==(Address left, Address right)
+        {
+            return left.IP == right.IP && left.Port == right.Port;
+        }
+
+        public static bool operator !=(Address left, Address right)
+        {
+            return !(left == right);
+        }
+
+        public long ToLong()
+        {
+            return ((long)this.IP << 32) | (uint)this.Port;
+        }
+
+        public override string ToString()
+        {
+            return $"{this.IP}:{this.Port}";
+        }
+    }
+    
     [MemoryPackable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public partial struct FiberInstanceId
@@ -62,14 +118,21 @@ namespace ET
     public partial struct ActorId
     {
         [MemoryPackOrder(0)]
-        public int Process;
+        public Address Address;
         
         [MemoryPackOrder(1)]
-        public int Fiber;
+        public FiberInstanceId FiberInstanceId;
+        
+        
+        public ActorId(Address address, FiberInstanceId fiberInstanceId)
+        {
+            this.Address = address;
+            this.FiberInstanceId = fiberInstanceId;
+        }
         
         public bool Equals(ActorId other)
         {
-            return this.Process == other.Process && this.Fiber == other.Fiber && this.InstanceId == other.InstanceId;
+            return this.Address == other.Address && this.FiberInstanceId == other.FiberInstanceId;
         }
 
         public override bool Equals(object obj)
@@ -79,44 +142,12 @@ namespace ET
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.Process, this.Fiber, this.InstanceId);
-        }
-
-        [MemoryPackOrder(2)]
-        public int InstanceId;
-        
-        public FiberInstanceId FiberInstanceId
-        {
-            get
-            {
-                return new FiberInstanceId(this.Fiber, this.InstanceId);
-            }
-        }
-        
-        public ActorId(int process, int fiber)
-        {
-            this.Process = process;
-            this.Fiber = fiber;
-            this.InstanceId = 1;
-        }
-        
-        public ActorId(int process, int fiber, int instanceId)
-        {
-            this.Process = process;
-            this.Fiber = fiber;
-            this.InstanceId = instanceId;
-        }
-        
-        public ActorId(int process, FiberInstanceId fiberInstanceId)
-        {
-            this.Process = process;
-            this.Fiber = fiberInstanceId.Fiber;
-            this.InstanceId = fiberInstanceId.InstanceId;
+            return HashCode.Combine(this.Address.GetHashCode(), this.FiberInstanceId.GetHashCode());
         }
         
         public static bool operator ==(ActorId left, ActorId right)
         {
-            return left.InstanceId == right.InstanceId && left.Process == right.Process && left.Fiber == right.Fiber;
+            return left.Address == right.Address && left.FiberInstanceId == right.FiberInstanceId;
         }
 
         public static bool operator !=(ActorId left, ActorId right)
@@ -126,7 +157,7 @@ namespace ET
 
         public override string ToString()
         {
-            return $"{this.Process}:{this.Fiber}:{this.InstanceId}";
+            return $"{this.Address}:{this.FiberInstanceId}";
         }
     }
 }

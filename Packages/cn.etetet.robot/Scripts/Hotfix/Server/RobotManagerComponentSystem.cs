@@ -29,7 +29,7 @@
                 actorId = default;
                 return false;
             }
-            actorId = new ActorId(self.Fiber().Process, fiberId);
+            actorId = new ActorId(Options.Instance.Address, new FiberInstanceId(fiberId, 1));
             return true;
         }
 
