@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using CommandLine;
 
 namespace ET
@@ -23,10 +22,10 @@ namespace ET
                 // 测试用例使用单线程模式，方便重置测试环境
                 if (Options.Instance.SceneName == "RobotCase")
                 {
-                    Options.Instance.SingleThread = true;
+                    Options.Instance.SingleThread = 1;
                 }
 				
-                World.Instance.AddSingleton<Logger>().Log = new NLogger(Options.Instance.SceneName, 0);
+                World.Instance.AddSingleton<Logger>().Log = new NLogger(Options.Instance.SceneName);
 				
                 ETTask.ExceptionHandler += Log.Error;
                 World.Instance.AddSingleton<TimeInfo>();

@@ -104,7 +104,7 @@ namespace ET
             {
                 this.ThreadSynchronizationContext = new ThreadSynchronizationContext();
                 
-                LogInvoker logInvoker = new() { Fiber = this.Id, SceneName = name };
+                LogInvoker logInvoker = new() { SceneName = name };
                 this.Log = EventSystem.Instance.Invoke<LogInvoker, ILog>(logInvoker);
             }
             
@@ -246,7 +246,7 @@ namespace ET
         public async ETTask<int> CreateFiber(SchedulerType schedulerType, long rootId, int zone, int sceneType, string name)
         {
             // 如果是单线程模式，强制设置为父fiber调度
-            if (Options.Instance.SingleThread)
+            if (Options.Instance.SingleThread == 1)
             {
                 schedulerType = SchedulerType.Parent;
             }
@@ -259,7 +259,7 @@ namespace ET
         public async ETTask<int> CreateFiberWithId(int fiberId, SchedulerType schedulerType, long rootId, int zone, int sceneType, string name)
         {
             // 如果是单线程模式，强制设置为父fiber调度
-            if (Options.Instance.SingleThread)
+            if (Options.Instance.SingleThread == 1)
             {
                 schedulerType = SchedulerType.Parent;
             }

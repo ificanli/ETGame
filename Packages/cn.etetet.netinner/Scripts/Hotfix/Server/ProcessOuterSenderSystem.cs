@@ -48,12 +48,10 @@ namespace ET.Server
             {
                 return;
             }
-            
             session.LastRecvTime = TimeInfo.Instance.ClientFrameTime();
 
             (FiberInstanceId fiberInstanceId, object message) = MessageSerializeHelper.ToMessage(self.AService, memoryBuffer);
             self.AService.Recycle(memoryBuffer);
-            
             if (message is IResponse response)
             {
                 self.HandleIActorResponse(response);
@@ -116,10 +114,13 @@ namespace ET.Server
 
         private static Session CreateInner(this ProcessOuterSender self, Address address)
         {
-            long ipPort = address.ToLong();
-            Session session = self.AddChildWithId<Session, AService>(ipPort, self.AService);
+            int channelId = Options.Instance.Process << 16 + self.channelIdCout++;
+            Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
             session.RemoteAddress = address;
-            self.AService.Create(ipPort, NetworkHelper.AddressToIPEndPoint(session.RemoteAddress));
+            
+            self.AddressSessions.Add(address, session);
+            
+            self.AService.Create(channelId, NetworkHelper.AddressToIPEndPoint(session.RemoteAddress));
 
             //session.AddComponent<InnerPingComponent>();
             //session.AddComponent<SessionIdleCheckerComponent, int, int, int>(NetThreadComponent.checkInteral, NetThreadComponent.recvMaxIdleTime, NetThreadComponent.sendMaxIdleTime);
@@ -127,10 +128,10 @@ namespace ET.Server
             return session;
         }
 
-        // 内网actor session，channelId是进程号
+        // 内网actor session
         private static Session Get(this ProcessOuterSender self, Address address)
         {
-            Session session = self.GetChild<Session>(address.ToLong());
+            Session session = self.AddressSessions.GetValueByKey(address);
             if (session != null)
             {
                 return session;
@@ -177,13 +178,17 @@ namespace ET.Server
             {
                 throw new Exception($"actor id is 0: {message}");
             }
+            
+            if (message == null)
+            {
+                throw new Exception($"message is null");
+            }
 
             // 如果发向同一个进程，则报错
             if (actorId.Address == Options.Instance.Address)
             {
                 throw new Exception($"actor is the same process: {actorId}");
             }
-            
             Session session = self.Get(actorId.Address);
             session.Send(actorId.FiberInstanceId, message);
         }
@@ -208,9 +213,7 @@ namespace ET.Server
             Type requestType = iRequest.GetType();
             MessageSenderStruct messageSenderStruct = new(actorId, requestType, needException);
             self.requestCallback.Add(rpcId, messageSenderStruct);
-            
             self.SendInner(actorId, iRequest as MessageObject);
-            
             EntityRef<ProcessOuterSender> selfRef = self;
 
             async ETTask Timeout()

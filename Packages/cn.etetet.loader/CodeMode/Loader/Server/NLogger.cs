@@ -10,7 +10,7 @@ namespace ET
     {
         public override ILog Handle(LogInvoker args)
         {
-            return new NLogger(args.SceneName, args.Fiber);
+            return new NLogger(args.SceneName);
         }
     }
 
@@ -28,10 +28,10 @@ namespace ET
             LogManager.Configuration.Variables["currentDir"] = Environment.CurrentDirectory;
         }
 
-        public NLogger(string name, int fiber)
+        public NLogger(string name)
         {
             this.sceneName = name;
-            this.logger = LogManager.GetLogger($"{(uint)fiber:000000}.{name}");
+            this.logger = LogManager.GetLogger($"{(uint)Options.Instance.Process:000000}.{name}");
         }
 
         public void Trace(string message)

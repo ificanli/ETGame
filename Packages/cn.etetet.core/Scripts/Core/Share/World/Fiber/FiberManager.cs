@@ -45,10 +45,10 @@ namespace ET
         
         public void AddMonitor(int fiberId, ref FiberMonitorInfo fiberMonitorInfo)
         {
-            if (fiberMonitorInfo.UpdateTimeUsed + fiberMonitorInfo.LateUpdateTimeUsed > 5)
-            {
-                Log.Warning($"FiberMonitor Warn! FiberId: {fiberId} Name: {fiberMonitorInfo.Name} UpdateTimeUsed: {fiberMonitorInfo.UpdateTimeUsed} LateUpdateTimeUsed: {fiberMonitorInfo.LateUpdateTimeUsed}");
-            }
+            //if (fiberMonitorInfo.UpdateTimeUsed + fiberMonitorInfo.LateUpdateTimeUsed > 5)
+            //{
+            //    Log.Warning($"FiberMonitor Warn! FiberId: {fiberId} Name: {fiberMonitorInfo.Name} UpdateTimeUsed: {fiberMonitorInfo.UpdateTimeUsed} LateUpdateTimeUsed: {fiberMonitorInfo.LateUpdateTimeUsed}");
+            //}
 #if !UNITY  // 仅在非Unity环境下启用纤程监控，Unity下这个方法有GC开销
             this.fiberMonitorInfos[fiberId] = fiberMonitorInfo;
 #endif
@@ -70,7 +70,7 @@ namespace ET
             this.mainThreadScheduler = new MainThreadScheduler();
             this.schedulers[(int)SchedulerType.Main] = this.mainThreadScheduler;
 
-            if (Options.Instance.SingleThread)
+            if (Options.Instance.SingleThread == 1)
             {
                 this.schedulers[(int)SchedulerType.Thread] = this.mainThreadScheduler;
                 this.schedulers[(int)SchedulerType.ThreadPool] = this.mainThreadScheduler;

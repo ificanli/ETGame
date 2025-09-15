@@ -16,5 +16,9 @@ namespace ET.Server
         public AService AService;
         
         public NetworkProtocol InnerProtocol = NetworkProtocol.KCP;
+
+        public int channelIdCout;
+
+        public DoubleMap<Address, EntityRef<Session>> AddressSessions = new();
     }
 }

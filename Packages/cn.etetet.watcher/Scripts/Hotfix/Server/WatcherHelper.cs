@@ -47,7 +47,8 @@ namespace ET.Server
                     $" --StartConfig={Options.Instance.StartConfig}" +
                     $" --Develop={Options.Instance.Develop}" +
                     $" --LogLevel={Options.Instance.LogLevel}" +
-                    $" --Console";
+                    $" --Console={Options.Instance.Console}" +
+                    $" --SingleThread={Options.Instance.SingleThread}";
             Log.Debug($"{exe} {arguments}");
             Process process = ProcessHelper.Run(exe, arguments);
             return process;

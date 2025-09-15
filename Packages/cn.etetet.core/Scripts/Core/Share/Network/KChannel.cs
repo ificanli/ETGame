@@ -138,7 +138,6 @@ namespace ET
 
 			Log.Info($"channel connected: {this.LocalConn} {this.RemoteConn} {this.RemoteAddress}");
 			this.IsConnected = true;
-			
 			while (true)
 			{
 				if (this.waitSendMessages.Count <= 0)
@@ -408,6 +407,7 @@ namespace ET
 			{
 				throw new Exception("kchannel connected but kcp is zero!");
 			}
+			
 			// 检查等待发送的消息，如果超出最大等待大小，应该断开连接
 			int n = (int)this.kcp.WaitSendCount;
 			int maxWaitSize = 0;
@@ -422,7 +422,6 @@ namespace ET
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-			
 			if (n > maxWaitSize)
 			{
 				Log.Error($"kcp wait snd too large: {n}: {this.LocalConn} {this.RemoteConn}");

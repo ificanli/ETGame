@@ -2,7 +2,7 @@ using CommandLine;
 
 namespace ET
 {
-    public class Options: Singleton<Options>
+    public class Options: Singleton<Options>, ISingletonAwake
     {
         [Option("SceneName", Required = false, Default = "", HelpText = "define in SceneType class")]
         public string SceneName { get; set; }
@@ -28,23 +28,27 @@ namespace ET
         [Option("LogLevel", Required = false, Default = 0)]
         public int LogLevel { get; set; }
         
-        [Option("Console", Required = false, Default = false)]
-        public bool Console { get; set; }
+        [Option("Console", Required = false, Default = 0)]
+        public int Console { get; set; }
         
-        [Option("SingleThread", Required = false, Default = false)]
-        public bool SingleThread { get; set; }
+        [Option("SingleThread", Required = false, Default = 0)]
+        public int SingleThread { get; set; }
         
         public Address Address
         {
             get
             {
-                return new Address(Options.Instance.IP, Options.Instance.Port);
+                return new Address(this.IP, this.Port);
             }
             set 
             {
                 this.IP = value.IP;
                 this.Port = value.Port;
             }
+        }
+
+        public void Awake()
+        {
         }
     }
 }

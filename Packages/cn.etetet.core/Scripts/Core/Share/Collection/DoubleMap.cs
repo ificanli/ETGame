@@ -59,20 +59,12 @@ namespace ET
 
 		public V GetValueByKey(K key)
 		{
-			if (key != null && this.kv.TryGetValue(key, out V byKey))
-			{
-				return byKey;
-			}
-			return default;
+			return this.kv.GetValueOrDefault(key);
 		}
 
 		public K GetKeyByValue(V value)
 		{
-			if (value != null && this.vk.TryGetValue(value, value: out K byValue))
-			{
-				return byValue;
-			}
-			return default;
+			return this.vk.GetValueOrDefault(value);
 		}
 
 		public Dictionary<K, V> GetAll()
