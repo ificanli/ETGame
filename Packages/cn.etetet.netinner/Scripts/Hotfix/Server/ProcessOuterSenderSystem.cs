@@ -114,11 +114,12 @@ namespace ET.Server
             //session.AddComponent<SessionIdleCheckerComponent, int, int, int>(NetThreadComponent.checkInteral, NetThreadComponent.recvMaxIdleTime, NetThreadComponent.sendMaxIdleTime);
         }
 
-        private static Session CreateInner(this ProcessOuterSender self, long channelId, IPEndPoint ipEndPoint)
+        private static Session CreateInner(this ProcessOuterSender self, Address address)
         {
-            Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(ipEndPoint);
-            self.AService.Create(channelId, NetworkHelper.AddressToIPEndPoint(session.RemoteAddress));
+            long ipPort = address.ToLong();
+            Session session = self.AddChildWithId<Session, AService>(ipPort, self.AService);
+            session.RemoteAddress = address;
+            self.AService.Create(ipPort, NetworkHelper.AddressToIPEndPoint(session.RemoteAddress));
 
             //session.AddComponent<InnerPingComponent>();
             //session.AddComponent<SessionIdleCheckerComponent, int, int, int>(NetThreadComponent.checkInteral, NetThreadComponent.recvMaxIdleTime, NetThreadComponent.sendMaxIdleTime);
@@ -127,16 +128,15 @@ namespace ET.Server
         }
 
         // 内网actor session，channelId是进程号
-        private static Session Get(this ProcessOuterSender self, long channelId)
+        private static Session Get(this ProcessOuterSender self, Address address)
         {
-            Session session = self.GetChild<Session>(channelId);
+            Session session = self.GetChild<Session>(address.ToLong());
             if (session != null)
             {
                 return session;
             }
-
-            IPEndPoint ipEndPoint = StartProcessConfigCategory.Instance.Get((int) channelId).IPEndPoint;
-            session = self.CreateInner(channelId, ipEndPoint);
+            
+            session = self.CreateInner(address);
             return session;
         }
 
@@ -184,7 +184,7 @@ namespace ET.Server
                 throw new Exception($"actor is the same process: {actorId}");
             }
             
-            Session session = self.Get(actorId.Address.ToLong());
+            Session session = self.Get(actorId.Address);
             session.Send(actorId.FiberInstanceId, message);
         }
 

@@ -10,6 +10,9 @@
             
             int process = Options.Instance.Process;
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(process);
+            Address address = startProcessConfig.Address;
+            Options.Instance.IP = address.IP;
+            Options.Instance.Port = address.Port;
             if (startProcessConfig.Port != 0)
             {
                 await fiber.CreateFiberWithId(SceneType.NetInner, SchedulerType.ThreadPool, IdGenerater.Instance.GenerateId(), 0, SceneType.NetInner, "NetInner");

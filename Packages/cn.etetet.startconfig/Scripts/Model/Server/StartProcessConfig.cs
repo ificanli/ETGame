@@ -15,22 +15,6 @@ namespace ET.Server
                 return new Address(NetworkHelper.IPStringToInt(this.InnerIP), this.Port);
             }
         }
-        
-        // 内网地址外网端口，通过防火墙映射端口过来
-        private IPEndPoint ipEndPoint;
-
-        public IPEndPoint IPEndPoint
-        {
-            get
-            {
-                if (ipEndPoint == null)
-                {
-                    this.ipEndPoint = NetworkHelper.ToIPEndPoint(this.InnerIP, this.Port);
-                }
-
-                return this.ipEndPoint;
-            }
-        }
 
         public StartMachineConfig StartMachineConfig => StartMachineConfigCategory.Instance.Get(this.MachineId);
 

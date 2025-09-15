@@ -14,8 +14,7 @@ namespace ET.Client
             // 创建一个ETModel层的Session
             root.RemoveComponent<RouterAddressComponent>();
             // 获取路由跟realmDispatcher地址
-            RouterAddressComponent routerAddressComponent =
-                    root.AddComponent<RouterAddressComponent, string>(request.Address);
+            RouterAddressComponent routerAddressComponent = root.AddComponent<RouterAddressComponent, string>(request.Address);
             EntityRef<Scene> rootRef = root;
             EntityRef<RouterAddressComponent> routerAddressComponentRef = routerAddressComponent;
             await routerAddressComponent.Init();

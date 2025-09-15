@@ -112,16 +112,6 @@ namespace ET.Server
             }
         }
 
-        private IPEndPoint outerIPPort;
-
-        // 外网地址外网端口
-        public IPEndPoint OuterIPPort
-        {
-            get
-            {
-                return this.outerIPPort ??= NetworkHelper.ToIPEndPoint($"{this.StartProcessConfig.OuterIP}:{this.Port}");
-            }
-        }
 
         public override void EndInit()
         {

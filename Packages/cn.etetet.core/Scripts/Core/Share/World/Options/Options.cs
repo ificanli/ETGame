@@ -1,6 +1,4 @@
 using CommandLine;
-using System;
-using System.Collections.Generic;
 
 namespace ET
 {
@@ -41,6 +39,11 @@ namespace ET
             get
             {
                 return new Address(Options.Instance.IP, Options.Instance.Port);
+            }
+            set 
+            {
+                this.IP = value.IP;
+                this.Port = value.Port;
             }
         }
     }
