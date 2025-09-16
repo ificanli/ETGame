@@ -112,13 +112,14 @@ namespace ET
             ((IScheduler)this.mainFiber).Dispose();
         }
 
-        public async ETTask<int> CreateMainFiber(int sceneType)
+        public async ETTask<int> CreateMainFiber(string sceneName)
         {
             if (this.mainFiber != null)
             {
                 throw new Exception("FiberManager is already created");
             }
-            this.mainFiber = await this.CreateFiber(SchedulerType.Main, IdGenerater.Instance.GenerateId(), 0, sceneType, "Main", null);
+            int sceneType = SceneTypeSingleton.Instance.GetSceneType(sceneName);
+            this.mainFiber = await this.CreateFiber(SchedulerType.Main, IdGenerater.Instance.GenerateId(), 0, sceneType, sceneName, null);
             return this.mainFiber.Id;
         }
 

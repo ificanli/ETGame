@@ -47,14 +47,16 @@ namespace ET
 
         public int Zone { get; }
 
-        private int instanceIdGenerator = 1;
-
         private EntityRef<Scene> root;
         
         public SchedulerType SchedulerType { get; }
+        
+        public int ParentFiberId { get; }
 
         private FiberMonitorInfo fiberMonitorInfo;
 
+        private int instanceIdGenerator = 1;
+        
         public int NewInstanceId()
         {
             return instanceIdGenerator++;
@@ -90,6 +92,7 @@ namespace ET
             this.SchedulerType = schedulerType;
             this.EntitySystem = new EntitySystem();
             this.Mailboxes = new Mailboxes();
+            this.ParentFiberId = parent?.Id ?? 0;
             
             if (schedulerType == SchedulerType.Parent)
             {
