@@ -6,7 +6,7 @@ namespace ET
 {
     [MemoryPackable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public partial struct Address
+    public partial struct Address: IEquatable<Address>
     {
         [MemoryPackOrder(0)]
         public int IP;
@@ -42,7 +42,7 @@ namespace ET
 
         public static bool operator ==(Address left, Address right)
         {
-            return left.IP == right.IP && left.Port == right.Port;
+            return left.Equals(right);
         }
 
         public static bool operator !=(Address left, Address right)
@@ -63,7 +63,7 @@ namespace ET
     
     [MemoryPackable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public partial struct FiberInstanceId
+    public partial struct FiberInstanceId: IEquatable<FiberInstanceId>
     {
         [MemoryPackOrder(0)]
         public int Fiber;
@@ -99,7 +99,7 @@ namespace ET
 
         public static bool operator ==(FiberInstanceId left, FiberInstanceId right)
         {
-            return left.Fiber == right.Fiber && left.InstanceId == right.InstanceId;
+            return left.Equals(right);
         }
 
         public static bool operator !=(FiberInstanceId left, FiberInstanceId right)
@@ -115,7 +115,7 @@ namespace ET
     
     [MemoryPackable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public partial struct ActorId
+    public partial struct ActorId: IEquatable<ActorId>
     {
         [MemoryPackOrder(0)]
         public Address Address;
@@ -147,7 +147,7 @@ namespace ET
         
         public static bool operator ==(ActorId left, ActorId right)
         {
-            return left.Address == right.Address && left.FiberInstanceId == right.FiberInstanceId;
+            return left.Equals(right);
         }
 
         public static bool operator !=(ActorId left, ActorId right)
