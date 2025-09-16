@@ -16,15 +16,12 @@ namespace ET
         [Option("Process", Required = false, Default = 1)]
         public int Process { get; set; }
         
-        [Option("IP", Required = false, Default = 0)]
-        public int IP { get; set; } 
+        [Option("IP", Required = false, Default = "")]
+        public string IP { get; set; } 
         
         [Option("Port", Required = false, Default = 0)]
         public int Port { get; set; } 
         
-        [Option("Develop", Required = false, Default = 0, HelpText = "develop mode, 0正式 1开发 2压测")]
-        public int Develop { get; set; }
-
         [Option("LogLevel", Required = false, Default = 0)]
         public int LogLevel { get; set; }
         
@@ -36,19 +33,13 @@ namespace ET
         
         public Address Address
         {
-            get
-            {
-                return new Address(this.IP, this.Port);
-            }
-            set 
-            {
-                this.IP = value.IP;
-                this.Port = value.Port;
-            }
+            get;
+            set;
         }
 
         public void Awake()
         {
+            this.Address = new Address(NetworkHelper.IPStringToInt(this.IP), this.Port);
         }
     }
 }

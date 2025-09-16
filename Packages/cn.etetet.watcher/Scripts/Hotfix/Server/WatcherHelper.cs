@@ -45,7 +45,6 @@ namespace ET.Server
                     $" --Process={startProcessConfig.Id}" +
                     $" --SceneName={Options.Instance.WatcherStartSceneName}" +  
                     $" --StartConfig={Options.Instance.StartConfig}" +
-                    $" --Develop={Options.Instance.Develop}" +
                     $" --LogLevel={Options.Instance.LogLevel}" +
                     $" --Console={Options.Instance.Console}" +
                     $" --SingleThread={Options.Instance.SingleThread}";
