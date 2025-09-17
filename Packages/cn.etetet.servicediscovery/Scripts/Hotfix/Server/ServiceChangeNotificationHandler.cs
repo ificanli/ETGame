@@ -8,7 +8,7 @@ namespace ET.Server
             ServiceDiscoveryProxyComponent proxy = scene.GetComponent<ServiceDiscoveryProxyComponent>();
             if (proxy != null)
             {
-                proxy.OnServiceChangeNotification(message);
+                proxy.OnServiceChangeNotification(message.ChangeType, message.ServiceInfo);
             }
 
             await ETTask.CompletedTask;

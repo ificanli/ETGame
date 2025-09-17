@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ET.Server
 {
     /// <summary>
@@ -26,5 +28,10 @@ namespace ET.Server
         /// 最后心跳时间
         /// </summary>
         public long LastHeartbeatTime;
+
+        /// <summary>
+        /// 订阅的SceneTypes
+        /// </summary>
+        public HashSet<int> SubSceneTypes = new();
     }
 }

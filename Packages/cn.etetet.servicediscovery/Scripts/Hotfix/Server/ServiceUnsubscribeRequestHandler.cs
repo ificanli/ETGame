@@ -6,16 +6,7 @@ namespace ET.Server
         protected override async ETTask Run(Scene scene, ServiceUnsubscribeRequest request, ServiceUnsubscribeResponse response)
         {
             ServiceDiscoveryComponent serviceDiscovery = scene.GetComponent<ServiceDiscoveryComponent>();
-            if (serviceDiscovery == null)
-            {
-                Log.Error("ServiceDiscoveryComponent not found");
-                response.Error = ErrorCode.ERR_ComponentNotFound;
-                response.Message = "ServiceDiscoveryComponent not found";
-                return;
-            }
-
-            serviceDiscovery.UnsubscribeServiceChange(request.SceneName);
-            response.Error = ErrorCode.ERR_Success;
+            serviceDiscovery.UnsubscribeServiceChange(request.SceneName, request.SceneTypes);
 
             Log.Debug($"Unsubscribe service change: {request.SceneName}");
 

@@ -38,7 +38,5 @@ namespace ET.Server
         /// 上次心跳检查时间
         /// </summary>
         public long LastHeartbeatCheckTime;
-
-        public List<string> timeoutServices = new();
     }
 }

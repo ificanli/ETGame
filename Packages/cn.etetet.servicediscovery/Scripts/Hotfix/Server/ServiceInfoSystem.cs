@@ -47,8 +47,6 @@ namespace ET.Server
             proto.SceneType = self.SceneType;
             proto.SceneName = self.SceneName;
             proto.ActorId = self.ActorId;
-            proto.RegisterTime = self.RegisterTime;
-            proto.LastHeartbeatTime = self.LastHeartbeatTime;
             return proto;
         }
     }

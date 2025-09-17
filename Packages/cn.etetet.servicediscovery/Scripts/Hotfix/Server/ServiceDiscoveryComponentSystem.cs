@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ET.Server
 {
@@ -20,10 +20,6 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this ServiceDiscoveryComponent self)
         {
-            self.Services?.Clear();
-            self.ServicesByType?.Clear();
-            self.Subscribers?.Clear();
-            Log.Debug($"ServiceDiscoveryComponent Destroy");
         }
 
         [EntitySystem]
@@ -40,13 +36,12 @@ namespace ET.Server
         /// <summary>
         /// 注册服务
         /// </summary>
-        public static bool RegisterService(this ServiceDiscoveryComponent self, string sceneName, int sceneType, ActorId actorId)
+        public static void RegisterService(this ServiceDiscoveryComponent self, string sceneName, int sceneType, ActorId actorId)
         {
-            // 检查是否已存在
+            // 已存在则注销之前的
             if (self.Services.ContainsKey(sceneName))
             {
-                Log.Warning($"Service already registered: {sceneName}");
-                return false;
+                self.UnregisterService(sceneName);
             }
 
             // 创建服务信息
@@ -54,32 +49,30 @@ namespace ET.Server
             self.Services[sceneName] = serviceInfo;
 
             // 添加到按类型分组的字典
-            self.ServicesByType[sceneType].Add(sceneName);
+            self.ServicesByType.Add(sceneType, sceneName);
 
             Log.Debug($"Service registered: {sceneType} {sceneName}");
 
             // 通知订阅者
             self.NotifyServiceChange(sceneType, 1, serviceInfo);
-
-            return true;
         }
 
         /// <summary>
         /// 注销服务
         /// </summary>
-        public static bool UnregisterService(this ServiceDiscoveryComponent self, string sceneName)
+        public static void UnregisterService(this ServiceDiscoveryComponent self, string sceneName)
         {
             if (!self.Services.TryGetValue(sceneName, out EntityRef<ServiceInfo> serviceRef))
             {
                 Log.Warning($"Service not found for unregister: {sceneName}");
-                return false;
+                return;
             }
 
             ServiceInfo serviceInfo = serviceRef;
             if (serviceInfo == null)
             {
                 Log.Warning($"Service info is null for unregister: {sceneName}");
-                return false;
+                return;
             }
 
             int sceneType = serviceInfo.SceneType;
@@ -87,7 +80,11 @@ namespace ET.Server
             // 从字典中移除
             self.Services.Remove(sceneName);
             self.ServicesByType.Remove(sceneType, sceneName);
-
+            foreach (int subSceneType in serviceInfo.SubSceneTypes)
+            {
+                self.Subscribers.Remove(subSceneType, sceneName);
+            }
+            
             Log.Debug($"Service unregistered: {sceneType} {sceneName}");
 
             // 通知订阅者
@@ -95,37 +92,34 @@ namespace ET.Server
 
             // 销毁服务信息实体
             serviceInfo.Dispose();
-
-            return true;
         }
 
         /// <summary>
         /// 更新服务心跳
         /// </summary>
-        public static bool UpdateServiceHeartbeat(this ServiceDiscoveryComponent self, string sceneName)
+        public static void UpdateServiceHeartbeat(this ServiceDiscoveryComponent self, string sceneName)
         {
             if (!self.Services.TryGetValue(sceneName, out EntityRef<ServiceInfo> serviceRef))
             {
                 Log.Warning($"Service not found for heartbeat: {sceneName}");
-                return false;
+                return;
             }
 
             ServiceInfo serviceInfo = serviceRef;
             if (serviceInfo == null)
             {
                 Log.Warning($"Service info is null for heartbeat: {sceneName}");
-                return false;
+                return;
             }
 
             serviceInfo.UpdateHeartbeat();
             Log.Debug($"Service heartbeat updated: {sceneName}");
-            return true;
         }
 
         /// <summary>
         /// 查询指定类型的服务列表
         /// </summary>
-        public static List<ServiceInfo> QueryServices(this ServiceDiscoveryComponent self, int sceneType)
+        public static List<ServiceInfo> GetServicesBySceneType(this ServiceDiscoveryComponent self, int sceneType)
         {
             List<ServiceInfo> result = new();
             if (!self.ServicesByType.TryGetValue(sceneType, out HashSet<string> serviceKeys))
@@ -151,19 +145,46 @@ namespace ET.Server
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static void SubscribeServiceChange(this ServiceDiscoveryComponent self, int sceneType, string sceneName)
+        public static void SubscribeServiceChange(this ServiceDiscoveryComponent self, string sceneName, List<int> sceneTypes)
         {
-            self.Subscribers.Add(sceneType, sceneName);
-            Log.Debug($"Subscribe service change: {sceneType} by {sceneName}");
+            ServiceInfo serviceInfo = self.Services[sceneName];
+            
+            ServiceChangeNotification notification = ServiceChangeNotification.Create();
+            notification.ChangeType = 1;
+            
+            foreach (int sceneType in sceneTypes)
+            {
+                if (!serviceInfo.SubSceneTypes.Add(sceneType))
+                {
+                    continue;
+                }
+                
+                self.Subscribers.Add(sceneType, sceneName);
+                
+                List<ServiceInfo> serviceInfos = self.GetServicesBySceneType(sceneType);
+                foreach (ServiceInfo sInfo in serviceInfos)
+                {
+                    notification.ServiceInfo.Add(sInfo.ToProto());
+                }
+            }
+            
+            self.Root().GetComponent<MessageSender>().Send(serviceInfo.ActorId, notification);
+
+            Log.Debug($"Subscribe service change: {sceneName} {sceneTypes.ListToString()}");
         }
 
         /// <summary>
         /// 取消订阅服务变更
         /// </summary>
-        public static void UnsubscribeServiceChange(this ServiceDiscoveryComponent self, int sceneType, string sceneName)
+        public static void UnsubscribeServiceChange(this ServiceDiscoveryComponent self, string sceneName, List<int> sceneTypes)
         {
-            self.Subscribers.Remove(sceneType, sceneName);
-            Log.Debug($"Unsubscribe service change: {sceneType} by {sceneName}");
+            ServiceInfo serviceInfo = self.Services[sceneName];
+            foreach (int sceneType in sceneTypes)
+            {
+                self.Subscribers.Remove(sceneType, sceneName);
+                serviceInfo.SubSceneTypes.Remove(sceneType);
+            }
+            Log.Debug($"Unsubscribe service change: {sceneName} {sceneTypes.ListToString()}");
         }
 
         /// <summary>
@@ -177,10 +198,8 @@ namespace ET.Server
             }
 
             ServiceChangeNotification notification = ServiceChangeNotification.Create();
-            notification.SceneName = serviceInfo.SceneName;
-            notification.SceneType = sceneType;
             notification.ChangeType = changeType;
-            notification.ServiceInfo = serviceInfo.ToProto();
+            notification.ServiceInfo.Add(serviceInfo.ToProto());
 
             // 给订阅者广播
             foreach (string sceneName in subscribers)
@@ -198,19 +217,19 @@ namespace ET.Server
         /// </summary>
         private static void CheckHeartbeatTimeout(this ServiceDiscoveryComponent self)
         {
-            self.timeoutServices.Clear();
+            using ListComponent<string> list = ListComponent<string>.Create();
 
             foreach (var kvp in self.Services)
             {
                 ServiceInfo serviceInfo = kvp.Value;
                 if (serviceInfo != null && serviceInfo.IsHeartbeatTimeout(self.HeartbeatTimeout))
                 {
-                    self.timeoutServices.Add(kvp.Key);
+                    list.Add(kvp.Key);
                 }
             }
 
             // 移除超时的服务
-            foreach (string sceneName in self.timeoutServices)
+            foreach (string sceneName in list)
             {
                 if (!self.Services.TryGetValue(sceneName, out EntityRef<ServiceInfo> serviceRef))
                 {

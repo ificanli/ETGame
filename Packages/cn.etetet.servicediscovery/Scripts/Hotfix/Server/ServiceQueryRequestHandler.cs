@@ -16,10 +16,7 @@ namespace ET.Server
                 return;
             }
 
-            List<ServiceInfo> services = serviceDiscovery.QueryServices(request.SceneType);
-            response.Error = ErrorCode.ERR_Success;
-            response.Services = new List<ServiceInfoProto>();
-
+            List<ServiceInfo> services = serviceDiscovery.GetServicesBySceneType(request.SceneType);
             foreach (ServiceInfo serviceInfo in services)
             {
                 response.Services.Add(serviceInfo.ToProto());

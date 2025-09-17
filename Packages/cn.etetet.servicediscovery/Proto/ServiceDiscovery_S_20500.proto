@@ -24,7 +24,7 @@ message ServiceUnregisterRequest // IRequest
 	int32 RpcId = 1;
 	string SceneName = 2;
 	int32 SceneType = 3;
-	ActorId ActorId = 3;
+	ActorId ActorId = 4;
 }
 
 message ServiceUnregisterResponse // IResponse
@@ -63,6 +63,21 @@ message ServiceQueryResponse // IResponse
 	repeated ServiceInfoProto Services = 4;
 }
 
+// ResponseType ServiceQueryBySceneNameResponse
+message ServiceQueryBySceneNameRequest // IRequest
+{
+	int32 RpcId = 1;
+	string SceneName = 2;
+}
+
+message ServiceQueryBySceneNameResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	ServiceInfoProto Services = 4;
+}
+
 // ResponseType ServiceSubscribeResponse
 message ServiceSubscribeRequest // IRequest
 {
@@ -96,18 +111,14 @@ message ServiceUnsubscribeResponse // IResponse
 // 服务变更通知消息
 message ServiceChangeNotification // IMessage
 {
-	string SceneName = 1;
-	int32 SceneType = 2;
-	int32 ChangeType = 3; // 1=添加, 2=删除
-	ServiceInfoProto ServiceInfo = 4;
+	int32 ChangeType = 1; // 1=添加, 2=删除
+	repeated ServiceInfoProto ServiceInfo = 4;
 }
 
 // 服务信息Proto定义
 message ServiceInfoProto
 {
 	string SceneName = 1;
-	int32 SceneType = 1;
+	int32 SceneType = 2;
 	ActorId ActorId = 3;
-	int64 RegisterTime = 4;
-	int64 LastHeartbeatTime = 5;
 }

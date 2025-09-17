@@ -9,26 +9,27 @@ namespace ET.Server
     public static partial class ServiceDiscoveryProxyComponentSystem
     {
         [EntitySystem]
-        private static void Awake(this ServiceDiscoveryProxyComponent self)
+        private static void Destroy(this ServiceDiscoveryProxyComponent self)
         {
-            self.LastHeartbeatTime = TimeInfo.Instance.ServerNow();
-
-            Log.Debug($"ServiceDiscoveryProxyComponent Awake");
-        }
-
-        [EntitySystem]
-        private static void Update(this ServiceDiscoveryProxyComponent self)
-        {
-            if (!self.IsRegistered)
+            Scene root = self.Root();
+            if (root.IsDisposed)
             {
                 return;
             }
+            root.GetComponent<TimerComponent>().Remove(ref self.HeartbeatTimer);
+        }
+        
+        [EntitySystem]
+        private static void Awake(this ServiceDiscoveryProxyComponent self)
+        {
+        }
 
-            long now = TimeInfo.Instance.ServerNow();
-            if (now - self.LastHeartbeatTime >= self.HeartbeatInterval)
+        [Invoke(TimerInvokeType.ServiceDiscoveryProxyHeartbeat)]
+        public class ServiceDiscoveryProxyHeartbeat : ATimer<ServiceDiscoveryProxyComponent>
+        {
+            protected override void Run(ServiceDiscoveryProxyComponent self)
             {
                 self.SendHeartbeat().NoContext();
-                self.LastHeartbeatTime = now;
             }
         }
 
@@ -63,8 +64,7 @@ namespace ET.Server
                 return;
             }
 
-            self.IsRegistered = true;
-            self.LastHeartbeatTime = TimeInfo.Instance.ServerNow();
+            self.HeartbeatTimer = self.Root().GetComponent<TimerComponent>().NewRepeatedTimer(self.HeartbeatInterval, TimerInvokeType.ServiceDiscoveryProxyHeartbeat, self);
             Log.Debug($"Service registered successfully: {request}");
         }
 
@@ -86,7 +86,7 @@ namespace ET.Server
         /// <summary>
         /// 发送心跳
         /// </summary>
-        public static async ETTask SendHeartbeat(this ServiceDiscoveryProxyComponent self)
+        private static async ETTask SendHeartbeat(this ServiceDiscoveryProxyComponent self)
         {
             ServiceHeartbeatRequest request = ServiceHeartbeatRequest.Create();
             request.SceneName = self.Root().Name;
@@ -128,18 +128,50 @@ namespace ET.Server
             await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request);
         }
 
+        public static void OnServiceChangeNotification(this ServiceDiscoveryProxyComponent self, int changeType, ServiceInfoProto serviceInfo)
+        {
+            switch (changeType)
+            {
+                // 添加
+                case 1:
+                {
+                    self.CachedSceneTypeServices.Add(serviceInfo.SceneType, serviceInfo.SceneName);
+                    self.CachedSceneNameServices.Add(serviceInfo.SceneName, new ServiceCacheInfo()
+                    {
+                        SceneName = serviceInfo.SceneName,
+                        SceneType = serviceInfo.SceneType,
+                        ActorId = serviceInfo.ActorId,
+                    });
+
+                    EventSystem.Instance.Publish(self.Scene(), new OnServiceChangeAddService()
+                    {
+                        SceneType = serviceInfo.SceneType, ServiceName = serviceInfo.SceneName
+                    });
+                    break;
+                }
+                // 删除
+                case 2:
+                {
+                    self.CachedSceneTypeServices.Remove(serviceInfo.SceneType, serviceInfo.SceneName);
+                    self.CachedSceneNameServices.Remove(serviceInfo.SceneName);
+
+                    EventSystem.Instance.Publish(self.Scene(), new OnServiceChangeRemoveService()
+                    {
+                        SceneType = serviceInfo.SceneType, ServiceName = serviceInfo.SceneName
+                    });
+                    break;
+                }
+            }
+        }
+        
         /// <summary>
         /// 处理服务变更通知
         /// </summary>
-        public static void OnServiceChangeNotification(this ServiceDiscoveryProxyComponent self, ServiceChangeNotification notification)
+        public static void OnServiceChangeNotification(this ServiceDiscoveryProxyComponent self, int changeType, List<ServiceInfoProto> serviceInfos)
         {
-            if (notification.ChangeType == 1) // 添加
+            foreach (ServiceInfoProto serviceInfo in serviceInfos)
             {
-                self.CachedServices.Add(notification.SceneType, notification.SceneName);
-            }
-            else if (notification.ChangeType == 2) // 删除
-            {
-                self.CachedServices.Remove(notification.SceneType, notification.SceneName);
+                self.OnServiceChangeNotification(changeType, serviceInfo);
             }
         }
 
@@ -148,7 +180,25 @@ namespace ET.Server
         /// </summary>
         public static string[] GetCachedServices(this ServiceDiscoveryProxyComponent self, int sceneType)
         {
-            return self.CachedServices.GetAll(sceneType);
+            return self.CachedSceneTypeServices.GetAll(sceneType);
+        }
+        
+        public static async ETTask<ActorId> GetServiceActorId(this ServiceDiscoveryProxyComponent self, string sceneName)
+        {
+            if (self.CachedSceneNameServices.TryGetValue(sceneName, out ServiceCacheInfo info))
+            {
+                return info.ActorId;
+            }
+
+            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+            ServiceQueryBySceneNameRequest request = ServiceQueryBySceneNameRequest.Create();
+            request.SceneName = sceneName;
+            
+            ServiceQueryBySceneNameResponse response = await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request) as ServiceQueryBySceneNameResponse;
+            
+            self = selfRef;
+            self.OnServiceChangeNotification(1, response.Services);
+            return response.Services.ActorId;
         }
     }
 }
