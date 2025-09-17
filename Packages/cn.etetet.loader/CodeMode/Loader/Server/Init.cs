@@ -20,7 +20,7 @@ namespace ET
                         .WithParsed((o)=>World.Instance.AddSingleton(o));
 
                 // 测试用例使用单线程模式，方便重置测试环境
-                if (Options.Instance.SceneName == "RobotCase")
+                if (Options.Instance.SceneName == "RobotTest")
                 {
                     Options.Instance.SingleThread = 1;
                 }

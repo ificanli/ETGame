@@ -9,7 +9,6 @@
         public override async ETTask Handle(FiberInit fiberInit)
         {
             Fiber fiber = fiberInit.Fiber;
-            Scene root = fiber.Root;
             
             int process = Options.Instance.Process;
 

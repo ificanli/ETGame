@@ -48,6 +48,14 @@
     "Port": 20101
   },
   {
+    "Id": 202,
+    "Process": 1,
+    "Zone": 3,
+    "SceneType": "ServiceDiscovery",
+    "Name": "ServiceDiscovery",
+    "Port": 0
+  },
+  {
     "Id": 301,
     "Process": 1,
     "Zone": 3,

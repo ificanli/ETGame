@@ -558,7 +558,7 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 
 ### 机器人测试流程
 
-1. 启动测试进程: `dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console`
+1. 启动测试进程: `dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotTest --StartConfig=Localhost --Console=1 --SingleThread=1`
 2. 进程会输出 `>`等待输入
 3. 测试所有用例: 输入 `Case --Id=0` //--Id=0指执行所有用例
 4. 测试指定用例X: 输入 `Case --Id=X` //X是RobotCaseType的成员变量
@@ -568,13 +568,13 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 #### 单个测试用例执行
 
 ```bash
-printf "Case --Id=0\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1"
+printf "Case --Id=0\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotTest --StartConfig=Localhost --Console=1 --SingleThread=1"
 ```
 
 #### 单进程多用例连续执行（推荐）
 
 ```bash
-printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1"
+printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotTest --StartConfig=Localhost --Console=1 --SingleThread=1"
 ```
 
 #### 执行流程说明

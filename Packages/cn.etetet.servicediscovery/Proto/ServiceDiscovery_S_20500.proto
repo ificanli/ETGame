@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package ET;
+
+// ResponseType ServiceRegisterResponse
+message ServiceRegisterRequest // IRequest
+{
+	int32 RpcId = 1;
+	string SceneName = 2;
+	int32 SceneType = 3;
+	ActorId ActorId = 4;
+}
+
+message ServiceRegisterResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType ServiceUnregisterResponse
+message ServiceUnregisterRequest // IRequest
+{
+	int32 RpcId = 1;
+	string SceneName = 2;
+	int32 SceneType = 3;
+	ActorId ActorId = 3;
+}
+
+message ServiceUnregisterResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType ServiceHeartbeatResponse
+message ServiceHeartbeatRequest // IRequest
+{
+	int32 RpcId = 1;
+	string SceneName = 2;
+}
+
+message ServiceHeartbeatResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType ServiceQueryResponse
+message ServiceQueryRequest // IRequest
+{
+	int32 RpcId = 1;
+	int32 SceneType = 2;
+}
+
+message ServiceQueryResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated ServiceInfoProto Services = 4;
+}
+
+// ResponseType ServiceSubscribeResponse
+message ServiceSubscribeRequest // IRequest
+{
+	int32 RpcId = 1;
+	string SceneName = 2;
+	repeated int32 SceneTypes = 3;
+}
+
+message ServiceSubscribeResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType ServiceUnsubscribeResponse
+message ServiceUnsubscribeRequest // IRequest
+{
+	int32 RpcId = 1;
+	string SceneName = 2;
+	repeated int32 SceneTypes = 3;
+}
+
+message ServiceUnsubscribeResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 服务变更通知消息
+message ServiceChangeNotification // IMessage
+{
+	string SceneName = 1;
+	int32 SceneType = 2;
+	int32 ChangeType = 3; // 1=添加, 2=删除
+	ServiceInfoProto ServiceInfo = 4;
+}
+
+// 服务信息Proto定义
+message ServiceInfoProto
+{
+	string SceneName = 1;
+	int32 SceneType = 1;
+	ActorId ActorId = 3;
+	int64 RegisterTime = 4;
+	int64 LastHeartbeatTime = 5;
+}

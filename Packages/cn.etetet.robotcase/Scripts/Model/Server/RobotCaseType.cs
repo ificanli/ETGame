@@ -1,7 +1,7 @@
 namespace ET.Server
 {
     [UniqueId(1, 10000)]
-    public static class RobotCaseType
+    public static partial class RobotCaseType
     {
         public const int CreateRobot = 1;
 

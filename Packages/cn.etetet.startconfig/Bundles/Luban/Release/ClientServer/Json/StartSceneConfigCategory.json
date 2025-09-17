@@ -1,7 +1,7 @@
 [
   {
     "Id": 101,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "RouterManager",
     "Name": "RouterManager",
@@ -9,7 +9,7 @@
   },
   {
     "Id": 102,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "Router",
     "Name": "Router01",
@@ -17,7 +17,7 @@
   },
   {
     "Id": 103,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "Router",
     "Name": "Router02",
@@ -25,7 +25,7 @@
   },
   {
     "Id": 104,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "Router",
     "Name": "Router03",
@@ -33,7 +33,7 @@
   },
   {
     "Id": 105,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "Router",
     "Name": "Router04",
@@ -48,8 +48,16 @@
     "Port": 20101
   },
   {
+    "Id": 202,
+    "Process": 1,
+    "Zone": 2,
+    "SceneType": "ServiceDiscovery",
+    "Name": "ServiceDiscovery",
+    "Port": 0
+  },
+  {
     "Id": 301,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "Gate",
     "Name": "Gate1",
@@ -57,7 +65,7 @@
   },
   {
     "Id": 302,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "Gate",
     "Name": "Gate2",
@@ -65,7 +73,7 @@
   },
   {
     "Id": 303,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "Location",
     "Name": "Location",
@@ -73,7 +81,7 @@
   },
   {
     "Id": 304,
-    "Process": 2,
+    "Process": 1,
     "Zone": 3,
     "SceneType": "MapManager",
     "Name": "MapManager",
