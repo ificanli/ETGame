@@ -11,6 +11,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this ServiceMessageSender self)
         {
+            self.ServiceDiscoveryProxy = self.Root().GetComponent<ServiceDiscoveryProxyComponent>();
         }
 
         [EntitySystem]
@@ -55,20 +56,16 @@ namespace ET.Server
         public static async ETTask<IResponse> Call(this ServiceMessageSender self, string sceneName, IRequest request, bool needException = true)
         {
             // ActorId未知，先获取ActorId
-            Scene root = self.Root();
-            EntityRef<Scene> rootRef = root;
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxy = root.GetComponent<ServiceDiscoveryProxyComponent>();
+            EntityRef<ServiceMessageSender> selfRef = self;
 
-            ActorId actorId = await serviceDiscoveryProxy.GetServiceActorId(sceneName);
+            ActorId actorId = await self.ServiceDiscoveryProxy.GetServiceActorId(sceneName);
             if (actorId == default)
             {
                 throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
             }
 
-            root = rootRef;
-            MessageSender messageSender = root.GetComponent<MessageSender>();
-
-            return await messageSender.Call(actorId, request, needException);
+            self = selfRef;
+            return await self.ServiceDiscoveryProxy.MessageSender.Call(actorId, request, needException);
         }
 
         /// <summary>
@@ -76,12 +73,9 @@ namespace ET.Server
         /// </summary>
         private static async ETTask StartFetchActorId(this ServiceMessageSender self, string sceneName)
         {
-            Scene root = self.Root();
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxy = root.GetComponent<ServiceDiscoveryProxyComponent>();
-
             EntityRef<ServiceMessageSender> selfRef = self;
 
-            ActorId actorId = await serviceDiscoveryProxy.GetServiceActorId(sceneName);
+            ActorId actorId = await self.ServiceDiscoveryProxy.GetServiceActorId(sceneName);
 
             self = selfRef;
             if (self == null)
@@ -108,7 +102,7 @@ namespace ET.Server
                 return;
             }
 
-            MessageSender messageSender = self.Root().GetComponent<MessageSender>();
+            MessageSender messageSender = self.ServiceDiscoveryProxy.MessageSender;
 
             while (queue.Count > 0)
             {

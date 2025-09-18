@@ -14,5 +14,19 @@ namespace ET.Server
         /// 待发送的消息队列，按SceneName分组
         /// </summary>
         public Dictionary<string, Queue<IMessage>> PendingMessages = new();
+        
+        private EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxy;
+
+        public ServiceDiscoveryProxyComponent ServiceDiscoveryProxy
+        {
+            get
+            {
+                return this.serviceDiscoveryProxy;
+            }
+            set
+            {
+                this.serviceDiscoveryProxy = value;
+            }
+        }
     }
 }

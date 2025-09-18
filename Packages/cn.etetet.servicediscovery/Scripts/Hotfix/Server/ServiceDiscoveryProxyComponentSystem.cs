@@ -22,6 +22,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this ServiceDiscoveryProxyComponent self)
         {
+            self.MessageSender = self.Root().GetComponent<MessageSender>();
         }
 
         [Invoke(TimerInvokeType.ServiceDiscoveryProxyHeartbeat)]
@@ -49,13 +50,12 @@ namespace ET.Server
         {
             ServiceRegisterRequest request = ServiceRegisterRequest.Create();
             Scene root = self.Root();
+            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
             request.SceneType = root.SceneType;
             request.SceneName = root.Name;
             request.ActorId = root.GetActorId();
-
-            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
-
-            ServiceRegisterResponse response = await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request) as ServiceRegisterResponse;
+            
+            ServiceRegisterResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceRegisterResponse;
 
             self = selfRef;
             if (response.Error != ErrorCode.ERR_Success)
@@ -80,7 +80,7 @@ namespace ET.Server
             request.SceneType = root.SceneType;
             request.ActorId = root.GetActorId();
 
-            await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request);
+            await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace ET.Server
         {
             ServiceHeartbeatRequest request = ServiceHeartbeatRequest.Create();
             request.SceneName = self.Root().Name;
-            await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request);
+            await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace ET.Server
             ServiceQueryRequest request = ServiceQueryRequest.Create();
             request.SceneType = sceneType;
 
-            ServiceQueryResponse response = await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request) as ServiceQueryResponse;
+            ServiceQueryResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceQueryResponse;
             return response.Services;
         }
 
@@ -114,7 +114,7 @@ namespace ET.Server
             request.SceneName = self.Root().Name;
             request.SceneTypes.AddRange(sceneTypes);
 
-            await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request);
+            await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace ET.Server
             ServiceUnsubscribeRequest request = ServiceUnsubscribeRequest.Create();
             request.SceneName = self.Root().Name;
             request.SceneTypes.AddRange(sceneTypes);
-            await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request);
+            await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
         }
 
         public static void OnServiceChangeNotification(this ServiceDiscoveryProxyComponent self, int changeType, ServiceInfoProto serviceInfo)
@@ -194,7 +194,7 @@ namespace ET.Server
             ServiceQueryBySceneNameRequest request = ServiceQueryBySceneNameRequest.Create();
             request.SceneName = sceneName;
             
-            ServiceQueryBySceneNameResponse response = await self.Root().GetComponent<MessageSender>().Call(self.ServiceDiscoveryActorId, request) as ServiceQueryBySceneNameResponse;
+            ServiceQueryBySceneNameResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceQueryBySceneNameResponse;
             
             self = selfRef;
             self.OnServiceChangeNotification(1, response.Services);

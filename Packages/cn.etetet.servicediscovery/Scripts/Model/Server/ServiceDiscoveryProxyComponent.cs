@@ -34,5 +34,19 @@ namespace ET.Server
         public Dictionary<string, ServiceCacheInfo> CachedSceneNameServices = new();
 
         public long HeartbeatTimer;
+        
+        private EntityRef<MessageSender> messageSender;
+
+        public MessageSender MessageSender
+        {
+            get
+            {
+                return this.messageSender;
+            }
+            set
+            {
+                this.messageSender = value;
+            }
+        }
     }
 }
