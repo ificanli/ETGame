@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ET.Server
 {
     /// <summary>
@@ -12,6 +14,7 @@ namespace ET.Server
             self.SceneName = sceneName;
             self.SceneType = sceneType;
             self.ActorId = actorId;
+            self.Metadata.Clear();
             self.RegisterTime = TimeInfo.Instance.ServerNow();
             self.LastHeartbeatTime = self.RegisterTime;
         }
@@ -39,6 +42,26 @@ namespace ET.Server
         }
 
         /// <summary>
+        /// 检查元数据是否匹配过滤条件
+        /// </summary>
+        public static bool MatchesFilter(this ServiceInfo self, Dictionary<string, string> filter)
+        {
+            if (filter.Count == 0)
+            {
+                return true;
+            }
+            foreach (var kvp in filter)
+            {
+                if (!self.Metadata.TryGetValue(kvp.Key, out string value) || value != kvp.Value)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// 转换为Proto格式
         /// </summary>
         public static ServiceInfoProto ToProto(this ServiceInfo self)
@@ -47,6 +70,12 @@ namespace ET.Server
             proto.SceneType = self.SceneType;
             proto.SceneName = self.SceneName;
             proto.ActorId = self.ActorId;
+
+            foreach (var kvp in self.Metadata)
+            {
+                proto.Metadata[kvp.Key] = kvp.Value;
+            }
+
             return proto;
         }
     }

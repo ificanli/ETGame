@@ -54,6 +54,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\cn.etetet.scripts\DotNet~\Model\ET.Model.csproj" IsAspireProjectResource="false" />
+        <ProjectReference Include="..\..\cn.etetet.scripts\DotNet~\Hotfix\ET.Hotfix.csproj" IsAspireProjectResource="false" />
     </ItemGroup>
 
 </Project>

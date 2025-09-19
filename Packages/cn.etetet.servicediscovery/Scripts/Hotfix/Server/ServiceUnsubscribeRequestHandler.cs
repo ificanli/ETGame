@@ -6,7 +6,7 @@ namespace ET.Server
         protected override async ETTask Run(Scene scene, ServiceUnsubscribeRequest request, ServiceUnsubscribeResponse response)
         {
             ServiceDiscoveryComponent serviceDiscovery = scene.GetComponent<ServiceDiscoveryComponent>();
-            serviceDiscovery.UnsubscribeServiceChange(request.SceneName, request.SceneTypes);
+            serviceDiscovery.UnsubscribeServiceChange(request.SceneName, request.SceneType);
 
             Log.Debug($"Unsubscribe service change: {request.SceneName}");
 

@@ -2,11 +2,13 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-    public struct ServiceCacheInfo
+    [ChildOf(typeof(ServiceDiscoveryProxyComponent))]
+    public partial class ServiceCacheInfo: Entity, IAwake
     {
         public string SceneName;
         public int SceneType;
         public ActorId ActorId;
+        public Dictionary<string, string> Metadata;
     }
     
     /// <summary>
@@ -31,7 +33,7 @@ namespace ET.Server
         /// </summary>
         public MultiMap<int, string> CachedSceneTypeServices = new();
         
-        public Dictionary<string, ServiceCacheInfo> CachedSceneNameServices = new();
+        public Dictionary<string, EntityRef<ServiceCacheInfo>> CachedSceneNameServices = new();
 
         public long HeartbeatTimer;
         

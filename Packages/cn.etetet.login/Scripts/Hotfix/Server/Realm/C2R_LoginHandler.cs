@@ -12,16 +12,27 @@ namespace ET.Server
 			EntityRef<Session> sessionRef = session;
 			const int UserZone = 3; // 这里一般会有创角，选择区服，demo就不做这个操作了，直接放在3区
 			// 随机分配一个Gate
-			StartSceneConfig config = RealmGateAddressHelper.GetGate(UserZone, request.Account);
-			Log.Debug($"gate address: {config}");
+			Scene root = session.Root();
+			EntityRef<Scene> rootRef = root;
+			ulong hash = (ulong)request.Account.GetLongHashCode();
+			
+			ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.GetComponent<ServiceDiscoveryProxyComponent>();
+			
+			RealmGateInfoComponent gateInfoComponent = root.GetComponent<RealmGateInfoComponent>();
+			string[] gates = gateInfoComponent.GetGatesByZone(UserZone);
+			string gateName = gates[(int)(hash % (ulong)gates.Length)];
+			Log.Debug($"gate address: {gateName}");
 			
 			// 向gate请求一个key,客户端可以拿着这个key连接gate
 			R2G_GetLoginKey r2GGetLoginKey = R2G_GetLoginKey.Create();
 			r2GGetLoginKey.Account = request.Account;
-			G2R_GetLoginKey g2RGetLoginKey = (G2R_GetLoginKey) await session.Fiber().Root.GetComponent<MessageSender>().Call(
-				config.ActorId, r2GGetLoginKey);
-
-			response.Address = config.InnerIPPort.ToString();
+			ServiceCacheInfo gateServiceInfo = await serviceDiscoveryProxyComponent.GetServiceInfo(gateName);
+			response.Address = gateServiceInfo.Metadata[ServiceMetaKey.InnerIPPort];
+			
+			root = rootRef;
+			MessageSender messageSender = root.GetComponent<MessageSender>();
+			G2R_GetLoginKey g2RGetLoginKey = (G2R_GetLoginKey) await messageSender.Call(gateServiceInfo.ActorId, r2GGetLoginKey);
+			
 			response.Key = g2RGetLoginKey.Key;
 			response.GateId = g2RGetLoginKey.GateId;
 			session = sessionRef;

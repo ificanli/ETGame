@@ -25,6 +25,9 @@ namespace ET
         [MemoryPackOrder(3)]
         public ActorId ActorId { get; set; }
 
+        [MongoDB.Bson.Serialization.Attributes.BsonDictionaryOptions(MongoDB.Bson.Serialization.Options.DictionaryRepresentation.ArrayOfArrays)]
+        [MemoryPackOrder(4)]
+        public Dictionary<string, string> Metadata { get; set; } = new();
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -36,6 +39,7 @@ namespace ET
             this.SceneName = default;
             this.SceneType = default;
             this.ActorId = default;
+            this.Metadata.Clear();
 
             ObjectPool.Recycle(this);
         }
@@ -359,8 +363,11 @@ namespace ET
         public string SceneName { get; set; }
 
         [MemoryPackOrder(2)]
-        public List<int> SceneTypes { get; set; } = new();
+        public int SceneType { get; set; }
 
+        [MongoDB.Bson.Serialization.Attributes.BsonDictionaryOptions(MongoDB.Bson.Serialization.Options.DictionaryRepresentation.ArrayOfArrays)]
+        [MemoryPackOrder(3)]
+        public Dictionary<string, string> FilterMetadata { get; set; } = new();
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -370,7 +377,8 @@ namespace ET
 
             this.RpcId = default;
             this.SceneName = default;
-            this.SceneTypes.Clear();
+            this.SceneType = default;
+            this.FilterMetadata.Clear();
 
             ObjectPool.Recycle(this);
         }
@@ -426,7 +434,7 @@ namespace ET
         public string SceneName { get; set; }
 
         [MemoryPackOrder(2)]
-        public List<int> SceneTypes { get; set; } = new();
+        public int SceneType { get; set; }
 
         public override void Dispose()
         {
@@ -437,7 +445,7 @@ namespace ET
 
             this.RpcId = default;
             this.SceneName = default;
-            this.SceneTypes.Clear();
+            this.SceneType = default;
 
             ObjectPool.Recycle(this);
         }
@@ -528,6 +536,9 @@ namespace ET
         [MemoryPackOrder(2)]
         public ActorId ActorId { get; set; }
 
+        [MongoDB.Bson.Serialization.Attributes.BsonDictionaryOptions(MongoDB.Bson.Serialization.Options.DictionaryRepresentation.ArrayOfArrays)]
+        [MemoryPackOrder(3)]
+        public Dictionary<string, string> Metadata { get; set; } = new();
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -538,6 +549,7 @@ namespace ET
             this.SceneName = default;
             this.SceneType = default;
             this.ActorId = default;
+            this.Metadata.Clear();
 
             ObjectPool.Recycle(this);
         }

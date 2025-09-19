@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ET.Server
 {
@@ -36,7 +37,7 @@ namespace ET.Server
         /// <summary>
         /// 注册服务
         /// </summary>
-        public static void RegisterService(this ServiceDiscoveryComponent self, string sceneName, int sceneType, ActorId actorId)
+        public static void RegisterService(this ServiceDiscoveryComponent self, string sceneName, int sceneType, ActorId actorId, Dictionary<string, string> metadata)
         {
             // 已存在则注销之前的
             if (self.Services.ContainsKey(sceneName))
@@ -46,12 +47,18 @@ namespace ET.Server
 
             // 创建服务信息
             ServiceInfo serviceInfo = self.AddChild<ServiceInfo, string, int, ActorId>(sceneName, sceneType, actorId);
+            // 设置元数据
+            foreach (var kvp in metadata)
+            {
+                serviceInfo.Metadata[kvp.Key] = kvp.Value;
+            }
+            
             self.Services[sceneName] = serviceInfo;
 
             // 添加到按类型分组的字典
             self.ServicesByType.Add(sceneType, sceneName);
 
-            Log.Debug($"Service registered: {sceneType} {sceneName}");
+            Log.Debug($"Service registered: {serviceInfo}");
 
             // 通知订阅者
             self.NotifyServiceChange(sceneType, 1, serviceInfo);
@@ -80,7 +87,7 @@ namespace ET.Server
             // 从字典中移除
             self.Services.Remove(sceneName);
             self.ServicesByType.Remove(sceneType, sceneName);
-            foreach (int subSceneType in serviceInfo.SubSceneTypes)
+            foreach (int subSceneType in serviceInfo.SubSceneTypes.Keys)
             {
                 self.Subscribers.Remove(subSceneType, sceneName);
             }
@@ -145,46 +152,44 @@ namespace ET.Server
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static void SubscribeServiceChange(this ServiceDiscoveryComponent self, string sceneName, List<int> sceneTypes)
+        public static void SubscribeServiceChange(this ServiceDiscoveryComponent self, string sceneName, int sceneType, Dictionary<string, string> filterMetadata)
         {
             ServiceInfo serviceInfo = self.Services[sceneName];
-            
+
             ServiceChangeNotification notification = ServiceChangeNotification.Create();
             notification.ChangeType = 1;
-            
-            foreach (int sceneType in sceneTypes)
+
+            // 存储过滤条件
+            serviceInfo.SubSceneTypes[sceneType] = new Dictionary<string, string>(filterMetadata);
+
+            self.Subscribers.Add(sceneType, sceneName);
+
+            // 查询现有服务并应用过滤条件
+            List<ServiceInfo> serviceInfos = self.GetServicesBySceneType(sceneType);
+            foreach (ServiceInfo sInfo in serviceInfos)
             {
-                if (!serviceInfo.SubSceneTypes.Add(sceneType))
-                {
-                    continue;
-                }
-                
-                self.Subscribers.Add(sceneType, sceneName);
-                
-                List<ServiceInfo> serviceInfos = self.GetServicesBySceneType(sceneType);
-                foreach (ServiceInfo sInfo in serviceInfos)
+                // 应用过滤条件
+                if (sInfo.MatchesFilter(filterMetadata))
                 {
                     notification.ServiceInfo.Add(sInfo.ToProto());
                 }
             }
-            
+
             self.Root().GetComponent<MessageSender>().Send(serviceInfo.ActorId, notification);
 
-            Log.Debug($"Subscribe service change: {sceneName} {sceneTypes.ListToString()}");
+            string filterStr = filterMetadata.Count > 0? $" filter=[{string.Join(", ", filterMetadata.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}]" : "";
+            Log.Debug($"Subscribe service change: {sceneName} {sceneType} {filterStr}");
         }
 
         /// <summary>
         /// 取消订阅服务变更
         /// </summary>
-        public static void UnsubscribeServiceChange(this ServiceDiscoveryComponent self, string sceneName, List<int> sceneTypes)
+        public static void UnsubscribeServiceChange(this ServiceDiscoveryComponent self, string sceneName, int sceneType)
         {
             ServiceInfo serviceInfo = self.Services[sceneName];
-            foreach (int sceneType in sceneTypes)
-            {
-                self.Subscribers.Remove(sceneType, sceneName);
-                serviceInfo.SubSceneTypes.Remove(sceneType);
-            }
-            Log.Debug($"Unsubscribe service change: {sceneName} {sceneTypes.ListToString()}");
+            self.Subscribers.Remove(sceneType, sceneName);
+            serviceInfo.SubSceneTypes.Remove(sceneType);
+            Log.Debug($"Unsubscribe service change: {sceneName} {sceneType}");
         }
 
         /// <summary>
@@ -197,19 +202,43 @@ namespace ET.Server
                 return;
             }
 
-            ServiceChangeNotification notification = ServiceChangeNotification.Create();
-            notification.ChangeType = changeType;
-            notification.ServiceInfo.Add(serviceInfo.ToProto());
+            int notifiedCount = 0;
 
             // 给订阅者广播
             foreach (string sceneName in subscribers)
             {
-                self.Services.TryGetValue(sceneName, out EntityRef<ServiceInfo> serviceRef);
+                if (!self.Services.TryGetValue(sceneName, out EntityRef<ServiceInfo> serviceRef))
+                {
+                    continue;
+                }
+
                 ServiceInfo subServiceInfo = serviceRef;
+                if (subServiceInfo == null)
+                {
+                    continue;
+                }
+
+                // 检查是否有过滤条件
+                Dictionary<string, string> filter = null;
+                if (subServiceInfo.SubSceneTypes.TryGetValue(sceneType, out filter))
+                {
+                    // 应用过滤条件
+                    if (!serviceInfo.MatchesFilter(filter))
+                    {
+                        continue;
+                    }
+                }
+
+                // 创建通知消息
+                ServiceChangeNotification notification = ServiceChangeNotification.Create();
+                notification.ChangeType = changeType;
+                notification.ServiceInfo.Add(serviceInfo.ToProto());
+
                 self.Root().GetComponent<MessageSender>().Send(subServiceInfo.ActorId, notification);
+                notifiedCount++;
             }
 
-            Log.Debug($"Notified service change: {sceneType} changeType={changeType} to {subscribers.Count} subscribers");
+            Log.Debug($"Notified service change: {sceneType} changeType={changeType} to {notifiedCount} subscribers (filtered from {subscribers.Count})");
         }
 
         /// <summary>

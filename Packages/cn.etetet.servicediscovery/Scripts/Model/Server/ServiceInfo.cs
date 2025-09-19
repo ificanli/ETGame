@@ -20,6 +20,11 @@ namespace ET.Server
         public ActorId ActorId;
 
         /// <summary>
+        /// 服务元数据，存储KV键值对
+        /// </summary>
+        public Dictionary<string, string> Metadata = new();
+
+        /// <summary>
         /// 注册时间
         /// </summary>
         public long RegisterTime;
@@ -30,8 +35,8 @@ namespace ET.Server
         public long LastHeartbeatTime;
 
         /// <summary>
-        /// 订阅的SceneTypes
+        /// 订阅时的过滤条件，Key为SceneType，Value为过滤元数据
         /// </summary>
-        public HashSet<int> SubSceneTypes = new();
+        public Dictionary<int, Dictionary<string, string>> SubSceneTypes = new();
     }
 }

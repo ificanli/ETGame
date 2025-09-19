@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace ET.Server
 {
@@ -17,10 +18,17 @@ namespace ET.Server
             root.AddComponent<GateSessionKeyComponent>();
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<MessageLocationSenderComponent>();
-
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
             root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPPort));
-            await ETTask.CompletedTask;
+            
+            // 注册服务发现
+            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            Dictionary<string, string> metadata = new()
+            {
+                { ServiceMetaKey.Zone, $"{startSceneConfig.Zone}" },
+                { ServiceMetaKey.InnerIPPort, $"{startSceneConfig.InnerIPPort}" }
+            };
+            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
         }
     }
 }

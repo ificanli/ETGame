@@ -73,7 +73,7 @@ namespace ET
 
         public static void Error(Exception e)
         {
-            GetLog().Error(e.ToString());
+            GetLog().Error(e);
         }
         
         public static void Console(string msg)
@@ -86,6 +86,7 @@ namespace ET
         }
 
 #if DOTNET
+        
         [Conditional("DEBUG")]
         public static void Trace(ref System.Runtime.CompilerServices.DefaultInterpolatedStringHandler message)
         {

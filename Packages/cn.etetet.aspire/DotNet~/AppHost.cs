@@ -1,6 +1,7 @@
 using CommandLine;
 using ET.Server;
 using Luban;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ET.Aspire
 {
@@ -59,11 +60,6 @@ namespace ET.Aspire
                     Console.WriteLine($"  - Scene: {scene.Name} ({scene.SceneType}) Port: {scene.Port}");
                 }
             }
-
-            // 可以添加Redis/MongoDB等外部依赖
-            // var redis = builder.AddRedis("cache");
-            // var mongo = builder.AddMongoDB("gamedb");
-
             builder.Build().Run();
         }
     }

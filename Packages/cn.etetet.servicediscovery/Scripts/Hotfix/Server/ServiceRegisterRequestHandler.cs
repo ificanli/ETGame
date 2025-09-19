@@ -6,7 +6,7 @@ namespace ET.Server
         protected override async ETTask Run(Scene scene, ServiceRegisterRequest request, ServiceRegisterResponse response)
         {
             ServiceDiscoveryComponent serviceDiscovery = scene.GetComponent<ServiceDiscoveryComponent>();
-            serviceDiscovery.RegisterService(request.SceneName, request.SceneType, request.ActorId);
+            serviceDiscovery.RegisterService(request.SceneName, request.SceneType, request.ActorId, request.Metadata);
             await ETTask.CompletedTask;
         }
     }

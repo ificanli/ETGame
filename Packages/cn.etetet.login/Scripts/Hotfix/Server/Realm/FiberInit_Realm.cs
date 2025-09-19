@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace ET.Server
 {
@@ -15,8 +16,27 @@ namespace ET.Server
             root.AddComponent<MessageSender>();
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get(root.Fiber.Id);
             root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPPort));
+            
+            root.AddComponent<ServiceMessageSender>();
+            
+            // 注册服务发现
+            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
 
-            await ETTask.CompletedTask;
+            Dictionary<string, string> metadata = new()
+            {
+                { ServiceMetaKey.Zone, $"{startSceneConfig.Zone}" },
+                { ServiceMetaKey.InnerIPPort, $"{startSceneConfig.InnerIPPort}" }
+            };
+            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
+            
+            // 订阅跟realm属于同一个zone的Gate
+            Dictionary<string, string> filterMeta = new()
+            {
+                { ServiceMetaKey.Zone, $"{startSceneConfig.Zone}" }
+            };
+            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Gate, filterMeta);
         }
     }
 }

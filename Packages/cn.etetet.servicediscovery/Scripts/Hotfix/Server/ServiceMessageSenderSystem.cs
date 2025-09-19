@@ -58,14 +58,14 @@ namespace ET.Server
             // ActorId未知，先获取ActorId
             EntityRef<ServiceMessageSender> selfRef = self;
 
-            ActorId actorId = await self.ServiceDiscoveryProxy.GetServiceActorId(sceneName);
-            if (actorId == default)
+            ServiceCacheInfo serviceCacheInfo = await self.ServiceDiscoveryProxy.GetServiceInfo(sceneName);
+            if (serviceCacheInfo.ActorId == default)
             {
                 throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
             }
 
             self = selfRef;
-            return await self.ServiceDiscoveryProxy.MessageSender.Call(actorId, request, needException);
+            return await self.ServiceDiscoveryProxy.MessageSender.Call(serviceCacheInfo.ActorId, request, needException);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace ET.Server
         {
             EntityRef<ServiceMessageSender> selfRef = self;
 
-            ActorId actorId = await self.ServiceDiscoveryProxy.GetServiceActorId(sceneName);
+            ServiceCacheInfo serviceCacheInfo = await self.ServiceDiscoveryProxy.GetServiceInfo(sceneName);
 
             self = selfRef;
             if (self == null)
@@ -83,13 +83,13 @@ namespace ET.Server
                 return;
             }
 
-            if (actorId == default)
+            if (serviceCacheInfo.ActorId == default)
             {
                 throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
             }
 
             // 处理待发送的消息
-            self.ProcessPendingMessages(sceneName, actorId);
+            self.ProcessPendingMessages(sceneName, serviceCacheInfo.ActorId);
         }
 
         /// <summary>
