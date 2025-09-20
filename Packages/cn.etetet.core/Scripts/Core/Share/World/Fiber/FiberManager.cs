@@ -135,8 +135,6 @@ namespace ET
         /// <param name="parent"></param>
         internal async ETTask<Fiber> CreateFiber(int fiberId, SchedulerType schedulerType, long rootId, int zone, int sceneType, string name, Fiber parent)
         {
-            Log.Debug($"create fiber {name} start");
-            
             if (sceneType == 0)
             {
                 throw new Exception("fiberId is 0");
@@ -144,7 +142,7 @@ namespace ET
             try
             {
                 int parentId = parent?.Id ?? 0;
-                Log.Debug($"create fiber: {fiberId} {zone} {sceneType} {name} {schedulerType} {parentId}");
+                Log.Debug($"create fiber: {name} {fiberId} {zone} {sceneType} {schedulerType} {parentId}");
                 
                 // 如果调度器是父fiber，那么日志也是父fiber的日志
                 Fiber fiber = new(fiberId, rootId, zone, sceneType, name, schedulerType, parent);
