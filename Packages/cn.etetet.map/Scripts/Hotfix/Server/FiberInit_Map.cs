@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace ET.Server
 {
@@ -39,7 +40,12 @@ namespace ET.Server
                 Unit unit = UnitFactory.Create(root, kv.Key, kv.Value.UnitConfigId);
                 unitComponent.Add(unit);
             }
-            await ETTask.CompletedTask;
+            
+            root.AddComponent<ServiceMessageSender>();
+            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            // 订阅location,并未注册Map
+            Dictionary<string, string> filterMeta = new();
+            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Location, filterMeta);
         }
     }
 }

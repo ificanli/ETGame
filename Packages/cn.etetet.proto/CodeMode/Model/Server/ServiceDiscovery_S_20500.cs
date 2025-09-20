@@ -26,7 +26,7 @@ namespace ET
         public ActorId ActorId { get; set; }
 
         [MongoDB.Bson.Serialization.Attributes.BsonDictionaryOptions(MongoDB.Bson.Serialization.Options.DictionaryRepresentation.ArrayOfArrays)]
-        [MemoryPackOrder(4)]
+        [MemoryPackOrder(5)]
         public Dictionary<string, string> Metadata { get; set; } = new();
         public override void Dispose()
         {
@@ -94,12 +94,6 @@ namespace ET
         [MemoryPackOrder(1)]
         public string SceneName { get; set; }
 
-        [MemoryPackOrder(2)]
-        public int SceneType { get; set; }
-
-        [MemoryPackOrder(3)]
-        public ActorId ActorId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -109,8 +103,6 @@ namespace ET
 
             this.RpcId = default;
             this.SceneName = default;
-            this.SceneType = default;
-            this.ActorId = default;
 
             ObjectPool.Recycle(this);
         }
@@ -366,7 +358,7 @@ namespace ET
         public int SceneType { get; set; }
 
         [MongoDB.Bson.Serialization.Attributes.BsonDictionaryOptions(MongoDB.Bson.Serialization.Options.DictionaryRepresentation.ArrayOfArrays)]
-        [MemoryPackOrder(3)]
+        [MemoryPackOrder(4)]
         public Dictionary<string, string> FilterMetadata { get; set; } = new();
         public override void Dispose()
         {
@@ -537,7 +529,7 @@ namespace ET
         public ActorId ActorId { get; set; }
 
         [MongoDB.Bson.Serialization.Attributes.BsonDictionaryOptions(MongoDB.Bson.Serialization.Options.DictionaryRepresentation.ArrayOfArrays)]
-        [MemoryPackOrder(3)]
+        [MemoryPackOrder(4)]
         public Dictionary<string, string> Metadata { get; set; } = new();
         public override void Dispose()
         {

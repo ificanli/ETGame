@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 
 namespace ET.Server
 {
@@ -25,7 +24,6 @@ namespace ET.Server
 
             Dictionary<string, string> metadata = new()
             {
-                { ServiceMetaKey.Zone, $"{startSceneConfig.Zone}" },
                 { ServiceMetaKey.InnerIPPort, $"{startSceneConfig.InnerIPPort}" }
             };
             await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
@@ -33,7 +31,7 @@ namespace ET.Server
             // 订阅跟realm属于同一个zone的Gate
             Dictionary<string, string> filterMeta = new()
             {
-                { ServiceMetaKey.Zone, $"{startSceneConfig.Zone}" }
+                { ServiceMetaKey.Zone, $"{fiberInit.Fiber.Zone}" }
             };
             serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Gate, filterMeta);

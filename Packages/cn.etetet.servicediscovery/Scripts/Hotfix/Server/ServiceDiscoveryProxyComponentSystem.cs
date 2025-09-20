@@ -10,6 +10,11 @@ namespace ET.Server
         {
 
         }
+
+        public static int ServiceZone(this ServiceCacheInfo self)
+        {
+            return int.Parse(self.Metadata[ServiceMetaKey.Zone]);
+        }
     }
 
 
@@ -65,6 +70,7 @@ namespace ET.Server
             request.SceneType = root.SceneType;
             request.SceneName = root.Name;
             request.ActorId = root.GetActorId();
+            request.Metadata.Add(ServiceMetaKey.Zone, $"{self.Zone()}");
             foreach (var item in metadata)
             {
                 request.Metadata.Add(item.Key, item.Value);
@@ -92,9 +98,6 @@ namespace ET.Server
 
             ServiceUnregisterRequest request = ServiceUnregisterRequest.Create();
             request.SceneName = root.Name;
-            request.SceneType = root.SceneType;
-            request.ActorId = root.GetActorId();
-
             await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
         }
 
@@ -146,6 +149,26 @@ namespace ET.Server
             request.SceneType = sceneType;
             await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
         }
+        
+        public static List<string> GetByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
+        {
+            return self.ZoneSceneTypeServices[zone][type];
+        }
+        
+        public static List<string> GetBySceneType(this ServiceDiscoveryProxyComponent self, int type)
+        {
+            return self.SceneTypeServices[type];
+        }
+        
+        public static string GetOneByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
+        {
+            return self.ZoneSceneTypeServices[zone][type][0];
+        }
+
+        public static ServiceCacheInfo GetByName(this ServiceDiscoveryProxyComponent self, string name)
+        {
+            return self.SceneNameServices[name];
+        }
 
         private static void OnServiceChangeNotification(this ServiceDiscoveryProxyComponent self, int changeType, ServiceInfoProto serviceInfo)
         {
@@ -154,13 +177,21 @@ namespace ET.Server
                 // 添加
                 case 1:
                 {
-                    self.CachedSceneTypeServices.Add(serviceInfo.SceneType, serviceInfo.SceneName);
                     ServiceCacheInfo serviceCacheInfo = self.AddChild<ServiceCacheInfo>();
                     serviceCacheInfo.SceneName = serviceInfo.SceneName;
                     serviceCacheInfo.SceneType = serviceInfo.SceneType;
                     serviceCacheInfo.ActorId = serviceInfo.ActorId;
                     serviceCacheInfo.Metadata = new Dictionary<string, string>(serviceInfo.Metadata);
-                    self.CachedSceneNameServices.Add(serviceInfo.SceneName, serviceCacheInfo);
+                    self.SceneNameServices.Add(serviceInfo.SceneName, serviceCacheInfo);
+                    self.SceneTypeServices.Add(serviceInfo.SceneType, serviceInfo.SceneName);
+                    MultiMap<int, string> map = null;
+                    if (!self.ZoneSceneTypeServices.TryGetValue(serviceCacheInfo.ServiceZone(), out map))
+                    {
+                        map = new MultiMap<int, string>();
+                        self.ZoneSceneTypeServices.Add(serviceCacheInfo.ServiceZone(), map);
+                    }
+                    map.Add(serviceCacheInfo.SceneType, serviceCacheInfo.SceneName);
+                    
 
                     EventSystem.Instance.Publish(self.Scene(), new OnServiceChangeAddService()
                     {
@@ -171,15 +202,24 @@ namespace ET.Server
                 // 删除
                 case 2:
                 {
-                    if (!self.CachedSceneNameServices.TryGetValue(serviceInfo.SceneName, out var serviceCacheInfoRef))
+                    if (!self.SceneNameServices.TryGetValue(serviceInfo.SceneName, out var serviceCacheInfoRef))
                     {
                         return;
                     }
                     
                     using ServiceCacheInfo serviceCacheInfo = serviceCacheInfoRef;
                     
-                    self.CachedSceneTypeServices.Remove(serviceInfo.SceneType, serviceInfo.SceneName);
-                    self.CachedSceneNameServices.Remove(serviceInfo.SceneName);
+                    self.SceneTypeServices.Remove(serviceCacheInfo.SceneType, serviceCacheInfo.SceneName);
+                    self.SceneNameServices.Remove(serviceCacheInfo.SceneName);
+                    if (self.ZoneSceneTypeServices.TryGetValue(serviceCacheInfo.ServiceZone(), out MultiMap<int, string> map))
+                    {
+                        map.Remove(serviceCacheInfo.SceneType, serviceCacheInfo.SceneName);
+                    }
+
+                    if (map.Count == 0)
+                    {
+                        self.ZoneSceneTypeServices.Remove(serviceCacheInfo.ServiceZone());
+                    }
                     
                     EventSystem.Instance.Publish(self.Scene(), new OnServiceChangeRemoveService()
                     {
@@ -200,18 +240,10 @@ namespace ET.Server
                 self.OnServiceChangeNotification(changeType, serviceInfo);
             }
         }
-
-        /// <summary>
-        /// 获取缓存的服务列表
-        /// </summary>
-        public static string[] GetCachedServices(this ServiceDiscoveryProxyComponent self, int sceneType)
-        {
-            return self.CachedSceneTypeServices.GetAll(sceneType);
-        }
         
         public static async ETTask<ServiceCacheInfo> GetServiceInfo(this ServiceDiscoveryProxyComponent self, string sceneName)
         {
-            if (self.CachedSceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef))
+            if (self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef))
             {
                 return serviceCacheInfoRef;
             }
@@ -224,7 +256,7 @@ namespace ET.Server
             
             self = selfRef;
             self.OnServiceChangeNotification(1, response.Services);
-            self.CachedSceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef2);
+            self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef2);
             return serviceCacheInfoRef2;
         }
     }

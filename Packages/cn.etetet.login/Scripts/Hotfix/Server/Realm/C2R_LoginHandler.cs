@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 
 
@@ -17,10 +18,9 @@ namespace ET.Server
 			ulong hash = (ulong)request.Account.GetLongHashCode();
 			
 			ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.GetComponent<ServiceDiscoveryProxyComponent>();
-			
-			RealmGateInfoComponent gateInfoComponent = root.GetComponent<RealmGateInfoComponent>();
-			string[] gates = gateInfoComponent.GetGatesByZone(UserZone);
-			string gateName = gates[(int)(hash % (ulong)gates.Length)];
+
+			List<string> gates = serviceDiscoveryProxyComponent.GetByZoneSceneType(UserZone, SceneType.Gate);
+			string gateName = gates[(int)(hash % (ulong)gates.Count)];
 			Log.Debug($"gate address: {gateName}");
 			
 			// 向gate请求一个key,客户端可以拿着这个key连接gate

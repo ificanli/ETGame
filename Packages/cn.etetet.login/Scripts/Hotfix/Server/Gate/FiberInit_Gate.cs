@@ -21,14 +21,20 @@ namespace ET.Server
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
             root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPPort));
             
+            root.AddComponent<ServiceMessageSender>();
             // 注册服务发现
             ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
             Dictionary<string, string> metadata = new()
             {
-                { ServiceMetaKey.Zone, $"{startSceneConfig.Zone}" },
                 { ServiceMetaKey.InnerIPPort, $"{startSceneConfig.InnerIPPort}" }
             };
             await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
+            
+            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
+            // 订阅location
+            Dictionary<string, string> filterMeta = new();
+            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Location, filterMeta);
         }
     }
 }

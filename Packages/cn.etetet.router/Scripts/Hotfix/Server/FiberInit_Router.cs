@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace ET.Server
 {
@@ -14,7 +15,14 @@ namespace ET.Server
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(startSceneConfig.Process);
             IPEndPoint outIPPort = NetworkHelper.ToIPEndPoint($"{startProcessConfig.OuterIP}:{startSceneConfig.Port}");
             root.AddComponent<RouterComponent, IPEndPoint, string>(outIPPort, startProcessConfig.InnerIP);
-            await ETTask.CompletedTask;
+            
+            // 注册服务发现
+            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            Dictionary<string, string> metadata = new()
+            {
+                { ServiceMetaKey.OuterIPPort, $"{startSceneConfig.StartProcessConfig.OuterIP}:{startSceneConfig.Port}" }
+            };
+            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
         }
     }
 }

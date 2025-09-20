@@ -11,15 +11,21 @@ namespace ET.Server
         public async ETTask Handle(Scene scene, HttpListenerContext context)
         {
             HttpGetRouterResponse httpGetRouterResponse = HttpGetRouterResponse.Create();
-            List<StartSceneConfig> realms = StartSceneConfigCategory.Instance.GetBySceneType(SceneType.Realm);
-            foreach (StartSceneConfig startSceneConfig in realms)
+            
+            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = scene.GetComponent<ServiceDiscoveryProxyComponent>();
+            List<string> realmNames = serviceDiscoveryProxyComponent.GetBySceneType(SceneType.Realm);
+            foreach (string realmName in realmNames)
             {
+                ServiceCacheInfo serviceCacheInfo = serviceDiscoveryProxyComponent.GetByName(realmName);
                 // 这里是要用InnerIP，因为云服务器上realm绑定不了OuterIP的,所以realm的内网外网的socket都是监听内网地址
-                httpGetRouterResponse.Realms.Add(startSceneConfig.InnerIPPort.ToString());
+                httpGetRouterResponse.Realms.Add(serviceCacheInfo.Metadata[ServiceMetaKey.InnerIPPort]);
             }
-            foreach (StartSceneConfig startSceneConfig in StartSceneConfigCategory.Instance.GetBySceneType(SceneType.Router))
+            
+            List<string> routerNames = serviceDiscoveryProxyComponent.GetBySceneType(SceneType.Router);
+            foreach (string routerName in routerNames)
             {
-                httpGetRouterResponse.Routers.Add($"{startSceneConfig.StartProcessConfig.OuterIP}:{startSceneConfig.Port}");
+                ServiceCacheInfo serviceCacheInfo = serviceDiscoveryProxyComponent.GetByName(routerName);
+                httpGetRouterResponse.Realms.Add(serviceCacheInfo.Metadata[ServiceMetaKey.OuterIPPort]);
             }
             
             HttpListenerRequest request = context.Request;

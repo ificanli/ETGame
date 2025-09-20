@@ -20,11 +20,7 @@ namespace ET.Server
             
             // 注册服务发现
             ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
-            Dictionary<string, string> metadata = new()
-            {
-                { ServiceMetaKey.Zone, $"{startSceneConfig.Zone}" },
-                { ServiceMetaKey.InnerIPPort, $"{startSceneConfig.InnerIPPort}" }
-            };
+            Dictionary<string, string> metadata = new();
             await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
         }
     }

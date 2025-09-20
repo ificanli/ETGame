@@ -31,9 +31,9 @@ namespace ET.Server
         /// <summary>
         /// 缓存的服务列表，Key为SceneType，Value为该类型的服务SceneName列表
         /// </summary>
-        public MultiMap<int, string> CachedSceneTypeServices = new();
-        
-        public Dictionary<string, EntityRef<ServiceCacheInfo>> CachedSceneNameServices = new();
+        public Dictionary<string, EntityRef<ServiceCacheInfo>> SceneNameServices = new();
+        public MultiMap<int, string> SceneTypeServices = new();
+        public Dictionary<long, MultiMap<int, string>> ZoneSceneTypeServices = new();
 
         public long HeartbeatTimer;
         

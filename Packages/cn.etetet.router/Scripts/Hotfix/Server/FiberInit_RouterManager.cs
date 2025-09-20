@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 
 namespace ET.Server
 {
@@ -12,7 +13,14 @@ namespace ET.Server
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
             root.AddComponent<HttpComponent, string>($"http://*:{startSceneConfig.Port}/");
 
-            await ETTask.CompletedTask;
+            // 注册服务发现
+            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
+            
+            // 订阅Router
+            Dictionary<string, string> filterMeta = new();
+            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Router, filterMeta);
         }
     }
 }
