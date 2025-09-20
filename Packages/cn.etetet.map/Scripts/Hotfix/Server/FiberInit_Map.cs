@@ -49,6 +49,9 @@ namespace ET.Server
             Dictionary<string, string> filterMeta = new();
             serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Location, filterMeta);
+            
+            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.MapManager, filterMeta);
         }
     }
 }

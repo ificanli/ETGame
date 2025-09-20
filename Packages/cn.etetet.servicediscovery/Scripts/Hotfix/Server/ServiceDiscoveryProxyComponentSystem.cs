@@ -256,7 +256,15 @@ namespace ET.Server
         
         public static string GetOneByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
         {
-            return self.ZoneSceneTypeServices[zone][type][0];
+            try
+            {
+                return self.ZoneSceneTypeServices[zone][type][0];
+            }
+            catch (Exception e)
+            {
+                string sceneName = SceneTypeSingleton.Instance.GetSceneName(type);
+                throw new Exception($"{self.Root().Name} not found scene type {zone}, {sceneName}", e);
+            }
         }
 
         public static ServiceCacheInfo GetByName(this ServiceDiscoveryProxyComponent self, string name)
