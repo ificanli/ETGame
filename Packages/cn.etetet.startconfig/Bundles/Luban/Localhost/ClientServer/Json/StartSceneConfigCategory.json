@@ -61,7 +61,7 @@
     "Zone": 2,
     "SceneType": "Gate",
     "Name": "Gate1",
-    "Port": 30101
+    "Port": 20102
   },
   {
     "Id": 203,
@@ -69,7 +69,7 @@
     "Zone": 2,
     "SceneType": "Gate",
     "Name": "Gate2",
-    "Port": 30102
+    "Port": 20103
   },
   {
     "Id": 204,

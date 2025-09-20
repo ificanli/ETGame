@@ -25,7 +25,7 @@ namespace ET.Server
             foreach (string routerName in routerNames)
             {
                 ServiceCacheInfo serviceCacheInfo = serviceDiscoveryProxyComponent.GetByName(routerName);
-                httpGetRouterResponse.Realms.Add(serviceCacheInfo.Metadata[ServiceMetaKey.OuterIPPort]);
+                httpGetRouterResponse.Routers.Add(serviceCacheInfo.Metadata[ServiceMetaKey.OuterIPPort]);
             }
             
             HttpListenerRequest request = context.Request;

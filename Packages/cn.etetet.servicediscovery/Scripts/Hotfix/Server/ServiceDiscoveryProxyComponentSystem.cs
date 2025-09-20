@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace ET.Server
@@ -242,7 +243,15 @@ namespace ET.Server
         
         public static List<string> GetBySceneType(this ServiceDiscoveryProxyComponent self, int type)
         {
-            return self.SceneTypeServices[type];
+            try
+            {
+                return self.SceneTypeServices[type];
+            }
+            catch (Exception e)
+            {
+                string sceneName = SceneTypeSingleton.Instance.GetSceneName(type);
+                throw new Exception($"{self.Root().Name} not found scene type {sceneName},", e);
+            }
         }
         
         public static string GetOneByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)

@@ -28,6 +28,10 @@ namespace ET.Server
             Dictionary<string, string> filterMeta = new();
             serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Router, filterMeta);
+            
+            // 订阅Realm
+            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Realm, filterMeta);
         }
     }
 }
