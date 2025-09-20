@@ -150,25 +150,6 @@ namespace ET.Server
             await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
         }
         
-        public static List<string> GetByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
-        {
-            return self.ZoneSceneTypeServices[zone][type];
-        }
-        
-        public static List<string> GetBySceneType(this ServiceDiscoveryProxyComponent self, int type)
-        {
-            return self.SceneTypeServices[type];
-        }
-        
-        public static string GetOneByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
-        {
-            return self.ZoneSceneTypeServices[zone][type][0];
-        }
-
-        public static ServiceCacheInfo GetByName(this ServiceDiscoveryProxyComponent self, string name)
-        {
-            return self.SceneNameServices[name];
-        }
 
         private static void OnServiceChangeNotification(this ServiceDiscoveryProxyComponent self, int changeType, ServiceInfoProto serviceInfo)
         {
@@ -241,6 +222,8 @@ namespace ET.Server
             }
         }
         
+        #region 获取ServiceInfo
+        
         public static async ETTask<ServiceCacheInfo> GetServiceInfo(this ServiceDiscoveryProxyComponent self, string sceneName)
         {
             if (self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef))
@@ -259,5 +242,132 @@ namespace ET.Server
             self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef2);
             return serviceCacheInfoRef2;
         }
+        
+        public static List<string> GetByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
+        {
+            return self.ZoneSceneTypeServices[zone][type];
+        }
+        
+        public static List<string> GetBySceneType(this ServiceDiscoveryProxyComponent self, int type)
+        {
+            return self.SceneTypeServices[type];
+        }
+        
+        public static string GetOneByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
+        {
+            return self.ZoneSceneTypeServices[zone][type][0];
+        }
+
+        public static ServiceCacheInfo GetByName(this ServiceDiscoveryProxyComponent self, string name)
+        {
+            return self.SceneNameServices[name];
+        }
+        
+        #endregion
+
+
+        #region 发消息
+        
+        /// <summary>
+        /// 同步发送消息到指定的SceneName
+        /// 如果ActorId未知，消息会被加入队列，等待ActorId获取后发送
+        /// </summary>
+        /// <param name="self">ServiceMessageSender实例</param>
+        /// <param name="sceneName">目标服务的SceneName</param>
+        /// <param name="message">要发送的消息</param>
+        public static void Send(this ServiceDiscoveryProxyComponent self, string sceneName, IMessage message)
+        {
+            // 获取或创建该SceneName的队列
+            if (!self.PendingMessages.TryGetValue(sceneName, out Queue<IMessage> queue))
+            {
+                queue = new Queue<IMessage>();
+                self.PendingMessages[sceneName] = queue;
+            }
+
+            queue.Enqueue(message);
+
+            // 开始获取ActorId（如果还未开始）
+            if (queue.Count == 1)
+            {
+                self.StartFetchActorId(sceneName).NoContext();
+            }
+        }
+
+        /// <summary>
+        /// 发送请求消息到指定的SceneName并等待响应
+        /// 如果ActorId未知，会先异步获取ActorId再发送请求
+        /// </summary>
+        /// <param name="self">ServiceMessageSender实例</param>
+        /// <param name="sceneName">目标服务的SceneName</param>
+        /// <param name="request">要发送的请求消息</param>
+        /// <param name="needException">是否需要抛出异常</param>
+        /// <returns>响应消息</returns>
+        public static async ETTask<IResponse> Call(this ServiceDiscoveryProxyComponent self, string sceneName, IRequest request, bool needException = true)
+        {
+            // ActorId未知，先获取ActorId
+            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+
+            ServiceCacheInfo serviceCacheInfo = await self.GetServiceInfo(sceneName);
+            if (serviceCacheInfo.ActorId == default)
+            {
+                throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
+            }
+
+            self = selfRef;
+            return await self.MessageSender.Call(serviceCacheInfo.ActorId, request, needException);
+        }
+
+        /// <summary>
+        /// 开始异步获取ActorId
+        /// </summary>
+        private static async ETTask StartFetchActorId(this ServiceDiscoveryProxyComponent self, string sceneName)
+        {
+            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+
+            ServiceCacheInfo serviceCacheInfo = await self.GetServiceInfo(sceneName);
+
+            self = selfRef;
+            if (self == null)
+            {
+                return;
+            }
+
+            if (serviceCacheInfo.ActorId == default)
+            {
+                throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
+            }
+
+            // 处理待发送的消息
+            self.ProcessPendingMessages(sceneName, serviceCacheInfo.ActorId);
+        }
+
+        /// <summary>
+        /// 处理待发送的消息
+        /// </summary>
+        private static void ProcessPendingMessages(this ServiceDiscoveryProxyComponent self, string sceneName, ActorId actorId)
+        {
+            if (!self.PendingMessages.TryGetValue(sceneName, out Queue<IMessage> queue))
+            {
+                return;
+            }
+
+            MessageSender messageSender = self.MessageSender;
+
+            while (queue.Count > 0)
+            {
+                IMessage pendingMessage = queue.Dequeue();
+
+                try
+                {
+                    // 只处理Send消息，Call消息不会进入队列
+                    messageSender.Send(actorId, pendingMessage);
+                }
+                catch (System.Exception e)
+                {
+                    Log.Error($"Error processing pending message for scene {sceneName}: {e}");
+                }
+            }
+        }
+        #endregion
     }
 }

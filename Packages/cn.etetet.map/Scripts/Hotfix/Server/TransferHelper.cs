@@ -44,12 +44,12 @@ namespace ET.Server
             mapRequest.MapName = mapName;
             mapRequest.UnitId = unitId;
             mapRequest.MapId = mapId;
-            StartSceneConfig mapManagerConfig = StartSceneConfigCategory.Instance.GetOneBySceneType(root.Zone(), SceneType.MapManager);
-            root = rootRef;
-            A2MapManager_GetMapResponse mapResponse = await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, mapRequest) as A2MapManager_GetMapResponse;
+            ServiceDiscoveryProxyComponent serviceDiscoveryProxy = root.GetComponent<ServiceDiscoveryProxyComponent>();
+            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyRef = serviceDiscoveryProxy;
+            string mapManagerName = serviceDiscoveryProxy.GetOneByZoneSceneType(root.Zone(), SceneType.MapManager);
+            A2MapManager_GetMapResponse mapResponse = await serviceDiscoveryProxy.Call(mapManagerName, mapRequest) as A2MapManager_GetMapResponse;
             
             //2. 传送
-            root = rootRef;
             unit = unitRef;
             await Transfer(unit, mapResponse.MapActorId, changeScene);
 
@@ -59,8 +59,9 @@ namespace ET.Server
             a2MapManagerNotifyPlayerAlreadyEnterMapRequest.MapName = mapResponse.MapName;
             a2MapManagerNotifyPlayerAlreadyEnterMapRequest.UnitId = unitId;
             a2MapManagerNotifyPlayerAlreadyEnterMapRequest.MapId = mapResponse.MapId;
-            root = rootRef;
-            await root.GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, a2MapManagerNotifyPlayerAlreadyEnterMapRequest);
+            
+            serviceDiscoveryProxy = serviceDiscoveryProxyRef;
+            await serviceDiscoveryProxy.Call(mapManagerName, a2MapManagerNotifyPlayerAlreadyEnterMapRequest);
         }
 
         private static async ETTask Transfer(Unit unit, ActorId mapActorId, bool changeScene)

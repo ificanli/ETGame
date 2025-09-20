@@ -5,17 +5,17 @@ namespace ET.Server
     [ComponentOf(typeof(Scene))]
     public class LocationProxyComponent: Entity, IAwake
     {
-        private EntityRef<ServiceMessageSender> serviceMessageSender;
+        private EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponent;
 
-        public ServiceMessageSender ServiceMessageSender
+        public ServiceDiscoveryProxyComponent ServiceDiscoveryProxyComponent
         {
             get
             {
-                return this.serviceMessageSender;
+                return this.serviceDiscoveryProxyComponent;
             }
             set
             {
-                this.serviceMessageSender = value;
+                this.serviceDiscoveryProxyComponent = value;
             }
         }
     }

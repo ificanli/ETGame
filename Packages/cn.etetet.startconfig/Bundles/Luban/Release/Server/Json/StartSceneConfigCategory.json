@@ -2,46 +2,54 @@
   {
     "Id": 101,
     "Process": 1,
-    "Zone": 3,
+    "Zone": 1,
+    "SceneType": "ServiceDiscovery",
+    "Name": "ServiceDiscovery",
+    "Port": 0
+  },
+  {
+    "Id": 102,
+    "Process": 2,
+    "Zone": 1,
     "SceneType": "RouterManager",
     "Name": "RouterManager",
     "Port": 10101
   },
   {
-    "Id": 102,
-    "Process": 1,
-    "Zone": 3,
+    "Id": 103,
+    "Process": 3,
+    "Zone": 1,
     "SceneType": "Router",
     "Name": "Router01",
     "Port": 10102
   },
   {
-    "Id": 103,
-    "Process": 1,
-    "Zone": 3,
+    "Id": 104,
+    "Process": 4,
+    "Zone": 1,
     "SceneType": "Router",
     "Name": "Router02",
     "Port": 10103
   },
   {
-    "Id": 104,
-    "Process": 1,
-    "Zone": 3,
+    "Id": 105,
+    "Process": 5,
+    "Zone": 1,
     "SceneType": "Router",
     "Name": "Router03",
     "Port": 10104
   },
   {
-    "Id": 105,
-    "Process": 1,
-    "Zone": 3,
+    "Id": 106,
+    "Process": 6,
+    "Zone": 1,
     "SceneType": "Router",
     "Name": "Router04",
     "Port": 10105
   },
   {
     "Id": 201,
-    "Process": 1,
+    "Process": 7,
     "Zone": 2,
     "SceneType": "Realm",
     "Name": "Realm",
@@ -49,40 +57,32 @@
   },
   {
     "Id": 202,
-    "Process": 1,
+    "Process": 8,
     "Zone": 2,
-    "SceneType": "ServiceDiscovery",
-    "Name": "ServiceDiscovery",
-    "Port": 0
-  },
-  {
-    "Id": 301,
-    "Process": 1,
-    "Zone": 3,
     "SceneType": "Gate",
     "Name": "Gate1",
-    "Port": 30101
+    "Port": 20102
   },
   {
-    "Id": 302,
-    "Process": 1,
-    "Zone": 3,
+    "Id": 203,
+    "Process": 9,
+    "Zone": 2,
     "SceneType": "Gate",
     "Name": "Gate2",
-    "Port": 30102
+    "Port": 20103
   },
   {
-    "Id": 303,
-    "Process": 1,
-    "Zone": 3,
+    "Id": 204,
+    "Process": 10,
+    "Zone": 2,
     "SceneType": "Location",
     "Name": "Location",
     "Port": 0
   },
   {
-    "Id": 304,
-    "Process": 1,
-    "Zone": 3,
+    "Id": 205,
+    "Process": 11,
+    "Zone": 2,
     "SceneType": "MapManager",
     "Name": "MapManager",
     "Port": 0

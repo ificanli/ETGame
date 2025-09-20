@@ -26,7 +26,7 @@ namespace ET.Server
         /// <summary>
         /// 心跳发送间隔（毫秒）
         /// </summary>
-        public long HeartbeatInterval = 10 * 1000;
+        public long HeartbeatInterval = 2 * 1000;
 
         /// <summary>
         /// 缓存的服务列表，Key为SceneType，Value为该类型的服务SceneName列表
@@ -50,5 +50,11 @@ namespace ET.Server
                 this.messageSender = value;
             }
         }
+        
+        
+        /// <summary>
+        /// 待发送的消息队列，按SceneName分组
+        /// </summary>
+        public Dictionary<string, Queue<IMessage>> PendingMessages = new();
     }
 }

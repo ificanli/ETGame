@@ -41,7 +41,6 @@ namespace ET.Server
                 unitComponent.Add(unit);
             }
             
-            root.AddComponent<ServiceMessageSender>();
             ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
             // 订阅location,并未注册Map
             Dictionary<string, string> filterMeta = new();

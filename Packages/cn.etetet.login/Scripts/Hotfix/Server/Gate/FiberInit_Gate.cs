@@ -21,7 +21,6 @@ namespace ET.Server
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
             root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPPort));
             
-            root.AddComponent<ServiceMessageSender>();
             // 注册服务发现
             ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
             EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
@@ -31,10 +30,14 @@ namespace ET.Server
             };
             await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
             
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
             // 订阅location
             Dictionary<string, string> filterMeta = new();
+            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Location, filterMeta);
+            
+            // 订阅mapmanager
+            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.MapManager, filterMeta);
         }
     }
 }

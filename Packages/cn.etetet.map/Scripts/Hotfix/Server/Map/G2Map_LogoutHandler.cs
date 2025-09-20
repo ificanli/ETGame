@@ -8,12 +8,13 @@ namespace ET.Server
 		protected override async ETTask Run(Unit unit, G2Map_Logout request, Map2G_Logout response)
 		{
 			EntityRef<Unit> unitRef = unit;
-			StartSceneConfig mapManagerConfig = StartSceneConfigCategory.Instance.GetOneBySceneType(unit.Zone(), SceneType.MapManager);
+			ServiceDiscoveryProxyComponent serviceDiscoveryProxy = unit.Root().GetComponent<ServiceDiscoveryProxyComponent>();
+			string mapManagerName = serviceDiscoveryProxy.GetOneByZoneSceneType(unit.Zone(), SceneType.MapManager);
 			Map2MapManager_LogoutRequest managerLogoutRequest = Map2MapManager_LogoutRequest.Create();
 			managerLogoutRequest.MapName = unit.Scene().Name;
 			managerLogoutRequest.UnitId = unit.Id;
 			managerLogoutRequest.MapId = unit.Scene().Id;
-			await unit.Root().GetComponent<MessageSender>().Call(mapManagerConfig.ActorId, managerLogoutRequest);
+			await serviceDiscoveryProxy.Call(mapManagerName, managerLogoutRequest);
 			unit = unitRef;
 			UnitComponent unitComponent = unit.GetParent<UnitComponent>();
 			unitComponent.Remove(unit.Id);
