@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace ET
 {
+    public struct FiberDestroyEvent
+    {
+    }
+    
     public static class FiberHelper
     {
         public static ActorId GetActorId(this Entity self)
@@ -289,6 +293,11 @@ namespace ET
             
             if (fiber.SchedulerType == SchedulerType.Parent)
             {
+                foreach (int child in this.children.Keys.ToArray())
+                {
+                    await this.RemoveFiber(child);
+                }
+                await EventSystem.Instance.PublishAsync(fiber.Root, new FiberDestroyEvent());
                 scheduler.Dispose();
                 return;
             }
@@ -297,8 +306,20 @@ namespace ET
             // 要扔到fiber线程执行，否则会出现线程竞争
             fiber.ThreadSynchronizationContext.Post(() =>
             {
-                scheduler.Dispose();
-                tcs.SetResult(true);
+                FiberDestroy().NoContext();
+                return;
+
+                async ETTask FiberDestroy()
+                {
+                    foreach (int child in this.children.Keys.ToArray())
+                    {
+                        await this.RemoveFiber(child);
+                    }
+                    Scene fiberRoot = (scheduler as Fiber).Root;
+                    await EventSystem.Instance.PublishAsync(fiberRoot, new FiberDestroyEvent());
+                    scheduler.Dispose();
+                    tcs.SetResult(true);
+                }
             });
             await tcs.Task;
         }

@@ -174,7 +174,10 @@ namespace ET.Server
                 }
             }
 
-            self.Root().GetComponent<MessageSender>().Send(serviceInfo.ActorId, notification);
+            if (notification.ServiceInfo.Count > 0)
+            {
+                self.Root().GetComponent<MessageSender>().Send(serviceInfo.ActorId, notification);
+            }
 
             string filterStr = filterMetadata.Count > 0? $" filter=[{string.Join(", ", filterMetadata.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}]" : "";
             Log.Debug($"Subscribe service change: {sceneName} {sceneType} {filterStr}");

@@ -22,7 +22,7 @@ namespace ET.Server
 
             unit.AddComponent<TurnComponent>();
             unit.AddComponent<MoveComponent>();
-            unit.AddComponent<PathfindingComponent, string>(scene.Name);
+            unit.AddComponent<PathfindingComponent, string>(scene.Name.GetMapName());
             unit.AddComponent<MailBoxComponent, int>(MailBoxType.OrderedMessage);
             unit.AddComponent<TargetComponent>();
 

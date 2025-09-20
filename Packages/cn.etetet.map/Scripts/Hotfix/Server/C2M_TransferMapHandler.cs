@@ -7,7 +7,7 @@ namespace ET.Server
 	{
 		protected override async ETTask Run(Unit unit, C2M_TransferMap request, M2C_TransferMap response)
 		{
-			string currentMap = unit.Scene().Name;
+			string currentMap = unit.Scene().Name.GetMapName();
 			string toMap = null;
 			if (currentMap == "Map1")
 			{

@@ -7,10 +7,15 @@ namespace ET
             MapConfig preMapConfig = null;
             if (preSceneName != null)
             {
-                preMapConfig = MapConfigCategory.Instance.GetByName(preSceneName);
+                preMapConfig = MapConfigCategory.Instance.GetByName(preSceneName.GetMapName());
             }
-            MapConfig mapConfig = MapConfigCategory.Instance.GetByName(nextSceneName);
+            MapConfig mapConfig = MapConfigCategory.Instance.GetByName(nextSceneName.GetMapName());
             return preMapConfig?.MapResName != mapConfig?.MapResName;
+        }
+
+        public static string GetMapName(this string sceneName)
+        {
+            return sceneName.Split("@")[0];
         }
     }
 }

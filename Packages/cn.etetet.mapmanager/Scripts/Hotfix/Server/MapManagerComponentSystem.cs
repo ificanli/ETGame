@@ -134,7 +134,7 @@ namespace ET.Server
             EntityRef<MapInfo> selfRef = self;
             
             // 创建Copy Fiber
-            int fiberId = await self.Fiber().CreateFiber(SchedulerType.ThreadPool, id, self.Zone(), SceneType.Map, self.MapName);
+            int fiberId = await self.Fiber().CreateFiber(SchedulerType.ThreadPool, id, self.Zone(), SceneType.Map, $"{self.MapName}@{id}");
             self = selfRef;
             return self.AddChildWithId<MapCopy, int>(id, fiberId);
         }

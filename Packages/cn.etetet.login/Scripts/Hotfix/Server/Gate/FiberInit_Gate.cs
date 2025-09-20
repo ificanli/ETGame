@@ -34,10 +34,6 @@ namespace ET.Server
             Dictionary<string, string> filterMeta = new();
             serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Location, filterMeta);
-            
-            // 订阅mapmanager
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.MapManager, filterMeta);
         }
     }
 }

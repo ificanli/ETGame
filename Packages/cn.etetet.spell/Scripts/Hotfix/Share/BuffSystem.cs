@@ -7,7 +7,7 @@
         private static void Destroy(this Buff self)
         {
             Scene root = self.Root();
-            if (root.IsDisposed)
+            if (root == null)
             {
                 return;
             }

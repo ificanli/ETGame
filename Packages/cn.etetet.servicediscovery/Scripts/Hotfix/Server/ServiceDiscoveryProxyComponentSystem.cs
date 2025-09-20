@@ -24,11 +24,21 @@ namespace ET.Server
     [EntitySystemOf(typeof(ServiceDiscoveryProxyComponent))]
     public static partial class ServiceDiscoveryProxyComponentSystem
     {
+        [Event(SceneType.All)]
+        public class FiberDestroyEvent_UnRegisterService: AEvent<Scene, FiberDestroyEvent>
+        {
+            protected override async ETTask Run(Scene scene, FiberDestroyEvent fiberDestroyEvent)
+            {
+                ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = scene.GetComponent<ServiceDiscoveryProxyComponent>();
+                await serviceDiscoveryProxyComponent.DestroyAsync();
+            }
+        }
+        
         [EntitySystem]
         private static void Destroy(this ServiceDiscoveryProxyComponent self)
         {
             Scene root = self.Root();
-            if (root.IsDisposed)
+            if (root == null)
             {
                 return;
             }
@@ -50,6 +60,19 @@ namespace ET.Server
             {
                 self.SendHeartbeat().NoContext();
             }
+        }
+
+        private static async ETTask DestroyAsync(this ServiceDiscoveryProxyComponent self)
+        {
+            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+            foreach (var kv in self.SceneTypeServices)
+            {
+                self = selfRef;
+                await self.UnsubscribeServiceChange(kv.Key);
+            }
+            
+            self = selfRef;
+            await self.UnregisterFromServiceDiscovery();
         }
 
         /// <summary>

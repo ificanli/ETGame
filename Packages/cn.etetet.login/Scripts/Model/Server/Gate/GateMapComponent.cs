@@ -1,20 +1,8 @@
 ﻿namespace ET.Server
 {
     [ComponentOf(typeof(Player))]
-    public class GateMapComponent: Entity, IAwake
+    public class GateMapComponent: Entity, IAwake, IDestroy
     {
-        private EntityRef<Scene> scene;
-
-        public Scene Scene
-        {
-            get
-            {
-                return this.scene;
-            }
-            set
-            {
-                this.scene = value;
-            }
-        }
+        public Fiber Fiber { get; set; }
     }
 }
