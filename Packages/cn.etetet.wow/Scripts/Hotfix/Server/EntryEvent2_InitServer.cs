@@ -15,8 +15,8 @@
             {
                 Options.Instance.Address = startProcessConfig.Address;
             }
-
-            await fiber.CreateFiberWithId(SceneType.NetInner, SchedulerType.ThreadPool, IdGenerater.Instance.GenerateId(), 0, SceneType.NetInner, "NetInner");
+            
+            await fiber.CreateFiberWithId(Const.NetInnerFiberId, SchedulerType.ThreadPool, IdGenerater.Instance.GenerateId(), 0, SceneType.NetInner, $"NetInner_{process}");
 
             if (startProcessConfig != null)
             {
@@ -26,7 +26,14 @@
                 foreach (StartSceneConfig startConfig in scenes)
                 {
                     int sceneType = SceneTypeSingleton.Instance.GetSceneType(startConfig.SceneType);
-                    await fiber.CreateFiberWithId(startConfig.Id, SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
+                    if (sceneType == SceneType.ServiceDiscovery)
+                    {
+                        await fiber.CreateFiberWithId(Const.ServiceDiscoveryFiberId, SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
+                    }
+                    else
+                    {
+                        await fiber.CreateFiber(SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
+                    }
                 }
             }
 

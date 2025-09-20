@@ -6,12 +6,17 @@ namespace ET.Server
     public partial class StartSceneConfigCategory
     {
         private readonly MultiMap<int, StartSceneConfig> processScenes = new();
-
-        public ActorId ServiceDiscoveryActorId { get; private set; }
+        
+        private readonly Dictionary<string, StartSceneConfig> sceneNameScenes = new();
         
         public List<StartSceneConfig> GetByProcess(int process)
         {
             return this.processScenes[process];
+        }
+        
+        public StartSceneConfig GetBySceneName(string sceneName)
+        {
+            return this.sceneNameScenes[sceneName];
         }
         
         public override void EndInit()
@@ -19,30 +24,18 @@ namespace ET.Server
             foreach (StartSceneConfig startSceneConfig in this.GetAll().Values)
             {
                 this.processScenes.Add(startSceneConfig.Process, startSceneConfig);
-
-                if (startSceneConfig.Type == SceneType.ServiceDiscovery)
-                {
-                    this.ServiceDiscoveryActorId = startSceneConfig.ActorId;
-                }
+                this.sceneNameScenes.Add(startSceneConfig.Name, startSceneConfig);
             }
         }
     }
     
     public partial class StartSceneConfig
     {
-        public int Type
+        public Address Address 
         {
             get
             {
-                return SceneTypeSingleton.Instance.GetSceneType(this.SceneType);
-            }
-        }
-
-        public ActorId ActorId 
-        {
-            get
-            {
-                return new ActorId(this.StartProcessConfig.Address, new FiberInstanceId(this.Id, 1));
+                return this.StartProcessConfig.Address;
             }
         }
 

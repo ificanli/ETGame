@@ -15,7 +15,7 @@ namespace ET.Server
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
             
-            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
+            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
             root.AddComponent<HttpComponent, string>($"http://*:{startSceneConfig.Port}/");
 
             // 注册服务发现

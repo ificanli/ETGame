@@ -18,7 +18,7 @@ namespace ET.Server
             root.AddComponent<GateSessionKeyComponent>();
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<MessageLocationSenderComponent>();
-            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
+            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
             root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPPort));
             
             // 注册服务发现

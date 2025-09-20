@@ -16,8 +16,6 @@ namespace ET.Server
             root.AddComponent<MessageSender>();
             root.AddComponent<LocationManagerComoponent>();
             
-            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
-            
             // 注册服务发现
             ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
             Dictionary<string, string> metadata = new();

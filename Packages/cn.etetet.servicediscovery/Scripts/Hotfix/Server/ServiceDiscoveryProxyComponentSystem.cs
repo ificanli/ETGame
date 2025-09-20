@@ -38,7 +38,8 @@ namespace ET.Server
         private static void Awake(this ServiceDiscoveryProxyComponent self)
         {
             self.MessageSender = self.Root().GetComponent<MessageSender>();
-            self.ServiceDiscoveryActorId = StartSceneConfigCategory.Instance.ServiceDiscoveryActorId;
+            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(nameof(SceneType.ServiceDiscovery));
+            self.ServiceDiscoveryActorId = new ActorId(startSceneConfig.Address, new FiberInstanceId(Const.ServiceDiscoveryFiberId));
         }
 
         [Invoke(TimerInvokeType.ServiceDiscoveryProxyHeartbeat)]
