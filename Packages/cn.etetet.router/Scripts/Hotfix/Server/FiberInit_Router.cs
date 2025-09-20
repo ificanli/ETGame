@@ -9,6 +9,12 @@ namespace ET.Server
         public override async ETTask Handle(FiberInit fiberInit)
         {
             Scene root = fiberInit.Fiber.Root;
+            root.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
+            root.AddComponent<TimerComponent>();
+            root.AddComponent<CoroutineLockComponent>();
+            root.AddComponent<ProcessInnerSender>();
+            root.AddComponent<MessageSender>();
+            
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get((int)root.Id);
             
             // 开发期间使用OuterIPPort，云服务器因为本机没有OuterIP，所以要改成InnerIPPort，然后在云防火墙中端口映射到InnerIPPort

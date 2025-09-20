@@ -135,6 +135,8 @@ namespace ET
         /// <param name="parent"></param>
         internal async ETTask<Fiber> CreateFiber(int fiberId, SchedulerType schedulerType, long rootId, int zone, int sceneType, string name, Fiber parent)
         {
+            Log.Debug($"create fiber {name} start");
+            
             if (sceneType == 0)
             {
                 throw new Exception("fiberId is 0");
@@ -157,6 +159,8 @@ namespace ET
                     Action().NoContext();
                 });
                 await tcs.Task;
+                
+                Log.Debug($"create fiber {name} finish");
                 return fiber;
 
                 async ETTask Action()

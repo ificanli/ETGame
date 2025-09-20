@@ -42,8 +42,12 @@ namespace ET.Server
             }
             
             ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
+            Dictionary<string, string> metaData = new();
+            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metaData);
             // 订阅location,并未注册Map
             Dictionary<string, string> filterMeta = new();
+            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Location, filterMeta);
         }
     }

@@ -26,8 +26,7 @@
                 foreach (StartSceneConfig startConfig in scenes)
                 {
                     int sceneType = SceneTypeSingleton.Instance.GetSceneType(startConfig.SceneType);
-                    await fiber.CreateFiberWithId(startConfig.Id, SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType,
-                        startConfig.Name);
+                    await fiber.CreateFiberWithId(startConfig.Id, SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
                 }
             }
 

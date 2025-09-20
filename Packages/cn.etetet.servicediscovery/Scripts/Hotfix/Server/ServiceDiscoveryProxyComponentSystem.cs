@@ -8,7 +8,6 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this ServiceCacheInfo self)
         {
-
         }
 
         public static int ServiceZone(this ServiceCacheInfo self)
@@ -39,6 +38,7 @@ namespace ET.Server
         private static void Awake(this ServiceDiscoveryProxyComponent self)
         {
             self.MessageSender = self.Root().GetComponent<MessageSender>();
+            self.ServiceDiscoveryActorId = StartSceneConfigCategory.Instance.ServiceDiscoveryActorId;
         }
 
         [Invoke(TimerInvokeType.ServiceDiscoveryProxyHeartbeat)]
@@ -48,15 +48,6 @@ namespace ET.Server
             {
                 self.SendHeartbeat().NoContext();
             }
-        }
-
-        /// <summary>
-        /// 设置服务发现服务器地址
-        /// </summary>
-        public static void SetServiceDiscoveryServer(this ServiceDiscoveryProxyComponent self, ActorId serviceDiscoveryActorId)
-        {
-            self.ServiceDiscoveryActorId = serviceDiscoveryActorId;
-            Log.Debug($"Set ServiceDiscovery server: {serviceDiscoveryActorId}");
         }
 
         /// <summary>

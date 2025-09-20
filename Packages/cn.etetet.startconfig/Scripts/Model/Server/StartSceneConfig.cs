@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Net;
 
 namespace ET.Server
@@ -7,6 +6,8 @@ namespace ET.Server
     public partial class StartSceneConfigCategory
     {
         private readonly MultiMap<int, StartSceneConfig> processScenes = new();
+
+        public ActorId ServiceDiscoveryActorId { get; private set; }
         
         public List<StartSceneConfig> GetByProcess(int process)
         {
@@ -15,6 +16,15 @@ namespace ET.Server
         
         public override void EndInit()
         {
+            foreach (StartSceneConfig startSceneConfig in this.GetAll().Values)
+            {
+                this.processScenes.Add(startSceneConfig.Process, startSceneConfig);
+
+                if (startSceneConfig.Type == SceneType.ServiceDiscovery)
+                {
+                    this.ServiceDiscoveryActorId = startSceneConfig.ActorId;
+                }
+            }
         }
     }
     

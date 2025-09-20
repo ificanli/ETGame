@@ -120,7 +120,6 @@ namespace ET.Server
             }
 
             serviceInfo.UpdateHeartbeat();
-            Log.Debug($"Service heartbeat updated: {sceneName}");
         }
 
         /// <summary>
