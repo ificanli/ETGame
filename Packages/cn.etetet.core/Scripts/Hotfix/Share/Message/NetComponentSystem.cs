@@ -108,5 +108,10 @@ namespace ET
             self.AService.Create(session.Id, routerIPEndPoint);
             return session;
         }
+
+        public static IPEndPoint GetBindPoint(this NetComponent self)
+        {
+            return self.AService.GetBindPoint();
+        }
     }
 }

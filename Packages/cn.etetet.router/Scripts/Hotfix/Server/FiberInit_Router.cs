@@ -26,7 +26,7 @@ namespace ET.Server
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             Dictionary<string, string> metadata = new()
             {
-                { ServiceMetaKey.OuterIPPort, $"{startSceneConfig.StartProcessConfig.OuterIP}:{startSceneConfig.Port}" }
+                { ServiceMetaKey.OuterIPOuterPort, $"{startSceneConfig.OuterIPOuterPort}" }
             };
             await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
         }

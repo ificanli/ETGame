@@ -11,6 +11,7 @@ namespace ET
     {
         void Send(byte[] bytes, int index, int length, EndPoint endPoint, ChannelType channelType);
         int Recv(byte[] buffer, ref EndPoint endPoint);
+        IPEndPoint GetBindPoint();
         int Available();
         void Update();
         void OnError(long id, int error);
@@ -55,6 +56,11 @@ namespace ET
         public int Recv(byte[] buffer, ref EndPoint endPoint)
         {
             return this.socket.ReceiveFrom(buffer, ref endPoint);
+        }
+
+        public IPEndPoint GetBindPoint()
+        {
+            return this.socket.LocalEndPoint as IPEndPoint;
         }
 
         public int Available()
@@ -155,6 +161,11 @@ namespace ET
         public int Recv(byte[] buffer, ref EndPoint endPoint)
         {
             return RecvNonAlloc(buffer, ref endPoint);
+        }
+
+        public IPEndPoint GetBindPoint()
+        {
+            return this.tService.GetBindPoint();
         }
 
         public int RecvNonAlloc(byte[] buffer, ref EndPoint endPoint)

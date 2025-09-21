@@ -49,7 +49,7 @@
   },
   {
     "Id": 201,
-    "Process": 1,
+    "Process": 0,
     "Zone": 2,
     "SceneType": "Realm",
     "Name": "Realm",
@@ -57,7 +57,7 @@
   },
   {
     "Id": 202,
-    "Process": 1,
+    "Process": 0,
     "Zone": 2,
     "SceneType": "Gate",
     "Name": "Gate1",
@@ -65,7 +65,7 @@
   },
   {
     "Id": 203,
-    "Process": 1,
+    "Process": 0,
     "Zone": 2,
     "SceneType": "Gate",
     "Name": "Gate2",
@@ -73,7 +73,7 @@
   },
   {
     "Id": 204,
-    "Process": 1,
+    "Process": 0,
     "Zone": 2,
     "SceneType": "Location",
     "Name": "Location",
@@ -81,7 +81,7 @@
   },
   {
     "Id": 205,
-    "Process": 1,
+    "Process": 0,
     "Zone": 2,
     "SceneType": "MapManager",
     "Name": "MapManager",

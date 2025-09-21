@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">    
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework> 
         <RootNamespace>ET</RootNamespace>
@@ -50,11 +50,6 @@
     <!-- sourcegenerator use -->
     <ItemGroup>
         <CompilerVisibleProperty Include="DotNetAssembly" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="..\..\..\cn.etetet.yiuilubangen\Scripts\">
-        <Link>cn.etetet.yiuilubangen\Scripts</Link>
-      </Folder>
     </ItemGroup>
 
 </Project>

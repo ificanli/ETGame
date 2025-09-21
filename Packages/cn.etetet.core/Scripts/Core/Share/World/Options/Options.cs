@@ -7,20 +7,26 @@ namespace ET
         [Option("SceneName", Required = false, Default = "", HelpText = "define in SceneType class")]
         public string SceneName { get; set; }
         
-        [Option("WatcherStartSceneName", Required = false, Default = "", HelpText = "define in SceneType class")]
-        public string WatcherStartSceneName { get; set; }
-
         [Option("StartConfig", Required = false, Default = "Localhost")]
         public string StartConfig { get; set; }
 
         [Option("Process", Required = false, Default = 1)]
         public int Process { get; set; }
         
-        [Option("IP", Required = false, Default = "")]
-        public string IP { get; set; } 
+        [Option("ReplicaIndex", Required = false, Default = 0)]
+        public int ReplicaIndex { get; set; }
         
-        [Option("Port", Required = false, Default = 0)]
-        public int Port { get; set; } 
+        [Option("InnerIP", Required = false, Default = "0.0.0.0")]
+        public string InnerIP { get; set; } 
+        
+        [Option("InnerPort", Required = false, Default = 0)]
+        public int InnerPort { get; set; } 
+        
+        [Option("OuterIP", Required = false, Default = "0.0.0.0")]
+        public string OuterIP { get; set; } 
+        
+        [Option("OuterPort", Required = false, Default = 0)]
+        public int OuterPort { get; set; } 
         
         [Option("LogLevel", Required = false, Default = 0)]
         public int LogLevel { get; set; }
@@ -31,16 +37,16 @@ namespace ET
         [Option("SingleThread", Required = false, Default = 0)]
         public int SingleThread { get; set; }
         
-        public Address Address
+        public Address InnerAddress
         {
             get
             {
-                return new Address(IP, Port);
+                return new Address(this.InnerIP, this.InnerPort);
             }
             set
             {
-                this.IP = value.IP;
-                this.Port = value.Port;
+                this.InnerIP = value.IP;
+                this.InnerPort = value.Port;
             }
         }
 

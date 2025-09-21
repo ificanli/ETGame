@@ -20,6 +20,7 @@ namespace ET.Server
             Id = _buf.ReadInt();
             MachineId = _buf.ReadInt();
             Port = _buf.ReadInt();
+            Num = _buf.ReadInt();
 
             EndInit();
         }
@@ -38,9 +39,13 @@ namespace ET.Server
         /// </summary>
         public readonly int MachineId;
         /// <summary>
-        /// 外网端口
+        /// 内网端口
         /// </summary>
         public readonly int Port;
+        /// <summary>
+        /// 数量
+        /// </summary>
+        public readonly int Num;
     
         public const int __ID__ = -224756389;
         public override int GetTypeId() => __ID__;
@@ -56,6 +61,7 @@ namespace ET.Server
             + "Id:" + Id + ","
             + "MachineId:" + MachineId + ","
             + "Port:" + Port + ","
+            + "Num:" + Num + ","
             + "}";
         }
 

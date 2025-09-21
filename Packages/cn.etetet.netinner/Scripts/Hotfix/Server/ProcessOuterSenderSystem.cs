@@ -22,6 +22,9 @@ namespace ET.Server
                     break;
                 }
             }
+
+            // 进程的真实ip port
+            Options.Instance.InnerAddress = self.AService.GetBindPoint();
                 
             self.AService.AcceptCallback = self.OnAccept;
             self.AService.ReadCallback = self.OnRead;
@@ -114,7 +117,7 @@ namespace ET.Server
 
         private static Session CreateInner(this ProcessOuterSender self, Address address)
         {
-            int channelId = Options.Instance.Process << 16 + self.channelIdCout++;
+            int channelId = Options.Instance.Process << 16 + Options.Instance.ReplicaIndex;
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
             session.RemoteAddress = address;
             
@@ -185,7 +188,7 @@ namespace ET.Server
             }
 
             // 如果发向同一个进程，则报错
-            if (actorId.Address == Options.Instance.Address)
+            if (actorId.Address == Options.Instance.InnerAddress)
             {
                 throw new Exception($"actor is the same process: {actorId}");
             }

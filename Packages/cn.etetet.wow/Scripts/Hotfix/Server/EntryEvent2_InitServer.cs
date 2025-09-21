@@ -11,12 +11,8 @@
             int process = Options.Instance.Process;
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(process);
             
-            if (Options.Instance.IP == "")
-            {
-                Options.Instance.Address = startProcessConfig.Address;
-            }
-            
-            await fiber.CreateFiberWithId(Const.NetInnerFiberId, SchedulerType.ThreadPool, IdGenerater.Instance.GenerateId(), 0, SceneType.NetInner, $"NetInner_{process}");
+            // NetInner创建完成会设置Option.Instance.InnerIP跟Option.Instance.InnerPort
+            await fiber.CreateFiberWithId(Const.NetInnerFiberId, SchedulerType.ThreadPool, Const.NetInnerFiberId, 0, SceneType.NetInner, $"NetInner_{process}");
 
             if (startProcessConfig != null)
             {
@@ -28,7 +24,7 @@
                     int sceneType = SceneTypeSingleton.Instance.GetSceneType(startConfig.SceneType);
                     if (sceneType == SceneType.ServiceDiscovery)
                     {
-                        await fiber.CreateFiberWithId(Const.ServiceDiscoveryFiberId, SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
+                        await fiber.CreateFiberWithId(Const.ServiceDiscoveryFiberId, SchedulerType.ThreadPool, Const.ServiceDiscoveryFiberId, startConfig.Zone, sceneType, startConfig.Name);
                     }
                     else
                     {

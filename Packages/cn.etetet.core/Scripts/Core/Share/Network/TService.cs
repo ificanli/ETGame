@@ -58,6 +58,11 @@ namespace ET
 			this.AcceptAsync();
 		}
 
+		public override IPEndPoint GetBindPoint()
+		{
+			return this.acceptor.LocalEndPoint as IPEndPoint;
+		}
+
 		private void OnComplete(object sender, SocketAsyncEventArgs e)
 		{
 			switch (e.LastOperation)

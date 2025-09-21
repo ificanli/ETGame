@@ -55,22 +55,21 @@ namespace ET.Server
             }
         }
 
-        // 内网地址外网端口，通过防火墙映射端口过来
-        private IPEndPoint innerIPPort;
-
-        public IPEndPoint InnerIPPort
+        public IPEndPoint InnerIPOuterPort
         {
             get
             {
-                if (innerIPPort == null)
-                {
-                    this.innerIPPort = NetworkHelper.ToIPEndPoint($"{this.StartProcessConfig.InnerIP}:{this.Port}");
-                }
-
-                return this.innerIPPort;
+                return NetworkHelper.ToIPEndPoint($"{this.StartProcessConfig.InnerIP}:{this.Port}");
             }
         }
-
+        
+        public IPEndPoint OuterIPOuterPort
+        {
+            get
+            {
+                return NetworkHelper.ToIPEndPoint($"{this.StartProcessConfig.OuterIP}:{this.Port}");
+            }
+        }
 
         public override void EndInit()
         {

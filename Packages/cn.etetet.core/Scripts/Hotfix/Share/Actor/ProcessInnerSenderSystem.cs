@@ -132,7 +132,7 @@ namespace ET
                 return response;
             }
             
-            MessageSenderStruct messageSenderStruct = new(new ActorId(Options.Instance.Address, fiberInstanceId), requestType, needException);
+            MessageSenderStruct messageSenderStruct = new(new ActorId(Options.Instance.InnerAddress, fiberInstanceId), requestType, needException);
             self.requestCallback.Add(rpcId, messageSenderStruct);
             
             async ETTask Timeout()

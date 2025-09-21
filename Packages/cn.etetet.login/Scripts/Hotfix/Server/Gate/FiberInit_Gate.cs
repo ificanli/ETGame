@@ -19,14 +19,14 @@ namespace ET.Server
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<MessageLocationSenderComponent>();
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
-            root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPPort));
+            NetComponent netComponent = root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPOuterPort));
             
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
             Dictionary<string, string> metadata = new()
             {
-                { ServiceMetaKey.InnerIPPort, $"{startSceneConfig.InnerIPPort}" }
+                { ServiceMetaKey.InnerIPOuterPort, $"{netComponent.GetBindPoint()}" }
             };
             await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
             

@@ -27,7 +27,7 @@ namespace ET.Server
 			R2G_GetLoginKey r2GGetLoginKey = R2G_GetLoginKey.Create();
 			r2GGetLoginKey.Account = request.Account;
 			ServiceCacheInfo gateServiceInfo = await serviceDiscoveryProxy.GetServiceInfo(gateName);
-			response.Address = gateServiceInfo.Metadata[ServiceMetaKey.InnerIPPort];
+			response.Address = gateServiceInfo.Metadata[ServiceMetaKey.InnerIPOuterPort];
 			
 			root = rootRef;
 			MessageSender messageSender = root.GetComponent<MessageSender>();

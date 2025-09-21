@@ -86,6 +86,11 @@ namespace ET
         {
             this.routerAckCallback.Remove(id);
         }
+
+        public override IPEndPoint GetBindPoint()
+        {
+            return this.Transport.GetBindPoint();
+        }
         
         public override void Dispose()
         {

@@ -12,7 +12,7 @@ namespace ET.Server
             mapCopy.AddWaitPlayer(request.UnitId);  // 加入等待进入列表
             response.MapName = request.MapName;
             response.MapId = mapCopy.Id;
-            response.MapActorId = new ActorId(Options.Instance.Address, new FiberInstanceId(mapCopy.FiberId, 1));
+            response.MapActorId = new ActorId(Options.Instance.InnerAddress, new FiberInstanceId(mapCopy.FiberId, 1));
         }
     }
 }

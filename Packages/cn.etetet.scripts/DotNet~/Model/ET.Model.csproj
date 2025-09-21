@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">    
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <RootNamespace>ET</RootNamespace>
@@ -65,14 +65,4 @@
 	<HintPath>..\..\..\..\Assets\Plugins\Sirenix\Assemblies\Sirenix.OdinInspector.Attributes.dll</HintPath>
 	</Reference>
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="..\..\..\cn.etetet.startconfig\">
-	    <Link>cn.etetet.startconfig</Link>
-	  </Folder>
-	  <Folder Include="..\..\..\cn.etetet.yiuiluban\Scripts\Model\Share\">
-	    <Link>cn.etetet.yiuiluban\Scripts\Model\Share</Link>
-	  </Folder>
-	</ItemGroup>
-
 </Project>

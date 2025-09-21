@@ -8,6 +8,14 @@ namespace ET.Server
 
         public string OuterIP => this.StartMachineConfig.OuterIP;
 
+        public IPEndPoint InnerIPInnerPort
+        {
+            get
+            {
+                return NetworkHelper.ToIPEndPoint($"{this.InnerIP}:{this.Port}");
+            }
+        }
+
         public Address Address
         {
             get

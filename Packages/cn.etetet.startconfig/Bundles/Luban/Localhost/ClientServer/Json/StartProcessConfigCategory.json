@@ -1,7 +1,8 @@
 [
   {
-    "Id": 1,
+    "Id": 0,
     "MachineId": 1,
-    "Port": 20001
+    "Port": 0,
+    "Num": 0
   }
 ]

@@ -29,7 +29,7 @@ namespace ET
         public NLogger(string name)
         {
             this.sceneName = name;
-            this.logger = LogManager.GetLogger($"{(uint)Options.Instance.Process:000000}.{name}");
+            this.logger = LogManager.GetLogger($"{(uint)Options.Instance.Process}.{Options.Instance.ReplicaIndex}.{name}");
         }
 
         public void Trace(string message)

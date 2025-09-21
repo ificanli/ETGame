@@ -7,22 +7,22 @@ namespace ET
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct IdStruct
     {
-        public short Process;  // 14bit
-        public uint Time;    // 30bit
-        public uint Value;   // 20bit
+        public ushort Process;  // 16bit
+        public uint Time;    // 32bit
+        public uint Value;   // 16bit
 
         public long ToLong()
         {
             ulong result = 0;
-            result |= (ushort) this.Process;
-            result <<= 30;
+            result |= this.Process;
+            result <<= 32;
             result |= this.Time;
-            result <<= 20;
+            result <<= 16;
             result |= this.Value;
             return (long) result;
         }
 
-        public IdStruct(uint time, short process, uint value)
+        public IdStruct(uint time, ushort process, uint value)
         {
             this.Process = process;
             this.Time = time;
@@ -32,11 +32,11 @@ namespace ET
         public IdStruct(long id)
         {
             ulong result = (ulong) id; 
-            this.Value = (uint) (result & IdGenerater.Mask20bit);
-            result >>= 20;
-            this.Time = (uint) result & IdGenerater.Mask30bit;
-            result >>= 30;
-            this.Process = (short) (result & IdGenerater.Mask14bit);
+            this.Value = (uint) (result & IdGenerater.Mask16bit);
+            result >>= 16;
+            this.Time = (uint) result & IdGenerater.Mask32bit;
+            result >>= 32;
+            this.Process = (ushort) (result & IdGenerater.Mask16bit);
         }
 
         public override string ToString()
@@ -82,50 +82,53 @@ namespace ET
 
     public class IdGenerater: Singleton<IdGenerater>, ISingletonAwake
     {
-        public const int MaxZone = 1024;
+        public const uint Mask32bit = 0xffffffff;
+        public const uint Mask16bit = 0xffff;
         
-        public const int Mask14bit = 0x3fff;
-        public const int Mask30bit = 0x3fffffff;
-        public const int Mask20bit = 0xfffff;
+        private long epoch2025;
         
-        private long epoch2022;
-        
-        private int value;
+        private uint value;
         private int instanceIdValue;
         
         public void Awake()
         {
             long epoch1970tick = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks / 10000;
-            this.epoch2022 = new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks / 10000 - epoch1970tick;
+            this.epoch2025 = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks / 10000 - epoch1970tick;
         }
 
-        private uint TimeSince2022()
+        private uint TimeSince2025()
         {
-            uint a = (uint)((TimeInfo.Instance.FrameTime - this.epoch2022) / 1000);
+            uint a = (uint)((TimeInfo.Instance.FrameTime - this.epoch2025) / 1000);
             return a;
         }
         
         public long GenerateId()
         {
-            uint time = TimeSince2022();
-            int v = 0;
+            uint time = TimeSince2025();
+            uint v = 0;
             // 这里必须加锁
             lock (this)
             {
-                if (++this.value > Mask20bit - 1)
+                if (++this.value == Mask32bit)
                 {
                     this.value = 0;
                 }
                 v = this.value;
             }
+
+            // 因为改成了服务发现，支持一个进程多个副本，比如gate只需要配一个进程，可以支持多个,同一个Replica是同一个进程Id
+            if (Options.Instance.Process * 1000 > 50000)
+            {
+                throw new Exception("Process is too large");
+            }
             
-            IdStruct idStruct = new(time, (short)Options.Instance.Process, (uint)v);
+            IdStruct idStruct = new(time, (ushort)(Options.Instance.Process * 1000 + Options.Instance.ReplicaIndex), v);
             return idStruct.ToLong();
         }
         
         public long GenerateInstanceId()
         {
-            uint time = this.TimeSince2022();
+            uint time = this.TimeSince2025();
             uint v = (uint)Interlocked.Add(ref this.instanceIdValue, 1);
             InstanceIdStruct instanceIdStruct = new(time, v);
             return instanceIdStruct.ToLong();

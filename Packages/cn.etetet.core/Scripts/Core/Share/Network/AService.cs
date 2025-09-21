@@ -14,6 +14,8 @@ namespace ET
         public long Id { get; set; } = IdGenerater.Instance.GenerateId();
         
         public ServiceType ServiceType { get; protected set; }
+
+        public abstract IPEndPoint GetBindPoint();
         
         private const int MaxMemoryBufferSize = 1024;
 		

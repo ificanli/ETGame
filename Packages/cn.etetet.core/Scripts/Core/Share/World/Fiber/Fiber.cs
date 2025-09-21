@@ -15,7 +15,7 @@ namespace ET
         public static ActorId GetActorId(this Entity self)
         {
             Fiber root = self.Fiber();
-            return new ActorId(Options.Instance.Address, new FiberInstanceId(root.Id, self.InstanceId));
+            return new ActorId(Options.Instance.InnerAddress, new FiberInstanceId(root.Id, self.InstanceId));
         }
     }
     
