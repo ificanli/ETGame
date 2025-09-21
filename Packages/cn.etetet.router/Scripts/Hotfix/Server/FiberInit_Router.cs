@@ -23,12 +23,12 @@ namespace ET.Server
             root.AddComponent<RouterComponent, IPEndPoint, string>(outIPPort, startProcessConfig.InnerIP);
             
             // 注册服务发现
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             Dictionary<string, string> metadata = new()
             {
                 { ServiceMetaKey.OuterIPPort, $"{startSceneConfig.StartProcessConfig.OuterIP}:{startSceneConfig.Port}" }
             };
-            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
         }
     }
 }

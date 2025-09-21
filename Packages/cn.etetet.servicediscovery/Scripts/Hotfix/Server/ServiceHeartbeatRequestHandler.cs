@@ -5,7 +5,7 @@ namespace ET.Server
     {
         protected override async ETTask Run(Scene scene, ServiceHeartbeatRequest request, ServiceHeartbeatResponse response)
         {
-            ServiceDiscoveryComponent serviceDiscovery = scene.GetComponent<ServiceDiscoveryComponent>();
+            ServiceDiscovery serviceDiscovery = scene.GetComponent<ServiceDiscovery>();
             serviceDiscovery.UpdateServiceHeartbeat(request.SceneName);
 
             await ETTask.CompletedTask;

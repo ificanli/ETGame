@@ -19,15 +19,15 @@ namespace ET.Server
             root.AddComponent<MapManagerComponent>();
             
             // 注册服务发现
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
-            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
+            ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
+            EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
             Dictionary<string, string> metadata = new();
-            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
             
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
             // 订阅location
             Dictionary<string, string> filterMeta = new();
-            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Location, filterMeta);
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location, filterMeta);
             
             await ETTask.CompletedTask;
         }

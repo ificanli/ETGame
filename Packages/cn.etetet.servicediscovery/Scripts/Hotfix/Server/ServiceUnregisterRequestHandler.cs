@@ -5,7 +5,7 @@ namespace ET.Server
     {
         protected override async ETTask Run(Scene scene, ServiceUnregisterRequest request, ServiceUnregisterResponse response)
         {
-            ServiceDiscoveryComponent serviceDiscovery = scene.GetComponent<ServiceDiscoveryComponent>();
+            ServiceDiscovery serviceDiscovery = scene.GetComponent<ServiceDiscovery>();
             serviceDiscovery.UnregisterService(request.SceneName);
 
             await ETTask.CompletedTask;

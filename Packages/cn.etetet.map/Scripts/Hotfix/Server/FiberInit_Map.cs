@@ -41,17 +41,17 @@ namespace ET.Server
                 unitComponent.Add(unit);
             }
             
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
-            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
+            ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
+            EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
             Dictionary<string, string> metaData = new();
-            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metaData);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metaData);
             // 订阅location,并未注册Map
             Dictionary<string, string> filterMeta = new();
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Location, filterMeta);
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location, filterMeta);
             
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.MapManager, filterMeta);
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.MapManager, filterMeta);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ET.Server
     /// 管理所有注册的服务信息和订阅者
     /// </summary>
     [ComponentOf(typeof(Scene))]
-    public class ServiceDiscoveryComponent : Entity, IAwake, IDestroy, IUpdate
+    public class ServiceDiscovery : Entity, IAwake, IDestroy, IUpdate
     {
         /// <summary>
         /// 所有注册的服务信息，Key为服务的唯一标识SceneName

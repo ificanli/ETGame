@@ -5,7 +5,7 @@ namespace ET.Server
     /// <summary>
     /// 服务信息实体，记录注册到服务发现中的Fiber信息
     /// </summary>
-    [ChildOf(typeof(ServiceDiscoveryComponent))]
+    [ChildOf(typeof(ServiceDiscovery))]
     public class ServiceInfo : Entity, IAwake<string, int, ActorId>, IDestroy
     {
         public string SceneName;

@@ -5,7 +5,7 @@ namespace ET.Server
     {
         protected override async ETTask Run(Scene scene, ServiceChangeNotification message)
         {
-            ServiceDiscoveryProxyComponent proxy = scene.GetComponent<ServiceDiscoveryProxyComponent>();
+            ServiceDiscoveryProxy proxy = scene.GetComponent<ServiceDiscoveryProxy>();
             if (proxy != null)
             {
                 proxy.OnServiceChangeNotification(message.ChangeType, message.ServiceInfo);

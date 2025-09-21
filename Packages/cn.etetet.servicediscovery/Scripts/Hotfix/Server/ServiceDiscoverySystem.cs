@@ -7,11 +7,11 @@ namespace ET.Server
     /// <summary>
     /// 服务发现组件系统
     /// </summary>
-    [EntitySystemOf(typeof(ServiceDiscoveryComponent))]
-    public static partial class ServiceDiscoveryComponentSystem
+    [EntitySystemOf(typeof(ServiceDiscovery))]
+    public static partial class ServiceDiscoverySystem
     {
         [EntitySystem]
-        private static void Awake(this ServiceDiscoveryComponent self)
+        private static void Awake(this ServiceDiscovery self)
         {
             self.LastHeartbeatCheckTime = TimeInfo.Instance.ServerNow();
 
@@ -19,12 +19,12 @@ namespace ET.Server
         }
 
         [EntitySystem]
-        private static void Destroy(this ServiceDiscoveryComponent self)
+        private static void Destroy(this ServiceDiscovery self)
         {
         }
 
         [EntitySystem]
-        private static void Update(this ServiceDiscoveryComponent self)
+        private static void Update(this ServiceDiscovery self)
         {
             long now = TimeInfo.Instance.ServerNow();
             if (now - self.LastHeartbeatCheckTime >= self.HeartbeatCheckInterval)
@@ -37,7 +37,7 @@ namespace ET.Server
         /// <summary>
         /// 注册服务
         /// </summary>
-        public static void RegisterService(this ServiceDiscoveryComponent self, string sceneName, int sceneType, ActorId actorId, Dictionary<string, string> metadata)
+        public static void RegisterService(this ServiceDiscovery self, string sceneName, int sceneType, ActorId actorId, Dictionary<string, string> metadata)
         {
             // 已存在则注销之前的
             if (self.Services.ContainsKey(sceneName))
@@ -67,7 +67,7 @@ namespace ET.Server
         /// <summary>
         /// 注销服务
         /// </summary>
-        public static void UnregisterService(this ServiceDiscoveryComponent self, string sceneName)
+        public static void UnregisterService(this ServiceDiscovery self, string sceneName)
         {
             if (!self.Services.TryGetValue(sceneName, out EntityRef<ServiceInfo> serviceRef))
             {
@@ -104,7 +104,7 @@ namespace ET.Server
         /// <summary>
         /// 更新服务心跳
         /// </summary>
-        public static void UpdateServiceHeartbeat(this ServiceDiscoveryComponent self, string sceneName)
+        public static void UpdateServiceHeartbeat(this ServiceDiscovery self, string sceneName)
         {
             if (!self.Services.TryGetValue(sceneName, out EntityRef<ServiceInfo> serviceRef))
             {
@@ -125,7 +125,7 @@ namespace ET.Server
         /// <summary>
         /// 查询指定类型的服务列表
         /// </summary>
-        public static List<ServiceInfo> GetServicesBySceneType(this ServiceDiscoveryComponent self, int sceneType)
+        public static List<ServiceInfo> GetServicesBySceneType(this ServiceDiscovery self, int sceneType)
         {
             List<ServiceInfo> result = new();
             if (!self.ServicesByType.TryGetValue(sceneType, out HashSet<string> serviceKeys))
@@ -151,7 +151,7 @@ namespace ET.Server
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static void SubscribeServiceChange(this ServiceDiscoveryComponent self, string sceneName, int sceneType, Dictionary<string, string> filterMetadata)
+        public static void SubscribeServiceChange(this ServiceDiscovery self, string sceneName, int sceneType, Dictionary<string, string> filterMetadata)
         {
             ServiceInfo serviceInfo = self.Services[sceneName];
 
@@ -186,7 +186,7 @@ namespace ET.Server
         /// <summary>
         /// 取消订阅服务变更
         /// </summary>
-        public static void UnsubscribeServiceChange(this ServiceDiscoveryComponent self, string sceneName, int sceneType)
+        public static void UnsubscribeServiceChange(this ServiceDiscovery self, string sceneName, int sceneType)
         {
             ServiceInfo serviceInfo = self.Services[sceneName];
             self.Subscribers.Remove(sceneType, sceneName);
@@ -197,7 +197,7 @@ namespace ET.Server
         /// <summary>
         /// 通知服务变更
         /// </summary>
-        private static void NotifyServiceChange(this ServiceDiscoveryComponent self, int sceneType, int changeType, ServiceInfo serviceInfo)
+        private static void NotifyServiceChange(this ServiceDiscovery self, int sceneType, int changeType, ServiceInfo serviceInfo)
         {
             if (!self.Subscribers.TryGetValue(sceneType, out HashSet<string> subscribers))
             {
@@ -246,7 +246,7 @@ namespace ET.Server
         /// <summary>
         /// 检查心跳超时
         /// </summary>
-        private static void CheckHeartbeatTimeout(this ServiceDiscoveryComponent self)
+        private static void CheckHeartbeatTimeout(this ServiceDiscovery self)
         {
             using ListComponent<string> list = ListComponent<string>.Create();
 

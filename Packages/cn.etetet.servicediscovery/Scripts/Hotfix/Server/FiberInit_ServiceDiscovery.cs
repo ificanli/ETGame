@@ -16,7 +16,7 @@ namespace ET.Server
             root.AddComponent<MessageSender>();
             
             // 添加服务发现核心组件
-            root.AddComponent<ServiceDiscoveryComponent>();
+            root.AddComponent<ServiceDiscovery>();
 
             await ETTask.CompletedTask;
         }

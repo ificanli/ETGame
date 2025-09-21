@@ -17,9 +17,9 @@ namespace ET.Server
             root.AddComponent<LocationManagerComoponent>();
             
             // 注册服务发现
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
+            ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             Dictionary<string, string> metadata = new();
-            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
         }
     }
 }

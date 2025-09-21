@@ -19,19 +19,19 @@ namespace ET.Server
             root.AddComponent<HttpComponent, string>($"http://*:{startSceneConfig.Port}/");
 
             // 注册服务发现
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
-            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
+            ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
+            EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
             Dictionary<string, string> metaData = new();
-            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metaData);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metaData);
             // 订阅Router
             Dictionary<string, string> filterMeta = new();
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Router, filterMeta);
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Router, filterMeta);
             
             // 订阅Realm
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Realm, filterMeta);
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Realm, filterMeta);
         }
     }
 }

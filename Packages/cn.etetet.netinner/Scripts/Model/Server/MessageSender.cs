@@ -10,7 +10,7 @@ namespace ET.Server
 
         public readonly Dictionary<int, MessageSenderStruct> requestCallback = new();
         
-        private EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxy;
+        private EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxy;
 
 
         private EntityRef<ProcessInnerSender> processInnerSender;

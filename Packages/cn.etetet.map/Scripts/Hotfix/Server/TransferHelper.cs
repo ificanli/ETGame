@@ -44,8 +44,8 @@ namespace ET.Server
             mapRequest.MapName = mapName;
             mapRequest.UnitId = unitId;
             mapRequest.MapId = mapId;
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxy = root.GetComponent<ServiceDiscoveryProxyComponent>();
-            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyRef = serviceDiscoveryProxy;
+            ServiceDiscoveryProxy serviceDiscoveryProxy = root.GetComponent<ServiceDiscoveryProxy>();
+            EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyRef = serviceDiscoveryProxy;
             string mapManagerName = serviceDiscoveryProxy.GetOneByZoneSceneType(root.Zone(), SceneType.MapManager);
             A2MapManager_GetMapResponse mapResponse = await serviceDiscoveryProxy.Call(mapManagerName, mapRequest) as A2MapManager_GetMapResponse;
             

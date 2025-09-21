@@ -8,7 +8,7 @@ namespace ET.Server
 		protected override async ETTask Run(Unit unit, G2Map_Logout request, Map2G_Logout response)
 		{
 			EntityRef<Unit> unitRef = unit;
-			ServiceDiscoveryProxyComponent serviceDiscoveryProxy = unit.Root().GetComponent<ServiceDiscoveryProxyComponent>();
+			ServiceDiscoveryProxy serviceDiscoveryProxy = unit.Root().GetComponent<ServiceDiscoveryProxy>();
 			string mapManagerName = serviceDiscoveryProxy.GetOneByZoneSceneType(unit.Zone(), SceneType.MapManager);
 			Map2MapManager_LogoutRequest managerLogoutRequest = Map2MapManager_LogoutRequest.Create();
 			managerLogoutRequest.MapName = unit.Scene().Name;

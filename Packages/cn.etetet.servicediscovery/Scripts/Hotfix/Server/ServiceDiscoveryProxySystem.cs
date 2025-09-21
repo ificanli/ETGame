@@ -21,21 +21,21 @@ namespace ET.Server
     /// <summary>
     /// 服务发现代理组件系统
     /// </summary>
-    [EntitySystemOf(typeof(ServiceDiscoveryProxyComponent))]
-    public static partial class ServiceDiscoveryProxyComponentSystem
+    [EntitySystemOf(typeof(ServiceDiscoveryProxy))]
+    public static partial class ServiceDiscoveryProxySystem
     {
         [Event(SceneType.All)]
         public class FiberDestroyEvent_UnRegisterService: AEvent<Scene, FiberDestroyEvent>
         {
             protected override async ETTask Run(Scene scene, FiberDestroyEvent fiberDestroyEvent)
             {
-                ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = scene.GetComponent<ServiceDiscoveryProxyComponent>();
-                await serviceDiscoveryProxyComponent.DestroyAsync();
+                ServiceDiscoveryProxy serviceDiscoveryProxy = scene.GetComponent<ServiceDiscoveryProxy>();
+                await serviceDiscoveryProxy.DestroyAsync();
             }
         }
         
         [EntitySystem]
-        private static void Destroy(this ServiceDiscoveryProxyComponent self)
+        private static void Destroy(this ServiceDiscoveryProxy self)
         {
             Scene root = self.Root();
             if (root == null)
@@ -46,7 +46,7 @@ namespace ET.Server
         }
         
         [EntitySystem]
-        private static void Awake(this ServiceDiscoveryProxyComponent self)
+        private static void Awake(this ServiceDiscoveryProxy self)
         {
             self.MessageSender = self.Root().GetComponent<MessageSender>();
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(nameof(SceneType.ServiceDiscovery));
@@ -54,17 +54,17 @@ namespace ET.Server
         }
 
         [Invoke(TimerInvokeType.ServiceDiscoveryProxyHeartbeat)]
-        public class ServiceDiscoveryProxyHeartbeat : ATimer<ServiceDiscoveryProxyComponent>
+        public class ServiceDiscoveryProxyHeartbeat : ATimer<ServiceDiscoveryProxy>
         {
-            protected override void Run(ServiceDiscoveryProxyComponent self)
+            protected override void Run(ServiceDiscoveryProxy self)
             {
                 self.SendHeartbeat().NoContext();
             }
         }
 
-        private static async ETTask DestroyAsync(this ServiceDiscoveryProxyComponent self)
+        private static async ETTask DestroyAsync(this ServiceDiscoveryProxy self)
         {
-            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+            EntityRef<ServiceDiscoveryProxy> selfRef = self;
             foreach (var kv in self.SceneTypeServices)
             {
                 self = selfRef;
@@ -78,11 +78,11 @@ namespace ET.Server
         /// <summary>
         /// 注册到服务发现服务器
         /// </summary>
-        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxyComponent self, Dictionary<string, string> metadata)
+        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, Dictionary<string, string> metadata)
         {
             ServiceRegisterRequest request = ServiceRegisterRequest.Create();
             Scene root = self.Root();
-            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+            EntityRef<ServiceDiscoveryProxy> selfRef = self;
             request.SceneType = root.SceneType;
             request.SceneName = root.Name;
             request.ActorId = root.GetActorId();
@@ -108,7 +108,7 @@ namespace ET.Server
         /// <summary>
         /// 从服务发现服务器注销
         /// </summary>
-        public static async ETTask UnregisterFromServiceDiscovery(this ServiceDiscoveryProxyComponent self)
+        public static async ETTask UnregisterFromServiceDiscovery(this ServiceDiscoveryProxy self)
         {
             Scene root = self.Root();
 
@@ -120,7 +120,7 @@ namespace ET.Server
         /// <summary>
         /// 发送心跳
         /// </summary>
-        private static async ETTask SendHeartbeat(this ServiceDiscoveryProxyComponent self)
+        private static async ETTask SendHeartbeat(this ServiceDiscoveryProxy self)
         {
             ServiceHeartbeatRequest request = ServiceHeartbeatRequest.Create();
             request.SceneName = self.Root().Name;
@@ -130,7 +130,7 @@ namespace ET.Server
         /// <summary>
         /// 查询服务列表
         /// </summary>
-        public static async ETTask<List<ServiceInfoProto>> QueryServices(this ServiceDiscoveryProxyComponent self, int sceneType)
+        public static async ETTask<List<ServiceInfoProto>> QueryServices(this ServiceDiscoveryProxy self, int sceneType)
         {
             ServiceQueryRequest request = ServiceQueryRequest.Create();
             request.SceneType = sceneType;
@@ -142,7 +142,7 @@ namespace ET.Server
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxyComponent self, int sceneType, Dictionary<string, string> filterMeta)
+        public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxy self, int sceneType, Dictionary<string, string> filterMeta)
         {
             ServiceSubscribeRequest request = ServiceSubscribeRequest.Create();
             request.SceneName = self.Root().Name;
@@ -158,7 +158,7 @@ namespace ET.Server
         /// <summary>
         /// 取消订阅服务变更
         /// </summary>
-        public static async ETTask UnsubscribeServiceChange(this ServiceDiscoveryProxyComponent self, int sceneType)
+        public static async ETTask UnsubscribeServiceChange(this ServiceDiscoveryProxy self, int sceneType)
         {
             ServiceUnsubscribeRequest request = ServiceUnsubscribeRequest.Create();
             request.SceneName = self.Root().Name;
@@ -167,7 +167,7 @@ namespace ET.Server
         }
         
 
-        private static void OnServiceChangeNotification(this ServiceDiscoveryProxyComponent self, int changeType, ServiceInfoProto serviceInfo)
+        private static void OnServiceChangeNotification(this ServiceDiscoveryProxy self, int changeType, ServiceInfoProto serviceInfo)
         {
             switch (changeType)
             {
@@ -230,7 +230,7 @@ namespace ET.Server
         /// <summary>
         /// 处理服务变更通知
         /// </summary>
-        public static void OnServiceChangeNotification(this ServiceDiscoveryProxyComponent self, int changeType, List<ServiceInfoProto> serviceInfos)
+        public static void OnServiceChangeNotification(this ServiceDiscoveryProxy self, int changeType, List<ServiceInfoProto> serviceInfos)
         {
             foreach (ServiceInfoProto serviceInfo in serviceInfos)
             {
@@ -240,14 +240,14 @@ namespace ET.Server
         
         #region 获取ServiceInfo
         
-        public static async ETTask<ServiceCacheInfo> GetServiceInfo(this ServiceDiscoveryProxyComponent self, string sceneName)
+        public static async ETTask<ServiceCacheInfo> GetServiceInfo(this ServiceDiscoveryProxy self, string sceneName)
         {
             if (self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef))
             {
                 return serviceCacheInfoRef;
             }
 
-            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+            EntityRef<ServiceDiscoveryProxy> selfRef = self;
             ServiceQueryBySceneNameRequest request = ServiceQueryBySceneNameRequest.Create();
             request.SceneName = sceneName;
             
@@ -259,12 +259,12 @@ namespace ET.Server
             return serviceCacheInfoRef2;
         }
         
-        public static List<string> GetByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
+        public static List<string> GetByZoneSceneType(this ServiceDiscoveryProxy self, int zone, int type)
         {
             return self.ZoneSceneTypeServices[zone][type];
         }
         
-        public static List<string> GetBySceneType(this ServiceDiscoveryProxyComponent self, int type)
+        public static List<string> GetBySceneType(this ServiceDiscoveryProxy self, int type)
         {
             try
             {
@@ -277,7 +277,7 @@ namespace ET.Server
             }
         }
         
-        public static string GetOneByZoneSceneType(this ServiceDiscoveryProxyComponent self, int zone, int type)
+        public static string GetOneByZoneSceneType(this ServiceDiscoveryProxy self, int zone, int type)
         {
             try
             {
@@ -290,7 +290,7 @@ namespace ET.Server
             }
         }
 
-        public static ServiceCacheInfo GetByName(this ServiceDiscoveryProxyComponent self, string name)
+        public static ServiceCacheInfo GetByName(this ServiceDiscoveryProxy self, string name)
         {
             return self.SceneNameServices[name];
         }
@@ -307,7 +307,7 @@ namespace ET.Server
         /// <param name="self">ServiceMessageSender实例</param>
         /// <param name="sceneName">目标服务的SceneName</param>
         /// <param name="message">要发送的消息</param>
-        public static void Send(this ServiceDiscoveryProxyComponent self, string sceneName, IMessage message)
+        public static void Send(this ServiceDiscoveryProxy self, string sceneName, IMessage message)
         {
             // 获取或创建该SceneName的队列
             if (!self.PendingMessages.TryGetValue(sceneName, out Queue<IMessage> queue))
@@ -334,10 +334,10 @@ namespace ET.Server
         /// <param name="request">要发送的请求消息</param>
         /// <param name="needException">是否需要抛出异常</param>
         /// <returns>响应消息</returns>
-        public static async ETTask<IResponse> Call(this ServiceDiscoveryProxyComponent self, string sceneName, IRequest request, bool needException = true)
+        public static async ETTask<IResponse> Call(this ServiceDiscoveryProxy self, string sceneName, IRequest request, bool needException = true)
         {
             // ActorId未知，先获取ActorId
-            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+            EntityRef<ServiceDiscoveryProxy> selfRef = self;
 
             ServiceCacheInfo serviceCacheInfo = await self.GetServiceInfo(sceneName);
             if (serviceCacheInfo.ActorId == default)
@@ -352,9 +352,9 @@ namespace ET.Server
         /// <summary>
         /// 开始异步获取ActorId
         /// </summary>
-        private static async ETTask StartFetchActorId(this ServiceDiscoveryProxyComponent self, string sceneName)
+        private static async ETTask StartFetchActorId(this ServiceDiscoveryProxy self, string sceneName)
         {
-            EntityRef<ServiceDiscoveryProxyComponent> selfRef = self;
+            EntityRef<ServiceDiscoveryProxy> selfRef = self;
 
             ServiceCacheInfo serviceCacheInfo = await self.GetServiceInfo(sceneName);
 
@@ -376,7 +376,7 @@ namespace ET.Server
         /// <summary>
         /// 处理待发送的消息
         /// </summary>
-        private static void ProcessPendingMessages(this ServiceDiscoveryProxyComponent self, string sceneName, ActorId actorId)
+        private static void ProcessPendingMessages(this ServiceDiscoveryProxy self, string sceneName, ActorId actorId)
         {
             if (!self.PendingMessages.TryGetValue(sceneName, out Queue<IMessage> queue))
             {

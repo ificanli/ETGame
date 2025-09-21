@@ -17,22 +17,22 @@ namespace ET.Server
             root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPPort));
             
             // 注册服务发现
-            ServiceDiscoveryProxyComponent serviceDiscoveryProxyComponent = root.AddComponent<ServiceDiscoveryProxyComponent>();
-            EntityRef<ServiceDiscoveryProxyComponent> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxyComponent;
+            ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
+            EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
 
             Dictionary<string, string> metadata = new()
             {
                 { ServiceMetaKey.InnerIPPort, $"{startSceneConfig.InnerIPPort}" }
             };
-            await serviceDiscoveryProxyComponent.RegisterToServiceDiscovery(metadata);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
             
             // 订阅跟realm属于同一个zone的Gate
             Dictionary<string, string> filterMeta = new()
             {
                 { ServiceMetaKey.Zone, $"{fiberInit.Fiber.Zone}" }
             };
-            serviceDiscoveryProxyComponent = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxyComponent.SubscribeServiceChange(SceneType.Gate, filterMeta);
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Gate, filterMeta);
         }
     }
 }

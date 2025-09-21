@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
-    [ChildOf(typeof(ServiceDiscoveryProxyComponent))]
+    [ChildOf(typeof(ServiceDiscoveryProxy))]
     public partial class ServiceCacheInfo: Entity, IAwake
     {
         public string SceneName;
@@ -16,7 +16,7 @@ namespace ET.Server
     /// 通过此组件可以将Fiber注册到服务发现服务器上
     /// </summary>
     [ComponentOf(typeof(Scene))]
-    public class ServiceDiscoveryProxyComponent : Entity, IAwake, IDestroy
+    public class ServiceDiscoveryProxy : Entity, IAwake, IDestroy
     {
         /// <summary>
         /// 服务发现服务器的ActorId
