@@ -33,13 +33,19 @@ namespace ET
         
         public Address Address
         {
-            get;
-            set;
+            get
+            {
+                return new Address(IP, Port);
+            }
+            set
+            {
+                this.IP = value.IP;
+                this.Port = value.Port;
+            }
         }
 
         public void Awake()
         {
-            this.Address = new Address(NetworkHelper.IPStringToInt(this.IP), this.Port);
         }
     }
 }

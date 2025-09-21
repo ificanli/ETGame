@@ -53,7 +53,7 @@ namespace ET.Client
             await self.GetAllRouter();
         }
 
-        public static IPEndPoint GetAddress(this RouterAddressComponent self)
+        public static Address GetAddress(this RouterAddressComponent self)
         {
             if (self.Routers.Count == 0)
             {
@@ -64,6 +64,7 @@ namespace ET.Client
             Log.Info($"get router address: {self.RouterIndex - 1} {address}");
             string[] ss = address.Split(':');
             IPAddress ipAddress = IPAddress.Parse(ss[0]);
+            // 下面是把ipv4转成ipv6
             if (self.AddressFamily == AddressFamily.InterNetworkV6)
             { 
                 ipAddress = ipAddress.MapToIPv6();

@@ -44,7 +44,7 @@ namespace ET
         private static void OnAccept(this NetComponent self, long channelId, IPEndPoint ipEndPoint)
         {
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(ipEndPoint);
+            session.RemoteAddress = ipEndPoint;
 
             // 挂上这个组件，5秒就会删除session，所以客户端验证完成要删除这个组件。该组件的作用就是防止外挂一直连接不发消息也不进行权限验证
             session.AddComponent<SessionAcceptTimeoutComponent>();
@@ -91,7 +91,7 @@ namespace ET
         {
             long channelId = NetServices.Instance.CreateConnectChannelId();
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(realIPEndPoint);
+            session.RemoteAddress = realIPEndPoint;
             session.AddComponent<SessionIdleCheckerComponent>();
             
             self.AService.Create(session.Id, realIPEndPoint);
@@ -103,7 +103,7 @@ namespace ET
         {
             long channelId = localConn;
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(realIPEndPoint);
+            session.RemoteAddress = realIPEndPoint;
             session.AddComponent<SessionIdleCheckerComponent>();
             self.AService.Create(session.Id, routerIPEndPoint);
             return session;

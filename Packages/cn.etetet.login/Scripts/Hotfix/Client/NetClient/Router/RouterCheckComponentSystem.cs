@@ -59,7 +59,7 @@ namespace ET.Client
                     
                     Log.Info($"get recvLocalConn start: {root.Id} {realAddress} {localConn} {remoteConn}");
 
-                    (uint recvLocalConn, IPEndPoint routerAddress) = await netComponent.GetRouterAddress(NetworkHelper.AddressToIPEndPoint(realAddress), localConn, remoteConn);
+                    (uint recvLocalConn, IPEndPoint routerAddress) = await netComponent.GetRouterAddress(realAddress, localConn, remoteConn);
                     session = sessionRef;
                     root = rootRef;
                     if (recvLocalConn == 0)

@@ -17,7 +17,7 @@ namespace ET.Server
 
         public static async ETTask Create(this GateMapComponent self, long id)
         {
-            self.Fiber = await self.Fiber().CreateFiber(id, self.Zone(), SceneType.GateMap, $"GateMap@{id}");
+            self.Fiber = await self.Fiber().CreateFiber(id, self.Zone(), SceneType.Map, $"GateMap@{id}");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Unity.Mathematics;
 
 namespace ET
@@ -61,6 +62,7 @@ namespace ET
             logMsg.AddIgnore(typeof(MessageResponse));
             logMsg.AddIgnore(typeof(ServiceHeartbeatRequest));
             logMsg.AddIgnore(typeof(ServiceHeartbeatResponse));
+            
             
             // 创建需要reload的code singleton
             CodeTypes.Instance.CodeProcess();

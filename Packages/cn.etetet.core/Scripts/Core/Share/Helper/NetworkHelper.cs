@@ -77,19 +77,6 @@ namespace ET
 			return new IPAddress(bytes).ToString();
 		}
         
-        public static Address IPEndPointToAddress(IPEndPoint ipEndPoint)
-        {
-            int ip = IPStringToInt(ipEndPoint.Address.ToString());
-            int port = ipEndPoint.Port;
-            return new Address(ip, port);
-        }
-        
-        public static IPEndPoint AddressToIPEndPoint(Address address)
-        {
-            string ipString = IntToIPString(address.IP);
-            return new IPEndPoint(IPAddress.Parse(ipString), address.Port);
-        }
-
 		public static void SetSioUdpConnReset(Socket socket)
 		{
 			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

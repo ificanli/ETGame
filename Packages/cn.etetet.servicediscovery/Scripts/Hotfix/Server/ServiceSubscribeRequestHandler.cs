@@ -8,8 +8,6 @@ namespace ET.Server
             ServiceDiscovery serviceDiscovery = scene.GetComponent<ServiceDiscovery>();
             serviceDiscovery.SubscribeServiceChange(request.SceneName, request.SceneType, request.FilterMetadata);
 
-            Log.Debug($"Subscribe service change: {request.SceneName}");
-
             await ETTask.CompletedTask;
         }
     }

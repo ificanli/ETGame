@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Runtime.InteropServices;
 using MemoryPack;
 
@@ -9,7 +10,7 @@ namespace ET
     public partial struct Address: IEquatable<Address>
     {
         [MemoryPackOrder(0)]
-        public int IP;
+        public string IP;
         [MemoryPackOrder(1)]
         public int Port;
         
@@ -28,16 +29,10 @@ namespace ET
             return HashCode.Combine(this.IP, this.Port);
         }
         
-        public Address(int ip, int port)
+        public Address(string ip, int port)
         {
             this.IP = ip;
             this.Port = port;
-        }
-        
-        public Address(long ipPort)
-        {
-            this.IP = (int)(ipPort >> 32);
-            this.Port = (int)(ipPort & 0xffff);
         }
 
         public static bool operator ==(Address left, Address right)
@@ -50,14 +45,19 @@ namespace ET
             return !(left == right);
         }
 
-        public long ToLong()
+        public static implicit operator IPEndPoint(Address address)
         {
-            return ((long)this.IP << 32) | (uint)this.Port;
+            return new IPEndPoint(IPAddress.Parse(address.IP), address.Port);
+        }
+
+        public static implicit operator Address(IPEndPoint endPoint)
+        {
+            return new Address(endPoint.Address.ToString(), endPoint.Port);
         }
 
         public override string ToString()
         {
-            return $"{this.IP}:{this.Port}";
+            return MongoHelper.ToJson(this);
         }
     }
     
@@ -157,7 +157,7 @@ namespace ET
 
         public override string ToString()
         {
-            return $"{this.Address}:{this.FiberInstanceId}";
+            return MongoHelper.ToJson(this);
         }
     }
 }

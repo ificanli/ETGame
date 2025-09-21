@@ -25,9 +25,13 @@ namespace ET.Server
             EntityRef<UnitComponent> unitComponentRef = unitComponent;
 
             string mapName = root.Name.GetMapName();
-            // 加载场景寻路数据
-            await NavmeshComponent.Instance.Load(mapName);
-            
+
+            if (mapName != "GateMap")
+            {
+                // 加载场景寻路数据
+                await NavmeshComponent.Instance.Load(mapName);
+            }
+
             root = rootRef;
             unitComponent = unitComponentRef;
 

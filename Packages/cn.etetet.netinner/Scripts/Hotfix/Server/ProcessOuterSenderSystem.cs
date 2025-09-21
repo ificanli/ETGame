@@ -108,7 +108,7 @@ namespace ET.Server
         private static void OnAccept(this ProcessOuterSender self, long channelId, IPEndPoint ipEndPoint)
         {
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
-            session.RemoteAddress = NetworkHelper.IPEndPointToAddress(ipEndPoint);
+            session.RemoteAddress = ipEndPoint;
             //session.AddComponent<SessionIdleCheckerComponent, int, int, int>(NetThreadComponent.checkInteral, NetThreadComponent.recvMaxIdleTime, NetThreadComponent.sendMaxIdleTime);
         }
 
@@ -120,7 +120,7 @@ namespace ET.Server
             
             self.AddressSessions.Add(address, session);
             
-            self.AService.Create(channelId, NetworkHelper.AddressToIPEndPoint(session.RemoteAddress));
+            self.AService.Create(channelId, session.RemoteAddress);
 
             //session.AddComponent<InnerPingComponent>();
             //session.AddComponent<SessionIdleCheckerComponent, int, int, int>(NetThreadComponent.checkInteral, NetThreadComponent.recvMaxIdleTime, NetThreadComponent.sendMaxIdleTime);

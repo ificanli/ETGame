@@ -12,7 +12,7 @@ namespace ET.Server
         {
             get
             {
-                return new Address(NetworkHelper.IPStringToInt(this.InnerIP), this.Port);
+                return new Address(this.InnerIP, this.Port);
             }
         }
 
