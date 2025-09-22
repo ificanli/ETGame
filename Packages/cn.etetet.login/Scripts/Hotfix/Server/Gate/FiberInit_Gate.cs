@@ -20,19 +20,9 @@ namespace ET.Server
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<MessageLocationSenderComponent>();
 
-            string innerIP = AddressSingleton.Instance.InnerIP;
-            int outerPort = AddressSingleton.Instance.OuterPort;
+            int outerPort = AddressHelper.GetSceneOuterPort(root.Name);
             
-            IPEndPoint innerIPOuterPort;
-            if (outerPort > 0)
-            {
-                innerIPOuterPort = new Address(innerIP, outerPort);
-            }
-            else
-            {
-                StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
-                innerIPOuterPort = startSceneConfig.InnerIPOuterPort;
-            }
+            IPEndPoint innerIPOuterPort = new Address(AddressSingleton.Instance.InnerIP, outerPort);
             
             NetComponent netComponent = root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(innerIPOuterPort));
             

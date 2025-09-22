@@ -15,20 +15,10 @@ namespace ET.Server
             root.AddComponent<CoroutineLockComponent>();
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
-
-            string innerIP = AddressSingleton.Instance.InnerIP;
-            int outerPort = AddressSingleton.Instance.OuterPort;
             
-            IPEndPoint innerIPOuterPort;
-            if (outerPort > 0)
-            {
-                innerIPOuterPort = new Address(innerIP, outerPort);
-            }
-            else
-            {
-                StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
-                innerIPOuterPort = startSceneConfig.InnerIPOuterPort;
-            }
+            int outerPort = AddressHelper.GetSceneOuterPort(root.Name);
+
+            IPEndPoint innerIPOuterPort = new Address(AddressSingleton.Instance.InnerIP, outerPort);
             
             NetComponent netComponent = root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(innerIPOuterPort));
             
