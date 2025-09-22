@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace ET.Server
 {
@@ -13,8 +15,19 @@ namespace ET.Server
             root.AddComponent<CoroutineLockComponent>();
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
-            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
-            NetComponent netComponent = root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(startSceneConfig.InnerIPOuterPort));
+
+            IPEndPoint innerIPOuterPort;
+            if (Options.Instance.OuterPort > 0)
+            {
+                innerIPOuterPort = new Address(Options.Instance.InnerIP, Options.Instance.OuterPort);
+            }
+            else
+            {
+                StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
+                innerIPOuterPort = startSceneConfig.InnerIPOuterPort;
+            }
+            
+            NetComponent netComponent = root.AddComponent<NetComponent, IKcpTransport>(new UdpTransport(innerIPOuterPort));
             
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();

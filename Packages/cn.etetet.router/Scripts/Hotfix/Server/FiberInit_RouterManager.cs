@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace ET.Server
@@ -15,8 +16,14 @@ namespace ET.Server
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
             
-            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
-            root.AddComponent<HttpComponent, string>($"http://*:{startSceneConfig.Port}/");
+            int outPort = 0;
+            outPort = Options.Instance.OuterPort;
+            if (outPort == 0)
+            {
+                StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
+                outPort = startSceneConfig.Port;
+            }
+            root.AddComponent<HttpComponent, string>($"http://*:{outPort}/");
 
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();

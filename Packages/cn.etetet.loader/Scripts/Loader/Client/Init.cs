@@ -20,14 +20,14 @@ namespace ET
                 Log.Error(e.ExceptionObject.ToString());
             };
 
+            GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
             // 命令行参数
-            string[] args = "".Split(" ");
+            string[] args = { $"--SceneName={globalConfig.SceneName}" };
             Parser.Default.ParseArguments<Options>(args)
                     .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
                     .WithParsed((o)=>World.Instance.AddSingleton(o));
 
-            GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
-            Options.Instance.SceneName = globalConfig.SceneName;
+
             
             // 编辑器模式下如果开启了ENABLE_VIEW使用单线程，WEBGL模式也使用单线程
 #if (ENABLE_VIEW && UNITY_EDITOR) || UNITY_WEBGL

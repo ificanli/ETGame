@@ -60,8 +60,6 @@ namespace ET
             logMsg.AddIgnore(typeof(M2C_PathfindingResult));
             logMsg.AddIgnore(typeof(M2C_Stop));
             logMsg.AddIgnore(typeof(MessageResponse));
-            logMsg.AddIgnore(typeof(ServiceHeartbeatRequest));
-            logMsg.AddIgnore(typeof(ServiceHeartbeatResponse));
             
             
             // 创建需要reload的code singleton

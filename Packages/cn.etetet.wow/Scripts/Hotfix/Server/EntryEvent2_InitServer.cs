@@ -12,7 +12,7 @@
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(process);
             
             // NetInner创建完成会设置Option.Instance.InnerIP跟Option.Instance.InnerPort
-            await fiber.CreateFiberWithId(Const.NetInnerFiberId, SchedulerType.ThreadPool, Const.NetInnerFiberId, 0, SceneType.NetInner, $"NetInner_{process}");
+            await fiber.CreateFiberWithId(Const.NetInnerFiberId, SchedulerType.ThreadPool, Const.NetInnerFiberId, 0, SceneType.NetInner, $"NetInner_{process}_{Options.Instance.ReplicaIndex}");
 
             if (startProcessConfig != null)
             {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace ET.Server
@@ -15,18 +16,29 @@ namespace ET.Server
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
             
-            StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
+            IPEndPoint outerIPOutPort;
+            string innerIP;
+            if (Options.Instance.OuterPort > 0)
+            {
+                outerIPOutPort = new Address(Options.Instance.OuterIP, Options.Instance.OuterPort);
+                innerIP = Options.Instance.InnerIP;
+            }
+            else
+            {
+                StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
+                outerIPOutPort = startSceneConfig.OuterIPOuterPort;
+                innerIP = startSceneConfig.StartProcessConfig.InnerIP;
+            }
+            
             
             // 开发期间使用OuterIPPort，云服务器因为本机没有OuterIP，所以要改成InnerIPPort，然后在云防火墙中端口映射到InnerIPPort
-            StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(startSceneConfig.Process);
-            IPEndPoint outIPPort = NetworkHelper.ToIPEndPoint($"{startProcessConfig.OuterIP}:{startSceneConfig.Port}");
-            root.AddComponent<RouterComponent, IPEndPoint, string>(outIPPort, startProcessConfig.InnerIP);
+            root.AddComponent<RouterComponent, IPEndPoint, string>(outerIPOutPort, innerIP);
             
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             Dictionary<string, string> metadata = new()
             {
-                { ServiceMetaKey.OuterIPOuterPort, $"{startSceneConfig.OuterIPOuterPort}" }
+                { ServiceMetaKey.OuterIPOuterPort, $"{outerIPOutPort}" }
             };
             await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
         }

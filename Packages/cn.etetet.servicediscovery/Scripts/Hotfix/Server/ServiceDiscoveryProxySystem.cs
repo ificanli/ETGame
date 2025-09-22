@@ -51,6 +51,9 @@ namespace ET.Server
             self.MessageSender = self.Root().GetComponent<MessageSender>();
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(nameof(SceneType.ServiceDiscovery));
             self.ServiceDiscoveryActorId = new ActorId(startSceneConfig.Address, new FiberInstanceId(Const.ServiceDiscoveryFiberId));
+            
+            LogMsg.Instance.AddIgnore(typeof(ServiceHeartbeatRequest));
+            LogMsg.Instance.AddIgnore(typeof(ServiceHeartbeatResponse));
         }
 
         [Invoke(TimerInvokeType.ServiceDiscoveryProxyHeartbeat)]
