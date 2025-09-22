@@ -5,6 +5,9 @@
     {
         protected override async ETTask Run(Scene root, EntryEvent2 args)
         {
+            LogMsg.Instance.AddIgnore(typeof(ServiceHeartbeatRequest));
+            LogMsg.Instance.AddIgnore(typeof(ServiceHeartbeatResponse));
+            
             Fiber fiber = root.Fiber;
             EntityRef<Scene> rootRef = root;
             
@@ -16,7 +19,7 @@
             addressSingleton.SetInnerIPInnerPortOuterIP(startProcessConfig);
             
             // 因为bind的地址有可能是0.0.0.0:0,NetInner创建完成会设置具体的地址到AddressSingleton中
-            await fiber.CreateFiberWithId(Const.NetInnerFiberId, SchedulerType.ThreadPool, Const.NetInnerFiberId, 0, SceneType.NetInner, $"NetInner_{process}_{Options.Instance.ReplicaIndex}");
+            await fiber.CreateFiberWithId(Const.NetInnerFiberId, SchedulerType.ThreadPool, Const.NetInnerFiberId, 0, SceneType.NetInner, $"NetInner@{process}@{Options.Instance.ReplicaIndex}");
 
             if (startProcessConfig != null)
             {
@@ -28,11 +31,11 @@
                     int sceneType = SceneTypeSingleton.Instance.GetSceneType(startConfig.SceneType);
                     if (sceneType == SceneType.ServiceDiscovery)
                     {
-                        await fiber.CreateFiberWithId(Const.ServiceDiscoveryFiberId, SchedulerType.ThreadPool, Const.ServiceDiscoveryFiberId, startConfig.Zone, sceneType, startConfig.Name);
+                        await fiber.CreateFiberWithId(Const.ServiceDiscoveryFiberId, SchedulerType.ThreadPool, Const.ServiceDiscoveryFiberId, startConfig.Zone, sceneType, $"{startConfig.Name}@{process}@{Options.Instance.ReplicaIndex}");
                     }
                     else
                     {
-                        await fiber.CreateFiber(SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
+                        await fiber.CreateFiber(SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, sceneType, $"{startConfig.Name}@{process}@{Options.Instance.ReplicaIndex}");
                     }
                 }
             }

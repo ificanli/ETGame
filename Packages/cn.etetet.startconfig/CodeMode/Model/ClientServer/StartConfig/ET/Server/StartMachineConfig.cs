@@ -20,7 +20,6 @@ namespace ET.Server
             Id = _buf.ReadInt();
             InnerIP = _buf.ReadString();
             OuterIP = _buf.ReadString();
-            WatcherPort = _buf.ReadString();
 
             EndInit();
         }
@@ -42,10 +41,6 @@ namespace ET.Server
         /// 外网地址
         /// </summary>
         public readonly string OuterIP;
-        /// <summary>
-        /// 守护进程端口
-        /// </summary>
-        public readonly string WatcherPort;
     
         public const int __ID__ = -737091277;
         public override int GetTypeId() => __ID__;
@@ -61,7 +56,6 @@ namespace ET.Server
             + "Id:" + Id + ","
             + "InnerIP:" + InnerIP + ","
             + "OuterIP:" + OuterIP + ","
-            + "WatcherPort:" + WatcherPort + ","
             + "}";
         }
 

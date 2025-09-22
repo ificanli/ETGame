@@ -24,7 +24,7 @@ namespace ET.Server
             
             EntityRef<UnitComponent> unitComponentRef = unitComponent;
 
-            string mapName = root.Name.GetMapName();
+            string mapName = root.Name.GetSceneConfigName();
 
             if (mapName != "GateMap")
             {

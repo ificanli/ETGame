@@ -70,14 +70,17 @@ namespace ET
                 {
                     response.Error = exception.Error;
                     response.Message = exception.ToString();
+                    Log.Error(exception);
                 }
                 catch (Exception exception)
                 {
                     response.Error = ErrorCode.ERR_RpcFail;
                     response.Message = exception.ToString();
+                    Log.Error(exception);
                 }
                 
                 response.RpcId = rpcId;
+
                 fiber.Root.GetComponent<ProcessInnerSender>().Reply(fromFiber, response);
             }
             catch (Exception e)

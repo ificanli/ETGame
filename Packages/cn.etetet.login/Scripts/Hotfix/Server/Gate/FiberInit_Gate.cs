@@ -20,7 +20,7 @@ namespace ET.Server
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<MessageLocationSenderComponent>();
 
-            int outerPort = AddressSingleton.Instance.GetSceneOuterPort(root.Name);
+            int outerPort = AddressSingleton.Instance.GetSceneOuterPort(root.Name.GetSceneConfigName());
             
             IPEndPoint innerIPOuterPort = new Address(AddressSingleton.Instance.InnerIP, outerPort);
             

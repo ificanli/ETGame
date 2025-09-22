@@ -91,10 +91,17 @@ namespace ET
 
 			try
 			{
-				long id = NetServices.Instance.CreateAcceptChannelId();
-				TChannel channel = new TChannel(id, acceptSocket, this);
+				int channelId;
+				while (true)
+				{
+					channelId = RandomGenerator.RandInt32();
+					if (!this.idChannels.ContainsKey(channelId))
+					{
+						break;
+					}
+				}
+				TChannel channel = new(channelId, acceptSocket, this);
 				this.idChannels.Add(channel.Id, channel);
-				long channelId = channel.Id;
 				
 				this.AcceptCallback(channelId, channel.RemoteAddress);
 			}

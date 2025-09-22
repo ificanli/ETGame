@@ -248,13 +248,13 @@ namespace ET
                             this.waitAcceptChannels.TryGetValue(remoteConn, out kChannel);
                             if (kChannel == null)
                             {
-                                // accept的localConn不能与connect的localConn冲突，所以设置为一个大的数
-                                // localConn被人猜出来问题不大，因为remoteConn是随机的,第三方并不知道
-                                localConn = NetServices.Instance.CreateAcceptChannelId();
-                                // 已存在同样的localConn，则不处理，等待下次sync
-                                if (this.localConnChannels.ContainsKey(localConn))
+                                while (true)
                                 {
-                                    break;
+                                    localConn = RandomGenerator.RandUInt32();
+                                    if (!this.localConnChannels.ContainsKey(localConn))
+                                    {
+                                        break;
+                                    }
                                 }
 
                                 kChannel = new KChannel(localConn, remoteConn, this.ipEndPoint.Clone(), this);
@@ -394,11 +394,10 @@ namespace ET
             {
                 return;
             }
-
             try
             {
                 // 低32bit是localConn
-                uint localConn = (uint)id;
+                uint localConn = (uint)((ulong)id & uint.MaxValue);
                 kChannel = new KChannel(localConn, ipEndPoint, this);
                 this.localConnChannels.Add(kChannel.LocalConn, kChannel);
             }

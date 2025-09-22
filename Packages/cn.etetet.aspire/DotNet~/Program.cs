@@ -56,7 +56,7 @@ namespace ET.Aspire
                 }
 
                 // 为每个副本创建独立的服务
-                for (int replicaIndex = 0; replicaIndex < replicasNum; replicaIndex++)
+                for (int replicaIndex = 1; replicaIndex <= replicasNum; replicaIndex++)
                 {
                     string serviceName = replicasNum > 1 ? $"et-process-{processId}-{replicaIndex}" : $"et-process-{processId}";
                     var p = builder.AddExecutable(serviceName, "dotnet", currentDir, "./Bin/ET.App.dll")

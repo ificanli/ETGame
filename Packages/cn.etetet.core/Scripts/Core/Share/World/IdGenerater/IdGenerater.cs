@@ -116,14 +116,18 @@ namespace ET
                 v = this.value;
             }
 
+            IdStruct idStruct = new(time, this.GetProcessReplicaIndex(), v);
+            return idStruct.ToLong();
+        }
+
+        public ushort GetProcessReplicaIndex()
+        {
             // 因为改成了服务发现，支持一个进程多个副本，比如gate只需要配一个进程，可以支持多个,同一个Replica是同一个进程Id
             if (Options.Instance.Process * 1000 > 50000)
             {
-                throw new Exception("Process is too large");
+                throw new Exception($"Process is too large: {Options.Instance.Process}");
             }
-            
-            IdStruct idStruct = new(time, (ushort)(Options.Instance.Process * 1000 + Options.Instance.ReplicaIndex), v);
-            return idStruct.ToLong();
+            return (ushort)(Options.Instance.Process * 1000 + Options.Instance.ReplicaIndex);
         }
         
         public long GenerateInstanceId()

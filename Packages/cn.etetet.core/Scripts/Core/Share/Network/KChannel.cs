@@ -136,7 +136,7 @@ namespace ET
 			this.kcp = new Kcp(this.RemoteConn, this.Output);
 			this.InitKcp();
 
-			Log.Info($"channel connected: {this.LocalConn} {this.RemoteConn} {this.RemoteAddress}");
+			Log.Info($"channel connected: {this.LocalConn} {this.RemoteConn} {this.RemoteAddress} {this.waitSendMessages.Count}");
 			this.IsConnected = true;
 			while (true)
 			{

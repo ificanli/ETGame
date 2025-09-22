@@ -43,7 +43,7 @@ namespace ET
             FiberInstanceId fiberInstanceId = messageInfo.FiberInstanceId;
             MessageObject message = messageInfo.MessageObject;
             int fromFiber = fiberInstanceId.Fiber;
-
+            
             Entity entity = self.Fiber().Mailboxes.Get(fiberInstanceId.InstanceId);
             MailBoxComponent mailBoxComponent = entity as MailBoxComponent;
             if (mailBoxComponent == null)

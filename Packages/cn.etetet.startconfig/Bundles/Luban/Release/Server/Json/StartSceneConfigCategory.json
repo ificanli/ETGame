@@ -21,7 +21,7 @@
     "Zone": 1,
     "SceneType": "Router",
     "Name": "Router",
-    "Port": -1
+    "Port": 0
   },
   {
     "Id": 201,
@@ -29,7 +29,7 @@
     "Zone": 2,
     "SceneType": "Realm",
     "Name": "Realm",
-    "Port": 20101
+    "Port": 0
   },
   {
     "Id": 202,
@@ -37,7 +37,7 @@
     "Zone": 2,
     "SceneType": "Gate",
     "Name": "Gate",
-    "Port": -1
+    "Port": 0
   },
   {
     "Id": 203,

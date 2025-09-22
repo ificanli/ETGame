@@ -51,9 +51,6 @@ namespace ET.Server
             self.MessageSender = self.Root().GetComponent<MessageSender>();
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(nameof(SceneType.ServiceDiscovery));
             self.ServiceDiscoveryActorId = new ActorId(startSceneConfig.Address, new FiberInstanceId(Const.ServiceDiscoveryFiberId));
-            
-            LogMsg.Instance.AddIgnore(typeof(ServiceHeartbeatRequest));
-            LogMsg.Instance.AddIgnore(typeof(ServiceHeartbeatResponse));
         }
 
         [Invoke(TimerInvokeType.ServiceDiscoveryProxyHeartbeat)]
@@ -94,7 +91,6 @@ namespace ET.Server
             {
                 request.Metadata.Add(item.Key, item.Value);
             }
-            
             ServiceRegisterResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceRegisterResponse;
 
             self = selfRef;

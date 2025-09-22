@@ -16,7 +16,7 @@ namespace ET.Server
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
             
-            int outerPort = AddressSingleton.Instance.GetSceneOuterPort(root.Name);
+            int outerPort = AddressSingleton.Instance.GetSceneOuterPort(root.Name.GetSceneConfigName());
             
             root.AddComponent<HttpComponent, string>($"http://*:{outerPort}/");
 

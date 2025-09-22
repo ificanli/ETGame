@@ -26,7 +26,7 @@
             if (changeScene)
             {
                 // 加载场景寻路数据
-                await NavmeshComponent.Instance.Load(sceneName.GetMapName());
+                await NavmeshComponent.Instance.Load(sceneName.GetSceneConfigName());
             }
             
             root = rootRef;

@@ -89,7 +89,15 @@ namespace ET
         
         public static Session Create(this NetComponent self, IPEndPoint realIPEndPoint)
         {
-            long channelId = NetServices.Instance.CreateConnectChannelId();
+            int channelId;
+            while (true)
+            {
+                channelId = RandomGenerator.RandInt32();
+                if (self.GetChild<Session>(channelId) == null)
+                {
+                    break;
+                }
+            }
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
             session.RemoteAddress = realIPEndPoint;
             session.AddComponent<SessionIdleCheckerComponent>();

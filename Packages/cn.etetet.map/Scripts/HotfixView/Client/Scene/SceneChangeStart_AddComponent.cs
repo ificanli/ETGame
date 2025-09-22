@@ -30,7 +30,7 @@ namespace ET.Client
                     currentScene = currentSceneRef;
                     ResourcesLoaderComponent resourcesLoaderComponent = currentScene.GetComponent<ResourcesLoaderComponent>();
 
-                    MapConfig mapConfig = MapConfigCategory.Instance.GetByName(currentScene.Name.GetMapName());
+                    MapConfig mapConfig = MapConfigCategory.Instance.GetByName(currentScene.Name.GetSceneConfigName());
                     // 加载场景资源
                     await resourcesLoaderComponent.LoadSceneAsync(mapConfig.MapResName, LoadSceneMode.Single,
                         (progress) =>

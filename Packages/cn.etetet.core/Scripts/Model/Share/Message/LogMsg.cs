@@ -24,7 +24,7 @@ namespace ET
             {
                 msg = messageWrapper.GetMessageObject();
             }
-            
+
             Type type = msg.GetType();
             if (this.ignore.Contains(type))
             {

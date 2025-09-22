@@ -51,7 +51,6 @@ namespace ET
             World.Instance.AddSingleton<OpcodeType>();
             
             World.Instance.AddSingleton<MessageQueue>();
-            World.Instance.AddSingleton<NetServices>();
             
             LogMsg logMsg = World.Instance.AddSingleton<LogMsg>();
             logMsg.AddIgnore(typeof(C2G_Ping));
@@ -67,8 +66,9 @@ namespace ET
             
             await World.Instance.AddSingleton<ConfigLoader>().LoadAsync();
             World.Instance.AddSingleton<NavmeshComponent>();
-            
-            await FiberManager.Instance.CreateMainFiber(Options.Instance.SceneName);
+
+            int sceneType = SceneTypeSingleton.Instance.GetSceneType(Options.Instance.SceneName);
+            await FiberManager.Instance.CreateMainFiber(sceneType, $"{Options.Instance.SceneName}@{Options.Instance.Process}@{Options.Instance.ReplicaIndex}");
         }
     }
 }

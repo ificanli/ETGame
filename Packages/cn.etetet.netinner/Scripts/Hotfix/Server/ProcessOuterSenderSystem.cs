@@ -25,7 +25,7 @@ namespace ET.Server
 
             // 进程的真实ip port
             AddressSingleton.Instance.InnerAddress = self.AService.GetBindPoint();
-                
+            
             self.AService.AcceptCallback = self.OnAccept;
             self.AService.ReadCallback = self.OnRead;
             self.AService.ErrorCallback = self.OnError;
@@ -54,6 +54,8 @@ namespace ET.Server
             session.LastRecvTime = TimeInfo.Instance.ClientFrameTime();
 
             (FiberInstanceId fiberInstanceId, object message) = MessageSerializeHelper.ToMessage(self.AService, memoryBuffer);
+            LogMsg.Instance.Recv(self.Fiber(), message);
+            
             self.AService.Recycle(memoryBuffer);
             if (message is IResponse response)
             {
@@ -117,12 +119,20 @@ namespace ET.Server
 
         private static Session CreateInner(this ProcessOuterSender self, Address address)
         {
-            int channelId = Options.Instance.Process << 16 + Options.Instance.ReplicaIndex;
+            int channelId;
+            while (true)
+            {
+                channelId = RandomGenerator.RandInt32();
+                if (self.GetChild<Session>(channelId) == null)
+                {
+                    break;
+                }
+            }
+            
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
             session.RemoteAddress = address;
             
-            self.AddressSessions.Add(address, session);
-            
+            self.AddressSessions[address] = session;
             self.AService.Create(channelId, session.RemoteAddress);
 
             //session.AddComponent<InnerPingComponent>();
@@ -134,7 +144,9 @@ namespace ET.Server
         // 内网actor session
         private static Session Get(this ProcessOuterSender self, Address address)
         {
-            Session session = self.AddressSessions.GetValueByKey(address);
+            EntityRef<Session> sessionRef;
+            self.AddressSessions.TryGetValue(address, out sessionRef);
+            Session session = sessionRef;
             if (session != null)
             {
                 return session;

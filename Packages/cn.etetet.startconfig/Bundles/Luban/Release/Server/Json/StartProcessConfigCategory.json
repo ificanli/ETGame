@@ -2,43 +2,43 @@
   {
     "Id": 1,
     "MachineId": 1,
-    "Port": 20001,
+    "Port": 40001,
     "Num": 1
   },
   {
     "Id": 2,
     "MachineId": 1,
-    "Port": 20002,
+    "Port": 0,
     "Num": 1
   },
   {
     "Id": 3,
     "MachineId": 1,
-    "Port": 20003,
+    "Port": 0,
     "Num": 4
   },
   {
     "Id": 4,
     "MachineId": 1,
-    "Port": 20004,
+    "Port": 0,
     "Num": 1
   },
   {
     "Id": 5,
     "MachineId": 1,
-    "Port": 20005,
+    "Port": 0,
     "Num": 2
   },
   {
     "Id": 6,
     "MachineId": 1,
-    "Port": 20006,
+    "Port": 0,
     "Num": 1
   },
   {
     "Id": 7,
     "MachineId": 1,
-    "Port": 20007,
+    "Port": 0,
     "Num": 1
   }
 ]
