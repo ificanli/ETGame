@@ -11,7 +11,7 @@ namespace ET.Server
             root.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
             root.AddComponent<TimerComponent>();
             root.AddComponent<CoroutineLockComponent>();
-            root.AddComponent<ProcessOuterSender, IPEndPoint>(Options.Instance.InnerAddress);
+            root.AddComponent<ProcessOuterSender, IPEndPoint>(AddressSingleton.Instance.InnerAddress);
             root.AddComponent<ProcessInnerSender>();
 
             await ETTask.CompletedTask;

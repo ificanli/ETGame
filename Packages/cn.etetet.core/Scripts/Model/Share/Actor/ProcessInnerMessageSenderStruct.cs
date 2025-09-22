@@ -4,9 +4,9 @@ using System.IO;
 namespace ET
 {
     // 知道对方的instanceId，使用这个类发actor消息
-    public readonly struct MessageSenderStruct
+    public readonly struct ProcessInnerMessageSenderStruct
     {
-        public ActorId ActorId { get; }
+        public FiberInstanceId FiberInstanceId { get; }
         
         public Type RequestType { get; }
         
@@ -14,9 +14,9 @@ namespace ET
 
         public bool NeedException { get; }
         
-        public MessageSenderStruct(ActorId actorId, Type requestType, bool needException)
+        public ProcessInnerMessageSenderStruct(FiberInstanceId fiberInstanceId, Type requestType, bool needException)
         {
-            this.ActorId = actorId;
+            this.FiberInstanceId = fiberInstanceId;
             
             this.RequestType = requestType;
             

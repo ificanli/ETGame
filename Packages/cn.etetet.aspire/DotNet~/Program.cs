@@ -47,29 +47,20 @@ namespace ET.Aspire
                 {
                     innerIP = "0.0.0.0";
                 }
-
                 string innerPortStr = startProcessConfig.Port.ToString();
-                if (startProcessConfig.Port < 0) // < 0表示动态分配
-                {
-                    innerPortStr = "{Port:InnerPort}";
-                }
 
+                string outerIP = "0.0.0.0";
                 string outerPortStr = "0";
                 // 进程只有一个Scene，需要设置OuterIP OuterPort
                 if (processScenes.Count == 1)
                 {
                     StartSceneConfig startSceneConfig = processScenes[0];
-                    string outerIP = startProcessConfig.OuterIP;
+                    outerIP = startProcessConfig.OuterIP;
                     if (outerIP == "")
                     {
                         outerIP = "0.0.0.0";
                     }
-
                     outerPortStr = startSceneConfig.Port.ToString();
-                    if (startSceneConfig.Port < 0)
-                    {
-                        outerPortStr = "{Port:OuterPort}";
-                    }
                 }
 
                 // 为每个副本创建独立的服务
@@ -82,20 +73,10 @@ namespace ET.Aspire
                             .WithArgs($"--SceneName={Options.Instance.SceneName}")
                             .WithArgs($"--StartConfig={Options.Instance.StartConfig}")
                             .WithArgs($"--SingleThread={Options.Instance.SingleThread}")
-                            .WithArgs($"--InnerIP={innerIP}")
-                            .WithArgs($"--InnerPort={innerPortStr}") // <<< Aspire 会把实际分配的端口替换掉
-                            .WithArgs($"--OuterIP={innerIP}")
-                            .WithArgs($"--OuterPort={outerPortStr}") // <<< Aspire 会把实际分配的端口替换掉
-                            .WithEndpoint(port: 40000, // 基准值，Aspire会根据它分配
-                                targetPort: null, // null = 让 Aspire 动态挑选
-                                scheme: "udp",
-                                name: "InnerPort" // 对应 {Port:InnerPort}
-                            )
-                            .WithEndpoint(port: 10000, // 基准值，Aspire会根据它分配
-                                targetPort: null, // null = 让 Aspire 动态挑选
-                                scheme: "udp",
-                                name: "OuterPort" // 对应 {Port:OuterPort}
-                            )
+                            .WithEnvironment("InnerIP", innerIP)
+                            .WithEnvironment("InnerPort", innerPortStr)
+                            .WithEnvironment("OuterIP", outerIP)
+                            .WithEnvironment("OuterPort", outerPortStr)
                             .WithOtlpExporter()
                             .WithEnvironment("ASPIRE_MANAGED", "true");
                 }

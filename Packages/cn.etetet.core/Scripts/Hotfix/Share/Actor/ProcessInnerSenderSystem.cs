@@ -61,24 +61,24 @@ namespace ET
 
         private static void HandleIActorResponse(this ProcessInnerSender self, IResponse response)
         {
-            if (!self.requestCallback.Remove(response.RpcId, out MessageSenderStruct actorMessageSender))
+            if (!self.requestCallback.Remove(response.RpcId, out ProcessInnerMessageSenderStruct actorMessageSender))
             {
                 return;
             }
             Run(actorMessageSender, response);
         }
         
-        private static void Run(MessageSenderStruct self, IResponse response)
+        private static void Run(ProcessInnerMessageSenderStruct self, IResponse response)
         {
             if (response.Error == ErrorCode.ERR_MessageTimeout)
             {
-                self.SetException(new RpcException(response.Error, $"Rpc error: request, 注意Actor消息超时，请注意查看是否死锁或者没有reply: actorId: {self.ActorId} {self.RequestType.FullName}, response: {response}"));
+                self.SetException(new RpcException(response.Error, $"Rpc error: request, 注意Actor消息超时，请注意查看是否死锁或者没有reply: actorId: {self.FiberInstanceId} {self.RequestType.FullName}, response: {response}"));
                 return;
             }
 
             if (self.NeedException && ErrorCode.IsRpcNeedThrowException(response.Error))
             {
-                self.SetException(new RpcException(response.Error, $"Rpc error: actorId: {self.ActorId} request: {self.RequestType.FullName}, response: {response}"));
+                self.SetException(new RpcException(response.Error, $"Rpc error: actorId: {self.FiberInstanceId} request: {self.RequestType.FullName}, response: {response}"));
                 return;
             }
 
@@ -132,7 +132,7 @@ namespace ET
                 return response;
             }
             
-            MessageSenderStruct messageSenderStruct = new(new ActorId(Options.Instance.InnerAddress, fiberInstanceId), requestType, needException);
+            ProcessInnerMessageSenderStruct messageSenderStruct = new(fiberInstanceId, requestType, needException);
             self.requestCallback.Add(rpcId, messageSenderStruct);
             
             async ETTask Timeout()
@@ -140,7 +140,7 @@ namespace ET
                 EntityRef<ProcessInnerSender> selfRef = self;
                 await fiber.Root.GetComponent<TimerComponent>().WaitAsync(ProcessInnerSender.TIMEOUT_TIME);
                 self = selfRef;
-                if (!self.requestCallback.Remove(rpcId, out MessageSenderStruct action))
+                if (!self.requestCallback.Remove(rpcId, out ProcessInnerMessageSenderStruct action))
                 {
                     return;
                 }

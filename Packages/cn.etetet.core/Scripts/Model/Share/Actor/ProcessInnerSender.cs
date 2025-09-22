@@ -10,7 +10,7 @@ namespace ET
         
         public int RpcId;
 
-        public readonly Dictionary<int, MessageSenderStruct> requestCallback = new();
+        public readonly Dictionary<int, ProcessInnerMessageSenderStruct> requestCallback = new();
         
         public readonly List<MessageInfo> list = new();
     }

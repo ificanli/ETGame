@@ -10,15 +10,6 @@ namespace ET
     {
     }
     
-    public static class FiberHelper
-    {
-        public static ActorId GetActorId(this Entity self)
-        {
-            Fiber root = self.Fiber();
-            return new ActorId(Options.Instance.InnerAddress, new FiberInstanceId(root.Id, self.InstanceId));
-        }
-    }
-    
     public class Fiber: IScheduler
     {
         // 该字段只能框架使用，绝对不能改成public，改了后果自负

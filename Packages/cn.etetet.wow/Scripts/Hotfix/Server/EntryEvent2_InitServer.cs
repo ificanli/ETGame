@@ -10,8 +10,15 @@
             
             int process = Options.Instance.Process;
             StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(process);
+
+            // 先看环境变量是否有地址传过来，如果没有，则使用StartProcessConfig的地址
+            AddressSingleton addressSingleton = World.Instance.AddSingleton<AddressSingleton>();
+            if (addressSingleton.InnerAddress == null)
+            {
+                addressSingleton.InnerAddress = startProcessConfig.Address;
+            }
             
-            // NetInner创建完成会设置Option.Instance.InnerIP跟Option.Instance.InnerPort
+            // 因为bind的地址有可能是0.0.0.0:0,NetInner创建完成会设置具体的地址到AddressSingleton中
             await fiber.CreateFiberWithId(Const.NetInnerFiberId, SchedulerType.ThreadPool, Const.NetInnerFiberId, 0, SceneType.NetInner, $"NetInner_{process}_{Options.Instance.ReplicaIndex}");
 
             if (startProcessConfig != null)

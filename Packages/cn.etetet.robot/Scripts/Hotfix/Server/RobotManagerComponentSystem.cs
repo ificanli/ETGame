@@ -29,7 +29,7 @@
                 actorId = default;
                 return false;
             }
-            actorId = new ActorId(Options.Instance.InnerAddress, new FiberInstanceId(fiberId, 1));
+            actorId = new ActorId(AddressSingleton.Instance.InnerAddress, new FiberInstanceId(fiberId, 1));
             return true;
         }
 

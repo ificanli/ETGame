@@ -16,12 +16,14 @@ namespace ET.Server
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
             
+            string innerIP = AddressSingleton.Instance.InnerIP;
+            string outerIP = AddressSingleton.Instance.OuterIP;
+            int outerPort = AddressSingleton.Instance.OuterPort;
+            
             IPEndPoint outerIPOutPort;
-            string innerIP;
-            if (Options.Instance.OuterPort > 0)
+            if (outerPort > 0)
             {
-                outerIPOutPort = new Address(Options.Instance.OuterIP, Options.Instance.OuterPort);
-                innerIP = Options.Instance.InnerIP;
+                outerIPOutPort = new Address(outerIP, outerPort);
             }
             else
             {

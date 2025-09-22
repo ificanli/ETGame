@@ -24,7 +24,7 @@ namespace ET.Server
             }
 
             // 进程的真实ip port
-            Options.Instance.InnerAddress = self.AService.GetBindPoint();
+            AddressSingleton.Instance.InnerAddress = self.AService.GetBindPoint();
                 
             self.AService.AcceptCallback = self.OnAccept;
             self.AService.ReadCallback = self.OnRead;
@@ -188,7 +188,7 @@ namespace ET.Server
             }
 
             // 如果发向同一个进程，则报错
-            if (actorId.Address == Options.Instance.InnerAddress)
+            if (actorId.Address == AddressSingleton.Instance.InnerAddress)
             {
                 throw new Exception($"actor is the same process: {actorId}");
             }

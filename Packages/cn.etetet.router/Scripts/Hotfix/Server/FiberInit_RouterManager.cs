@@ -16,14 +16,14 @@ namespace ET.Server
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
             
-            int outPort = 0;
-            outPort = Options.Instance.OuterPort;
-            if (outPort == 0)
+            int outerPort = AddressSingleton.Instance.OuterPort;
+            if (outerPort == 0)
             {
                 StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(root.Name);
-                outPort = startSceneConfig.Port;
+                outerPort = startSceneConfig.Port;
             }
-            root.AddComponent<HttpComponent, string>($"http://*:{outPort}/");
+            
+            root.AddComponent<HttpComponent, string>($"http://*:{outerPort}/");
 
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
