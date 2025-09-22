@@ -43,23 +43,15 @@ namespace ET.Aspire
                 List<StartSceneConfig> processScenes = StartSceneConfigCategory.Instance.GetByProcess(processId);
 
                 string innerIP = startProcessConfig.InnerIP;
-                if (startProcessConfig.InnerIP == "")
-                {
-                    innerIP = "0.0.0.0";
-                }
                 string innerPortStr = startProcessConfig.Port.ToString();
 
-                string outerIP = "0.0.0.0";
+                string outerIP = startProcessConfig.OuterIP;
+                
                 string outerPortStr = "0";
-                // 进程只有一个Scene，需要设置OuterIP OuterPort
+                // 进程只有一个Scene，需要设置Scene OuterPort
                 if (processScenes.Count == 1)
                 {
                     StartSceneConfig startSceneConfig = processScenes[0];
-                    outerIP = startProcessConfig.OuterIP;
-                    if (outerIP == "")
-                    {
-                        outerIP = "0.0.0.0";
-                    }
                     outerPortStr = startSceneConfig.Port.ToString();
                 }
 

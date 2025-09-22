@@ -16,18 +16,18 @@ namespace ET.Server
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
             
-            int outerPort = AddressHelper.GetSceneOuterPort(root.Name);
+            int outerPort = AddressSingleton.Instance.GetSceneOuterPort(root.Name);
             string innerIP = AddressSingleton.Instance.InnerIP;
             IPEndPoint outerIPOutPort = new Address(AddressSingleton.Instance.OuterIP, outerPort);
             
             // 开发期间使用OuterIPPort，云服务器因为本机没有OuterIP，所以要改成InnerIPPort，然后在云防火墙中端口映射到InnerIPPort
-            root.AddComponent<RouterComponent, IPEndPoint, string>(outerIPOutPort, innerIP);
+            RouterComponent routerComponent = root.AddComponent<RouterComponent, IPEndPoint, string>(outerIPOutPort, innerIP);
             
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             Dictionary<string, string> metadata = new()
             {
-                { ServiceMetaKey.OuterIPOuterPort, $"{outerIPOutPort}" }
+                { ServiceMetaKey.OuterIPOuterPort, $"{routerComponent.GetBindPoint()}" }
             };
             await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
         }

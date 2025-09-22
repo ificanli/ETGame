@@ -49,6 +49,11 @@ namespace ET.Server
             }
         }
 
+        public static IPEndPoint GetBindPoint(this RouterComponent self)
+        {
+            return self.OuterUdp.GetBindPoint();
+        }
+
         private static IPEndPoint CloneAddress(this RouterComponent self)
         {
             IPEndPoint ipEndPoint = (IPEndPoint) self.IPEndPoint;

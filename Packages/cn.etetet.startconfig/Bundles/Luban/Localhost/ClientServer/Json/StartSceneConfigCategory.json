@@ -21,7 +21,7 @@
     "Zone": 1,
     "SceneType": "Router",
     "Name": "Router01",
-    "Port": 10102
+    "Port": 0
   },
   {
     "Id": 104,
@@ -29,7 +29,7 @@
     "Zone": 1,
     "SceneType": "Router",
     "Name": "Router02",
-    "Port": 10103
+    "Port": 0
   },
   {
     "Id": 105,
@@ -37,7 +37,7 @@
     "Zone": 1,
     "SceneType": "Router",
     "Name": "Router03",
-    "Port": 10104
+    "Port": 0
   },
   {
     "Id": 106,
@@ -45,7 +45,7 @@
     "Zone": 1,
     "SceneType": "Router",
     "Name": "Router04",
-    "Port": 10105
+    "Port": 0
   },
   {
     "Id": 201,
@@ -53,7 +53,7 @@
     "Zone": 2,
     "SceneType": "Realm",
     "Name": "Realm",
-    "Port": 20001
+    "Port": 0
   },
   {
     "Id": 202,
@@ -61,7 +61,7 @@
     "Zone": 2,
     "SceneType": "Gate",
     "Name": "Gate1",
-    "Port": 20002
+    "Port": 0
   },
   {
     "Id": 203,
@@ -69,7 +69,7 @@
     "Zone": 2,
     "SceneType": "Gate",
     "Name": "Gate2",
-    "Port": 20003
+    "Port": 0
   },
   {
     "Id": 204,
