@@ -58,8 +58,8 @@ namespace ET.Aspire
                 // 为每个副本创建独立的服务
                 for (int replicaIndex = 1; replicaIndex <= replicasNum; replicaIndex++)
                 {
-                    string serviceName = replicasNum > 1 ? $"et-process-{processId}-{replicaIndex}" : $"et-process-{processId}";
-                    var p = builder.AddExecutable(serviceName, "dotnet", currentDir, "./Bin/ET.App.dll")
+                    string serviceName = replicasNum > 1 ? $"{startProcessConfig.Name}-{processId}-{replicaIndex}" : $"{startProcessConfig.Name}-{processId}";
+                    builder.AddExecutable(serviceName, "dotnet", currentDir, "./Bin/ET.App.dll")
                             .WithArgs($"--Process={processId}") // 固定逻辑进程 ID
                             .WithArgs($"--ReplicaIndex={replicaIndex}") // 副本索引
                             .WithArgs($"--SceneName={Options.Instance.SceneName}")
