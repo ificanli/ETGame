@@ -16,7 +16,6 @@ namespace ET
         [Option("ReplicaIndex", Required = false, Default = 0)]
         public int ReplicaIndex { get; set; }
         
-        
         [Option("LogLevel", Required = false, Default = 0)]
         public int LogLevel { get; set; }
         

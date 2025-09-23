@@ -1,9 +1,6 @@
-using CommandLine;
-using ET.Server;
 using Luban;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace ET.Aspire
+namespace ET.Server
 {
     public static class Program
     {
@@ -11,17 +8,18 @@ namespace ET.Aspire
         {
             IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
-            // 命令行参数
-            Parser.Default.ParseArguments<Options>(System.Environment.GetCommandLineArgs())
-                    .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
-                    .WithParsed((o) => World.Instance.AddSingleton(o));
+            World.Instance.AddSingleton<Options>();
 
-            // ET配置文件路径 - 智能检测解决方案根目录
-            string currentDir = Directory.GetCurrentDirectory();
-            Console.WriteLine($"Current working directory: {currentDir}");
+            Options.Instance.SceneName = Environment.GetEnvironmentVariable("SceneName");
+            Options.Instance.StartConfig = Environment.GetEnvironmentVariable("StartConfig") ?? "Localhost";
+            Options.Instance.SingleThread = int.Parse(Environment.GetEnvironmentVariable("SingleThread")  ?? "0");
 
-            World.Instance.AddSingleton<SceneTypeSingleton, Type>(typeof(SceneType));
-            string configBasePath = Path.Combine(currentDir,
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string workDir = Path.Combine(currentDirectory, "../../..");
+            Console.WriteLine($"Current working directory: {workDir}");
+
+
+            string configBasePath = Path.Combine(workDir,
                 $"Packages/cn.etetet.startconfig/Bundles/Luban/{Options.Instance.StartConfig}/Server/Binary");
             string processConfigPath = Path.Combine(configBasePath, "StartProcessConfigCategory.bytes");
             string sceneConfigPath = Path.Combine(configBasePath, "StartSceneConfigCategory.bytes");
@@ -59,7 +57,8 @@ namespace ET.Aspire
                 for (int replicaIndex = 1; replicaIndex <= replicasNum; replicaIndex++)
                 {
                     string serviceName = replicasNum > 1 ? $"{startProcessConfig.Name}-{processId}-{replicaIndex}" : $"{startProcessConfig.Name}-{processId}";
-                    builder.AddExecutable(serviceName, "dotnet", currentDir, "./Bin/ET.App.dll")
+                    // workingDirectory使用环境变量指定的路径
+                    builder.AddExecutable(serviceName, "dotnet", workDir, "./Bin/ET.App.dll")
                             .WithArgs($"--Process={processId}") // 固定逻辑进程 ID
                             .WithArgs($"--ReplicaIndex={replicaIndex}") // 副本索引
                             .WithArgs($"--SceneName={Options.Instance.SceneName}")

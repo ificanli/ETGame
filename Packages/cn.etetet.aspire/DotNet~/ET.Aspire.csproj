@@ -17,14 +17,14 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <OutputPath>$(SolutionDir)Bin</OutputPath>
-      <WorkingDirectory>$(SolutionDir)</WorkingDirectory>
+      <OutputPath>$(ProjectDir)../../../Bin</OutputPath>
+      <WorkingDirectory>$(ProjectDir)</WorkingDirectory>
       <NoWarn>;0169;0649;3021;8981;2022;UNT0006;NU1903</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <OutputPath>$(SolutionDir)Bin</OutputPath>
-      <WorkingDirectory>$(SolutionDir)</WorkingDirectory>
+      <OutputPath>$(ProjectDir)../../../Bin</OutputPath>
+      <WorkingDirectory>$(ProjectDir)</WorkingDirectory>
       <Optimize>false</Optimize>
       <DebugSymbols>true</DebugSymbols>
       <NoWarn>;0169;0649;3021;8981;2022;UNT0006;NU1903</NoWarn>
@@ -46,16 +46,33 @@
       </None>
     </ItemGroup>
 
+    <!-- 直接引用编译好的dll -->
     <ItemGroup>
-        <PackageReference Include="CommandLineParser" Version="2.9.1" />
-        <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
-        <PackageReference Include="NLog" Version="5.3.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\cn.etetet.core\DotNet~\ET.Core.csproj" IsAspireProjectResource="false" />
-        <ProjectReference Include="..\..\cn.etetet.loader\DotNet~\ET.Loader.csproj" IsAspireProjectResource="false" />
-        <ProjectReference Include="..\..\cn.etetet.scripts\DotNet~\Model\ET.Model.csproj" IsAspireProjectResource="false" />
+        <Reference Include="ET.Core">
+            <HintPath>$(ProjectDir)../../../Bin/ET.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="ET.Model">
+            <HintPath>$(ProjectDir)../../../Bin/ET.Model.dll</HintPath>
+        </Reference>
+        <Reference Include="ET.Mathematics">
+            <HintPath>$(ProjectDir)../../../Bin/ET.Mathematics.dll</HintPath>
+        </Reference>
+        <Reference Include="ET.Recast">
+            <HintPath>$(ProjectDir)../../../Bin/ET.Recast.dll</HintPath>
+        </Reference>
+        <Reference Include="CommandLine">
+            <HintPath>$(ProjectDir)../../../Bin/CommandLine.dll</HintPath>
+        </Reference>
+        <Reference Include="NLog">
+            <HintPath>$(ProjectDir)../../../Bin/NLog.dll</HintPath>
+        </Reference>
+        <Reference Include="MemoryPack.Core">
+            <HintPath>$(ProjectDir)../../../Bin/MemoryPack.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="MongoDB.Bson">
+            <HintPath>$(ProjectDir)../../../Bin/MongoDB.Bson.dll</HintPath>
+        </Reference>
+        
     </ItemGroup>
 
 </Project>
