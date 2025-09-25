@@ -24,16 +24,14 @@ namespace ET.Server
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            Dictionary<string, string> metaData = new();
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metaData);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery();
             // 订阅Router
-            Dictionary<string, string> filterMeta = new();
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Router, filterMeta);
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Router);
             
             // 订阅Realm
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Realm, filterMeta);
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Realm);
         }
     }
 }

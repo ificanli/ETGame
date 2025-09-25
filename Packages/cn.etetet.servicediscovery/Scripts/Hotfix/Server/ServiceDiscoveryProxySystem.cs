@@ -78,7 +78,7 @@ namespace ET.Server
         /// <summary>
         /// 注册到服务发现服务器
         /// </summary>
-        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, Dictionary<string, string> metadata)
+        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, Dictionary<string, string> metadata = null)
         {
             ServiceRegisterRequest request = ServiceRegisterRequest.Create();
             Scene root = self.Root();
@@ -87,10 +87,14 @@ namespace ET.Server
             request.SceneName = root.Name;
             request.ActorId = root.GetActorId();
             request.Metadata.Add(ServiceMetaKey.Zone, $"{self.Zone()}");
-            foreach (var item in metadata)
+            if (metadata != null)
             {
-                request.Metadata.Add(item.Key, item.Value);
+                foreach (var item in metadata)
+                {
+                    request.Metadata.Add(item.Key, item.Value);
+                }
             }
+
             ServiceRegisterResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceRegisterResponse;
 
             self = selfRef;
@@ -141,14 +145,18 @@ namespace ET.Server
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxy self, int sceneType, Dictionary<string, string> filterMeta)
+        public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxy self, int sceneType, Dictionary<string, string> filterMeta = null)
         {
             ServiceSubscribeRequest request = ServiceSubscribeRequest.Create();
             request.SceneName = self.Root().Name;
             request.SceneType = sceneType;
-            foreach (var kv in filterMeta)
+
+            if (filterMeta != null)
             {
-                request.FilterMetadata.Add(kv.Key, kv.Value);
+                foreach (var kv in filterMeta)
+                {
+                    request.FilterMetadata.Add(kv.Key, kv.Value);
+                }
             }
 
             await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);

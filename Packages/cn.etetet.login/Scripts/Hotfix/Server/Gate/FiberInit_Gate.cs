@@ -29,16 +29,18 @@ namespace ET.Server
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
-            Dictionary<string, string> metadata = new()
-            {
-                { ServiceMetaKey.InnerIPOuterPort, $"{netComponent.GetBindPoint()}" }
-            };
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
+            
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery
+            (
+                new Dictionary<string, string>() 
+                {
+                    { ServiceMetaKey.InnerIPOuterPort, $"{netComponent.GetBindPoint()}" }
+                }
+            );
             
             // 订阅location
-            Dictionary<string, string> filterMeta = new();
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location, filterMeta);
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location);
         }
     }
 }

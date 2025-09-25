@@ -26,19 +26,24 @@ namespace ET.Server
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
 
-            Dictionary<string, string> metadata = new()
-            {
-                { ServiceMetaKey.InnerIPOuterPort, $"{netComponent.GetBindPoint()}" }
-            };
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery
+            (
+                new Dictionary<string, string>()
+                {
+                    { ServiceMetaKey.InnerIPOuterPort, $"{netComponent.GetBindPoint()}" }
+                }
+            );
             
             // 订阅跟realm属于同一个zone的Gate
-            Dictionary<string, string> filterMeta = new()
-            {
-                { ServiceMetaKey.Zone, $"{fiberInit.Fiber.Zone}" }
-            };
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Gate, filterMeta);
+            await serviceDiscoveryProxy.SubscribeServiceChange
+            (
+                SceneType.Gate, 
+                new Dictionary<string, string>()
+                {
+                    { ServiceMetaKey.Zone, $"{fiberInit.Fiber.Zone}" }
+                }
+            );
         }
     }
 }

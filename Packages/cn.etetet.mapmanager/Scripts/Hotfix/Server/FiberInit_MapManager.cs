@@ -21,15 +21,11 @@ namespace ET.Server
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
-            Dictionary<string, string> metadata = new();
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery();
             
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
             // 订阅location
-            Dictionary<string, string> filterMeta = new();
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location, filterMeta);
-            
-            await ETTask.CompletedTask;
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location);
         }
     }
 }

@@ -50,12 +50,11 @@ namespace ET.Server
             Dictionary<string, string> metaData = new();
             await serviceDiscoveryProxy.RegisterToServiceDiscovery(metaData);
             // 订阅location,并未注册Map
-            Dictionary<string, string> filterMeta = new();
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location, filterMeta);
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location);
             
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.MapManager, filterMeta);
+            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.MapManager);
         }
     }
 }
