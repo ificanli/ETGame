@@ -25,11 +25,10 @@ namespace ET.Server
             
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
-            Dictionary<string, string> metadata = new()
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(new Dictionary<string, string>()
             {
                 { ServiceMetaKey.OuterIPOuterPort, $"{routerComponent.GetBindPoint()}" }
-            };
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metadata);
+            });
         }
     }
 }

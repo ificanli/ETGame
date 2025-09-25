@@ -9,10 +9,9 @@ namespace ET.Server
     public static partial class ServiceInfoSystem
     {
         [EntitySystem]
-        private static void Awake(this ServiceInfo self, string sceneName, int sceneType, ActorId actorId)
+        private static void Awake(this ServiceInfo self, string sceneName, ActorId actorId)
         {
             self.SceneName = sceneName;
-            self.SceneType = sceneType;
             self.ActorId = actorId;
             self.Metadata.Clear();
             self.RegisterTime = TimeInfo.Instance.ServerNow();
@@ -67,7 +66,6 @@ namespace ET.Server
         public static ServiceInfoProto ToProto(this ServiceInfo self)
         {
             ServiceInfoProto proto = ServiceInfoProto.Create();
-            proto.SceneType = self.SceneType;
             proto.SceneName = self.SceneName;
             proto.ActorId = self.ActorId;
 

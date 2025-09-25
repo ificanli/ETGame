@@ -7,9 +7,8 @@ message ServiceRegisterRequest // IRequest
 {
 	int32 RpcId = 1;
 	string SceneName = 2;
-	int32 SceneType = 3;
-	ActorId ActorId = 4;
-	map<string, string> Metadata = 6;
+	ActorId ActorId = 3;
+	map<string, string> Metadata = 4;
 }
 
 message ServiceRegisterResponse // IResponse
@@ -51,7 +50,7 @@ message ServiceHeartbeatResponse // IResponse
 message ServiceQueryRequest // IRequest
 {
 	int32 RpcId = 1;
-	int32 SceneType = 2;
+	map<string, string> Filter = 2;
 }
 
 message ServiceQueryResponse // IResponse
@@ -82,8 +81,8 @@ message ServiceSubscribeRequest // IRequest
 {
 	int32 RpcId = 1;
 	string SceneName = 2;
-	int32 SceneType = 3;
-	map<string, string> FilterMetadata = 5;
+	string FilterName = 3;
+	map<string, string> FilterMetadata = 4;
 }
 
 message ServiceSubscribeResponse // IResponse
@@ -98,7 +97,6 @@ message ServiceUnsubscribeRequest // IRequest
 {
 	int32 RpcId = 1;
 	string SceneName = 2;
-	int32 SceneType = 3;
 }
 
 message ServiceUnsubscribeResponse // IResponse
@@ -119,7 +117,6 @@ message ServiceChangeNotification // IMessage
 message ServiceInfoProto
 {
 	string SceneName = 1;
-	int32 SceneType = 2;
 	ActorId ActorId = 3;
 	map<string, string> Metadata = 5;
 }

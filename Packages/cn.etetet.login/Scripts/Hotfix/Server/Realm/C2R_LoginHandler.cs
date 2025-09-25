@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 
@@ -19,14 +20,14 @@ namespace ET.Server
 			
 			ServiceDiscoveryProxy serviceDiscoveryProxy = root.GetComponent<ServiceDiscoveryProxy>();
 
-			List<string> gates = serviceDiscoveryProxy.GetByZoneSceneType(UserZone, SceneType.Gate);
-			string gateName = gates[(int)(hash % (ulong)gates.Count)];
+			List<ServiceInfo> gates = serviceDiscoveryProxy.GetBySceneTypeAndZone(SceneType.Gate, UserZone);
+			string gateName = gates[(int)(hash % (ulong)gates.Count)].SceneName;
 			Log.Debug($"gate address: {gateName}");
 			
 			// 向gate请求一个key,客户端可以拿着这个key连接gate
 			R2G_GetLoginKey r2GGetLoginKey = R2G_GetLoginKey.Create();
 			r2GGetLoginKey.Account = request.Account;
-			ServiceCacheInfo gateServiceInfo = await serviceDiscoveryProxy.GetServiceInfo(gateName);
+			ServiceInfo gateServiceInfo = await serviceDiscoveryProxy.GetServiceInfo(gateName);
 			response.Address = gateServiceInfo.Metadata[ServiceMetaKey.InnerIPOuterPort];
 			
 			root = rootRef;

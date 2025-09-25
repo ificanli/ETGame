@@ -37,7 +37,7 @@ namespace ET.Server
         /// <summary>
         /// 注册服务
         /// </summary>
-        public static void RegisterService(this ServiceDiscovery self, string sceneName, int sceneType, ActorId actorId, Dictionary<string, string> metadata)
+        public static void RegisterService(this ServiceDiscovery self, string sceneName, ActorId actorId, Dictionary<string, string> metadata)
         {
             // 已存在则注销之前的
             if (self.Services.ContainsKey(sceneName))
@@ -46,22 +46,33 @@ namespace ET.Server
             }
 
             // 创建服务信息
-            ServiceInfo serviceInfo = self.AddChild<ServiceInfo, string, int, ActorId>(sceneName, sceneType, actorId);
-            // 设置元数据
-            foreach (var kvp in metadata)
+            ServiceInfo serviceInfo = self.AddChild<ServiceInfo, string, ActorId>(sceneName, actorId);
+            
+            // 设置元数据,根据Indexs创建索引
+            foreach ((string key, string value) in metadata)
             {
-                serviceInfo.Metadata[kvp.Key] = kvp.Value;
+                serviceInfo.Metadata[key] = value;
+                
+                if (!self.Indexs.Contains(key))
+                {
+                    continue;
+                }
+
+                MultiMapSet<string, string> index = null;
+                if (!self.ServicesIndexs.TryGetValue(key, out index))
+                {
+                    index = new MultiMapSet<string, string>();
+                    self.ServicesIndexs.Add(key, new MultiMapSet<string, string>());
+                }
+                index.Add(value, sceneName);
             }
             
             self.Services[sceneName] = serviceInfo;
 
-            // 添加到按类型分组的字典
-            self.ServicesByType.Add(sceneType, sceneName);
-
             Log.Debug($"Service registered: {serviceInfo}");
 
             // 通知订阅者
-            self.NotifyServiceChange(sceneType, 1, serviceInfo);
+            self.NotifyServiceChange(1, serviceInfo);
         }
 
         /// <summary>
@@ -82,20 +93,27 @@ namespace ET.Server
                 return;
             }
 
-            int sceneType = serviceInfo.SceneType;
-
             // 从字典中移除
             self.Services.Remove(sceneName);
-            self.ServicesByType.Remove(sceneType, sceneName);
-            foreach (int subSceneType in serviceInfo.SubSceneTypes.Keys)
+
+            // 从索引中移除
+            foreach ((string key, string value) in serviceInfo.Metadata)
             {
-                self.Subscribers.Remove(subSceneType, sceneName);
+                if (!self.Indexs.Contains(key))
+                {
+                    continue;
+                }
+
+                self.ServicesIndexs.TryGetValue(key, out MultiMapSet<string, string> index2);
+                {
+                    index2.Remove(value, serviceInfo.SceneName);
+                }
             }
             
-            Log.Debug($"Service unregistered: {sceneType} {sceneName}");
+            Log.Debug($"Service unregistered: {sceneName}");
 
             // 通知订阅者
-            self.NotifyServiceChange(sceneType, 2, serviceInfo);
+            self.NotifyServiceChange(2, serviceInfo);
 
             // 销毁服务信息实体
             serviceInfo.Dispose();
@@ -121,37 +139,31 @@ namespace ET.Server
 
             serviceInfo.UpdateHeartbeat();
         }
-
+        
         /// <summary>
-        /// 查询指定类型的服务列表
+        /// 查询服务
         /// </summary>
-        public static List<ServiceInfo> GetServicesBySceneType(this ServiceDiscovery self, int sceneType)
+        public static List<ServiceInfo> GetServiceInfoByFilter(this ServiceDiscovery self, Dictionary<string, string> filterMetadata)
         {
-            List<ServiceInfo> result = new();
-            if (!self.ServicesByType.TryGetValue(sceneType, out HashSet<string> serviceKeys))
-            {
-                return result;
-            }
+            List<ServiceInfo> serviceInfos = new();
 
-            foreach (string serviceKey in serviceKeys)
+            // 查询现有服务并应用过滤条件
+            foreach ((string key, ServiceInfo sInfo) in self.Services)
             {
-                if (self.Services.TryGetValue(serviceKey, out EntityRef<ServiceInfo> serviceRef))
+                // 应用过滤条件
+                if (sInfo.MatchesFilter(filterMetadata))
                 {
-                    ServiceInfo serviceInfo = serviceRef;
-                    if (serviceInfo != null)
-                    {
-                        result.Add(serviceInfo);
-                    }
+                    serviceInfos.Add(sInfo);
                 }
             }
-
-            return result;
+            return serviceInfos;
         }
+        
 
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static void SubscribeServiceChange(this ServiceDiscovery self, string sceneName, int sceneType, Dictionary<string, string> filterMetadata)
+        public static void SubscribeServiceChange(this ServiceDiscovery self, string sceneName, string filterName, Dictionary<string, string> filterMetadata)
         {
             ServiceInfo serviceInfo = self.Services[sceneName];
 
@@ -159,13 +171,10 @@ namespace ET.Server
             notification.ChangeType = 1;
 
             // 存储过滤条件
-            serviceInfo.SubSceneTypes[sceneType] = new Dictionary<string, string>(filterMetadata);
-
-            self.Subscribers.Add(sceneType, sceneName);
+            self.Subscribers.Add(sceneName, filterName, filterMetadata);
 
             // 查询现有服务并应用过滤条件
-            List<ServiceInfo> serviceInfos = self.GetServicesBySceneType(sceneType);
-            foreach (ServiceInfo sInfo in serviceInfos)
+            foreach ((string key, ServiceInfo sInfo) in self.Services)
             {
                 // 应用过滤条件
                 if (sInfo.MatchesFilter(filterMetadata))
@@ -180,67 +189,60 @@ namespace ET.Server
             }
 
             string filterStr = filterMetadata.Count > 0? $" filter=[{string.Join(", ", filterMetadata.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}]" : "";
-            Log.Debug($"Subscribe service change: {sceneName} {sceneType} {filterStr}");
+            Log.Debug($"Subscribe service change: {sceneName} {filterStr}");
         }
 
         /// <summary>
         /// 取消订阅服务变更
         /// </summary>
-        public static void UnsubscribeServiceChange(this ServiceDiscovery self, string sceneName, int sceneType)
+        public static void UnsubscribeServiceChange(this ServiceDiscovery self, string sceneName)
         {
-            ServiceInfo serviceInfo = self.Services[sceneName];
-            self.Subscribers.Remove(sceneType, sceneName);
-            serviceInfo.SubSceneTypes.Remove(sceneType);
-            Log.Debug($"Unsubscribe service change: {sceneName} {sceneType}");
+            self.Subscribers.Remove(sceneName);
+            
+            Log.Debug($"Unsubscribe service change: {sceneName}");
         }
 
         /// <summary>
         /// 通知服务变更
         /// </summary>
-        private static void NotifyServiceChange(this ServiceDiscovery self, int sceneType, int changeType, ServiceInfo serviceInfo)
+        private static void NotifyServiceChange(this ServiceDiscovery self, int changeType, ServiceInfo serviceInfo)
         {
-            if (!self.Subscribers.TryGetValue(sceneType, out HashSet<string> subscribers))
-            {
-                return;
-            }
-
             int notifiedCount = 0;
 
-            // 给订阅者广播
-            foreach (string sceneName in subscribers)
+            // 给订阅者广播, 遍历订阅者
+            foreach (var kv in self.Subscribers)
             {
-                if (!self.Services.TryGetValue(sceneName, out EntityRef<ServiceInfo> serviceRef))
+                foreach (var kv2 in kv.Value) // 一个订阅者有多个订阅
                 {
-                    continue;
-                }
+                    string subSceneName = kv.Key;
+                    Dictionary<string, string> filter = kv2.Value;
+                    if (!self.Services.TryGetValue(subSceneName, out EntityRef<ServiceInfo> subServiceInfoRef))
+                    {
+                        // 订阅者不存在
+                        continue;
+                    }
 
-                ServiceInfo subServiceInfo = serviceRef;
-                if (subServiceInfo == null)
-                {
-                    continue;
-                }
-
-                // 检查是否有过滤条件
-                Dictionary<string, string> filter = null;
-                if (subServiceInfo.SubSceneTypes.TryGetValue(sceneType, out filter))
-                {
                     // 应用过滤条件
                     if (!serviceInfo.MatchesFilter(filter))
                     {
                         continue;
                     }
+
+                    // 创建通知消息
+                    ServiceChangeNotification notification = ServiceChangeNotification.Create();
+                    notification.ChangeType = changeType;
+                    notification.ServiceInfo.Add(serviceInfo.ToProto());
+
+                    ServiceInfo subServiceInfo = subServiceInfoRef;
+                    self.Root().GetComponent<MessageSender>().Send(subServiceInfo.ActorId, notification);
+                    notifiedCount++;
+                    
+                    // 只要满足一个就不用继续了
+                    break;
                 }
-
-                // 创建通知消息
-                ServiceChangeNotification notification = ServiceChangeNotification.Create();
-                notification.ChangeType = changeType;
-                notification.ServiceInfo.Add(serviceInfo.ToProto());
-
-                self.Root().GetComponent<MessageSender>().Send(subServiceInfo.ActorId, notification);
-                notifiedCount++;
             }
 
-            Log.Debug($"Notified service change: {sceneType} changeType={changeType} to {notifiedCount} subscribers (filtered from {subscribers.Count})");
+            Log.Debug($"Notified service change: changeType={changeType} to {notifiedCount} subscribers (filtered from)");
         }
 
         /// <summary>
@@ -273,7 +275,7 @@ namespace ET.Server
                     continue;
                 }
 
-                Log.Warning($"Service heartbeat timeout, removing: {sceneName} {serviceInfo.SceneType} ");
+                Log.Warning($"Service heartbeat timeout, removing: {sceneName}");
                 self.UnregisterService(sceneName);
             }
         }

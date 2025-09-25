@@ -13,19 +13,17 @@ namespace ET.Server
             HttpGetRouterResponse httpGetRouterResponse = HttpGetRouterResponse.Create();
             
             ServiceDiscoveryProxy serviceDiscoveryProxy = scene.GetComponent<ServiceDiscoveryProxy>();
-            List<string> realmNames = serviceDiscoveryProxy.GetBySceneType(SceneType.Realm);
-            foreach (string realmName in realmNames)
+            List<ServiceInfo> realmServiceInfos = serviceDiscoveryProxy.GetBySceneType(SceneType.Realm);
+            foreach (ServiceInfo serviceInfo in realmServiceInfos)
             {
-                ServiceCacheInfo serviceCacheInfo = serviceDiscoveryProxy.GetByName(realmName);
                 // 这里是要用InnerIP，因为云服务器上realm绑定不了OuterIP的,所以realm的内网外网的socket都是监听内网地址
-                httpGetRouterResponse.Realms.Add(serviceCacheInfo.Metadata[ServiceMetaKey.InnerIPOuterPort]);
+                httpGetRouterResponse.Realms.Add(serviceInfo.Metadata[ServiceMetaKey.InnerIPOuterPort]);
             }
             
-            List<string> routerNames = serviceDiscoveryProxy.GetBySceneType(SceneType.Router);
-            foreach (string routerName in routerNames)
+            List<ServiceInfo> routerServiceInfos = serviceDiscoveryProxy.GetBySceneType(SceneType.Router);
+            foreach (ServiceInfo serviceInfo in routerServiceInfos)
             {
-                ServiceCacheInfo serviceCacheInfo = serviceDiscoveryProxy.GetByName(routerName);
-                httpGetRouterResponse.Routers.Add(serviceCacheInfo.Metadata[ServiceMetaKey.OuterIPOuterPort]);
+                httpGetRouterResponse.Routers.Add(serviceInfo.Metadata[ServiceMetaKey.OuterIPOuterPort]);
             }
             
             HttpListenerRequest request = context.Request;

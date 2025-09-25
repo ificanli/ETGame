@@ -14,7 +14,7 @@ namespace ET.Server
         {
             ServiceDiscoveryProxy serviceDiscoveryProxy = self.Root().GetComponent<ServiceDiscoveryProxy>();
             // 这里默认取第一个location，如果是mmo，就需要根据key获取zone
-            string locationName = serviceDiscoveryProxy.GetBySceneType(SceneType.Location)[0];
+            string locationName = serviceDiscoveryProxy.GetBySceneType(SceneType.Location)[0].SceneName;
             return locationName;
         }
 

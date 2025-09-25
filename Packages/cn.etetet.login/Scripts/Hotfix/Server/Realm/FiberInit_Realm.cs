@@ -36,14 +36,12 @@ namespace ET.Server
             
             // 订阅跟realm属于同一个zone的Gate
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange
-            (
-                SceneType.Gate, 
+            await serviceDiscoveryProxy.SubscribeServiceChange("Gate", 
                 new Dictionary<string, string>()
                 {
+                    {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.Gate)},
                     { ServiceMetaKey.Zone, $"{fiberInit.Fiber.Zone}" }
-                }
-            );
+                });
         }
     }
 }

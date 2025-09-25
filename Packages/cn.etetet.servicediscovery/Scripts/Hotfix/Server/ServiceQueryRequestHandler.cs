@@ -16,13 +16,13 @@ namespace ET.Server
                 return;
             }
 
-            List<ServiceInfo> services = serviceDiscovery.GetServicesBySceneType(request.SceneType);
+            List<ServiceInfo> services = serviceDiscovery.GetServiceInfoByFilter(request.Filter);
             foreach (ServiceInfo serviceInfo in services)
             {
                 response.Services.Add(serviceInfo.ToProto());
             }
 
-            Log.Debug($"Query services: {request.SceneType} found {services.Count} services");
+            Log.Debug($"Query services: {request} found {response}");
 
             await ETTask.CompletedTask;
         }

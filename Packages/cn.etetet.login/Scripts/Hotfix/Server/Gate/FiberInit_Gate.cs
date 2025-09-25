@@ -40,7 +40,8 @@ namespace ET.Server
             
             // 订阅location
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location);
+            await serviceDiscoveryProxy.SubscribeServiceChange("Location", 
+                new Dictionary<string, string>() { {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.Location)} });
         }
     }
 }

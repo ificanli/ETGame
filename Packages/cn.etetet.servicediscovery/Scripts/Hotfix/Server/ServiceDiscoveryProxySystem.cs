@@ -1,23 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ET.Server
 {
-    [EntitySystemOf(typeof(ServiceCacheInfo))]
-    public static partial class ServiceCacheInfoSystem
-    {
-        [EntitySystem]
-        private static void Awake(this ServiceCacheInfo self)
-        {
-        }
-
-        public static int ServiceZone(this ServiceCacheInfo self)
-        {
-            return int.Parse(self.Metadata[ServiceMetaKey.Zone]);
-        }
-    }
-
-
     /// <summary>
     /// 服务发现代理组件系统
     /// </summary>
@@ -65,11 +51,7 @@ namespace ET.Server
         private static async ETTask DestroyAsync(this ServiceDiscoveryProxy self)
         {
             EntityRef<ServiceDiscoveryProxy> selfRef = self;
-            foreach (var kv in self.SceneTypeServices)
-            {
-                self = selfRef;
-                await self.UnsubscribeServiceChange(kv.Key);
-            }
+            await self.UnsubscribeServiceChange();
             
             self = selfRef;
             await self.UnregisterFromServiceDiscovery();
@@ -78,21 +60,18 @@ namespace ET.Server
         /// <summary>
         /// 注册到服务发现服务器
         /// </summary>
-        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, Dictionary<string, string> metadata = null)
+        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, Dictionary<string, string> metadata)
         {
             ServiceRegisterRequest request = ServiceRegisterRequest.Create();
             Scene root = self.Root();
             EntityRef<ServiceDiscoveryProxy> selfRef = self;
-            request.SceneType = root.SceneType;
             request.SceneName = root.Name;
             request.ActorId = root.GetActorId();
+            request.Metadata.Add(ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(self.Scene().SceneType));
             request.Metadata.Add(ServiceMetaKey.Zone, $"{self.Zone()}");
-            if (metadata != null)
+            foreach (var item in metadata)
             {
-                foreach (var item in metadata)
-                {
-                    request.Metadata.Add(item.Key, item.Value);
-                }
+                request.Metadata.Add(item.Key, item.Value);
             }
 
             ServiceRegisterResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceRegisterResponse;
@@ -133,10 +112,13 @@ namespace ET.Server
         /// <summary>
         /// 查询服务列表
         /// </summary>
-        public static async ETTask<List<ServiceInfoProto>> QueryServices(this ServiceDiscoveryProxy self, int sceneType)
+        public static async ETTask<List<ServiceInfoProto>> QueryServices(this ServiceDiscoveryProxy self, Dictionary<string, string> filterMetadata)
         {
             ServiceQueryRequest request = ServiceQueryRequest.Create();
-            request.SceneType = sceneType;
+            foreach (var kv in filterMetadata)
+            {
+                request.Filter.Add(kv.Key, kv.Value);
+            }
 
             ServiceQueryResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceQueryResponse;
             return response.Services;
@@ -145,18 +127,15 @@ namespace ET.Server
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxy self, int sceneType, Dictionary<string, string> filterMeta = null)
+        public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxy self, string filterName, Dictionary<string, string> filterMeta)
         {
             ServiceSubscribeRequest request = ServiceSubscribeRequest.Create();
             request.SceneName = self.Root().Name;
-            request.SceneType = sceneType;
+            request.FilterName = filterName;
 
-            if (filterMeta != null)
+            foreach (var kv in filterMeta)
             {
-                foreach (var kv in filterMeta)
-                {
-                    request.FilterMetadata.Add(kv.Key, kv.Value);
-                }
+                request.FilterMetadata.Add(kv.Key, kv.Value);
             }
 
             await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
@@ -165,69 +144,76 @@ namespace ET.Server
         /// <summary>
         /// 取消订阅服务变更
         /// </summary>
-        public static async ETTask UnsubscribeServiceChange(this ServiceDiscoveryProxy self, int sceneType)
+        public static async ETTask UnsubscribeServiceChange(this ServiceDiscoveryProxy self)
         {
             ServiceUnsubscribeRequest request = ServiceUnsubscribeRequest.Create();
             request.SceneName = self.Root().Name;
-            request.SceneType = sceneType;
             await self.MessageSender.Call(self.ServiceDiscoveryActorId, request);
         }
         
 
-        private static void OnServiceChangeNotification(this ServiceDiscoveryProxy self, int changeType, ServiceInfoProto serviceInfo)
+        private static void OnServiceChangeNotification(this ServiceDiscoveryProxy self, int changeType, ServiceInfoProto serviceInfoProto)
         {
             switch (changeType)
             {
                 // 添加
                 case 1:
                 {
-                    ServiceCacheInfo serviceCacheInfo = self.AddChild<ServiceCacheInfo>();
-                    serviceCacheInfo.SceneName = serviceInfo.SceneName;
-                    serviceCacheInfo.SceneType = serviceInfo.SceneType;
-                    serviceCacheInfo.ActorId = serviceInfo.ActorId;
-                    serviceCacheInfo.Metadata = new Dictionary<string, string>(serviceInfo.Metadata);
-                    self.SceneNameServices.Add(serviceInfo.SceneName, serviceCacheInfo);
-                    self.SceneTypeServices.Add(serviceInfo.SceneType, serviceInfo.SceneName);
-                    MultiMap<int, string> map = null;
-                    if (!self.ZoneSceneTypeServices.TryGetValue(serviceCacheInfo.ServiceZone(), out map))
+                    ServiceInfo serviceInfo = self.AddChild<ServiceInfo, string, ActorId>(serviceInfoProto.SceneName, serviceInfoProto.ActorId);
+                    serviceInfo.Metadata = new Dictionary<string, string>(serviceInfoProto.Metadata);
+                    self.SceneNameServices.Add(serviceInfo.SceneName, serviceInfo);
+
+                    foreach ((string key, var value) in serviceInfo.Metadata)
                     {
-                        map = new MultiMap<int, string>();
-                        self.ZoneSceneTypeServices.Add(serviceCacheInfo.ServiceZone(), map);
+                        if (!self.Indexs.Contains(key))
+                        {
+                            continue;
+                        }
+
+                        MultiMapSet<string, string> index = null;
+                        if (!self.ServicesIndexs.TryGetValue(key, out index))
+                        {
+                            index = new MultiMapSet<string, string>();
+                            self.ServicesIndexs.Add(key, new MultiMapSet<string, string>());
+                        }
+                        index.Add(value, serviceInfo.SceneName);
                     }
-                    map.Add(serviceCacheInfo.SceneType, serviceCacheInfo.SceneName);
-                    
 
                     EventSystem.Instance.Publish(self.Scene(), new OnServiceChangeAddService()
                     {
-                        SceneType = serviceInfo.SceneType, ServiceName = serviceInfo.SceneName
+                        ServiceName = serviceInfo.SceneName
                     });
                     break;
                 }
                 // 删除
                 case 2:
                 {
-                    if (!self.SceneNameServices.TryGetValue(serviceInfo.SceneName, out var serviceCacheInfoRef))
+                    if (!self.SceneNameServices.TryGetValue(serviceInfoProto.SceneName, out var serviceInfoRef))
                     {
                         return;
                     }
                     
-                    using ServiceCacheInfo serviceCacheInfo = serviceCacheInfoRef;
+                    using ServiceInfo serviceInfo = serviceInfoRef;
                     
-                    self.SceneTypeServices.Remove(serviceCacheInfo.SceneType, serviceCacheInfo.SceneName);
-                    self.SceneNameServices.Remove(serviceCacheInfo.SceneName);
-                    if (self.ZoneSceneTypeServices.TryGetValue(serviceCacheInfo.ServiceZone(), out MultiMap<int, string> map))
-                    {
-                        map.Remove(serviceCacheInfo.SceneType, serviceCacheInfo.SceneName);
-                    }
+                    self.SceneNameServices.Remove(serviceInfo.SceneName);
 
-                    if (map.Count == 0)
+                    foreach ((string key, string value) in serviceInfo.Metadata)
                     {
-                        self.ZoneSceneTypeServices.Remove(serviceCacheInfo.ServiceZone());
+                        if (!self.Indexs.Contains(key))
+                        {
+                            continue;
+                        }
+
+                        self.ServicesIndexs.TryGetValue(key, out MultiMapSet<string, string> index2);
+                        {
+                            index2.Remove(value, serviceInfo.SceneName);
+                        }
                     }
+                    
                     
                     EventSystem.Instance.Publish(self.Scene(), new OnServiceChangeRemoveService()
                     {
-                        SceneType = serviceInfo.SceneType, ServiceName = serviceInfo.SceneName
+                        ServiceName = serviceInfo.SceneName
                     });
                     break;
                 }
@@ -247,7 +233,7 @@ namespace ET.Server
         
         #region 获取ServiceInfo
         
-        public static async ETTask<ServiceCacheInfo> GetServiceInfo(this ServiceDiscoveryProxy self, string sceneName)
+        public static async ETTask<ServiceInfo> GetServiceInfo(this ServiceDiscoveryProxy self, string sceneName)
         {
             if (self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef))
             {
@@ -265,39 +251,44 @@ namespace ET.Server
             self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef2);
             return serviceCacheInfoRef2;
         }
-        
-        public static List<string> GetByZoneSceneType(this ServiceDiscoveryProxy self, int zone, int type)
+
+        public static List<ServiceInfo> GetBySceneTypeAndZone(this ServiceDiscoveryProxy self, int sceneType, int zone)
         {
-            return self.ZoneSceneTypeServices[zone][type];
+            return self.GetServiceInfoByFilter(new Dictionary<string, string>()
+            {
+                {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(sceneType)},
+                {ServiceMetaKey.Zone, zone.ToString()},
+            });
         }
         
-        public static List<string> GetBySceneType(this ServiceDiscoveryProxy self, int type)
+        public static List<ServiceInfo> GetBySceneType(this ServiceDiscoveryProxy self, int sceneType)
         {
-            try
+            return self.GetServiceInfoByFilter(new Dictionary<string, string>()
             {
-                return self.SceneTypeServices[type];
-            }
-            catch (Exception e)
-            {
-                string sceneName = SceneTypeSingleton.Instance.GetSceneName(type);
-                throw new Exception($"{self.Root().Name} not found scene type {sceneName},", e);
-            }
+                {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(sceneType)},
+            });
         }
         
-        public static string GetOneByZoneSceneType(this ServiceDiscoveryProxy self, int zone, int type)
+        /// <summary>
+        /// 查询服务
+        /// </summary>
+        public static List<ServiceInfo> GetServiceInfoByFilter(this ServiceDiscoveryProxy self, Dictionary<string, string> filterMetadata)
         {
-            try
+            List<ServiceInfo> serviceInfos = new();
+
+            // 查询现有服务并应用过滤条件
+            foreach ((string key, ServiceInfo sInfo) in self.SceneNameServices)
             {
-                return self.ZoneSceneTypeServices[zone][type][0];
+                // 应用过滤条件
+                if (sInfo.MatchesFilter(filterMetadata))
+                {
+                    serviceInfos.Add(sInfo);
+                }
             }
-            catch (Exception e)
-            {
-                string sceneName = SceneTypeSingleton.Instance.GetSceneName(type);
-                throw new Exception($"{self.Root().Name} not found scene type {zone}, {sceneName}", e);
-            }
+            return serviceInfos;
         }
 
-        public static ServiceCacheInfo GetByName(this ServiceDiscoveryProxy self, string name)
+        public static ServiceInfo GetByName(this ServiceDiscoveryProxy self, string name)
         {
             return self.SceneNameServices[name];
         }
@@ -346,14 +337,14 @@ namespace ET.Server
             // ActorId未知，先获取ActorId
             EntityRef<ServiceDiscoveryProxy> selfRef = self;
 
-            ServiceCacheInfo serviceCacheInfo = await self.GetServiceInfo(sceneName);
-            if (serviceCacheInfo.ActorId == default)
+            ServiceInfo serviceInfo = await self.GetServiceInfo(sceneName);
+            if (serviceInfo.ActorId == default)
             {
                 throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
             }
 
             self = selfRef;
-            return await self.MessageSender.Call(serviceCacheInfo.ActorId, request, needException);
+            return await self.MessageSender.Call(serviceInfo.ActorId, request, needException);
         }
 
         /// <summary>
@@ -363,7 +354,7 @@ namespace ET.Server
         {
             EntityRef<ServiceDiscoveryProxy> selfRef = self;
 
-            ServiceCacheInfo serviceCacheInfo = await self.GetServiceInfo(sceneName);
+            ServiceInfo serviceInfo = await self.GetServiceInfo(sceneName);
 
             self = selfRef;
             if (self == null)
@@ -371,13 +362,13 @@ namespace ET.Server
                 return;
             }
 
-            if (serviceCacheInfo.ActorId == default)
+            if (serviceInfo.ActorId == default)
             {
                 throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
             }
 
             // 处理待发送的消息
-            self.ProcessPendingMessages(sceneName, serviceCacheInfo.ActorId);
+            self.ProcessPendingMessages(sceneName, serviceInfo.ActorId);
         }
 
         /// <summary>

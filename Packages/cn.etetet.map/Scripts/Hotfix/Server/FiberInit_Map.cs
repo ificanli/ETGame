@@ -47,14 +47,21 @@ namespace ET.Server
             
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
-            Dictionary<string, string> metaData = new();
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(metaData);
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(new Dictionary<string, string>());
             // 订阅location,并未注册Map
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.Location);
+            await serviceDiscoveryProxy.SubscribeServiceChange("Location", 
+                new Dictionary<string, string>()
+                {
+                    {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.Location)},
+                });
             
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange(SceneType.MapManager);
+            await serviceDiscoveryProxy.SubscribeServiceChange("MapManager", 
+                new Dictionary<string, string>()
+                {
+                    {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.MapManager)},
+                });
         }
     }
 }

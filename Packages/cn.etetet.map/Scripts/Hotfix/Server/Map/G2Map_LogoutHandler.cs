@@ -1,5 +1,7 @@
 ﻿
 
+using System.Collections.Generic;
+
 namespace ET.Server
 {
 	[MessageHandler(SceneType.Map)]
@@ -9,7 +11,11 @@ namespace ET.Server
 		{
 			EntityRef<Unit> unitRef = unit;
 			ServiceDiscoveryProxy serviceDiscoveryProxy = unit.Root().GetComponent<ServiceDiscoveryProxy>();
-			string mapManagerName = serviceDiscoveryProxy.GetOneByZoneSceneType(unit.Zone(), SceneType.MapManager);
+			int zone = unit.Zone();
+
+			List<ServiceInfo> serviceInfos = serviceDiscoveryProxy.GetBySceneTypeAndZone(SceneType.MapManager, zone);
+			string mapManagerName = serviceInfos[0].SceneName;
+			
 			Map2MapManager_LogoutRequest managerLogoutRequest = Map2MapManager_LogoutRequest.Create();
 			managerLogoutRequest.MapName = unit.Scene().Name;
 			managerLogoutRequest.UnitId = unit.Id;
