@@ -44,11 +44,5 @@ namespace ET.Server
                 this.messageSender = value;
             }
         }
-        
-        
-        /// <summary>
-        /// 待发送的消息队列，按SceneName分组
-        /// </summary>
-        public Dictionary<string, Queue<IMessage>> PendingMessages = new();
     }
 }

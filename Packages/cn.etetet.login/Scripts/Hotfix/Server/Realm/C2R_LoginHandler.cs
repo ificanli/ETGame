@@ -27,7 +27,7 @@ namespace ET.Server
 			// 向gate请求一个key,客户端可以拿着这个key连接gate
 			R2G_GetLoginKey r2GGetLoginKey = R2G_GetLoginKey.Create();
 			r2GGetLoginKey.Account = request.Account;
-			ServiceInfo gateServiceInfo = await serviceDiscoveryProxy.GetServiceInfo(gateName);
+			ServiceInfo gateServiceInfo = serviceDiscoveryProxy.GetServiceInfo(gateName);
 			response.Address = gateServiceInfo.Metadata[ServiceMetaKey.InnerIPOuterPort];
 			
 			root = rootRef;

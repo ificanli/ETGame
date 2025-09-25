@@ -233,23 +233,13 @@ namespace ET.Server
         
         #region 获取ServiceInfo
         
-        public static async ETTask<ServiceInfo> GetServiceInfo(this ServiceDiscoveryProxy self, string sceneName)
+        public static ServiceInfo GetServiceInfo(this ServiceDiscoveryProxy self, string sceneName)
         {
-            if (self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef))
+            if (!self.SceneNameServices.TryGetValue(sceneName, out var serviceInfoRef))
             {
-                return serviceCacheInfoRef;
+                throw new Exception("not found scene name: " + sceneName);
             }
-
-            EntityRef<ServiceDiscoveryProxy> selfRef = self;
-            ServiceQueryBySceneNameRequest request = ServiceQueryBySceneNameRequest.Create();
-            request.SceneName = sceneName;
-            
-            ServiceQueryBySceneNameResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceQueryBySceneNameResponse;
-            
-            self = selfRef;
-            self.OnServiceChangeNotification(1, response.Services);
-            self.SceneNameServices.TryGetValue(sceneName, out var serviceCacheInfoRef2);
-            return serviceCacheInfoRef2;
+            return serviceInfoRef;
         }
 
         public static List<ServiceInfo> GetBySceneTypeAndZone(this ServiceDiscoveryProxy self, int sceneType, int zone)
@@ -307,20 +297,12 @@ namespace ET.Server
         /// <param name="message">要发送的消息</param>
         public static void Send(this ServiceDiscoveryProxy self, string sceneName, IMessage message)
         {
-            // 获取或创建该SceneName的队列
-            if (!self.PendingMessages.TryGetValue(sceneName, out Queue<IMessage> queue))
+            ServiceInfo serviceInfo = self.GetServiceInfo(sceneName);
+            if (serviceInfo.ActorId == default)
             {
-                queue = new Queue<IMessage>();
-                self.PendingMessages[sceneName] = queue;
+                throw new Exception($"Failed to get ActorId for scene: {sceneName}");
             }
-
-            queue.Enqueue(message);
-
-            // 开始获取ActorId（如果还未开始）
-            if (queue.Count == 1)
-            {
-                self.StartFetchActorId(sceneName).NoContext();
-            }
+            self.MessageSender.Send(serviceInfo.ActorId, message);
         }
 
         /// <summary>
@@ -337,66 +319,14 @@ namespace ET.Server
             // ActorId未知，先获取ActorId
             EntityRef<ServiceDiscoveryProxy> selfRef = self;
 
-            ServiceInfo serviceInfo = await self.GetServiceInfo(sceneName);
+            ServiceInfo serviceInfo = self.GetServiceInfo(sceneName);
             if (serviceInfo.ActorId == default)
             {
-                throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
+                throw new Exception($"Failed to get ActorId for scene: {sceneName}");
             }
 
             self = selfRef;
             return await self.MessageSender.Call(serviceInfo.ActorId, request, needException);
-        }
-
-        /// <summary>
-        /// 开始异步获取ActorId
-        /// </summary>
-        private static async ETTask StartFetchActorId(this ServiceDiscoveryProxy self, string sceneName)
-        {
-            EntityRef<ServiceDiscoveryProxy> selfRef = self;
-
-            ServiceInfo serviceInfo = await self.GetServiceInfo(sceneName);
-
-            self = selfRef;
-            if (self == null)
-            {
-                return;
-            }
-
-            if (serviceInfo.ActorId == default)
-            {
-                throw new System.Exception($"Failed to get ActorId for scene: {sceneName}");
-            }
-
-            // 处理待发送的消息
-            self.ProcessPendingMessages(sceneName, serviceInfo.ActorId);
-        }
-
-        /// <summary>
-        /// 处理待发送的消息
-        /// </summary>
-        private static void ProcessPendingMessages(this ServiceDiscoveryProxy self, string sceneName, ActorId actorId)
-        {
-            if (!self.PendingMessages.TryGetValue(sceneName, out Queue<IMessage> queue))
-            {
-                return;
-            }
-
-            MessageSender messageSender = self.MessageSender;
-
-            while (queue.Count > 0)
-            {
-                IMessage pendingMessage = queue.Dequeue();
-
-                try
-                {
-                    // 只处理Send消息，Call消息不会进入队列
-                    messageSender.Send(actorId, pendingMessage);
-                }
-                catch (System.Exception e)
-                {
-                    Log.Error($"Error processing pending message for scene {sceneName}: {e}");
-                }
-            }
         }
         #endregion
     }

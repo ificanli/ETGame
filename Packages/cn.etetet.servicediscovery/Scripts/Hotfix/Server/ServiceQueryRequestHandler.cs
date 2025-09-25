@@ -8,14 +8,6 @@ namespace ET.Server
         protected override async ETTask Run(Scene scene, ServiceQueryRequest request, ServiceQueryResponse response)
         {
             ServiceDiscovery serviceDiscovery = scene.GetComponent<ServiceDiscovery>();
-            if (serviceDiscovery == null)
-            {
-                Log.Error("ServiceDiscoveryComponent not found");
-                response.Error = ErrorCode.ERR_ComponentNotFound;
-                response.Message = "ServiceDiscoveryComponent not found";
-                return;
-            }
-
             List<ServiceInfo> services = serviceDiscovery.GetServiceInfoByFilter(request.Filter);
             foreach (ServiceInfo serviceInfo in services)
             {

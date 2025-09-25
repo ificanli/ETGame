@@ -61,21 +61,6 @@ message ServiceQueryResponse // IResponse
 	repeated ServiceInfoProto Services = 4;
 }
 
-// ResponseType ServiceQueryBySceneNameResponse
-message ServiceQueryBySceneNameRequest // IRequest
-{
-	int32 RpcId = 1;
-	string SceneName = 2;
-}
-
-message ServiceQueryBySceneNameResponse // IResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	ServiceInfoProto Services = 4;
-}
-
 // ResponseType ServiceSubscribeResponse
 message ServiceSubscribeRequest // IRequest
 {

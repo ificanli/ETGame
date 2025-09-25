@@ -268,73 +268,6 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.ServiceQueryBySceneNameRequest)]
-    [ResponseType(nameof(ServiceQueryBySceneNameResponse))]
-    public partial class ServiceQueryBySceneNameRequest : MessageObject, IRequest
-    {
-        public static ServiceQueryBySceneNameRequest Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<ServiceQueryBySceneNameRequest>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-
-        [MemoryPackOrder(1)]
-        public string SceneName { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.SceneName = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.ServiceQueryBySceneNameResponse)]
-    public partial class ServiceQueryBySceneNameResponse : MessageObject, IResponse
-    {
-        public static ServiceQueryBySceneNameResponse Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<ServiceQueryBySceneNameResponse>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-
-        [MemoryPackOrder(1)]
-        public int Error { get; set; }
-
-        [MemoryPackOrder(2)]
-        public string Message { get; set; }
-
-        [MemoryPackOrder(3)]
-        public ServiceInfoProto Services { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.Error = default;
-            this.Message = default;
-            this.Services = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
     [Message(Opcode.ServiceSubscribeRequest)]
     [ResponseType(nameof(ServiceSubscribeResponse))]
     public partial class ServiceSubscribeRequest : MessageObject, IRequest
@@ -545,13 +478,11 @@ namespace ET
         public const ushort ServiceHeartbeatResponse = 20506;
         public const ushort ServiceQueryRequest = 20507;
         public const ushort ServiceQueryResponse = 20508;
-        public const ushort ServiceQueryBySceneNameRequest = 20509;
-        public const ushort ServiceQueryBySceneNameResponse = 20510;
-        public const ushort ServiceSubscribeRequest = 20511;
-        public const ushort ServiceSubscribeResponse = 20512;
-        public const ushort ServiceUnsubscribeRequest = 20513;
-        public const ushort ServiceUnsubscribeResponse = 20514;
-        public const ushort ServiceChangeNotification = 20515;
-        public const ushort ServiceInfoProto = 20516;
+        public const ushort ServiceSubscribeRequest = 20509;
+        public const ushort ServiceSubscribeResponse = 20510;
+        public const ushort ServiceUnsubscribeRequest = 20511;
+        public const ushort ServiceUnsubscribeResponse = 20512;
+        public const ushort ServiceChangeNotification = 20513;
+        public const ushort ServiceInfoProto = 20514;
     }
 }
