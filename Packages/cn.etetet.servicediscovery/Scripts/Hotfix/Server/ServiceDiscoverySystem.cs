@@ -13,8 +13,6 @@ namespace ET.Server
         private static void Awake(this ServiceDiscovery self)
         {
             self.LastHeartbeatCheckTime = TimeInfo.Instance.ServerNow();
-
-            Log.Debug($"ServiceDiscoveryComponent Awake");
         }
 
         [EntitySystem]
@@ -172,8 +170,7 @@ namespace ET.Server
                 self.Root().GetComponent<MessageSender>().Send(serviceInfo.ActorId, notification);
             }
 
-            string filterStr = filterMetadata.Count > 0? $" filter=[{string.Join(", ", filterMetadata.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}]" : "";
-            Log.Debug($"Subscribe service change: {sceneName} {filterStr}");
+            Log.Debug($"Subscribe service change: {sceneName} {filterMetadata}");
         }
 
         /// <summary>
@@ -191,8 +188,6 @@ namespace ET.Server
         /// </summary>
         private static void NotifyServiceChange(this ServiceDiscovery self, int changeType, ServiceInfo serviceInfo)
         {
-            int notifiedCount = 0;
-
             // 给订阅者广播, 遍历订阅者
             foreach (var kv in self.Subscribers)
             {
@@ -219,14 +214,10 @@ namespace ET.Server
 
                     ServiceInfo subServiceInfo = subServiceInfoRef;
                     self.Root().GetComponent<MessageSender>().Send(subServiceInfo.ActorId, notification);
-                    notifiedCount++;
-                    
                     // 只要满足一个就不用继续了
                     break;
                 }
             }
-
-            Log.Debug($"Notified service change: changeType={changeType} to {notifiedCount} subscribers (filtered from)");
         }
 
         /// <summary>
