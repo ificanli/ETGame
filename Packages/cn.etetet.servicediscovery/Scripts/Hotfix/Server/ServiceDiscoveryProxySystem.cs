@@ -110,21 +110,6 @@ namespace ET.Server
         }
 
         /// <summary>
-        /// 查询服务列表
-        /// </summary>
-        public static async ETTask<List<ServiceInfoProto>> QueryServices(this ServiceDiscoveryProxy self, Dictionary<string, string> filterMetadata)
-        {
-            ServiceQueryRequest request = ServiceQueryRequest.Create();
-            foreach (var kv in filterMetadata)
-            {
-                request.Filter.Add(kv.Key, kv.Value);
-            }
-
-            ServiceQueryResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceQueryResponse;
-            return response.Services;
-        }
-
-        /// <summary>
         /// 订阅服务变更
         /// </summary>
         public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxy self, string filterName, Dictionary<string, string> filterMeta)
@@ -170,11 +155,10 @@ namespace ET.Server
                             continue;
                         }
 
-                        MultiMapSet<string, string> index = null;
-                        if (!self.ServicesIndexs.TryGetValue(key, out index))
+                        if (!self.ServicesIndexs.TryGetValue(key, out MultiMapSet<string, string> index))
                         {
                             index = new MultiMapSet<string, string>();
-                            self.ServicesIndexs.Add(key, new MultiMapSet<string, string>());
+                            self.ServicesIndexs.Add(key, index);
                         }
                         index.Add(value, serviceInfo.SceneName);
                     }
@@ -266,15 +250,82 @@ namespace ET.Server
         {
             List<ServiceInfo> serviceInfos = new();
 
-            // 查询现有服务并应用过滤条件
-            foreach ((string key, ServiceInfo sInfo) in self.SceneNameServices)
+            if (filterMetadata == null || filterMetadata.Count == 0)
             {
-                // 应用过滤条件
-                if (sInfo.MatchesFilter(filterMetadata))
+                // 没有过滤条件，返回所有服务
+                foreach ((_, ServiceInfo sInfo) in self.SceneNameServices)
                 {
                     serviceInfos.Add(sInfo);
                 }
+                return serviceInfos;
             }
+
+            // 优先使用索引查询
+            HashSet<string> candidateSceneNames = null;
+            bool firstIndexedFilter = true;
+
+            // 遍历过滤条件，优先使用有索引的字段
+            foreach ((string key, string value) in filterMetadata)
+            {
+                // 检查是否有索引
+                if (self.ServicesIndexs.TryGetValue(key, out MultiMapSet<string, string> index))
+                {
+                    // 获取索引中匹配的SceneName集合
+                    HashSet<string> matchedSceneNames = index[value];
+                    if (matchedSceneNames.Count == 0)
+                    {
+                        // 如果某个索引字段没有匹配结果，直接返回空列表
+                        return serviceInfos;
+                    }
+
+                    if (firstIndexedFilter)
+                    {
+                        // 第一个索引过滤条件，直接使用结果集
+                        candidateSceneNames = new HashSet<string>(matchedSceneNames);
+                        firstIndexedFilter = false;
+                    }
+                    else
+                    {
+                        // 后续索引过滤条件，取交集
+                        candidateSceneNames.IntersectWith(matchedSceneNames);
+                        if (candidateSceneNames.Count == 0)
+                        {
+                            // 交集为空，直接返回
+                            return serviceInfos;
+                        }
+                    }
+                }
+            }
+
+            // 如果使用了索引查询
+            if (candidateSceneNames != null)
+            {
+                // 从候选集合中筛选最终结果
+                foreach (string sceneName in candidateSceneNames)
+                {
+                    if (self.SceneNameServices.TryGetValue(sceneName, out var serviceInfoRef))
+                    {
+                        ServiceInfo sInfo = serviceInfoRef;
+                        // 对于有索引的字段已经匹配了，只需要检查没有索引的字段
+                        if (sInfo.MatchesFilter(filterMetadata))
+                        {
+                            serviceInfos.Add(sInfo);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // 如果没有任何索引字段，回退到原来的全遍历方式
+                foreach ((_, ServiceInfo sInfo) in self.SceneNameServices)
+                {
+                    if (sInfo.MatchesFilter(filterMetadata))
+                    {
+                        serviceInfos.Add(sInfo);
+                    }
+                }
+            }
+
             return serviceInfos;
         }
 
