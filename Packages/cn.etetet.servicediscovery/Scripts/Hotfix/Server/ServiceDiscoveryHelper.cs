@@ -18,7 +18,7 @@ namespace ET.Server
         public static List<ServiceInfo> GetServiceInfoByFilter(
             Dictionary<string, EntityRef<ServiceInfo>> services,
             Dictionary<string, MultiMapSet<string, string>> servicesIndexs,
-            Dictionary<string, string> filterMetadata)
+            StringKV filterMetadata)
         {
             List<ServiceInfo> serviceInfos = new();
 

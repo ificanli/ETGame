@@ -16,13 +16,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int QuestId { get; set; }
-
         [MemoryPackOrder(2)]
         public long NPCId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -49,13 +46,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -84,13 +78,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int QuestId { get; set; }
-
         [MemoryPackOrder(2)]
         public long NPCId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -117,13 +108,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -150,13 +138,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int QuestObjectiveId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Count { get; set; }
-
         [MemoryPackOrder(2)]
         public int NeedCount { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -184,7 +169,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long QuestId { get; set; }
-
         [MemoryPackOrder(1)]
         public List<QuestObjectiveInfo> QuestObjective { get; set; } = new();
 
@@ -217,7 +201,6 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(0)]
         public long QuestId { get; set; }
-
         [MemoryPackOrder(1)]
         public List<QuestObjectiveInfo> QuestObjective { get; set; } = new();
 
@@ -247,13 +230,11 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long QuestId { get; set; }
-
         /// <summary>
         /// 1:进行中, 2:已完成
         /// </summary>
         [MemoryPackOrder(1)]
         public int State { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -281,7 +262,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -306,13 +286,11 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long QuestId { get; set; }
-
         /// <summary>
         /// 任务状态
         /// </summary>
         [MemoryPackOrder(1)]
         public int Status { get; set; }
-
         [MemoryPackOrder(2)]
         public List<QuestObjectiveInfo> Objectives { get; set; } = new();
 
@@ -321,13 +299,11 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(3)]
         public long AcceptTime { get; set; }
-
         /// <summary>
         /// 完成时间
         /// </summary>
         [MemoryPackOrder(4)]
         public long CompleteTime { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -356,13 +332,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public List<QuestInfo> QuestList { get; set; } = new();
 
@@ -395,10 +368,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int QuestId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -424,13 +395,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -459,13 +427,11 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         /// <summary>
         /// NPC ID，为0时查询所有可接取任务
         /// </summary>
         [MemoryPackOrder(1)]
         public long NPCId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -491,22 +457,16 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int QuestId { get; set; }
-
         [MemoryPackOrder(1)]
         public string QuestName { get; set; }
-
         [MemoryPackOrder(2)]
         public string QuestDesc { get; set; }
-
         [MemoryPackOrder(3)]
         public int QuestType { get; set; }
-
         [MemoryPackOrder(4)]
         public int RewardExp { get; set; }
-
         [MemoryPackOrder(5)]
         public int RewardGold { get; set; }
-
         /// <summary>
         /// 奖励道具ID列表
         /// </summary>
@@ -543,13 +503,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public List<AvailableQuestInfo> AvailableQuests { get; set; } = new();
 
@@ -581,13 +538,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int QuestId { get; set; }
-
         [MemoryPackOrder(1)]
         public int RewardExp { get; set; }
-
         [MemoryPackOrder(2)]
         public int RewardGold { get; set; }
-
         [MemoryPackOrder(3)]
         public List<int> RewardItems { get; set; } = new();
 
@@ -619,10 +573,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int QuestId { get; set; }
-
         [MemoryPackOrder(1)]
         public string Reason { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -649,13 +601,11 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int QuestId { get; set; }
-
         /// <summary>
         /// 进度描述文本
         /// </summary>
         [MemoryPackOrder(1)]
         public string ProgressText { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -683,10 +633,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int QuestId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -712,34 +660,25 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int QuestId { get; set; }
-
         [MemoryPackOrder(1)]
         public string QuestName { get; set; }
-
         [MemoryPackOrder(2)]
         public string QuestDesc { get; set; }
-
         /// <summary>
         /// 任务背景故事
         /// </summary>
         [MemoryPackOrder(3)]
         public string QuestStory { get; set; }
-
         [MemoryPackOrder(4)]
         public int QuestType { get; set; }
-
         [MemoryPackOrder(5)]
         public int AcceptNPC { get; set; }
-
         [MemoryPackOrder(6)]
         public int SubmitNPC { get; set; }
-
         [MemoryPackOrder(7)]
         public int RewardExp { get; set; }
-
         [MemoryPackOrder(8)]
         public int RewardGold { get; set; }
-
         [MemoryPackOrder(9)]
         public List<int> RewardItems { get; set; } = new();
 
@@ -754,13 +693,11 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(11)]
         public int MinLevel { get; set; }
-
         /// <summary>
         /// 最高等级限制
         /// </summary>
         [MemoryPackOrder(12)]
         public int MaxLevel { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -797,16 +734,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public QuestDetailInfo QuestDetail { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)

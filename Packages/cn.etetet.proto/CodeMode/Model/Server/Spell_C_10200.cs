@@ -15,13 +15,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int SpellConfigId { get; set; }
-
         [MemoryPackOrder(2)]
         public Unity.Mathematics.float3 TargetPosition { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -48,19 +45,15 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
-
         [MemoryPackOrder(1)]
         public long SpellId { get; set; }
-
         [MemoryPackOrder(2)]
         public int SpellConfigId { get; set; }
-
         [MemoryPackOrder(2)]
         public List<long> TargetUnitId { get; set; } = new();
 
         [MemoryPackOrder(3)]
         public Unity.Mathematics.float3 TargetPosition { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -89,13 +82,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
-
         [MemoryPackOrder(1)]
         public long SpellId { get; set; }
-
         [MemoryPackOrder(2)]
         public int RemoveType { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -125,7 +115,6 @@ namespace ET
 
         [MemoryPackOrder(3)]
         public Unity.Mathematics.float3 TargetPosition { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -152,31 +141,22 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
-
         [MemoryPackOrder(1)]
         public long BuffId { get; set; }
-
         [MemoryPackOrder(2)]
         public int BuffConfigId { get; set; }
-
         [MemoryPackOrder(3)]
         public long CreateTime { get; set; }
-
         [MemoryPackOrder(4)]
         public int TickTime { get; set; }
-
         [MemoryPackOrder(5)]
         public long ExpireTime { get; set; }
-
         [MemoryPackOrder(6)]
         public long CasterId { get; set; }
-
         [MemoryPackOrder(7)]
         public int Stack { get; set; }
-
         [MemoryPackOrder(8)]
         public SpellTarget SpellTarget { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -209,19 +189,14 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
-
         [MemoryPackOrder(1)]
         public long BuffId { get; set; }
-
         [MemoryPackOrder(4)]
         public int TickTime { get; set; }
-
         [MemoryPackOrder(5)]
         public long ExpireTime { get; set; }
-
         [MemoryPackOrder(6)]
         public int Stack { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -250,16 +225,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
-
         [MemoryPackOrder(1)]
         public long BuffId { get; set; }
-
         [MemoryPackOrder(2)]
         public int BuffConfigId { get; set; }
-
         [MemoryPackOrder(3)]
         public int RemoveType { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -288,19 +259,15 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public long UnitId { get; set; }
-
         /// <summary>
         /// 0表示公共CD
         /// </summary>
         [MemoryPackOrder(2)]
         public int SpellConfigId { get; set; }
-
         [MemoryPackOrder(3)]
         public long Time { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -329,10 +296,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public long UnitId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)

@@ -15,25 +15,20 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int OwnerFiberId { get; set; }
-
         [MemoryPackOrder(2)]
         public string Address { get; set; }
-
         /// <summary>
         /// 账号
         /// </summary>
         [MemoryPackOrder(3)]
         public string Account { get; set; }
-
         /// <summary>
         /// 密码
         /// </summary>
         [MemoryPackOrder(4)]
         public string Password { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -62,16 +57,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public long PlayerId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -100,7 +91,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -125,16 +115,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public long Time { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -163,19 +149,16 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         /// <summary>
         /// 帐号
         /// </summary>
         [MemoryPackOrder(1)]
         public string Account { get; set; }
-
         /// <summary>
         /// 密码
         /// </summary>
         [MemoryPackOrder(2)]
         public string Password { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -202,22 +185,16 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public string Address { get; set; }
-
         [MemoryPackOrder(4)]
         public long Key { get; set; }
-
         [MemoryPackOrder(5)]
         public long GateId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -248,16 +225,13 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         /// <summary>
         /// 帐号
         /// </summary>
         [MemoryPackOrder(1)]
         public long Key { get; set; }
-
         [MemoryPackOrder(2)]
         public long GateId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -284,16 +258,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public long PlayerId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)

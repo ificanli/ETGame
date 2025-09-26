@@ -15,7 +15,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -40,13 +39,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -74,19 +70,15 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public ActorId OldActorId { get; set; }
-
         [MemoryPackOrder(2)]
         public byte[] Unit { get; set; }
-
         [MemoryPackOrder(3)]
         public List<byte[]> Entitys { get; set; } = new();
 
         [MemoryPackOrder(4)]
         public bool ChangeScene { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -115,16 +107,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public ActorId NewActorId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -153,7 +141,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -178,13 +165,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)

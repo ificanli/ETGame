@@ -16,13 +16,11 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         /// <summary>
         /// 分类ID，0表示获取所有
         /// </summary>
         [MemoryPackOrder(1)]
         public int CategoryId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -48,37 +46,31 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int AchievementId { get; set; }
-
         /// <summary>
         /// 成就状态：0=未开始，1=进行中，2=已完成，3=已领取
         /// </summary>
         [MemoryPackOrder(1)]
         public int Status { get; set; }
-
         /// <summary>
         /// 当前进度
         /// </summary>
         [MemoryPackOrder(2)]
         public int Progress { get; set; }
-
         /// <summary>
         /// 最大进度
         /// </summary>
         [MemoryPackOrder(3)]
         public int MaxProgress { get; set; }
-
         /// <summary>
         /// 完成时间
         /// </summary>
         [MemoryPackOrder(4)]
         public long CompleteTime { get; set; }
-
         /// <summary>
         /// 领取时间
         /// </summary>
         [MemoryPackOrder(5)]
         public long ClaimTime { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -108,13 +100,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public List<AchievementInfo> Achievements { get; set; } = new();
 
@@ -147,10 +136,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int AchievementId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -179,19 +166,16 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(0)]
         public int Type { get; set; }
-
         /// <summary>
         /// 道具ID（奖励类型为道具时使用）
         /// </summary>
         [MemoryPackOrder(1)]
         public int ItemId { get; set; }
-
         /// <summary>
         /// 数量
         /// </summary>
         [MemoryPackOrder(2)]
         public int Count { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -218,13 +202,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public List<AchievementReward> Rewards { get; set; } = new();
 
@@ -256,13 +237,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int AchievementId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Progress { get; set; }
-
         [MemoryPackOrder(2)]
         public int MaxProgress { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -290,13 +268,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int AchievementId { get; set; }
-
         [MemoryPackOrder(1)]
         public string AchievementName { get; set; }
-
         [MemoryPackOrder(2)]
         public long CompleteTime { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -325,10 +300,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int AchievementId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -354,28 +327,21 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int AchievementId { get; set; }
-
         [MemoryPackOrder(1)]
         public string AchievementName { get; set; }
-
         [MemoryPackOrder(2)]
         public string Description { get; set; }
-
         [MemoryPackOrder(3)]
         public string Icon { get; set; }
-
         [MemoryPackOrder(4)]
         public int CategoryId { get; set; }
-
         /// <summary>
         /// 成就类型
         /// </summary>
         [MemoryPackOrder(5)]
         public int Type { get; set; }
-
         [MemoryPackOrder(6)]
         public int MaxProgress { get; set; }
-
         [MemoryPackOrder(7)]
         public List<AchievementReward> Rewards { get; set; } = new();
 
@@ -390,7 +356,6 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(9)]
         public int Points { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -424,16 +389,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public AchievementDetailInfo Detail { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -463,7 +424,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -488,31 +448,25 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int CategoryId { get; set; }
-
         [MemoryPackOrder(1)]
         public string CategoryName { get; set; }
-
         [MemoryPackOrder(2)]
         public string Icon { get; set; }
-
         /// <summary>
         /// 排序
         /// </summary>
         [MemoryPackOrder(3)]
         public int Order { get; set; }
-
         /// <summary>
         /// 该分类下总成就数
         /// </summary>
         [MemoryPackOrder(4)]
         public int TotalCount { get; set; }
-
         /// <summary>
         /// 已完成数量
         /// </summary>
         [MemoryPackOrder(5)]
         public int CompletedCount { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -542,13 +496,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public List<AchievementCategoryInfo> Categories { get; set; } = new();
 
@@ -581,7 +532,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -609,25 +559,21 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(0)]
         public int TotalAchievements { get; set; }
-
         /// <summary>
         /// 已完成数
         /// </summary>
         [MemoryPackOrder(1)]
         public int CompletedAchievements { get; set; }
-
         /// <summary>
         /// 总成就点数
         /// </summary>
         [MemoryPackOrder(2)]
         public int TotalPoints { get; set; }
-
         /// <summary>
         /// 已获得点数
         /// </summary>
         [MemoryPackOrder(3)]
         public int EarnedPoints { get; set; }
-
         /// <summary>
         /// 最近完成的成就ID列表
         /// </summary>
@@ -662,16 +608,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public AchievementStatsInfo Stats { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -700,25 +642,21 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         /// <summary>
         /// 事件类型：1=击杀，2=升级，3=任务完成，4=道具收集，5=地图探索
         /// </summary>
         [MemoryPackOrder(1)]
         public int EventType { get; set; }
-
         /// <summary>
         /// 参数ID（怪物ID、等级、任务ID、道具ID、地图ID）
         /// </summary>
         [MemoryPackOrder(2)]
         public int ParamId { get; set; }
-
         /// <summary>
         /// 数量（击杀数量、道具数量等）
         /// </summary>
         [MemoryPackOrder(3)]
         public int Count { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -746,13 +684,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)

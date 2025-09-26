@@ -45,7 +45,7 @@ namespace ET.Server
         /// 检查元数据是否匹配过滤条件
         /// 支持多值匹配，过滤条件的值可以用逗号分割，如 "Gate,Realm"
         /// </summary>
-        public static bool MatchesFilter(this ServiceInfo self, Dictionary<string, string> filter)
+        public static bool MatchesFilter(this ServiceInfo self, StringKV filter)
         {
             if (filter.Count == 0)
             {

@@ -14,10 +14,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public uint ConnectId { get; set; }
-
         [MemoryPackOrder(1)]
         public string Address { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -44,10 +42,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public string request { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -73,16 +69,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public string response { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -111,7 +103,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -136,19 +127,15 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         /// <summary>
         /// 自己的UnitId
         /// </summary>
         [MemoryPackOrder(3)]
         public long MyId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -179,10 +166,8 @@ namespace ET
 
         [MemoryPackOrder(1)]
         public Unity.Mathematics.quaternion Rotation { get; set; }
-
         [MemoryPackOrder(2)]
         public int TurnSpeed { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -209,7 +194,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long OwnerId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -234,28 +218,21 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
-
         [MemoryPackOrder(1)]
         public int ConfigId { get; set; }
-
         [MemoryPackOrder(2)]
         public int Type { get; set; }
-
         [MemoryPackOrder(3)]
         public Unity.Mathematics.float3 Position { get; set; }
-
         [MemoryPackOrder(4)]
         public Unity.Mathematics.float3 Forward { get; set; }
-
         [MongoDB.Bson.Serialization.Attributes.BsonDictionaryOptions(MongoDB.Bson.Serialization.Options.DictionaryRepresentation.ArrayOfArrays)]
         [MemoryPackOrder(5)]
         public Dictionary<int, long> KV { get; set; } = new();
         [MemoryPackOrder(6)]
         public MoveInfo MoveInfo { get; set; }
-
         [MemoryPackOrder(7)]
         public PetInfo PetInfo { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -312,7 +289,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public UnitInfo Unit { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -337,10 +313,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long SceneId { get; set; }
-
         [MemoryPackOrder(1)]
         public string SceneName { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -391,10 +365,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public Unity.Mathematics.float3 Position { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -420,7 +392,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -445,10 +416,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long Id { get; set; }
-
         [MemoryPackOrder(1)]
         public Unity.Mathematics.float3 Position { get; set; }
-
         [MemoryPackOrder(2)]
         public List<Unity.Mathematics.float3> Points { get; set; } = new();
 
@@ -478,16 +447,12 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int Error { get; set; }
-
         [MemoryPackOrder(1)]
         public long Id { get; set; }
-
         [MemoryPackOrder(2)]
         public Unity.Mathematics.float3 Position { get; set; }
-
         [MemoryPackOrder(3)]
         public Unity.Mathematics.quaternion Rotation { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -537,13 +502,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public string Account { get; set; }
-
         [MemoryPackOrder(2)]
         public string Password { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -570,13 +532,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -603,7 +562,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public string Info { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -629,7 +587,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -654,13 +611,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -688,7 +642,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -713,13 +666,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -746,7 +696,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int Error { get; set; }
-
         [MemoryPackOrder(1)]
         public List<string> Values { get; set; } = new();
 
@@ -775,13 +724,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
-
         [MemoryPackOrder(1)]
         public int NumericType { get; set; }
-
         [MemoryPackOrder(2)]
         public long Value { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -808,10 +754,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public long TargetUnitId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -837,13 +781,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
-
         [MemoryPackOrder(1)]
         public Unity.Mathematics.quaternion Rotation { get; set; }
-
         [MemoryPackOrder(2)]
         public int TurnTime { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -871,7 +812,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -896,13 +836,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)

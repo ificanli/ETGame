@@ -32,7 +32,7 @@ namespace ET.Server
             
             await serviceDiscoveryProxy.RegisterToServiceDiscovery
             (
-                new Dictionary<string, string>() 
+                new StringKV()
                 {
                     { ServiceMetaKey.InnerIPOuterPort, $"{netComponent.GetBindPoint()}" }
                 }
@@ -41,7 +41,7 @@ namespace ET.Server
             // 订阅location
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxy.SubscribeServiceChange("Location", 
-                new Dictionary<string, string>() { {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.Location)} });
+                new StringKV() { {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.Location)} });
         }
     }
 }

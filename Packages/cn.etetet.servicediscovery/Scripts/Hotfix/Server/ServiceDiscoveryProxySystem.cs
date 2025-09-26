@@ -60,7 +60,7 @@ namespace ET.Server
         /// <summary>
         /// 注册到服务发现服务器
         /// </summary>
-        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, Dictionary<string, string> metadata)
+        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, StringKV metadata)
         {
             ServiceRegisterRequest request = ServiceRegisterRequest.Create();
             Scene root = self.Root();
@@ -112,7 +112,7 @@ namespace ET.Server
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxy self, string filterName, Dictionary<string, string> filterMeta)
+        public static async ETTask SubscribeServiceChange(this ServiceDiscoveryProxy self, string filterName, StringKV filterMeta)
         {
             ServiceSubscribeRequest request = ServiceSubscribeRequest.Create();
             request.SceneName = self.Root().Name;
@@ -145,7 +145,7 @@ namespace ET.Server
                 case 1:
                 {
                     ServiceInfo serviceInfo = self.AddChild<ServiceInfo, string, ActorId>(serviceInfoProto.SceneName, serviceInfoProto.ActorId);
-                    serviceInfo.Metadata = new Dictionary<string, string>(serviceInfoProto.Metadata);
+                    serviceInfo.Metadata = new StringKV(serviceInfoProto.Metadata);
                     self.SceneNameServices.Add(serviceInfo.SceneName, serviceInfo);
 
                     foreach ((string key, var value) in serviceInfo.Metadata)
@@ -228,7 +228,7 @@ namespace ET.Server
 
         public static List<ServiceInfo> GetBySceneTypeAndZone(this ServiceDiscoveryProxy self, int sceneType, int zone)
         {
-            return self.GetServiceInfoByFilter(new Dictionary<string, string>()
+            return self.GetServiceInfoByFilter(new StringKV()
             {
                 {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(sceneType)},
                 {ServiceMetaKey.Zone, zone.ToString()},
@@ -237,7 +237,7 @@ namespace ET.Server
         
         public static List<ServiceInfo> GetBySceneType(this ServiceDiscoveryProxy self, int sceneType)
         {
-            return self.GetServiceInfoByFilter(new Dictionary<string, string>()
+            return self.GetServiceInfoByFilter(new StringKV()
             {
                 {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(sceneType)},
             });
@@ -246,7 +246,7 @@ namespace ET.Server
         /// <summary>
         /// 查询服务
         /// </summary>
-        public static List<ServiceInfo> GetServiceInfoByFilter(this ServiceDiscoveryProxy self, Dictionary<string, string> filterMetadata)
+        public static List<ServiceInfo> GetServiceInfoByFilter(this ServiceDiscoveryProxy self, StringKV filterMetadata)
         {
             return ServiceDiscoveryHelper.GetServiceInfoByFilter(self.SceneNameServices, self.ServicesIndexs, filterMetadata);
         }

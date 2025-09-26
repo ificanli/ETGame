@@ -36,7 +36,7 @@ namespace ET.Server
         /// <summary>
         /// 注册服务
         /// </summary>
-        public static void RegisterService(this ServiceDiscovery self, string sceneName, ActorId actorId, Dictionary<string, string> metadata)
+        public static void RegisterService(this ServiceDiscovery self, string sceneName, ActorId actorId, StringKV metadata)
         {
             // 已存在则注销之前的
             if (self.Services.ContainsKey(sceneName))
@@ -141,7 +141,7 @@ namespace ET.Server
         /// <summary>
         /// 查询服务
         /// </summary>
-        public static List<ServiceInfo> GetServiceInfoByFilter(this ServiceDiscovery self, Dictionary<string, string> filterMetadata)
+        public static List<ServiceInfo> GetServiceInfoByFilter(this ServiceDiscovery self, StringKV filterMetadata)
         {
             return ServiceDiscoveryHelper.GetServiceInfoByFilter(self.Services, self.ServicesIndexs, filterMetadata);
         }
@@ -150,7 +150,7 @@ namespace ET.Server
         /// <summary>
         /// 订阅服务变更
         /// </summary>
-        public static void SubscribeServiceChange(this ServiceDiscovery self, string sceneName, string filterName, Dictionary<string, string> filterMetadata)
+        public static void SubscribeServiceChange(this ServiceDiscovery self, string sceneName, string filterName, StringKV filterMetadata)
         {
             ServiceInfo serviceInfo = self.Services[sceneName];
 
@@ -199,7 +199,7 @@ namespace ET.Server
                 foreach (var kv2 in kv.Value) // 一个订阅者有多个订阅
                 {
                     string subSceneName = kv.Key;
-                    Dictionary<string, string> filter = kv2.Value;
+                    StringKV filter = kv2.Value;
                     if (!self.Services.TryGetValue(subSceneName, out EntityRef<ServiceInfo> subServiceInfoRef))
                     {
                         // 订阅者不存在

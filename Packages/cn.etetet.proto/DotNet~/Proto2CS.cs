@@ -209,7 +209,7 @@ namespace ET
                     if (newline.Contains("//"))
                     {
                         string[] lineSplit = newline.Split("//");
-                        memberStr = lineSplit[0].Trim();
+                        memberStr = newline;
                         sb.Append("\t\t/// <summary>\n");
                         sb.Append($"\t\t/// {lineSplit[1].Trim()}\n");
                         sb.Append("\t\t/// </summary>\n");
@@ -337,6 +337,7 @@ namespace ET
         {
             try
             {
+                string oldline = newline;
                 int index = newline.IndexOf(';');
                 newline = newline.Remove(index);
                 string[] ss = newline.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
@@ -346,7 +347,14 @@ namespace ET
                 string typeCs = ConvertType(type);
 
                 sb.Append($"\t\t[MemoryPackOrder({n - 1})]\n");
-                sb.Append($"\t\tpublic {typeCs} {name} {{ get; set; }}\n\n");
+                sb.Append($"\t\tpublic {typeCs} {name} {{ get; set; }}");
+                
+                if (oldline.Contains("new()"))
+                {
+                    sb.Append(" = new();");
+                }
+
+                sb.Append('\n');
 
                 switch (typeCs)
                 {

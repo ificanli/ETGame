@@ -18,7 +18,7 @@ namespace ET.Server
         /// <summary>
         /// 服务元数据，存储KV键值对
         /// </summary>
-        public Dictionary<string, string> Metadata = new();
+        public StringKV Metadata = new();
 
         /// <summary>
         /// 注册时间

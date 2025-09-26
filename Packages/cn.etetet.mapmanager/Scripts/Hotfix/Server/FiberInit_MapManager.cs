@@ -21,12 +21,12 @@ namespace ET.Server
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(new Dictionary<string, string>());
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery(new StringKV());
             
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
             // 订阅location
             await serviceDiscoveryProxy.SubscribeServiceChange("Location", 
-                new Dictionary<string, string>()
+                new StringKV()
                 {
                     {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.Location)},
                 });

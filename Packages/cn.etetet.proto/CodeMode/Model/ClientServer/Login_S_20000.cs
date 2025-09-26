@@ -15,10 +15,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public string Account { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -44,19 +42,14 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public long Key { get; set; }
-
         [MemoryPackOrder(4)]
         public long GateId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -85,7 +78,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)

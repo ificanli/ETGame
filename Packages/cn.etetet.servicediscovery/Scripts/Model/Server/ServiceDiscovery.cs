@@ -24,7 +24,7 @@ namespace ET.Server
         /// <summary>
         /// 订阅者信息，Key为SceneName，value是订阅的过滤条件,可以多个过滤条件
         /// </summary>
-        public MultiDictionary<string, string, Dictionary<string, string>> Subscribers = new();
+        public MultiDictionary<string, string, StringKV> Subscribers = new();
 
         /// <summary>
         /// 心跳超时时间（毫秒）
