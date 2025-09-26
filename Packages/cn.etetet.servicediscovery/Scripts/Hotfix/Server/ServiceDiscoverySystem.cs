@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -144,85 +143,7 @@ namespace ET.Server
         /// </summary>
         public static List<ServiceInfo> GetServiceInfoByFilter(this ServiceDiscovery self, Dictionary<string, string> filterMetadata)
         {
-            List<ServiceInfo> serviceInfos = new();
-
-            if (filterMetadata == null || filterMetadata.Count == 0)
-            {
-                // 没有过滤条件，返回所有服务
-                foreach ((_, ServiceInfo sInfo) in self.Services)
-                {
-                    serviceInfos.Add(sInfo);
-                }
-                return serviceInfos;
-            }
-
-            // 优先使用索引查询
-            HashSet<string> candidateSceneNames = null;
-            bool firstIndexedFilter = true;
-
-            // 遍历过滤条件，优先使用有索引的字段
-            foreach ((string key, string value) in filterMetadata)
-            {
-                // 检查是否有索引
-                if (self.ServicesIndexs.TryGetValue(key, out MultiMapSet<string, string> index))
-                {
-                    // 获取索引中匹配的SceneName集合
-                    HashSet<string> matchedSceneNames = index[value];
-                    if (matchedSceneNames.Count == 0)
-                    {
-                        // 如果某个索引字段没有匹配结果，直接返回空列表
-                        return serviceInfos;
-                    }
-
-                    if (firstIndexedFilter)
-                    {
-                        // 第一个索引过滤条件，直接使用结果集
-                        candidateSceneNames = new HashSet<string>(matchedSceneNames);
-                        firstIndexedFilter = false;
-                    }
-                    else
-                    {
-                        // 后续索引过滤条件，取交集
-                        candidateSceneNames.IntersectWith(matchedSceneNames);
-                        if (candidateSceneNames.Count == 0)
-                        {
-                            // 交集为空，直接返回
-                            return serviceInfos;
-                        }
-                    }
-                }
-            }
-
-            // 如果使用了索引查询
-            if (candidateSceneNames != null)
-            {
-                // 从候选集合中筛选最终结果
-                foreach (string sceneName in candidateSceneNames)
-                {
-                    if (self.Services.TryGetValue(sceneName, out var serviceInfoRef))
-                    {
-                        ServiceInfo sInfo = serviceInfoRef;
-                        // 对于有索引的字段已经匹配了，只需要检查没有索引的字段
-                        if (sInfo.MatchesFilter(filterMetadata))
-                        {
-                            serviceInfos.Add(sInfo);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // 如果没有任何索引字段，回退到原来的全遍历方式
-                foreach ((_, ServiceInfo sInfo) in self.Services)
-                {
-                    if (sInfo.MatchesFilter(filterMetadata))
-                    {
-                        serviceInfos.Add(sInfo);
-                    }
-                }
-            }
-
-            return serviceInfos;
+            return ServiceDiscoveryHelper.GetServiceInfoByFilter(self.Services, self.ServicesIndexs, filterMetadata);
         }
         
 
