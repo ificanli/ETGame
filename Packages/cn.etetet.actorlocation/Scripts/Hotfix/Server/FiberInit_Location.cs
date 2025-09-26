@@ -18,7 +18,7 @@ namespace ET.Server
             
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(new StringKV());
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery();
         }
     }
 }

@@ -60,7 +60,7 @@ namespace ET.Server
         /// <summary>
         /// 注册到服务发现服务器
         /// </summary>
-        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, StringKV metadata)
+        public static async ETTask RegisterToServiceDiscovery(this ServiceDiscoveryProxy self, StringKV metadata = null)
         {
             ServiceRegisterRequest request = ServiceRegisterRequest.Create();
             Scene root = self.Root();
@@ -69,9 +69,13 @@ namespace ET.Server
             request.ActorId = root.GetActorId();
             request.Metadata.Add(ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(self.Scene().SceneType));
             request.Metadata.Add(ServiceMetaKey.Zone, $"{self.Zone()}");
-            foreach (var item in metadata)
+
+            if (metadata != null)
             {
-                request.Metadata.Add(item.Key, item.Value);
+                foreach (var item in metadata)
+                {
+                    request.Metadata.Add(item.Key, item.Value);
+                }
             }
 
             ServiceRegisterResponse response = await self.MessageSender.Call(self.ServiceDiscoveryActorId, request) as ServiceRegisterResponse;

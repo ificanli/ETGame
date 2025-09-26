@@ -47,7 +47,7 @@ namespace ET.Server
             
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
-            await serviceDiscoveryProxy.RegisterToServiceDiscovery(new StringKV());
+            await serviceDiscoveryProxy.RegisterToServiceDiscovery();
             // 订阅location,并未注册Map
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxy.SubscribeServiceChange("Location", 
