@@ -7,7 +7,6 @@
         <Nullable>disable</Nullable>
         <RootNamespace>ET</RootNamespace>
         <LangVersion>12</LangVersion>
-        <PackageId>Apps.Tool</PackageId>
         <AssemblyName>ET.ExcelExporter</AssemblyName>
     </PropertyGroup>
 

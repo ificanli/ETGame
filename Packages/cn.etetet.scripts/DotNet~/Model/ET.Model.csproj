@@ -26,10 +26,6 @@
         <NoWarn>CS9193</NoWarn>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <PreserveCompilationContext>true</PreserveCompilationContext>
-    </PropertyGroup>
-    
     <ItemGroup>
         <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Model\Share\**\*.cs">
             <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>

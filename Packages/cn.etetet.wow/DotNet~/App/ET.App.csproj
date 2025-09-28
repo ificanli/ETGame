@@ -20,10 +20,6 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <PublishTrimmed>false</PublishTrimmed>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>DOTNET</DefineConstants>
     <OutputPath>$(SolutionDir)Bin</OutputPath>
