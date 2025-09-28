@@ -31,7 +31,6 @@ namespace ET
     {
         public const int ConnectTimeoutTime = 20 * 1000;
 
-        private DateTime dt1970;
         // KService创建的时间
         private readonly long startTime;
 

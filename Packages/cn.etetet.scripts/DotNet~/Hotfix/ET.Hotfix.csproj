@@ -13,7 +13,7 @@
         <DefineConstants>DOTNET;ET10</DefineConstants>
         <OutputPath>$(SolutionDir)Bin</OutputPath> 
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NoWarn>0169,0649,3021,8981,CS9193,CS9192,CA2022</NoWarn>
+        <NoWarn></NoWarn>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DefineConstants>DOTNET;ET10</DefineConstants>
@@ -21,7 +21,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Optimize>false</Optimize>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <NoWarn>0169,0649,3021,8981,CS9193,CS9192</NoWarn>
+        <NoWarn></NoWarn>
     </PropertyGroup>
     <ItemGroup>
 

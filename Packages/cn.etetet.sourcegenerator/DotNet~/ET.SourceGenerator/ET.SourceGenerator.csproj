@@ -8,7 +8,7 @@
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <DevelopmentDependency>true</DevelopmentDependency>
         <IncludeSymbols>false</IncludeSymbols>
-        <NoWarn>1701;1702;RS2008</NoWarn>
+        <NoWarn>RS2008</NoWarn>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
         <RootNamespace>ET</RootNamespace>

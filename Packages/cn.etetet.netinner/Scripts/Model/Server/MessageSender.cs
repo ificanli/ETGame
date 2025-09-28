@@ -9,9 +9,6 @@ namespace ET.Server
         public const long TIMEOUT_TIME = 40 * 1000;
 
         public readonly Dictionary<int, MessageSenderStruct> requestCallback = new();
-        
-        private EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxy;
-
 
         private EntityRef<ProcessInnerSender> processInnerSender;
         

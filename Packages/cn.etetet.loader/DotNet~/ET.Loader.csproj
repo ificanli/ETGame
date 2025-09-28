@@ -15,7 +15,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Optimize>false</Optimize>
-        <NoWarn>0169,0649,3021,8981,CA2022</NoWarn>
+        <NoWarn>CA2022</NoWarn>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"> 
         <DefineConstants>DOTNET</DefineConstants>
