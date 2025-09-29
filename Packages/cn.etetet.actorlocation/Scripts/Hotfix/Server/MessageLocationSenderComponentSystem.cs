@@ -254,7 +254,7 @@ namespace ET.Server
                     {
                         // 如果没找到Actor,重试
                         ++failTimes;
-                        if (failTimes > 20)
+                        if (failTimes > 10)
                         {
                             Log.Debug($"actor send message fail, actorid: {messageLocationSender.Id} {requestType.FullName}");
                             
@@ -269,7 +269,7 @@ namespace ET.Server
 
                         // 等待0.5s再发送
                         root = rootRef;
-                        await root.GetComponent<TimerComponent>().WaitAsync(500);
+                        await root.GetComponent<TimerComponent>().WaitAsync(failTimes * failTimes * 10);
                         messageLocationSender = messageLocationSenderRef;
                         if (messageLocationSender == null)
                         {

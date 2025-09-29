@@ -28,10 +28,6 @@ namespace ET
                 }
             }
         }
-
-        protected override void Destroy()
-        {
-        }
         
         public void Serialize(Entity component)
         {

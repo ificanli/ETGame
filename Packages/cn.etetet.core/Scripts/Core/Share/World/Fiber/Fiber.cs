@@ -167,7 +167,7 @@ namespace ET
                 int t2 = Environment.TickCount;
                 this.fiberMonitorInfo.LateUpdateTimeUsed = t2 - t1;
 
-                FiberManager.Instance.AddMonitor(this.Id, ref this.fiberMonitorInfo);
+                FiberManager.Instance?.AddMonitor(this.Id, ref this.fiberMonitorInfo);
 
                 int count = this.schedulerQueue.Count;
                 while (count-- > 0)

@@ -44,8 +44,9 @@
             {
                 return;
             }
+            
             Instance = null;
-
+            
             this.Destroy();
         }
     }
