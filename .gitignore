@@ -46,7 +46,7 @@ Publish/
 */TestResults/
 Assets/Generate/Model/Proto*
 Assets/Generate/Model/Excel*
-MongoDB/
+/MongoDB/
 Unity.sln
 Unity.sln.DotSettings.user
 
