@@ -4,12 +4,12 @@
     public static partial class CoroutineLockComponentSystem
     {
         [EntitySystem]
-        public static void Awake(this CoroutineLockComponent self)
+        private static void Awake(this CoroutineLockComponent self)
         {
         }
         
         [EntitySystem]
-        public static void Update(this CoroutineLockComponent self)
+        private static void Update(this CoroutineLockComponent self)
         {
             // 循环过程中会有对象继续加入队列
             while (self.nextFrameRun.Count > 0)
@@ -28,6 +28,15 @@
             }
 
             self.nextFrameRun.Enqueue((coroutineLockType, key, level));
+        }
+
+        /// <summary>
+        /// 控制并发执行数量
+        /// </summary>
+        public static void SetMaxConcurrency(this CoroutineLockComponent self, long coroutineLockType, long key, int maxConcurrency)
+        {
+            CoroutineLockQueueType coroutineLockQueueType = self.GetChild<CoroutineLockQueueType>(coroutineLockType) ?? self.AddChildWithId<CoroutineLockQueueType>(coroutineLockType);
+            coroutineLockQueueType.SetMaxConcurrency(key, maxConcurrency);
         }
 
         public static async ETTask<CoroutineLock> Wait(this CoroutineLockComponent self, long coroutineLockType, long key, int time = 60000)

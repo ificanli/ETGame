@@ -7,26 +7,26 @@
         private static void Awake(this CoroutineLockQueueType self)
         {
         }
-        
-        public static CoroutineLockQueue Get(this CoroutineLockQueueType self, long key)
+
+        private static CoroutineLockQueue Get(this CoroutineLockQueueType self, long key)
         {
-            return self.GetChild<CoroutineLockQueue>(key);
+            return self.GetChild<CoroutineLockQueue>(key) ?? self.AddChildWithId<CoroutineLockQueue, long>(key, self.Id, true);
         }
 
-        public static CoroutineLockQueue New(this CoroutineLockQueueType self, long key)
-        {
-            CoroutineLockQueue queue = self.AddChildWithId<CoroutineLockQueue, long>(key, self.Id, true);
-            return queue;
-        }
-
-        public static void Remove(this CoroutineLockQueueType self, long key)
+        private static void Remove(this CoroutineLockQueueType self, long key)
         {
             self.RemoveChild(key);
         }
 
+        public static void SetMaxConcurrency(this CoroutineLockQueueType self, long key, int maxConcurrency)
+        {
+            CoroutineLockQueue coroutineLockQueue = self.Get(key);
+            coroutineLockQueue.MaxConcurrency = maxConcurrency;
+        }
+
         public static async ETTask<CoroutineLock> Wait(this CoroutineLockQueueType self, long key, int time)
         {
-            CoroutineLockQueue queue = self.Get(key) ?? self.New(key);
+            CoroutineLockQueue queue = self.Get(key);
             return await queue.Wait(time);
         }
 

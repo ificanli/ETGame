@@ -6,30 +6,32 @@
         [EntitySystem]
         private static void Awake(this CoroutineLockQueue self, long type)
         {
-            self.isStart = false;
-            self.type = type;
+            self.Type = type;
+            self.RunningCount = 0;
+            self.MaxConcurrency = 1;
         }
         
         [EntitySystem]
         private static void Destroy(this CoroutineLockQueue self)
         {
-            self.queue.Clear();
-            self.type = 0;
-            self.isStart = false;
+            self.Queue.Clear();
+            self.Type = 0;
+            self.MaxConcurrency = 0;
+            self.RunningCount = 0;
         }
         
         public static async ETTask<CoroutineLock> Wait(this CoroutineLockQueue self, int time)
         {
             CoroutineLock coroutineLock = null;
-            if (!self.isStart)
+            if (self.RunningCount < self.MaxConcurrency)
             {
-                self.isStart = true;
-                coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, 1, true);
+                ++self.RunningCount;
+                coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.Type, self.Id, 1, true);
                 return coroutineLock;
             }
 
             WaitCoroutineLock waitCoroutineLock = self.AddChild<WaitCoroutineLock>(true);
-            self.queue.Enqueue(waitCoroutineLock);
+            self.Queue.Enqueue(waitCoroutineLock);
             if (time > 0)
             {
                 long tillTime = TimeInfo.Instance.ServerFrameTime() + time;
@@ -42,21 +44,30 @@
         // 返回值，是否找到了一个有效的协程锁
         public static bool Notify(this CoroutineLockQueue self, int level)
         {
-            // 有可能WaitCoroutineLock已经超时抛出异常，所以要找到一个未处理的WaitCoroutineLock
-            while (self.queue.Count > 0)
+            --self.RunningCount;
+            
+            // 尝试唤醒等待队列中的协程，直到达到并发上限
+            while (self.Queue.Count > 0)
             {
-                WaitCoroutineLock waitCoroutineLock = self.queue.Dequeue();
+                WaitCoroutineLock waitCoroutineLock = self.Queue.Dequeue();
 
                 if (waitCoroutineLock == null)
                 {
                     continue;
                 }
 
-                CoroutineLock coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, level, true);
+                CoroutineLock coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.Type, self.Id, level, true);
                 waitCoroutineLock.SetResult(coroutineLock);
-                return true;
+                
+                // 达到最大并发数量
+                if (++self.RunningCount >= self.MaxConcurrency)
+                {
+                    break;
+                }
             }
-            return false;
+            
+            // 如果还有运行中的协程或等待队列不为空，则队列继续存活
+            return self.RunningCount > 0 || self.Queue.Count > 0;
         }
     }
 }
