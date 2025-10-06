@@ -2,10 +2,22 @@ using System;
 
 namespace ET
 {
-    public struct EntityRef<T>: IEquatable<EntityRef<T>> where T: Entity
+    public struct EntityRef<T>: IDisposable, IEquatable<EntityRef<T>> where T: Entity
     {
         private readonly long instanceId;
         private T entity;
+        
+        public void Dispose()
+        {
+            T t = this.Entity;
+            
+            if (t == null)
+            {
+                return;
+            }
+
+            t.Dispose();
+        }
 
         public override int GetHashCode()
         {
@@ -83,7 +95,7 @@ namespace ET
     }
     
     
-    public struct EntityWeakRef<T>: IEquatable<EntityWeakRef<T>> where T: Entity
+    public struct EntityWeakRef<T>: IDisposable, IEquatable<EntityWeakRef<T>> where T: Entity
     {
         private long instanceId;
         // 使用WeakReference，这样不会导致entity dispose了却无法gc的问题
@@ -105,6 +117,18 @@ namespace ET
             }
             this.instanceId = t.InstanceId;
             this.weakRef = new WeakReference<T>(t);
+        }
+        
+        public void Dispose()
+        {
+            T t = this.Entity;
+            
+            if (t == null)
+            {
+                return;
+            }
+
+            t.Dispose();
         }
         
         public T Entity

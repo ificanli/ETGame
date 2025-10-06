@@ -30,19 +30,24 @@
             self.nextFrameRun.Enqueue((coroutineLockType, key, level));
         }
 
+        private static CoroutineLockQueueType Get(this CoroutineLockComponent self, long coroutineLockType)
+        {
+            return self.GetChild<CoroutineLockQueueType>(coroutineLockType) ?? self.AddChildWithId<CoroutineLockQueueType>(coroutineLockType);
+        }
+
         /// <summary>
         /// 控制并发执行数量
         /// </summary>
         public static void SetMaxConcurrency(this CoroutineLockComponent self, long coroutineLockType, long key, int maxConcurrency)
         {
-            CoroutineLockQueueType coroutineLockQueueType = self.GetChild<CoroutineLockQueueType>(coroutineLockType) ?? self.AddChildWithId<CoroutineLockQueueType>(coroutineLockType);
+            CoroutineLockQueueType coroutineLockQueueType = self.Get(coroutineLockType);
             coroutineLockQueueType.SetMaxConcurrency(key, maxConcurrency);
         }
 
-        public static async ETTask<CoroutineLock> Wait(this CoroutineLockComponent self, long coroutineLockType, long key, int time = 60000)
+        public static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockComponent self, long coroutineLockType, long key)
         {
-            CoroutineLockQueueType coroutineLockQueueType = self.GetChild<CoroutineLockQueueType>(coroutineLockType) ?? self.AddChildWithId<CoroutineLockQueueType>(coroutineLockType);
-            return await coroutineLockQueueType.Wait(key, time);
+            CoroutineLockQueueType coroutineLockQueueType = self.Get(coroutineLockType);
+            return await coroutineLockQueueType.Wait(key);
         }
 
         private static void Notify(this CoroutineLockComponent self, long coroutineLockType, long key, int level)

@@ -19,7 +19,7 @@ namespace ET.Server
             if (needLock)
             {
                 EntityRef<Unit> unitRef = unit;
-                using CoroutineLock _ = await unit.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, unit.Id);
+                using var _ = await unit.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, unit.Id);
                 unit = unitRef;
                 await TransferHelper.Transfer(unit, mapName, mapId);
             }

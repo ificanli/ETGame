@@ -24,7 +24,7 @@ namespace ET.Client
             go.transform.rotation = unit.Rotation;
 
             {
-                using CoroutineLock coroutineLock = await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
+                using var _ = await scene.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
                 GameObjectPosHelper.OnTerrain(go.transform);
             }
 

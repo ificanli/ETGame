@@ -21,20 +21,22 @@
             }
 
             EntityRef<MailBoxComponent> mailBoxComponentRef = mailBoxComponent;
-            using (await fiber.Root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, mailBoxComponent.ParentInstanceId))
+            using EntityRef<CoroutineLock> coroutineLockRef = await fiber.Root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, mailBoxComponent.ParentInstanceId);
+
+            // 占用锁只能占用5秒,5秒之后解锁
+            CoroutineLockHelper.LockTime(fiber, coroutineLockRef, 5000).NoContext();
+
+            mailBoxComponent = mailBoxComponentRef;
+            if (mailBoxComponent == null)
             {
-                mailBoxComponent = mailBoxComponentRef;
-                if (mailBoxComponent == null)
+                if (messageObject is IRequest request)
                 {
-                    if (messageObject is IRequest request)
-                    {
-                        IResponse resp = MessageHelper.CreateResponse(request.GetType(), request.RpcId, ErrorCode.ERR_NotFoundActor);
-                        fiber.Root.GetComponent<ProcessInnerSender>().Reply(args.FromFiber, resp);
-                    }
-                    return;
+                    IResponse resp = MessageHelper.CreateResponse(request.GetType(), request.RpcId, ErrorCode.ERR_NotFoundActor);
+                    fiber.Root.GetComponent<ProcessInnerSender>().Reply(args.FromFiber, resp);
                 }
-                await MessageDispatcher.Instance.HandleAsync(mailBoxComponent.Parent, args.FromFiber, messageObject);
+                return;
             }
+            await MessageDispatcher.Instance.HandleAsync(mailBoxComponent.Parent, args.FromFiber, messageObject);
         }
     }
 }

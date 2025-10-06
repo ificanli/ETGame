@@ -21,13 +21,13 @@
         public static void SetMaxConcurrency(this CoroutineLockQueueType self, long key, int maxConcurrency)
         {
             CoroutineLockQueue coroutineLockQueue = self.Get(key);
-            coroutineLockQueue.MaxConcurrency = maxConcurrency;
+            coroutineLockQueue.maxConcurrency = maxConcurrency;
         }
 
-        public static async ETTask<CoroutineLock> Wait(this CoroutineLockQueueType self, long key, int time)
+        public static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockQueueType self, long key)
         {
             CoroutineLockQueue queue = self.Get(key);
-            return await queue.Wait(time);
+            return await queue.Wait();
         }
 
         public static void Notify(this CoroutineLockQueueType self, long key, int level)
