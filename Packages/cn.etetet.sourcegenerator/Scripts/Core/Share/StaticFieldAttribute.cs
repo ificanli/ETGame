@@ -10,27 +10,6 @@ namespace ET
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class StaticFieldAttribute: Attribute
     {
-        public object valueToAssign;
-
-        public readonly bool assignNewTypeInstance;
-        
-        public StaticFieldAttribute()
-        {
-            this.valueToAssign  = null;
-            this.assignNewTypeInstance = false;
-        }
-        
-        public StaticFieldAttribute(object valueToAssign )
-        {
-            this.valueToAssign  = valueToAssign ;
-            this.assignNewTypeInstance = false;
-        }
-        
-        public StaticFieldAttribute(bool assignNewTypeInstance)
-        {
-            this.valueToAssign  = null;
-            this.assignNewTypeInstance = assignNewTypeInstance;
-        }
     }
 }
 
