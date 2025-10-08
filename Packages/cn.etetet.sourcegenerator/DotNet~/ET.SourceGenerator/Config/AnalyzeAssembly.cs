@@ -5,6 +5,7 @@ namespace ET
     public static class AnalyzeAssembly
     {
         private const string Core = "ET.Core";
+        private const string Loader = "ET.Loader";
         private const string Model = "ET.Model";
         private const string Hotfix = "ET.Hotfix";
         private const string ModelView = "ET.ModelView";
@@ -27,7 +28,7 @@ namespace ET
         
         public static readonly string[] All =
         [
-            Core, Model, Hotfix, ModelView, HotfixView
+            Core, Loader, Model, Hotfix, ModelView, HotfixView
         ];
         
         public static readonly string[] AllLogicModel =
