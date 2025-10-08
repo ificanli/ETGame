@@ -7,6 +7,11 @@ namespace ET
     // 自定义 Drawer：为每个成员的顶部添加按钮
     public class BTNodeDrawer : OdinValueDrawer<BTRoot>
     {
+        public static BTRoot OpenNode;
+
+        public static UnityEngine.Object ScriptableObject;
+        
+
         protected override void DrawPropertyLayout(GUIContent label)
         {
             // 获取当前对象的值
@@ -18,8 +23,9 @@ namespace ET
             if (GUILayout.Button($"Open BehaviorTreeEditor", GUILayout.Height(25)))
             {
                 // 打开行为树编辑器
-                BTRoot.OpenNode = node;
-                BTRoot.ScriptableObject = this.Property.Tree.WeakTargets[0] as UnityEngine.Object;
+                OpenNode = node;
+                ScriptableObject = this.Property.Tree.WeakTargets[0] as UnityEngine.Object;
+
                 EditorApplication.ExecuteMenuItem("ET/BehaviorTreeEditor");
             }
 
