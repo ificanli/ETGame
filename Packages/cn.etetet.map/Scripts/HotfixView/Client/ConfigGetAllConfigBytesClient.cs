@@ -42,13 +42,11 @@ namespace ET.Client
             }
             else
             {
-#pragma warning disable CS0162 // Unreachable code detected
                 foreach (Type type in allTypes)
                 {
                     TextAsset v = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>(type.Name);
                     output[type] = v.bytes;
                 }
-#pragma warning restore CS0162 // Unreachable code detected
             }
 
 

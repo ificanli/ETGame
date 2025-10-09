@@ -14,10 +14,8 @@ namespace ET
                 return File.ReadAllBytes($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
             }
             
-#pragma warning disable CS0162 // Unreachable code detected
             TextAsset textAsset = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
 			return textAsset.bytes;
-#pragma warning restore CS0162 // Unreachable code detected
         }
     }
 }
