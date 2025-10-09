@@ -23,11 +23,13 @@ namespace ET
         {
             if (!Define.IsEditor)
             {
+#pragma warning disable CS0162 // Unreachable code detected
                 this.dlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"ET.Model.dll");
                 if (Define.EnableIL2CPP)
                 {
                     this.aotDlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"mscorlib.dll");
                 }
+#pragma warning restore CS0162 // Unreachable code detected
             }
         }
 
@@ -37,6 +39,7 @@ namespace ET
             
             if (!Define.IsEditor)
             {
+#pragma warning disable CS0162 // Unreachable code detected
                 byte[] modelAssBytes = this.dlls["ET.Model.dll"].bytes;
                 byte[] modelPdbBytes = this.dlls["ET.Model.pdb"].bytes;
                 byte[] modelViewAssBytes = this.dlls["ET.ModelView.dll"].bytes;
@@ -57,6 +60,7 @@ namespace ET
                 }
                 this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
                 this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
+#pragma warning restore CS0162 // Unreachable code detected
             }
             else
             {
@@ -103,6 +107,7 @@ namespace ET
             Assembly hotfixViewAssembly = null;
             if (!Define.IsEditor)
             {
+#pragma warning disable CS0162 // Unreachable code detected
                 hotfixAssBytes = this.dlls["ET.Hotfix.dll"].bytes;
                 hotfixPdbBytes = this.dlls["ET.Hotfix.pdb"].bytes;
                 hotfixViewAssBytes = this.dlls["ET.HotfixView.dll"].bytes;
@@ -114,6 +119,7 @@ namespace ET
                 //hotfixViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.pdb.bytes"));
                 hotfixAssembly = Assembly.Load(hotfixAssBytes, hotfixPdbBytes);
                 hotfixViewAssembly = Assembly.Load(hotfixViewAssBytes, hotfixViewPdbBytes);
+#pragma warning restore CS0162 // Unreachable code detected
             }
             else
             {

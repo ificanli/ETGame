@@ -13,22 +13,22 @@
         public const string BuildOutputDir = "Temp/Bin/Debug";
 
 #if DEBUG
-        public static bool IsDebug = true;
+        public const bool IsDebug = true;
 #else
-        public static bool IsDebug = false;
+        public const bool IsDebug = false;
 #endif
 
 #if UNITY_EDITOR
-        public static bool IsEditor = true;
+        public const bool IsEditor = true;
 #else
-        public static bool IsEditor = false;
+        public const bool IsEditor = false;
 #endif
 
 
 #if ENABLE_IL2CPP
-        public static bool EnableIL2CPP = true;
+        public const bool EnableIL2CPP = true;
 #else
-        public static bool EnableIL2CPP = false;
+        public const bool EnableIL2CPP = false;
 #endif
     }
 }
