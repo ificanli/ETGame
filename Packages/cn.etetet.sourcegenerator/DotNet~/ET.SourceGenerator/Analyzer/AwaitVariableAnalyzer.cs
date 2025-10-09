@@ -318,8 +318,26 @@ namespace ET
                 if (parent is AnonymousMethodExpressionSyntax ams && ams.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
                     return list;
 
+                // try-catch-finally 敏感
+                if (parent is TryStatementSyntax tryStmt && parent.Parent is BlockSyntax tryOuter)
+                {
+                    // 如果 try 块包含 await，则需要检查 try 块是否终止
+                    if (ContainsAwait(tryStmt.Block))
+                    {
+                        bool tryTerminates = Terminates(tryStmt.Block);
+
+                        // 只有当 try 块没有终止时，才将 try-catch-finally 语句之后的代码视为受影响
+                        if (!tryTerminates)
+                        {
+                            // 添加 try-catch-finally 语句之后的所有语句
+                            int idx = tryOuter.Statements.IndexOf(tryStmt);
+                            for (int i = idx + 1; i < tryOuter.Statements.Count; i++)
+                                list.Add(tryOuter.Statements[i]);
+                        }
+                    }
+                }
                 // If 分支敏感
-                if (parent is IfStatementSyntax ifStmt && parent.Parent is BlockSyntax outer)
+                else if (parent is IfStatementSyntax ifStmt && parent.Parent is BlockSyntax outer)
                 {
                     bool ifAwait   = ContainsAwait(ifStmt.Statement);
                     bool elseAwait = ContainsAwait(ifStmt.Else?.Statement);
