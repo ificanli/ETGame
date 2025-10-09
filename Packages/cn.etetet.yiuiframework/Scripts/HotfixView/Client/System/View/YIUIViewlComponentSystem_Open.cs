@@ -50,6 +50,7 @@ namespace ET.Client
                 return false;
             }
 
+            EntityRef<YIUIViewComponent> selfRef = self;
             try
             {
                 if (self.OwnerUIEntity is IYIUIOpen _)
@@ -68,6 +69,7 @@ namespace ET.Client
 
             if (success)
             {
+                self = selfRef;
                 await self.UIWindow.InternalOnWindowOpenTween();
             }
 

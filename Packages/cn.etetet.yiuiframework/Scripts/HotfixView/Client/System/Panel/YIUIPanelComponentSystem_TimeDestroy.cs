@@ -26,10 +26,9 @@ namespace ET.Client
 
         private static async ETTask DoCountDownDestroyPanel(this YIUIPanelComponent self)
         {
+            EntityRef<YIUIPanelComponent> selfRef = self;
             try
             {
-                EntityRef<YIUIPanelComponent> selfRef = self;
-
                 var oldCancellationToken = await ETTaskHelper.GetContextAsync<ETCancellationToken>();
 
                 await ETTaskSafely.Await(selfRef.Entity?.Root()?.GetComponent<TimerComponent>()?.WaitAsync((long)(selfRef.Entity?.CachePanelTime * 1000 ?? 0)));
@@ -45,6 +44,7 @@ namespace ET.Client
                 return;
             }
 
+            self = selfRef;
             self.m_Token = null;
             self.RemoveUIReset();
         }
