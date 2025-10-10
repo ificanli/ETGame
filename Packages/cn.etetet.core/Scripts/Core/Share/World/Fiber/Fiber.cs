@@ -284,9 +284,9 @@ namespace ET
             
             if (fiber.SchedulerType == SchedulerType.Parent)
             {
-                foreach (int child in this.children.Keys.ToArray())
+                foreach (int child in fiber.children.Keys.ToArray())
                 {
-                    await this.RemoveFiber(child);
+                    await fiber.RemoveFiber(child);
                 }
                 await EventSystem.Instance.PublishAsync(fiber.Root, new FiberDestroyEvent());
                 scheduler.Dispose();
@@ -302,9 +302,9 @@ namespace ET
 
                 async ETTask FiberDestroy()
                 {
-                    foreach (int child in this.children.Keys.ToArray())
+                    foreach (int child in fiber.children.Keys.ToArray())
                     {
-                        await this.RemoveFiber(child);
+                        await fiber.RemoveFiber(child);
                     }
                     Scene fiberRoot = (scheduler as Fiber).Root;
                     await EventSystem.Instance.PublishAsync(fiberRoot, new FiberDestroyEvent());
