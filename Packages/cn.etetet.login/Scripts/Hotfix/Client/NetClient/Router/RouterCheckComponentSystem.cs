@@ -41,7 +41,7 @@ namespace ET.Client
                     return;
                 }
 
-                long time = TimeInfo.Instance.ClientFrameTime();
+                long time = TimeInfo.Instance.ClientNow();
 
                 if (time - session.LastRecvTime < 7 * 1000)
                 {

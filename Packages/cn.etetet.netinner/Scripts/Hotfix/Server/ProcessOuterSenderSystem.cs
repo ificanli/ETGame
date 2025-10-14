@@ -51,7 +51,7 @@ namespace ET.Server
             {
                 return;
             }
-            session.LastRecvTime = TimeInfo.Instance.ClientFrameTime();
+            session.LastRecvTime = TimeInfo.Instance.ClientNow();
 
             (FiberInstanceId fiberInstanceId, object message) = MessageSerializeHelper.ToMessage(self.AService, memoryBuffer);
             LogMsg.Instance.Recv(self.Fiber(), message);
@@ -253,11 +253,11 @@ namespace ET.Server
 
             Timeout().NoContext();
 
-            long beginTime = TimeInfo.Instance.ServerFrameTime();
+            long beginTime = TimeInfo.Instance.ServerNow();
 
             IResponse response = await messageSenderStruct.Wait();
 
-            long endTime = TimeInfo.Instance.ServerFrameTime();
+            long endTime = TimeInfo.Instance.ServerNow();
 
             long costTime = endTime - beginTime;
             if (costTime > 200)

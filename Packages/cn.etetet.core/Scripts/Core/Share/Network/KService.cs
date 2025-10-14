@@ -39,7 +39,7 @@ namespace ET
         {
             get
             {
-                return (uint)(TimeInfo.Instance.ClientFrameTime() - this.startTime);
+                return (uint)(TimeInfo.Instance.ClientNow() - this.startTime);
             }
         }
 
@@ -50,7 +50,7 @@ namespace ET
         public KService(IKcpTransport kcpTransport, ServiceType serviceType)
         {
             this.ServiceType = serviceType;
-            this.startTime = TimeInfo.Instance.ClientFrameTime();
+            this.startTime = TimeInfo.Instance.ClientNow();
             this.Transport = kcpTransport;
         }
 

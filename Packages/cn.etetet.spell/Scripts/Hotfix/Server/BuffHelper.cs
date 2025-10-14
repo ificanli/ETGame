@@ -190,7 +190,7 @@ namespace ET.Server
         {
             buff.ExpireTime = expireTime;
             
-            if (buff.ExpireTime < TimeInfo.Instance.ServerFrameTime())
+            if (buff.ExpireTime < TimeInfo.Instance.ServerNow())
             {
                 BuffHelper.RemoveBuff(buff, BuffFlags.TimeoutRemove);
                 return;

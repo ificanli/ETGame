@@ -107,13 +107,13 @@ namespace ET.Server
             // 主技能更新CD
             if (parent == null)
             {
-                spellComponent.UpdateCD(spellConfig.Id, TimeInfo.Instance.ServerFrameTime());
+                spellComponent.UpdateCD(spellConfig.Id, TimeInfo.Instance.ServerNow());
                 if (unit.UnitType.IsSame(UnitType.Player))
                 {
                     M2C_UpdateCD m2CUpdateCd = M2C_UpdateCD.Create();
                     m2CUpdateCd.UnitId = unit.Id;
                     m2CUpdateCd.SpellConfigId = spellConfig.Id;
-                    m2CUpdateCd.Time = TimeInfo.Instance.ServerFrameTime();
+                    m2CUpdateCd.Time = TimeInfo.Instance.ServerNow();
                     MapMessageHelper.NoticeClient(unit, m2CUpdateCd, NoticeType.Self);
                 }
             }

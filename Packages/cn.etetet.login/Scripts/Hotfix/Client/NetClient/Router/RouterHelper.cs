@@ -67,7 +67,7 @@ namespace ET.Client
 
             while (true)
             {
-                long timeNow = TimeInfo.Instance.ClientFrameTime();
+                long timeNow = TimeInfo.Instance.ClientNow();
                 if (timeNow - lastSendTimer > 300)
                 {
                     if (--count < 0)

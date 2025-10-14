@@ -33,12 +33,6 @@ namespace ET
             this.FrameTime = this.ClientNow();
         }
 
-        public void Update()
-        {
-            // 赋值long型是原子操作，线程安全
-            this.FrameTime = this.ClientNow();
-        }
-
         /// <summary>
         /// 返回毫秒数（跨平台，无状态，超长运行）
         /// </summary>
@@ -64,16 +58,6 @@ namespace ET
         public long ServerNow()
         {
             return ClientNow() + this.ServerMinusClientTime;
-        }
-        
-        public long ClientFrameTime()
-        {
-            return this.FrameTime;
-        }
-        
-        public long ServerFrameTime()
-        {
-            return this.FrameTime + this.ServerMinusClientTime;
         }
     }
 }

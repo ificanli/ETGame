@@ -44,7 +44,6 @@ namespace ET
 
         public void Update()
         {
-            TimeInfo.Instance.Update();
             FiberManager.Instance.Update();
         }
 

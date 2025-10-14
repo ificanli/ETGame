@@ -43,7 +43,7 @@ namespace ET
         
         public static void Turn(this TurnComponent self, quaternion to, int turnTime)
         {
-            self.StartTime = TimeInfo.Instance.ServerFrameTime();
+            self.StartTime = TimeInfo.Instance.ServerNow();
             self.From = self.GetParent<Unit>().Rotation;
             self.To = to;
             self.TurnTime = turnTime;

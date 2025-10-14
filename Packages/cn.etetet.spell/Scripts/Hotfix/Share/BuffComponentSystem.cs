@@ -31,7 +31,7 @@ namespace ET
         {
             Buff buff = self.AddChildWithId<Buff, int>(buffId, buffConfigId);
             buff.Caster = casterId;
-            buff.CreateTime = TimeInfo.Instance.ServerFrameTime();
+            buff.CreateTime = TimeInfo.Instance.ServerNow();
             BuffConfig buffConfig = buff.GetConfig();
             buff.Stack = buffConfig.Stack;
             foreach (BuffFlags buffFlag in buffConfig.Flags)

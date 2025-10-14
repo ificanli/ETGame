@@ -96,7 +96,7 @@ namespace ET
 
         private static long GetNow(this TimerComponent self)
         {
-            return TimeInfo.Instance.ServerFrameTime();
+            return TimeInfo.Instance.ServerNow();
         }
 
         private static void Run(this TimerComponent self, long timerId)
