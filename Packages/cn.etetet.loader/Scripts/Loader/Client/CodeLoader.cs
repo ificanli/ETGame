@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using HybridCLR;
 using UnityEngine;
 
 namespace ET
@@ -21,65 +20,62 @@ namespace ET
 
         private async ETTask DownloadAsync()
         {
-            if (!Define.IsEditor)
-            {
-                this.dlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"ET.Model.dll");
-                if (Define.EnableIL2CPP)
-                {
-                    this.aotDlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"mscorlib.dll");
-                }
-            }
+#if !UNITY_EDITOR
+            await ETTask.CompletedTask;
+#else
+            this.dlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"ET.Model.dll");
+    #if EnableIL2CPP
+            this.aotDlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"mscorlib.dll");
+    #endif
+#endif
         }
 
         public async ETTask Start()
         {
             await DownloadAsync();
             
-            if (!Define.IsEditor)
+#if UNITY_EDITOR
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in assemblies)
             {
-                byte[] modelAssBytes = this.dlls["ET.Model.dll"].bytes;
-                byte[] modelPdbBytes = this.dlls["ET.Model.pdb"].bytes;
-                byte[] modelViewAssBytes = this.dlls["ET.ModelView.dll"].bytes;
-                byte[] modelViewPdbBytes = this.dlls["ET.ModelView.pdb"].bytes;
-                // 如果需要测试，可替换成下面注释的代码直接加载Packages/cn.etetet.loader/Code/ET.Model.dll.bytes，但真正打包时必须使用上面的代码
-                //modelAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Model.dll.bytes"));
-                //modelPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Model.pdb.bytes"));
-                //modelViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.ModelView.dll.bytes"));
-                //modelViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.ModelView.pdb.bytes"));
+                string name = assembly.GetName().Name;
+                if (name == "ET.Model")
+                {
+                    this.modelAssembly = assembly;
+                    continue;
+                }
+                if (name == "ET.ModelView")
+                {
+                    this.modelViewAssembly = assembly;
+                    continue;
+                }
+                if (this.modelAssembly != null && this.modelViewAssembly != null)
+                {
+                    break;
+                }
+            }
+#else
+            byte[] modelAssBytes = this.dlls["ET.Model.dll"].bytes;
+            byte[] modelPdbBytes = this.dlls["ET.Model.pdb"].bytes;
+            byte[] modelViewAssBytes = this.dlls["ET.ModelView.dll"].bytes;
+            byte[] modelViewPdbBytes = this.dlls["ET.ModelView.pdb"].bytes;
+            // 如果需要测试，可替换成下面注释的代码直接加载Packages/cn.etetet.loader/Code/ET.Model.dll.bytes，但真正打包时必须使用上面的代码
+            //byte[] modelAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Model.dll.bytes"));
+            //byte[] modelPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Model.pdb.bytes"));
+            //byte[] modelViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.ModelView.dll.bytes"));
+            //byte[] modelViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.ModelView.pdb.bytes"));
 
-                if (Define.EnableIL2CPP)
-                {
-                    foreach (var kv in this.aotDlls)
-                    {
-                        TextAsset textAsset = kv.Value;
-                        RuntimeApi.LoadMetadataForAOTAssembly(textAsset.bytes, HomologousImageMode.SuperSet);
-                    }
-                }
-                this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
-                this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
-            }
-            else
+    #if EnableIL2CPP
+            foreach (var kv in this.aotDlls)
             {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                foreach (Assembly assembly in assemblies)
-                {
-                    string name = assembly.GetName().Name;
-                    if (name == "ET.Model")
-                    {
-                        this.modelAssembly = assembly;
-                        continue;
-                    }
-                    if (name == "ET.ModelView")
-                    {
-                        this.modelViewAssembly = assembly;
-                        continue;
-                    }
-                    if (this.modelAssembly != null && this.modelViewAssembly != null)
-                    {
-                        break;
-                    }
-                }
+                TextAsset textAsset = kv.Value;
+                HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(textAsset.bytes, HybridCLR.HomologousImageMode.SuperSet);
             }
+    #endif
+            
+            this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
+            this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
+#endif
             
             (Assembly hotfixAssembly, Assembly hotfixViewAssembly) = this.LoadHotfix();
 
@@ -95,36 +91,26 @@ namespace ET
 
         private (Assembly, Assembly) LoadHotfix()
         {
-            byte[] hotfixAssBytes;
-            byte[] hotfixPdbBytes;
-            byte[] hotfixViewAssBytes;
-            byte[] hotfixViewPdbBytes;
-            Assembly hotfixAssembly = null;
-            Assembly hotfixViewAssembly = null;
-            if (!Define.IsEditor)
-            {
-                hotfixAssBytes = this.dlls["ET.Hotfix.dll"].bytes;
-                hotfixPdbBytes = this.dlls["ET.Hotfix.pdb"].bytes;
-                hotfixViewAssBytes = this.dlls["ET.HotfixView.dll"].bytes;
-                hotfixViewPdbBytes = this.dlls["ET.HotfixView.pdb"].bytes;
-                // 如果需要测试，可替换成下面注释的代码直接加载Packages/cn.etetet.loader/Code/Hotfix.dll.bytes，但真正打包时必须使用上面的代码
-                //hotfixAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.dll.bytes"));
-                //hotfixPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.pdb.bytes"));
-                //hotfixViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.dll.bytes"));
-                //hotfixViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.pdb.bytes"));
-                hotfixAssembly = Assembly.Load(hotfixAssBytes, hotfixPdbBytes);
-                hotfixViewAssembly = Assembly.Load(hotfixViewAssBytes, hotfixViewPdbBytes);
-            }
-            else
-            {
-                hotfixAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.dll.bytes"));
-                hotfixPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.pdb.bytes"));
-                hotfixViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.dll.bytes"));
-                hotfixViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.pdb.bytes"));
-                hotfixAssembly = Assembly.Load(hotfixAssBytes, hotfixPdbBytes);
-                hotfixViewAssembly = Assembly.Load(hotfixViewAssBytes, hotfixViewPdbBytes);
-            }
-            
+#if UNITY_EDITOR
+            byte[] hotfixAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.dll.bytes"));
+            byte[] hotfixPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.pdb.bytes"));
+            byte[] hotfixViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.dll.bytes"));
+            byte[] hotfixViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.pdb.bytes"));
+            Assembly hotfixAssembly = Assembly.Load(hotfixAssBytes, hotfixPdbBytes);
+            Assembly hotfixViewAssembly = Assembly.Load(hotfixViewAssBytes, hotfixViewPdbBytes);
+#else
+            byte[] hotfixAssBytes = this.dlls["ET.Hotfix.dll"].bytes;
+            byte[] hotfixPdbBytes = this.dlls["ET.Hotfix.pdb"].bytes;
+            byte[] hotfixViewAssBytes = this.dlls["ET.HotfixView.dll"].bytes;
+            byte[] hotfixViewPdbBytes = this.dlls["ET.HotfixView.pdb"].bytes;
+            // 如果需要测试，可替换成下面注释的代码直接加载Packages/cn.etetet.loader/Code/Hotfix.dll.bytes，但真正打包时必须使用上面的代码
+            //hotfixAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.dll.bytes"));
+            //hotfixPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.pdb.bytes"));
+            //hotfixViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.dll.bytes"));
+            //hotfixViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.pdb.bytes"));
+            Assembly hotfixAssembly = Assembly.Load(hotfixAssBytes, hotfixPdbBytes);
+            Assembly hotfixViewAssembly = Assembly.Load(hotfixViewAssBytes, hotfixViewPdbBytes);
+#endif
             return (hotfixAssembly, hotfixViewAssembly);
         }
 

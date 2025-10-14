@@ -9,13 +9,13 @@ namespace ET
     {
         public override async ETTask<byte[]> Handle(NavmeshComponent.RecastFileLoader args)
         {
-            if (Define.IsEditor)
-            {
-                return File.ReadAllBytes($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
-            }
-            
+            await ETTask.CompletedTask;
+#if UNITY_EDITOR
+            return File.ReadAllBytes($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
+#else
             TextAsset textAsset = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
 			return textAsset.bytes;
+#endif
         }
     }
 }

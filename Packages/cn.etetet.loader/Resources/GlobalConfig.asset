@@ -15,3 +15,4 @@ MonoBehaviour:
   CodeMode: 3
   SceneName: WOW
   Address: 127.0.0.1:10101
+  EditorScripts: 1

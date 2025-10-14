@@ -11,26 +11,5 @@
         /// VS或Rider工程生成dll的所在目录, 使用HybridCLR打包时需要使用
         /// </summary>
         public const string BuildOutputDir = "Temp/Bin/Debug";
-
-        [StaticField]
-#if DEBUG
-        public static bool IsDebug = true;
-#else
-        public static bool IsDebug = false;
-#endif
-
-        [StaticField]
-#if UNITY_EDITOR
-        public static bool IsEditor = true;
-#else
-        public static bool IsEditor = false;
-#endif
-
-        [StaticField]
-#if ENABLE_IL2CPP
-        public static bool EnableIL2CPP = true;
-#else
-        public static bool EnableIL2CPP = false;
-#endif
     }
 }
