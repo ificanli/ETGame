@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using UnityEditor;
 using UnityEditor.Build.Player;
@@ -61,21 +62,21 @@ namespace ET
             Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode}", ".", true);
             process.WaitForExit();
 
-            bool isCompileOk = CompileDlls();
+            bool isCompileOk = CompileDlls(globalConfig.EditorScripts);
             if (!isCompileOk)
             {
                 return;
             }
 
             CopyHotUpdateDlls();
-            
+
             Log.Info($"Compile Finish!");
         }
 
         /// <summary>
         /// 编译成dll
         /// </summary>
-        static bool CompileDlls()
+        static bool CompileDlls(bool editorScript = false)
         {
             // 运行时编译需要先设置为UnitySynchronizationContext, 编译完再还原为CurrentContext
             SynchronizationContext lastSynchronizationContext = Application.isPlaying ? SynchronizationContext.Current : null;
@@ -95,7 +96,22 @@ namespace ET
                     extraScriptingDefines = new[] { "IS_COMPILING" },
                     options = EditorUserBuildSettings.development ? ScriptCompilationOptions.DevelopmentBuild : ScriptCompilationOptions.None
                 };
-                ScriptCompilationResult result = PlayerBuildInterface.CompilePlayerScripts(scriptCompilationSettings, Define.BuildOutputDir);
+
+                MethodInfo compilePlayerScriptsInternalMethod = typeof(PlayerBuildInterface).GetMethod("CompilePlayerScriptsInternal",
+                    BindingFlags.Static | BindingFlags.NonPublic,
+                    null,
+                    new[] { typeof(ScriptCompilationSettings), typeof(string), typeof(bool) },
+                    null);
+
+                if (compilePlayerScriptsInternalMethod == null)
+                {
+                    Log.Error("Failed to find PlayerBuildInterface.CompilePlayerScriptsInternal method!");
+                    return false;
+                }
+
+                var result = (ScriptCompilationResult)compilePlayerScriptsInternalMethod.Invoke(null,
+                    new object[] { scriptCompilationSettings, Define.BuildOutputDir, editorScript });
+
                 isCompileOk = result.assemblies.Count > 0;
                 EditorUtility.ClearProgressBar();
             }
@@ -121,7 +137,7 @@ namespace ET
             {
                 Directory.CreateDirectory(Define.CodeDir);
             }
-            
+
             foreach (string dllName in DllNames)
             {
                 string sourceDll = $"{Define.BuildOutputDir}/{dllName}.dll";
