@@ -43,143 +43,121 @@ namespace ET
                 if (entityType == null || messageObjectType == null)
                     return;
 
+                // Only check field and property declarations
                 startContext.RegisterSyntaxNodeAction(
-                    ctx => AnalyzeAssignment(ctx, entityType, messageObjectType),
-                    SyntaxKind.SimpleAssignmentExpression);
+                    ctx => AnalyzeFieldDeclaration(ctx, entityType, messageObjectType),
+                    SyntaxKind.FieldDeclaration);
 
                 startContext.RegisterSyntaxNodeAction(
-                    ctx => AnalyzeInvocation(ctx, entityType, messageObjectType),
-                    SyntaxKind.InvocationExpression);
+                    ctx => AnalyzePropertyDeclaration(ctx, entityType, messageObjectType),
+                    SyntaxKind.PropertyDeclaration);
             });
         }
 
-        private static void AnalyzeAssignment(
+        private static void AnalyzeFieldDeclaration(
             SyntaxNodeAnalysisContext context,
             INamedTypeSymbol entityType,
             INamedTypeSymbol messageObjectType)
         {
-            var assignment = (AssignmentExpressionSyntax)context.Node;
-            var symbol = context.SemanticModel.GetSymbolInfo(assignment.Left).Symbol;
-            var fieldSymbol = symbol as IFieldSymbol;
-            var propSymbol = symbol as IPropertySymbol;
-            if (fieldSymbol == null && propSymbol == null)
+            var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
+            var containingType = context.ContainingSymbol?.ContainingType;
+
+            if (containingType == null || !DerivesFrom(containingType, entityType))
                 return;
 
-            var containingType = (fieldSymbol ?? (ISymbol)propSymbol).ContainingType;
-            if (!DerivesFrom(containingType, entityType))
-                return;
-
-            if (IsDisallowedExpression(assignment.Right, context.SemanticModel, messageObjectType))
+            foreach (var variable in fieldDeclaration.Declaration.Variables)
             {
-                var diag = Diagnostic.Create(Rule, assignment.Right.GetLocation(), assignment.Right.ToString());
-                context.ReportDiagnostic(diag);
+                var fieldSymbol = context.SemanticModel.GetDeclaredSymbol(variable) as IFieldSymbol;
+                if (fieldSymbol == null)
+                    continue;
+
+                if (IsDisallowedType(fieldSymbol.Type, messageObjectType))
+                {
+                    var diagnostic = Diagnostic.Create(
+                        Rule,
+                        variable.GetLocation(),
+                        $"Field '{fieldSymbol.Name}' with type '{fieldSymbol.Type.ToDisplayString()}'");
+                    context.ReportDiagnostic(diagnostic);
+                }
             }
         }
 
-        private static void AnalyzeInvocation(
+        private static void AnalyzePropertyDeclaration(
             SyntaxNodeAnalysisContext context,
             INamedTypeSymbol entityType,
             INamedTypeSymbol messageObjectType)
         {
-            var invocation = (InvocationExpressionSyntax)context.Node;
-            if (!(invocation.Expression is MemberAccessExpressionSyntax memberAccess))
+            var propertyDeclaration = (PropertyDeclarationSyntax)context.Node;
+            var containingType = context.ContainingSymbol?.ContainingType;
+
+            if (containingType == null || !DerivesFrom(containingType, entityType))
                 return;
 
-            var methodSymbol = context.SemanticModel.GetSymbolInfo(memberAccess).Symbol as IMethodSymbol;
-            if (methodSymbol == null)
+            var propertySymbol = context.SemanticModel.GetDeclaredSymbol(propertyDeclaration) as IPropertySymbol;
+            if (propertySymbol == null)
                 return;
 
-            var receiverSymbol = context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
-            var fieldSymbol = receiverSymbol as IFieldSymbol;
-            var propSymbol = receiverSymbol as IPropertySymbol;
-            if (fieldSymbol == null && propSymbol == null)
-                return;
-
-            var recvType = (fieldSymbol ?? (ISymbol)propSymbol).ContainingType;
-            if (!DerivesFrom(recvType, entityType))
-                return;
-
-            switch (methodSymbol.Name)
+            if (IsDisallowedType(propertySymbol.Type, messageObjectType))
             {
-                case "Add":
-                    foreach (var arg in invocation.ArgumentList.Arguments)
-                    {
-                        if (IsDisallowedExpression(arg.Expression, context.SemanticModel, messageObjectType))
-                        {
-                            var diag = Diagnostic.Create(Rule, arg.GetLocation(), arg.ToString());
-                            context.ReportDiagnostic(diag);
-                        }
-                    }
-                    break;
-
-                case "AddRange":
-                    var recvTypeInfo = context.SemanticModel.GetTypeInfo(memberAccess.Expression).Type as INamedTypeSymbol;
-                    if (recvTypeInfo == null || recvTypeInfo.TypeArguments.Length == 0)
-                        return;
-                    var elementType = recvTypeInfo.TypeArguments[0];
-                    if (DerivesFrom(elementType, messageObjectType))
-                    {
-                        var arg = invocation.ArgumentList.Arguments.FirstOrDefault();
-                        if (arg != null && IsDisallowedExpression(arg.Expression, context.SemanticModel, messageObjectType))
-                        {
-                            var diag = Diagnostic.Create(Rule, arg.GetLocation(), arg.ToString());
-                            context.ReportDiagnostic(diag);
-                        }
-                    }
-                    break;
+                var diagnostic = Diagnostic.Create(
+                    Rule,
+                    propertyDeclaration.Type.GetLocation(),
+                    $"Property '{propertySymbol.Name}' with type '{propertySymbol.Type.ToDisplayString()}'");
+                context.ReportDiagnostic(diagnostic);
             }
         }
 
-        private static bool IsDisallowedExpression(
-            ExpressionSyntax expr,
-            SemanticModel model,
-            INamedTypeSymbol messageObjectType)
+        private static bool IsDisallowedType(ITypeSymbol type, INamedTypeSymbol messageObjectType)
         {
-            var typeInfo = model.GetTypeInfo(expr).Type;
-            if (typeInfo == null) return false;
+            if (type == null)
+                return false;
 
-            // 允许 struct
-            if (typeInfo.IsValueType)
+            // Allow value types (struct, enum, primitives)
+            if (type.IsValueType)
                 return false;
-            // 允许 string
-            if (typeInfo.SpecialType == SpecialType.System_String)
+
+            // Allow string
+            if (type.SpecialType == SpecialType.System_String)
                 return false;
-            // 允许 C# readonly struct
-            if (typeInfo.IsReadOnly)
+
+            // Allow readonly struct
+            if (type.IsReadOnly)
                 return false;
-            // 允许标记为不可变的 MessageObject 子类
-            if (DerivesFrom(typeInfo, messageObjectType) &&
-                typeInfo.GetAttributes().Any(attr =>
-                    attr.AttributeClass.Name.EndsWith("Immutable") ||
-                    attr.AttributeClass.Name.EndsWith("ImmutableObjectAttribute") ||
-                    attr.AttributeClass.Name.EndsWith("ReadOnly")))
-                return false;
-            // 允许 ImmutableList<T> 等 System.Collections.Immutable 不可变集合
-            if (typeInfo is INamedTypeSymbol namedType)
+
+            // Check if type is MessageObject or derives from it
+            if (DerivesFrom(type, messageObjectType))
             {
-                var original = namedType.OriginalDefinition;
-                if (original.ToString() == "System.Collections.Immutable.ImmutableList<T>")
+                // Allow if marked as Immutable
+                if (type.GetAttributes().Any(attr =>
+                    attr.AttributeClass?.Name.Contains("Immutable") == true ||
+                    attr.AttributeClass?.Name.Contains("ReadOnly") == true))
                     return false;
-                if (namedType.AllInterfaces.Any(i =>
-                        i.OriginalDefinition.ToString() == "System.Collections.Immutable.IImmutableList<T>"))
-                    return false;
-            }
 
-            // 直接 MessageObject 或子类实例
-            if (DerivesFrom(typeInfo, messageObjectType))
                 return true;
-
-            // 来自 MessageObject 或子类的 class 成员访问
-            var sym = model.GetSymbolInfo(expr).Symbol;
-            var fld = sym as IFieldSymbol;
-            var prop = sym as IPropertySymbol;
-            if (fld != null || prop != null)
-            {
-                var memberSym = fld ?? (ISymbol)prop;
-                var memberType = fld != null ? fld.Type : prop.Type;
-                if (DerivesFrom(memberSym.ContainingType, messageObjectType) && memberType.IsReferenceType)
-                    return true;
             }
+
+            // Check generic type arguments (List<T>, Dictionary<K,V>, etc.)
+            if (type is INamedTypeSymbol namedType)
+            {
+                // Allow System.Collections.Immutable types
+                var typeString = namedType.OriginalDefinition.ToString();
+                if (typeString.StartsWith("System.Collections.Immutable."))
+                    return false;
+
+                // Check all generic type arguments recursively
+                foreach (var typeArg in namedType.TypeArguments)
+                {
+                    if (IsDisallowedType(typeArg, messageObjectType))
+                        return true;
+                }
+            }
+
+            // Check array element type
+            if (type is IArrayTypeSymbol arrayType)
+            {
+                return IsDisallowedType(arrayType.ElementType, messageObjectType);
+            }
+
             return false;
         }
 
