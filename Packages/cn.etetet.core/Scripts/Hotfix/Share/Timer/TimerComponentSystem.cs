@@ -262,10 +262,6 @@ namespace ET
         public static long NewOnceTimer(this TimerComponent self, long tillTime, int type, Entity args)
         {
             long timeNow = self.GetNow();
-            if (tillTime < timeNow)
-            {
-                Log.Error($"new once time too small: {tillTime}");
-            }
 
             EntityRef<Entity> entityRef = args;
             ValueTypeWrap<EntityRef<Entity>> wrap = ValueTypeWrap<EntityRef<Entity>>.Create(entityRef);

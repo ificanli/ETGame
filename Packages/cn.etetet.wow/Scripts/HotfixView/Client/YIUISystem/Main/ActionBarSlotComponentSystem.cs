@@ -29,7 +29,7 @@ namespace ET.Client
             if (self.u_DataId.GetValue() == 0) return;
 
             //检查公共CD
-            long timeNow     = TimeInfo.Instance.FrameTime;
+            long timeNow     = TimeInfo.Instance.ServerNow();
             long ggCDTime    = self.SpellComponent.CDTime + self.GGCD;
             var  hasGGCD     = ggCDTime > timeNow;
             long skillCDTime = 0;

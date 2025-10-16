@@ -98,7 +98,7 @@ namespace ET
 
         private uint TimeSince2025()
         {
-            uint a = (uint)((TimeInfo.Instance.FrameTime - this.epoch2025) / 1000);
+            uint a = (uint)((TimeInfo.Instance.ClientNow() - this.epoch2025) / 1000);
             return a;
         }
         

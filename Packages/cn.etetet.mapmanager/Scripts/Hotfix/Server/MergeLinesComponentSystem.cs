@@ -44,7 +44,7 @@ namespace ET.Server
             while (self.WaitMergetQueue.Count > 0)
             {
                 MergeLineInfo mergeLineInfo = self.WaitMergetQueue.Peek();
-                if (TimeInfo.Instance.FrameTime - mergeLineInfo.Time > 1)
+                if (TimeInfo.Instance.ServerNow() - mergeLineInfo.Time > 1)
                 {
                     self.WaitMergetQueue.Dequeue();
                     
@@ -103,7 +103,7 @@ namespace ET.Server
 
             // 设置状态
             mapCopy1.Status = MapCopyStatus.Running;
-            mapCopy1.MergeTime = TimeInfo.Instance.FrameTime;
+            mapCopy1.MergeTime = TimeInfo.Instance.ServerNow();
 
             // 删除副本2
             await mapInfo.RemoveCopy(mapCopy2.Id);
@@ -176,7 +176,7 @@ namespace ET.Server
                     {
                         mapCopy1.Status = MapCopyStatus.WaitMerge;
                         mapCopy2.Status = MapCopyStatus.WaitMerge;
-                        self.WaitMergetQueue.Enqueue(new MergeLineInfo() {LineNum1 = line1, LineNum2 = line2, Time = TimeInfo.Instance.FrameTime});
+                        self.WaitMergetQueue.Enqueue(new MergeLineInfo() {LineNum1 = line1, LineNum2 = line2, Time = TimeInfo.Instance.ServerNow()});
                         // 通知两个场景的玩家，1分钟后合线
                         Log.Info($"map can merge lines, {mapInfo.MapName} line1: {line1} {mapCopy1.Players.Count}, line2: {line2} {mapCopy2.Players.Count}");
                     }

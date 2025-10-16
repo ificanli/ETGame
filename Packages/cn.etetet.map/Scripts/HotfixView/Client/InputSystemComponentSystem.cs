@@ -35,9 +35,9 @@ namespace ET.Client
         {
             if (self.InputSystem.Player.Move.IsPressed())
             {
-                if (TimeInfo.Instance.FrameTime - self.PressTime > 100)
+                if (TimeInfo.Instance.ClientNow() - self.PressTime > 100)
                 {
-                    self.PressTime = TimeInfo.Instance.FrameTime;
+                    self.PressTime = TimeInfo.Instance.ClientNow();
                     Vector2 v = self.InputSystem.Player.Move.ReadValue<Vector2>();
                     self.Move(v);
                 }

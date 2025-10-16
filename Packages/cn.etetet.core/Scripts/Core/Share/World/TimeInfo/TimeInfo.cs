@@ -23,14 +23,11 @@ namespace ET
         
         // ping消息会设置该值，原子操作
         public long ServerMinusClientTime { private get; set; }
-
-        public long FrameTime { get; private set; }
         
         public void Awake()
         {
             this.dt1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             this.tick1970 = GetTick() - (DateTime.UtcNow.Ticks - this.dt1970.Ticks) / 10000;
-            this.FrameTime = this.ClientNow();
         }
 
         /// <summary>
