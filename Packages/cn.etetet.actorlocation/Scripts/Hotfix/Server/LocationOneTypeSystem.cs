@@ -6,7 +6,7 @@ namespace ET.Server
     public static partial class LockInfoSystem
     {
         [EntitySystem]
-        private static void Awake(this LockInfo self, ActorId lockActorId, CoroutineLock coroutineLock)
+        private static void Awake(this LockInfo self, ActorId lockActorId, EntityRef<CoroutineLock> coroutineLock)
         {
             self.CoroutineLock = coroutineLock;
             self.LockActorId = lockActorId;
@@ -57,9 +57,9 @@ namespace ET.Server
         {
             EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
-            CoroutineLock coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key);
+            EntityRef<CoroutineLock> coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key);
             self = selfRef;
-            LockInfo lockInfo = self.AddChild<LockInfo, ActorId, CoroutineLock>(actorId, coroutineLock);
+            LockInfo lockInfo = self.AddChild<LockInfo, ActorId, EntityRef<CoroutineLock>>(actorId, coroutineLock);
             EntityRef<LockInfo> lockInfoRef = lockInfo;
             self.lockInfos.Add(key, lockInfo);
 
@@ -122,15 +122,15 @@ namespace ET.Server
         }
     }
 
-    [EntitySystemOf(typeof(LocationManagerComoponent))]
+    [EntitySystemOf(typeof(LocationManagerComponent))]
     public static partial class LocationComoponentSystem
     {
         [EntitySystem]
-        private static void Awake(this LocationManagerComoponent self)
+        private static void Awake(this LocationManagerComponent self)
         {
         }
         
-        public static LocationOneType Get(this LocationManagerComoponent self, int locationType)
+        public static LocationOneType Get(this LocationManagerComponent self, int locationType)
         {
             LocationOneType locationOneType = self.GetChild<LocationOneType>(locationType);
             if (locationOneType != null)

@@ -6,15 +6,15 @@ namespace ET
     [ChildOf(typeof(CoroutineLockQueueType))]
     public class CoroutineLockQueue: Entity, IAwake<long>, IDestroy
     {
-        public long type;
+        internal long type;
 
-        public int maxConcurrency { get; set; }
+        internal int maxConcurrency { get; set; }
 
-        public int runningCount;
+        internal int runningCount;
         
-        public Queue<EntityRef<WaitCoroutineLock>> queue = new();
+        internal Queue<EntityRef<WaitCoroutineLock>> queue = new();
 
-        public int Count
+        internal int Count
         {
             get
             {

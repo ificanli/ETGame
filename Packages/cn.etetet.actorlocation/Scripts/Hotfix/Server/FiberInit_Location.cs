@@ -14,7 +14,7 @@ namespace ET.Server
             root.AddComponent<CoroutineLockComponent>();
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();
-            root.AddComponent<LocationManagerComoponent>();
+            root.AddComponent<LocationManagerComponent>();
             
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();

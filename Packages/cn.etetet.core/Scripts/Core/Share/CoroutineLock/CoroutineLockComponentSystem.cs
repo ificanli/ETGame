@@ -19,7 +19,7 @@
             }
         }
 
-        public static void RunNextCoroutine(this CoroutineLockComponent self, long coroutineLockType, long key, int level)
+        internal static void RunNextCoroutine(this CoroutineLockComponent self, long coroutineLockType, long key, int level)
         {
             // 一个协程队列一帧处理超过100个,说明比较多了,打个warning,检查一下是否够正常
             if (level == 100)

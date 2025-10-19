@@ -20,7 +20,7 @@
             self.runningCount = 0;
         }
         
-        public static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockQueue self)
+        internal static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockQueue self)
         {
             CoroutineLock coroutineLock = null;
             if (self.runningCount < self.maxConcurrency)
@@ -37,7 +37,7 @@
         }
 
         // 返回值，是否找到了一个有效的协程锁
-        public static bool Notify(this CoroutineLockQueue self, int level)
+        internal static bool Notify(this CoroutineLockQueue self, int level)
         {
             --self.runningCount;
             

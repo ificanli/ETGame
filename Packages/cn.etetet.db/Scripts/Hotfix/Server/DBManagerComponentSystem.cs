@@ -3,7 +3,6 @@ using MongoDB.Driver;
 
 namespace ET.Server
 {
-    [FriendOf(typeof(DBManagerComponent))]
     public static partial class DBManagerComponentSystem
     {
         public static async ETTask DropDB(this DBManagerComponent self, int zone)

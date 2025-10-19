@@ -27,7 +27,7 @@ namespace ET
             self.Object = null;
         }
 
-        public static Entity GetEntity(this TimerAction self)
+        internal static Entity GetEntity(this TimerAction self)
         {
             var wrap = (ValueTypeWrap<EntityRef<Entity>>)self.Object;
             return wrap.Value;
