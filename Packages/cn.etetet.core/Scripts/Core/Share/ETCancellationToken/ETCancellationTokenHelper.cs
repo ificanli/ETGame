@@ -4,6 +4,15 @@ namespace ET
 {
     public static class ETCancellationTokenHelper
     {
+        public static bool IsCancel(this ETCancellationToken self)
+        {
+            if (self == null)
+            {
+                return false;
+            }
+            return self.IsDispose();
+        }
+        
         private static async ETTask TimeoutAsync(this ETCancellationToken self, long afterTimeCancel)
         {
             if (afterTimeCancel <= 0)

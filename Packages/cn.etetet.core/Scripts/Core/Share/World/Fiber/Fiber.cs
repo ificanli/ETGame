@@ -17,14 +17,15 @@ namespace ET
         [ThreadStatic]
         private static Fiber instance;
 
+        // 绝对禁止逻辑使用！！！
         [StaticField]
-        public static Fiber Instance
+        internal static Fiber Instance
         {
             get
             {
                 return instance;
             }
-            internal set
+            set
             {
                 instance = value;
                 

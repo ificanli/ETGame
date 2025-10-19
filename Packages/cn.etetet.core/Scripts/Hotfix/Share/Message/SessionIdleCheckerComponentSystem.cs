@@ -5,7 +5,7 @@ namespace ET
     [EntitySystemOf(typeof(SessionIdleCheckerComponent))]
     public static partial class SessionIdleCheckerComponentSystem
     {
-        [Invoke(TimerCoreInvokeType.SessionIdleChecker)]
+        [Invoke(TimerInvokeType.SessionIdleChecker)]
         public class SessionIdleChecker: ATimer<SessionIdleCheckerComponent>
         {
             protected override void Run(SessionIdleCheckerComponent self)
@@ -24,7 +24,7 @@ namespace ET
         [EntitySystem]
         private static void Awake(this SessionIdleCheckerComponent self)
         {
-            self.RepeatedTimer = self.Root().GetComponent<TimerComponent>().NewRepeatedTimer(CheckInteral, TimerCoreInvokeType.SessionIdleChecker, self);
+            self.RepeatedTimer = self.Root().GetComponent<TimerComponent>().NewRepeatedTimer(CheckInteral, TimerInvokeType.SessionIdleChecker, self);
         }
         
         [EntitySystem]

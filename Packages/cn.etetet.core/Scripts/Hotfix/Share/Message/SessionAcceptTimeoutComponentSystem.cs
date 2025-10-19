@@ -5,7 +5,7 @@ namespace ET
     [EntitySystemOf(typeof(SessionAcceptTimeoutComponent))]
     public static partial class SessionAcceptTimeoutComponentSystem
     {
-        [Invoke(TimerCoreInvokeType.SessionAcceptTimeout)]
+        [Invoke(TimerInvokeType.SessionAcceptTimeout)]
         public class SessionAcceptTimeout: ATimer<SessionAcceptTimeoutComponent>
         {
             protected override void Run(SessionAcceptTimeoutComponent self)
@@ -24,7 +24,7 @@ namespace ET
         [EntitySystem]
         private static void Awake(this SessionAcceptTimeoutComponent self)
         {
-            self.Timer = self.Root().GetComponent<TimerComponent>().NewOnceTimer(TimeInfo.Instance.ServerNow() + 5000, TimerCoreInvokeType.SessionAcceptTimeout, self);
+            self.Timer = self.Root().GetComponent<TimerComponent>().NewOnceTimer(TimeInfo.Instance.ServerNow() + 5000, TimerInvokeType.SessionAcceptTimeout, self);
         }
         
         [EntitySystem]
