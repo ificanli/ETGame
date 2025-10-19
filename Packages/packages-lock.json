@@ -125,6 +125,14 @@
         "cn.etetet.scripts": "4.0.0"
       }
     },
+    "cn.etetet.db": {
+      "version": "file:cn.etetet.db",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0"
+      }
+    },
     "cn.etetet.excel": {
       "version": "file:cn.etetet.excel",
       "depth": 0,

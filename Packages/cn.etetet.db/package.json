@@ -1,0 +1,21 @@
+{
+  "name": "cn.etetet.db",
+  "displayName": "ET.DB",
+  "version": "4.0.0",
+  "description": "ET框架数据库基础模块占位包，提供后续扩展的脚手架",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.core": "4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  }
+}
