@@ -10,7 +10,7 @@ namespace ET
     public struct ConfigDeserialize
     {
         public Type Type;
-        public byte[] ConfigBytes;
+        public object ConfigBytes;
     }
     
     public class ConfigLoader : Singleton<ConfigLoader>, ISingletonAwake
@@ -30,7 +30,7 @@ namespace ET
             this.allConfig.Clear();
 
             // load config
-            Dictionary<Type, byte[]> configBytes = await EventSystem.Instance.Invoke<ConfigGetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>(new ConfigGetAllConfigBytes());
+            Dictionary<Type, object> configBytes = await EventSystem.Instance.Invoke<ConfigGetAllConfigBytes, ETTask<Dictionary<Type, object>>>(new ConfigGetAllConfigBytes());
 
 #if DOTNET || UNITY_STANDALONE
             {
@@ -38,7 +38,7 @@ namespace ET
 
                 foreach (Type type in configBytes.Keys)
                 {
-                    byte[] oneConfigBytes = configBytes[type];
+                    object oneConfigBytes = configBytes[type];
                     Task task = Task.Run(() => this.LoadOneConfig(type, oneConfigBytes));
                     listTasks.Add(task);
                 }
@@ -59,7 +59,7 @@ namespace ET
             }
         }
         
-        private void LoadOneConfig(Type configType, byte[] oneConfigBytes)
+        private void LoadOneConfig(Type configType, object oneConfigBytes)
         {
             object category = null;
             

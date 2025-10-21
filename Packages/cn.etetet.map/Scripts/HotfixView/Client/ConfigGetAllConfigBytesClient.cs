@@ -6,11 +6,11 @@ using UnityEngine;
 namespace ET.Client
 {
     [Invoke]
-    public class ConfigGetAllConfigBytesClient : AInvokeHandler<ConfigLoader.ConfigGetAllConfigBytes, ETTask<Dictionary<Type, byte[]>>>
+    public class ConfigGetAllConfigBytesClient : AInvokeHandler<ConfigLoader.ConfigGetAllConfigBytes, ETTask<Dictionary<Type, object>>>
     {
-        public override async ETTask<Dictionary<Type, byte[]>> Handle(ConfigLoader.ConfigGetAllConfigBytes args)
+        public override async ETTask<Dictionary<Type, object>> Handle(ConfigLoader.ConfigGetAllConfigBytes args)
         {
-            var output   = new Dictionary<Type, byte[]>();
+            var output   = new Dictionary<Type, object>();
             var allTypes = CodeTypes.Instance.GetTypes(typeof(ConfigProcessAttribute));
 
 #if UNITY_EDITOR
@@ -23,20 +23,26 @@ namespace ET.Client
                 switch(configProcessAttribute.ConfigType)
                 {
                     case ConfigType.Luban:
+                        configFilePath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/Binary/{configType.Name}.bytes");
+                        output[configType] = File.ReadAllBytes(configFilePath);
+                        break;
+                    case ConfigType.Json:
                         if (StartConfigHelper.StartConfigs.Contains(configType.Name))
                         {
-                            configFilePath = Path.Combine($"Packages/cn.etetet.startconfig/Bundles/Luban/{Options.Instance.StartConfig}/Server/Binary/{configType.Name}.bytes");
+                            configFilePath = Path.Combine($"Packages/cn.etetet.startconfig/Bundles/Luban/{Options.Instance.StartConfig}/Server/Json/{configType.Name}.json");
                         }
                         else
                         {
-                            configFilePath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/Binary/{configType.Name}.bytes");
+                            configFilePath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/Json/{configType.Name}.json");
                         }
+                        output[configType] = File.ReadAllText(configFilePath);
                         break;
                     case ConfigType.Bson:
                         configFilePath = Path.Combine($"Packages/cn.etetet.wow/Bundles/Bson/{configType.Name}.bytes");
+                        output[configType] = File.ReadAllBytes(configFilePath);
                         break;
                 }
-                output[configType] = File.ReadAllBytes(configFilePath);
+                
             }
             await ETTask.CompletedTask;
 #else

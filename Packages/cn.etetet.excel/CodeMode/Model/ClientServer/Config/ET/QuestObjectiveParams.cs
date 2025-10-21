@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,23 +16,23 @@ namespace ET
     [EnableClass]
     public abstract partial class QuestObjectiveParams : Luban.BeanBase
     {
-        public QuestObjectiveParams(ByteBuf _buf) 
+        public QuestObjectiveParams(JSONNode _buf) 
         {
 
             EndInit();
         }
 
-        public static QuestObjectiveParams DeserializeQuestObjectiveParams(ByteBuf _buf)
+        public static QuestObjectiveParams DeserializeQuestObjectiveParams(JSONNode _buf)
         {
-            switch (_buf.ReadInt())
+            switch ((string)_buf["$type"])
             {
-                case ET.QuestObjectiveParams_KillMonster.__ID__: return new ET.QuestObjectiveParams_KillMonster(_buf);
-                case ET.QuestObjectiveParams_CollectItem.__ID__: return new ET.QuestObjectiveParams_CollectItem(_buf);
+                case "QuestObjectiveParams_KillMonster": return new ET.QuestObjectiveParams_KillMonster(_buf);
+                case "QuestObjectiveParams_CollectItem": return new ET.QuestObjectiveParams_CollectItem(_buf);
                 default: throw new SerializationException();
             }
         }
 
-    
+
 
         public virtual void ResolveRef()
         {

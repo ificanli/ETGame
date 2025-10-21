@@ -1,4 +1,5 @@
 using Luban;
+using SimpleJSON;
 
 namespace ET.Server
 {
@@ -19,19 +20,18 @@ namespace ET.Server
             Console.WriteLine($"Current working directory: {workDir}");
 
 
-            string configBasePath = Path.Combine(workDir,
-                $"Packages/cn.etetet.startconfig/Bundles/Luban/{Options.Instance.StartConfig}/Server/Binary");
-            string processConfigPath = Path.Combine(configBasePath, "StartProcessConfigCategory.bytes");
-            string sceneConfigPath = Path.Combine(configBasePath, "StartSceneConfigCategory.bytes");
-            string machineConfigPath = Path.Combine(configBasePath, "StartMachineConfigCategory.bytes");
-            string zoneConfigPath = Path.Combine(configBasePath, "StartZoneConfigCategory.bytes");
+            string configBasePath = Path.Combine(workDir, $"Packages/cn.etetet.startconfig/Bundles/Luban/{Options.Instance.StartConfig}/Server/Json");
+            string processConfigPath = Path.Combine(configBasePath, "StartProcessConfigCategory.json");
+            string sceneConfigPath = Path.Combine(configBasePath, "StartSceneConfigCategory.json");
+            string machineConfigPath = Path.Combine(configBasePath, "StartMachineConfigCategory.json");
+            string zoneConfigPath = Path.Combine(configBasePath, "StartZoneConfigCategory.json");
 
             Console.WriteLine($"Reading ET configs from: {configBasePath}");
 
-            World.Instance.AddSingleton(new StartProcessConfigCategory(new ByteBuf(File.ReadAllBytes(processConfigPath))));
-            World.Instance.AddSingleton(new StartSceneConfigCategory(new ByteBuf(File.ReadAllBytes(sceneConfigPath))));
-            World.Instance.AddSingleton(new StartMachineConfigCategory(new ByteBuf(File.ReadAllBytes(machineConfigPath))));
-            World.Instance.AddSingleton(new StartZoneConfigCategory(new ByteBuf(File.ReadAllBytes(zoneConfigPath))));
+            World.Instance.AddSingleton(new StartProcessConfigCategory(JSON.Parse(File.ReadAllText(processConfigPath))));
+            World.Instance.AddSingleton(new StartSceneConfigCategory(JSON.Parse(File.ReadAllText(sceneConfigPath))));
+            World.Instance.AddSingleton(new StartMachineConfigCategory(JSON.Parse(File.ReadAllText(machineConfigPath))));
+            World.Instance.AddSingleton(new StartZoneConfigCategory(JSON.Parse(File.ReadAllText(zoneConfigPath))));
 
             // 为每个进程创建Aspire服务
             foreach ((int processId, StartProcessConfig startProcessConfig) in StartProcessConfigCategory.Instance.GetAll())

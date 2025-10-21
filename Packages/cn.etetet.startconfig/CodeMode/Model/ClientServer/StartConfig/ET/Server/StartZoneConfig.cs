@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET.Server
@@ -15,17 +16,17 @@ namespace ET.Server
     [EnableClass]
     public sealed partial class StartZoneConfig : Luban.BeanBase
     {
-        public StartZoneConfig(ByteBuf _buf) 
+        public StartZoneConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            ZoneType = _buf.ReadInt();
-            DBConnection = _buf.ReadString();
-            DBName = _buf.ReadString();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["ZoneType"].IsNumber) { throw new SerializationException(); }  ZoneType = _buf["ZoneType"]; }
+            { if(!_buf["DBConnection"].IsString) { throw new SerializationException(); }  DBConnection = _buf["DBConnection"]; }
+            { if(!_buf["DBName"].IsString) { throw new SerializationException(); }  DBName = _buf["DBName"]; }
 
             EndInit();
         }
 
-        public static StartZoneConfig DeserializeStartZoneConfig(ByteBuf _buf)
+        public static StartZoneConfig DeserializeStartZoneConfig(JSONNode _buf)
         {
             return new ET.Server.StartZoneConfig(_buf);
         }
@@ -46,7 +47,7 @@ namespace ET.Server
         /// 数据库名
         /// </summary>
         public readonly string DBName;
-    
+
         public const int __ID__ = 350676868;
         public override int GetTypeId() => __ID__;
 

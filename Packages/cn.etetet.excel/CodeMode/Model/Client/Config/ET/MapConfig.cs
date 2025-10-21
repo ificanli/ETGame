@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,18 +16,18 @@ namespace ET
     [EnableClass]
     public sealed partial class MapConfig : Luban.BeanBase
     {
-        public MapConfig(ByteBuf _buf) 
+        public MapConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Name = _buf.ReadString();
-            Desc = _buf.ReadString();
-            CopyType = (ET.CopyType)_buf.ReadInt();
-            MapResName = _buf.ReadString();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["Desc"].IsString) { throw new SerializationException(); }  Desc = _buf["Desc"]; }
+            { if(!_buf["CopyType"].IsNumber) { throw new SerializationException(); }  CopyType = (ET.CopyType)_buf["CopyType"].AsInt; }
+            { if(!_buf["MapResName"].IsString) { throw new SerializationException(); }  MapResName = _buf["MapResName"]; }
 
             EndInit();
         }
 
-        public static MapConfig DeserializeMapConfig(ByteBuf _buf)
+        public static MapConfig DeserializeMapConfig(JSONNode _buf)
         {
             return new ET.MapConfig(_buf);
         }
@@ -51,7 +52,7 @@ namespace ET
         /// 地图场景资源
         /// </summary>
         public readonly string MapResName;
-    
+
         public const int __ID__ = 1701072159;
         public override int GetTypeId() => __ID__;
 

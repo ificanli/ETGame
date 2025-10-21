@@ -11,27 +11,28 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
+using SimpleJSON;
 
 namespace ET
 {
 
-    [ConfigProcess]
+    [ConfigProcess(ConfigType.Json)]
     public partial class QuestConfigCategory : Singleton<QuestConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.QuestConfig> _dataMap;
         private readonly List<ET.QuestConfig> _dataList;
-        
-        public QuestConfigCategory(ByteBuf _buf)
+
+        public QuestConfigCategory(JSONNode _buf)
         {
             _dataMap = new Dictionary<int, ET.QuestConfig>();
             _dataList = new List<ET.QuestConfig>();
-            
-            for(int n = _buf.ReadSize() ; n > 0 ; --n)
+
+            foreach(JSONNode _ele in _buf.Children)
             {
                 ET.QuestConfig _v;
-                _v = global::ET.QuestConfig.DeserializeQuestConfig(_buf);
+                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.QuestConfig.DeserializeQuestConfig(_ele);  }
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

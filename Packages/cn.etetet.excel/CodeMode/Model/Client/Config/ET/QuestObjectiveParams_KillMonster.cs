@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,14 +16,14 @@ namespace ET
     [EnableClass]
     public sealed partial class QuestObjectiveParams_KillMonster : ET.QuestObjectiveParams
     {
-        public QuestObjectiveParams_KillMonster(ByteBuf _buf)  : base(_buf) 
+        public QuestObjectiveParams_KillMonster(JSONNode _buf)  : base(_buf) 
         {
-            MonsterId = _buf.ReadInt();
+            { if(!_buf["MonsterId"].IsNumber) { throw new SerializationException(); }  MonsterId = _buf["MonsterId"]; }
 
             EndInit();
         }
 
-        public static QuestObjectiveParams_KillMonster DeserializeQuestObjectiveParams_KillMonster(ByteBuf _buf)
+        public static QuestObjectiveParams_KillMonster DeserializeQuestObjectiveParams_KillMonster(JSONNode _buf)
         {
             return new ET.QuestObjectiveParams_KillMonster(_buf);
         }
@@ -31,7 +32,7 @@ namespace ET
         /// 击杀的怪物Id
         /// </summary>
         public readonly int MonsterId;
-    
+
         public const int __ID__ = -933968487;
         public override int GetTypeId() => __ID__;
 

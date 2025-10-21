@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET.Server
@@ -15,16 +16,16 @@ namespace ET.Server
     [EnableClass]
     public sealed partial class StartMachineConfig : Luban.BeanBase
     {
-        public StartMachineConfig(ByteBuf _buf) 
+        public StartMachineConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            InnerIP = _buf.ReadString();
-            OuterIP = _buf.ReadString();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["InnerIP"].IsString) { throw new SerializationException(); }  InnerIP = _buf["InnerIP"]; }
+            { if(!_buf["OuterIP"].IsString) { throw new SerializationException(); }  OuterIP = _buf["OuterIP"]; }
 
             EndInit();
         }
 
-        public static StartMachineConfig DeserializeStartMachineConfig(ByteBuf _buf)
+        public static StartMachineConfig DeserializeStartMachineConfig(JSONNode _buf)
         {
             return new ET.Server.StartMachineConfig(_buf);
         }
@@ -41,7 +42,7 @@ namespace ET.Server
         /// 外网地址
         /// </summary>
         public readonly string OuterIP;
-    
+
         public const int __ID__ = -737091277;
         public override int GetTypeId() => __ID__;
 

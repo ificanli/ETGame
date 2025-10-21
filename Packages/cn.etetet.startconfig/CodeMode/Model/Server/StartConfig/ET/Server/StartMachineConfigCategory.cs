@@ -11,27 +11,28 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
+using SimpleJSON;
 
 namespace ET.Server
 {
 
-    [ConfigProcess]
+    [ConfigProcess(ConfigType.Json)]
     public partial class StartMachineConfigCategory : Singleton<StartMachineConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.Server.StartMachineConfig> _dataMap;
         private readonly List<ET.Server.StartMachineConfig> _dataList;
-        
-        public StartMachineConfigCategory(ByteBuf _buf)
+
+        public StartMachineConfigCategory(JSONNode _buf)
         {
             _dataMap = new Dictionary<int, ET.Server.StartMachineConfig>();
             _dataList = new List<ET.Server.StartMachineConfig>();
-            
-            for(int n = _buf.ReadSize() ; n > 0 ; --n)
+
+            foreach(JSONNode _ele in _buf.Children)
             {
                 ET.Server.StartMachineConfig _v;
-                _v = global::ET.Server.StartMachineConfig.DeserializeStartMachineConfig(_buf);
+                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.Server.StartMachineConfig.DeserializeStartMachineConfig(_ele);  }
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

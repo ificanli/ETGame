@@ -37,7 +37,7 @@ using MongoDB.Bson.Serialization.Options;
     /// {{escape_comment __table.comment}}
     /// </summary>
     {{~end~}}
-    [ConfigProcess]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class {{__name}} : Singleton<{{__name}}>, IConfig
     {
         {{~if __table.is_map_table ~}}

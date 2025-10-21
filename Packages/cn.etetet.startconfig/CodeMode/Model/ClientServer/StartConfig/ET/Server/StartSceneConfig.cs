@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET.Server
@@ -15,19 +16,19 @@ namespace ET.Server
     [EnableClass]
     public sealed partial class StartSceneConfig : Luban.BeanBase
     {
-        public StartSceneConfig(ByteBuf _buf) 
+        public StartSceneConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Process = _buf.ReadInt();
-            Zone = _buf.ReadInt();
-            SceneType = _buf.ReadString();
-            Name = _buf.ReadString();
-            Port = _buf.ReadInt();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Process"].IsNumber) { throw new SerializationException(); }  Process = _buf["Process"]; }
+            { if(!_buf["Zone"].IsNumber) { throw new SerializationException(); }  Zone = _buf["Zone"]; }
+            { if(!_buf["SceneType"].IsString) { throw new SerializationException(); }  SceneType = _buf["SceneType"]; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["Port"].IsNumber) { throw new SerializationException(); }  Port = _buf["Port"]; }
 
             EndInit();
         }
 
-        public static StartSceneConfig DeserializeStartSceneConfig(ByteBuf _buf)
+        public static StartSceneConfig DeserializeStartSceneConfig(JSONNode _buf)
         {
             return new ET.Server.StartSceneConfig(_buf);
         }
@@ -56,7 +57,7 @@ namespace ET.Server
         /// 外网端口
         /// </summary>
         public readonly int Port;
-    
+
         public const int __ID__ = 777443384;
         public override int GetTypeId() => __ID__;
 
