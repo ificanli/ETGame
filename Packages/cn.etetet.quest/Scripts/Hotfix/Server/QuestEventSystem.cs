@@ -19,19 +19,25 @@ namespace ET.Server
             }
 
             // 触发击杀类型任务的进度检查
-            var killObjectives = questComponent.GetQuestObjective(QuestObjectiveType.KillMonster);
+            var killObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.KillMonster);
             if (killObjectives != null)
             {
-                foreach (EntityRef<QuestObjective> objectiveRef in killObjectives)
+                foreach (QuestObjective objective in killObjectives)
                 {
-                    QuestObjective objective = objectiveRef;
                     if (objective == null)
                     {
                         continue;
                     }
-
+                    QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
+                    
+                    if (objective.Count >= questObjectiveConfig.NeedCount)
+                    {
+                        return;
+                    }
+                    
+                    QuestObjectiveParams_KillMonster questObjectiveParams = (QuestObjectiveParams_KillMonster)questObjectiveConfig.Params;
                     // 检查是否是目标怪物
-                    if (objective.Params.Count > 0 && objective.Params[0] == monsterConfigId)
+                    if (questObjectiveParams.MonsterId == monsterConfigId)
                     {
                         UpdateObjectiveProgress(objective, 1);
                     }
@@ -45,13 +51,9 @@ namespace ET.Server
         public static void OnItemCollected(Unit player, int itemId, int count)
         {
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
-            if (questComponent == null)
-            {
-                return;
-            }
 
             // 触发收集类型任务的进度检查
-            var collectObjectives = questComponent.GetQuestObjective(QuestObjectiveType.Collectltem);
+            var collectObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.Collectltem);
             if (collectObjectives != null)
             {
                 foreach (EntityRef<QuestObjective> objectiveRef in collectObjectives)
@@ -62,84 +64,23 @@ namespace ET.Server
                         continue;
                     }
 
+                    QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
+
+                    if (objective.Count >= questObjectiveConfig.NeedCount)
+                    {
+                        return;
+                    }
+                    
+                    QuestObjectiveParams_Collectltem questObjectiveParams = (QuestObjectiveParams_Collectltem)questObjectiveConfig.Params;
                     // 检查是否是目标物品
-                    if (objective.Params.Count > 0 && objective.Params[0] == itemId)
+                    if (questObjectiveParams.ItemId == itemId)
                     {
                         UpdateObjectiveProgress(objective, count);
                     }
                 }
             }
         }
-
-        /// <summary>
-        /// 处理玩家升级事件
-        /// </summary>
-        public static void OnPlayerLevelUp(Unit player, int newLevel)
-        {
-            QuestComponent questComponent = player.GetComponent<QuestComponent>();
-            if (questComponent == null)
-            {
-                return;
-            }
-
-            // 触发等级类型任务的进度检查
-            var levelObjectives = questComponent.GetQuestObjective(QuestObjectiveType.Level);
-            if (levelObjectives != null)
-            {
-                foreach (EntityRef<QuestObjective> objectiveRef in levelObjectives)
-                {
-                    QuestObjective objective = objectiveRef;
-                    if (objective == null)
-                    {
-                        continue;
-                    }
-
-                    // 检查是否达到目标等级
-                    int targetLevel = objective.TargetCount;
-                    if (newLevel >= targetLevel)
-                    {
-                        objective.Progress = targetLevel;
-                        objective.IsCompleted = true;
-                        NotifyQuestProgress(player, objective);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 处理进入地图事件
-        /// </summary>
-        public static void OnEnterMap(Unit player, int mapId)
-        {
-            QuestComponent questComponent = player.GetComponent<QuestComponent>();
-            if (questComponent == null)
-            {
-                return;
-            }
-
-            // 触发进入地图类型任务的进度检查
-            var enterMapObjectives = questComponent.GetQuestObjective(QuestObjectiveType.EnterMap);
-            if (enterMapObjectives != null)
-            {
-                foreach (EntityRef<QuestObjective> objectiveRef in enterMapObjectives)
-                {
-                    QuestObjective objective = objectiveRef;
-                    if (objective == null)
-                    {
-                        continue;
-                    }
-
-                    // 检查是否是目标地图
-                    if (objective.Params.Count > 0 && objective.Params[0] == mapId)
-                    {
-                        objective.Progress = 1;
-                        objective.IsCompleted = true;
-                        NotifyQuestProgress(player, objective);
-                    }
-                }
-            }
-        }
-
+        
         /// <summary>
         /// 更新任务目标进度
         /// </summary>
@@ -150,9 +91,9 @@ namespace ET.Server
                 return;
             }
 
-            objective.Progress = Math.Min(objective.Progress + increment, objective.TargetCount);
-            
-            if (objective.Progress >= objective.TargetCount)
+            ++objective.Count;
+            QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
+            if (objective.Count >= questObjectiveConfig.NeedCount)
             {
                 objective.IsCompleted = true;
             }
@@ -182,9 +123,9 @@ namespace ET.Server
                 if (child is QuestObjective obj)
                 {
                     QuestObjectiveInfo info = QuestObjectiveInfo.Create();
-                    info.QuestObjectiveId = obj.ConfigId;
-                    info.Count = obj.Progress;
-                    info.NeedCount = obj.TargetCount;
+                    info.QuestObjectiveId = (int)obj.Id;
+                    info.Count = obj.Count;
+                    info.NeedCount = obj.GetConfig().NeedCount;
                     message.QuestObjective.Add(info);
                 }
             }

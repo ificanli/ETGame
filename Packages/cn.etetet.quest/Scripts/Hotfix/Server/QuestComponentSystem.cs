@@ -17,17 +17,19 @@ namespace ET.Server
         }
 
         // 任务目标前进,订阅各种事件，然后调用这个。比如杀一只怪，调用一下，采集调用一下
-        public static void Process(this QuestComponent self, QuestObjectiveType questObjectiveType)
+        public static void Process(this QuestComponent self, QuestObjectiveType questObjectiveType, int p)
         {
-            var questObjectives = self.GetQuestObjective(questObjectiveType);
+            IQuestObjectiveHandler questObjectiveHandler = QuestObjectiveDispatcher.Instance.Get(questObjectiveType);
+            
+            var questObjectives = self.GetQuestObjectiveByType(questObjectiveType);
             foreach (EntityRef<QuestObjective> questObjectiveRef in questObjectives)
             {
                 QuestObjective questObjective = questObjectiveRef;
-                questObjective.Process();
+                questObjectiveHandler.Process(questObjective, p);
             }
         }
 
-        public static HashSet<EntityRef<QuestObjective>> GetQuestObjective(this QuestComponent self, QuestObjectiveType questObjectiveType)
+        public static HashSet<EntityRef<QuestObjective>> GetQuestObjectiveByType(this QuestComponent self, QuestObjectiveType questObjectiveType)
         {
             HashSet<EntityRef<QuestObjective>> questObjectives;
             self.QuestObjectives.TryGetValue(questObjectiveType, out questObjectives);
@@ -56,14 +58,21 @@ namespace ET.Server
         
         public static Quest AddQuest(this QuestComponent self, int configId)
         {
-            Quest quest = self.AddChild<Quest, int>(configId);
+            Quest quest = self.AddChildWithId<Quest>(configId);
+
+            foreach (KeyValuePair<long, Entity> kv in quest.Children)
+            {
+                QuestObjective questObjective = kv.Value as QuestObjective;
+                self.QuestObjectives.Add(questObjective.GetConfig().Type, questObjective);
+            }
+            
             return quest;
         }
 
         // 尝试完成任务
-        public static bool TryFinishQuest(this QuestComponent self, int configId)
+        public static bool TryFinishQuest(this QuestComponent self, int questId)
         {
-            Quest quest = self.GetChild<Quest>(configId);
+            Quest quest = self.GetQuest(questId);
             if (!quest.IsFinished())
             {
                 return false;
@@ -77,23 +86,20 @@ namespace ET.Server
         /// <summary>
         /// 接取任务
         /// </summary>
-        public static Quest AcceptQuest(this QuestComponent self, int questConfigId)
+        public static Quest AcceptQuest(this QuestComponent self, int questId)
         {
             // 检查是否已完成或已接取
-            if (self.FinishedQuests.Contains(questConfigId) || self.ActiveQuests.ContainsKey(questConfigId))
+            if (self.FinishedQuests.Contains(questId) || self.GetQuest(questId) != null)
             {
                 return null;
             }
             // 检查前置任务
-            if (!self.IsPreQuestFinished(questConfigId))
+            if (!self.IsPreQuestFinished(questId))
             {
                 return null;
             }
             // 创建任务实体
-            Quest quest = self.AddChild<Quest, int>(questConfigId);
-            self.ActiveQuests[questConfigId] = quest;
-            // 初始化进度
-            self.QuestProgressDict[questConfigId] = new Dictionary<int, int>();
+            Quest quest = self.AddChildWithId<Quest>(questId);
             // 可扩展：初始化目标、事件订阅等
             return quest;
         }
@@ -101,104 +107,51 @@ namespace ET.Server
         /// <summary>
         /// 放弃任务
         /// </summary>
-        public static void AbandonQuest(this QuestComponent self, int questConfigId)
+        public static void RemoveQuest(this QuestComponent self, int questId)
         {
-            if (!self.ActiveQuests.TryGetValue(questConfigId, out var questRef))
-            {
-                return;
-            }
-            Quest quest = questRef;
+            Quest quest = self.GetChild<Quest>(questId);
             if (quest != null)
             {
-                quest.Status = QuestStatus.Abandoned;
                 self.RemoveChild(quest.Id);
             }
-            self.ActiveQuests.Remove(questConfigId);
-            self.QuestProgressDict.Remove(questConfigId);
-        }
-
-        /// <summary>
-        /// 更新任务进度
-        /// </summary>
-        public static void UpdateQuestProgress(this QuestComponent self, int questConfigId, int objectiveId, int progress)
-        {
-            if (!self.QuestProgressDict.TryGetValue(questConfigId, out var progressDict))
-            {
-                return;
-            }
-            progressDict[objectiveId] = progress;
-            // 可扩展：进度变更事件、完成检测
         }
 
         /// <summary>
         /// 完成任务
         /// </summary>
-        public static bool CompleteQuest(this QuestComponent self, int questConfigId)
+        public static bool TryCompleteQuest(this QuestComponent self, int questId)
         {
-            if (!self.ActiveQuests.TryGetValue(questConfigId, out var questRef))
+            if (self.FinishedQuests.Contains(questId))
             {
-                return false;
+                return true;
             }
-            Quest quest = questRef;
+            
+            Quest quest = self.GetQuest(questId);
             if (quest == null)
             {
                 return false;
             }
+            
             // 检查所有目标是否完成
-            bool allFinished = true;
-            foreach (int objectiveId in quest.ObjectiveIds)
+            foreach (int objectiveId in quest.GetConfig().ObjectiveIds)
             {
-                int needCount = 1;
-                // 通过配置获取目标所需数量
-                var objectiveConfig = QuestObjectiveConfigCategory.Instance.GetOrDefault(objectiveId);
-                if (objectiveConfig != null)
+                QuestObjective questObjective = quest.GetChild<QuestObjective>(objectiveId);
+                if (questObjective == null)
                 {
-                    needCount = objectiveConfig.NeedCount;
+                    return false;
                 }
-                if (!self.QuestProgressDict.TryGetValue(questConfigId, out var progressDict) ||
-                    !progressDict.TryGetValue(objectiveId, out int value) ||
-                    value < needCount)
+
+                if (!questObjective.IsCompleted)
                 {
-                    allFinished = false;
-                    break;
+                    return false;
                 }
             }
-            if (!allFinished)
-            {
-                return false;
-            }
+            
             quest.Status = QuestStatus.Finished;
-            self.FinishedQuests.Add(questConfigId);
-            self.ActiveQuests.Remove(questConfigId);
-            self.QuestProgressDict.Remove(questConfigId);
-            // 发放奖励
-            self.GrantQuestReward(questConfigId);
-            // 推进任务链
-            self.AdvanceQuestChain(questConfigId);
+            self.FinishedQuests.Add(questId);
             // 移除任务实体
             self.RemoveChild(quest.Id);
             return true;
-        }
-
-        /// <summary>
-        /// 发放任务奖励
-        /// </summary>
-        public static void GrantQuestReward(this QuestComponent self, int questConfigId)
-        {
-            // TODO: 根据QuestConfig奖励字段发放奖励
-            // 这里只做结构占位，具体实现需结合奖励系统
-        }
-
-        /// <summary>
-        /// 推进任务链，解锁后续任务
-        /// </summary>
-        public static void AdvanceQuestChain(this QuestComponent self, int questConfigId)
-        {
-            QuestConfig questConfig = QuestConfigCategory.Instance.Get(questConfigId);
-            foreach (int nextQuestId in questConfig.NextQuestId)
-            {
-                self.AvailableQuests.Add(nextQuestId);
-            }
         }
     }
 }

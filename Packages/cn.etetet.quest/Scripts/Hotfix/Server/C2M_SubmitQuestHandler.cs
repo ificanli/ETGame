@@ -24,20 +24,8 @@ namespace ET.Server
             
             // 获取QuestComponent
             QuestComponent questComponent = unit.GetComponent<QuestComponent>();
-            if (questComponent == null)
-            {
-                response.Error = TextConstDefine.Quest_ComponentNotFound;
-                return;
-            }
             
-            // 检查任务是否存在
-            if (!questComponent.ActiveQuests.TryGetValue(request.QuestId, out EntityRef<Quest> questRef))
-            {
-                response.Error = TextConstDefine.Quest_NotFound;
-                return;
-            }
-            
-            Quest quest = questRef;
+            Quest quest = questComponent.GetQuest(request.QuestId);
             if (quest == null)
             {
                 response.Error = TextConstDefine.Quest_NotFound;
@@ -65,22 +53,8 @@ namespace ET.Server
         {
             QuestComponent questComponent = unit.GetComponent<QuestComponent>();
             
-            // 从活跃任务中移除
-            if (questComponent.ActiveQuests.TryGetValue(questId, out EntityRef<Quest> questRef))
-            {
-                Quest quest = questRef;
-                if (quest != null)
-                {
-                    quest.Status = QuestStatus.Finished;
-                    quest.Dispose(); // 释放Quest实体
-                }
-                questComponent.ActiveQuests.Remove(questId);
-            }
-            
             // 添加到已完成任务列表
             questComponent.FinishedQuests.Add(questId);
-            
-            Log.Debug($"Quest {questId} finished for player {unit.Id}");
         }
     }
 }

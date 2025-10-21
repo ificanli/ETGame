@@ -22,6 +22,7 @@ namespace ET
             Desc = _buf.ReadString();
             Type = (ET.QuestObjectiveType)_buf.ReadInt();
             NeedCount = _buf.ReadInt();
+            Params = global::ET.QuestObjectiveParams.DeserializeQuestObjectiveParams(_buf);
 
             EndInit();
         }
@@ -51,12 +52,17 @@ namespace ET
         /// 需要的数量
         /// </summary>
         public readonly int NeedCount;
+        /// <summary>
+        /// 任务目标参数
+        /// </summary>
+        public readonly ET.QuestObjectiveParams Params;
     
         public const int __ID__ = -70847336;
         public override int GetTypeId() => __ID__;
 
         public  void ResolveRef()
         {
+            Params?.ResolveRef();
             EndRef();
         }
 
@@ -68,6 +74,7 @@ namespace ET
             + "Desc:" + Desc + ","
             + "Type:" + Type + ","
             + "NeedCount:" + NeedCount + ","
+            + "Params:" + Params + ","
             + "}";
         }
 

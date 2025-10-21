@@ -12,21 +12,6 @@ namespace ET.Server
         public HashSet<int> FinishedQuests = new();
 
         /// <summary>
-        /// 进行中的任务（任务Id->EntityRef<Quest>）
-        /// </summary>
-        public Dictionary<int, EntityRef<Quest>> ActiveQuests = new();
-
-        /// <summary>
-        /// 可接任务Id集合
-        /// </summary>
-        public HashSet<int> AvailableQuests = new();
-
-        /// <summary>
-        /// 任务进度字典（任务Id->进度字典）
-        /// </summary>
-        public Dictionary<int, Dictionary<int, int>> QuestProgressDict = new();
-
-        /// <summary>
         /// 任务目标类型映射（QuestObjectiveType->EntityRef<QuestObjective>集合）
         /// </summary>
         public MultiMapSet<QuestObjectiveType, EntityRef<QuestObjective>> QuestObjectives = new();

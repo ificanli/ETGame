@@ -4,13 +4,21 @@
     "Name": "击杀3只野猪",
     "Desc": "击杀3只野猪",
     "Type": 1,
-    "NeedCount": 3
+    "NeedCount": 3,
+    "Params": {
+      "$type": "QuestObjectiveParams_KillMonster",
+      "MonsterId": 0
+    }
   },
   {
     "Id": 2,
     "Name": "采集野花",
     "Desc": "采集2朵野花",
     "Type": 2,
-    "NeedCount": 2
+    "NeedCount": 2,
+    "Params": {
+      "$type": "QuestObjectiveParams_Collectltem",
+      "ItemId": 0
+    }
   }
 ]
