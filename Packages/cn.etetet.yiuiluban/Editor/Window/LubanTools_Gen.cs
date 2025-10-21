@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using ET;
 using UnityEditor;
+using UnityEngine;
 
 namespace YIUI.Luban.Editor
 {
@@ -11,7 +12,11 @@ namespace YIUI.Luban.Editor
         [MenuItem("ET/Excel/ExcelExporter")]
         public static void MenuLubanGen()
         {
-            ProcessHelper.DotNet("./Bin/ET.ExcelExporter.dll", "./", true).WaitForExit();
+            GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
+
+            string configType = globalConfig.EditorScripts ? "Json" : "Luban";
+            
+            ProcessHelper.DotNet($"./Bin/ET.ExcelExporter.dll {configType}", "./", true).WaitForExit();
         }        
     }
 }

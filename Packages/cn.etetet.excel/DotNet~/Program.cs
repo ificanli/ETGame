@@ -43,7 +43,7 @@ namespace ET
                     iExcelHandler.Run();
                 }
                 
-                LubanGen.CreateLubanConf();
+                LubanGen.CreateLubanConf(args[0]);
             }
             catch (Exception e)
             {

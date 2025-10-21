@@ -25,7 +25,7 @@ namespace ET
 
         private static Dictionary<string, LubanInfo> lubanInfos = new();
 
-        public static bool CreateLubanConf()
+        public static bool CreateLubanConf(string configType)
         {
             lubanInfos.Clear();
             foreach (string packageDir in Directory.GetDirectories("Packages", "cn.etetet.*"))
@@ -111,7 +111,7 @@ namespace ET
 
                     Console.WriteLine($"[INFO] 开始导出 {configCollectionsName}");
                     Console.Out.Flush();
-                    RunLubanGen(lubanInfo.LubanConfigPath);
+                    RunLubanGen(lubanInfo.LubanConfigPath, configType);
                 }
                 catch (Exception e)
                 {
@@ -124,15 +124,15 @@ namespace ET
             return true;
         }
 
-        private static void RunLubanGen(string configCollectionPath)
+        private static void RunLubanGen(string configCollectionPath, string configType)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                RunProcess("powershell.exe", $"-ExecutionPolicy Bypass -File {Path.Combine(configCollectionPath, "LubanGen.ps1")}");
+                RunProcess("powershell.exe", $"-ExecutionPolicy Bypass -File {Path.Combine(configCollectionPath, "LubanGen.ps1")} -ConfigType {configType}");
             }
             else
             {
-                RunProcess("/usr/local/bin/pwsh", $"-ExecutionPolicy Bypass -File {Path.Combine(configCollectionPath, "LubanGen.ps1")}");
+                RunProcess("/usr/local/bin/pwsh", $"-ExecutionPolicy Bypass -File {Path.Combine(configCollectionPath, "LubanGen.ps1")} -ConfigType {configType}");
             }
         }
 
