@@ -1,13 +1,12 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
 
 namespace ET.Server
 {
     public static class QuestHelper
     {
-        public static void AddQuest(Unit self, int configId)
+        public static void AddQuest(Unit self, int questId)
         {
-            Quest quest = self.GetComponent<QuestComponent>().AddQuest(configId);
+            Quest quest = self.GetComponent<QuestComponent>().AddQuest(questId);
             
             // 通知任务
             M2C_CreateQuest createQuest = M2C_CreateQuest.Create();
@@ -78,24 +77,6 @@ namespace ET.Server
             }
             
             Log.Debug($"Quest {questId} rewards granted to player {self.Id}");
-        }
-
-        /// <summary>
-        /// 处理怪物击杀事件
-        /// </summary>
-        public static void OnMonsterKilled(Unit self, int monsterId)
-        {
-            QuestComponent questComponent = self.GetComponent<QuestComponent>();
-            questComponent.Process(QuestObjectiveType.KillMonster, monsterId);
-        }
-
-        /// <summary>
-        /// 处理物品收集事件
-        /// </summary>
-        public static void OnItemCollected(Unit self, int itemId)
-        {
-            QuestComponent questComponent = self.GetComponent<QuestComponent>();
-            questComponent.Process(QuestObjectiveType.Collectltem, itemId);
         }
 
 

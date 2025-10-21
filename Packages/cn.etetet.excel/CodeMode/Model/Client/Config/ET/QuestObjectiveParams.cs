@@ -26,7 +26,7 @@ namespace ET
             switch (_buf.ReadInt())
             {
                 case ET.QuestObjectiveParams_KillMonster.__ID__: return new ET.QuestObjectiveParams_KillMonster(_buf);
-                case ET.QuestObjectiveParams_Collectltem.__ID__: return new ET.QuestObjectiveParams_Collectltem(_buf);
+                case ET.QuestObjectiveParams_CollectItem.__ID__: return new ET.QuestObjectiveParams_CollectItem(_buf);
                 default: throw new SerializationException();
             }
         }

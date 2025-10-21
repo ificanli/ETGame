@@ -10,37 +10,36 @@ namespace ET.Server
         /// <summary>
         /// 处理怪物击杀事件
         /// </summary>
-        public static void OnMonsterKilled(Unit player, int monsterId, int monsterConfigId)
+        public static void OnMonsterKilled(Unit player, int monsterId, int count)
         {
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
-            if (questComponent == null)
-            {
-                return;
-            }
 
             // 触发击杀类型任务的进度检查
-            var killObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.KillMonster);
-            if (killObjectives != null)
+            var questObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.KillMonster);
+            if (questObjectives != null)
             {
-                foreach (QuestObjective objective in killObjectives)
+                foreach (QuestObjective questObjective in questObjectives)
                 {
-                    if (objective == null)
+                    if (questObjective == null)
                     {
                         continue;
                     }
-                    QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
+                    QuestObjectiveConfig questObjectiveConfig = questObjective.GetConfig();
                     
-                    if (objective.Count >= questObjectiveConfig.NeedCount)
+                    if (questObjective.Count >= questObjectiveConfig.NeedCount)
                     {
                         return;
                     }
                     
                     QuestObjectiveParams_KillMonster questObjectiveParams = (QuestObjectiveParams_KillMonster)questObjectiveConfig.Params;
                     // 检查是否是目标怪物
-                    if (questObjectiveParams.MonsterId == monsterConfigId)
+                    if (questObjectiveParams.MonsterId != monsterId)
                     {
-                        UpdateObjectiveProgress(objective, 1);
+                        continue;
                     }
+
+                    questObjective.Count += count;
+                    UpdateObjectiveProgress(questObjective);
                 }
             }
         }
@@ -51,56 +50,55 @@ namespace ET.Server
         public static void OnItemCollected(Unit player, int itemId, int count)
         {
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
-
-            // 触发收集类型任务的进度检查
-            var collectObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.Collectltem);
-            if (collectObjectives != null)
+            
+            var questObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.Collectltem);
+            foreach (QuestObjective questObjective in questObjectives)
             {
-                foreach (EntityRef<QuestObjective> objectiveRef in collectObjectives)
+                if (questObjective == null)
                 {
-                    QuestObjective objective = objectiveRef;
-                    if (objective == null)
-                    {
-                        continue;
-                    }
-
-                    QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
-
-                    if (objective.Count >= questObjectiveConfig.NeedCount)
-                    {
-                        return;
-                    }
-                    
-                    QuestObjectiveParams_Collectltem questObjectiveParams = (QuestObjectiveParams_Collectltem)questObjectiveConfig.Params;
-                    // 检查是否是目标物品
-                    if (questObjectiveParams.ItemId == itemId)
-                    {
-                        UpdateObjectiveProgress(objective, count);
-                    }
+                    continue;
                 }
+
+                QuestObjectiveConfig questObjectiveConfig = questObjective.GetConfig();
+                if (questObjective.Count >= questObjectiveConfig.NeedCount)
+                {
+                    continue;
+                }
+                
+                QuestObjectiveParams_CollectItem questObjectiveParamsCollectItem = questObjectiveConfig.Params as QuestObjectiveParams_CollectItem;
+                if (questObjectiveParamsCollectItem.ItemId != itemId)
+                {
+                    continue;
+                }
+
+                questObjective.Count += count;
+                UpdateObjectiveProgress(questObjective);
+
             }
         }
         
         /// <summary>
         /// 更新任务目标进度
         /// </summary>
-        private static void UpdateObjectiveProgress(QuestObjective objective, int increment)
+        private static void UpdateObjectiveProgress(QuestObjective objective)
         {
-            if (objective.IsCompleted)
+            QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
+            if (objective.Count >= questObjectiveConfig.NeedCount)
             {
                 return;
             }
 
-            ++objective.Count;
-            QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
-            if (objective.Count >= questObjectiveConfig.NeedCount)
-            {
-                objective.IsCompleted = true;
-            }
-
             // 获取玩家Unit并通知进度更新
-            Unit player = objective.GetParent<Quest>().GetParent<QuestComponent>().GetParent<Unit>();
+            Quest quest = objective.GetParent<Quest>();
+            Unit player = quest.GetParent<QuestComponent>().GetParent<Unit>();
             NotifyQuestProgress(player, objective);
+            
+            // 检查整个任务是否完成
+            if (quest.IsFinished())
+            {
+                quest.Status = QuestStatus.CanSubmit;
+                QuestHelper.NotifyQuestCanSubmit(player, (int)quest.Id);
+            }
         }
 
         /// <summary>
@@ -118,26 +116,13 @@ namespace ET.Server
             message.QuestId = quest.Id;
 
             // 添加所有任务目标信息
-            foreach (var child in quest.Children.Values)
-            {
-                if (child is QuestObjective obj)
-                {
-                    QuestObjectiveInfo info = QuestObjectiveInfo.Create();
-                    info.QuestObjectiveId = (int)obj.Id;
-                    info.Count = obj.Count;
-                    info.NeedCount = obj.GetConfig().NeedCount;
-                    message.QuestObjective.Add(info);
-                }
-            }
+            QuestObjectiveInfo info = QuestObjectiveInfo.Create();
+            info.QuestObjectiveId = (int)objective.Id;
+            info.Count = objective.Count;
+            info.NeedCount = objective.GetConfig().NeedCount;
+            message.QuestObjective.Add(info);
 
             MapMessageHelper.NoticeClient(player, message, NoticeType.Self);
-
-            // 检查整个任务是否完成
-            if (quest.IsFinished())
-            {
-                quest.Status = QuestStatus.CanSubmit;
-                QuestHelper.NotifyQuestCanSubmit(player, (int)quest.Id);
-            }
         }
     }
 }

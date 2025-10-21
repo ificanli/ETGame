@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace ET.Server
@@ -8,25 +9,11 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this QuestComponent self)
         {
-
         }
+        
         [EntitySystem]
         private static void Awake(this QuestComponent self)
         {
-            
-        }
-
-        // 任务目标前进,订阅各种事件，然后调用这个。比如杀一只怪，调用一下，采集调用一下
-        public static void Process(this QuestComponent self, QuestObjectiveType questObjectiveType, int p)
-        {
-            IQuestObjectiveHandler questObjectiveHandler = QuestObjectiveDispatcher.Instance.Get(questObjectiveType);
-            
-            var questObjectives = self.GetQuestObjectiveByType(questObjectiveType);
-            foreach (EntityRef<QuestObjective> questObjectiveRef in questObjectives)
-            {
-                QuestObjective questObjective = questObjectiveRef;
-                questObjectiveHandler.Process(questObjective, p);
-            }
         }
 
         public static HashSet<EntityRef<QuestObjective>> GetQuestObjectiveByType(this QuestComponent self, QuestObjectiveType questObjectiveType)
@@ -79,29 +66,9 @@ namespace ET.Server
             }
 
             self.FinishedQuests.Add((int)quest.Id);
-            self.RemoveChild(quest.Id);
+            
+            self.RemoveQuest(questId);
             return true;
-        }
-
-        /// <summary>
-        /// 接取任务
-        /// </summary>
-        public static Quest AcceptQuest(this QuestComponent self, int questId)
-        {
-            // 检查是否已完成或已接取
-            if (self.FinishedQuests.Contains(questId) || self.GetQuest(questId) != null)
-            {
-                return null;
-            }
-            // 检查前置任务
-            if (!self.IsPreQuestFinished(questId))
-            {
-                return null;
-            }
-            // 创建任务实体
-            Quest quest = self.AddChildWithId<Quest>(questId);
-            // 可扩展：初始化目标、事件订阅等
-            return quest;
         }
 
         /// <summary>
@@ -110,48 +77,22 @@ namespace ET.Server
         public static void RemoveQuest(this QuestComponent self, int questId)
         {
             Quest quest = self.GetChild<Quest>(questId);
-            if (quest != null)
-            {
-                self.RemoveChild(quest.Id);
-            }
-        }
-
-        /// <summary>
-        /// 完成任务
-        /// </summary>
-        public static bool TryCompleteQuest(this QuestComponent self, int questId)
-        {
-            if (self.FinishedQuests.Contains(questId))
-            {
-                return true;
-            }
-            
-            Quest quest = self.GetQuest(questId);
-            if (quest == null)
-            {
-                return false;
-            }
             
             // 检查所有目标是否完成
-            foreach (int objectiveId in quest.GetConfig().ObjectiveIds)
+            // 检查所有目标是否完成
+            foreach (var kv in quest.Children)
             {
-                QuestObjective questObjective = quest.GetChild<QuestObjective>(objectiveId);
+                QuestObjective questObjective = kv.Value as QuestObjective;
                 if (questObjective == null)
                 {
-                    return false;
+                    continue;
                 }
 
-                if (!questObjective.IsCompleted)
-                {
-                    return false;
-                }
+                QuestObjectiveConfig questObjectiveConfig = questObjective.GetConfig();
+                self.QuestObjectives.Remove(questObjectiveConfig.Type, questObjective);
             }
             
-            quest.Status = QuestStatus.Finished;
-            self.FinishedQuests.Add(questId);
-            // 移除任务实体
             self.RemoveChild(quest.Id);
-            return true;
         }
     }
 }

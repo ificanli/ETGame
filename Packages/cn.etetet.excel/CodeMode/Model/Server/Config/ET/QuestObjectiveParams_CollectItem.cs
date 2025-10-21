@@ -13,18 +13,18 @@ using Luban;
 namespace ET
 {
     [EnableClass]
-    public sealed partial class QuestObjectiveParams_Collectltem : ET.QuestObjectiveParams
+    public sealed partial class QuestObjectiveParams_CollectItem : ET.QuestObjectiveParams
     {
-        public QuestObjectiveParams_Collectltem(ByteBuf _buf)  : base(_buf) 
+        public QuestObjectiveParams_CollectItem(ByteBuf _buf)  : base(_buf) 
         {
             ItemId = _buf.ReadInt();
 
             EndInit();
         }
 
-        public static QuestObjectiveParams_Collectltem DeserializeQuestObjectiveParams_Collectltem(ByteBuf _buf)
+        public static QuestObjectiveParams_CollectItem DeserializeQuestObjectiveParams_CollectItem(ByteBuf _buf)
         {
-            return new ET.QuestObjectiveParams_Collectltem(_buf);
+            return new ET.QuestObjectiveParams_CollectItem(_buf);
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace ET
         /// </summary>
         public readonly int ItemId;
     
-        public const int __ID__ = -1135305897;
+        public const int __ID__ = -1136348582;
         public override int GetTypeId() => __ID__;
 
         public override void ResolveRef()

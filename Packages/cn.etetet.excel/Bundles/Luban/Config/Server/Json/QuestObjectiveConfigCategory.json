@@ -17,7 +17,7 @@
     "Type": 2,
     "NeedCount": 2,
     "Params": {
-      "$type": "QuestObjectiveParams_Collectltem",
+      "$type": "QuestObjectiveParams_CollectItem",
       "ItemId": 0
     }
   }
