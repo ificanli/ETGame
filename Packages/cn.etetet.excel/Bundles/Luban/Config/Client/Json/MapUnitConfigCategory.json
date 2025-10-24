@@ -5,11 +5,6 @@
     "MapName": "Map1"
   },
   {
-    "Id": 10003,
-    "UnitConfigId": 1002,
-    "MapName": "Map2"
-  },
-  {
     "Id": 10004,
     "UnitConfigId": 1003,
     "MapName": "Map1"
@@ -107,6 +102,16 @@
   {
     "Id": 10023,
     "UnitConfigId": 1004,
+    "MapName": "Map2"
+  },
+  {
+    "Id": 10024,
+    "UnitConfigId": 1005,
+    "MapName": "Map2"
+  },
+  {
+    "Id": 10025,
+    "UnitConfigId": 1002,
     "MapName": "Map2"
   }
 ]

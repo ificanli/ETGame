@@ -57,6 +57,10 @@ namespace ET.Server
                     unit.AddComponent<PathfindingComponent, string>(scene.Name.GetSceneConfigName());
                     break;
                 }
+                case UnitType.NPC:
+                {
+                    break;
+                }
                 case UnitType.Virtual:
                 {
                     break;

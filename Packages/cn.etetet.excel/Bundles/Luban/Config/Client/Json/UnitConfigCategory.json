@@ -26,5 +26,12 @@
     "Name": "Bear",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 8
+  },
+  {
+    "Id": 1005,
+    "UnitType": 4,
+    "Name": "Mage",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 12
   }
 ]
