@@ -5,8 +5,20 @@ namespace ET
     [ComponentOf(typeof(Unit))]
     public class TargetComponent: Entity, IAwake
     {
-        public EntityRef<Unit> Unit     { get; set; }
-        public Unit            Target   => Unit;
+        private EntityRef<Unit> unit;
+
+        public Unit Unit
+        {
+            get
+            {
+                return this.unit; 
+                
+            }
+            set 
+            {
+                this.unit = value;
+            }
+        }
         public float3          Position { get; set; }
     }
 }

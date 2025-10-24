@@ -17,7 +17,7 @@ namespace ET.Server
 
         protected override async ETTask Execute(Unit unit, AI_PetReturn node, BTEnv env)
         {
-            unit.GetComponent<TargetComponent>().Unit = default;
+            unit.GetComponent<TargetComponent>().Unit = null;
 
             TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();

@@ -105,13 +105,8 @@ namespace ET.Client
             {
                 return;
             }
-
-            Unit myUnit = self.GetParent<Unit>();
-            myUnit.GetComponent<TargetComponent>().Unit = targetUnit;
-
-            C2M_SelectTarget c2MSelectTarget = C2M_SelectTarget.Create();
-            c2MSelectTarget.TargetUnitId = targetUnit.Id;
-            self.Root().GetComponent<ClientSenderComponent>().Send(c2MSelectTarget);
+            
+            UnitClickHelper.Click(self.Root(), targetUnit.Id).NoContext();
         }
 
         private static void ChangeTarget(this InputSystemComponent self, InputAction.CallbackContext context)
@@ -127,7 +122,7 @@ namespace ET.Client
         private static void PetAttack(this InputSystemComponent self, InputAction.CallbackContext context)
         {
             C2M_PetAttack c2MPetAttack = C2M_PetAttack.Create();
-            c2MPetAttack.UnitId = self.GetParent<Unit>().GetComponent<TargetComponent>().Unit.Entity.Id;
+            c2MPetAttack.UnitId = self.GetParent<Unit>().GetComponent<TargetComponent>().Unit.Id;
             self.Root().GetComponent<ClientSenderComponent>().Send(c2MPetAttack);
         }
 

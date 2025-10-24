@@ -175,12 +175,6 @@ message M2C_NumericChange // IMessage
 	int64 Value = 3;
 }
 
-message C2M_SelectTarget // ILocationMessage
-{
-	int32 RpcId = 1;
-	int64 TargetUnitId = 2;
-}
-
 message M2C_Turn // IMessage
 {
 	int64 UnitId = 1;
@@ -202,3 +196,18 @@ message G2C_Logout // ISessionResponse
 	string Message = 3;
 }
 
+// ResponseType M2C_ClickUnitResponse
+message C2M_ClickUnitRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 UnitId = 2;
+}
+
+message M2C_ClickUnitResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+
+	int32 UnitInteractionType = 4; // 0: None, 1: Quest, 2: Shop, etc.
+}

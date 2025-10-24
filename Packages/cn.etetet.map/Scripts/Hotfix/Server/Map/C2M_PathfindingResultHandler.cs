@@ -2,11 +2,13 @@
 namespace ET.Server
 {
 	[MessageHandler(SceneType.Map)]
-	public class C2M_SelectTargetHandler : MessageLocationHandler<Unit, C2M_SelectTarget>
+	public class C2M_ClickUnitRequestHandler : MessageLocationHandler<Unit, C2M_ClickUnitRequest, M2C_ClickUnitResponse>
 	{
-		protected override async ETTask Run(Unit unit, C2M_SelectTarget message)
+		protected override async ETTask Run(Unit unit, C2M_ClickUnitRequest request, M2C_ClickUnitResponse response)
 		{
-			Unit target = unit.GetParent<UnitComponent>().Get(message.TargetUnitId);
+			await ETTask.CompletedTask;
+			
+			Unit target = unit.GetParent<UnitComponent>().Get(request.UnitId);
 			if (target == null)
 			{
 				return;
@@ -14,7 +16,7 @@ namespace ET.Server
 
 			unit.GetComponent<TargetComponent>().Unit = target;
 			
-			await ETTask.CompletedTask;
+			// 返回点击展示的内容给客户端,根据unit跟npc不同的状态，显示不同的内容
 		}
 	}
 }

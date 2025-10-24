@@ -744,33 +744,6 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.C2M_SelectTarget)]
-    public partial class C2M_SelectTarget : MessageObject, ILocationMessage
-    {
-        public static C2M_SelectTarget Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<C2M_SelectTarget>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-        [MemoryPackOrder(1)]
-        public long TargetUnitId { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.TargetUnitId = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
     [Message(Opcode.M2C_Turn)]
     public partial class M2C_Turn : MessageObject, IMessage
     {
@@ -855,6 +828,70 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.C2M_ClickUnitRequest)]
+    [ResponseType(nameof(M2C_ClickUnitResponse))]
+    public partial class C2M_ClickUnitRequest : MessageObject, ILocationRequest
+    {
+        public static C2M_ClickUnitRequest Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_ClickUnitRequest>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public long UnitId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.UnitId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ClickUnitResponse)]
+    public partial class M2C_ClickUnitResponse : MessageObject, ILocationResponse
+    {
+        public static M2C_ClickUnitResponse Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ClickUnitResponse>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        /// <summary>
+        /// 0: None, 1: Quest, 2: Shop, etc.
+        /// </summary>
+        [MemoryPackOrder(3)]
+        public int UnitInteractionType { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.UnitInteractionType = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort RouterSync = 10701;
@@ -883,9 +920,10 @@ namespace ET
         public const ushort G2C_Benchmark = 10724;
         public const ushort M2C_Error = 10725;
         public const ushort M2C_NumericChange = 10726;
-        public const ushort C2M_SelectTarget = 10727;
-        public const ushort M2C_Turn = 10728;
-        public const ushort C2G_Logout = 10729;
-        public const ushort G2C_Logout = 10730;
+        public const ushort M2C_Turn = 10727;
+        public const ushort C2G_Logout = 10728;
+        public const ushort G2C_Logout = 10729;
+        public const ushort C2M_ClickUnitRequest = 10730;
+        public const ushort M2C_ClickUnitResponse = 10731;
     }
 }

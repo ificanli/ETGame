@@ -108,16 +108,12 @@ namespace ET.Client
 
             var targetComponent = player.GetComponent<TargetComponent>();
 
-            if (self.Unit == targetComponent.Target)
+            if (self.Unit == targetComponent.Unit)
             {
                 return;
             }
-
-            targetComponent.Unit = self.Unit;
-
-            C2M_SelectTarget c2MSelectTarget = C2M_SelectTarget.Create();
-            c2MSelectTarget.TargetUnitId = self.Unit.Id;
-            player.Root().GetComponent<ClientSenderComponent>().Send(c2MSelectTarget);
+            
+            UnitClickHelper.Click(self.Root(), self.Unit.Id).NoContext();
         }
 
         #endregion YIUIEvent结束

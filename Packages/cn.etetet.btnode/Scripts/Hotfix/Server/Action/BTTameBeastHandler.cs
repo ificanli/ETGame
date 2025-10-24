@@ -14,7 +14,7 @@
             // 清除所有仇恨
             target.GetComponent<ThreatComponent>().ClearThreat();
             // 清除目标
-            target.GetComponent<TargetComponent>().Unit = default;
+            target.GetComponent<TargetComponent>().Unit = null;
             
             target.AddComponent<PetComponent>().OwnerId = unit.Id;
             target.RemoveComponent<AIComponent>();

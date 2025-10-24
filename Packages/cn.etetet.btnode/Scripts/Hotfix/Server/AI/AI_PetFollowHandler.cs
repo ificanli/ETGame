@@ -7,7 +7,7 @@ namespace ET.Server
         protected override int Check(Unit unit, AI_PetFollow node, BTEnv env)
         {
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
-            Unit target = targetComponent.Target;
+            Unit target = targetComponent.Unit;
             if (target != null)
             {
                 return 1;

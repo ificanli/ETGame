@@ -26,7 +26,7 @@ namespace ET.Server
 
             if (node.Children.Count > 0)
             {
-                env.AddEntity(node.Unit, targetComponent.Unit.Entity);
+                env.AddEntity(node.Unit, targetComponent.Unit);
                 foreach (BTNode child in node.Children)
                 {
                     int ret = BTDispatcher.Instance.Handle(child, env);
@@ -52,7 +52,7 @@ namespace ET.Server
                 return TextConstDefine.SpellCast_TargetNotInFrontOfCaster;
             }
             
-            buff.GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit.Entity.Id);
+            buff.GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit.Id);
             
             return 0;
         }

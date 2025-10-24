@@ -62,7 +62,7 @@ namespace ET.Client
         private static void LateUpdate(this TargetInfoComponent self)
         {
             if (self.TargetComponent == null) return;
-            var target = self.TargetComponent.Target;
+            var target = self.TargetComponent.Unit;
             if (target == null)
             {
                 self.SetActive(false);
