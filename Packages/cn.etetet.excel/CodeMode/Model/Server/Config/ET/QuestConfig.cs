@@ -26,11 +26,12 @@ namespace ET
             { var __json0 = _buf["NextQuestId"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; NextQuestId = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  NextQuestId[__index0++] = __v0; }   }
             { if(!_buf["Title"].IsString) { throw new SerializationException(); }  Title = _buf["Title"]; }
             { if(!_buf["Content"].IsString) { throw new SerializationException(); }  Content = _buf["Content"]; }
+            { if(!_buf["AcceptedContent"].IsString) { throw new SerializationException(); }  AcceptedContent = _buf["AcceptedContent"]; }
             { if(!_buf["FinishContent"].IsString) { throw new SerializationException(); }  FinishContent = _buf["FinishContent"]; }
             { if(!_buf["AcceptNPC"].IsNumber) { throw new SerializationException(); }  AcceptNPC = _buf["AcceptNPC"]; }
-            { if(!_buf["AcceptNPCMap"].IsNumber) { throw new SerializationException(); }  AcceptNPCMap = _buf["AcceptNPCMap"]; }
+            { if(!_buf["AcceptNPCMap"].IsString) { throw new SerializationException(); }  AcceptNPCMap = _buf["AcceptNPCMap"]; }
             { if(!_buf["SubmitNPC"].IsNumber) { throw new SerializationException(); }  SubmitNPC = _buf["SubmitNPC"]; }
-            { if(!_buf["SubmitNPCMap"].IsNumber) { throw new SerializationException(); }  SubmitNPCMap = _buf["SubmitNPCMap"]; }
+            { if(!_buf["SubmitNPCMap"].IsString) { throw new SerializationException(); }  SubmitNPCMap = _buf["SubmitNPCMap"]; }
 
             EndInit();
         }
@@ -73,6 +74,10 @@ namespace ET
         /// </summary>
         public readonly string Content;
         /// <summary>
+        /// 已接任务文本
+        /// </summary>
+        public readonly string AcceptedContent;
+        /// <summary>
         /// 任务完成文本
         /// </summary>
         public readonly string FinishContent;
@@ -83,7 +88,7 @@ namespace ET
         /// <summary>
         /// 接任务NPC地图
         /// </summary>
-        public readonly int AcceptNPCMap;
+        public readonly string AcceptNPCMap;
         /// <summary>
         /// 交任务NPC
         /// </summary>
@@ -91,7 +96,7 @@ namespace ET
         /// <summary>
         /// 交任务NPC地图
         /// </summary>
-        public readonly int SubmitNPCMap;
+        public readonly string SubmitNPCMap;
 
         public const int __ID__ = -507727899;
         public override int GetTypeId() => __ID__;
@@ -112,6 +117,7 @@ namespace ET
             + "NextQuestId:" + Luban.StringUtil.CollectionToString(NextQuestId) + ","
             + "Title:" + Title + ","
             + "Content:" + Content + ","
+            + "AcceptedContent:" + AcceptedContent + ","
             + "FinishContent:" + FinishContent + ","
             + "AcceptNPC:" + AcceptNPC + ","
             + "AcceptNPCMap:" + AcceptNPCMap + ","

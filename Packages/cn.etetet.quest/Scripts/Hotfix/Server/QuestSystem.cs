@@ -41,5 +41,20 @@ namespace ET.Server
         {
             return self.GetChild<QuestObjective>(objectiveId);
         }
+        
+        public static List<QuestObjective> GetQuestObjectiveByType(this Quest self, QuestObjectiveType type)
+        {
+            List<QuestObjective> list = new List<QuestObjective>();
+            foreach (KeyValuePair<long, Entity> pair in self.Children)
+            {
+                QuestObjective objective = (QuestObjective)pair.Value;
+                QuestObjectiveConfig config = objective.GetConfig();
+                if (config.Type == type)
+                {
+                    list.Add(objective);
+                }
+            }
+            return list;
+        }
     }
 }

@@ -13,13 +13,9 @@ namespace ET.Client
             M2C_ClickUnitResponse response = await root.GetComponent<ClientSenderComponent>().Call(c2MClickUnitRequest) as M2C_ClickUnitResponse;
 
             // 根据返回的类型做不同的显示
-            switch (response.UnitInteractionType)
+            if (response.questInfo != null && response.questInfo.Count > 0)
             {
-                case 1:
-                {
-                    // 显示任务面板
-                    break;
-                }
+                // 显示任务界面
             }
         }
     }

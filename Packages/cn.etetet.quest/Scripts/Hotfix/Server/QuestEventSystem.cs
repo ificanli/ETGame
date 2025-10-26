@@ -16,31 +16,33 @@ namespace ET.Server
 
             // 触发击杀类型任务的进度检查
             var questObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.KillMonster);
-            if (questObjectives != null)
+            if (questObjectives == null)
             {
-                foreach (QuestObjective questObjective in questObjectives)
-                {
-                    if (questObjective == null)
-                    {
-                        continue;
-                    }
-                    QuestObjectiveConfig questObjectiveConfig = questObjective.GetConfig();
-                    
-                    if (questObjective.Count >= questObjectiveConfig.NeedCount)
-                    {
-                        return;
-                    }
-                    
-                    QuestObjectiveParams_KillMonster questObjectiveParams = (QuestObjectiveParams_KillMonster)questObjectiveConfig.Params;
-                    // 检查是否是目标怪物
-                    if (questObjectiveParams.MonsterId != monsterId)
-                    {
-                        continue;
-                    }
+                return;
+            }
 
-                    questObjective.Count += count;
-                    UpdateObjectiveProgress(questObjective);
+            foreach (QuestObjective questObjective in questObjectives)
+            {
+                if (questObjective == null)
+                {
+                    continue;
                 }
+                QuestObjectiveConfig questObjectiveConfig = questObjective.GetConfig();
+                    
+                if (questObjective.Count >= questObjectiveConfig.NeedCount)
+                {
+                    return;
+                }
+                    
+                QuestObjectiveParams_KillMonster questObjectiveParams = (QuestObjectiveParams_KillMonster)questObjectiveConfig.Params;
+                // 检查是否是目标怪物
+                if (questObjectiveParams.MonsterId != monsterId)
+                {
+                    continue;
+                }
+
+                questObjective.Count += count;
+                UpdateObjectiveProgress(questObjective);
             }
         }
 
@@ -52,6 +54,11 @@ namespace ET.Server
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
             
             var questObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.Collectltem);
+            if (questObjectives == null)
+            {
+                return;
+            }
+            
             foreach (QuestObjective questObjective in questObjectives)
             {
                 if (questObjective == null)

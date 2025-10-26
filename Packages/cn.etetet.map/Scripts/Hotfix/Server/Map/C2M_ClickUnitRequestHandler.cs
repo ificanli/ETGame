@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+
 namespace ET.Server
 {
 	[MessageHandler(SceneType.Map)]
@@ -16,7 +17,46 @@ namespace ET.Server
 
 			unit.GetComponent<TargetComponent>().Unit = target;
 			
-			// 返回点击展示的内容给客户端,根据unit跟npc不同的状态，显示不同的内容
+			// 有可接任务则发送任务信息
+			QuestComponent questComponent = unit.GetComponent<QuestComponent>();
+			
+			HashSet<int> allIds = QuestConfigCategory.Instance.GetAllQuestsById(target.Id);
+			HashSet<int> questIds = QuestConfigCategory.Instance.GetAcceptQuestsById(target.Id);
+			HashSet<int> submitQuestIds = QuestConfigCategory.Instance.GetSubmitQuestsById(target.Id);
+			
+			foreach (int questId in allIds)
+			{
+				Quest acceptedQuest = questComponent.GetQuest(questId);
+				if (acceptedQuest != null) // 已接任务
+				{
+					Show_QuestInfo questInfo = Show_QuestInfo.Create();
+					questInfo.QuestId = questId;
+					// 已接已完成
+					if (submitQuestIds.Contains(questId))
+					{
+						questInfo.Status = 2;
+					}
+					else
+					{
+						questInfo.Status = 1;	
+					}
+					response.questInfo.Add(questInfo);
+				}
+				else
+				{
+					if (!questIds.Contains(questId))
+					{
+						continue;
+					}
+					
+					// 可接
+					Show_QuestInfo questInfo = Show_QuestInfo.Create();
+					questInfo.QuestId = questId;
+					questInfo.Status = 0;
+
+					response.questInfo.Add(questInfo);
+				}
+			}
 		}
 	}
 }

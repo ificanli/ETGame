@@ -8,14 +8,12 @@ namespace ET.Server
         {
             QuestObjectiveConfig questObjectiveConfig = self.GetConfig();
 
-            self.Scene<QuestComponent>().QuestObjectives.Add(questObjectiveConfig.Type, self);
+            self.Parent?.GetParent<QuestComponent>().QuestObjectives.Add(questObjectiveConfig.Type, self);
         }
         
         [EntitySystem]
         private static void Destroy(this QuestObjective self)
         {
-            QuestObjectiveConfig questObjectiveConfig = self.GetConfig();
-            self.Scene<QuestComponent>()?.QuestObjectives.Remove(questObjectiveConfig.Type, self);
         }
 
         public static QuestObjectiveConfig GetConfig(this QuestObjective self)

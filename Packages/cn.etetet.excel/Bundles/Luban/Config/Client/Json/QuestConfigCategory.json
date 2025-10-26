@@ -1,17 +1,40 @@
 [
   {
     "Id": 1,
-    "Name": "驱赶野猪",
+    "Name": "烦人的野猪",
     "Desc": "击杀3只野猪",
-    "ObjectiveIds": [],
+    "ObjectiveIds": [
+      1
+    ],
+    "PreQuestIds": [],
+    "NextQuestId": [
+      2
+    ],
+    "Title": "烦人的野猪",
+    "Content": "野猪骚扰老百姓，请帮忙清除！",
+    "AcceptedContent": "麻烦您了！",
+    "FinishContent": "谢谢您帮我清除了野猪！",
+    "AcceptNPC": 10024,
+    "AcceptNPCMap": "Map2",
+    "SubmitNPC": 10024,
+    "SubmitNPCMap": "Map2"
+  },
+  {
+    "Id": 2,
+    "Name": "暴躁的熊",
+    "Desc": "击杀1头熊",
+    "ObjectiveIds": [
+      2
+    ],
     "PreQuestIds": [],
     "NextQuestId": [],
-    "Title": "",
-    "Content": "",
-    "FinishContent": "",
-    "AcceptNPC": 0,
-    "AcceptNPCMap": 0,
-    "SubmitNPC": 0,
-    "SubmitNPCMap": 0
+    "Title": "暴躁的熊",
+    "Content": "附近出现了一头熊，很危险！",
+    "AcceptedContent": "麻烦您了！",
+    "FinishContent": "谢谢！",
+    "AcceptNPC": 10024,
+    "AcceptNPCMap": "Map2",
+    "SubmitNPC": 10024,
+    "SubmitNPCMap": "Map2"
   }
 ]

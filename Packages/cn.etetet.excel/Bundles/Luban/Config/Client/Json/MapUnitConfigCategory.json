@@ -111,6 +111,11 @@
   },
   {
     "Id": 10025,
+    "UnitConfigId": 1005,
+    "MapName": "Map2"
+  },
+  {
+    "Id": 10026,
     "UnitConfigId": 1002,
     "MapName": "Map2"
   }

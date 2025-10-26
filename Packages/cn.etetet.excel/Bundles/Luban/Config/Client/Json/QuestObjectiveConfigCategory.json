@@ -7,18 +7,18 @@
     "NeedCount": 3,
     "Params": {
       "$type": "QuestObjectiveParams_KillMonster",
-      "MonsterId": 0
+      "MonsterId": 1003
     }
   },
   {
     "Id": 2,
-    "Name": "采集野花",
-    "Desc": "采集2朵野花",
-    "Type": 2,
-    "NeedCount": 2,
+    "Name": "击杀1头熊",
+    "Desc": "击杀1头熊",
+    "Type": 1,
+    "NeedCount": 1,
     "Params": {
-      "$type": "QuestObjectiveParams_CollectItem",
-      "ItemId": 0
+      "$type": "QuestObjectiveParams_KillMonster",
+      "MonsterId": 1004
     }
   }
 ]

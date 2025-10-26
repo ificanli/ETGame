@@ -872,10 +872,11 @@ namespace ET
         [MemoryPackOrder(2)]
         public string Message { get; set; }
         /// <summary>
-        /// 0: None, 1: Quest, 2: Shop, etc.
+        /// 任务信息
         /// </summary>
-        [MemoryPackOrder(3)]
-        public int UnitInteractionType { get; set; }
+        [MemoryPackOrder(4)]
+        public List<Show_QuestInfo> questInfo { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -886,7 +887,37 @@ namespace ET
             this.RpcId = default;
             this.Error = default;
             this.Message = default;
-            this.UnitInteractionType = default;
+            this.questInfo.Clear();
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.Show_QuestInfo)]
+    public partial class Show_QuestInfo : MessageObject
+    {
+        public static Show_QuestInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<Show_QuestInfo>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int QuestId { get; set; }
+        /// <summary>
+        /// 0: 可接, 1: 已接, 2: 可提交，3: 已提交
+        /// </summary>
+        [MemoryPackOrder(1)]
+        public int Status { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.QuestId = default;
+            this.Status = default;
 
             ObjectPool.Recycle(this);
         }
@@ -925,5 +956,6 @@ namespace ET
         public const ushort G2C_Logout = 10729;
         public const ushort C2M_ClickUnitRequest = 10730;
         public const ushort M2C_ClickUnitResponse = 10731;
+        public const ushort Show_QuestInfo = 10732;
     }
 }
