@@ -7,7 +7,6 @@ message C2M_AcceptQuest // ILocationRequest
 {
 	int32 RpcId = 1;
 	int32 QuestId = 2;
-	int64 NPCId = 3;
 }
 
 message M2C_AcceptQuest // ILocationResponse
@@ -23,7 +22,6 @@ message C2M_SubmitQuest // ILocationRequest
 {
 	int32 RpcId = 1;
 	int32 QuestId = 2;
-	int64 NPCId = 3;
 }
 
 message M2C_SubmitQuest // ILocationResponse

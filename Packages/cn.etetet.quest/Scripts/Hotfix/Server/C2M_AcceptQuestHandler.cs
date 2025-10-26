@@ -7,11 +7,18 @@ namespace ET.Server
     {
         protected override async ETTask Run(Unit unit, C2M_AcceptQuest request, M2C_AcceptQuest response)
         {
+            QuestConfig questConfig = QuestConfigCategory.Instance.Get(request.QuestId);
+            if (questConfig == null)
+            {
+                Log.Warning($"not found request: {request.QuestId}");
+                return;
+            }
+            
             // 判断NPC是否存在
-            Unit npc = unit.GetParent<UnitComponent>().Get(request.NPCId);
+            Unit npc = unit.GetParent<UnitComponent>().Get(questConfig.AcceptNPC);
             if (npc == null)
             {
-                response.Error = TextConstDefine.Quest_NotFoundNPC;
+                Log.Warning($"not found npc: {questConfig.AcceptNPC}");
                 return;
             }
             
@@ -31,11 +38,16 @@ namespace ET.Server
                 response.Error = TextConstDefine.Quest_AlreadyAccepted;
                 return;
             }
+
+            // 检查任务是否可以接取，主要防止外挂
+            if (!QuestHelper.CanAcceptQuest(unit, request.QuestId))
+            {
+                Log.Warning($"can not accept quest: {unit.Id} {request.QuestId}");
+                return;
+            }
             
             // 接取任务 - 创建Quest实体
             QuestHelper.AddQuest(unit, request.QuestId);
-            
-            Log.Debug($"Player {unit.Id} accepted quest {request.QuestId}");
             await ETTask.CompletedTask;
         }
     }

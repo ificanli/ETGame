@@ -24,15 +24,15 @@ namespace ET.Server
         }
         
         // 获取任务
-        public static Quest GetQuest(this QuestComponent self, int questId)
+        public static Quest GetQuest(this QuestComponent self, long questId)
         {
             return self.GetChild<Quest>(questId);
         }
 
         // 判断前置任务是否完成
-        public static bool IsPreQuestFinished(this QuestComponent self, int questId)
+        public static bool IsPreQuestFinished(this QuestComponent self, long questId)
         {
-            QuestConfig questConfig = QuestConfigCategory.Instance.Get(questId);
+            QuestConfig questConfig = QuestConfigCategory.Instance.Get((int)questId);
             foreach (int preQuestId in questConfig.PreQuestIds)
             {
                 if (!self.FinishedQuests.Contains(preQuestId))
@@ -43,9 +43,9 @@ namespace ET.Server
             return true;
         }
         
-        public static Quest AddQuest(this QuestComponent self, int configId)
+        public static Quest AddQuest(this QuestComponent self, int questId)
         {
-            Quest quest = self.AddChildWithId<Quest>(configId);
+            Quest quest = self.AddChildWithId<Quest>(questId);
 
             foreach (KeyValuePair<long, Entity> kv in quest.Children)
             {
@@ -57,7 +57,7 @@ namespace ET.Server
         }
 
         // 尝试完成任务
-        public static bool TryFinishQuest(this QuestComponent self, int questId)
+        public static bool TryFinishQuest(this QuestComponent self, long questId)
         {
             Quest quest = self.GetQuest(questId);
             if (!quest.IsFinished())
@@ -74,7 +74,7 @@ namespace ET.Server
         /// <summary>
         /// 放弃任务
         /// </summary>
-        public static void RemoveQuest(this QuestComponent self, int questId)
+        public static void RemoveQuest(this QuestComponent self, long questId)
         {
             Quest quest = self.GetChild<Quest>(questId);
             

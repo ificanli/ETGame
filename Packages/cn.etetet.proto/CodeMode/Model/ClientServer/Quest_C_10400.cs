@@ -18,8 +18,6 @@ namespace ET
         public int RpcId { get; set; }
         [MemoryPackOrder(1)]
         public int QuestId { get; set; }
-        [MemoryPackOrder(2)]
-        public long NPCId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -29,7 +27,6 @@ namespace ET
 
             this.RpcId = default;
             this.QuestId = default;
-            this.NPCId = default;
 
             ObjectPool.Recycle(this);
         }
@@ -80,8 +77,6 @@ namespace ET
         public int RpcId { get; set; }
         [MemoryPackOrder(1)]
         public int QuestId { get; set; }
-        [MemoryPackOrder(2)]
-        public long NPCId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -91,7 +86,6 @@ namespace ET
 
             this.RpcId = default;
             this.QuestId = default;
-            this.NPCId = default;
 
             ObjectPool.Recycle(this);
         }

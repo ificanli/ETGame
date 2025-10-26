@@ -34,11 +34,11 @@ namespace ET.Server
 					// 已接已完成
 					if (submitQuestIds.Contains(questId))
 					{
-						questInfo.Status = 2;
+						questInfo.Status = (int)QuestStatus.CanSubmit;
 					}
 					else
 					{
-						questInfo.Status = 1;	
+						questInfo.Status = (int)QuestStatus.InProgress;	
 					}
 					response.questInfo.Add(questInfo);
 				}
@@ -52,7 +52,7 @@ namespace ET.Server
 					// 可接
 					Show_QuestInfo questInfo = Show_QuestInfo.Create();
 					questInfo.QuestId = questId;
-					questInfo.Status = 0;
+					questInfo.Status = (int)QuestStatus.Available;
 
 					response.questInfo.Add(questInfo);
 				}

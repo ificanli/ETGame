@@ -17,7 +17,6 @@ namespace ET.Client
                 
                 C2M_AcceptQuest request = C2M_AcceptQuest.Create();
                 request.QuestId = questId;
-                request.NPCId = npcId;
 
                 M2C_AcceptQuest response = (M2C_AcceptQuest)await scene.GetComponent<ClientSenderComponent>().Call(request);
                 
@@ -59,7 +58,6 @@ namespace ET.Client
                 
                 C2M_SubmitQuest request = C2M_SubmitQuest.Create();
                 request.QuestId = questId;
-                request.NPCId = npcId;
 
                 M2C_SubmitQuest response = (M2C_SubmitQuest)await scene.GetComponent<ClientSenderComponent>().Call(request);
                 

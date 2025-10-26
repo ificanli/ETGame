@@ -38,6 +38,15 @@ namespace ET.Server
             
             MapMessageHelper.NoticeClient(self, updateQuest, NoticeType.Self);
         }
+        
+        public static void SubmitQuest(Unit self, Quest quest)
+        {
+            QuestComponent questComponent = self.GetComponent<QuestComponent>();
+            questComponent.FinishedQuests.Add((int)quest.Id);
+            questComponent.RemoveQuest((int)quest.Id);
+            
+            // 触发新可接任务
+        }
 
         /// <summary>
         /// 查找指定任务Id的任务
@@ -47,40 +56,6 @@ namespace ET.Server
             return self.GetComponent<QuestComponent>().GetQuest(questId);
         }
 
-        /// <summary>
-        /// 校验任务是否可接取
-        /// </summary>
-        public static bool CheckQuestAcceptable(Unit self, int questId)
-        {
-            QuestComponent questComponent = self.GetComponent<QuestComponent>();
-            return !questComponent.FinishedQuests.Contains(questId) && questComponent.IsPreQuestFinished(questId);
-        }
-
-        /// <summary>
-        /// 校验任务是否可提交
-        /// </summary>
-        public static bool CheckQuestSubmittable(Unit self, int questId)
-        {
-            Quest quest = self.GetComponent<QuestComponent>().GetQuest(questId);
-            return quest != null && quest.IsFinished();
-        }
-
-        /// <summary>
-        /// 发放任务奖励
-        /// </summary>
-        public static void GrantQuestReward(Unit self, int questId)
-        {
-            QuestConfig questConfig = QuestConfigCategory.Instance.Get(questId);
-            if (questConfig == null)
-            {
-                return;
-            }
-            
-            Log.Debug($"Quest {questId} rewards granted to player {self.Id}");
-        }
-
-
-        #region 通知方法
         
         /// <summary>
         /// 通知任务目标完成
@@ -116,20 +91,13 @@ namespace ET.Server
             MapMessageHelper.NoticeClient(self, message, NoticeType.Self);
         }
         
-        #endregion
-
-        #region 消息处理器所需方法
 
         /// <summary>
         /// 检查任务是否可以接取
         /// </summary>
-        public static async ETTask<bool> CanAcceptQuest(Unit unit, int questId)
+        public static bool CanAcceptQuest(Unit unit, int questId)
         {
             QuestComponent questComponent = unit.GetComponent<QuestComponent>();
-            if (questComponent == null)
-            {
-                return false;
-            }
 
             // 检查是否已经有此任务
             if (questComponent.GetQuest(questId) != null)
@@ -145,10 +113,6 @@ namespace ET.Server
 
             // 获取任务配置
             var questConfig = QuestConfigCategory.Instance.Get(questId);
-            if (questConfig == null)
-            {
-                return false;
-            }
 
             // 检查等级要求
             // TODO: 获取玩家等级进行检查
@@ -169,39 +133,7 @@ namespace ET.Server
                 }
             }
 
-            await ETTask.CompletedTask;
             return true;
         }
-
-        /// <summary>
-        /// 检查NPC是否正确
-        /// </summary>
-        public static bool IsCorrectAcceptNPC(int questId, int npcId)
-        {
-            var questConfig = QuestConfigCategory.Instance.Get(questId);
-            if (questConfig == null)
-            {
-                return false;
-            }
-
-            return questConfig.AcceptNPC == npcId;
-        }
-
-        /// <summary>
-        /// 检查是否正确的提交NPC
-        /// </summary>
-        public static bool IsCorrectSubmitNPC(int questId, int npcId)
-        {
-            var questConfig = QuestConfigCategory.Instance.Get(questId);
-            if (questConfig == null)
-            {
-                return false;
-            }
-
-            return questConfig.SubmitNPC == npcId;
-        }
-
-
-        #endregion
     }
 }

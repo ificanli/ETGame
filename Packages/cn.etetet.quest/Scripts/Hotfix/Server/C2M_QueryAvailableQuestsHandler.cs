@@ -8,6 +8,7 @@ namespace ET.Server
             // 如果指定了NPC ID，检查NPC是否存在
             if (request.NPCId == 0)
             {
+                response.Error = TextConstDefine.Quest_NotFoundNPC;
                 return;
             }
             
