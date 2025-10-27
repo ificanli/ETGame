@@ -114,7 +114,11 @@ namespace ET
                     Entity entity = timerAction.GetEntity();
                     int timerActionType = timerAction.Type;
                     self.RemoveChild(timerId);
-                    EventSystem.Instance.Invoke(timerActionType, new TimerCallback() { Args = entity });
+
+                    if (entity != null)
+                    {
+                        EventSystem.Instance.Invoke(timerActionType, new TimerCallback() { Args = entity });
+                    }                    
                     break;
                 }
                 case TimerClass.OnceWaitTimer:
@@ -129,10 +133,16 @@ namespace ET
                     int timerActionType = timerAction.Type;
                     Entity entity = timerAction.GetEntity();
 
-                    timerAction.StartTime = self.GetNow();
-                    self.AddTimer(timerAction);
-
-                    EventSystem.Instance.Invoke(timerActionType, new TimerCallback() { Args = entity });
+                    if (entity != null)
+                    {
+                        timerAction.StartTime = self.GetNow();
+                        self.AddTimer(timerAction);
+                        EventSystem.Instance.Invoke(timerActionType, new TimerCallback() { Args = entity });
+                    }
+                    else
+                    {
+                        self.RemoveChild(timerId);
+                    }
                     break;
                 }
             }
