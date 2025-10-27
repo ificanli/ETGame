@@ -11,12 +11,15 @@
         [EntitySystem]
         private static void Update(this CoroutineLockComponent self)
         {
-            // 循环过程中会有对象继续加入队列
-            while (self.nextFrameRun.Count > 0)
-            {
-                (long coroutineLockType, long key, int count) = self.nextFrameRun.Dequeue();
-                self.Notify(coroutineLockType, key, count);
-            }
+            // 循环过程中会有对象继续加入队列，这里避免死循环，每帧处理当前队列长度的对象
+            // 因为协程锁可能是同步处理完成，这样会导致await之后的逻辑立即加入队列，从而导致一帧处理过多
+            // 比如map收到发给unit的消息，大部分消息都是同步的，假如一帧收到1000个同步消息，那么之前这里一帧就会处理1000次
+            int count = self.nextFrameRun.Count;
+            for (int i = 0; i < count; i++)
+            {                
+                (long coroutineLockType, long key, int level) = self.nextFrameRun.Dequeue();
+                self.Notify(coroutineLockType, key, level);
+            }       
         }
 
         internal static void RunNextCoroutine(this CoroutineLockComponent self, long coroutineLockType, long key, int level)
