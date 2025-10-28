@@ -134,7 +134,7 @@ namespace ET.Client
                 return;
             }
 
-            List<ClientQuestData> submittableQuests = questComponent.GetSubmittableQuests();
+            List<ClientQuest> submittableQuests = questComponent.GetSubmittableQuests();
             // TODO: 需要根据任务配置检查NPC ID
             /*
             submittableQuests = submittableQuests
@@ -165,7 +165,7 @@ namespace ET.Client
         /// <summary>
         /// 显示可提交任务UI
         /// </summary>
-        private static void ShowSubmittableQuestsUI(Scene scene, List<ClientQuestData> submittableQuests)
+        private static void ShowSubmittableQuestsUI(Scene scene, List<ClientQuest> submittableQuests)
         {
             // TODO: 显示可提交任务的UI界面
             Log.Info($"Found {submittableQuests.Count} submittable quests");

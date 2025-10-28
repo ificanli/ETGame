@@ -15,7 +15,7 @@ namespace ET.Client
 
             // 更新任务目标进度 - 需要转换服务器数据到客户端数据格式
             // TODO: 实现服务器QuestObjective到ClientQuestObjectiveData的转换
-            // questComponent.UpdateQuestObjective((int)message.QuestId, ConvertToClientObjectives(message.QuestObjective));
+            // questComponent.UpdateQuestObjective(message.QuestId, ConvertToClientObjectives(message.QuestObjective));
 
             Log.Info($"Quest {message.QuestId} objectives updated, count: {message.QuestObjective.Count}");
             

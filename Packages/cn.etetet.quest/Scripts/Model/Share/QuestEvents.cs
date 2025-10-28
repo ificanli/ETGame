@@ -7,7 +7,7 @@ namespace ET
     /// </summary>
     public struct ClientQuestDataChanged
     {
-        public int QuestId;
+        public long QuestId;
         public int Status; // 简化为int状态值
     }
 
@@ -16,7 +16,7 @@ namespace ET
     /// </summary>
     public struct ClientQuestObjectiveChanged
     {
-        public int QuestId;
+        public long QuestId;
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ namespace ET
     /// </summary>
     public struct ClientQuestRemoved
     {
-        public int QuestId;
+        public long QuestId;
     }
 
     /// <summary>
@@ -32,29 +32,9 @@ namespace ET
     /// </summary>
     public struct QuestDataSyncedEvent
     {
-        public Dictionary<int, int> QuestStatusMap; // 简化为任务ID和状态的映射
+        public Dictionary<long, int> QuestStatusMap; // 简化为任务ID和状态的映射
     }
 
-    /// <summary>
-    /// 任务目标进度更新事件
-    /// </summary>
-    public struct QuestObjectiveProgressUpdatedEvent
-    {
-        public int QuestId;
-        public int ObjectiveId;
-        public int OldCount;
-        public int NewCount;
-        public Dictionary<int, int> Progress;
-    }
-
-    /// <summary>
-    /// 任务失败事件
-    /// </summary>
-    public struct QuestFailedEvent
-    {
-        public int QuestId;
-        public string Reason;
-    }
 
     /// <summary>
     /// 任务完成事件
@@ -77,24 +57,6 @@ namespace ET
     }
 
     /// <summary>
-    /// 查询可接取任务失败事件
-    /// </summary>
-    public struct QueryAvailableQuestsFailedEvent
-    {
-        public int NPCId;
-        public string ErrorMessage;
-    }
-
-    /// <summary>
-    /// 可接取任务查询完成事件
-    /// </summary>
-    public struct AvailableQuestsQueriedEvent
-    {
-        public int NPCId;
-        public List<AvailableQuestInfo> AvailableQuests;
-    }
-
-    /// <summary>
     /// 获取任务详情失败事件
     /// </summary>
     public struct GetQuestDetailFailedEvent
@@ -113,15 +75,6 @@ namespace ET
         public QuestDetailInfo QuestDetail; // 兼容字段名
     }
 
-    /// <summary>
-    /// 任务操作失败事件
-    /// </summary>
-    public struct QuestOperationFailedEvent
-    {
-        public int QuestId;
-        public string Operation;
-        public string ErrorMessage;
-    }
 
     /// <summary>
     /// 任务放弃事件

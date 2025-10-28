@@ -520,100 +520,6 @@ namespace ET
         }
     }
 
-    // 任务完成通知
-    [MemoryPackable]
-    [Message(Opcode.M2C_QuestComplete)]
-    public partial class M2C_QuestComplete : MessageObject, IMessage
-    {
-        public static M2C_QuestComplete Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<M2C_QuestComplete>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int QuestId { get; set; }
-        [MemoryPackOrder(1)]
-        public int RewardExp { get; set; }
-        [MemoryPackOrder(2)]
-        public int RewardGold { get; set; }
-        [MemoryPackOrder(3)]
-        public List<int> RewardItems { get; set; } = new();
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.QuestId = default;
-            this.RewardExp = default;
-            this.RewardGold = default;
-            this.RewardItems.Clear();
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    // 任务失败通知
-    [MemoryPackable]
-    [Message(Opcode.M2C_QuestFailed)]
-    public partial class M2C_QuestFailed : MessageObject, IMessage
-    {
-        public static M2C_QuestFailed Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<M2C_QuestFailed>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int QuestId { get; set; }
-        [MemoryPackOrder(1)]
-        public string Reason { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.QuestId = default;
-            this.Reason = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    // 任务进度提示
-    [MemoryPackable]
-    [Message(Opcode.M2C_QuestProgress)]
-    public partial class M2C_QuestProgress : MessageObject, IMessage
-    {
-        public static M2C_QuestProgress Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<M2C_QuestProgress>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int QuestId { get; set; }
-        /// <summary>
-        /// 进度描述文本
-        /// </summary>
-        [MemoryPackOrder(1)]
-        public string ProgressText { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.QuestId = default;
-            this.ProgressText = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
     // 获取任务详情
     [MemoryPackable]
     [Message(Opcode.C2M_GetQuestDetail)]
@@ -768,11 +674,8 @@ namespace ET
         public const ushort C2M_QueryAvailableQuests = 10414;
         public const ushort AvailableQuestInfo = 10415;
         public const ushort M2C_QueryAvailableQuests = 10416;
-        public const ushort M2C_QuestComplete = 10417;
-        public const ushort M2C_QuestFailed = 10418;
-        public const ushort M2C_QuestProgress = 10419;
-        public const ushort C2M_GetQuestDetail = 10420;
-        public const ushort QuestDetailInfo = 10421;
-        public const ushort M2C_GetQuestDetail = 10422;
+        public const ushort C2M_GetQuestDetail = 10417;
+        public const ushort QuestDetailInfo = 10418;
+        public const ushort M2C_GetQuestDetail = 10419;
     }
 }

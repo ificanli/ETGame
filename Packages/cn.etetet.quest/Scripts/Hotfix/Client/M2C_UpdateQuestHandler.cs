@@ -3,19 +3,13 @@ namespace ET.Client
     [MessageHandler(SceneType.Client)]
     public class M2C_UpdateQuestHandler : MessageHandler<Scene, M2C_UpdateQuest>
     {
-        protected override async ETTask Run(Scene scene, M2C_UpdateQuest message)
+        protected override async ETTask Run(Scene root, M2C_UpdateQuest message)
         {
-            ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
-            if (questComponent == null)
-            {
-                Log.Error("ClientQuestComponent not found in scene");
-                await ETTask.CompletedTask;
-                return;
-            }
+            ClientQuestComponent questComponent = root.GetComponent<ClientQuestComponent>();
 
             // 更新任务状态
             QuestStatus questStatus = (QuestStatus)message.State;
-            questComponent.UpdateQuestData((int)message.QuestId, questStatus);
+            questComponent.UpdateQuestData(message.QuestId, questStatus);
 
             Log.Info($"Quest {message.QuestId} status updated to {questStatus}");
             

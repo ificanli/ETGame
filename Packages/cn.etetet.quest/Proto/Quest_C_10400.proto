@@ -125,29 +125,6 @@ message M2C_QueryAvailableQuests // ILocationResponse
 	repeated AvailableQuestInfo AvailableQuests = 4;
 }
 
-// 任务完成通知
-message M2C_QuestComplete // IMessage
-{
-	int32 QuestId = 1;
-	int32 RewardExp = 2;
-	int32 RewardGold = 3;
-	repeated int32 RewardItems = 4;
-}
-
-// 任务失败通知
-message M2C_QuestFailed // IMessage
-{
-	int32 QuestId = 1;
-	string Reason = 2;
-}
-
-// 任务进度提示
-message M2C_QuestProgress // IMessage
-{
-	int32 QuestId = 1;
-	string ProgressText = 2; // 进度描述文本
-}
-
 // 获取任务详情
 // ResponseType M2C_GetQuestDetail
 message C2M_GetQuestDetail // ILocationRequest
