@@ -26,5 +26,7 @@
         "Temp": true
     },
     "explorerExclude.backup": {},
-    "claudeCodeChat.permissions.yoloMode": true
+    "claudeCodeChat.permissions.yoloMode": true,
+    "Codegeex.GenerationPreference": "block",
+    "Codegeex.CompletionDelay": 0.2
 }
