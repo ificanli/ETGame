@@ -4,7 +4,7 @@ namespace ET.Server
 {
     public static class QuestHelper
     {
-        public static void AddQuest(Unit self, int questId)
+        public static void AddQuest(Unit self, long questId)
         {
             Quest quest = self.GetComponent<QuestComponent>().AddQuest(questId);
             
@@ -16,17 +16,16 @@ namespace ET.Server
                 QuestObjectiveConfig objectiveConfig = objective.GetConfig();
                 QuestObjectiveInfo questObjectiveInfo = QuestObjectiveInfo.Create();
                 questObjectiveInfo.QuestObjectiveId = objectiveConfig.Id;
-                questObjectiveInfo.NeedCount = objectiveConfig.NeedCount;
                 createQuest.QuestObjective.Add(questObjectiveInfo);
             }
             
             MapMessageHelper.NoticeClient(self, createQuest, NoticeType.Self);
         }
         
-        public static void FinishQuest(Unit self, int questId)
+        public static void SubmitQuest(Unit self, long questId)
         {
             QuestComponent questComponent = self.GetComponent<QuestComponent>();
-            if (!questComponent.TryFinishQuest(questId))
+            if (!questComponent.TrySubmitQuest(questId))
             {
                 return;
             }
@@ -34,16 +33,9 @@ namespace ET.Server
             // 通知任务完成
             M2C_UpdateQuest updateQuest = M2C_UpdateQuest.Create();
             updateQuest.QuestId = questId;
-            updateQuest.State = (int)QuestStatus.Finished;
+            updateQuest.State = (int)QuestStatus.Submited;
             
             MapMessageHelper.NoticeClient(self, updateQuest, NoticeType.Self);
-        }
-        
-        public static void SubmitQuest(Unit self, Quest quest)
-        {
-            QuestComponent questComponent = self.GetComponent<QuestComponent>();
-            questComponent.FinishedQuests.Add((int)quest.Id);
-            questComponent.RemoveQuest((int)quest.Id);
             
             // 触发新可接任务
         }
@@ -51,51 +43,40 @@ namespace ET.Server
         /// <summary>
         /// 查找指定任务Id的任务
         /// </summary>
-        public static Quest GetQuest(Unit self, int questId)
+        public static Quest GetQuest(Unit self, long questId)
         {
             return self.GetComponent<QuestComponent>().GetQuest(questId);
         }
 
         
         /// <summary>
-        /// 通知任务目标完成
+        /// 更新任务目标进度
         /// </summary>
-        private static void NotifyQuestObjectiveUpdate(Unit self, int questId, int objectiveId)
+        public static void UpdateObjectiveCount(QuestObjective objective)
         {
-            Quest quest = self.GetComponent<QuestComponent>().GetQuest(questId);
-            if (quest == null) return;
+            QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
+            if (objective.Count >= questObjectiveConfig.NeedCount)
+            {
+                return;
+            }
+
+            // 获取玩家Unit并通知进度更新
+            Quest quest = objective.GetParent<Quest>();
+            Unit player = quest.GetParent<QuestComponent>().GetParent<Unit>();
             
             M2C_UpdateQuestObjective message = M2C_UpdateQuestObjective.Create();
-            message.QuestId = questId;
+            message.QuestId = quest.Id;
+            message.QuestObjectiveId = objective.Id;
+            message.Count = objective.Count;
 
-            QuestObjective objective = quest.GetQuestObjective(objectiveId);
-            
-            QuestObjectiveInfo info = QuestObjectiveInfo.Create();
-            info.QuestObjectiveId = (int)objective.Id;
-            info.Count = objective.Count;
-            info.NeedCount = objective.GetConfig().NeedCount;
-            message.QuestObjective.Add(info);
-            
-            MapMessageHelper.NoticeClient(self, message, NoticeType.Self);
-        }
-
-        /// <summary>
-        /// 通知任务可提交
-        /// </summary>
-        public static void NotifyQuestCanSubmit(Unit self, int questId)
-        {
-            M2C_UpdateQuest message = M2C_UpdateQuest.Create();
-            message.QuestId = questId;
-            message.State = (int)QuestStatus.CanSubmit;
-            
-            MapMessageHelper.NoticeClient(self, message, NoticeType.Self);
+            MapMessageHelper.NoticeClient(player, message, NoticeType.Self);
         }
         
 
         /// <summary>
         /// 检查任务是否可以接取
         /// </summary>
-        public static bool CanAcceptQuest(Unit unit, int questId)
+        public static bool CanAcceptQuest(Unit unit, long questId)
         {
             QuestComponent questComponent = unit.GetComponent<QuestComponent>();
 
@@ -106,13 +87,13 @@ namespace ET.Server
             }
 
             // 检查是否已经完成过此任务
-            if (questComponent.FinishedQuests.Contains(questId))
+            if (questComponent.FinishedQuests.Contains((int)questId))
             {
                 return false;
             }
 
             // 获取任务配置
-            var questConfig = QuestConfigCategory.Instance.Get(questId);
+            var questConfig = QuestConfigCategory.Instance.Get((int)questId);
 
             // 检查等级要求
             // TODO: 获取玩家等级进行检查

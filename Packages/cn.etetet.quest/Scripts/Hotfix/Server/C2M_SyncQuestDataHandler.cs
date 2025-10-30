@@ -26,7 +26,6 @@ namespace ET.Server
                     }
                     QuestObjectiveInfo questObjectiveInfo = QuestObjectiveInfo.Create();
                     questObjectiveInfo.Count = questObjective.Count;
-                    questObjectiveInfo.NeedCount = questObjective.GetConfig().NeedCount;
                     questObjectiveInfo.QuestObjectiveId = (int)questObjective.Id;
                     questInfo.Objectives.Add(questObjectiveInfo);
                 }

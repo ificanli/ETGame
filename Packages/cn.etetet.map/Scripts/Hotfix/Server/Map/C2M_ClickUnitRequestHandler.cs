@@ -34,7 +34,7 @@ namespace ET.Server
 					// 已接已完成
 					if (submitQuestIds.Contains(questId))
 					{
-						questInfo.Status = (int)QuestStatus.CanSubmit;
+						questInfo.Status = (int)QuestStatus.Submited;
 					}
 					else
 					{

@@ -63,6 +63,12 @@ namespace ET.Server
                     BTDispatcher.Instance.Handle(effect, env);
                 }
             }
+
+            // 死亡
+            if (v == 0)
+            {
+                EventSystem.Instance.Publish(target.Scene(), new UnitDie { Unit = attacker, Target = target});
+            }
         }
     }
 }

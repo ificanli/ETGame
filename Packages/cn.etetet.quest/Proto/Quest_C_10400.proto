@@ -6,7 +6,7 @@ package ET;
 message C2M_AcceptQuest // ILocationRequest
 {
 	int32 RpcId = 1;
-	int32 QuestId = 2;
+	int64 QuestId = 2;
 }
 
 message M2C_AcceptQuest // ILocationResponse
@@ -21,7 +21,7 @@ message M2C_AcceptQuest // ILocationResponse
 message C2M_SubmitQuest // ILocationRequest
 {
 	int32 RpcId = 1;
-	int32 QuestId = 2;
+	int64 QuestId = 2;
 }
 
 message M2C_SubmitQuest // ILocationResponse
@@ -33,9 +33,8 @@ message M2C_SubmitQuest // ILocationResponse
 
 message QuestObjectiveInfo
 {
-	int32 QuestObjectiveId = 1;
+	int64 QuestObjectiveId = 1;
 	int32 Count = 2;
-	int32 NeedCount = 3;
 }
 
 // 更新任务信息
@@ -49,7 +48,8 @@ message M2C_CreateQuest // IMessage
 message M2C_UpdateQuestObjective // IMessage
 {
 	int64 QuestId = 1; // 任务Id
-	repeated QuestObjectiveInfo QuestObjective = 2;
+	int64 QuestObjectiveId = 2;
+	int32 Count = 3;
 }
 
 // 更新任务信息
@@ -88,7 +88,7 @@ message M2C_SyncQuestData // ILocationResponse
 message C2M_AbandonQuest // ILocationRequest
 {
 	int32 RpcId = 1;
-	int32 QuestId = 2;
+	int64 QuestId = 2;
 }
 
 message M2C_AbandonQuest // ILocationResponse
@@ -108,7 +108,7 @@ message C2M_QueryAvailableQuests // ILocationRequest
 
 message AvailableQuestInfo
 {
-	int32 QuestId = 1;
+	int64 QuestId = 1;
 	string QuestName = 2;
 	string QuestDesc = 3;
 	int32 QuestType = 4;
@@ -130,18 +130,18 @@ message M2C_QueryAvailableQuests // ILocationResponse
 message C2M_GetQuestDetail // ILocationRequest
 {
 	int32 RpcId = 1;
-	int32 QuestId = 2;
+	int64 QuestId = 2;
 }
 
 message QuestDetailInfo
 {
-	int32 QuestId = 1;
+	int64 QuestId = 1;
 	string QuestName = 2;
 	string QuestDesc = 3;
 	string QuestStory = 4; // 任务背景故事
 	int32 QuestType = 5;
-	int32 AcceptNPC = 6;
-	int32 SubmitNPC = 7;
+	int64 AcceptNPC = 6;
+	int64 SubmitNPC = 7;
 	int32 RewardExp = 8;
 	int32 RewardGold = 9;
 	repeated int32 RewardItems = 10;
@@ -155,5 +155,5 @@ message M2C_GetQuestDetail // ILocationResponse
 	int32 RpcId = 1;
 	int32 Error = 2;
 	string Message = 3;
-	QuestDetailInfo QuestDetail = 4;
+	QuestDetailInfo QuestDetail = 4;		
 }

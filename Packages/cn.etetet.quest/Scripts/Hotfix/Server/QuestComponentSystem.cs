@@ -43,7 +43,7 @@ namespace ET.Server
             return true;
         }
         
-        public static Quest AddQuest(this QuestComponent self, int questId)
+        public static Quest AddQuest(this QuestComponent self, long questId)
         {
             Quest quest = self.AddChildWithId<Quest>(questId);
 
@@ -57,10 +57,10 @@ namespace ET.Server
         }
 
         // 尝试完成任务
-        public static bool TryFinishQuest(this QuestComponent self, long questId)
+        public static bool TrySubmitQuest(this QuestComponent self, long questId)
         {
             Quest quest = self.GetQuest(questId);
-            if (!quest.IsFinished())
+            if (!quest.CanSubmit())
             {
                 return false;
             }

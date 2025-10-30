@@ -5,12 +5,12 @@ namespace ET.Server
     /// <summary>
     /// 任务事件系统 - 处理各种游戏事件对任务进度的影响
     /// </summary>
-    public static class QuestEventSystem
+    public static class QuestEventHelper
     {
         /// <summary>
         /// 处理怪物击杀事件
         /// </summary>
-        public static void OnMonsterKilled(Unit player, int monsterId, int count)
+        public static void OnMonsterKilled(Unit player, long monsterId, int count)
         {
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
 
@@ -42,14 +42,14 @@ namespace ET.Server
                 }
 
                 questObjective.Count += count;
-                UpdateObjectiveProgress(questObjective);
+                QuestHelper.UpdateObjectiveCount(questObjective);
             }
         }
 
         /// <summary>
         /// 处理物品收集事件
         /// </summary>
-        public static void OnItemCollected(Unit player, int itemId, int count)
+        public static void OnItemCollected(Unit player, long itemId, int count)
         {
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
             
@@ -79,57 +79,11 @@ namespace ET.Server
                 }
 
                 questObjective.Count += count;
-                UpdateObjectiveProgress(questObjective);
+                QuestHelper.UpdateObjectiveCount(questObjective);
 
             }
         }
         
-        /// <summary>
-        /// 更新任务目标进度
-        /// </summary>
-        private static void UpdateObjectiveProgress(QuestObjective objective)
-        {
-            QuestObjectiveConfig questObjectiveConfig = objective.GetConfig();
-            if (objective.Count >= questObjectiveConfig.NeedCount)
-            {
-                return;
-            }
 
-            // 获取玩家Unit并通知进度更新
-            Quest quest = objective.GetParent<Quest>();
-            Unit player = quest.GetParent<QuestComponent>().GetParent<Unit>();
-            NotifyQuestProgress(player, objective);
-            
-            // 检查整个任务是否完成
-            if (quest.IsFinished())
-            {
-                quest.Status = QuestStatus.CanSubmit;
-                QuestHelper.NotifyQuestCanSubmit(player, (int)quest.Id);
-            }
-        }
-
-        /// <summary>
-        /// 通知任务进度更新
-        /// </summary>
-        private static void NotifyQuestProgress(Unit player, QuestObjective objective)
-        {
-            Quest quest = objective.GetParent<Quest>();
-            if (quest == null)
-            {
-                return;
-            }
-
-            M2C_UpdateQuestObjective message = M2C_UpdateQuestObjective.Create();
-            message.QuestId = quest.Id;
-
-            // 添加所有任务目标信息
-            QuestObjectiveInfo info = QuestObjectiveInfo.Create();
-            info.QuestObjectiveId = (int)objective.Id;
-            info.Count = objective.Count;
-            info.NeedCount = objective.GetConfig().NeedCount;
-            message.QuestObjective.Add(info);
-
-            MapMessageHelper.NoticeClient(player, message, NoticeType.Self);
-        }
     }
 }

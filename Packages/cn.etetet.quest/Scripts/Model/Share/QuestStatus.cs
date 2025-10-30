@@ -8,8 +8,7 @@ namespace ET
         None = 0,           // 未接取
         Available = 1,      // 可接取
         InProgress = 2,     // 进行中
-        CanSubmit = 3,      // 可提交
-        Finished = 4,      // 已完成
+        Submited = 4,      // 已完成
         Failed = 5,         // 失败
         Abandoned = 6,      // 已放弃
     }

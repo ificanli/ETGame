@@ -21,7 +21,7 @@ namespace ET.Server
             return questConfig;
         }
 
-        public static bool IsFinished(this Quest self)
+        public static bool CanSubmit(this Quest self)
         {
             foreach (KeyValuePair<long, Entity> pair in self.Children)
             {
@@ -44,7 +44,7 @@ namespace ET.Server
         
         public static List<QuestObjective> GetQuestObjectiveByType(this Quest self, QuestObjectiveType type)
         {
-            List<QuestObjective> list = new List<QuestObjective>();
+            List<QuestObjective> list = new();
             foreach (KeyValuePair<long, Entity> pair in self.Children)
             {
                 QuestObjective objective = (QuestObjective)pair.Value;

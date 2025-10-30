@@ -17,7 +17,7 @@ namespace ET.Client
             // TODO: 实现服务器QuestObjective到ClientQuestObjectiveData的转换
             // questComponent.UpdateQuestObjective(message.QuestId, ConvertToClientObjectives(message.QuestObjective));
 
-            Log.Info($"Quest {message.QuestId} objectives updated, count: {message.QuestObjective.Count}");
+            Log.Info($"Quest {message.QuestId} objectives updated, count: {message.Count}");
             
             await ETTask.CompletedTask;
         }

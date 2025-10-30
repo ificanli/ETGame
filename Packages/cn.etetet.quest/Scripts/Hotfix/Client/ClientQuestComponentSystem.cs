@@ -66,7 +66,7 @@ namespace ET.Client
             List<ClientQuest> submittableQuests = new();
             foreach (Entity entity in self.Children.Values)
             {
-                if (entity is ClientQuest quest && quest.Status == QuestStatus.CanSubmit)
+                if (entity is ClientQuest quest && quest.CanSubmit())
                 {
                     submittableQuests.Add(quest);
                 }
@@ -78,7 +78,7 @@ namespace ET.Client
         /// <summary>
         /// 移除任务
         /// </summary>
-        public static void RemoveQuest(this ClientQuestComponent self, int questId)
+        public static void RemoveQuest(this ClientQuestComponent self, long questId)
         {
             if (!self.RemoveChild(questId))
             {

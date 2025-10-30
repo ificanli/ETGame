@@ -180,7 +180,7 @@ namespace ET.Client
         /// <summary>
         /// 显示任务进度更新提示
         /// </summary>
-        public static void ShowProgressUpdate(int questId, string objectiveText, int currentCount, int requiredCount)
+        public static void ShowProgressUpdate(long questId, string objectiveText, int currentCount, int requiredCount)
         {
             string message = $"{objectiveText} ({currentCount}/{requiredCount})";
             
@@ -193,7 +193,7 @@ namespace ET.Client
         /// <summary>
         /// 显示任务完成提示
         /// </summary>
-        public static void ShowQuestComplete(int questId)
+        public static void ShowQuestComplete(long questId)
         {
             // TODO: 获取任务配置
             /*

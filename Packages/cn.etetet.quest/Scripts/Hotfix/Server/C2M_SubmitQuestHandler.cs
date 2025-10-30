@@ -35,14 +35,14 @@ namespace ET.Server
             }
             
             // 检查任务是否可以提交
-            if (quest.Status != QuestStatus.CanSubmit)
+            if (!quest.CanSubmit())
             {
                 response.Error = TextConstDefine.Quest_NotFinish;
                 return;
             }
             
             // 完成任务
-            QuestHelper.SubmitQuest(unit, quest);
+            QuestHelper.SubmitQuest(unit, quest.Id);
             await ETTask.CompletedTask;
         }
     }

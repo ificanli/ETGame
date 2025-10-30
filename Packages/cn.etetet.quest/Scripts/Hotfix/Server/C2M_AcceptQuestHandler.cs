@@ -7,7 +7,7 @@ namespace ET.Server
     {
         protected override async ETTask Run(Unit unit, C2M_AcceptQuest request, M2C_AcceptQuest response)
         {
-            QuestConfig questConfig = QuestConfigCategory.Instance.Get(request.QuestId);
+            QuestConfig questConfig = QuestConfigCategory.Instance.Get((int)request.QuestId);
             if (questConfig == null)
             {
                 Log.Warning($"not found request: {request.QuestId}");

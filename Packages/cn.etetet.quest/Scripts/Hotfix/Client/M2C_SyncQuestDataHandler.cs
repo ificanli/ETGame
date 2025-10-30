@@ -32,7 +32,6 @@ namespace ET.Client
                 {
                     ClientQuestObjective objective = clientQuest.AddChildWithId<ClientQuestObjective>(objInfo.QuestObjectiveId);
                     objective.Count = objInfo.Count;
-                    objective.NeedCount = objInfo.NeedCount;
 
                     clientQuest.Objectives.Add(objective);
                 }

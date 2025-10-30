@@ -71,7 +71,7 @@ namespace ET.Client
         /// <summary>
         /// 检查任务是否可以提交
         /// </summary>
-        public static bool IsFinished(this ClientQuest self)
+        public static bool CanSubmit(this ClientQuest self)
         {
             foreach (var objRef in self.Objectives)
             {

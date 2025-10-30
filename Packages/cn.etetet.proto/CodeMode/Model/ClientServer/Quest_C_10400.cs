@@ -17,7 +17,7 @@ namespace ET
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
         [MemoryPackOrder(1)]
-        public int QuestId { get; set; }
+        public long QuestId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -76,7 +76,7 @@ namespace ET
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
         [MemoryPackOrder(1)]
-        public int QuestId { get; set; }
+        public long QuestId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -131,11 +131,9 @@ namespace ET
         }
 
         [MemoryPackOrder(0)]
-        public int QuestObjectiveId { get; set; }
+        public long QuestObjectiveId { get; set; }
         [MemoryPackOrder(1)]
         public int Count { get; set; }
-        [MemoryPackOrder(2)]
-        public int NeedCount { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -145,7 +143,6 @@ namespace ET
 
             this.QuestObjectiveId = default;
             this.Count = default;
-            this.NeedCount = default;
 
             ObjectPool.Recycle(this);
         }
@@ -196,8 +193,9 @@ namespace ET
         [MemoryPackOrder(0)]
         public long QuestId { get; set; }
         [MemoryPackOrder(1)]
-        public List<QuestObjectiveInfo> QuestObjective { get; set; } = new();
-
+        public long QuestObjectiveId { get; set; }
+        [MemoryPackOrder(2)]
+        public int Count { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -206,7 +204,8 @@ namespace ET
             }
 
             this.QuestId = default;
-            this.QuestObjective.Clear();
+            this.QuestObjectiveId = default;
+            this.Count = default;
 
             ObjectPool.Recycle(this);
         }
@@ -363,7 +362,7 @@ namespace ET
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
         [MemoryPackOrder(1)]
-        public int QuestId { get; set; }
+        public long QuestId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -450,7 +449,7 @@ namespace ET
         }
 
         [MemoryPackOrder(0)]
-        public int QuestId { get; set; }
+        public long QuestId { get; set; }
         [MemoryPackOrder(1)]
         public string QuestName { get; set; }
         [MemoryPackOrder(2)]
@@ -534,7 +533,7 @@ namespace ET
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
         [MemoryPackOrder(1)]
-        public int QuestId { get; set; }
+        public long QuestId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -559,7 +558,7 @@ namespace ET
         }
 
         [MemoryPackOrder(0)]
-        public int QuestId { get; set; }
+        public long QuestId { get; set; }
         [MemoryPackOrder(1)]
         public string QuestName { get; set; }
         [MemoryPackOrder(2)]
@@ -572,9 +571,9 @@ namespace ET
         [MemoryPackOrder(4)]
         public int QuestType { get; set; }
         [MemoryPackOrder(5)]
-        public int AcceptNPC { get; set; }
+        public long AcceptNPC { get; set; }
         [MemoryPackOrder(6)]
-        public int SubmitNPC { get; set; }
+        public long SubmitNPC { get; set; }
         [MemoryPackOrder(7)]
         public int RewardExp { get; set; }
         [MemoryPackOrder(8)]

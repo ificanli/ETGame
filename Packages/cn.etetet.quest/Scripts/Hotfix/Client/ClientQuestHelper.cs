@@ -8,7 +8,7 @@ namespace ET.Client
         /// <summary>
         /// 接取任务
         /// </summary>
-        public static async ETTask<bool> AcceptQuest(Scene scene, int questId)
+        public static async ETTask<bool> AcceptQuest(Scene scene, long questId)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace ET.Client
         /// <summary>
         /// 提交任务
         /// </summary>
-        public static async ETTask<bool> SubmitQuest(Scene scene, int questId)
+        public static async ETTask<bool> SubmitQuest(Scene scene, long questId)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace ET.Client
         /// <summary>
         /// 放弃任务
         /// </summary>
-        public static async ETTask<bool> AbandonQuest(Scene scene, int questId)
+        public static async ETTask<bool> AbandonQuest(Scene scene, long questId)
         {
             try
             {
