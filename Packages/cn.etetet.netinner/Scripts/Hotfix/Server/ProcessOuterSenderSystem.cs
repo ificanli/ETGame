@@ -246,7 +246,7 @@ namespace ET.Server
                 }
                 else
                 {
-                    IResponse response = MessageHelper.CreateResponse(requestType, rpcId, ErrorCode.ERR_Timeout);
+                    IResponse response = MessageHelper.CreateResponse(requestType, rpcId, ErrorCode.ERR_MessageTimeout);
                     action.SetResult(response);
                 }
             }

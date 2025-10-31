@@ -21,13 +21,12 @@ namespace ET.Server
 			ServiceDiscoveryProxy serviceDiscoveryProxy = root.GetComponent<ServiceDiscoveryProxy>();
 
 			List<ServiceInfo> gates = serviceDiscoveryProxy.GetBySceneTypeAndZone(SceneType.Gate, UserZone);
-			string gateName = gates[(int)(hash % (ulong)gates.Count)].SceneName;
-			Log.Debug($"gate address: {gateName}");
+			ServiceInfo gateServiceInfo = gates[(int)(hash % (ulong)gates.Count)];
+			Log.Debug($"gate address: {gateServiceInfo.SceneName}");
 			
 			// 向gate请求一个key,客户端可以拿着这个key连接gate
 			R2G_GetLoginKey r2GGetLoginKey = R2G_GetLoginKey.Create();
 			r2GGetLoginKey.Account = request.Account;
-			ServiceInfo gateServiceInfo = serviceDiscoveryProxy.GetServiceInfo(gateName);
 			response.Address = gateServiceInfo.Metadata[ServiceMetaKey.InnerIPOuterPort];
 			
 			root = rootRef;
