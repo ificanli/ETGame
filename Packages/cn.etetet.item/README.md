@@ -21,9 +21,10 @@ ET框架物品背包系统模块，提供完整的物品管理、背包容量控
 - `ItemSystem` - 物品操作系统
 
 ### 客户端
-- `ClientItemComponent` - 客户端物品背包组件
-- `ItemInfo` - 客户端物品信息结构
-- `ClientItemComponentSystem` - 客户端背包操作系统
+- `ItemComponent` - 客户端物品背包组件（ET.Client命名空间）
+- `Item` - 客户端物品实体（ET.Client命名空间）
+- `ItemComponentSystem` - 客户端背包操作系统
+- `ItemSystem` - 客户端物品操作系统
 
 ### 共享
 - `ItemType` - 物品类型枚举
@@ -43,7 +44,7 @@ ET框架物品背包系统模块，提供完整的物品管理、背包容量控
 ### 服务端添加物品
 ```csharp
 // 服务端添加物品（会自动通知客户端）
-ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
+ItemComponent itemComponent = unit.GetComponent<Server.ItemComponent>();
 bool success = itemComponent.AddItem(configId: 10001, count: 10);
 // 无需手动调用通知，AddItem内部会自动发送M2C_UpdateItem
 ```
@@ -81,6 +82,14 @@ var response = await fiber.Root.GetComponent<ClientSenderComponent>().Call(reque
 // 客户端同步背包数据
 C2M_SyncBagData syncRequest = C2M_SyncBagData.Create();
 var syncResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(syncRequest);
+
+// 客户端获取物品
+ItemComponent itemComponent = scene.GetComponent<Client.ItemComponent>();
+Item item = itemComponent.GetItemBySlot(0);
+if (item != null)
+{
+    Log.Debug($"Item ConfigId: {item.ConfigId}, Count: {item.Count}");
+}
 ```
 
 ## 物品类型
@@ -146,7 +155,14 @@ var syncResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(s
 
 ## 版本历史
 
-### 1.1.0 (当前版本)
+### 1.2.0 (当前版本)
+- 重构客户端物品系统架构
+- ItemInfo结构体改为Item Entity，支持ECS规范
+- ClientItemComponent重命名为ItemComponent（使用ET.Client命名空间区分）
+- 客户端和服务端通过命名空间区分同名类（ET.Client.Item vs ET.Server.Item）
+- 遵循ET框架Entity-Component-System设计原则
+
+### 1.1.0
 - 移除客户端直接添加/移除物品的请求
 - 优化服务端权威架构，AddItem/RemoveItem自动通知客户端
 - 添加ERR_ItemUseFailed错误码
@@ -165,3 +181,5 @@ var syncResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(s
 2. **自动通知机制**：AddItem和RemoveItem方法会自动通知客户端，无需手动调用NotifyItemChanges
 3. **物品使用**：客户端通过UseItem请求，服务端验证后调用RemoveItem执行
 4. **数据同步**：客户端可通过SyncBagData获取完整背包数据，用于登录或重连后的数据恢复
+5. **命名空间区分**：客户端使用ET.Client.Item和ET.Client.ItemComponent，服务端使用ET.Server.Item和ET.Server.ItemComponent
+6. **EntityRef使用**：客户端ItemComponent使用Dictionary<int, EntityRef<Item>>管理物品，遵循ET框架规范
