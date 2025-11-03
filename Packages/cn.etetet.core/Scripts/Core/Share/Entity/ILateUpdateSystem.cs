@@ -6,16 +6,16 @@ namespace ET
 	{
 	}
 	
-	public interface ILateUpdate: IClassEvent<LateUpdateEvent>
+	public interface ILateUpdate: IEvent<LateUpdateEvent>
 	{
 	}
 
 	[EntitySystem]
-	public abstract class LateUpdateSystem<T> : ClassEventSystem<T, LateUpdateEvent> where T: Entity, ILateUpdate
+	public abstract class LateUpdateSystem<T> : EventSystem<T, LateUpdateEvent> where T: Entity, ILateUpdate
 	{
-		protected override void Handle(Entity e, LateUpdateEvent t)
+		protected override void Event(T e, LateUpdateEvent t)
 		{
-			this.LateUpdate((T)e);
+			this.LateUpdate(e);
 		}
 
 		protected abstract void LateUpdate(T self);

@@ -20,6 +20,8 @@
         "Assembly*.csproj": true,
         "build/": true,
         "Build/": true,
+        "ET.*.csproj": true,
+        "Ignore.ET.*": true,
         "Library": true,
         "Library/": true,
         "obj": true,

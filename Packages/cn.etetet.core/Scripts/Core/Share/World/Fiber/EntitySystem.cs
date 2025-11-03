@@ -37,7 +37,7 @@ namespace ET
         
         public void Publish<T>(T t) where T: struct
         {
-            Type systemType = typeof(AClassEventSystem<T>);
+            Type systemType = typeof(AEventSystem<T>);
             Queue<EntityRef<Entity>> queue = this.GetQueue(systemType);
             int count = queue.Count;
             while (count-- > 0)
@@ -51,7 +51,7 @@ namespace ET
                 {
                     continue;
                 }
-                if (component is not IClassEvent<T>)
+                if (component is not IEvent<T>)
                 {
                     continue;
                 }
@@ -65,7 +65,7 @@ namespace ET
 
                     queue.Enqueue(component);
 
-                    foreach (AClassEventSystem<T> classSystem in systems)
+                    foreach (AEventSystem<T> classSystem in systems)
                     {
                         try
                         {

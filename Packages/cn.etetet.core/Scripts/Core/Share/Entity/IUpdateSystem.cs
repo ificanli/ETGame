@@ -6,16 +6,16 @@ namespace ET
 	{
 	}
 	
-	public interface IUpdate: IClassEvent<UpdateEvent>
+	public interface IUpdate: IEvent<UpdateEvent>
 	{
 	}
 
 	[EntitySystem]
-	public abstract class UpdateSystem<T> : ClassEventSystem<T, UpdateEvent> where T: Entity, IUpdate
+	public abstract class UpdateSystem<T> : EventSystem<T, UpdateEvent> where T: Entity, IUpdate
 	{
-		protected override void Handle(Entity e, UpdateEvent t)
+		protected override void Event(T e, UpdateEvent t)
 		{
-			this.Update((T)e);
+			this.Update(e);
 		}
 
 		protected abstract void Update(T self);
