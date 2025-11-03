@@ -31,47 +31,42 @@ namespace ET.Client
         /// </summary>
         public static void UpdateItem(this ItemComponent self, long itemId, int slotIndex, int configId, int count)
         {
+            Item item = self.GetItemById(itemId);
+            
             if (count <= 0)
             {
                 // Count=0表示该槽位的物品被移除或清空
-                // 通过slotIndex查找并移除
-                if (self.SlotItems.TryGetValue(slotIndex, out EntityRef<Item> itemRef))
+                if (item != null)
                 {
-                    Item item = itemRef;
-                    if (item != null)
-                    {
-                        item.Dispose();
-                    }
-                    self.SlotItems.Remove(slotIndex);
+                    item.Dispose();
                 }
+                self.SlotItems.Remove(slotIndex);
             }
             else
             {
                 // 查找是否已存在该ItemId的物品
-                Item existingItem = self.GetItemById(itemId);
-                
-                if (existingItem != null)
+                if (item != null)
                 {
                     // 更新现有物品
                     // 如果槽位改变，需要更新槽位映射
-                    if (existingItem.SlotIndex != slotIndex)
+                    if (item.SlotIndex != slotIndex)
                     {
-                        self.SlotItems.Remove(existingItem.SlotIndex);
-                        self.SlotItems[slotIndex] = existingItem;
+                        self.SlotItems.Remove(item.SlotIndex);
+                        self.SlotItems[slotIndex] = item;
                     }
                     
-                    existingItem.ConfigId = configId;
-                    existingItem.Count = count;
-                    existingItem.SlotIndex = slotIndex;
+                    item.ConfigId = configId;
+                    item.Count = count;
+                    item.SlotIndex = slotIndex;
                 }
                 else
                 {
                     // 创建新物品，使用服务端传来的ItemId
-                    Item newItem = self.AddChildWithId<Item>(itemId);
-                    newItem.ConfigId = configId;
-                    newItem.Count = count;
-                    newItem.SlotIndex = slotIndex;
-                    self.SlotItems[slotIndex] = newItem;
+                    item = self.AddChildWithId<Item>(itemId);
+                    item.ConfigId = configId;
+                    item.Count = count;
+                    item.SlotIndex = slotIndex;
+                    self.SlotItems[slotIndex] = item;
                 }
             }
         }

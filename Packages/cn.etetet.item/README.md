@@ -8,6 +8,7 @@ ET框架物品背包系统模块，提供完整的物品管理、背包容量控
 - **背包系统**：支持背包容量管理、槽位管理
 - **物品堆叠**：支持可堆叠物品的自动堆叠
 - **物品移动**：支持物品在背包槽位间移动和堆叠，类似魔兽世界操作
+- **整理背包**：支持一键整理背包，相同ConfigId物品自动堆叠并排序，类似魔兽世界整理功能
 - **智能合并**：相同ConfigId且可堆叠的物品自动合并，未满则部分堆叠
 - **服务端权威**：添加/移除/移动物品由服务端控制，自动同步客户端
 - **前后端同步**：客户端服务端数据实时同步
@@ -19,7 +20,8 @@ ET框架物品背包系统模块，提供完整的物品管理、背包容量控
 ### 服务端
 - `ItemComponent` - 服务端物品背包组件
 - `Item` - 物品实体
-- `ItemComponentSystem` - 背包操作系统
+- `ItemComponentSystem` - 背包数据查询系统（纯数据操作，不涉及消息）
+- `ItemHelper` - 物品业务逻辑辅助类（处理涉及消息通知的复杂操作）
 - `ItemSystem` - 物品操作系统
 
 ### 客户端
@@ -35,6 +37,37 @@ ET框架物品背包系统模块，提供完整的物品管理、背包容量控
 
 ## 设计原则
 
+### 架构分层设计
+
+系统采用清晰的职责分离架构：
+
+#### ItemComponentSystem - 数据查询层
+- **职责**：纯数据查询和简单管理操作
+- **特点**：保持简洁，不涉及网络消息发送
+- **方法**：
+  - `GetItemCount()` - 获取物品总数量
+  - `FindEmptySlot()` - 查找空槽位
+  - `GetUsedSlotCount()` - 获取已使用槽位数量
+  - `IsFull()` - 检查背包是否已满
+  - `GetItemBySlot()` - 获取指定槽位的物品
+  - `GetItemById()` - 通过ItemId获取物品
+  - `Clear()` - 清空背包
+
+#### ItemHelper - 业务逻辑层
+- **职责**：处理涉及消息通知的复杂业务逻辑
+- **特点**：封装完整业务流程，包括数据修改和消息通知
+- **方法**：
+  - `AddItem()` - 添加物品并通知客户端
+  - `RemoveItem()` - 移除物品并通知客户端
+  - `RemoveItemById()` - 通过ID移除物品并通知客户端
+  - `MoveItem()` - 移动或堆叠物品并通知客户端
+  - `SortBag()` - 整理背包，相同ConfigId物品堆叠并排序
+  - `SetCapacity()` - 设置容量并通知客户端
+  - `NotifyItemUpdate()` - 通知单个物品更新
+  - `NotifyItemRemove()` - 通知物品移除
+  - `NotifyItemChanges()` - 通知所有物品变化
+  - `NotifyCapacityChange()` - 通知容量变化
+
 ### 服务端权威架构
 - **添加物品**：完全由服务端触发（任务奖励、怪物掉落、GM命令等），客户端无权请求添加
 - **移除物品**：客户端通过UseItem/DiscardItem等具体操作间接移除，服务端验证后执行
@@ -47,30 +80,30 @@ ET框架物品背包系统模块，提供完整的物品管理、背包容量控
 ```csharp
 // 服务端添加物品（会自动通知客户端）
 ItemComponent itemComponent = unit.GetComponent<Server.ItemComponent>();
-bool success = itemComponent.AddItem(configId: 10001, count: 10);
+bool success = ItemHelper.AddItem(itemComponent, configId: 10001, count: 10);
 // 无需手动调用通知，AddItem内部会自动发送M2C_UpdateItem
 ```
 
 ### 服务端移除物品
 ```csharp
 // 服务端移除物品（会自动通知客户端）
-bool success = itemComponent.RemoveItem(configId: 10001, count: 5);
+bool success = ItemHelper.RemoveItem(itemComponent, configId: 10001, count: 5);
 // 无需手动调用通知，RemoveItem内部会自动发送M2C_UpdateItem
 ```
 
 ### 其他物品操作
 ```csharp
-// 获取物品数量
+// 获取物品数量（使用ItemComponentSystem）
 int count = itemComponent.GetItemCount(configId: 10001);
 
-// 检查背包是否已满
+// 检查背包是否已满（使用ItemComponentSystem）
 bool isFull = itemComponent.IsFull();
 
-// 获取指定槽位的物品
+// 获取指定槽位的物品（使用ItemComponentSystem）
 Item item = itemComponent.GetItemBySlot(slotIndex: 0);
 
-// 设置背包容量
-itemComponent.SetCapacity(capacity: 200);
+// 设置背包容量（使用ItemHelper，会自动通知客户端）
+ItemHelper.SetCapacity(itemComponent, capacity: 200);
 ```
 
 ### 服务端移动/堆叠物品
@@ -80,7 +113,7 @@ ItemComponent itemComponent = unit.GetComponent<Server.ItemComponent>();
 
 // 通过ItemId移动物品
 Item item = itemComponent.GetItemById(itemId);
-int errorCode = itemComponent.MoveItem(itemId: item.Id, toSlot: 1);
+int errorCode = ItemHelper.MoveItem(itemComponent, itemId: item.Id, toSlot: 1);
 if (errorCode == ErrorCode.ERR_Success)
 {
     // 移动/堆叠成功
@@ -115,6 +148,11 @@ C2M_MoveItem moveRequest = C2M_MoveItem.Create();
 moveRequest.ItemId = item.Id; // 使用ItemId指定要移动的物品
 moveRequest.ToSlot = 1;        // 目标槽位
 var moveResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(moveRequest);
+
+// 客户端整理背包
+C2M_SortBag sortRequest = C2M_SortBag.Create();
+var sortResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(sortRequest);
+// 整理后，相同ConfigId的物品会自动堆叠并按ConfigId排序
 
 // 客户端通过槽位获取物品
 ItemComponent itemComponent = scene.GetComponent<Client.ItemComponent>();
@@ -233,6 +271,61 @@ if (itemById != null)
 // 槽位1：药水x5
 ```
 
+## 整理背包功能
+
+### 功能特性
+
+- **一键整理**：自动整理背包中的所有物品
+- **智能堆叠**：相同ConfigId的物品会尽量堆叠在一起
+- **自动排序**：物品按ConfigId升序排列，从槽位0开始紧密排列
+- **考虑堆叠上限**：每堆物品不会超过MaxStack限制
+- **无缝体验**：整理过程自动完成，客户端实时同步
+
+### 整理规则
+
+1. **收集统计**：遍历所有物品，按ConfigId分组统计总数量
+2. **按ID排序**：将所有ConfigId按升序排列
+3. **重新堆叠**：根据MaxStack限制，重新创建物品堆
+4. **紧密排列**：从槽位0开始依次放置，中间无空隙
+
+### 使用示例
+
+```csharp
+// 服务端调用
+ItemComponent itemComponent = unit.GetComponent<Server.ItemComponent>();
+int errorCode = ItemHelper.SortBag(itemComponent);
+if (errorCode == ErrorCode.ERR_Success)
+{
+    // 整理成功
+}
+
+// 客户端请求
+C2M_SortBag request = C2M_SortBag.Create();
+var response = await fiber.Root.GetComponent<ClientSenderComponent>().Call(request);
+```
+
+### 整理效果示例
+
+```csharp
+// 整理前：
+// 槽位0：药水(10002)x5
+// 槽位1：空
+// 槽位2：装备(10001)x1
+// 槽位3：药水(10002)x3
+// 槽位4：材料(10003)x10
+// 槽位5：空
+// 槽位6：药水(10002)x7（最大堆叠10）
+
+// 整理后（按ConfigId排序且堆叠）：
+// 槽位0：装备(10001)x1
+// 槽位1：药水(10002)x10
+// 槽位2：药水(10002)x5
+// 槽位3：材料(10003)x10
+// 槽位4：空
+// 槽位5：空
+// 槽位6：空
+```
+
 ## 错误码
 
 - `ERR_ItemNotFound`: 物品未找到
@@ -286,7 +379,24 @@ if (itemById != null)
 
 ## 版本历史
 
-### 1.4.0 (当前版本)
+### 1.6.0 (当前版本)
+- **新增功能**：整理背包功能（SortBag）
+- 新增ItemHelper.SortBag方法，支持一键整理背包
+- 相同ConfigId的物品自动堆叠并按ConfigId升序排列
+- 从槽位0开始紧密排列，消除空隙
+- 新增C2M_SortBagHandler消息处理器
+- 完善README文档，添加详细的整理背包功能说明
+- 整理效果类似魔兽世界的整理背包功能
+
+### 1.5.0
+- **架构重构**：职责分离，创建ItemHelper辅助类
+- 将涉及消息通知的方法从ItemComponentSystem迁移到ItemHelper
+- ItemComponentSystem保持简洁，只负责数据查询和简单管理
+- ItemHelper负责处理复杂业务逻辑和消息通知
+- 优化代码组织结构，提高可维护性
+- 迁移的方法：AddItem、RemoveItem、RemoveItemById、MoveItem、SetCapacity、NotifyItemUpdate、NotifyItemRemove、NotifyItemChanges、NotifyCapacityChange、SwapItems
+
+### 1.4.0
 - **重大重构**：从基于SlotIndex改为基于Item.Id的物品追踪机制
 - 所有客户端请求（UseItem、MoveItem、DiscardItem）改用ItemId参数
 - 新增GetItemById方法，支持通过ItemId直接获取物品
@@ -327,13 +437,16 @@ if (itemById != null)
 ## 注意事项
 
 1. **严禁客户端直接添加/移除物品**：所有物品增删必须由服务端触发
-2. **自动通知机制**：AddItem、RemoveItem和MoveItem方法会自动通知客户端，无需手动调用NotifyItemChanges
-3. **物品使用**：客户端通过UseItem请求（使用ItemId），服务端验证后调用RemoveItem执行
-4. **物品移动**：客户端通过MoveItem请求（使用ItemId），服务端验证后执行移动或堆叠操作
-5. **数据同步**：客户端可通过SyncBagData获取完整背包数据，用于登录或重连后的数据恢复
-6. **命名空间区分**：客户端使用ET.Client.Item和ET.Client.ItemComponent，服务端使用ET.Server.Item和ET.Server.ItemComponent
-7. **EntityRef使用**：客户端ItemComponent使用Dictionary<int, EntityRef<Item>>管理物品，遵循ET框架规范
-8. **堆叠限制**：物品是否可堆叠由配置的MaxStack字段控制，MaxStack=1表示不可堆叠
-9. **ItemId追踪**：所有物品操作都使用ItemId，便于追踪物品生命周期和问题排查
-10. **Count=0语义**：Count=0统一表示物品移除或槽位清空，ItemId永远不为0
-11. **ID一致性**：客户端使用AddChildWithId创建Item Entity，确保与服务端ID一致
+2. **使用ItemHelper处理业务逻辑**：涉及消息通知的操作（添加、移除、移动物品等）应使用ItemHelper，而非直接调用ItemComponentSystem
+3. **自动通知机制**：ItemHelper的AddItem、RemoveItem和MoveItem方法会自动通知客户端，无需手动调用NotifyItemChanges
+4. **数据查询使用ItemComponentSystem**：纯数据查询（如GetItemCount、IsFull等）使用ItemComponentSystem的方法
+5. **物品使用**：客户端通过UseItem请求（使用ItemId），服务端验证后调用ItemHelper.RemoveItem执行
+6. **物品移动**：客户端通过MoveItem请求（使用ItemId），服务端验证后调用ItemHelper.MoveItem执行移动或堆叠操作
+7. **数据同步**：客户端可通过SyncBagData获取完整背包数据，用于登录或重连后的数据恢复
+8. **命名空间区分**：客户端使用ET.Client.Item和ET.Client.ItemComponent，服务端使用ET.Server.Item和ET.Server.ItemComponent
+9. **EntityRef使用**：客户端ItemComponent使用Dictionary<int, EntityRef<Item>>管理物品，遵循ET框架规范
+10. **堆叠限制**：物品是否可堆叠由配置的MaxStack字段控制，MaxStack=1表示不可堆叠
+11. **ItemId追踪**：所有物品操作都使用ItemId，便于追踪物品生命周期和问题排查
+12. **Count=0语义**：Count=0统一表示物品移除或槽位清空，ItemId永远不为0
+13. **ID一致性**：客户端使用AddChildWithId创建Item Entity，确保与服务端ID一致
+14. **整理背包**：整理背包会重新分配所有槽位，所有旧ItemId失效，客户端会收到完整更新

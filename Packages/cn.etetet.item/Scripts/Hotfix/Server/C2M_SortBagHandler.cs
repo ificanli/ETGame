@@ -1,12 +1,12 @@
 namespace ET.Server
 {
     /// <summary>
-    /// 移动/堆叠物品Handler
+    /// 整理背包Handler
     /// </summary>
     [MessageHandler(SceneType.Map)]
-    public class C2M_MoveItemHandler : MessageLocationHandler<Unit, C2M_MoveItem, M2C_MoveItem>
+    public class C2M_SortBagHandler : MessageLocationHandler<Unit, C2M_SortBag, M2C_SortBag>
     {
-        protected override async ETTask Run(Unit unit, C2M_MoveItem request, M2C_MoveItem response)
+        protected override async ETTask Run(Unit unit, C2M_SortBag request, M2C_SortBag response)
         {
             ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
             if (itemComponent == null)
@@ -16,9 +16,9 @@ namespace ET.Server
                 return;
             }
 
-            // 调用MoveItem方法进行移动或堆叠
-            int errorCode = ItemHelper.MoveItem(itemComponent, request.ItemId, request.ToSlot);
-            
+            // 调用SortBag方法进行整理
+            int errorCode = ItemHelper.SortBag(itemComponent);
+
             if (errorCode != ErrorCode.ERR_Success)
             {
                 response.Error = errorCode;
