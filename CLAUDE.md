@@ -200,6 +200,7 @@ ET.Core (框架核心层)
 - **System**：只包含逻辑，不包含数据
 - **Component**：Entity的组成部分，遵循组合优于继承
 - **分离原则**：严格分离数据定义和业务逻辑
+- **Entity跟System只做数据相关管理，以及自身的一些简单方法**：不要在System中实现复杂的业务逻辑。具体的业务逻辑应该写到XXXHelper中，例如ItemHelper
 
 ### 包结构规范
 
@@ -519,7 +520,7 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 ├── cn.etetet.recast        (寻路系统) 依赖unit
 ├── cn.etetet.netinner      (内网消息系统) 依赖startconfig
 ├── cn.etetet.router        (软路由系统) 依赖startconfig,http
-├── cn.etetet.watcher       (watcher系统) 依赖console，startconfig
+├── cn.etetet.item          (道具背包系统) 依赖unit
 ```
 
 #### 第2层
