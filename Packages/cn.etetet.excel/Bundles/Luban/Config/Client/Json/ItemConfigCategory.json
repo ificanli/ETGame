@@ -1,0 +1,41 @@
+[
+  {
+    "Id": 10001,
+    "Name": "生命药水",
+    "Desc": "恢复100点生命值",
+    "Type": 2,
+    "MaxStack": 99,
+    "Icon": "Items/Potion_HP",
+    "Quality": 1,
+    "SellPrice": 5,
+    "BuyPrice": 10,
+    "UseType": 1,
+    "Level": 1
+  },
+  {
+    "Id": 10002,
+    "Name": "魔法药水",
+    "Desc": "恢复100点魔法值",
+    "Type": 2,
+    "MaxStack": 99,
+    "Icon": "Items/Potion_MP",
+    "Quality": 1,
+    "SellPrice": 5,
+    "BuyPrice": 10,
+    "UseType": 1,
+    "Level": 1
+  },
+  {
+    "Id": 10003,
+    "Name": "铁矿石",
+    "Desc": "锻造材料",
+    "Type": 3,
+    "MaxStack": 999,
+    "Icon": "Items/Ore_Iron",
+    "Quality": 0,
+    "SellPrice": 1,
+    "BuyPrice": 2,
+    "UseType": 0,
+    "Level": 1
+  }
+]

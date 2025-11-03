@@ -155,6 +155,17 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "cn.etetet.item": {
+      "version": "file:cn.etetet.item",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.excel": "4.0.0",
+        "cn.etetet.proto": "4.0.0",
+        "cn.etetet.unit": "4.0.0"
+      }
+    },
     "cn.etetet.loader": {
       "version": "file:cn.etetet.loader",
       "depth": 0,

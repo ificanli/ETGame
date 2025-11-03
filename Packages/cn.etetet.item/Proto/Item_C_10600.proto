@@ -1,0 +1,134 @@
+syntax = "proto3";
+package ET;
+
+// 添加物品请求
+// ResponseType M2C_AddItem
+message C2M_AddItem // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 ConfigId = 2; // 物品配置ID
+	int32 Count = 3; // 物品数量
+}
+
+message M2C_AddItem // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 移除物品请求
+// ResponseType M2C_RemoveItem
+message C2M_RemoveItem // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 ConfigId = 2; // 物品配置ID
+	int32 Count = 3; // 移除数量
+}
+
+message M2C_RemoveItem // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 使用物品请求
+// ResponseType M2C_UseItem
+message C2M_UseItem // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 SlotIndex = 2; // 槽位索引
+	int32 Count = 3; // 使用数量
+}
+
+message M2C_UseItem // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 物品信息
+message ItemData
+{
+	int32 SlotIndex = 1; // 槽位索引
+	int32 ConfigId = 2; // 物品配置ID
+	int32 Count = 3; // 物品数量
+}
+
+// 同步背包数据请求
+// ResponseType M2C_SyncBagData
+message C2M_SyncBagData // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message M2C_SyncBagData // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int32 Capacity = 4; // 背包容量
+	repeated ItemData Items = 5; // 物品列表
+}
+
+// 更新物品通知（服务器推送）
+message M2C_UpdateItem // IMessage
+{
+	int32 SlotIndex = 1; // 槽位索引
+	int32 ConfigId = 2; // 物品配置ID
+	int32 Count = 3; // 物品数量（0表示移除）
+}
+
+// 背包容量变化通知
+message M2C_UpdateBagCapacity // IMessage
+{
+	int32 Capacity = 1; // 新的背包容量
+}
+
+// 物品移动/交换槽位
+// ResponseType M2C_MoveItem
+message C2M_MoveItem // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 FromSlot = 2; // 源槽位
+	int32 ToSlot = 3; // 目标槽位
+}
+
+message M2C_MoveItem // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 丢弃物品
+// ResponseType M2C_DiscardItem
+message C2M_DiscardItem // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 SlotIndex = 2; // 槽位索引
+	int32 Count = 3; // 丢弃数量
+}
+
+message M2C_DiscardItem // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// 整理背包
+// ResponseType M2C_SortBag
+message C2M_SortBag // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message M2C_SortBag // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
