@@ -5,7 +5,7 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene root, M2C_UpdateQuest message)
         {
-            ClientQuestComponent questComponent = root.GetComponent<ClientQuestComponent>();
+            QuestComponent questComponent = root.GetComponent<QuestComponent>();
 
             // 更新任务状态
             QuestStatus questStatus = (QuestStatus)message.State;

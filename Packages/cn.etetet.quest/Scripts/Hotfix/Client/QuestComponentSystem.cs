@@ -2,20 +2,20 @@ using System.Collections.Generic;
 
 namespace ET.Client
 {
-    [EntitySystemOf(typeof(ClientQuestComponent))]
-    public static partial class ClientQuestComponentSystem
+    [EntitySystemOf(typeof(QuestComponent))]
+    public static partial class QuestComponentSystem
     {
         [EntitySystem]
-        private static void Awake(this ClientQuestComponent self)
+        private static void Awake(this QuestComponent self)
         {
         }
 
         /// <summary>
         /// 更新任务数据
         /// </summary>
-        public static void UpdateQuestData(this ClientQuestComponent self, long questId, QuestStatus status)
+        public static void UpdateQuestData(this QuestComponent self, long questId, QuestStatus status)
         {
-            ClientQuest questData = self.GetQuest(questId);
+            Quest questData = self.GetQuest(questId);
             questData.Status = status;
 
             // 发布任务状态更新事件
@@ -25,10 +25,10 @@ namespace ET.Client
         /// <summary>
         /// 更新任务目标进度
         /// </summary>
-        public static void UpdateQuestObjective(this ClientQuestComponent self, long questId, long questObjectiveId, int count)
+        public static void UpdateQuestObjective(this QuestComponent self, long questId, long questObjectiveId, int count)
         {
-            ClientQuest quest = self.GetQuest(questId);
-            ClientQuestObjective clientQuestObjective = quest.GetObjective(questObjectiveId);
+            Quest quest = self.GetQuest(questId);
+            QuestObjective clientQuestObjective = quest.GetObjective(questObjectiveId);
             clientQuestObjective.Count = count;
             // 发布任务目标更新事件
             EventSystem.Instance.Publish(self.Scene(), new ClientQuestObjectiveChanged { QuestId = questId });
@@ -37,20 +37,20 @@ namespace ET.Client
         /// <summary>
         /// 获取任务数据
         /// </summary>
-        public static ClientQuest GetQuest(this ClientQuestComponent self, long questId)
+        public static Quest GetQuest(this QuestComponent self, long questId)
         {
-            return self.GetChild<ClientQuest>(questId);
+            return self.GetChild<Quest>(questId);
         }
 
         /// <summary>
         /// 获取所有进行中的任务
         /// </summary>
-        public static List<ClientQuest> GetActiveQuests(this ClientQuestComponent self)
+        public static List<Quest> GetActiveQuests(this QuestComponent self)
         {
-            List<ClientQuest> activeQuests = new();
+            List<Quest> activeQuests = new();
             foreach (Entity entity in self.Children.Values)
             {
-                if (entity is ClientQuest quest && quest.Status == QuestStatus.InProgress)
+                if (entity is Quest quest && quest.Status == QuestStatus.InProgress)
                 {
                     activeQuests.Add(quest);
                 }
@@ -61,12 +61,12 @@ namespace ET.Client
         /// <summary>
         /// 获取可提交的任务
         /// </summary>
-        public static List<ClientQuest> GetSubmittableQuests(this ClientQuestComponent self)
+        public static List<Quest> GetSubmittableQuests(this QuestComponent self)
         {
-            List<ClientQuest> submittableQuests = new();
+            List<Quest> submittableQuests = new();
             foreach (Entity entity in self.Children.Values)
             {
-                if (entity is ClientQuest quest && quest.CanSubmit())
+                if (entity is Quest quest && quest.CanSubmit())
                 {
                     submittableQuests.Add(quest);
                 }
@@ -78,7 +78,7 @@ namespace ET.Client
         /// <summary>
         /// 移除任务
         /// </summary>
-        public static void RemoveQuest(this ClientQuestComponent self, long questId)
+        public static void RemoveQuest(this QuestComponent self, long questId)
         {
             if (!self.RemoveChild(questId))
             {

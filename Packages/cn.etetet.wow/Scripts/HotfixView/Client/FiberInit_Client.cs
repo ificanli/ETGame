@@ -18,7 +18,7 @@
             root.AddComponent<ObjectWait>();
             root.AddComponent<ResourcesLoaderComponent>();
             root.AddComponent<GlobalComponent>();
-            root.AddComponent<ClientQuestComponent>();
+            root.AddComponent<QuestComponent>();
 
             bool result = await root.AddComponent<YIUIMgrComponent>().Initialize();
             if (!result)

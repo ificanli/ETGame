@@ -1,21 +1,21 @@
 namespace ET.Client
 {
-    [EntitySystemOf(typeof(ClientQuestObjective))]
-    public static partial class ClientQuestObjectiveSystem
+    [EntitySystemOf(typeof(QuestObjective))]
+    public static partial class QuestObjectiveSystem
     {
         [EntitySystem]
-        private static void Awake(this ClientQuestObjective self)
+        private static void Awake(this QuestObjective self)
         {
             
         }
 
         [EntitySystem]
-        private static void Destroy(this ClientQuestObjective self)
+        private static void Destroy(this QuestObjective self)
         {
-            
+
         }
-        
-        public static bool IsFinished(this ClientQuestObjective self)
+
+        public static bool IsFinished(this QuestObjective self)
         {
             return self.Count >= self.NeedCount;
         }
@@ -23,7 +23,7 @@ namespace ET.Client
         /// <summary>
         /// 获取进度百分比
         /// </summary>
-        public static float GetProgressPercent(this ClientQuestObjective self)
+        public static float GetProgressPercent(this QuestObjective self)
         {
             if (self.NeedCount <= 0)
             {
@@ -35,7 +35,7 @@ namespace ET.Client
         /// <summary>
         /// 获取进度文本
         /// </summary>
-        public static string GetProgressText(this ClientQuestObjective self)
+        public static string GetProgressText(this QuestObjective self)
         {
             return $"{self.Count}/{self.NeedCount}";
         }

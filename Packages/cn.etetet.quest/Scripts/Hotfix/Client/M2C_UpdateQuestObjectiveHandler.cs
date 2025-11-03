@@ -5,10 +5,10 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene scene, M2C_UpdateQuestObjective message)
         {
-            ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+            QuestComponent questComponent = scene.GetComponent<QuestComponent>();
             if (questComponent == null)
             {
-                Log.Error("ClientQuestComponent not found in scene");
+                Log.Error("QuestComponent not found in scene");
                 await ETTask.CompletedTask;
                 return;
             }

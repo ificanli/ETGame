@@ -28,9 +28,9 @@ namespace ET.Client
 
                 // await后重新获取Scene
                 scene = sceneRef;
-                
+
                 // 更新客户端任务数据 - 任务接取成功，状态为进行中
-                ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+                QuestComponent questComponent = scene.GetComponent<QuestComponent>();
                 if (questComponent != null)
                 {
                     questComponent.UpdateQuestData(questId, QuestStatus.InProgress);
@@ -69,9 +69,9 @@ namespace ET.Client
 
                 // await后重新获取Scene
                 scene = sceneRef;
-                
+
                 // 更新客户端任务数据 - 移除已完成的任务
-                ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+                QuestComponent questComponent = scene.GetComponent<QuestComponent>();
                 if (questComponent != null)
                 {
                     questComponent.RemoveQuest(questId);
@@ -137,9 +137,9 @@ namespace ET.Client
 
                 // await后重新获取Scene
                 scene = sceneRef;
-                
+
                 // 更新客户端任务数据 - 移除放弃的任务
-                ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+                QuestComponent questComponent = scene.GetComponent<QuestComponent>();
                 if (questComponent != null)
                 {
                     questComponent.RemoveQuest(questId);

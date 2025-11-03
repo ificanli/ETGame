@@ -17,23 +17,23 @@ namespace ET.Client
                 return;
             }
 
-            ClientQuestComponent questComponent = root.AddComponent<ClientQuestComponent>();
+            QuestComponent questComponent = root.AddComponent<QuestComponent>();
 
             // 同步服务器任务数据
             foreach (QuestInfo questInfo in message.QuestList)
             {
-                ClientQuest clientQuest = questComponent.AddChildWithId<ClientQuest>(questInfo.QuestId);
-                clientQuest.Status = (QuestStatus)questInfo.Status;
-                clientQuest.CreateTime = questInfo.AcceptTime;
-                clientQuest.CompleteTime = questInfo.CompleteTime;
+                Quest quest = questComponent.AddChildWithId<Quest>(questInfo.QuestId);
+                quest.Status = (QuestStatus)questInfo.Status;
+                quest.CreateTime = questInfo.AcceptTime;
+                quest.CompleteTime = questInfo.CompleteTime;
 
                 // 同步任务目标
                 foreach (QuestObjectiveInfo objInfo in questInfo.Objectives)
                 {
-                    ClientQuestObjective objective = clientQuest.AddChildWithId<ClientQuestObjective>(objInfo.QuestObjectiveId);
+                    QuestObjective objective = quest.AddChildWithId<QuestObjective>(objInfo.QuestObjectiveId);
                     objective.Count = objInfo.Count;
 
-                    clientQuest.Objectives.Add(objective);
+                    quest.Objectives.Add(objective);
                 }
             }
 

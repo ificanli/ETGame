@@ -16,9 +16,9 @@ namespace ET.Client
         protected override async ETTask Run(Scene scene, AfterCreateCurrentScene args)
         {
             // 为当前场景添加任务组件
-            scene.AddComponent<ClientQuestComponent>();
-            
-            Log.Info("ClientQuestComponent added to scene");
+            scene.AddComponent<QuestComponent>();
+
+            Log.Info("QuestComponent added to scene");
             
             await ETTask.CompletedTask;
         }
@@ -33,10 +33,10 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene scene, LoginFinish args)
         {
-            ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+            QuestComponent questComponent = scene.GetComponent<QuestComponent>();
             if (questComponent == null)
             {
-                Log.Error("ClientQuestComponent not found in scene");
+                Log.Error("QuestComponent not found in scene");
                 await ETTask.CompletedTask;
                 return;
             }
@@ -64,7 +64,7 @@ namespace ET.Client
                 
                 if (response.Error == ErrorCode.ERR_Success)
                 {
-                    ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+                    ClientQuestComponent questComponent = scene.GetComponent<QuestComponent>();
                     // 处理同步回来的任务数据
                     foreach (var questInfo in response.QuestList)
                     {
@@ -128,13 +128,13 @@ namespace ET.Client
         /// </summary>
         private static void CheckSubmittableQuests(Scene scene, int npcId)
         {
-            ClientQuestComponent questComponent = scene.GetComponent<ClientQuestComponent>();
+            QuestComponent questComponent = scene.GetComponent<QuestComponent>();
             if (questComponent == null)
             {
                 return;
             }
 
-            List<ClientQuest> submittableQuests = questComponent.GetSubmittableQuests();
+            List<Quest> submittableQuests = questComponent.GetSubmittableQuests();
             // TODO: 需要根据任务配置检查NPC ID
             /*
             submittableQuests = submittableQuests
@@ -165,7 +165,7 @@ namespace ET.Client
         /// <summary>
         /// 显示可提交任务UI
         /// </summary>
-        private static void ShowSubmittableQuestsUI(Scene scene, List<ClientQuest> submittableQuests)
+        private static void ShowSubmittableQuestsUI(Scene scene, List<Quest> submittableQuests)
         {
             // TODO: 显示可提交任务的UI界面
             Log.Info($"Found {submittableQuests.Count} submittable quests");

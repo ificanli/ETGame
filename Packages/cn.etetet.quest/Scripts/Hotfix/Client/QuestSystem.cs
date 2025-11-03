@@ -1,21 +1,21 @@
 namespace ET.Client
 {
-    [EntitySystemOf(typeof(ClientQuest))]
-    public static partial class ClientQuestSystem
+    [EntitySystemOf(typeof(Quest))]
+    public static partial class QuestSystem
     {
         [EntitySystem]
-        private static void Awake(this ClientQuest self)
+        private static void Awake(this Quest self)
         {
             self.Objectives.Clear();
         }
 
         [EntitySystem]
-        private static void Destroy(this ClientQuest self)
+        private static void Destroy(this Quest self)
         {
             // 清理所有目标Entity
             foreach (var objRef in self.Objectives)
             {
-                ClientQuestObjective obj = objRef;
+                QuestObjective obj = objRef;
                 if (obj != null)
                 {
                     obj.Dispose();
@@ -27,9 +27,9 @@ namespace ET.Client
         /// <summary>
         /// 添加任务目标
         /// </summary>
-        public static void AddObjective(this ClientQuest self, long objectiveId, int count, int needCount)
+        public static void AddObjective(this Quest self, long objectiveId, int count, int needCount)
         {
-            ClientQuestObjective objective = self.AddChildWithId<ClientQuestObjective>(objectiveId);
+            QuestObjective objective = self.AddChildWithId<QuestObjective>(objectiveId);
             objective.Count = count;
             objective.NeedCount = needCount;
             
@@ -39,11 +39,11 @@ namespace ET.Client
         /// <summary>
         /// 更新任务目标进度
         /// </summary>
-        public static void UpdateObjective(this ClientQuest self, long objectiveId, int count)
+        public static void UpdateObjective(this Quest self, long objectiveId, int count)
         {
             foreach (var objRef in self.Objectives)
             {
-                ClientQuestObjective obj = objRef;
+                QuestObjective obj = objRef;
                 if (obj != null && obj.Id == objectiveId)
                 {
                     obj.Count = count;
@@ -55,11 +55,11 @@ namespace ET.Client
         /// <summary>
         /// 获取任务目标
         /// </summary>
-        public static ClientQuestObjective GetObjective(this ClientQuest self, long objectiveId)
+        public static QuestObjective GetObjective(this Quest self, long objectiveId)
         {
             foreach (var objRef in self.Objectives)
             {
-                ClientQuestObjective obj = objRef;
+                QuestObjective obj = objRef;
                 if (obj != null && obj.Id == objectiveId)
                 {
                     return obj;
@@ -71,11 +71,11 @@ namespace ET.Client
         /// <summary>
         /// 检查任务是否可以提交
         /// </summary>
-        public static bool CanSubmit(this ClientQuest self)
+        public static bool CanSubmit(this Quest self)
         {
             foreach (var objRef in self.Objectives)
             {
-                ClientQuestObjective obj = objRef;
+                QuestObjective obj = objRef;
                 if (!obj.IsFinished())
                 {
                     return false;

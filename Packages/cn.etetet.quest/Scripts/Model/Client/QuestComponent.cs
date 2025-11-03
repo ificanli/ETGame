@@ -6,15 +6,15 @@ namespace ET.Client
     /// 客户端任务组件 - 管理玩家的任务数据和UI显示
     /// </summary>
     [ComponentOf(typeof(Scene))]
-    public class ClientQuestComponent : Entity, IAwake
+    public class QuestComponent : Entity, IAwake
     {
     }
 
     /// <summary>
     /// 客户端任务数据
     /// </summary>
-    [ChildOf(typeof(ClientQuestComponent))]
-    public class ClientQuest : Entity, IAwake, IDestroy
+    [ChildOf(typeof(QuestComponent))]
+    public class Quest : Entity, IAwake, IDestroy
     {
         /// <summary>
         /// 任务状态
@@ -24,7 +24,7 @@ namespace ET.Client
         /// <summary>
         /// 任务目标数据列表
         /// </summary>
-        public List<EntityRef<ClientQuestObjective>> Objectives = new();
+        public List<EntityRef<QuestObjective>> Objectives = new();
 
         /// <summary>
         /// 任务创建时间戳
@@ -40,8 +40,8 @@ namespace ET.Client
     /// <summary>
     /// 客户端任务目标数据
     /// </summary>
-    [ChildOf(typeof(ClientQuest))]
-    public class ClientQuestObjective : Entity, IAwake, IDestroy
+    [ChildOf(typeof(Quest))]
+    public class QuestObjective : Entity, IAwake, IDestroy
     {
         public int Count;
 
