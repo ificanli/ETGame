@@ -23,7 +23,7 @@ namespace ET.Server
             foreach (var kv in itemComponent.SlotItems)
             {
                 Item item = kv.Value;
-                if (item == null || item.IsDisposed)
+                if (item == null)
                 {
                     continue;
                 }

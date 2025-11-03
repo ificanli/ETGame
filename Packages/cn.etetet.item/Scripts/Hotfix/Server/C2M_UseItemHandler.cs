@@ -18,7 +18,7 @@ namespace ET.Server
 
             // 通过ItemId获取物品
             Item item = itemComponent.GetItemById(request.ItemId);
-            if (item == null || item.IsDisposed)
+            if (item == null)
             {
                 response.Error = ErrorCode.ERR_ItemNotFound;
                 response.Message = "item not found";

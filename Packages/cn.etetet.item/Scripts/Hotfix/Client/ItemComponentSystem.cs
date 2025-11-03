@@ -38,7 +38,7 @@ namespace ET.Client
                 if (self.SlotItems.TryGetValue(slotIndex, out EntityRef<Item> itemRef))
                 {
                     Item item = itemRef;
-                    if (item != null && !item.IsDisposed)
+                    if (item != null)
                     {
                         item.Dispose();
                     }
@@ -50,7 +50,7 @@ namespace ET.Client
                 // 查找是否已存在该ItemId的物品
                 Item existingItem = self.GetItemById(itemId);
                 
-                if (existingItem != null && !existingItem.IsDisposed)
+                if (existingItem != null)
                 {
                     // 更新现有物品
                     // 如果槽位改变，需要更新槽位映射
@@ -84,7 +84,7 @@ namespace ET.Client
             if (self.SlotItems.TryGetValue(slotIndex, out EntityRef<Item> itemRef))
             {
                 Item item = itemRef;
-                if (item != null && !item.IsDisposed)
+                if (item != null)
                 {
                     return item;
                 }
@@ -109,7 +109,7 @@ namespace ET.Client
             foreach (var kv in self.SlotItems)
             {
                 Item item = kv.Value;
-                if (item != null && !item.IsDisposed && item.ConfigId == configId)
+                if (item != null && item.ConfigId == configId)
                 {
                     count += item.Count;
                 }
@@ -125,7 +125,7 @@ namespace ET.Client
             foreach (var kv in self.SlotItems)
             {
                 Item item = kv.Value;
-                if (item != null && !item.IsDisposed)
+                if (item != null)
                 {
                     item.Dispose();
                 }

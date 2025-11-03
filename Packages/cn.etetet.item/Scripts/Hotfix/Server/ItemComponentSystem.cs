@@ -59,7 +59,7 @@ namespace ET.Server
 
             int maxStack = itemConfig.MaxStack;
             int remainCount = count;
-            List<int> updatedSlots = new();
+            List<long> updatedItemIds = new();
 
             // 如果物品可堆叠，先尝试叠加到已有物品
             if (maxStack > 1)
@@ -67,7 +67,7 @@ namespace ET.Server
                 foreach (var kv in self.SlotItems)
                 {
                     Item item = kv.Value;
-                    if (item == null || item.IsDisposed)
+                    if (item == null)
                     {
                         continue;
                     }
@@ -77,7 +77,7 @@ namespace ET.Server
                         int addCount = System.Math.Min(remainCount, maxStack - item.Count);
                         item.AddCount(addCount);
                         remainCount -= addCount;
-                        updatedSlots.Add(item.SlotIndex);
+                        updatedItemIds.Add(item.Id);
 
                         if (remainCount <= 0)
                         {
@@ -104,15 +104,15 @@ namespace ET.Server
                 newItem.SlotIndex = slotIndex;
 
                 self.SlotItems[slotIndex] = newItem;
-                updatedSlots.Add(slotIndex);
+                updatedItemIds.Add(newItem.Id);
                 remainCount -= addCount;
             }
 
             // 通知客户端物品更新
-            foreach (int slotIndex in updatedSlots)
+            foreach (long itemId in updatedItemIds)
             {
-                Item item = self.GetItemBySlot(slotIndex);
-                if (item != null && !item.IsDisposed)
+                Item item = self.GetItemById(itemId);
+                if (item != null)
                 {
                     self.NotifyItemUpdate(item);
                 }
@@ -144,7 +144,7 @@ namespace ET.Server
 
             int remainCount = count;
             List<int> emptySlots = new();
-            List<int> updatedSlots = new();
+            List<long> updatedItemIds = new();
 
             foreach (var kv in self.SlotItems)
             {
@@ -154,7 +154,7 @@ namespace ET.Server
                 }
 
                 Item item = kv.Value;
-                if (item == null || item.IsDisposed)
+                if (item == null)
                 {
                     continue;
                 }
@@ -173,7 +173,7 @@ namespace ET.Server
                     {
                         item.ReduceCount(remainCount);
                         remainCount = 0;
-                        updatedSlots.Add(item.SlotIndex);
+                        updatedItemIds.Add(item.Id);
                     }
                 }
             }
@@ -185,10 +185,10 @@ namespace ET.Server
             }
 
             // 通知客户端物品数量更新
-            foreach (int slotIndex in updatedSlots)
+            foreach (long itemId in updatedItemIds)
             {
-                Item item = self.GetItemBySlot(slotIndex);
-                if (item != null && !item.IsDisposed)
+                Item item = self.GetItemById(itemId);
+                if (item != null)
                 {
                     self.NotifyItemUpdate(item);
                 }
@@ -196,6 +196,35 @@ namespace ET.Server
 
             return true;
         }
+        /// <summary>
+        /// 通过ItemId移除物品
+        /// </summary>
+        /// <param name="self">物品组件</param>
+        /// <param name="itemId">物品ID</param>
+        /// <returns>是否移除成功</returns>
+        public static bool RemoveItemById(this ItemComponent self, long itemId)
+        {
+            Item item = self.GetItemById(itemId);
+            if (item == null)
+            {
+                Log.Error($"item not found: {itemId}");
+                return false;
+            }
+
+            int slotIndex = item.SlotIndex;
+            
+            // 通知客户端移除该物品
+            self.NotifyItemRemove(item);
+            
+            // 从字典移除
+            self.SlotItems.Remove(slotIndex);
+            
+            // 销毁物品实体
+            item.Dispose();
+
+            return true;
+        }
+
 
         /// <summary>
         /// 获取指定物品的总数量
@@ -206,7 +235,7 @@ namespace ET.Server
             foreach (var kv in self.SlotItems)
             {
                 Item item = kv.Value;
-                if (item != null && !item.IsDisposed && item.ConfigId == configId)
+                if (item != null && item.ConfigId == configId)
                 {
                     count += item.Count;
                 }
@@ -271,7 +300,7 @@ namespace ET.Server
             foreach (var kv in self.SlotItems)
             {
                 Item item = kv.Value;
-                if (item != null && !item.IsDisposed)
+                if (item != null)
                 {
                     item.Dispose();
                 }
@@ -290,7 +319,7 @@ namespace ET.Server
             foreach (var kv in self.SlotItems)
             {
                 Item item = kv.Value;
-                if (item == null || item.IsDisposed)
+                if (item == null)
                 {
                     continue;
                 }
@@ -363,7 +392,7 @@ namespace ET.Server
 
             // 获取要移动的物品
             Item fromItem = self.GetItemById(itemId);
-            if (fromItem == null || fromItem.IsDisposed)
+            if (fromItem == null)
             {
                 return ErrorCode.ERR_ItemNotFound;
             }
@@ -380,7 +409,7 @@ namespace ET.Server
             Item toItem = self.GetItemBySlot(toSlot);
 
             // 情况1：目标槽位为空，直接移动
-            if (toItem == null || toItem.IsDisposed)
+            if (toItem == null)
             {
                 // 先通知源槽位清空（在修改之前，保存物品Id和源槽位）
                 long movedItemId = fromItem.Id;
