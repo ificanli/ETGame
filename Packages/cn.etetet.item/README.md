@@ -7,7 +7,9 @@ ET框架物品背包系统模块，提供完整的物品管理、背包容量控
 - **物品管理**：支持物品的添加、移除、使用等完整操作
 - **背包系统**：支持背包容量管理、槽位管理
 - **物品堆叠**：支持可堆叠物品的自动堆叠
-- **服务端权威**：添加/移除物品由服务端控制，自动同步客户端
+- **物品移动**：支持物品在背包槽位间移动和堆叠，类似魔兽世界操作
+- **智能合并**：相同ConfigId且可堆叠的物品自动合并，未满则部分堆叠
+- **服务端权威**：添加/移除/移动物品由服务端控制，自动同步客户端
 - **前后端同步**：客户端服务端数据实时同步
 - **配置驱动**：基于Luban配置系统的物品数据管理
 - **模块化设计**：符合ET框架ECS架构规范
@@ -71,6 +73,18 @@ Item item = itemComponent.GetItemBySlot(slotIndex: 0);
 itemComponent.SetCapacity(capacity: 200);
 ```
 
+### 服务端移动/堆叠物品
+```csharp
+// 服务端移动或堆叠物品（会自动通知客户端）
+ItemComponent itemComponent = unit.GetComponent<Server.ItemComponent>();
+int errorCode = itemComponent.MoveItem(fromSlot: 0, toSlot: 1);
+if (errorCode == ErrorCode.ERR_Success)
+{
+    // 移动/堆叠成功
+}
+// 无需手动调用通知，MoveItem内部会自动发送M2C_UpdateItem
+```
+
 ### 客户端请求
 ```csharp
 // 客户端请求使用物品
@@ -82,6 +96,12 @@ var response = await fiber.Root.GetComponent<ClientSenderComponent>().Call(reque
 // 客户端同步背包数据
 C2M_SyncBagData syncRequest = C2M_SyncBagData.Create();
 var syncResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(syncRequest);
+
+// 客户端移动/堆叠物品
+C2M_MoveItem moveRequest = C2M_MoveItem.Create();
+moveRequest.FromSlot = 0; // 源槽位
+moveRequest.ToSlot = 1;   // 目标槽位
+var moveResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(moveRequest);
 
 // 客户端获取物品
 ItemComponent itemComponent = scene.GetComponent<Client.ItemComponent>();
@@ -138,6 +158,61 @@ if (item != null)
 - **M2C_DiscardItem**: 丢弃物品响应
 - **M2C_SortBag**: 整理背包响应
 
+## 物品移动和堆叠功能
+
+### 功能特性
+
+- **智能堆叠**：将物品A拖到物品B上，如果ConfigId相同且可堆叠，自动合并
+- **容量检测**：如果目标槽位未达到最大堆叠数，源物品将尽可能合并到目标
+- **自动清理**：源物品完全堆叠到目标后，源槽位自动清空
+- **部分堆叠**：如果目标槽位空间不足，只堆叠部分数量，剩余保留在源槽位
+- **位置交换**：不同ConfigId或不可堆叠物品将交换位置
+- **空槽移动**：拖动物品到空槽位时直接移动
+
+### 堆叠规则
+
+1. **相同物品且可堆叠**（MaxStack > 1）：
+   - 目标未满：尽可能堆叠，源物品减少或清空
+   - 目标已满：返回错误，无法堆叠
+
+2. **不同物品或不可堆叠**（MaxStack = 1）：
+   - 直接交换两个槽位的物品
+
+3. **目标槽位为空**：
+   - 直接移动到目标槽位
+
+### 使用示例
+
+```csharp
+// 情况1：堆叠相同物品
+// 槽位0：药水x5（最大堆叠10）
+// 槽位1：药水x3（最大堆叠10）
+// 执行 MoveItem(0, 1) 后：
+// 槽位0：空
+// 槽位1：药水x8
+
+// 情况2：部分堆叠
+// 槽位0：药水x7（最大堆叠10）
+// 槽位1：药水x8（最大堆叠10）
+// 执行 MoveItem(0, 1) 后：
+// 槽位0：药水x5
+// 槽位1：药水x10（已满）
+
+// 情况3：交换不同物品
+// 槽位0：药水x5
+// 槽位1：装备x1
+// 执行 MoveItem(0, 1) 后：
+// 槽位0：装备x1
+// 槽位1：药水x5
+
+// 情况4：移动到空槽位
+// 槽位0：药水x5
+// 槽位1：空
+// 执行 MoveItem(0, 1) 后：
+// 槽位0：空
+// 槽位1：药水x5
+```
+
 ## 错误码
 
 - `ERR_ItemNotFound`: 物品未找到
@@ -145,6 +220,9 @@ if (item != null)
 - `ERR_ItemUseCountInvalid`: 使用数量无效
 - `ERR_ItemAddFailed`: 添加物品失败
 - `ERR_ItemUseFailed`: 使用物品失败
+- `ERR_ItemSlotInvalid`: 槽位索引无效
+- `ERR_ItemCannotStack`: 物品无法堆叠（目标槽位已满）
+- `ERR_ItemMoveToSameSlot`: 不能移动到相同槽位
 
 ## 依赖
 
@@ -155,7 +233,15 @@ if (item != null)
 
 ## 版本历史
 
-### 1.2.0 (当前版本)
+### 1.3.0 (当前版本)
+- 新增物品移动和堆叠功能（MoveItem）
+- 支持相同ConfigId物品的智能堆叠合并
+- 支持不同物品的位置交换
+- 新增错误码：ERR_ItemSlotInvalid、ERR_ItemCannotStack、ERR_ItemMoveToSameSlot
+- 新增C2M_MoveItemHandler消息处理器
+- 完善README文档，添加详细的移动和堆叠功能说明
+
+### 1.2.0
 - 重构客户端物品系统架构
 - ItemInfo结构体改为Item Entity，支持ECS规范
 - ClientItemComponent重命名为ItemComponent（使用ET.Client命名空间区分）
@@ -178,8 +264,10 @@ if (item != null)
 ## 注意事项
 
 1. **严禁客户端直接添加/移除物品**：所有物品增删必须由服务端触发
-2. **自动通知机制**：AddItem和RemoveItem方法会自动通知客户端，无需手动调用NotifyItemChanges
+2. **自动通知机制**：AddItem、RemoveItem和MoveItem方法会自动通知客户端，无需手动调用NotifyItemChanges
 3. **物品使用**：客户端通过UseItem请求，服务端验证后调用RemoveItem执行
-4. **数据同步**：客户端可通过SyncBagData获取完整背包数据，用于登录或重连后的数据恢复
-5. **命名空间区分**：客户端使用ET.Client.Item和ET.Client.ItemComponent，服务端使用ET.Server.Item和ET.Server.ItemComponent
-6. **EntityRef使用**：客户端ItemComponent使用Dictionary<int, EntityRef<Item>>管理物品，遵循ET框架规范
+4. **物品移动**：客户端通过MoveItem请求，服务端验证后执行移动或堆叠操作
+5. **数据同步**：客户端可通过SyncBagData获取完整背包数据，用于登录或重连后的数据恢复
+6. **命名空间区分**：客户端使用ET.Client.Item和ET.Client.ItemComponent，服务端使用ET.Server.Item和ET.Server.ItemComponent
+7. **EntityRef使用**：客户端ItemComponent使用Dictionary<int, EntityRef<Item>>管理物品，遵循ET框架规范
+8. **堆叠限制**：物品是否可堆叠由配置的MaxStack字段控制，MaxStack=1表示不可堆叠

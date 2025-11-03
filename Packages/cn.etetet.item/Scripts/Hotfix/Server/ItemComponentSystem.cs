@@ -326,6 +326,135 @@ namespace ET.Server
             MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
         }
 
+        /// <summary>
+        /// 移动或堆叠物品
+        /// </summary>
+        /// <param name="self">物品组件</param>
+        /// <param name="fromSlot">源槽位</param>
+        /// <param name="toSlot">目标槽位</param>
+        /// <returns>错误码，0表示成功</returns>
+        public static int MoveItem(this ItemComponent self, int fromSlot, int toSlot)
+        {
+            // 验证槽位索引
+            if (fromSlot < 0 || fromSlot >= self.Capacity || toSlot < 0 || toSlot >= self.Capacity)
+            {
+                return ErrorCode.ERR_ItemSlotInvalid;
+            }
+
+            // 不能移动到同一个槽位
+            if (fromSlot == toSlot)
+            {
+                return ErrorCode.ERR_ItemMoveToSameSlot;
+            }
+
+            // 获取源槽位物品
+            Item fromItem = self.GetItemBySlot(fromSlot);
+            if (fromItem == null || fromItem.IsDisposed)
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            // 获取目标槽位物品
+            Item toItem = self.GetItemBySlot(toSlot);
+
+            // 情况1：目标槽位为空，直接移动
+            if (toItem == null || toItem.IsDisposed)
+            {
+                fromItem.SlotIndex = toSlot;
+                self.SlotItems.Remove(fromSlot);
+                self.SlotItems[toSlot] = fromItem;
+
+                // 通知客户端更新
+                self.NotifyItemUpdate(fromSlot, 0, 0); // 源槽位清空
+                self.NotifyItemUpdate(toSlot, fromItem.ConfigId, fromItem.Count); // 目标槽位更新
+                return ErrorCode.ERR_Success;
+            }
+
+            // 情况2：目标槽位有物品
+            // 如果ConfigId相同且可以堆叠，尝试堆叠
+            if (fromItem.ConfigId == toItem.ConfigId)
+            {
+                ItemConfigCategory itemConfigCategory = ItemConfigCategory.Instance;
+                ItemConfig itemConfig = itemConfigCategory.Get(fromItem.ConfigId);
+                if (itemConfig == null)
+                {
+                    return ErrorCode.ERR_ItemNotFound;
+                }
+
+                int maxStack = itemConfig.MaxStack;
+
+                // 只有可堆叠物品才能堆叠
+                if (maxStack > 1)
+                {
+                    // 计算可以堆叠的数量
+                    int canStackCount = maxStack - toItem.Count;
+                    if (canStackCount > 0)
+                    {
+                        // 堆叠数量取最小值
+                        int stackCount = System.Math.Min(canStackCount, fromItem.Count);
+                        
+                        // 更新目标槽位数量
+                        toItem.AddCount(stackCount);
+                        
+                        // 更新源槽位数量
+                        fromItem.ReduceCount(stackCount);
+
+                        if (fromItem.Count <= 0)
+                        {
+                            // 源槽位物品完全堆叠到目标槽位，移除源槽位
+                            self.SlotItems.Remove(fromSlot);
+                            fromItem.Dispose();
+                            self.NotifyItemUpdate(fromSlot, 0, 0); // 源槽位清空
+                        }
+                        else
+                        {
+                            // 源槽位还有剩余
+                            self.NotifyItemUpdate(fromSlot, fromItem.ConfigId, fromItem.Count); // 源槽位更新数量
+                        }
+
+                        // 通知目标槽位更新
+                        self.NotifyItemUpdate(toSlot, toItem.ConfigId, toItem.Count);
+                        return ErrorCode.ERR_Success;
+                    }
+                    else
+                    {
+                        // 目标槽位已满，无法堆叠
+                        return ErrorCode.ERR_ItemCannotStack;
+                    }
+                }
+                else
+                {
+                    // 不可堆叠物品，执行交换
+                    self.SwapItems(fromSlot, toSlot, fromItem, toItem);
+                    return ErrorCode.ERR_Success;
+                }
+            }
+            else
+            {
+                // 情况3：ConfigId不同，交换位置
+                self.SwapItems(fromSlot, toSlot, fromItem, toItem);
+                return ErrorCode.ERR_Success;
+            }
+        }
+
+        /// <summary>
+        /// 交换两个槽位的物品
+        /// </summary>
+        private static void SwapItems(this ItemComponent self, int fromSlot, int toSlot, Item fromItem, Item toItem)
+        {
+            // 交换槽位索引
+            fromItem.SlotIndex = toSlot;
+            toItem.SlotIndex = fromSlot;
+
+            // 更新字典映射
+            self.SlotItems[fromSlot] = toItem;
+            self.SlotItems[toSlot] = fromItem;
+
+            // 通知客户端更新两个槽位
+            self.NotifyItemUpdate(fromSlot, toItem.ConfigId, toItem.Count);
+            self.NotifyItemUpdate(toSlot, fromItem.ConfigId, fromItem.Count);
+        }
+
         #endregion
     }
 }
