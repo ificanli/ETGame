@@ -3,142 +3,6 @@ using System.Collections.Generic;
 
 namespace ET
 {
-    // 添加物品请求
-    [MemoryPackable]
-    [Message(Opcode.C2M_AddItem)]
-    [ResponseType(nameof(M2C_AddItem))]
-    public partial class C2M_AddItem : MessageObject, ILocationRequest
-    {
-        public static C2M_AddItem Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<C2M_AddItem>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-        /// <summary>
-        /// 物品配置ID
-        /// </summary>
-        [MemoryPackOrder(1)]
-        public int ConfigId { get; set; }
-        /// <summary>
-        /// 物品数量
-        /// </summary>
-        [MemoryPackOrder(2)]
-        public int Count { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.ConfigId = default;
-            this.Count = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.M2C_AddItem)]
-    public partial class M2C_AddItem : MessageObject, ILocationResponse
-    {
-        public static M2C_AddItem Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<M2C_AddItem>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-        [MemoryPackOrder(1)]
-        public int Error { get; set; }
-        [MemoryPackOrder(2)]
-        public string Message { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.Error = default;
-            this.Message = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    // 移除物品请求
-    [MemoryPackable]
-    [Message(Opcode.C2M_RemoveItem)]
-    [ResponseType(nameof(M2C_RemoveItem))]
-    public partial class C2M_RemoveItem : MessageObject, ILocationRequest
-    {
-        public static C2M_RemoveItem Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<C2M_RemoveItem>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-        /// <summary>
-        /// 物品配置ID
-        /// </summary>
-        [MemoryPackOrder(1)]
-        public int ConfigId { get; set; }
-        /// <summary>
-        /// 移除数量
-        /// </summary>
-        [MemoryPackOrder(2)]
-        public int Count { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.ConfigId = default;
-            this.Count = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.M2C_RemoveItem)]
-    public partial class M2C_RemoveItem : MessageObject, ILocationResponse
-    {
-        public static M2C_RemoveItem Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<M2C_RemoveItem>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public int RpcId { get; set; }
-        [MemoryPackOrder(1)]
-        public int Error { get; set; }
-        [MemoryPackOrder(2)]
-        public string Message { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RpcId = default;
-            this.Error = default;
-            this.Message = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
     // 使用物品请求
     [MemoryPackable]
     [Message(Opcode.C2M_UseItem)]
@@ -153,10 +17,10 @@ namespace ET
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
         /// <summary>
-        /// 槽位索引
+        /// 物品ID
         /// </summary>
         [MemoryPackOrder(1)]
-        public int SlotIndex { get; set; }
+        public long ItemId { get; set; }
         /// <summary>
         /// 使用数量
         /// </summary>
@@ -170,7 +34,7 @@ namespace ET
             }
 
             this.RpcId = default;
-            this.SlotIndex = default;
+            this.ItemId = default;
             this.Count = default;
 
             ObjectPool.Recycle(this);
@@ -218,19 +82,24 @@ namespace ET
         }
 
         /// <summary>
-        /// 槽位索引
+        /// 物品ID
         /// </summary>
         [MemoryPackOrder(0)]
+        public long ItemId { get; set; }
+        /// <summary>
+        /// 槽位索引
+        /// </summary>
+        [MemoryPackOrder(1)]
         public int SlotIndex { get; set; }
         /// <summary>
         /// 物品配置ID
         /// </summary>
-        [MemoryPackOrder(1)]
+        [MemoryPackOrder(2)]
         public int ConfigId { get; set; }
         /// <summary>
         /// 物品数量
         /// </summary>
-        [MemoryPackOrder(2)]
+        [MemoryPackOrder(3)]
         public int Count { get; set; }
         public override void Dispose()
         {
@@ -239,6 +108,7 @@ namespace ET
                 return;
             }
 
+            this.ItemId = default;
             this.SlotIndex = default;
             this.ConfigId = default;
             this.Count = default;
@@ -327,19 +197,24 @@ namespace ET
         }
 
         /// <summary>
-        /// 槽位索引
+        /// 物品ID（0表示移除该槽位物品）
         /// </summary>
         [MemoryPackOrder(0)]
+        public long ItemId { get; set; }
+        /// <summary>
+        /// 槽位索引
+        /// </summary>
+        [MemoryPackOrder(1)]
         public int SlotIndex { get; set; }
         /// <summary>
         /// 物品配置ID
         /// </summary>
-        [MemoryPackOrder(1)]
+        [MemoryPackOrder(2)]
         public int ConfigId { get; set; }
         /// <summary>
-        /// 物品数量（0表示移除）
+        /// 物品数量
         /// </summary>
-        [MemoryPackOrder(2)]
+        [MemoryPackOrder(3)]
         public int Count { get; set; }
         public override void Dispose()
         {
@@ -348,6 +223,7 @@ namespace ET
                 return;
             }
 
+            this.ItemId = default;
             this.SlotIndex = default;
             this.ConfigId = default;
             this.Count = default;
@@ -398,10 +274,10 @@ namespace ET
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
         /// <summary>
-        /// 源槽位
+        /// 要移动的物品ID
         /// </summary>
         [MemoryPackOrder(1)]
-        public int FromSlot { get; set; }
+        public long ItemId { get; set; }
         /// <summary>
         /// 目标槽位
         /// </summary>
@@ -415,7 +291,7 @@ namespace ET
             }
 
             this.RpcId = default;
-            this.FromSlot = default;
+            this.ItemId = default;
             this.ToSlot = default;
 
             ObjectPool.Recycle(this);
@@ -466,10 +342,10 @@ namespace ET
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
         /// <summary>
-        /// 槽位索引
+        /// 物品ID
         /// </summary>
         [MemoryPackOrder(1)]
-        public int SlotIndex { get; set; }
+        public long ItemId { get; set; }
         /// <summary>
         /// 丢弃数量
         /// </summary>
@@ -483,7 +359,7 @@ namespace ET
             }
 
             this.RpcId = default;
-            this.SlotIndex = default;
+            this.ItemId = default;
             this.Count = default;
 
             ObjectPool.Recycle(this);
@@ -578,22 +454,18 @@ namespace ET
 
     public static partial class Opcode
     {
-        public const ushort C2M_AddItem = 10801;
-        public const ushort M2C_AddItem = 10802;
-        public const ushort C2M_RemoveItem = 10803;
-        public const ushort M2C_RemoveItem = 10804;
-        public const ushort C2M_UseItem = 10805;
-        public const ushort M2C_UseItem = 10806;
-        public const ushort ItemData = 10807;
-        public const ushort C2M_SyncBagData = 10808;
-        public const ushort M2C_SyncBagData = 10809;
-        public const ushort M2C_UpdateItem = 10810;
-        public const ushort M2C_UpdateBagCapacity = 10811;
-        public const ushort C2M_MoveItem = 10812;
-        public const ushort M2C_MoveItem = 10813;
-        public const ushort C2M_DiscardItem = 10814;
-        public const ushort M2C_DiscardItem = 10815;
-        public const ushort C2M_SortBag = 10816;
-        public const ushort M2C_SortBag = 10817;
+        public const ushort C2M_UseItem = 10801;
+        public const ushort M2C_UseItem = 10802;
+        public const ushort ItemData = 10803;
+        public const ushort C2M_SyncBagData = 10804;
+        public const ushort M2C_SyncBagData = 10805;
+        public const ushort M2C_UpdateItem = 10806;
+        public const ushort M2C_UpdateBagCapacity = 10807;
+        public const ushort C2M_MoveItem = 10808;
+        public const ushort M2C_MoveItem = 10809;
+        public const ushort C2M_DiscardItem = 10810;
+        public const ushort M2C_DiscardItem = 10811;
+        public const ushort C2M_SortBag = 10812;
+        public const ushort M2C_SortBag = 10813;
     }
 }

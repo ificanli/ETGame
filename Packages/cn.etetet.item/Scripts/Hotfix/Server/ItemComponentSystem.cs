@@ -114,7 +114,7 @@ namespace ET.Server
                 Item item = self.GetItemBySlot(slotIndex);
                 if (item != null && !item.IsDisposed)
                 {
-                    self.NotifyItemUpdate(item.SlotIndex, item.ConfigId, item.Count);
+                    self.NotifyItemUpdate(item);
                 }
             }
 
@@ -165,8 +165,8 @@ namespace ET.Server
                     {
                         remainCount -= item.Count;
                         emptySlots.Add(kv.Key);
-                        // 通知客户端移除该槽位的物品（Count为0表示移除）
-                        self.NotifyItemUpdate(kv.Key, configId, 0);
+                        // 通知客户端移除该槽位的物品（Count=0表示移除）
+                        self.NotifyItemRemove(item);
                         item.Dispose();
                     }
                     else
@@ -190,7 +190,7 @@ namespace ET.Server
                 Item item = self.GetItemBySlot(slotIndex);
                 if (item != null && !item.IsDisposed)
                 {
-                    self.NotifyItemUpdate(item.SlotIndex, item.ConfigId, item.Count);
+                    self.NotifyItemUpdate(item);
                 }
             }
 
@@ -254,6 +254,14 @@ namespace ET.Server
             self.SlotItems.TryGetValue(slotIndex, out EntityRef<Item> itemRef);
             return itemRef;
         }
+        
+        /// <summary>
+        /// 通过ItemId获取物品
+        /// </summary>
+        public static Item GetItemById(this ItemComponent self, long itemId)
+        {
+            return self.GetChild<Item>(itemId);
+        }
 
         /// <summary>
         /// 清空背包
@@ -287,12 +295,7 @@ namespace ET.Server
                     continue;
                 }
 
-                M2C_UpdateItem message = M2C_UpdateItem.Create();
-                message.SlotIndex = item.SlotIndex;
-                message.ConfigId = item.ConfigId;
-                message.Count = item.Count;
-                
-                MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
+                self.NotifyItemUpdate(item);
             }
 
             await ETTask.CompletedTask;
@@ -301,14 +304,31 @@ namespace ET.Server
         /// <summary>
         /// 通知客户端单个物品更新
         /// </summary>
-        public static void NotifyItemUpdate(this ItemComponent self, int slotIndex, int configId, int count)
+        public static void NotifyItemUpdate(this ItemComponent self, Item item)
         {
             Unit unit = self.GetParent<Unit>();
             
             M2C_UpdateItem message = M2C_UpdateItem.Create();
-            message.SlotIndex = slotIndex;
-            message.ConfigId = configId;
-            message.Count = count;
+            message.ItemId = item.Id;
+            message.SlotIndex = item.SlotIndex;
+            message.ConfigId = item.ConfigId;
+            message.Count = item.Count;
+            
+            MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
+        }
+        
+        /// <summary>
+        /// 通知客户端移除物品（Count=0表示移除）
+        /// </summary>
+        public static void NotifyItemRemove(this ItemComponent self, Item item)
+        {
+            Unit unit = self.GetParent<Unit>();
+            
+            M2C_UpdateItem message = M2C_UpdateItem.Create();
+            message.ItemId = item.Id;
+            message.SlotIndex = item.SlotIndex;
+            message.ConfigId = item.ConfigId;
+            message.Count = 0; // Count=0表示移除
             
             MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
         }
@@ -330,28 +350,30 @@ namespace ET.Server
         /// 移动或堆叠物品
         /// </summary>
         /// <param name="self">物品组件</param>
-        /// <param name="fromSlot">源槽位</param>
+        /// <param name="itemId">要移动的物品ID</param>
         /// <param name="toSlot">目标槽位</param>
         /// <returns>错误码，0表示成功</returns>
-        public static int MoveItem(this ItemComponent self, int fromSlot, int toSlot)
+        public static int MoveItem(this ItemComponent self, long itemId, int toSlot)
         {
             // 验证槽位索引
-            if (fromSlot < 0 || fromSlot >= self.Capacity || toSlot < 0 || toSlot >= self.Capacity)
+            if (toSlot < 0 || toSlot >= self.Capacity)
             {
                 return ErrorCode.ERR_ItemSlotInvalid;
             }
+
+            // 获取要移动的物品
+            Item fromItem = self.GetItemById(itemId);
+            if (fromItem == null || fromItem.IsDisposed)
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+            
+            int fromSlot = fromItem.SlotIndex;
 
             // 不能移动到同一个槽位
             if (fromSlot == toSlot)
             {
                 return ErrorCode.ERR_ItemMoveToSameSlot;
-            }
-
-            // 获取源槽位物品
-            Item fromItem = self.GetItemBySlot(fromSlot);
-            if (fromItem == null || fromItem.IsDisposed)
-            {
-                return ErrorCode.ERR_ItemNotFound;
             }
 
             // 获取目标槽位物品
@@ -360,13 +382,27 @@ namespace ET.Server
             // 情况1：目标槽位为空，直接移动
             if (toItem == null || toItem.IsDisposed)
             {
+                // 先通知源槽位清空（在修改之前，保存物品Id和源槽位）
+                long movedItemId = fromItem.Id;
+                int fromSlotIndex = fromSlot;
+                
+                // 更新物品槽位
                 fromItem.SlotIndex = toSlot;
                 self.SlotItems.Remove(fromSlot);
                 self.SlotItems[toSlot] = fromItem;
 
                 // 通知客户端更新
-                self.NotifyItemUpdate(fromSlot, 0, 0); // 源槽位清空
-                self.NotifyItemUpdate(toSlot, fromItem.ConfigId, fromItem.Count); // 目标槽位更新
+                Unit unit = self.GetParent<Unit>();
+                
+                // 源槽位清空：使用原物品Id + 源槽位 + Count=0
+                M2C_UpdateItem clearMessage = M2C_UpdateItem.Create();
+                clearMessage.ItemId = movedItemId;
+                clearMessage.SlotIndex = fromSlotIndex;
+                clearMessage.ConfigId = 0;
+                clearMessage.Count = 0;
+                MapMessageHelper.NoticeClient(unit, clearMessage, NoticeType.Self);
+                
+                self.NotifyItemUpdate(fromItem); // 目标槽位更新
                 return ErrorCode.ERR_Success;
             }
 
@@ -401,19 +437,31 @@ namespace ET.Server
 
                         if (fromItem.Count <= 0)
                         {
-                            // 源槽位物品完全堆叠到目标槽位，移除源槽位
+                            // 源槽位物品完全堆叠到目标槽位
+                            // 先保存信息，再移除
+                            long fromItemId = fromItem.Id;
+                            int fromSlotIndex = fromItem.SlotIndex;
+                            
                             self.SlotItems.Remove(fromSlot);
                             fromItem.Dispose();
-                            self.NotifyItemUpdate(fromSlot, 0, 0); // 源槽位清空
+                            
+                            // 源槽位清空：使用原物品Id + 源槽位 + Count=0
+                            Unit unit = self.GetParent<Unit>();
+                            M2C_UpdateItem clearMessage = M2C_UpdateItem.Create();
+                            clearMessage.ItemId = fromItemId;
+                            clearMessage.SlotIndex = fromSlotIndex;
+                            clearMessage.ConfigId = 0;
+                            clearMessage.Count = 0;
+                            MapMessageHelper.NoticeClient(unit, clearMessage, NoticeType.Self);
                         }
                         else
                         {
                             // 源槽位还有剩余
-                            self.NotifyItemUpdate(fromSlot, fromItem.ConfigId, fromItem.Count); // 源槽位更新数量
+                            self.NotifyItemUpdate(fromItem); // 源槽位更新数量
                         }
 
                         // 通知目标槽位更新
-                        self.NotifyItemUpdate(toSlot, toItem.ConfigId, toItem.Count);
+                        self.NotifyItemUpdate(toItem);
                         return ErrorCode.ERR_Success;
                     }
                     else
@@ -451,8 +499,8 @@ namespace ET.Server
             self.SlotItems[toSlot] = fromItem;
 
             // 通知客户端更新两个槽位
-            self.NotifyItemUpdate(fromSlot, toItem.ConfigId, toItem.Count);
-            self.NotifyItemUpdate(toSlot, fromItem.ConfigId, fromItem.Count);
+            self.NotifyItemUpdate(toItem);
+            self.NotifyItemUpdate(fromItem);
         }
 
         #endregion

@@ -6,7 +6,7 @@ package ET;
 message C2M_UseItem // ILocationRequest
 {
 	int32 RpcId = 1;
-	int32 SlotIndex = 2; // 槽位索引
+	int64 ItemId = 2; // 物品ID
 	int32 Count = 3; // 使用数量
 }
 
@@ -20,9 +20,10 @@ message M2C_UseItem // ILocationResponse
 // 物品信息
 message ItemData
 {
-	int32 SlotIndex = 1; // 槽位索引
-	int32 ConfigId = 2; // 物品配置ID
-	int32 Count = 3; // 物品数量
+	int64 ItemId = 1; // 物品ID
+	int32 SlotIndex = 2; // 槽位索引
+	int32 ConfigId = 3; // 物品配置ID
+	int32 Count = 4; // 物品数量
 }
 
 // 同步背包数据请求
@@ -44,9 +45,10 @@ message M2C_SyncBagData // ILocationResponse
 // 更新物品通知（服务器推送）
 message M2C_UpdateItem // IMessage
 {
-	int32 SlotIndex = 1; // 槽位索引
-	int32 ConfigId = 2; // 物品配置ID
-	int32 Count = 3; // 物品数量（0表示移除）
+	int64 ItemId = 1; // 物品ID（0表示移除该槽位物品）
+	int32 SlotIndex = 2; // 槽位索引
+	int32 ConfigId = 3; // 物品配置ID
+	int32 Count = 4; // 物品数量
 }
 
 // 背包容量变化通知
@@ -60,7 +62,7 @@ message M2C_UpdateBagCapacity // IMessage
 message C2M_MoveItem // ILocationRequest
 {
 	int32 RpcId = 1;
-	int32 FromSlot = 2; // 源槽位
+	int64 ItemId = 2; // 要移动的物品ID
 	int32 ToSlot = 3; // 目标槽位
 }
 
@@ -76,7 +78,7 @@ message M2C_MoveItem // ILocationResponse
 message C2M_DiscardItem // ILocationRequest
 {
 	int32 RpcId = 1;
-	int32 SlotIndex = 2; // 槽位索引
+	int64 ItemId = 2; // 物品ID
 	int32 Count = 3; // 丢弃数量
 }
 

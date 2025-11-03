@@ -29,6 +29,7 @@ namespace ET.Server
                 }
 
                 ItemData itemData = ItemData.Create();
+                itemData.ItemId = item.Id;
                 itemData.SlotIndex = item.SlotIndex;
                 itemData.ConfigId = item.ConfigId;
                 itemData.Count = item.Count;

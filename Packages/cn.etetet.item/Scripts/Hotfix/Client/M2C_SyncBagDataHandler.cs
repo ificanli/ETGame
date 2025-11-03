@@ -30,7 +30,7 @@ namespace ET.Client
             // 添加所有物品
             foreach (ItemData itemData in message.Items)
             {
-                itemComponent.UpdateItem(itemData.SlotIndex, itemData.ConfigId, itemData.Count);
+                itemComponent.UpdateItem(itemData.ItemId, itemData.SlotIndex, itemData.ConfigId, itemData.Count);
             }
 
             Log.Debug($"bag data synced, capacity: {message.Capacity}, item count: {message.Items.Count}");

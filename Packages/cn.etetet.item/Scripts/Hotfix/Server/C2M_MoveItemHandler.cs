@@ -17,7 +17,7 @@ namespace ET.Server
             }
 
             // 调用MoveItem方法进行移动或堆叠
-            int errorCode = itemComponent.MoveItem(request.FromSlot, request.ToSlot);
+            int errorCode = itemComponent.MoveItem(request.ItemId, request.ToSlot);
             
             if (errorCode != ErrorCode.ERR_Success)
             {

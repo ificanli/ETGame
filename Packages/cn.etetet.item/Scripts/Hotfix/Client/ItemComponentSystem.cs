@@ -29,11 +29,12 @@ namespace ET.Client
         /// <summary>
         /// 更新背包物品信息
         /// </summary>
-        public static void UpdateItem(this ItemComponent self, int slotIndex, int configId, int count)
+        public static void UpdateItem(this ItemComponent self, long itemId, int slotIndex, int configId, int count)
         {
             if (count <= 0)
             {
-                // 移除物品
+                // Count=0表示该槽位的物品被移除或清空
+                // 通过slotIndex查找并移除
                 if (self.SlotItems.TryGetValue(slotIndex, out EntityRef<Item> itemRef))
                 {
                     Item item = itemRef;
@@ -46,31 +47,27 @@ namespace ET.Client
             }
             else
             {
-                // 更新或添加物品
-                if (self.SlotItems.TryGetValue(slotIndex, out EntityRef<Item> itemRef))
+                // 查找是否已存在该ItemId的物品
+                Item existingItem = self.GetItemById(itemId);
+                
+                if (existingItem != null && !existingItem.IsDisposed)
                 {
                     // 更新现有物品
-                    Item item = itemRef;
-                    if (item != null && !item.IsDisposed)
+                    // 如果槽位改变，需要更新槽位映射
+                    if (existingItem.SlotIndex != slotIndex)
                     {
-                        item.ConfigId = configId;
-                        item.Count = count;
-                        item.SlotIndex = slotIndex;
+                        self.SlotItems.Remove(existingItem.SlotIndex);
+                        self.SlotItems[slotIndex] = existingItem;
                     }
-                    else
-                    {
-                        // Entity已失效，创建新的
-                        Item newItem = self.AddChild<Item>();
-                        newItem.ConfigId = configId;
-                        newItem.Count = count;
-                        newItem.SlotIndex = slotIndex;
-                        self.SlotItems[slotIndex] = newItem;
-                    }
+                    
+                    existingItem.ConfigId = configId;
+                    existingItem.Count = count;
+                    existingItem.SlotIndex = slotIndex;
                 }
                 else
                 {
-                    // 创建新物品
-                    Item newItem = self.AddChild<Item>();
+                    // 创建新物品，使用服务端传来的ItemId
+                    Item newItem = self.AddChildWithId<Item>(itemId);
                     newItem.ConfigId = configId;
                     newItem.Count = count;
                     newItem.SlotIndex = slotIndex;
@@ -93,6 +90,14 @@ namespace ET.Client
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// 通过ItemId获取物品
+        /// </summary>
+        public static Item GetItemById(this ItemComponent self, long itemId)
+        {
+            return self.GetChild<Item>(itemId);
         }
 
         /// <summary>

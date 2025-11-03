@@ -77,7 +77,10 @@ itemComponent.SetCapacity(capacity: 200);
 ```csharp
 // 服务端移动或堆叠物品（会自动通知客户端）
 ItemComponent itemComponent = unit.GetComponent<Server.ItemComponent>();
-int errorCode = itemComponent.MoveItem(fromSlot: 0, toSlot: 1);
+
+// 通过ItemId移动物品
+Item item = itemComponent.GetItemById(itemId);
+int errorCode = itemComponent.MoveItem(itemId: item.Id, toSlot: 1);
 if (errorCode == ErrorCode.ERR_Success)
 {
     // 移动/堆叠成功
@@ -85,11 +88,21 @@ if (errorCode == ErrorCode.ERR_Success)
 // 无需手动调用通知，MoveItem内部会自动发送M2C_UpdateItem
 ```
 
+### 通过ItemId获取物品
+```csharp
+// 服务端通过ItemId直接获取物品
+Item item = itemComponent.GetItemById(itemId);
+if (item != null && !item.IsDisposed)
+{
+    Log.Debug($"Item ConfigId: {item.ConfigId}, Count: {item.Count}, Slot: {item.SlotIndex}");
+}
+```
+
 ### 客户端请求
 ```csharp
-// 客户端请求使用物品
+// 客户端请求使用物品（通过ItemId）
 C2M_UseItem request = C2M_UseItem.Create();
-request.SlotIndex = 0;
+request.ItemId = item.Id; // 使用ItemId而非SlotIndex
 request.Count = 1;
 var response = await fiber.Root.GetComponent<ClientSenderComponent>().Call(request);
 
@@ -97,18 +110,25 @@ var response = await fiber.Root.GetComponent<ClientSenderComponent>().Call(reque
 C2M_SyncBagData syncRequest = C2M_SyncBagData.Create();
 var syncResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(syncRequest);
 
-// 客户端移动/堆叠物品
+// 客户端移动/堆叠物品（通过ItemId）
 C2M_MoveItem moveRequest = C2M_MoveItem.Create();
-moveRequest.FromSlot = 0; // 源槽位
-moveRequest.ToSlot = 1;   // 目标槽位
+moveRequest.ItemId = item.Id; // 使用ItemId指定要移动的物品
+moveRequest.ToSlot = 1;        // 目标槽位
 var moveResponse = await fiber.Root.GetComponent<ClientSenderComponent>().Call(moveRequest);
 
-// 客户端获取物品
+// 客户端通过槽位获取物品
 ItemComponent itemComponent = scene.GetComponent<Client.ItemComponent>();
 Item item = itemComponent.GetItemBySlot(0);
 if (item != null)
 {
-    Log.Debug($"Item ConfigId: {item.ConfigId}, Count: {item.Count}");
+    Log.Debug($"Item ID: {item.Id}, ConfigId: {item.ConfigId}, Count: {item.Count}");
+}
+
+// 客户端通过ItemId获取物品
+Item itemById = itemComponent.GetItemById(itemId);
+if (itemById != null)
+{
+    Log.Debug($"Item ConfigId: {itemById.ConfigId}, Count: {itemById.Count}, Slot: {itemById.SlotIndex}");
 }
 ```
 
@@ -231,9 +251,52 @@ if (item != null)
 - cn.etetet.proto
 - cn.etetet.unit
 
+## 物品追踪机制
+
+### ItemId设计
+
+系统采用基于`Item.Id`的物品追踪机制，而非基于槽位索引（SlotIndex）：
+
+- **唯一标识**：每个物品实体都有唯一的`Item.Id`（Entity的ID）
+- **完整追踪**：可以追踪物品的完整生命周期（创建、移动、使用、移除）
+- **直接访问**：服务端和客户端都可以通过ItemId直接获取物品，无需通过槽位
+- **永不为0**：ItemId永远不为0（Entity的ID由ET框架管理，从1开始递增）
+
+### 物品移除语义
+
+物品的移除和槽位清空统一通过`Count=0`表示：
+
+1. **物品被移除**（使用、丢弃等）
+   - 服务端发送：`ItemId + SlotIndex + Count=0`
+   - 表示该物品在该槽位被完全移除
+   - 客户端通过SlotIndex定位并移除物品Entity
+
+2. **槽位清空**（物品移动导致）
+   - 服务端发送：`原ItemId + 原SlotIndex + Count=0`
+   - 表示物品从原槽位移走（可能移动到新槽位）
+   - 客户端通过SlotIndex清空该槽位
+   - 同时会收到新槽位的更新消息
+
+### 优势
+
+- **可追踪性**：每个物品都有唯一ID，便于日志记录和问题排查
+- **灵活操作**：操作物品时使用ItemId，不受槽位变化影响
+- **架构清晰**：利用ET框架Entity机制，无需额外的ID管理
+- **语义统一**：Count=0统一表示移除，逻辑清晰简单
+
 ## 版本历史
 
-### 1.3.0 (当前版本)
+### 1.4.0 (当前版本)
+- **重大重构**：从基于SlotIndex改为基于Item.Id的物品追踪机制
+- 所有客户端请求（UseItem、MoveItem、DiscardItem）改用ItemId参数
+- 新增GetItemById方法，支持通过ItemId直接获取物品
+- 优化M2C_UpdateItem协议，添加ItemId字段
+- ItemData结构添加ItemId字段，保留SlotIndex用于UI显示
+- 统一使用Count=0表示物品移除或槽位清空
+- 客户端Item Entity使用AddChildWithId保持与服务端ID一致
+- 完善物品追踪和生命周期管理
+
+### 1.3.0
 - 新增物品移动和堆叠功能（MoveItem）
 - 支持相同ConfigId物品的智能堆叠合并
 - 支持不同物品的位置交换
@@ -265,9 +328,12 @@ if (item != null)
 
 1. **严禁客户端直接添加/移除物品**：所有物品增删必须由服务端触发
 2. **自动通知机制**：AddItem、RemoveItem和MoveItem方法会自动通知客户端，无需手动调用NotifyItemChanges
-3. **物品使用**：客户端通过UseItem请求，服务端验证后调用RemoveItem执行
-4. **物品移动**：客户端通过MoveItem请求，服务端验证后执行移动或堆叠操作
+3. **物品使用**：客户端通过UseItem请求（使用ItemId），服务端验证后调用RemoveItem执行
+4. **物品移动**：客户端通过MoveItem请求（使用ItemId），服务端验证后执行移动或堆叠操作
 5. **数据同步**：客户端可通过SyncBagData获取完整背包数据，用于登录或重连后的数据恢复
 6. **命名空间区分**：客户端使用ET.Client.Item和ET.Client.ItemComponent，服务端使用ET.Server.Item和ET.Server.ItemComponent
 7. **EntityRef使用**：客户端ItemComponent使用Dictionary<int, EntityRef<Item>>管理物品，遵循ET框架规范
 8. **堆叠限制**：物品是否可堆叠由配置的MaxStack字段控制，MaxStack=1表示不可堆叠
+9. **ItemId追踪**：所有物品操作都使用ItemId，便于追踪物品生命周期和问题排查
+10. **Count=0语义**：Count=0统一表示物品移除或槽位清空，ItemId永远不为0
+11. **ID一致性**：客户端使用AddChildWithId创建Item Entity，确保与服务端ID一致

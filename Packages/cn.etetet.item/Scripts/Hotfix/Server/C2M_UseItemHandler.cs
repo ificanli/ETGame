@@ -16,12 +16,12 @@ namespace ET.Server
                 return;
             }
 
-            // 获取指定槽位的物品
-            Item item = itemComponent.GetItemBySlot(request.SlotIndex);
+            // 通过ItemId获取物品
+            Item item = itemComponent.GetItemById(request.ItemId);
             if (item == null || item.IsDisposed)
             {
                 response.Error = ErrorCode.ERR_ItemNotFound;
-                response.Message = "item not found in slot";
+                response.Message = "item not found";
                 return;
             }
 

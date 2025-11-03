@@ -16,7 +16,7 @@ namespace ET.Client
             }
 
             // 更新物品数据
-            itemComponent.UpdateItem(message.SlotIndex, message.ConfigId, message.Count);
+            itemComponent.UpdateItem(message.ItemId, message.SlotIndex, message.ConfigId, message.Count);
             
             await ETTask.CompletedTask;
         }
