@@ -4,7 +4,6 @@ namespace ET.Server
     /// 物品实体系统
     /// </summary>
     [EntitySystemOf(typeof(Item))]
-    [FriendOf(typeof(Item))]
     public static partial class ItemSystem
     {
         #region 生命周期方法

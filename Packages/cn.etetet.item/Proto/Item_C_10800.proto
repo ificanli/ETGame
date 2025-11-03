@@ -1,38 +1,6 @@
 syntax = "proto3";
 package ET;
 
-// 添加物品请求
-// ResponseType M2C_AddItem
-message C2M_AddItem // ILocationRequest
-{
-	int32 RpcId = 1;
-	int32 ConfigId = 2; // 物品配置ID
-	int32 Count = 3; // 物品数量
-}
-
-message M2C_AddItem // ILocationResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}
-
-// 移除物品请求
-// ResponseType M2C_RemoveItem
-message C2M_RemoveItem // ILocationRequest
-{
-	int32 RpcId = 1;
-	int32 ConfigId = 2; // 物品配置ID
-	int32 Count = 3; // 移除数量
-}
-
-message M2C_RemoveItem // ILocationResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}
-
 // 使用物品请求
 // ResponseType M2C_UseItem
 message C2M_UseItem // ILocationRequest

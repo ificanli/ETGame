@@ -6,7 +6,6 @@ namespace ET.Client
     /// 客户端背包组件系统
     /// </summary>
     [EntitySystemOf(typeof(ClientItemComponent))]
-    [FriendOf(typeof(ClientItemComponent))]
     public static partial class ClientItemComponentSystem
     {
         #region 生命周期方法

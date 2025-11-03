@@ -6,8 +6,6 @@ namespace ET.Server
     /// 背包组件系统
     /// </summary>
     [EntitySystemOf(typeof(ItemComponent))]
-    [FriendOf(typeof(ItemComponent))]
-    [FriendOf(typeof(Item))]
     public static partial class ItemComponentSystem
     {
         #region 生命周期方法
@@ -61,6 +59,7 @@ namespace ET.Server
 
             int maxStack = itemConfig.MaxStack;
             int remainCount = count;
+            List<int> updatedSlots = new();
 
             // 如果物品可堆叠，先尝试叠加到已有物品
             if (maxStack > 1)
@@ -78,10 +77,11 @@ namespace ET.Server
                         int addCount = System.Math.Min(remainCount, maxStack - item.Count);
                         item.AddCount(addCount);
                         remainCount -= addCount;
+                        updatedSlots.Add(item.SlotIndex);
 
                         if (remainCount <= 0)
                         {
-                            return true;
+                            break;
                         }
                     }
                 }
@@ -104,7 +104,18 @@ namespace ET.Server
                 newItem.SlotIndex = slotIndex;
 
                 self.SlotItems[slotIndex] = newItem;
+                updatedSlots.Add(slotIndex);
                 remainCount -= addCount;
+            }
+
+            // 通知客户端物品更新
+            foreach (int slotIndex in updatedSlots)
+            {
+                Item item = self.GetItemBySlot(slotIndex);
+                if (item != null && !item.IsDisposed)
+                {
+                    self.NotifyItemUpdate(item.SlotIndex, item.ConfigId, item.Count);
+                }
             }
 
             return true;
@@ -133,6 +144,7 @@ namespace ET.Server
 
             int remainCount = count;
             List<int> emptySlots = new();
+            List<int> updatedSlots = new();
 
             foreach (var kv in self.SlotItems)
             {
@@ -153,12 +165,15 @@ namespace ET.Server
                     {
                         remainCount -= item.Count;
                         emptySlots.Add(kv.Key);
+                        // 通知客户端移除该槽位的物品（Count为0表示移除）
+                        self.NotifyItemUpdate(kv.Key, configId, 0);
                         item.Dispose();
                     }
                     else
                     {
                         item.ReduceCount(remainCount);
                         remainCount = 0;
+                        updatedSlots.Add(item.SlotIndex);
                     }
                 }
             }
@@ -167,6 +182,16 @@ namespace ET.Server
             foreach (int slotIndex in emptySlots)
             {
                 self.SlotItems.Remove(slotIndex);
+            }
+
+            // 通知客户端物品数量更新
+            foreach (int slotIndex in updatedSlots)
+            {
+                Item item = self.GetItemBySlot(slotIndex);
+                if (item != null && !item.IsDisposed)
+                {
+                    self.NotifyItemUpdate(item.SlotIndex, item.ConfigId, item.Count);
+                }
             }
 
             return true;
@@ -244,6 +269,61 @@ namespace ET.Server
                 }
             }
             self.SlotItems.Clear();
+        }
+
+        /// <summary>
+        /// 通知客户端物品变化
+        /// </summary>
+        public static async ETTask NotifyItemChanges(this ItemComponent self)
+        {
+            Unit unit = self.GetParent<Unit>();
+            
+            // 遍历所有物品，通知客户端更新
+            foreach (var kv in self.SlotItems)
+            {
+                Item item = kv.Value;
+                if (item == null || item.IsDisposed)
+                {
+                    continue;
+                }
+
+                M2C_UpdateItem message = M2C_UpdateItem.Create();
+                message.SlotIndex = item.SlotIndex;
+                message.ConfigId = item.ConfigId;
+                message.Count = item.Count;
+                
+                MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
+            }
+
+            await ETTask.CompletedTask;
+        }
+
+        /// <summary>
+        /// 通知客户端单个物品更新
+        /// </summary>
+        public static void NotifyItemUpdate(this ItemComponent self, int slotIndex, int configId, int count)
+        {
+            Unit unit = self.GetParent<Unit>();
+            
+            M2C_UpdateItem message = M2C_UpdateItem.Create();
+            message.SlotIndex = slotIndex;
+            message.ConfigId = configId;
+            message.Count = count;
+            
+            MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
+        }
+
+        /// <summary>
+        /// 通知客户端背包容量变化
+        /// </summary>
+        public static void NotifyCapacityChange(this ItemComponent self)
+        {
+            Unit unit = self.GetParent<Unit>();
+            
+            M2C_UpdateBagCapacity message = M2C_UpdateBagCapacity.Create();
+            message.Capacity = self.Capacity;
+            
+            MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
         }
 
         #endregion
