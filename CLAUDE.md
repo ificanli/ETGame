@@ -210,6 +210,7 @@ ET.Core (框架核心层)
 - **包命名规范**：`cn.etetet.{功能模块名}`
 - 每个package中都有packagegit.json文件，每个packagegit.json中的Id是项目唯一的
 - 每个package中都有Scripts/Model/Share/PackageType.cs文件，里面的编号就是packagegit.json中的Id
+- 每个包都有README.md文件，如果没有请创建，修改前可以读取理解包的内容，修改后需要更新一下README.md，可以参考cn.etetet.item包
 
 #### 程序集分类规范
 

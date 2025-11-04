@@ -14,8 +14,8 @@ namespace ET.Server
         public int Capacity;
         
         /// <summary>
-        /// 背包槽位映射表（槽位索引 -> 物品EntityRef）
+        /// 背包槽位列表（索引对应槽位号，值为物品EntityRef）
         /// </summary>
-        public Dictionary<int, EntityRef<Item>> SlotItems = new();
+        public List<EntityRef<Item>> SlotItems = new();
     }
 }

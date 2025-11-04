@@ -12,7 +12,7 @@ namespace ET.Server
         /// </summary>
         public static void SetCapacity(ItemComponent self, int capacity)
         {
-            self.Capacity = capacity;
+            self.SetCapacity(capacity);
             NotifyCapacityChange(self);
         }
 
@@ -22,8 +22,9 @@ namespace ET.Server
         /// <param name="self">物品组件</param>
         /// <param name="configId">物品配置ID</param>
         /// <param name="count">物品数量</param>
+        /// <param name="reason">道具变化原因</param>
         /// <returns>是否添加成功</returns>
-        public static bool AddItem(ItemComponent self, int configId, int count)
+        public static bool AddItem(ItemComponent self, int configId, int count, ItemChangeReason reason)
         {
             if (count <= 0)
             {
@@ -39,6 +40,8 @@ namespace ET.Server
                 return false;
             }
 
+            Log.Debug($"add item: configId={configId}, count={count}, reason={reason}");
+
             int maxStack = itemConfig.MaxStack;
             int remainCount = count;
             List<long> updatedItemIds = new();
@@ -46,9 +49,9 @@ namespace ET.Server
             // 如果物品可堆叠，先尝试叠加到已有物品
             if (maxStack > 1)
             {
-                foreach (var kv in self.SlotItems)
+                for (int i = 0; i < self.SlotItems.Count; ++i)
                 {
-                    Item item = kv.Value;
+                    Item item = self.SlotItems[i];
                     if (item == null)
                     {
                         continue;
@@ -83,9 +86,8 @@ namespace ET.Server
                 Item newItem = self.AddChild<Item>();
                 newItem.ConfigId = configId;
                 newItem.Count = addCount;
-                newItem.SlotIndex = slotIndex;
 
-                self.SlotItems[slotIndex] = newItem;
+                self.SetSlotItem(slotIndex, newItem);
                 updatedItemIds.Add(newItem.Id);
                 remainCount -= addCount;
             }
@@ -109,8 +111,9 @@ namespace ET.Server
         /// <param name="self">物品组件</param>
         /// <param name="configId">物品配置ID</param>
         /// <param name="count">移除数量</param>
+        /// <param name="reason">道具变化原因</param>
         /// <returns>是否移除成功</returns>
-        public static bool RemoveItem(ItemComponent self, int configId, int count)
+        public static bool RemoveItem(ItemComponent self, int configId, int count, ItemChangeReason reason)
         {
             if (count <= 0)
             {
@@ -124,18 +127,19 @@ namespace ET.Server
                 return false;
             }
 
+            Log.Debug($"remove item: configId={configId}, count={count}, reason={reason}");
+
             int remainCount = count;
-            List<int> emptySlots = new();
             List<long> updatedItemIds = new();
 
-            foreach (var kv in self.SlotItems)
+            for (int i = 0; i < self.SlotItems.Count; ++i)
             {
                 if (remainCount <= 0)
                 {
                     break;
                 }
 
-                Item item = kv.Value;
+                Item item = self.SlotItems[i];
                 if (item == null)
                 {
                     continue;
@@ -146,7 +150,6 @@ namespace ET.Server
                     if (item.Count <= remainCount)
                     {
                         remainCount -= item.Count;
-                        emptySlots.Add(kv.Key);
                         // 通知客户端移除该槽位的物品（Count=0表示移除）
                         NotifyItemRemove(self, item);
                         item.Dispose();
@@ -158,12 +161,6 @@ namespace ET.Server
                         updatedItemIds.Add(item.Id);
                     }
                 }
-            }
-
-            // 清理空槽位
-            foreach (int slotIndex in emptySlots)
-            {
-                self.SlotItems.Remove(slotIndex);
             }
 
             // 通知客户端物品数量更新
@@ -184,8 +181,9 @@ namespace ET.Server
         /// </summary>
         /// <param name="self">物品组件</param>
         /// <param name="itemId">物品ID</param>
+        /// <param name="reason">道具变化原因</param>
         /// <returns>是否移除成功</returns>
-        public static bool RemoveItemById(ItemComponent self, long itemId)
+        public static bool RemoveItemById(ItemComponent self, long itemId, ItemChangeReason reason)
         {
             Item item = self.GetItemById(itemId);
             if (item == null)
@@ -194,13 +192,10 @@ namespace ET.Server
                 return false;
             }
 
-            int slotIndex = item.SlotIndex;
+            Log.Debug($"remove item by id: itemId={itemId}, configId={item.ConfigId}, count={item.Count}, reason={reason}");
 
             // 通知客户端移除该物品
             NotifyItemRemove(self, item);
-
-            // 从字典移除
-            self.SlotItems.Remove(slotIndex);
 
             // 销毁物品实体
             item.Dispose();
@@ -213,12 +208,10 @@ namespace ET.Server
         /// </summary>
         public static async ETTask NotifyItemChanges(ItemComponent self)
         {
-            Unit unit = self.GetParent<Unit>();
-
             // 遍历所有物品，通知客户端更新
-            foreach (var kv in self.SlotItems)
+            for (int i = 0; i < self.SlotItems.Count; ++i)
             {
-                Item item = kv.Value;
+                Item item = self.SlotItems[i];
                 if (item == null)
                 {
                     continue;
@@ -297,6 +290,8 @@ namespace ET.Server
                 return ErrorCode.ERR_ItemNotFound;
             }
 
+            Log.Debug($"move item: itemId={itemId}, fromSlot={fromItem.SlotIndex}, toSlot={toSlot}, reason={ItemChangeReason.MoveItem}");
+
             int fromSlot = fromItem.SlotIndex;
 
             // 不能移动到同一个槽位
@@ -311,27 +306,12 @@ namespace ET.Server
             // 情况1：目标槽位为空，直接移动
             if (toItem == null)
             {
-                // 先通知源槽位清空（在修改之前，保存物品Id和源槽位）
-                long movedItemId = fromItem.Id;
-                int fromSlotIndex = fromSlot;
-
                 // 更新物品槽位
-                fromItem.SlotIndex = toSlot;
-                self.SlotItems.Remove(fromSlot);
-                self.SlotItems[toSlot] = fromItem;
+                self.ClearSlot(fromSlot);
+                self.SetSlotItem(toSlot, fromItem);
 
-                // 通知客户端更新
-                Unit unit = self.GetParent<Unit>();
-
-                // 源槽位清空：使用原物品Id + 源槽位 + Count=0
-                M2C_UpdateItem clearMessage = M2C_UpdateItem.Create();
-                clearMessage.ItemId = movedItemId;
-                clearMessage.SlotIndex = fromSlotIndex;
-                clearMessage.ConfigId = 0;
-                clearMessage.Count = 0;
-                MapMessageHelper.NoticeClient(unit, clearMessage, NoticeType.Self);
-
-                NotifyItemUpdate(self, fromItem); // 目标槽位更新
+                // 通知客户端更新（客户端会自动处理槽位变化，移除旧槽位映射）
+                NotifyItemUpdate(self, fromItem);
                 return ErrorCode.ERR_Success;
             }
 
@@ -380,22 +360,11 @@ namespace ET.Server
 
             if (fromItem.Count <= 0)
             {
-                // 源槽位物品完全堆叠到目标槽位
-                // 先保存信息，再移除
-                long fromItemId = fromItem.Id;
-                int fromSlotIndex = fromItem.SlotIndex;
+                // 通知客户端移除源槽位物品
+                NotifyItemRemove(self, fromItem);
 
-                self.SlotItems.Remove(fromSlot);
+                // 源槽位物品完全堆叠到目标槽位，销毁物品实体
                 fromItem.Dispose();
-
-                // 源槽位清空：使用原物品Id + 源槽位 + Count=0
-                Unit unit = self.GetParent<Unit>();
-                M2C_UpdateItem clearMessage = M2C_UpdateItem.Create();
-                clearMessage.ItemId = fromItemId;
-                clearMessage.SlotIndex = fromSlotIndex;
-                clearMessage.ConfigId = 0;
-                clearMessage.Count = 0;
-                MapMessageHelper.NoticeClient(unit, clearMessage, NoticeType.Self);
             }
             else
             {
@@ -413,13 +382,9 @@ namespace ET.Server
         /// </summary>
         private static void SwapItems(ItemComponent self, int fromSlot, int toSlot, Item fromItem, Item toItem)
         {
-            // 交换槽位索引
-            fromItem.SlotIndex = toSlot;
-            toItem.SlotIndex = fromSlot;
-
             // 更新字典映射
-            self.SlotItems[fromSlot] = toItem;
-            self.SlotItems[toSlot] = fromItem;
+            self.SetSlotItem(fromSlot, toItem);
+            self.SetSlotItem(toSlot, fromItem);
 
             // 通知客户端更新两个槽位
             NotifyItemUpdate(self, toItem);
@@ -433,6 +398,8 @@ namespace ET.Server
         /// <returns>错误码，0表示成功</returns>
         public static int SortBag(ItemComponent self)
         {
+            Log.Debug($"sort bag: reason={ItemChangeReason.SortBag}");
+
             ItemConfigCategory itemConfigCategory = ItemConfigCategory.Instance;
             Unit unit = self.GetParent<Unit>();
 
@@ -440,18 +407,15 @@ namespace ET.Server
             Dictionary<int, int> configIdToCount = new();
             List<(long itemId, int slotIndex)> oldItemInfos = new();
 
-            foreach (var kv in self.SlotItems)
+            for (int i = 0; i < self.SlotItems.Count; ++i)
             {
-                Item item = kv.Value;
+                Item item = self.SlotItems[i];
                 if (item == null)
                 {
                     continue;
                 }
 
-                if (!configIdToCount.ContainsKey(item.ConfigId))
-                {
-                    configIdToCount[item.ConfigId] = 0;
-                }
+                configIdToCount.TryAdd(item.ConfigId, 0);
 
                 configIdToCount[item.ConfigId] += item.Count;
                 oldItemInfos.Add((item.Id, item.SlotIndex));
@@ -469,23 +433,13 @@ namespace ET.Server
             }
 
             // 第三步：清空所有槽位，并销毁旧物品
-            List<Item> itemsToDispose = new();
-            foreach (var kv in self.SlotItems)
+            for (int i = 0; i < self.SlotItems.Count; ++i)
             {
-                Item item = kv.Value;
-                if (item != null)
-                {
-                    itemsToDispose.Add(item);
-                }
+                Item item = self.SlotItems[i];
+                item?.Dispose();
             }
 
-            self.SlotItems.Clear();
-            foreach (Item item in itemsToDispose)
-            {
-                item.Dispose();
-            }
-
-            // 第四步：按ConfigId排序，重新创建物品堆
+            // 第四步：按ConfigId排序，重新创建物品堆, 相同ConfigId的物品尽量堆叠在一起, 不排序的话可能每次整理结果都不一样
             List<int> sortedConfigIds = new(configIdToCount.Keys);
             sortedConfigIds.Sort();
 
@@ -516,9 +470,8 @@ namespace ET.Server
                     Item newItem = self.AddChild<Item>();
                     newItem.ConfigId = configId;
                     newItem.Count = stackCount;
-                    newItem.SlotIndex = currentSlot;
 
-                    self.SlotItems[currentSlot] = newItem;
+                    self.SetSlotItem(currentSlot, newItem);
 
                     remainCount -= stackCount;
                     currentSlot++;
@@ -526,9 +479,9 @@ namespace ET.Server
             }
 
             // 第五步：通知客户端新物品
-            foreach (var kv in self.SlotItems)
+            for (int i = 0; i < self.SlotItems.Count; ++i)
             {
-                Item item = kv.Value;
+                Item item = self.SlotItems[i];
                 if (item != null)
                 {
                     NotifyItemUpdate(self, item);

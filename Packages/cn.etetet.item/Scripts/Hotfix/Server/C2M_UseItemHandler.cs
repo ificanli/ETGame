@@ -39,7 +39,7 @@ namespace ET.Server
             // 例如：使用药水恢复血量等
 
             // 使用RemoveItem方法移除物品，会自动通知客户端
-            if (!ItemHelper.RemoveItem(itemComponent, configId, request.Count))
+            if (!ItemHelper.RemoveItem(itemComponent, configId, request.Count, ItemChangeReason.UseItem))
             {
                 response.Error = ErrorCode.ERR_ItemUseFailed;
                 response.Message = "failed to use item";

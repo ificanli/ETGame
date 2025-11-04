@@ -25,7 +25,7 @@ namespace ET.Client
             itemComponent.Clear();
 
             // 设置背包容量
-            itemComponent.Capacity = message.Capacity;
+            itemComponent.SetCapacity(message.Capacity);
 
             // 添加所有物品
             foreach (ItemData itemData in message.Items)

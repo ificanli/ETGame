@@ -80,14 +80,14 @@ ET框架物品背包系统模块，提供完整的物品管理、背包容量控
 ```csharp
 // 服务端添加物品（会自动通知客户端）
 ItemComponent itemComponent = unit.GetComponent<Server.ItemComponent>();
-bool success = ItemHelper.AddItem(itemComponent, configId: 10001, count: 10);
+bool success = ItemHelper.AddItem(itemComponent, configId: 10001, count: 10, reason: ItemChangeReason.QuestReward);
 // 无需手动调用通知，AddItem内部会自动发送M2C_UpdateItem
 ```
 
 ### 服务端移除物品
 ```csharp
 // 服务端移除物品（会自动通知客户端）
-bool success = ItemHelper.RemoveItem(itemComponent, configId: 10001, count: 5);
+bool success = ItemHelper.RemoveItem(itemComponent, configId: 10001, count: 5, reason: ItemChangeReason.UseItem);
 // 无需手动调用通知，RemoveItem内部会自动发送M2C_UpdateItem
 ```
 
@@ -377,9 +377,261 @@ var response = await fiber.Root.GetComponent<ClientSenderComponent>().Call(reque
 - **架构清晰**：利用ET框架Entity机制，无需额外的ID管理
 - **语义统一**：Count=0统一表示移除，逻辑清晰简单
 
+## 代码实现详解
+
+### ItemHelper - 业务逻辑层实现
+
+#### AddItem 方法实现
+```csharp
+public static bool AddItem(ItemComponent self, int configId, int count, ItemChangeReason reason)
+{
+    // 1. 参数验证
+    if (count <= 0) return false;
+    
+    // 2. 获取物品配置
+    ItemConfig itemConfig = ItemConfigCategory.Instance.Get(configId);
+    if (itemConfig == null) return false;
+    
+    // 3. 堆叠逻辑：先尝试叠加到已有物品
+    if (itemConfig.MaxStack > 1)
+    {
+        // 遍历所有槽位，找到相同ConfigId且未满的物品
+        // 计算可以叠加的数量，更新物品Count
+    }
+    
+    // 4. 创建新物品：剩余数量创建新物品堆
+    while (remainCount > 0)
+    {
+        // 查找空槽位
+        // 创建新Item实体
+        // 设置ConfigId和Count
+    }
+    
+    // 5. 自动通知客户端：遍历所有更新的物品，发送M2C_UpdateItem
+    foreach (long itemId in updatedItemIds)
+    {
+        NotifyItemUpdate(self, item);
+    }
+}
+```
+
+**关键特性**：
+- 自动处理物品堆叠逻辑
+- 支持部分堆叠（当新增数量超过单堆上限时）
+- 自动通知客户端，无需手动调用
+- 返回bool表示是否添加成功
+
+#### RemoveItem 方法实现
+```csharp
+public static bool RemoveItem(ItemComponent self, int configId, int count, ItemChangeReason reason)
+{
+    // 1. 检查物品数量是否足够
+    int totalCount = self.GetItemCount(configId);
+    if (totalCount < count) return false;
+    
+    // 2. 遍历槽位，按顺序移除物品
+    for (int i = 0; i < self.SlotItems.Count; ++i)
+    {
+        Item item = self.SlotItems[i];
+        if (item.ConfigId == configId)
+        {
+            if (item.Count <= remainCount)
+            {
+                // 完全移除该物品
+                NotifyItemRemove(self, item);  // Count=0表示移除
+                item.Dispose();
+            }
+            else
+            {
+                // 部分移除，减少Count
+                item.ReduceCount(remainCount);
+                NotifyItemUpdate(self, item);
+            }
+        }
+    }
+}
+```
+
+**关键特性**：
+- 先验证物品数量是否足够
+- 支持跨槽位移除（自动处理多个槽位）
+- 自动通知客户端移除或更新
+- 完全移除时销毁物品实体
+
+#### MoveItem 方法实现
+```csharp
+public static int MoveItem(ItemComponent self, long itemId, int toSlot)
+{
+    // 1. 获取源物品
+    Item fromItem = self.GetItemById(itemId);
+    int fromSlot = fromItem.SlotIndex;
+    
+    // 2. 获取目标槽位物品
+    Item toItem = self.GetItemBySlot(toSlot);
+    
+    // 3. 情况1：目标槽位为空 -> 直接移动
+    if (toItem == null)
+    {
+        self.ClearSlot(fromSlot);
+        self.SetSlotItem(toSlot, fromItem);
+        NotifyItemUpdate(self, fromItem);
+        return ErrorCode.ERR_Success;
+    }
+    
+    // 4. 情况2：ConfigId不同 -> 交换位置
+    if (fromItem.ConfigId != toItem.ConfigId)
+    {
+        SwapItems(self, fromSlot, toSlot, fromItem, toItem);
+        return ErrorCode.ERR_Success;
+    }
+    
+    // 5. 情况3：ConfigId相同且可堆叠 -> 尝试堆叠
+    int maxStack = itemConfig.MaxStack;
+    int canStackCount = maxStack - toItem.Count;
+    
+    if (canStackCount > 0)
+    {
+        int stackCount = Math.Min(canStackCount, fromItem.Count);
+        toItem.AddCount(stackCount);
+        fromItem.ReduceCount(stackCount);
+        
+        if (fromItem.Count <= 0)
+        {
+            NotifyItemRemove(self, fromItem);
+            fromItem.Dispose();
+        }
+        else
+        {
+            NotifyItemUpdate(self, fromItem);
+        }
+        NotifyItemUpdate(self, toItem);
+    }
+}
+```
+
+**关键特性**：
+- 支持三种操作：移动、交换、堆叠
+- 智能判断目标槽位状态
+- 部分堆叠时保留源物品
+- 完全堆叠时销毁源物品
+
+#### SortBag 方法实现
+```csharp
+public static int SortBag(ItemComponent self)
+{
+    // 第一步：收集所有物品信息，按ConfigId分组统计数量
+    Dictionary<int, int> configIdToCount = new();
+    foreach (Item item in self.SlotItems)
+    {
+        configIdToCount[item.ConfigId] += item.Count;
+    }
+    
+    // 第二步：通知客户端清空所有旧槽位（Count=0）
+    foreach (Item item in self.SlotItems)
+    {
+        M2C_UpdateItem clearMessage = M2C_UpdateItem.Create();
+        clearMessage.Count = 0;  // 清空标记
+        MapMessageHelper.NoticeClient(unit, clearMessage, NoticeType.Self);
+    }
+    
+    // 第三步：销毁所有旧物品
+    foreach (Item item in self.SlotItems)
+    {
+        item?.Dispose();
+    }
+    
+    // 第四步：按ConfigId排序，重新创建物品堆
+    List<int> sortedConfigIds = new(configIdToCount.Keys);
+    sortedConfigIds.Sort();  // 升序排列
+    
+    int currentSlot = 0;
+    foreach (int configId in sortedConfigIds)
+    {
+        int maxStack = itemConfig.MaxStack;
+        int remainCount = configIdToCount[configId];
+        
+        // 创建物品堆，每堆最多maxStack个
+        while (remainCount > 0)
+        {
+            int stackCount = Math.Min(remainCount, maxStack);
+            Item newItem = self.AddChild<Item>();
+            newItem.ConfigId = configId;
+            newItem.Count = stackCount;
+            self.SetSlotItem(currentSlot, newItem);
+            remainCount -= stackCount;
+            currentSlot++;
+        }
+    }
+    
+    // 第五步：通知客户端新物品
+    foreach (Item item in self.SlotItems)
+    {
+        NotifyItemUpdate(self, item);
+    }
+}
+```
+
+**关键特性**：
+- 完整重组背包结构
+- 按ConfigId升序排列
+- 自动堆叠相同物品
+- 从槽位0开始紧密排列
+- 消除背包中的空隙
+
+### ItemComponentSystem - 数据查询层
+
+**服务端职责**：
+- 纯数据查询和管理
+- 不涉及网络消息
+- 提供基础操作接口
+
+**主要方法**：
+```csharp
+// 查询类方法
+GetItemCount(configId)      // 获取物品总数量
+GetItemBySlot(slotIndex)    // 获取指定槽位物品
+GetItemById(itemId)         // 通过ID获取物品
+FindEmptySlot()             // 查找空槽位
+GetUsedSlotCount()          // 获取已使用槽位数
+IsFull()                    // 检查背包是否已满
+
+// 管理类方法
+SetCapacity(capacity)       // 设置背包容量
+SetSlotItem(slotIndex, item) // 设置槽位物品
+ClearSlot(slotIndex)        // 清空槽位
+Clear()                     // 清空背包
+```
+
+### 客户端 ItemComponentSystem
+
+**客户端职责**：
+- 接收服务端推送的物品更新
+- 维护本地物品缓存
+- 提供UI查询接口
+
+**关键方法**：
+```csharp
+// 更新方法
+UpdateItem(itemId, slotIndex, configId, count)
+// 当count=0时表示移除物品
+// 当count>0时表示更新或创建物品
+
+// 查询方法（与服务端相同）
+GetItemBySlot(slotIndex)
+GetItemById(itemId)
+GetItemCount(configId)
+```
+
 ## 版本历史
 
-### 1.6.0 (当前版本)
+### 1.7.0 (当前版本)
+- **完善代码实现**：详细记录ItemHelper各方法的实现逻辑
+- 添加AddItem、RemoveItem、MoveItem、SortBag的完整实现说明
+- 说明各方法的关键特性和处理流程
+- 补充ItemComponentSystem和客户端系统的职责说明
+- 优化代码文档，便于开发者理解系统设计
+
+### 1.6.0
 - **新增功能**：整理背包功能（SortBag）
 - 新增ItemHelper.SortBag方法，支持一键整理背包
 - 相同ConfigId的物品自动堆叠并按ConfigId升序排列

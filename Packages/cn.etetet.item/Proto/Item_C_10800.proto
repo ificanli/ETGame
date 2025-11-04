@@ -45,7 +45,7 @@ message M2C_SyncBagData // ILocationResponse
 // 更新物品通知（服务器推送）
 message M2C_UpdateItem // IMessage
 {
-	int64 ItemId = 1; // 物品ID（0表示移除该槽位物品）
+	int64 ItemId = 1; // 物品ID
 	int32 SlotIndex = 2; // 槽位索引
 	int32 ConfigId = 3; // 物品配置ID
 	int32 Count = 4; // 物品数量

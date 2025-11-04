@@ -20,9 +20,9 @@ namespace ET.Server
             response.Capacity = itemComponent.Capacity;
 
             // 遍历所有物品
-            foreach (var kv in itemComponent.SlotItems)
+            for (int i = 0; i < itemComponent.SlotItems.Count; ++i)
             {
-                Item item = kv.Value;
+                Item item = itemComponent.SlotItems[i];
                 if (item == null)
                 {
                     continue;

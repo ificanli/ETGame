@@ -197,7 +197,7 @@ namespace ET
         }
 
         /// <summary>
-        /// 物品ID（0表示移除该槽位物品）
+        /// 物品ID
         /// </summary>
         [MemoryPackOrder(0)]
         public long ItemId { get; set; }
