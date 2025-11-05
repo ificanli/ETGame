@@ -503,4 +503,40 @@ namespace ET
                     true,
                     Description);
     }
+
+    public static class CoroutineLockUsingAnalyzerRule
+    {
+        private const string Title = "禁止使用 using 语句获取 CoroutineLock";
+
+        private const string MessageFormat = "禁止使用 using 语句获取 CoroutineLock，因为 CoroutineLock 可能在 using 代码块结束前已经超时释放，导致重复释放问题。请使用 try-finally 或其他方式手动管理。";
+
+        private const string Description = "CoroutineLock 是自管理的锁，会在超时时自动释放，使用 using 语句可能导致重复释放.";
+
+        public static readonly DiagnosticDescriptor Rule =
+                new DiagnosticDescriptor(DiagnosticIds.CoroutineLockUsingAnalyzerRuleId,
+                    Title,
+                    MessageFormat,
+                    DiagnosticCategories.All,
+                    DiagnosticSeverity.Error,
+                    true,
+                    Description);
+    }
+
+    public static class CoroutineLockDisposeAnalyzerRule
+    {
+        private const string Title = "禁止手动调用 CoroutineLock.Dispose";
+
+        private const string MessageFormat = "禁止手动调用 CoroutineLock.Dispose 方法，因为 CoroutineLock 可能已经在超时时自动释放，导致重复释放问题。应该让 CoroutineLock 自动管理其生命周期。";
+
+        private const string Description = "CoroutineLock 的释放由框架自动管理，手动调用 Dispose 可能导致重复释放异常.";
+
+        public static readonly DiagnosticDescriptor Rule =
+                new DiagnosticDescriptor(DiagnosticIds.CoroutineLockDisposeAnalyzerRuleId,
+                    Title,
+                    MessageFormat,
+                    DiagnosticCategories.All,
+                    DiagnosticSeverity.Error,
+                    true,
+                    Description);
+    }
 }

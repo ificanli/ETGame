@@ -73,5 +73,9 @@
         
         public const string ETFieldAccessDiagnosticId = "ET1003";
         public const string ETCyclicCallDiagnosticId = "ET1004";
+
+        public const string CoroutineLockUsingAnalyzerRuleId = "ET0034";
+
+        public const string CoroutineLockDisposeAnalyzerRuleId = "ET0035";
     }
 }

@@ -57,7 +57,7 @@ namespace ET
             if (self != null)
             {
                 Log.Error($"{filePath}:{line} Coroutine lock timeout after {timeout}ms, type: {type}, key: {key}, level: {level}");
-                self.Dispose();
+                selfRef.Dispose();
             }
         }
     }
