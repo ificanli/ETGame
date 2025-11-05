@@ -1,4 +1,6 @@
-﻿namespace ET
+﻿using System.Runtime.CompilerServices;
+
+namespace ET
 {
     [EntitySystemOf(typeof(CoroutineLockComponent))]
     public static partial class CoroutineLockComponentSystem
@@ -47,10 +49,25 @@
             coroutineLockQueueType.SetMaxConcurrency(key, maxConcurrency);
         }
 
-        public static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockComponent self, long coroutineLockType, long key)
+        /// <summary>
+        /// 等待协程锁，带超时参数
+        /// </summary>
+        /// <param name="self">协程锁组件</param>
+        /// <param name="coroutineLockType">锁类型</param>
+        /// <param name="key">锁键值</param>
+        /// <param name="timeout">协程锁占用时间，超时则自动释放</param>
+        /// <param name="line"></param>
+        /// <param name="filePath"></param>
+        /// <returns>协程锁引用</returns>
+        public static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockComponent self, long coroutineLockType, long key, int timeout = 30000, [CallerLineNumber] int line = 0, [CallerFilePath] string filePath = "")
         {
+            if (timeout < 0)
+            {
+                timeout = 30000;
+            }
+            
             CoroutineLockQueueType coroutineLockQueueType = self.Get(coroutineLockType);
-            return await coroutineLockQueueType.Wait(key);
+            return await coroutineLockQueueType.Wait(key, timeout, line, filePath);
         }
 
         private static void Notify(this CoroutineLockComponent self, long coroutineLockType, long key, int level)

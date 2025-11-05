@@ -21,11 +21,8 @@
             }
 
             EntityRef<MailBoxComponent> mailBoxComponentRef = mailBoxComponent;
-            using EntityRef<CoroutineLock> coroutineLockRef = await fiber.Root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, mailBoxComponent.ParentInstanceId);
-
-            // 占用锁只能占用5秒,5秒之后解锁
-            CoroutineLockHelper.LockTime(fiber, coroutineLockRef, 5000).NoContext();
-
+            using EntityRef<CoroutineLock> coroutineLockRef = await fiber.Root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, mailBoxComponent.ParentInstanceId, 5000);
+            
             mailBoxComponent = mailBoxComponentRef;
             if (mailBoxComponent == null)
             {

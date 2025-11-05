@@ -24,10 +24,10 @@
             coroutineLockQueue.maxConcurrency = maxConcurrency;
         }
 
-        internal static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockQueueType self, long key)
+        internal static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockQueueType self, long key, int timeout, int line, string filePath)
         {
             CoroutineLockQueue queue = self.Get(key);
-            return await queue.Wait();
+            return await queue.Wait(timeout, line, filePath);
         }
 
         internal static void Notify(this CoroutineLockQueueType self, long key, int level)

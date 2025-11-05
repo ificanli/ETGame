@@ -20,19 +20,26 @@
             self.runningCount = 0;
         }
         
-        internal static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockQueue self)
+        internal static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockQueue self, int timeout, int line, string filePath)
         {
             CoroutineLock coroutineLock = null;
             if (self.runningCount < self.maxConcurrency)
             {
                 ++self.runningCount;
                 coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, 1, true);
-                return coroutineLock;
-            }
+                // 获得锁后立即启动超时计时
 
-            WaitCoroutineLock waitCoroutineLock = self.AddChild<WaitCoroutineLock>(true);
-            self.queue.Enqueue(waitCoroutineLock);
-            coroutineLock = await waitCoroutineLock.Wait();
+            }
+            else
+            {
+                WaitCoroutineLock waitCoroutineLock = self.AddChild<WaitCoroutineLock>(true);
+                self.queue.Enqueue(waitCoroutineLock);
+                var coroutineLockRef = await waitCoroutineLock.Wait();
+
+                // 获得锁后立即启动超时计时
+                coroutineLock = coroutineLockRef;
+            }
+            coroutineLock.SetTimeout(timeout, line, filePath).NoContext();
             return coroutineLock;
         }
 
