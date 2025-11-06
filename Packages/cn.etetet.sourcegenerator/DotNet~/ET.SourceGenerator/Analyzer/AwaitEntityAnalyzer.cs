@@ -266,7 +266,6 @@ namespace ET
                     if (assigned.Contains(sym))                   continue;
                     if (loopDeclared.Contains(sym))               continue;
                     if (hasSkipAttributeCached(sym.GetSymbolTypeSafe())) continue;
-                    if (IsInUsingScope(context, sym, awaitExpr))  continue;
 
                     context.ReportDiagnostic(
                         Diagnostic.Create(Rule, id.GetLocation(), id.Identifier.Text));
@@ -412,21 +411,6 @@ namespace ET
                 || stmt is ThrowStatementSyntax
                 || stmt is BreakStatementSyntax
                 || stmt is ContinueStatementSyntax;
-        }
-
-        private static bool IsInUsingScope(
-            SyntaxNodeAnalysisContext context,
-            ISymbol sym,
-            AwaitExpressionSyntax awaitExpr)
-        {
-            var syntaxRef = sym.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
-            var usingDecl = syntaxRef?.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
-            if (usingDecl == null || !usingDecl.UsingKeyword.IsKind(SyntaxKind.UsingKeyword))
-                return false;
-
-            var block  = usingDecl.FirstAncestorOrSelf<BlockSyntax>();
-            var ablock = awaitExpr.FirstAncestorOrSelf<BlockSyntax>();
-            return block != null && ablock != null && block.Span.Contains(ablock.SpanStart);
         }
 
         private static bool IsAsyncReturnType(ITypeSymbol type)

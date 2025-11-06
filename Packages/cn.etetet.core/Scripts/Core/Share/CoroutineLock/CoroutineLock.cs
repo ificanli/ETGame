@@ -8,6 +8,5 @@ namespace ET
         internal long type;
         internal long key;
         internal int level;
-        internal long timerId;
     }
 }

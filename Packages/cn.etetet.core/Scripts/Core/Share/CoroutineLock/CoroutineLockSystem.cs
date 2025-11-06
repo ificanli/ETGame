@@ -11,25 +11,11 @@ namespace ET
             self.type = type;
             self.key = k;
             self.level = count;
-            self.timerId = 0;
         }
         
         [EntitySystem]
         private static void Destroy(this CoroutineLock self)
         {
-            // 清理超时计时器
-            Scene root = self.Root();
-            if (root == null)
-            {
-                return;
-            }
-
-            if (self.timerId != 0)
-            {
-                TimerComponent timerComponent = root.GetComponent<TimerComponent>();
-                timerComponent?.Remove(ref self.timerId);
-            }
-            
             self.Scene<CoroutineLockComponent>().RunNextCoroutine(self.type, self.key, self.level + 1);
             self.type = 0;
             self.key = 0;

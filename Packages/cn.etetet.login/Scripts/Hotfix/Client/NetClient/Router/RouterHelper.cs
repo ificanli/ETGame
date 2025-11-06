@@ -48,8 +48,8 @@ namespace ET.Client
 
             // 注意，session也以localConn作为id，所以这里不能用localConn作为id
             long id = (long)(((ulong)localConn << 32) | remoteConn);
-            using RouterConnector routerConnector = netComponent.AddChildWithId<RouterConnector>(id);
-            EntityRef<RouterConnector> routerConnectorRef = routerConnector;
+            using EntityRef<RouterConnector> routerConnectorRef = netComponent.AddChildWithId<RouterConnector>(id);
+            RouterConnector routerConnector = routerConnectorRef;
             int count = 20;
             byte[] sendCache = new byte[512];
 
@@ -77,12 +77,15 @@ namespace ET.Client
                     }
 
                     lastSendTimer = timeNow;
+
+                    routerConnector = routerConnectorRef;
                     // 发送
                     routerConnector.Connect(sendCache, 0, addressBytes.Length + 13, routerAddress);
                 }
 
                 await timerComponent.WaitFrameAsync();
 
+                routerConnector = routerConnectorRef;
                 if (routerConnector.Flag == 0)
                 {
                     continue;
