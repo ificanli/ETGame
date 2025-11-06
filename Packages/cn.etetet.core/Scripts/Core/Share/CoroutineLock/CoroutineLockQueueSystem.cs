@@ -26,20 +26,17 @@
             if (self.runningCount < self.maxConcurrency)
             {
                 ++self.runningCount;
-                coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, 1, true);
-                // 获得锁后立即启动超时计时
-
+                coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, 1);
             }
             else
             {
-                WaitCoroutineLock waitCoroutineLock = self.AddChild<WaitCoroutineLock>(true);
-                self.queue.Enqueue(waitCoroutineLock);
-                var coroutineLockRef = await waitCoroutineLock.Wait();
-
-                // 获得锁后立即启动超时计时
-                coroutineLock = coroutineLockRef;
+                ETTask<EntityRef<CoroutineLock>> tcs = ETTask<EntityRef<CoroutineLock>>.Create(true);
+                self.queue.Enqueue(tcs);
+                coroutineLock = await tcs;
             }
+
             coroutineLock.SetTimeout(timeout, line, filePath).NoContext();
+
             return coroutineLock;
         }
 
@@ -47,27 +44,22 @@
         internal static bool Notify(this CoroutineLockQueue self, int level)
         {
             --self.runningCount;
-            
+
             // 尝试唤醒等待队列中的协程，直到达到并发上限
             while (self.queue.Count > 0)
             {
-                WaitCoroutineLock waitCoroutineLock = self.queue.Dequeue();
+                ETTask<EntityRef<CoroutineLock>> tcs = self.queue.Dequeue();
 
-                if (waitCoroutineLock == null)
-                {
-                    continue;
-                }
+                CoroutineLock coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, level);
+                tcs.SetResult(coroutineLock);
 
-                CoroutineLock coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, level, true);
-                waitCoroutineLock.SetResult(coroutineLock);
-                
                 // 达到最大并发数量
                 if (++self.runningCount >= self.maxConcurrency)
                 {
                     break;
                 }
             }
-            
+
             // 如果还有运行中的协程或等待队列不为空，则队列继续存活
             return self.runningCount > 0 || self.queue.Count > 0;
         }

@@ -11,8 +11,8 @@ namespace ET
         internal int maxConcurrency { get; set; }
 
         internal int runningCount;
-        
-        internal Queue<EntityRef<WaitCoroutineLock>> queue = new();
+
+        internal Queue<ETTask<EntityRef<CoroutineLock>>> queue = new();
 
         internal int Count
         {

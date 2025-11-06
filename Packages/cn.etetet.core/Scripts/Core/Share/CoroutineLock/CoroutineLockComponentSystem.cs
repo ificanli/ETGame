@@ -61,7 +61,7 @@ namespace ET
         /// <returns>协程锁引用</returns>
         public static async ETTask<EntityRef<CoroutineLock>> Wait(this CoroutineLockComponent self, long coroutineLockType, long key, int timeout = 30000, [CallerLineNumber] int line = 0, [CallerFilePath] string filePath = "")
         {
-            if (timeout < 0)
+            if (timeout <= 0) // 必须要计时，防止死锁
             {
                 timeout = 30000;
             }
