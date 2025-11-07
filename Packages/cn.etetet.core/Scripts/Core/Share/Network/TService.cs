@@ -32,6 +32,10 @@ namespace ET
 
 		public ConcurrentQueue<TArgs> Queue = new();
 
+		private long idGenerator = 1;
+		
+		public long NewId() => idGenerator++;
+
 		public TService(AddressFamily addressFamily, ServiceType serviceType)
 		{
 			this.ServiceType = serviceType;
@@ -91,15 +95,7 @@ namespace ET
 
 			try
 			{
-				int channelId;
-				while (true)
-				{
-					channelId = RandomGenerator.RandInt32();
-					if (!this.idChannels.ContainsKey(channelId))
-					{
-						break;
-					}
-				}
+				long channelId = this.NewId();
 				TChannel channel = new(channelId, acceptSocket, this);
 				this.idChannels.Add(channel.Id, channel);
 				

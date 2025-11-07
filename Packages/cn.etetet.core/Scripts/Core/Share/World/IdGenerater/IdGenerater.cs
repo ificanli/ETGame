@@ -8,16 +8,16 @@ namespace ET
     public struct IdStruct
     {
         public ushort Process;  // 16bit
-        public uint Time;    // 32bit
-        public uint Value;   // 16bit
+        public uint Time;    // 28bit  可用大约8年
+        public uint Value;   // 20bit
 
         public long ToLong()
         {
             ulong result = 0;
             result |= this.Process;
-            result <<= 32;
+            result <<= 28;
             result |= this.Time;
-            result <<= 16;
+            result <<= 20;
             result |= this.Value;
             return (long) result;
         }
@@ -31,11 +31,11 @@ namespace ET
 
         public IdStruct(long id)
         {
-            ulong result = (ulong) id; 
-            this.Value = (uint) (result & IdGenerater.Mask16bit);
-            result >>= 16;
-            this.Time = (uint) result & IdGenerater.Mask32bit;
-            result >>= 32;
+            ulong result = (ulong) id;
+            this.Value = (uint) (result & IdGenerater.Mask20bit);
+            result >>= 20;
+            this.Time = (uint) (result & IdGenerater.Mask28bit);
+            result >>= 28;
             this.Process = (ushort) (result & IdGenerater.Mask16bit);
         }
 
@@ -44,51 +44,18 @@ namespace ET
             return $"process: {this.Process}, time: {this.Time}, value: {this.Value}";
         }
     }
-    
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct InstanceIdStruct
-    {
-        public uint Time;  // 32bit
-        public uint Value; // 32bit
-
-        public long ToLong()
-        {
-            ulong result = 0;
-            result |= this.Time;
-            result <<= 32;
-            result |= this.Value;
-            return (long) result;
-        }
-
-        public InstanceIdStruct(uint time, uint value)
-        {
-            this.Time = time;
-            this.Value = value;
-        }
-
-        public InstanceIdStruct(long id)
-        {
-            ulong result = (ulong) id; 
-            this.Value = (uint)(result & uint.MaxValue);
-            result >>= 32;
-            this.Time = (uint)(result & uint.MaxValue);
-        }
-
-        public override string ToString()
-        {
-            return $"time: {this.Time}, value: {this.Value}";
-        }
-    }
 
     public class IdGenerater: Singleton<IdGenerater>, ISingletonAwake
     {
         public const uint Mask32bit = 0xffffffff;
+        public const uint Mask28bit = 0xfffffff;  // 28bit mask: 268,435,455
+        public const uint Mask20bit = 0xfffff;    // 20bit mask: 1,048,575
         public const uint Mask16bit = 0xffff;
         
         private long epoch2025;
         
         private uint value;
-        private int instanceIdValue;
+        private uint second; // 秒
         
         public void Awake()
         {
@@ -106,36 +73,40 @@ namespace ET
         {
             uint time = TimeSince2025();
             uint v = 0;
+            uint s = 0;
             // 这里必须加锁
             lock (this)
             {
-                if (++this.value == Mask32bit)
+                if (time > this.second)
                 {
                     this.value = 0;
+                    this.second = time;
                 }
+                else
+                {
+                    ++this.value;
+                    if (this.value == IdGenerater.Mask20bit)  
+                    {
+                        ++this.second; // 借用下一秒的id
+                        this.value = 0;
+                    }
+                }
+                s = this.second;
                 v = this.value;
             }
 
-            IdStruct idStruct = new(time, this.GetProcessReplicaIndex(), v);
+            IdStruct idStruct = new(s, this.GetProcessReplicaIndex(), v);
             return idStruct.ToLong();
         }
 
         public ushort GetProcessReplicaIndex()
         {
             // 因为改成了服务发现，支持一个进程多个副本，比如gate只需要配一个进程，可以支持多个,同一个Replica是同一个进程Id
-            if (Options.Instance.Process * 1000 > 50000)
+            if (Options.Instance.Process > 50)
             {
                 throw new Exception($"Process is too large: {Options.Instance.Process}");
             }
             return (ushort)(Options.Instance.Process * 1000 + Options.Instance.ReplicaIndex);
-        }
-        
-        public long GenerateInstanceId()
-        {
-            uint time = this.TimeSince2025();
-            uint v = (uint)Interlocked.Add(ref this.instanceIdValue, 1);
-            InstanceIdStruct instanceIdStruct = new(time, v);
-            return instanceIdStruct.ToLong();
         }
     }
 }
