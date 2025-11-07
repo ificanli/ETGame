@@ -62,7 +62,7 @@ namespace ET.Server
                     return;
                 }
 
-                long entityId = entity.Id;
+                //long entityId = entity.Id;
 
                 int rpcId = request.RpcId;
                 Response response = ObjectPool.Fetch<Response>();
@@ -85,10 +85,11 @@ namespace ET.Server
                 // 这里是为了保证response消息在handler消息处理完成之后发出，
                 // 因为MessageLocationSenderComponentSystem里面的Send方法有可能需要从location获取actorid
                 // 这样会导致send实际上进入了新的协程，从而response却先发送出去了
-                using (await fiber.Root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
-                {
-                    fiber.Root.GetComponent<ProcessInnerSender>().Reply(fromFiber, response);
-                }
+                //using (await fiber.Root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
+                //{
+                // map发消息改成了用ActorId发送，这样可以不用加协程锁了
+                fiber.Root.GetComponent<ProcessInnerSender>().Reply(fromFiber, response);
+                //}
             }
             catch (Exception e)
             {

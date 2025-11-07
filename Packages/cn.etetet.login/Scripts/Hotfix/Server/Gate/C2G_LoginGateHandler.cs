@@ -31,17 +31,9 @@ namespace ET.Server
                 PlayerSessionComponent playerSessionComponent = player.AddComponent<PlayerSessionComponent>();
                 playerSessionComponent.AddComponent<MailBoxComponent, int>(MailBoxType.GateSession);
                 
-                EntityRef<PlayerSessionComponent> playerSessionComponentRef = playerSessionComponent;
-                await playerSessionComponent.AddLocation(LocationType.GateSession);
-
-                player = playerRef;
-                player.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
-                await player.AddLocation(LocationType.Player);
-                
                 player = playerRef;
                 session = sessionRef;
                 session.AddComponent<SessionPlayerComponent>().Player = player;
-                playerSessionComponent = playerSessionComponentRef;
                 playerSessionComponent.Session = session;
             }
             else

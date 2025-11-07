@@ -17,6 +17,7 @@
 			// 这里可以从DB中加载Unit
 			player = playerRef;
 			Unit unit = UnitFactory.Create(scene, player.Id, 1001);
+			unit.AddComponent<UnitGateInfoComponent>().ActorId = player.GetComponent<PlayerSessionComponent>().GetActorId();
 
 			session = sessionRef;
 			

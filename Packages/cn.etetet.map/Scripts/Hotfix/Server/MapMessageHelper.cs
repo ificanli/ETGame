@@ -23,14 +23,15 @@ namespace ET.Server
         {
             (message as MessageObject).IsFromPool = false;
             Dictionary<long, EntityRef<AOIEntity>> dict = unit.GetBeSeePlayers();
-            MessageLocationSenderOneType oneTypeMessageLocationType = unit.Root().GetComponent<MessageLocationSenderComponent>().Get(LocationType.GateSession);
+            MessageSender messageSender = unit.Root().GetComponent<MessageSender>();
+            
             foreach (AOIEntity u in dict.Values)
             {
                 if (!withSelf && u.Id == unit.Id)
                 {
                     continue;
                 }
-                oneTypeMessageLocationType.Send(u.Unit.Id, message);
+                messageSender.Send(u.Unit.GetComponent<UnitGateInfoComponent>().ActorId, message);
             }
         }
         
@@ -40,8 +41,8 @@ namespace ET.Server
             {
                 return;
             }
-            
-            unit.Root().GetComponent<MessageLocationSenderComponent>().Get(LocationType.GateSession).Send(unit.Id, message);
+            MessageSender messageSender = unit.Root().GetComponent<MessageSender>();
+            messageSender.Send(unit.GetComponent<UnitGateInfoComponent>().ActorId, message);
         }
         
         public static void NoticeClient(Unit unit, IMessage message, NoticeType noticeType)
