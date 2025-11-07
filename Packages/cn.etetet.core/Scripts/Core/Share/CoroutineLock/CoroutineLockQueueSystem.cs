@@ -41,27 +41,24 @@
         }
 
         // 返回值，是否找到了一个有效的协程锁
-        internal static bool Notify(this CoroutineLockQueue self, int level)
+        internal static void Notify(this CoroutineLockQueue self, int level)
         {
             --self.runningCount;
-
+            
             // 尝试唤醒等待队列中的协程，直到达到并发上限
             while (self.queue.Count > 0)
             {
-                ETTask<EntityRef<CoroutineLock>> tcs = self.queue.Dequeue();
-
-                CoroutineLock coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, level);
-                tcs.SetResult(coroutineLock);
-
                 // 达到最大并发数量
-                if (++self.runningCount >= self.maxConcurrency)
+                if (self.runningCount >= self.maxConcurrency)
                 {
                     break;
                 }
+                ++self.runningCount;
+                
+                ETTask<EntityRef<CoroutineLock>> tcs = self.queue.Dequeue();
+                CoroutineLock coroutineLock = self.AddChild<CoroutineLock, long, long, int>(self.type, self.Id, level);
+                tcs.SetResult(coroutineLock);
             }
-
-            // 如果还有运行中的协程或等待队列不为空，则队列继续存活
-            return self.runningCount > 0 || self.queue.Count > 0;
         }
     }
 }

@@ -37,11 +37,14 @@
             {
                 return;
             }
-
-            if (!queue.Notify(level))
+            
+            if (queue.Count == 0)
             {
                 self.Remove(key);
+                return;
             }
+            
+            queue.Notify(level);
         }
     }
 }
