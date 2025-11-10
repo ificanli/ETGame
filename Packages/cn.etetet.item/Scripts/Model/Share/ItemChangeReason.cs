@@ -89,5 +89,7 @@ namespace ET
         /// 系统奖励
         /// </summary>
         SystemReward = 16,
+
+        Equip = 17,
     }
 }

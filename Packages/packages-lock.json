@@ -133,6 +133,17 @@
         "cn.etetet.core": "4.0.0"
       }
     },
+    "cn.etetet.equipment": {
+      "version": "file:cn.etetet.equipment",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.excel": "4.0.0",
+        "cn.etetet.proto": "4.0.0",
+        "cn.etetet.unit": "4.0.0"
+      }
+    },
     "cn.etetet.excel": {
       "version": "file:cn.etetet.excel",
       "depth": 0,

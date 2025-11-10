@@ -3,7 +3,7 @@ namespace ET.Server
     /// <summary>
     /// 物品实体
     /// </summary>
-    [ChildOf(typeof(ItemComponent))]
+    [ChildOf]
     public class Item: Entity, IAwake, IDestroy
     {
         /// <summary>

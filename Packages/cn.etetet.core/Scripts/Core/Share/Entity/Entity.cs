@@ -392,7 +392,7 @@ namespace ET
             this.Children.Add(entity.Id, entity);
         }
 
-        private void RemoveChildNoDispose(Entity entity)
+        public void RemoveChildNoDispose(Entity entity)
         {
             if (this.children == null)
             {
@@ -515,7 +515,7 @@ namespace ET
             this.Components.Add(component.GetLongHashCode(), component);
         }
 
-        private void RemoveComponentNoDispose(Entity component)
+        public void RemoveComponentNoDispose(Entity component)
         {
             if (this.components == null)
             {

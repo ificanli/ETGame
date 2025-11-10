@@ -9,12 +9,6 @@ namespace ET.Server
         protected override async ETTask Run(Unit unit, C2M_SyncBagData request, M2C_SyncBagData response)
         {
             ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
-            if (itemComponent == null)
-            {
-                response.Error = ErrorCode.ERR_ComponentNotFound;
-                response.Message = "ItemComponent not found";
-                return;
-            }
 
             // 设置背包容量
             response.Capacity = itemComponent.Capacity;

@@ -9,12 +9,6 @@ namespace ET.Server
         protected override async ETTask Run(Unit unit, C2M_UseItem request, M2C_UseItem response)
         {
             ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
-            if (itemComponent == null)
-            {
-                response.Error = ErrorCode.ERR_ComponentNotFound;
-                response.Message = "ItemComponent not found";
-                return;
-            }
 
             // 通过ItemId获取物品
             Item item = itemComponent.GetItemById(request.ItemId);

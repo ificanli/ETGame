@@ -1,0 +1,24 @@
+{
+  "name": "cn.etetet.equipment",
+  "displayName": "ET.Equipment",
+  "version": "4.0.0",
+  "description": "ET框架装备系统模块，提供完整的装备管理、装备穿戴、属性加成和装备强化功能",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  },
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0"
+  }
+}

@@ -203,6 +203,30 @@ namespace ET.Server
             return true;
         }
 
+                /// <summary>
+        /// 通过ItemId移除物品
+        /// </summary>
+        /// <param name="self">物品组件</param>
+        /// <param name="itemId">物品ID</param>
+        /// <param name="reason">道具变化原因</param>
+        /// <returns>是否移除成功</returns>
+        public static Item RemoveItemByIdNoDispose(ItemComponent self, long itemId, ItemChangeReason reason)
+        {
+            Item item = self.GetItemById(itemId);
+            if (item == null)
+            {
+                Log.Error($"item not found: {itemId}");
+                return null;
+            }
+
+            Log.Debug($"remove item by id: itemId={itemId}, configId={item.ConfigId}, count={item.Count}, reason={reason}");
+
+            // 通知客户端移除该物品
+            NotifyItemRemove(self, item);
+
+            return item;
+        }
+
         /// <summary>
         /// 通知客户端物品变化
         /// </summary>

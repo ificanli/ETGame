@@ -9,12 +9,6 @@ namespace ET.Server
         protected override async ETTask Run(Unit unit, C2M_MoveItem request, M2C_MoveItem response)
         {
             ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
-            if (itemComponent == null)
-            {
-                response.Error = ErrorCode.ERR_ComponentNotFound;
-                response.Message = "ItemComponent not found";
-                return;
-            }
 
             // 调用MoveItem方法进行移动或堆叠
             int errorCode = ItemHelper.MoveItem(itemComponent, request.ItemId, request.ToSlot);

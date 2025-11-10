@@ -9,12 +9,6 @@ namespace ET.Server
         protected override async ETTask Run(Unit unit, C2M_SortBag request, M2C_SortBag response)
         {
             ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
-            if (itemComponent == null)
-            {
-                response.Error = ErrorCode.ERR_ComponentNotFound;
-                response.Message = "ItemComponent not found";
-                return;
-            }
 
             // 调用SortBag方法进行整理
             int errorCode = ItemHelper.SortBag(itemComponent);
