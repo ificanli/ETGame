@@ -1,0 +1,18 @@
+syntax = "proto3";
+package ET;
+
+// 装备数据
+message EquipmentData
+{
+	int64 ItemId = 1; // 物品ID
+	int32 SlotType = 2; // 装备槽位类型
+	int32 ConfigId = 3; // 物品配置ID
+}
+
+// 更新装备通知（服务器推送）
+message M2C_UpdateEquipment // IMessage
+{
+	int32 SlotType = 1; // 装备槽位类型（-1表示卸下装备）
+	int64 ItemId = 2; // 物品ID
+	int32 ConfigId = 3; // 物品配置ID
+}

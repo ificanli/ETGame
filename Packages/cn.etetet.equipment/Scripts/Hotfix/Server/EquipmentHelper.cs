@@ -38,7 +38,7 @@ namespace ET.Server
             if (oldItem != null)
             {
                 // 先卸下旧装备到背包
-                int unequipResult = UnEquipItemInternal(unit, slotType, false);
+                int unequipResult = UnequipItem(unit, slotType);
                 if (unequipResult != ErrorCode.ERR_Success)
                 {
                     Log.Error($"failed to unequip old item: {unequipResult}");
@@ -65,18 +65,6 @@ namespace ET.Server
         /// <param name="slotType">装备槽位类型</param>
         /// <returns>错误码，0表示成功</returns>
         public static int UnequipItem(Unit unit, EquipmentSlotType slotType)
-        {
-            return UnEquipItemInternal(unit, slotType, true);
-        }
-
-        /// <summary>
-        /// 卸载装备内部实现
-        /// </summary>
-        /// <param name="unit">单位</param>
-        /// <param name="slotType">装备槽位类型</param>
-        /// <param name="notifyClient">是否通知客户端</param>
-        /// <returns>错误码，0表示成功</returns>
-        private static int UnEquipItemInternal(Unit unit, EquipmentSlotType slotType, bool notifyClient)
         {
             // 获取装备组件
             EquipmentComponent equipmentComponent = unit.GetComponent<EquipmentComponent>();
@@ -108,14 +96,11 @@ namespace ET.Server
             // 放回背包
             itemComponent.SetSlotItem(emptySlot, item);
 
-            if (notifyClient)
-            {
-                // 通知客户端装备变化（itemId=0表示卸载）
-                NotifyEquipmentRemove(unit, slotType);
+            // 通知客户端装备变化（itemId=0表示卸载）
+            NotifyEquipmentRemove(unit, item);
 
-                // 通知客户端背包物品添加
-                ItemHelper.NotifyItemUpdate(itemComponent, item);
-            }
+            // 通知客户端背包物品添加
+            ItemHelper.NotifyItemUpdate(itemComponent, item);
 
             return ErrorCode.ERR_Success;
         }
@@ -125,13 +110,11 @@ namespace ET.Server
         /// </summary>
         private static void NotifyEquipmentChange(Unit unit, EquipmentSlotType slotType, Item item)
         {
-            // 使用M2C_UpdateItem消息通知装备变化
-            // SlotIndex使用负数表示装备槽位：-(slotType+1)
-            M2C_UpdateItem message = M2C_UpdateItem.Create();
+            // 使用M2C_UpdateEquipment消息通知装备变化
+            M2C_UpdateEquipment message = M2C_UpdateEquipment.Create();
+            message.SlotType = (int)slotType;
             message.ItemId = item.Id;
-            message.SlotIndex = -((int)slotType + 1); // 负数表示装备槽位
             message.ConfigId = item.ConfigId;
-            message.Count = 1; // 装备数量总是1
 
             MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
             
@@ -141,18 +124,17 @@ namespace ET.Server
         /// <summary>
         /// 通知客户端装备移除
         /// </summary>
-        private static void NotifyEquipmentRemove(Unit unit, EquipmentSlotType slotType)
+        private static void NotifyEquipmentRemove(Unit unit, Item item)
         {
-            // 使用M2C_UpdateItem消息通知装备移除（Count=0表示移除）
-            M2C_UpdateItem message = M2C_UpdateItem.Create();
-            message.ItemId = 0;
-            message.SlotIndex = -((int)slotType + 1); // 负数表示装备槽位
-            message.ConfigId = 0;
-            message.Count = 0; // Count=0表示移除
+            // 使用M2C_UpdateEquipment消息通知装备移除（SlotType=-1表示卸下）
+            M2C_UpdateEquipment message = M2C_UpdateEquipment.Create();
+            message.SlotType = -1; // SlotType=-1表示卸下装备
+            message.ItemId = item.Id;
+            message.ConfigId = item.ConfigId;
 
             MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
             
-            Log.Debug($"equipment removed: unitId={unit.Id}, slotType={slotType}");
+            Log.Debug($"equipment removed: unitId={unit.Id}, itemId={item.Id}, slotType={item.SlotIndex}");
         }
     }
 }
