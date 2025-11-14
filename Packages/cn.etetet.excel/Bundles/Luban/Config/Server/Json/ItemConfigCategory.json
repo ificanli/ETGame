@@ -2,40 +2,109 @@
   {
     "Id": 10001,
     "Name": "生命药水",
-    "Desc": "恢复100点生命值",
     "Type": 2,
     "MaxStack": 99,
-    "Icon": "Items/Potion_HP",
     "Quality": 1,
-    "SellPrice": 5,
-    "BuyPrice": 10,
     "UseType": 1,
     "Level": 1
   },
   {
     "Id": 10002,
     "Name": "魔法药水",
-    "Desc": "恢复100点魔法值",
     "Type": 2,
     "MaxStack": 99,
-    "Icon": "Items/Potion_MP",
     "Quality": 1,
-    "SellPrice": 5,
-    "BuyPrice": 10,
     "UseType": 1,
     "Level": 1
   },
   {
     "Id": 10003,
     "Name": "铁矿石",
-    "Desc": "锻造材料",
     "Type": 3,
     "MaxStack": 999,
-    "Icon": "Items/Ore_Iron",
     "Quality": 0,
-    "SellPrice": 1,
-    "BuyPrice": 2,
     "UseType": 0,
     "Level": 1
+  },
+  {
+    "Id": 10004,
+    "Name": "新手之剑",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 0,
+    "UseType": 2,
+    "Level": 1
+  },
+  {
+    "Id": 10005,
+    "Name": "皮革头盔",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 0,
+    "UseType": 2,
+    "Level": 1
+  },
+  {
+    "Id": 10006,
+    "Name": "铁制胸甲",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 1,
+    "UseType": 2,
+    "Level": 5
+  },
+  {
+    "Id": 10007,
+    "Name": "布袍",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 0,
+    "UseType": 2,
+    "Level": 1
+  },
+  {
+    "Id": 10008,
+    "Name": "皮革护腿",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 0,
+    "UseType": 2,
+    "Level": 3
+  },
+  {
+    "Id": 10009,
+    "Name": "铁靴",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 1,
+    "UseType": 2,
+    "Level": 5
+  },
+  {
+    "Id": 10010,
+    "Name": "精灵之弓",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 1,
+    "UseType": 2,
+    "Level": 5
+  },
+  {
+    "Id": 10011,
+    "Name": "魔法项链",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 2,
+    "UseType": 2,
+    "Level": 10
+  },
+  {
+    "Id": 10012,
+    "Name": "力量戒指",
+    "Type": 4,
+    "MaxStack": 1,
+    "Quality": 1,
+    "UseType": 2,
+    "Level": 8
   }
 ]

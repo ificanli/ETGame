@@ -7,8 +7,6 @@
     "MaxStack": 99,
     "Icon": "Items/Potion_HP",
     "Quality": 1,
-    "SellPrice": 5,
-    "BuyPrice": 10,
     "UseType": 1,
     "Level": 1
   },
@@ -20,8 +18,6 @@
     "MaxStack": 99,
     "Icon": "Items/Potion_MP",
     "Quality": 1,
-    "SellPrice": 5,
-    "BuyPrice": 10,
     "UseType": 1,
     "Level": 1
   },
@@ -33,9 +29,106 @@
     "MaxStack": 999,
     "Icon": "Items/Ore_Iron",
     "Quality": 0,
-    "SellPrice": 1,
-    "BuyPrice": 2,
     "UseType": 0,
     "Level": 1
+  },
+  {
+    "Id": 10004,
+    "Name": "新手之剑",
+    "Desc": "适合初学者使用的铁剑",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Weapon_Sword_01",
+    "Quality": 0,
+    "UseType": 2,
+    "Level": 1
+  },
+  {
+    "Id": 10005,
+    "Name": "皮革头盔",
+    "Desc": "简单的皮革头盔",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Helmet_Leather_01",
+    "Quality": 0,
+    "UseType": 2,
+    "Level": 1
+  },
+  {
+    "Id": 10006,
+    "Name": "铁制胸甲",
+    "Desc": "坚固的铁制护甲",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Armor_Iron_01",
+    "Quality": 1,
+    "UseType": 2,
+    "Level": 5
+  },
+  {
+    "Id": 10007,
+    "Name": "布袍",
+    "Desc": "法师的入门长袍",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Robe_Cloth_01",
+    "Quality": 0,
+    "UseType": 2,
+    "Level": 1
+  },
+  {
+    "Id": 10008,
+    "Name": "皮革护腿",
+    "Desc": "适合游侠的护腿",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Pants_Leather_01",
+    "Quality": 0,
+    "UseType": 2,
+    "Level": 3
+  },
+  {
+    "Id": 10009,
+    "Name": "铁靴",
+    "Desc": "厚重的战士之靴",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Boots_Iron_01",
+    "Quality": 1,
+    "UseType": 2,
+    "Level": 5
+  },
+  {
+    "Id": 10010,
+    "Name": "精灵之弓",
+    "Desc": "轻盈的远程武器",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Weapon_Bow_01",
+    "Quality": 1,
+    "UseType": 2,
+    "Level": 5
+  },
+  {
+    "Id": 10011,
+    "Name": "魔法项链",
+    "Desc": "增强魔法的项链",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Necklace_Magic_01",
+    "Quality": 2,
+    "UseType": 2,
+    "Level": 10
+  },
+  {
+    "Id": 10012,
+    "Name": "力量戒指",
+    "Desc": "增加力量的戒指",
+    "Type": 4,
+    "MaxStack": 1,
+    "Icon": "Items/Equipment/Ring_Strength_01",
+    "Quality": 1,
+    "UseType": 2,
+    "Level": 8
   }
 ]

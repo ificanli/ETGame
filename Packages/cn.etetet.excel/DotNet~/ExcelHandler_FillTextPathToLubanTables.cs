@@ -5,32 +5,115 @@ using OfficeOpenXml;
 namespace ET
 {
     /// <summary>
-    /// 扫描Packages/cn.etetet.XXX/Luban/Config/Datas/Text.xlsx，把路径填到
-    /// Packages/cn.etetet.wow/Luban/Config/Base/__tables__.xlsx表格第二列Text的行，第一行为input的列里面，用英文逗号分割
-    /// 操作Excel可以参考ExcelHandler_TextConstDefine.cs
+    /// Excel表路径填充配置
+    /// </summary>
+    public class ExcelPathFillConfig
+    {
+        /// <summary>
+        /// 要扫描的Excel文件名（如 Text.xlsx, Item.xlsx）
+        /// </summary>
+        public string ScanFileName { get; set; }
+        
+        /// <summary>
+        /// 要扫描的子路径（相对于包目录，如 Luban/Config/Datas）
+        /// </summary>
+        public string ScanSubPath { get; set; }
+        
+        /// <summary>
+        /// 目标__tables__.xlsx文件路径（相对于项目根目录）
+        /// </summary>
+        public string TargetTablesPath { get; set; }
+        
+        /// <summary>
+        /// 在目标表中要更新的行标识（在第二列中查找）
+        /// </summary>
+        public string TargetRowName { get; set; }
+    }
+    
+    /// <summary>
+    /// 扫描Packages/cn.etetet.XXX目录下的Excel文件，把路径填到指定的__tables__.xlsx表格中
+    /// 支持配置多个扫描任务
     /// </summary>
     public class ExcelHandler_FillTextPathToLubanTables : IExcelHandler
     {
+        private List<ExcelPathFillConfig> configs;
+        
         public void Run()
         {
-            // 扫描所有Packages/cn.etetet.*/Luban/Config/Datas/Text.xlsx文件
-            List<string> textExcelPaths = ScanTextExcelFiles();
+            // 初始化配置
+            InitConfigs();
             
-            if (textExcelPaths.Count == 0)
+            if (configs.Count == 0)
             {
-                Log.Warning("No Text.xlsx files found in any packages");
+                Log.Warning("No Excel path fill configs defined");
                 return;
             }
             
-            // 读取目标__tables__.xlsx文件并更新Text行的input列
-            UpdateTablesExcel(textExcelPaths);
+            // 处理每个配置
+            foreach (var config in configs)
+            {
+                ProcessConfig(config);
+            }
             
-            Log.Console($"Successfully updated __tables__.xlsx with {textExcelPaths.Count} Text.xlsx paths");
+            Log.Console($"Successfully processed {configs.Count} Excel path fill configurations");
         }
         
-        private List<string> ScanTextExcelFiles()
+        /// <summary>
+        /// 初始化配置列表
+        /// 可以根据需要添加更多配置
+        /// </summary>
+        private void InitConfigs()
         {
-            List<string> textExcelPaths = new List<string>();
+            configs = new List<ExcelPathFillConfig>
+            {
+                // 配置1：扫描Text.xlsx，填到excel包的__tables__.xlsx的Text行
+                new ExcelPathFillConfig
+                {
+                    ScanFileName = "Text.xlsx",
+                    ScanSubPath = "Luban/Config/Datas",
+                    TargetTablesPath = "Packages/cn.etetet.excel/Luban/Config/Base/__tables__.xlsx",
+                    TargetRowName = "Text"
+                },
+                
+                // 配置示例2：扫描其他表（需要时取消注释并修改）
+                // new ExcelPathFillConfig
+                // {
+                //     ScanFileName = "Item.xlsx",
+                //     ScanSubPath = "Luban/Config/Datas",
+                //     TargetTablesPath = "Packages/cn.etetet.excel/Luban/Config/Base/__tables__.xlsx",
+                //     TargetRowName = "Item"
+                // },
+            };
+        }
+        
+        /// <summary>
+        /// 处理单个配置
+        /// </summary>
+        private void ProcessConfig(ExcelPathFillConfig config)
+        {
+            Log.Console($"Processing config: {config.ScanFileName} -> {config.TargetRowName}");
+            
+            // 扫描指定的Excel文件
+            List<string> excelPaths = ScanExcelFiles(config.ScanFileName, config.ScanSubPath);
+            
+            if (excelPaths.Count == 0)
+            {
+                Log.Warning($"No {config.ScanFileName} files found in any packages");
+                return;
+            }
+            
+            // 更新目标__tables__.xlsx
+            UpdateTablesExcel(excelPaths, config.TargetTablesPath, config.TargetRowName);
+            
+            Log.Console($"Updated {config.TargetRowName} with {excelPaths.Count} paths");
+        }
+        
+        /// <summary>
+        /// 扫描指定的Excel文件
+        /// </summary>
+        private List<string> ScanExcelFiles(string fileName, string subPath)
+        {
+            List<string> excelPaths = new List<string>();
             
             // 获取Packages目录的绝对路径
             string packagesDir = Path.GetFullPath("Packages");
@@ -38,7 +121,7 @@ namespace ET
             if (!Directory.Exists(packagesDir))
             {
                 Log.Error($"Packages directory not found: {packagesDir}");
-                return textExcelPaths;
+                return excelPaths;
             }
             
             // 扫描所有cn.etetet.*包目录
@@ -46,28 +129,31 @@ namespace ET
             
             foreach (string packageDir in packageDirs)
             {
-                string textExcelPath = Path.Combine(packageDir, "Luban/Config/Datas/Text.xlsx");
+                string excelPath = Path.Combine(packageDir, subPath, fileName);
                 
-                if (File.Exists(textExcelPath))
+                if (File.Exists(excelPath))
                 {
-                    // 生成带4个../前缀的路径格式
+                    // 生成带4个../前缀的相对路径格式
                     string packageName = Path.GetFileName(packageDir);
-                    string pathWithPrefix = $"../../../../{packageName}/Luban/Config/Datas/Text.xlsx";
-                    textExcelPaths.Add(pathWithPrefix);
-                    Log.Console($"Found Text.xlsx: {pathWithPrefix}");
+                    string pathWithPrefix = $"../../../../{packageName}/{subPath}/{fileName}";
+                    excelPaths.Add(pathWithPrefix);
+                    Log.Console($"Found {fileName}: {pathWithPrefix}");
                 }
             }
             
-            return textExcelPaths;
+            return excelPaths;
         }
         
-        private void UpdateTablesExcel(List<string> textExcelPaths)
+        /// <summary>
+        /// 更新目标__tables__.xlsx文件
+        /// </summary>
+        private void UpdateTablesExcel(List<string> excelPaths, string tablesPath, string rowName)
         {
-            string tablesExcelPath = Path.GetFullPath("Packages/cn.etetet.excel/Luban/Config/Base/__tables__.xlsx");
+            string tablesExcelPath = Path.GetFullPath(tablesPath);
             
             if (!File.Exists(tablesExcelPath))
             {
-                Log.Error($"__tables__.xlsx not found: {tablesExcelPath}");
+                Log.Error($"Target tables file not found: {tablesExcelPath}");
                 return;
             }
             
@@ -84,8 +170,8 @@ namespace ET
                     return;
                 }
                 
-                // 查找Text行和input列
-                int textRow = -1;
+                // 查找目标行和input列
+                int targetRow = -1;
                 int inputCol = -1;
                 
                 // 查找input列（第一行）
@@ -101,35 +187,35 @@ namespace ET
                 
                 if (inputCol == -1)
                 {
-                    Log.Error("Input column not found in __tables__.xlsx");
+                    Log.Error($"Input column not found in {tablesExcelPath}");
                     return;
                 }
                 
-                // 查找Text行（第二列）
+                // 查找目标行（第二列）
                 for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
                 {
                     string cellValue = worksheet.Cells[row, 2].Text.Trim();
-                    if (cellValue.Equals("Text", System.StringComparison.OrdinalIgnoreCase))
+                    if (cellValue.Equals(rowName, System.StringComparison.OrdinalIgnoreCase))
                     {
-                        textRow = row;
+                        targetRow = row;
                         break;
                     }
                 }
                 
-                if (textRow == -1)
+                if (targetRow == -1)
                 {
-                    Log.Error("Text row not found in __tables__.xlsx");
+                    Log.Error($"{rowName} row not found in {tablesExcelPath}");
                     return;
                 }
                 
-                // 将Text.xlsx路径用英文逗号分割后填入input列
-                string pathsString = string.Join(",", textExcelPaths);
-                worksheet.Cells[textRow, inputCol].Value = pathsString;
+                // 将Excel路径用英文逗号分割后填入input列
+                string pathsString = string.Join(",", excelPaths);
+                worksheet.Cells[targetRow, inputCol].Value = pathsString;
                 
                 // 强制保存Excel文件 - EPPlus需要显式保存
                 excelPackage.SaveAs(new FileInfo(tablesExcelPath));
                 
-                Log.Console($"Updated Text row at [{textRow}, {inputCol}] with: {pathsString}");
+                Log.Console($"Updated {rowName} row at [{targetRow}, {inputCol}] with: {pathsString}");
             }
             catch (System.Exception e)
             {

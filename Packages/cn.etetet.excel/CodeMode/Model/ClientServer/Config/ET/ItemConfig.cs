@@ -25,8 +25,6 @@ namespace ET
             { if(!_buf["MaxStack"].IsNumber) { throw new SerializationException(); }  MaxStack = _buf["MaxStack"]; }
             { if(!_buf["Icon"].IsString) { throw new SerializationException(); }  Icon = _buf["Icon"]; }
             { if(!_buf["Quality"].IsNumber) { throw new SerializationException(); }  Quality = _buf["Quality"]; }
-            { if(!_buf["SellPrice"].IsNumber) { throw new SerializationException(); }  SellPrice = _buf["SellPrice"]; }
-            { if(!_buf["BuyPrice"].IsNumber) { throw new SerializationException(); }  BuyPrice = _buf["BuyPrice"]; }
             { if(!_buf["UseType"].IsNumber) { throw new SerializationException(); }  UseType = _buf["UseType"]; }
             { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
 
@@ -67,14 +65,6 @@ namespace ET
         /// </summary>
         public readonly int Quality;
         /// <summary>
-        /// 卖价
-        /// </summary>
-        public readonly int SellPrice;
-        /// <summary>
-        /// 买价
-        /// </summary>
-        public readonly int BuyPrice;
-        /// <summary>
         /// 使用类型
         /// </summary>
         public readonly int UseType;
@@ -101,8 +91,6 @@ namespace ET
             + "MaxStack:" + MaxStack + ","
             + "Icon:" + Icon + ","
             + "Quality:" + Quality + ","
-            + "SellPrice:" + SellPrice + ","
-            + "BuyPrice:" + BuyPrice + ","
             + "UseType:" + UseType + ","
             + "Level:" + Level + ","
             + "}";
