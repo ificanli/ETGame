@@ -87,8 +87,8 @@ public sealed class BrotliFormatter : MemoryPackFormatter<byte[]>
         }
 
         // write to buffer header (uncompressedLength, compressedLength, values...)
-        Unsafe.WriteUnaligned(ref head, value.Length);
-        Unsafe.WriteUnaligned(ref Unsafe.Add(ref head, 4), bytesWritten);
+        Safe.WriteUnaligned(ref head, value.Length);
+        Safe.WriteUnaligned(ref Unsafe.Add(ref head, 4), bytesWritten);
 
         writer.Advance(bytesWritten + 8);
     }

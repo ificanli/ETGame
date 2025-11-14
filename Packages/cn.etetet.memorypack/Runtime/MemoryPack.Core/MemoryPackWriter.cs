@@ -255,8 +255,8 @@ public ref partial struct MemoryPackWriter
         else
         {
             ref var spanRef = ref GetSpanReference(3);
-            Unsafe.WriteUnaligned(ref spanRef, MemoryPackCode.WideTag);
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref spanRef, 1), tag);
+            Safe.WriteUnaligned(ref spanRef, MemoryPackCode.WideTag);
+            Safe.WriteUnaligned(ref Unsafe.Add(ref spanRef, 1), tag);
             Advance(3);
         }
     }
@@ -270,14 +270,14 @@ public ref partial struct MemoryPackWriter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteCollectionHeader(int length)
     {
-        Unsafe.WriteUnaligned(ref GetSpanReference(4), length);
+        Safe.WriteUnaligned(ref GetSpanReference(4), length);
         Advance(4);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void WriteNullCollectionHeader()
     {
-        Unsafe.WriteUnaligned(ref GetSpanReference(4), MemoryPackCode.NullCollection);
+        Safe.WriteUnaligned(ref GetSpanReference(4), MemoryPackCode.NullCollection);
         Advance(4);
     }
 
@@ -312,7 +312,7 @@ public ref partial struct MemoryPackWriter
         var copyByteCount = checked(value.Length * 2);
 
         ref var dest = ref GetSpanReference(copyByteCount + 4);
-        Unsafe.WriteUnaligned(ref dest, value.Length);
+        Safe.WriteUnaligned(ref dest, value.Length);
 
 #if NET7_0_OR_GREATER
         ref var src = ref Unsafe.As<char, byte>(ref Unsafe.AsRef(value.GetPinnableReference()));
@@ -336,7 +336,7 @@ public ref partial struct MemoryPackWriter
         var copyByteCount = checked(value.Length * 2);
 
         ref var dest = ref GetSpanReference(copyByteCount + 4);
-        Unsafe.WriteUnaligned(ref dest, value.Length);
+        Safe.WriteUnaligned(ref dest, value.Length);
         MemoryMarshal.AsBytes(value).CopyTo(MemoryMarshal.CreateSpan(ref Unsafe.Add(ref dest, 4), copyByteCount));
         Advance(copyByteCount + 4);
     }
@@ -366,7 +366,7 @@ public ref partial struct MemoryPackWriter
         ref var destPointer = ref GetSpanReference(maxByteCount + 8); // header
 
         // write utf16-length
-        Unsafe.WriteUnaligned(ref Unsafe.Add(ref destPointer, 4), source.Length);
+        Safe.WriteUnaligned(ref Unsafe.Add(ref destPointer, 4), source.Length);
 
         var dest = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref destPointer, 8), maxByteCount);
 #if NET7_0_OR_GREATER
@@ -380,7 +380,7 @@ public ref partial struct MemoryPackWriter
 #endif
 
         // write written utf8-length in header, that is ~length
-        Unsafe.WriteUnaligned(ref destPointer, ~bytesWritten);
+        Safe.WriteUnaligned(ref destPointer, ~bytesWritten);
         Advance(bytesWritten + 8); // + header
     }
 
@@ -397,8 +397,8 @@ public ref partial struct MemoryPackWriter
 
         ref var destPointer = ref GetSpanReference(utf8Value.Length + 8); // header
 
-        Unsafe.WriteUnaligned(ref destPointer, ~utf8Value.Length);
-        Unsafe.WriteUnaligned(ref Unsafe.Add(ref destPointer, 4), utf16Length);
+        Safe.WriteUnaligned(ref destPointer, ~utf8Value.Length);
+        Safe.WriteUnaligned(ref Unsafe.Add(ref destPointer, 4), utf16Length);
 
         var dest = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref destPointer, 8), utf8Value.Length);
         utf8Value.CopyTo(dest);
@@ -634,7 +634,7 @@ public ref partial struct MemoryPackWriter
         ref var dest = ref GetSpanReference(allocSize);
         ref var src = ref Unsafe.As<T, byte>(ref GetArrayDataReference(value));
 
-        Unsafe.WriteUnaligned(ref dest, value.Length);
+        Safe.WriteUnaligned(ref dest, value.Length);
         Unsafe.CopyBlockUnaligned(ref Unsafe.Add(ref dest, 4), ref src, (uint)srcLength);
 
         Advance(allocSize);
@@ -655,7 +655,7 @@ public ref partial struct MemoryPackWriter
         ref var dest = ref GetSpanReference(allocSize);
         ref var src = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value));
 
-        Unsafe.WriteUnaligned(ref dest, value.Length);
+        Safe.WriteUnaligned(ref dest, value.Length);
         Unsafe.CopyBlockUnaligned(ref Unsafe.Add(ref dest, 4), ref src, (uint)srcLength);
 
         Advance(allocSize);
@@ -676,7 +676,7 @@ public ref partial struct MemoryPackWriter
         ref var dest = ref GetSpanReference(allocSize);
         ref var src = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value));
 
-        Unsafe.WriteUnaligned(ref dest, value.Length);
+        Safe.WriteUnaligned(ref dest, value.Length);
         Unsafe.CopyBlockUnaligned(ref Unsafe.Add(ref dest, 4), ref src, (uint)srcLength);
 
         Advance(allocSize);

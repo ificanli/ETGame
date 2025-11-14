@@ -33,7 +33,7 @@ public static partial class MemoryPackSerializer
         if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
             var array = AllocateUninitializedArray<byte>(Unsafe.SizeOf<T>());
-            Unsafe.WriteUnaligned(ref GetArrayDataReference(array), value);
+            Safe.WriteUnaligned(ref GetArrayDataReference(array), value);
             return array;
         }
 #if NET7_0_OR_GREATER
@@ -60,7 +60,7 @@ public static partial class MemoryPackSerializer
             var destArray = AllocateUninitializedArray<byte>(dataSize + 4);
             ref var head = ref MemoryMarshal.GetArrayDataReference(destArray);
 
-            Unsafe.WriteUnaligned(ref head, length);
+            Safe.WriteUnaligned(ref head, length);
             Unsafe.CopyBlockUnaligned(ref Unsafe.Add(ref head, 4), ref MemoryMarshal.GetArrayDataReference(srcArray), (uint)dataSize);
 
             return destArray;
@@ -104,7 +104,7 @@ public static partial class MemoryPackSerializer
         if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
             var buffer = bufferWriter.GetSpan(Unsafe.SizeOf<T>());
-            Unsafe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), value);
+            Safe.WriteUnaligned(ref MemoryMarshal.GetReference(buffer), value);
             bufferWriter.Advance(Unsafe.SizeOf<T>());
             return;
         }
@@ -133,7 +133,7 @@ public static partial class MemoryPackSerializer
             var destSpan = bufferWriter.GetSpan(dataSize + 4);
             ref var head = ref MemoryMarshal.GetReference(destSpan);
 
-            Unsafe.WriteUnaligned(ref head, length);
+            Safe.WriteUnaligned(ref head, length);
             Unsafe.CopyBlockUnaligned(ref Unsafe.Add(ref head, 4), ref MemoryMarshal.GetArrayDataReference(srcArray), (uint)dataSize);
 
             bufferWriter.Advance(dataSize + 4);

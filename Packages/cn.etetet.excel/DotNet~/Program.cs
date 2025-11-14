@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using CommandLine;
 using OfficeOpenXml;
@@ -11,7 +12,7 @@ namespace ET
         {
             try
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                ExcelPackage.License.SetNonCommercialOrganization("ET");
                 
                 AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
                 {

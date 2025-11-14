@@ -35,7 +35,7 @@ public static partial class MemoryPackSerializer
             {
                 MemoryPackSerializationException.ThrowInvalidRange(Unsafe.SizeOf<T>(), buffer.Length);
             }
-            value = Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(buffer));
+            value = Safe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(buffer));
             return Unsafe.SizeOf<T>();
         }
 

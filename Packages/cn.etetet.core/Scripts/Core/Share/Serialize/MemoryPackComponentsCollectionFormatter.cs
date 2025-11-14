@@ -40,7 +40,11 @@ namespace ET
                     formatter.Serialize(ref writer, ref entity!);
                 }
             }
+#if UNITY
+            Safe.WriteUnaligned(ref spanReference, count);
+#else
             Unsafe.WriteUnaligned(ref spanReference, count);
+#endif
         }
 
         [Preserve]

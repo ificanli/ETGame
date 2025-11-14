@@ -291,7 +291,7 @@ public ref partial struct MemoryPackReader
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryReadCollectionHeader(out int length)
     {
-        length = Unsafe.ReadUnaligned<int>(ref GetSpanReference(4));
+        length = Safe.ReadUnaligned<int>(ref GetSpanReference(4));
         Advance(4);
 
         // If collection-length is larger than buffer-length, it is invalid data.
@@ -329,7 +329,7 @@ public ref partial struct MemoryPackReader
         else if (firstTag == MemoryPackCode.WideTag)
         {
             ref var spanRef = ref GetSpanReference(sizeof(ushort) + 1); // skip firstTag
-            tag = Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref spanRef, 1));
+            tag = Safe.ReadUnaligned<ushort>(ref Unsafe.Add(ref spanRef, 1));
             return true;
         }
         else
@@ -342,7 +342,7 @@ public ref partial struct MemoryPackReader
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryPeekCollectionHeader(out int length)
     {
-        length = Unsafe.ReadUnaligned<int>(ref GetSpanReference(4));
+        length = Safe.ReadUnaligned<int>(ref GetSpanReference(4));
 
         // If collection-length is larger than buffer-length, it is invalid data.
         if (Remaining < length)
@@ -359,7 +359,7 @@ public ref partial struct MemoryPackReader
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool DangerousTryReadCollectionHeader(out int length)
     {
-        length = Unsafe.ReadUnaligned<int>(ref GetSpanReference(4));
+        length = Safe.ReadUnaligned<int>(ref GetSpanReference(4));
         Advance(4);
 
         return length != MemoryPackCode.NullCollection;
@@ -411,7 +411,7 @@ public ref partial struct MemoryPackReader
         ref var spanRef = ref GetSpanReference(utf8Length + 4); // + read utf16 length
 
         string str;
-        var utf16Length = Unsafe.ReadUnaligned<int>(ref spanRef);
+        var utf16Length = Safe.ReadUnaligned<int>(ref spanRef);
 
         if (utf16Length <= 0)
         {
@@ -464,7 +464,7 @@ public ref partial struct MemoryPackReader
     {
         var size = Unsafe.SizeOf<T1>();
         ref var spanRef = ref GetSpanReference(size);
-        var value1 = Unsafe.ReadUnaligned<T1>(ref spanRef);
+        var value1 = Safe.ReadUnaligned<T1>(ref spanRef);
         Advance(size);
         return value1;
     }
