@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,6 +14,8 @@ namespace ET.Client
         [MenuItem("ET/WOW/ExportScriptableObject")]
         public static void ExportScriptableObject()
         {
+            MongoRegister.Init();
+            
             // 1.获取所有的ScriptableObject
             string[] allScriptableObjects = UnityEditor.AssetDatabase.FindAssets("t:ScriptableObject");
 

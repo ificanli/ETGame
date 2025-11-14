@@ -47,20 +47,23 @@ namespace ET
             //RegisterStruct<TSQuaternion>();
             //RegisterStruct<LSInput>();
 
-            Dictionary<string, Type> types = CodeTypes.Instance.GetTypes();
-            foreach (Type type in types.Values)
+            Dictionary<string, Type> types = CodeTypes.Instance?.GetTypes();
+            if (types != null)
             {
-                if (!type.IsSubclassOf(typeof (Object)))
+                foreach (Type type in types.Values)
                 {
-                    continue;
-                }
+                    if (!type.IsSubclassOf(typeof(Object)))
+                    {
+                        continue;
+                    }
 
-                if (type.IsGenericType)
-                {
-                    continue;
-                }
+                    if (type.IsGenericType)
+                    {
+                        continue;
+                    }
 
-                BsonClassMap.LookupClassMap(type);
+                    BsonClassMap.LookupClassMap(type);
+                }
             }
         }
     }
