@@ -4,7 +4,7 @@
     <DebugType>Portable</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- 全局警告抑制，会与项目级设置合并 -->
-    <NoWarn>$(NoWarn);MSB3277</NoWarn>
+    <NoWarn>$(NoWarn)</NoWarn>
     <WarningsNotAsErrors>$(WarningsNotAsErrors);</WarningsNotAsErrors>
   </PropertyGroup>
 </Project>
