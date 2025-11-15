@@ -36,7 +36,7 @@ namespace ET
                     formatter.Serialize(ref writer, ref entity!);
                 }
             }
-            Unsafe.WriteUnaligned(ref spanReference, count);
+            SafeUnsafe.WriteUnaligned(ref spanReference, count);
         }
 
         [Preserve]
