@@ -1,9 +1,12 @@
 ﻿using MemoryPack.Internal;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using MemoryPack;
 using MemoryPack.Formatters;
 
+// ReSharper disable CSharpWarnings::CS9063
+#pragma warning disable CS9063
 #nullable enable
 namespace ET
 {
@@ -15,7 +18,7 @@ namespace ET
     {
         [Preserve]
 #if UNITY
-        public override void Serialize(ref MemoryPackWriter writer, ref ComponentsCollection? value)
+        public override void Serialize<TBufferWriter>(ref MemoryPackWriter<TBufferWriter> writer, ref ComponentsCollection? value)
 #else
         public override void Serialize<TBufferWriter>(ref MemoryPackWriter<TBufferWriter> writer, scoped ref ComponentsCollection? value)
 #endif
@@ -40,11 +43,7 @@ namespace ET
                     formatter.Serialize(ref writer, ref entity!);
                 }
             }
-#if UNITY
-            Safe.WriteUnaligned(ref spanReference, count);
-#else
             Unsafe.WriteUnaligned(ref spanReference, count);
-#endif
         }
 
         [Preserve]
@@ -81,4 +80,6 @@ namespace ET
             }
         }
     }
+    #pragma warning restore CS9063
+    // ReSharper restore CSharpWarnings::CS9063
 }

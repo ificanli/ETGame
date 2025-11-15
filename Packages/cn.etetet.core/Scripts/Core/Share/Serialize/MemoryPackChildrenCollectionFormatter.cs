@@ -15,7 +15,7 @@ namespace ET
     {
         [Preserve]
 #if UNITY
-        public override void Serialize(ref MemoryPackWriter writer, ref ChildrenCollection? value)
+        public override void Serialize<TBufferWriter>(ref MemoryPackWriter<TBufferWriter> writer, ref ChildrenCollection? value)
 #else
         public override void Serialize<TBufferWriter>(ref MemoryPackWriter<TBufferWriter> writer, scoped ref ChildrenCollection? value)
 #endif
@@ -40,11 +40,7 @@ namespace ET
                     formatter.Serialize(ref writer, ref entity!);
                 }
             }
-#if UNITY
-            Safe.WriteUnaligned(ref spanReference, count);
-#else
             Unsafe.WriteUnaligned(ref spanReference, count);
-#endif
         }
 
         [Preserve]

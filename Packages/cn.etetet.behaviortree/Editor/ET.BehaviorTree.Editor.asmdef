@@ -16,7 +16,6 @@
         "ET.HybridCLR",
         "ET.Init.Editor",
         "ET.Loader",
-        "ET.MemoryPack",
         "ET.Recast",
         "ET.YIUIFramework"
     ],

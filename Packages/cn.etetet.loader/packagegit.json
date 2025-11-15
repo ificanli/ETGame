@@ -10,14 +10,12 @@
   "Model": [
     "ET.Core",
     "Unity.Mathematics",
-    "ET.MemoryPack",
     "ET.YooAssets"
   ],
   "HotfixView": [
     "ET.Core",
     "Unity.Mathematics",
     "ET.Loader",
-    "ET.MemoryPack",
     "ET.Model",
     "ET.Hotfix",
     "ET.ModelView",
@@ -27,7 +25,6 @@
   "Hotfix": [
     "ET.Core",
     "Unity.Mathematics",
-    "ET.MemoryPack",
     "ET.Model"
   ]
 }

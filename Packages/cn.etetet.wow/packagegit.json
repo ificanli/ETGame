@@ -18,7 +18,6 @@
             "ET.Loader",
             "ET.Core",
             "Unity.Mathematics",
-            "ET.MemoryPack",
             "ET.Recast"
         ],
         "HotfixView": [
@@ -26,7 +25,6 @@
             "ET.Core",
             "Unity.Mathematics",
             "ET.Loader",
-            "ET.MemoryPack",
             "ET.Model",
             "ET.Hotfix",
             "ET.ModelView",
@@ -38,7 +36,6 @@
             "ET.Core",
             "Unity.Mathematics",
             "ET.Loader",
-            "ET.MemoryPack",
             "ET.Model",
             "ET.Recast"
         ]

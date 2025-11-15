@@ -1,0 +1,6 @@
+# 禁用 CS9063 scoped 修饰符不匹配错误
+[*.cs]
+dotnet_diagnostic.CS9063.severity = none
+
+# 禁用 ReSharper 的 scoped 修饰符检查
+resharper_csharp_warnings_cs9063_highlighting = none
