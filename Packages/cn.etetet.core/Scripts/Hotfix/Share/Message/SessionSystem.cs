@@ -22,6 +22,12 @@ namespace ET
         [EntitySystem]
         private static void Destroy(this Session self)
         {
+            Scene root = self.Root();
+            if (root == null)
+            {
+                return;
+            }
+            
             self.AService.Remove(self.Id, self.Error);
             
             foreach (RpcInfo responseCallback in self.requestCallbacks.Values.ToArray())
