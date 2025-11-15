@@ -5,8 +5,6 @@ using System.Runtime.CompilerServices;
 using MemoryPack;
 using MemoryPack.Formatters;
 
-// ReSharper disable CSharpWarnings::CS9063
-#pragma warning disable CS9063
 #nullable enable
 namespace ET
 {
@@ -17,11 +15,7 @@ namespace ET
     public sealed class MemoryPackComponentsCollectionFormatter : MemoryPackFormatter<ComponentsCollection>
     {
         [Preserve]
-#if UNITY
         public override void Serialize<TBufferWriter>(ref MemoryPackWriter<TBufferWriter> writer, ref ComponentsCollection? value)
-#else
-        public override void Serialize<TBufferWriter>(ref MemoryPackWriter<TBufferWriter> writer, scoped ref ComponentsCollection? value)
-#endif
         {
             if (value == null)
             {
@@ -47,11 +41,7 @@ namespace ET
         }
 
         [Preserve]
-#if UNITY
         public override void Deserialize(ref MemoryPackReader reader, ref ComponentsCollection? value)
-#else
-        public override void Deserialize(ref MemoryPackReader reader, scoped ref ComponentsCollection? value)
-#endif
         {
             if (!reader.TryReadCollectionHeader(out int length))
             {
@@ -80,6 +70,4 @@ namespace ET
             }
         }
     }
-    #pragma warning restore CS9063
-    // ReSharper restore CSharpWarnings::CS9063
 }

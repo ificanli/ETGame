@@ -373,7 +373,7 @@ namespace ET
             }
         }
 
-        [GeneratedRegex(@"//\s*ResponseType")]
-        private static partial Regex ResponseTypeRegex();
+        private static readonly Regex _responseTypeRegex = new Regex(@"//\s*ResponseType", RegexOptions.Compiled);
+        private static Regex ResponseTypeRegex() => _responseTypeRegex;
     }
 }

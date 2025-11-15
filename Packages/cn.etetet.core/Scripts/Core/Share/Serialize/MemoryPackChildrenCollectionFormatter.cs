@@ -14,11 +14,7 @@ namespace ET
     public sealed class MemoryPackChildrenCollectionFormatter : MemoryPackFormatter<ChildrenCollection>
     {
         [Preserve]
-#if UNITY
         public override void Serialize<TBufferWriter>(ref MemoryPackWriter<TBufferWriter> writer, ref ChildrenCollection? value)
-#else
-        public override void Serialize<TBufferWriter>(ref MemoryPackWriter<TBufferWriter> writer, scoped ref ChildrenCollection? value)
-#endif
         {
             if (value == null)
             {
@@ -44,11 +40,7 @@ namespace ET
         }
 
         [Preserve]
-#if UNITY
         public override void Deserialize(ref MemoryPackReader reader, ref ChildrenCollection? value)
-#else
-        public override void Deserialize(ref MemoryPackReader reader, scoped ref ChildrenCollection? value)
-#endif
         {
             if (!reader.TryReadCollectionHeader(out int length))
             {

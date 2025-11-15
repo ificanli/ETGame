@@ -43,6 +43,7 @@
         
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\Model\ET.Model.csproj" />
     </ItemGroup>
