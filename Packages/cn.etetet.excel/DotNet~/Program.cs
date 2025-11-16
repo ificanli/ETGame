@@ -12,7 +12,7 @@ namespace ET
         {
             try
             {
-                ExcelPackage.License.SetNonCommercialOrganization("ET");
+                ExcelPackage.License.SetNonCommercialOrganization("ETET");
                 
                 AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
                 {
