@@ -19,8 +19,8 @@ namespace ET
         // 小于这个Rpc会抛异常，大于这个异常的error需要自己判断处理，也就是说需要处理的错误应该要大于该值
         public const int ERR_WithoutException = 200000000;
         
-        public const int ERR_Cancel = 200000000 + PackageType.Core * 1000 + 1;
-        public const int ERR_Timeout = 200000000 + PackageType.Core * 1000 + 2;
+        public const int ERR_Cancel = 200000000 + PackageType.Core * 1000 + 1; // 200001001
+        public const int ERR_Timeout = 200000000 + PackageType.Core * 1000 + 2; // 200001002
 
 
         public static bool IsRpcNeedThrowException(int error)
