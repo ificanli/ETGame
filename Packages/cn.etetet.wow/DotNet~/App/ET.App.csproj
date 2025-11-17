@@ -6,6 +6,8 @@
     <RootNamespace>ET</RootNamespace>
     <LangVersion>default</LangVersion>
     <AssemblyName>ET.App</AssemblyName>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -17,14 +19,18 @@
     <DefineConstants>DOTNET</DefineConstants>
     <OutputPath>$(SolutionDir)Bin</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DefineConstants>DOTNET</DefineConstants>
     <OutputPath>$(SolutionDir)Bin</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Deterministic>false</Deterministic>
   </PropertyGroup>
 
   <ItemGroup>

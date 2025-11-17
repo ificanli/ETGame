@@ -6,6 +6,8 @@
         <Nullable>disable</Nullable>
         <RootNamespace>ET</RootNamespace>
         <LangVersion>default</LangVersion>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -28,6 +30,10 @@
       <OutputPath>$(SolutionDir)Bin</OutputPath>
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
       <NoWarn>CA2022</NoWarn>
+      <Optimize>true</Optimize>
+      <DebugType>full</DebugType>
+      <DebugSymbols>true</DebugSymbols>
+      <Deterministic>false</Deterministic>
     </PropertyGroup>
 
     <ItemGroup>

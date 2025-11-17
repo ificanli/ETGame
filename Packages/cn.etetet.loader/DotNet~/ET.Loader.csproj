@@ -4,6 +4,8 @@
         <RootNamespace>ET</RootNamespace>
         <LangVersion>default</LangVersion>
         <AssemblyName>ET.Loader</AssemblyName>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
     <PropertyGroup>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -12,7 +14,7 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>DOTNET</DefineConstants>
         <OutputPath>$(SolutionDir)Bin</OutputPath> 
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Optimize>false</Optimize>
         <NoWarn>CA2022</NoWarn>
@@ -20,9 +22,12 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"> 
         <DefineConstants>DOTNET</DefineConstants>
         <OutputPath>$(SolutionDir)Bin</OutputPath>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Optimize>true</Optimize>
+        <DebugType>full</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <Deterministic>false</Deterministic>
     </PropertyGroup>
 
     <ItemGroup>

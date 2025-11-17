@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace ET.Server
 {
 	[MessageHandler(SceneType.Map)]

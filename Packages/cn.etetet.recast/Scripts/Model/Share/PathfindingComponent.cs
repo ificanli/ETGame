@@ -10,13 +10,7 @@ namespace ET
     {
         public float Next()
         {
-            int random = RandomGenerator.GetRandom().Next();
-            float f;
-            unsafe
-            {
-                f = *(float*)&random;
-            }
-            return f;
+            return RandomGenerator.RandFloat();
         }
     }
     

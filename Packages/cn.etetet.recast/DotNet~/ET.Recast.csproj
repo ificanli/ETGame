@@ -6,6 +6,8 @@
         <LangVersion>default</LangVersion>
         <RootNamespace>ET</RootNamespace>
         <PackageId>ET.Recast</PackageId>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -18,7 +20,7 @@
         <OutputPath>$(SolutionDir)Bin</OutputPath>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <Optimize>true</Optimize>
+        <Optimize>false</Optimize>
         <NoWarn>CA2022</NoWarn>
     </PropertyGroup>
 
@@ -28,6 +30,10 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>CA2022</NoWarn>
+        <Optimize>true</Optimize>
+        <DebugType>full</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <Deterministic>false</Deterministic>
     </PropertyGroup>
 
     <ItemGroup>

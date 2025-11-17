@@ -15,6 +15,17 @@ namespace ET
         {
             return random ??= new Random(Guid.NewGuid().GetHashCode() ^ Environment.TickCount);
         }
+        
+        public static float RandFloat()
+        {
+            int v = GetRandom().Next();
+            float f;
+            unsafe
+            {
+                f = *(float*)&v;
+            }
+            return f;
+        }
 
         public static ulong RandUInt64()
         {

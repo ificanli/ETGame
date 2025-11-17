@@ -16,6 +16,14 @@ namespace ET.Server
             EntityRef<Session> sessionRef = session;
             object message = args.Message;
             Scene root = session.Root();
+
+            MessageStatisticsComponent messageStatisticsComponent = session.GetComponent<MessageStatisticsComponent>();
+            if (!messageStatisticsComponent.Check(message.GetType(), 20))
+            {
+                session.Error = ErrorCode.ERR_MessageCountTooMany;
+                session.Dispose();
+                return;
+            }
             
             // 根据消息接口判断是不是Actor消息，不同的接口做不同的处理,比如需要转发给Chat Scene，可以做一个IChatMessage接口
             switch (message)

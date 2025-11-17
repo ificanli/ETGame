@@ -40,16 +40,18 @@ namespace ET
             session.Dispose();
         }
 
+        // 只有服务端会accept
         // 这个channelId是由CreateAcceptChannelId生成的
         private static void OnAccept(this NetComponent self, long channelId, IPEndPoint ipEndPoint)
         {
             Session session = self.AddChildWithId<Session, AService>(channelId, self.AService);
             session.RemoteAddress = ipEndPoint;
-
+            
             // 挂上这个组件，5秒就会删除session，所以客户端验证完成要删除这个组件。该组件的作用就是防止外挂一直连接不发消息也不进行权限验证
             session.AddComponent<SessionAcceptTimeoutComponent>();
             // 客户端连接，2秒检查一次recv消息，10秒没有消息则断开
             session.AddComponent<SessionIdleCheckerComponent>();
+            session.AddComponent<MessageStatisticsComponent>();
         }
         
         private static void OnRead(this NetComponent self, long channelId, MemoryBuffer memoryBuffer)
