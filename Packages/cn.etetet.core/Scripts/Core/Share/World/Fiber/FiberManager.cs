@@ -90,6 +90,9 @@ namespace ET
             this.context.Update();
             
             this.mainThreadScheduler.Update();
+            
+            // unity的回调需要用到Instance
+            Fiber.Instance = this.mainFiber;
         }
 
         public void LateUpdate()

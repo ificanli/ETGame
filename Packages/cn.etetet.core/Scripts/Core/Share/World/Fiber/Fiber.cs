@@ -27,13 +27,13 @@ namespace ET
             }
             set
             {
-                instance = value;
-                
-                if (instance != null)
+                if (value == null)
                 {
-                    instance.Log.SceneName = instance.Root.Name;
-                    SynchronizationContext.SetSynchronizationContext(instance.ThreadSynchronizationContext);
+                    return;
                 }
+                instance = value;
+                instance.Log.SceneName = instance.Name;
+                SynchronizationContext.SetSynchronizationContext(instance.ThreadSynchronizationContext);
             }
         }
         
@@ -70,6 +70,8 @@ namespace ET
             }
         }
 
+        public string Name { get; }
+
         public EntitySystem EntitySystem { get; }
         public Mailboxes Mailboxes { get; private set; }
         public ThreadSynchronizationContext ThreadSynchronizationContext { get; }
@@ -89,7 +91,8 @@ namespace ET
             this.EntitySystem = new EntitySystem();
             this.Mailboxes = new Mailboxes();
             this.ParentFiberId = parent?.Id ?? 0;
-            
+            this.Name = name;
+
             if (schedulerType == SchedulerType.Parent)
             {
                 this.Log = parent.Log;
@@ -106,18 +109,16 @@ namespace ET
                 LogInvoker logInvoker = new() { SceneName = name };
                 this.Log = EventSystem.Instance.Invoke<LogInvoker, ILog>(logInvoker);
             }
-            
             this.Root = new Scene(this, rootId, sceneType, name);
         }
 
         internal void Update()
-        {
-            Fiber saveInstance = Instance;
-            Instance = this;
-            
+        {            
             try
-            {
-                this.fiberMonitorInfo = new FiberMonitorInfo(this.Root.Name);
+            {                
+                Instance = this;
+
+                this.fiberMonitorInfo = new FiberMonitorInfo(this.Name);
                 
                 int t1 = Environment.TickCount;
                 
@@ -144,21 +145,16 @@ namespace ET
             }
             catch (Exception e)
             {
-                this.Log.Error(e);
-            }
-            finally
-            {
-                Instance = saveInstance;
+                Log.Error(e);
             }
         }
         
         internal void LateUpdate()
         {
-            Fiber saveInstance = Instance;
-            Instance = this;
-            
             try
             {
+                Instance = this;
+
                 int t1 = Environment.TickCount;
                 
                 this.EntitySystem.Publish(new LateUpdateEvent());
@@ -189,10 +185,6 @@ namespace ET
             catch (Exception e)
             {
                 Log.Error(e);
-            }
-            finally
-            {
-                Instance = saveInstance;
             }
         }
 
@@ -346,7 +338,7 @@ namespace ET
                 {
                     continue;
                 }
-                if (fiber.Root.Name != name)
+                if (fiber.Name != name)
                 {
                     continue;
                 }

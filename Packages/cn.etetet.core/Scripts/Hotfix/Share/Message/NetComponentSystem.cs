@@ -77,7 +77,7 @@ namespace ET
             // 机器人消息只在RobotCase场景中处理
             if (message is IRobotCaseMessage)
             {
-                if (Options.Instance.SceneName != "RobotCase")
+                if (Options.Instance.SceneName != "RobotTest")
                 {
                     Log.Error($"RobotCase message received in non-RobotCase scene: {message.GetType().Name}");
                     return;

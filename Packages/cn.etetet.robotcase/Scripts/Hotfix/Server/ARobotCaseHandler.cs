@@ -11,20 +11,13 @@ namespace ET.Server
         public override async ETTask<int> Handle(RobotCaseContext context)
         {
             Fiber parentFiber = context.Fiber;
-            int subFiberId = 0;
-            try
-            {
-                // 使用安全的重置方法，直接获取新的Main Fiber
-                Fiber subFiber = await context.Fiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.RobotCase, $"{context.Args.Id}");
-                subFiberId = subFiber.Id;
-                int ret = await this.Run(subFiber, context.Args);
-                return ret;
-            }
-            finally
-            {
-                // case跑完会删除RobotCase Fiber
-                await parentFiber.RemoveFiber(subFiberId);
-            }
+            // 使用安全的重置方法，直接获取新的Main Fiber
+            Fiber subFiber = await parentFiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.RobotCase, $"RobotCaseServer_{context.Args.Id}");
+            int subFiberId = subFiber.Id;
+            int ret = await this.Run(subFiber, context.Args);
+            // case跑完会删除RobotCase Fiber
+            await parentFiber.RemoveFiber(subFiberId);
+            return ret;
         }
 
         protected abstract ETTask<int> Run(Fiber fiber, RobotCaseArgs args);

@@ -36,6 +36,8 @@ namespace ET.Server
                     {
                         try
                         {
+                            Log.Console($"case run start: {type}");
+                            options.Id = (int)type;
                             int ret = await EventSystem.Instance.Invoke<RobotCaseContext, ETTask<int>>(type, new RobotCaseContext() { Fiber = fiber, Args = options });
                             if (ret != ErrorCode.ERR_Success)
                             {
@@ -58,6 +60,7 @@ namespace ET.Server
                     try
                     {
                         // 执行options.Case这个测试用例
+                        Log.Console($"case run start: {type}");
                         int ret = await EventSystem.Instance.Invoke<RobotCaseContext, ETTask<int>>(type, new RobotCaseContext() { Fiber = fiber, Args = options });
                         if (ret != ErrorCode.ERR_Success)
                         {
