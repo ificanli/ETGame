@@ -1,16 +1,4 @@
 syntax = "proto3";
 package ET;
 
-// ResponseType RobotCase_001_PrepareData_Response
-message RobotCase_001_PrepareData_Request // ILocationRequest, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-}
-
-message RobotCase_001_PrepareData_Response // ILocationResponse, IRobotCaseMessage
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}
 
