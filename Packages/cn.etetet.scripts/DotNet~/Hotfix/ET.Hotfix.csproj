@@ -48,6 +48,13 @@
         </Compile>
         
     </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)'=='Debug'">
+        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Hotfix\Test\**\*.cs">
+            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
+    </ItemGroup>
+    
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -57,6 +64,25 @@
     <!-- sourcegenerator use -->
     <ItemGroup>
         <CompilerVisibleProperty Include="DotNetAssembly" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Test\ARobotCaseHandler.cs.meta">
+        <Link>cn.etetet.robotcase\Scripts\Hotfix\Test\ARobotCaseHandler.cs.meta</Link>
+      </Content>
+      <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Test\FiberInit_RobotCase.cs.meta">
+        <Link>cn.etetet.robotcase\Scripts\Hotfix\Test\FiberInit_RobotCase.cs.meta</Link>
+      </Content>
+      <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Test\FiberInit_RobotTest.cs.meta">
+        <Link>cn.etetet.robotcase\Scripts\Hotfix\Test\FiberInit_RobotTest.cs.meta</Link>
+      </Content>
+      <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Test\RobotCaseConsoleHandler.cs.meta">
+        <Link>cn.etetet.robotcase\Scripts\Hotfix\Test\RobotCaseConsoleHandler.cs.meta</Link>
+      </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Server\">
+        <Link>cn.etetet.robotcase\Scripts\Hotfix\Server</Link>
+      </Folder>
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-namespace ET.Server
+namespace ET.Test
 {
     [UniqueId(1, 10000)]
     public static partial class RobotCaseType

@@ -1,6 +1,7 @@
 using ET.Client;
+using ET.Server;
 
-namespace ET.Server
+namespace ET.Test
 {
     [Invoke(RobotCaseType.AchievementProgressTest)]
     public class RobotCase_005_AchievementProgress_Handler : ARobotCaseHandler

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ET.Server
+namespace ET.Test
 {
     [Invoke(SceneType.RobotTest)]
     public class FiberInit_RobotTest: AInvokeHandler<FiberInit, ETTask>
@@ -15,7 +15,7 @@ namespace ET.Server
             root.AddComponent<ObjectWait>();
             root.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
             root.AddComponent<ProcessInnerSender>();
-            root.AddComponent<ConsoleComponent>();
+            root.AddComponent<Server.ConsoleComponent>();
 
             await ETTask.CompletedTask;
         }

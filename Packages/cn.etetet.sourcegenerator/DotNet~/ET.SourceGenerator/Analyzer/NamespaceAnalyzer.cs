@@ -132,6 +132,10 @@ namespace ET
 
             var normalizedPath = filePath.Replace('\\', '/');
             
+            // Test目录规则：ET.Test
+            if (IsInTestDirectory(normalizedPath))
+                return "ET.Test";
+            
             // Client目录规则：ET.Client
             if (IsInClientDirectory(normalizedPath))
                 return "ET.Client";
@@ -173,6 +177,16 @@ namespace ET
             );
         }
 
+        private static bool IsInTestDirectory(string normalizedPath)
+        {
+            return normalizedPath.Contains("/Packages/") && (
+                normalizedPath.Contains("/Scripts/Model/Test/") ||
+                normalizedPath.Contains("/Scripts/Hotfix/Test/") ||
+                normalizedPath.Contains("/Scripts/ModelView/Test/") ||
+                normalizedPath.Contains("/Scripts/HotfixView/Test/")
+            );
+        }
+
         private static string GetRelativePath(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
@@ -194,22 +208,32 @@ namespace ET
             var namespaceName = usingDirective.Name?.ToString();
             if (namespaceName == null) return;
             
-            // ET命名空间（Share）不能使用ET.Client或ET.Server
+            // ET命名空间（Share）不能使用ET.Client或ET.Server或ET.Test
             if (IsInShareDirectory(normalizedPath))
             {
-                if (namespaceName == "ET.Client" || namespaceName == "ET.Server" || 
-                    namespaceName.StartsWith("ET.Client.") || namespaceName.StartsWith("ET.Server."))
+                if (namespaceName == "ET.Client" || namespaceName == "ET.Server" || namespaceName == "ET.Test" ||
+                    namespaceName.StartsWith("ET.Client.") || namespaceName.StartsWith("ET.Server.") || namespaceName.StartsWith("ET.Test."))
                 {
                     var diagnostic = Diagnostic.Create(DependencyRule, usingDirective.GetLocation(), namespaceName);
                     context.ReportDiagnostic(diagnostic);
                 }
             }
-            // ET.Client命名空间不能使用ET.Server
+            // ET.Client命名空间不能使用ET.Server或ET.Test
             else if (IsInClientDirectory(normalizedPath))
             {
-                if (namespaceName == "ET.Server" || namespaceName.StartsWith("ET.Server."))
+                if (namespaceName == "ET.Server" || namespaceName == "ET.Test" ||
+                    namespaceName.StartsWith("ET.Server.") || namespaceName.StartsWith("ET.Test."))
                 {
                     var diagnostic = Diagnostic.Create(ClientServerDependencyRule, usingDirective.GetLocation(), namespaceName);
+                    context.ReportDiagnostic(diagnostic);
+                }
+            }
+            // ET.Server命名空间不能使用ET.Test
+            else if (IsInServerDirectory(normalizedPath))
+            {
+                if (namespaceName == "ET.Test" || namespaceName.StartsWith("ET.Test."))
+                {
+                    var diagnostic = Diagnostic.Create(DependencyRule, usingDirective.GetLocation(), namespaceName);
                     context.ReportDiagnostic(diagnostic);
                 }
             }
@@ -227,22 +251,32 @@ namespace ET
                 var namespaceName = typeSymbol.ContainingNamespace?.ToDisplayString();
                 if (namespaceName == null) return;
                 
-                // ET命名空间（Share）不能使用ET.Client或ET.Server
+                // ET命名空间（Share）不能使用ET.Client或ET.Server或ET.Test
                 if (IsInShareDirectory(normalizedPath))
                 {
-                    if (namespaceName == "ET.Client" || namespaceName == "ET.Server" ||
-                        namespaceName.StartsWith("ET.Client.") || namespaceName.StartsWith("ET.Server."))
+                    if (namespaceName == "ET.Client" || namespaceName == "ET.Server" || namespaceName == "ET.Test" ||
+                        namespaceName.StartsWith("ET.Client.") || namespaceName.StartsWith("ET.Server.") || namespaceName.StartsWith("ET.Test."))
                     {
                         var diagnostic = Diagnostic.Create(DependencyRule, identifierName.GetLocation(), namespaceName);
                         context.ReportDiagnostic(diagnostic);
                     }
                 }
-                // ET.Client命名空间不能使用ET.Server
+                // ET.Client命名空间不能使用ET.Server或ET.Test
                 else if (IsInClientDirectory(normalizedPath))
                 {
-                    if (namespaceName == "ET.Server" || namespaceName.StartsWith("ET.Server."))
+                    if (namespaceName == "ET.Server" || namespaceName == "ET.Test" ||
+                        namespaceName.StartsWith("ET.Server.") || namespaceName.StartsWith("ET.Test."))
                     {
                         var diagnostic = Diagnostic.Create(ClientServerDependencyRule, identifierName.GetLocation(), namespaceName);
+                        context.ReportDiagnostic(diagnostic);
+                    }
+                }
+                // ET.Server命名空间不能使用ET.Test
+                else if (IsInServerDirectory(normalizedPath))
+                {
+                    if (namespaceName == "ET.Test" || namespaceName.StartsWith("ET.Test."))
+                    {
+                        var diagnostic = Diagnostic.Create(DependencyRule, identifierName.GetLocation(), namespaceName);
                         context.ReportDiagnostic(diagnostic);
                     }
                 }

@@ -1,4 +1,6 @@
-﻿namespace ET.Server
+﻿using ET.Server;
+
+namespace ET.Test
 {
     /// <summary>
     /// 每个测试用例都是一个全新的环境，全新的服务器环境

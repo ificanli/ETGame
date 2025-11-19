@@ -1,6 +1,7 @@
 using System;
+using ET.Server;
 
-namespace ET.Server
+namespace ET.Test
 {
 	[MessageHandler(SceneType.Map)]
 	public class RobotCase_001_PrepareData_Request_Handler : MessageLocationHandler<Unit, RobotCase_001_PrepareData_Request, RobotCase_001_PrepareData_Response>

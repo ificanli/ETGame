@@ -1,4 +1,4 @@
-namespace ET.Server
+namespace ET.Test
 {
     /// <summary>
     /// 机器人测试用例回调参数

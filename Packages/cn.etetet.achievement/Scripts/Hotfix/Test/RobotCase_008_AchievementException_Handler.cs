@@ -1,6 +1,7 @@
 using ET.Client;
+using ET.Server;
 
-namespace ET.Server
+namespace ET.Test
 {
     [Invoke(RobotCaseType.AchievementExceptionTest)]
     public class RobotCase_008_AchievementException_Handler : ARobotCaseHandler

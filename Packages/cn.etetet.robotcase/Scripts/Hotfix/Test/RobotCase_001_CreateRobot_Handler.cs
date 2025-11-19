@@ -1,7 +1,8 @@
 using System.Threading;
 using ET.Client;
+using ET.Server;
 
-namespace ET.Server
+namespace ET.Test
 {
     [Invoke(RobotCaseType.CreateRobot)]
     public class RobotCase_001_CreateRobot_Handler: ARobotCaseHandler

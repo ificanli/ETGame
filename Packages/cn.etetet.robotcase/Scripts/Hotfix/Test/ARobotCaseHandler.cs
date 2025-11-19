@@ -1,6 +1,6 @@
 using System;
 
-namespace ET.Server
+namespace ET.Test
 {
     /// <summary>
     /// 机器人测试用例处理器抽象基类

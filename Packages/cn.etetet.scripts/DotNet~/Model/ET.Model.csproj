@@ -47,8 +47,14 @@
         <Compile Include="$(SolutionDir)Packages\cn.etetet.*\CodeMode\Model\Server\**\*.cs">
             <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
-        
-    </ItemGroup> 
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(Configuration)'=='Debug'">
+        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Model\Test\**\*.cs">
+            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
+    </ItemGroup>
+    
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -66,5 +72,23 @@
 	<Reference Include="Sirenix.OdinInspector.Attributes">
 	<HintPath>..\..\..\..\Assets\Plugins\Sirenix\Assemblies\Sirenix.OdinInspector.Attributes.dll</HintPath>
 	</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="..\..\..\cn.etetet.robotcase\Scripts\Model\Server\">
+	    <Link>cn.etetet.robotcase\Scripts\Model\Server</Link>
+	  </Folder>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Model\Test\RobotCaseArgs.cs.meta">
+	    <Link>cn.etetet.robotcase\Scripts\Model\Test\RobotCaseArgs.cs.meta</Link>
+	  </Content>
+	  <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Model\Test\RobotCaseContext.cs.meta">
+	    <Link>cn.etetet.robotcase\Scripts\Model\Test\RobotCaseContext.cs.meta</Link>
+	  </Content>
+	  <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Model\Test\RobotCaseType.cs.meta">
+	    <Link>cn.etetet.robotcase\Scripts\Model\Test\RobotCaseType.cs.meta</Link>
+	  </Content>
 	</ItemGroup>
 </Project>

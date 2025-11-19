@@ -1,6 +1,6 @@
 using CommandLine;
 
-namespace ET.Server
+namespace ET.Test
 {
     public class RobotCaseArgs: Object
     {

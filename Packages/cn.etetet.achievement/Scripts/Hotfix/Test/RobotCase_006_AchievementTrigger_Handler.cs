@@ -1,6 +1,7 @@
 using ET.Client;
+using ET.Server;
 
-namespace ET.Server
+namespace ET.Test
 {
     [Invoke(RobotCaseType.AchievementTriggerTest)]
     public class RobotCase_006_AchievementTrigger_Handler : ARobotCaseHandler

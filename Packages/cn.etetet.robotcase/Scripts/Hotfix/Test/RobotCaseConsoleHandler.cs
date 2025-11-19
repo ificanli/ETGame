@@ -1,7 +1,8 @@
 using System;
 using CommandLine;
+using ET.Server;
 
-namespace ET.Server
+namespace ET.Test
 {
     /// <summary>
     /// 机器人测试用例控制台处理器
