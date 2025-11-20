@@ -74,12 +74,12 @@ namespace ET
                 return;
             }
 
-            // 机器人消息只在RobotCase场景中处理
-            if (message is IRobotCaseMessage)
+            // 机器人消息只在Test进程中处理
+            if (message is ITestMessage)
             {
-                if (Options.Instance.SceneName != "RobotTest")
+                if (Options.Instance.SceneName != "Test")
                 {
-                    Log.Error($"RobotCase message received in non-RobotCase scene: {message.GetType().Name}");
+                    Log.Error($"Test message received in non-Test scene: {message.GetType().Name}");
                     return;
                 }
             }

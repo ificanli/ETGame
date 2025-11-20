@@ -22,7 +22,7 @@ namespace ET
         
         private readonly Dictionary<Type, List<EventInfo>> allEvents = new();
         
-        private readonly Dictionary<Type, Dictionary<long, object>> allInvokers = new(); 
+        private readonly Dictionary<Type, Dictionary<long, object>> allInvokers = new();
         
         public void Awake()
         {

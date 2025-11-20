@@ -65,24 +65,5 @@
     <ItemGroup>
         <CompilerVisibleProperty Include="DotNetAssembly" />
     </ItemGroup>
-    <ItemGroup>
-      <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Test\ARobotCaseHandler.cs.meta">
-        <Link>cn.etetet.robotcase\Scripts\Hotfix\Test\ARobotCaseHandler.cs.meta</Link>
-      </Content>
-      <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Test\FiberInit_RobotCase.cs.meta">
-        <Link>cn.etetet.robotcase\Scripts\Hotfix\Test\FiberInit_RobotCase.cs.meta</Link>
-      </Content>
-      <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Test\FiberInit_RobotTest.cs.meta">
-        <Link>cn.etetet.robotcase\Scripts\Hotfix\Test\FiberInit_RobotTest.cs.meta</Link>
-      </Content>
-      <Content Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Test\RobotCaseConsoleHandler.cs.meta">
-        <Link>cn.etetet.robotcase\Scripts\Hotfix\Test\RobotCaseConsoleHandler.cs.meta</Link>
-      </Content>
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="..\..\..\cn.etetet.robotcase\Scripts\Hotfix\Server\">
-        <Link>cn.etetet.robotcase\Scripts\Hotfix\Server</Link>
-      </Folder>
-    </ItemGroup>
 
 </Project>

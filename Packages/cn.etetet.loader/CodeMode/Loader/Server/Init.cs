@@ -23,7 +23,7 @@ namespace ET
                 }
 
                 // 测试用例使用单线程模式，方便重置测试环境
-                if (Options.Instance.SceneName == "RobotTest")
+                if (Options.Instance.SceneName == "Test")
                 {
                     Options.Instance.SingleThread = 1;
                 }

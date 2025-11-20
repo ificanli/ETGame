@@ -146,8 +146,8 @@ message M2C_GetAchievementStats // ILocationResponse
 }
 
 
-// ResponseType RobotCase_TriggerAchievementEvent_Response
-message RobotCase_TriggerAchievementEvent_Request // ILocationRequest, IRobotCaseMessage
+// ResponseType Test_TriggerAchievementEvent_Response
+message Test_TriggerAchievementEvent_Request // ILocationRequest, ITestMessage
 {
 	int32 RpcId = 1;
 	int32 EventType = 2; // 事件类型：1=击杀，2=升级，3=任务完成，4=道具收集，5=地图探索
@@ -155,7 +155,7 @@ message RobotCase_TriggerAchievementEvent_Request // ILocationRequest, IRobotCas
 	int32 Count = 4; // 数量（击杀数量、道具数量等）
 }
 
-message RobotCase_TriggerAchievementEvent_Response // ILocationResponse, IRobotCaseMessage
+message Test_TriggerAchievementEvent_Response // ILocationResponse, ITestMessage
 {
 	int32 RpcId = 1;
 	int32 Error = 2;

@@ -439,23 +439,23 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 ## 机器人测试系统
 
 ### 机器人测试流程
-1. 启动测试进程: `dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1`
+1. 启动测试进程: `dotnet ./Bin/ET.App.dll --Process=1 --SceneName=Test --StartConfig=Localhost --Console=1`
 2. 进程会输出`>`等待你的输入
 3. 测试所有用例: 在测试进程控制台输入`Case --Id=0` //--Id=0指执行所有用例
    输出`case run success: 0`，表示所有测试用例执行完成
-4. 测试指定用例X: 在测试进程控制台输入`Case --Id=X`   X是RobotCaseType的成员变量
+4. 测试指定用例X: 在测试进程控制台输入`Case --Id=X`   X是TestType的成员变量
    输出`case run success: X` 表示测试用例X执行完成
 
 ### 完整的命令行执行方式
 
 **单个测试用例执行：**
 ```bash
-printf "Case --Id=0\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1"
+printf "Case --Id=0\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=Test --StartConfig=Localhost --Console=1"
 ```
 
 **单进程多用例连续执行（推荐）：**
 ```bash
-printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotCase --StartConfig=Localhost --Console=1"
+printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=Test --StartConfig=Localhost --Console=1"
 ```
 
 **执行流程说明：**
@@ -472,18 +472,17 @@ printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --P
 - 实时查看每个用例的执行结果
 
 ### 机器人测试用例编写流程
-1. ARobotCaseHandler是测试用例的父类，继承它来写一个用例，用例名参考RobotCase_001_CreateRobot_Handler
+1. ATestHandler是测试用例的父类，继承它来写一个用例，用例名参考Test_CreateRobot
 2. 每个用例运行之前都创建了服务端环境，用例使用真实的消息与服务端交互
-3. 假如需要准备测试数据，可以自己新定义一个消息，每个用例使用自己的数据准备消息（例如C2M_RobotCase_PrepareData_001），发送到服务端，服务端写对应的C2M_RobotCase_PrepareData_001_Handler来准备数据，注意参考命名格式，准备测试数据的消息请放到RobotCase_C_5000.proto中
-4. 如果需要准备配置文件，请自己在代码中写json串，然后使用MongoHelper.FromJson来反序列化成配置数据，不要修改已有的json或者excel，例如：
+3. 如果需要准备配置文件，请自己在代码中写json串，然后使用MongoHelper.FromJson来反序列化成配置数据，不要修改已有的json或者excel，例如：
 ```csharp
 QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); // json写在代码中
 ```
-5. 日志目录是Logs，测试前请删除，方便查找问题，All.log是整个用例的日志
-6. 写用例的时候应该尽量调用客户端跟服务端已有的代码
-7. 测试用例要检查返回的数据或者客户端的数据是否与预期一致，如果与预期不一致需要抛出异常，用例的上层会打印异常
-8. 测试跑成功之后，应该去检查All.log，看日志是否与预期一致
-9. 如果是跑单个用例，看到输出case run success则表示用例成功，可以立即结束用例进程，如果看到case run fail，则表示失败，可以立即结束用例进程
+1. 日志目录是Logs，测试前请删除，方便查找问题，All.log是整个用例的日志
+2. 写用例的时候应该尽量调用客户端跟服务端已有的代码
+3. 测试用例要检查返回的数据或者客户端的数据是否与预期一致，如果与预期不一致需要抛出异常，用例的上层会打印异常
+4. 测试跑成功之后，应该去检查All.log，看日志是否与预期一致
+5. 如果是跑单个用例，看到输出case run success则表示用例成功，可以立即结束用例进程，如果看到case run fail，则表示失败，可以立即结束用例进程
 
 ## 常见错误避免
 
@@ -527,7 +526,7 @@ QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); //
   ├── cn.etetet.btnode        (btnode)           AllowSameLevelAccess
   ├── cn.etetet.quest         (任务系统)          AllowSameLevelAccess
   ├── cn.etetet.spell         (技能系统)          AllowSameLevelAccess
-  ├── cn.etetet.robotcase     (机器人用例系统)     AllowSameLevelAccess
+  ├── cn.etetet.test     (机器人用例系统)     AllowSameLevelAccess
   ├── cn.etetet.robot         (机器人系统)        AllowSameLevelAccess 依赖console
   ├── cn.etetet.login         (登录系统)          AllowSameLevelAccess
   ├── cn.etetet.map           (地图系统)          AllowSameLevelAccess 依赖actorlocation

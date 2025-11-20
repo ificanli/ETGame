@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace ET
 {
-    public class SceneTypeSingleton: Singleton<SceneTypeSingleton>, ISingletonAwake<Type>
+    public class SceneTypeSingleton: EnumSingleton<SceneTypeSingleton>, ISingletonAwake<Type>
     {
         public static bool IsSame(int a, int b)
         {
@@ -26,29 +25,19 @@ namespace ET
             return false;
         }
         
-        private readonly DoubleMap<int, string> sceneNames = new();
-
         public void Awake(Type type)
         {
-            FieldInfo[] fieldInfos = type.GetFields(BindingFlags.Static | BindingFlags.Public);
-            foreach (FieldInfo fieldInfo in fieldInfos)
-            {
-                if (fieldInfo.FieldType != typeof(int))
-                {
-                    continue;
-                }
-                this.sceneNames.Add((int)fieldInfo.GetValue(null), fieldInfo.Name);	
-            }
+            Init(type);
         }
 		
         public string GetSceneName(int sceneType)
         {
-            return this.sceneNames.GetValueByKey(sceneType);
+            return this.GetStringByValue(sceneType);
         }
 		
         public int GetSceneType(string sceneName)
         {
-            int type = this.sceneNames.GetKeyByValue(sceneName);
+            int type = this.GetValueByName(sceneName);
             if (type == 0)
             {
                 throw new Exception($"not found scene type: {type} {sceneName}");
@@ -58,7 +47,7 @@ namespace ET
 
         public Dictionary<int, string> GetAll()
         {
-            return this.sceneNames.GetAll();
+            return this.enumValueString.GetAll();
         }
     }
 }

@@ -631,13 +631,13 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.RobotCase_TriggerAchievementEvent_Request)]
-    [ResponseType(nameof(RobotCase_TriggerAchievementEvent_Response))]
-    public partial class RobotCase_TriggerAchievementEvent_Request : MessageObject, ILocationRequest, IRobotCaseMessage
+    [Message(Opcode.Test_TriggerAchievementEvent_Request)]
+    [ResponseType(nameof(Test_TriggerAchievementEvent_Response))]
+    public partial class Test_TriggerAchievementEvent_Request : MessageObject, ILocationRequest, ITestMessage
     {
-        public static RobotCase_TriggerAchievementEvent_Request Create(bool isFromPool = false)
+        public static Test_TriggerAchievementEvent_Request Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<RobotCase_TriggerAchievementEvent_Request>(isFromPool);
+            return ObjectPool.Fetch<Test_TriggerAchievementEvent_Request>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -674,12 +674,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.RobotCase_TriggerAchievementEvent_Response)]
-    public partial class RobotCase_TriggerAchievementEvent_Response : MessageObject, ILocationResponse, IRobotCaseMessage
+    [Message(Opcode.Test_TriggerAchievementEvent_Response)]
+    public partial class Test_TriggerAchievementEvent_Response : MessageObject, ILocationResponse, ITestMessage
     {
-        public static RobotCase_TriggerAchievementEvent_Response Create(bool isFromPool = false)
+        public static Test_TriggerAchievementEvent_Response Create(bool isFromPool = false)
         {
-            return ObjectPool.Fetch<RobotCase_TriggerAchievementEvent_Response>(isFromPool);
+            return ObjectPool.Fetch<Test_TriggerAchievementEvent_Response>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -722,7 +722,7 @@ namespace ET
         public const ushort C2M_GetAchievementStats = 10615;
         public const ushort AchievementStatsInfo = 10616;
         public const ushort M2C_GetAchievementStats = 10617;
-        public const ushort RobotCase_TriggerAchievementEvent_Request = 10618;
-        public const ushort RobotCase_TriggerAchievementEvent_Response = 10619;
+        public const ushort Test_TriggerAchievementEvent_Request = 10618;
+        public const ushort Test_TriggerAchievementEvent_Response = 10619;
     }
 }

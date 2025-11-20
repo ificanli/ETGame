@@ -372,29 +372,6 @@
         "cn.etetet.console": "4.0.0"
       }
     },
-    "cn.etetet.robotcase": {
-      "version": "file:cn.etetet.robotcase",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "cn.etetet.core": "4.0.0",
-        "cn.etetet.excel": "4.0.0",
-        "cn.etetet.proto": "4.0.0",
-        "cn.etetet.unit": "4.0.0",
-        "cn.etetet.ai": "4.0.0",
-        "cn.etetet.behaviortree": "4.0.0",
-        "cn.etetet.http": "4.0.0",
-        "cn.etetet.startconfig": "4.0.0",
-        "cn.etetet.aoi": "4.0.0",
-        "cn.etetet.numeric": "4.0.0",
-        "cn.etetet.move": "4.0.0",
-        "cn.etetet.recast": "4.0.0",
-        "cn.etetet.netinner": "4.0.0",
-        "cn.etetet.router": "4.0.0",
-        "cn.etetet.actorlocation": "4.0.0",
-        "cn.etetet.console": "4.0.0"
-      }
-    },
     "cn.etetet.router": {
       "version": "file:cn.etetet.router",
       "depth": 0,
@@ -461,6 +438,29 @@
         "cn.etetet.core": "4.0.0",
         "cn.etetet.excel": "4.0.0",
         "cn.etetet.proto": "4.0.0"
+      }
+    },
+    "cn.etetet.test": {
+      "version": "file:cn.etetet.test",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.excel": "4.0.0",
+        "cn.etetet.proto": "4.0.0",
+        "cn.etetet.unit": "4.0.0",
+        "cn.etetet.ai": "4.0.0",
+        "cn.etetet.behaviortree": "4.0.0",
+        "cn.etetet.http": "4.0.0",
+        "cn.etetet.startconfig": "4.0.0",
+        "cn.etetet.aoi": "4.0.0",
+        "cn.etetet.numeric": "4.0.0",
+        "cn.etetet.move": "4.0.0",
+        "cn.etetet.recast": "4.0.0",
+        "cn.etetet.netinner": "4.0.0",
+        "cn.etetet.router": "4.0.0",
+        "cn.etetet.actorlocation": "4.0.0",
+        "cn.etetet.console": "4.0.0"
       }
     },
     "cn.etetet.unit": {
