@@ -13,7 +13,6 @@
   - `Test --Name=CreateRobot2`（无匹配时提示 not found test）
 
 ## 命令参数
-- `--Package`：包名正则，默认 `.*`，匹配所有包。
 - `--Name`：处理器类名正则，默认 `.*`，匹配所有测试用例。
 - 解析与分发：控制台命令由 `TestConsoleHandler` 解析，按正则从 `TestDispatcher` 获取匹配的处理器并逐一运行。
 
@@ -26,18 +25,58 @@
 - `Scripts/Hotfix/Test/ATestHandler.cs:11`：统一处理流程，自动创建/移除 `TestCase` 子纤程并调用 `Run(...)`。
 - `Scripts/Hotfix/Test/FiberInit_TestCase.cs:8`：`TestCase` 场景初始化，每个用例均为全新服务器环境。
 
+## 测试用例命名规范（强制）
+继承 `ATestHandler` 的测试用例类必须遵守以下命名规范，由分析器 `TestCaseNamingAnalyzer`（ET0036）在编译时强制检查：
+
+### 规则
+1. **命名格式**：`{PackageType}_{TestName}_Test`
+   - `PackageType`：必须与所在包的 `PackageType` 常量匹配（如 `Test`、`Robot`、`Map` 等）
+   - `TestName`：测试用例的描述性名称，可包含多个下划线分隔
+   - 必须以 `_Test` 结尾
+
+2. **文件位置**：必须放在包的 `Scripts/Hotfix/Test/` 目录下
+
+3. **PackageType 匹配规则**：
+   - `cn.etetet.test` → `Test`
+   - `cn.etetet.robot` → `Robot`
+   - `cn.etetet.map` → `Map`
+   - YIUI相关包（如 `cn.etetet.yiuiframework`）→ `YIUIFramework`
+   - 其他包：首字母大写的包名最后部分
+
+### 示例
+```csharp
+// ✅ 正确：在 cn.etetet.test 包中
+public class Test_CreateRobot_Test : ATestHandler { }
+public class Test_Login_Success_Test : ATestHandler { }
+public class Test_Data_Validation_Test : ATestHandler { }
+
+// ❌ 错误：缺少 _Test 后缀
+public class Test_CreateRobot : ATestHandler { }
+
+// ❌ 错误：PackageType 不匹配（在 test 包中使用了 Robot 前缀）
+public class Robot_CreateRobot_Test : ATestHandler { }
+
+// ❌ 错误：文件不在 Scripts/Hotfix/Test/ 目录
+```
+
+### 编译错误示例
+违反命名规范时，编译器会报错：
+- `Test case class 'InvalidTest' must follow naming pattern '{PackageType}_{TestName}_Test' and be placed in 'Scripts/Hotfix/Test' directory: Class name must end with '_Test'`
+- `Test case class 'Robot_Example_Test' must follow naming pattern '{PackageType}_{TestName}_Test' and be placed in 'Scripts/Hotfix/Test' directory: PackageType should be 'Test' for package 'cn.etetet.test', but got 'Robot'`
+
 ## 编写新测试
-1. 新建类继承 `ATestHandler`，添加特性 `[Test(PackageType.Test)]`。
-2. 实现 `protected override ETTask<int> Run(Fiber fiber, TestArgs args)` 并返回约定值（`0` 成功，非 `0` 失败）。
-3. 示例：
+1. 新建类继承 `ATestHandler`（注意：父类已有 `[Test]` 特性，子类无需重复添加）。
+2. **严格遵守上述命名规范**，类名格式为 `Test_{描述}_Test`。
+3. 文件必须放在 `Scripts/Hotfix/Test/` 目录下。
+4. 实现 `protected override ETTask<int> Run(Fiber fiber, TestArgs args)` 并返回约定值（`0` 成功，非 `0` 失败）。
+5. 示例：
 ```csharp
 using ET.Test;
 using ET.Server;
 
 namespace ET.Test
 {
-    [Test(PackageType.Test)]
-    public class Test_MyCase : ATestHandler
+    public class Test_MyCase_Test : ATestHandler
     {
         protected override async ETTask<int> Run(Fiber fiber, TestArgs args)
         {
@@ -59,5 +98,5 @@ namespace ET.Test
 - `> Test --Name=CreateRobot2` → `not found test! package: .* name: CreateRobot2`
 
 ## 常见问题
-- `not found test`：无匹配用例。检查是否添加 `[Test(PackageType.Test)]`，类名与正则是否匹配，热更/编译是否完成。
-- 正则匹配范围过大或过小：调整 `--Package` 与 `--Name`，建议先用默认值确认整体列表再收敛过滤。
+- `not found test`：无匹配用例。检查类名与正则是否匹配，是否继承了 `ATestHandler`，热更/编译是否完成。
+- 正则匹配范围过大或过小：调整 `--Name` 参数，建议先用默认值确认整体列表再收敛过滤。

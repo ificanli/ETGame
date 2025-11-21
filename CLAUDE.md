@@ -499,7 +499,7 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 ├── cn.etetet.btnode        (btnode)           AllowSameLevelAccess
 ├── cn.etetet.quest         (任务系统)          AllowSameLevelAccess
 ├── cn.etetet.spell         (技能系统)          AllowSameLevelAccess
-├── cn.etetet.robotcase     (机器人用例系统)     AllowSameLevelAccess
+├── cn.etetet.test          (测试系统)          AllowSameLevelAccess
 ├── cn.etetet.robot         (机器人系统)        AllowSameLevelAccess 依赖console
 ├── cn.etetet.login         (登录系统)          AllowSameLevelAccess
 ├── cn.etetet.map           (地图系统)          AllowSameLevelAccess 依赖actorlocation
@@ -556,49 +556,55 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 ├── cn.etetet.scripts       (scripts)
 ```
 
-## 机器人测试系统
+## 测试系统
 
-### 机器人测试流程
+### 测试流程
 
-1. 启动测试进程: `dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotTest --StartConfig=Localhost --Console=1 --SingleThread=1`
+1. 启动测试场景: `pwsh -Command "dotnet ./Bin/ET.App.dll --Console=1 --SceneName=Test"`
 2. 进程会输出 `>`等待输入
-3. 测试所有用例: 输入 `Case --Id=0` //--Id=0指执行所有用例
-4. 测试指定用例X: 输入 `Case --Id=X` //X是RobotCaseType的成员变量
+3. 执行所有测试: 输入 `Test`
+4. 执行指定测试: 输入 `Test --Name=CreateRobot`（Name支持正则匹配）
 
 ### 完整的命令行执行方式
 
-#### 单个测试用例执行
+#### 交互式执行（推荐）
 
 ```bash
-printf "Case --Id=0\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotTest --StartConfig=Localhost --Console=1 --SingleThread=1"
+pwsh -Command "dotnet ./Bin/ET.App.dll --Console=1 --SceneName=Test"
+# 然后输入命令：
+# Test                          # 执行所有测试
+# Test --Name=CreateRobot       # 执行匹配CreateRobot的测试
 ```
 
-#### 单进程多用例连续执行（推荐）
+#### 单命令执行
 
 ```bash
-printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Process=1 --SceneName=RobotTest --StartConfig=Localhost --Console=1 --SingleThread=1"
+printf "Test\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Console=1 --SceneName=Test"
 ```
 
 #### 执行流程说明
 
-- 启动测试进程，显示 `>` 等待输入
-- 依次执行多个测试用例，无需重启进程
-- 成功输出：`case run success: X` (X为用例ID)
-- 失败输出：`case run failed: X` 加详细错误信息
-- 检测到EOF时程序正常退出
+- 启动测试场景，显示 `>` 等待输入
+- 依次执行匹配的测试用例，无需重启进程
+- 成功输出：`Test.Test_XXX_Test success`
+- 失败输出：`Test.Test_XXX_Test fail` 加详细错误信息
+- 未匹配到测试：`not found test! package: .* name: XXX`
 
 #### 优势
 
+- 支持正则匹配，灵活筛选测试用例
 - 一次启动多次测试，提高效率
 - 保持进程状态，减少启动开销
-- 支持连续测试不同用例
 - 实时查看每个用例的执行结果
 
-### 机器人测试用例编写流程
+### 测试用例编写流程
 
-1. **继承基类**: ARobotCaseHandler是测试用例的父类，继承它来写一个用例，用例名参考RobotCase_001_CreateRobot_Handler
-2. **环境准备**: 每个用例运行前都创建了服务端环境，用例使用真实的消息与服务端交互
-3. **测试数据准备**: 直接访问服务端Fiber，直接修改数据， 参考RobotCase_001_CreateRobot_Handler，例如:
+1. **继承基类**: ATestHandler是测试用例的父类，继承它来写一个测试用例
+2. **命名规范**: 测试用例类名必须符合格式 `{PackageType}_{TestName}_Test`，例如 `Test_CreateRobot_Test`
+3. **文件位置**: 必须放在包的 `Scripts/Hotfix/Test/` 目录下
+4. **无需添加特性**: 父类 `ATestHandler` 已有 `[Test]` 特性，子类无需重复添加
+5. **环境准备**: 每个用例运行前都创建了独立的服务端环境（TestCase场景），用例使用真实的消息与服务端交互
+6. **测试数据准备**: 直接访问服务端Fiber，直接修改数据，例如:
 
 ```csharp
     // 也可以直接访问服务器的数据，直接设置数据
@@ -617,18 +623,64 @@ printf "Case --Id=1\nCase --Id=2\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --P
     Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
 ```
 
-4. **配置准备**: 如果需要准备配置文件，请自己在代码中写json串，然后使用MongoHelper.FromJson来反序列化成配置数据，不要修改已有的json或者excel：
+7. **配置准备**: 如果需要准备配置文件，请自己在代码中写json串，然后使用MongoHelper.FromJson来反序列化成配置数据，不要修改已有的json或者excel：
 
 ```csharp
 QuestConfigCategory config = MongoHelper.FromJson<QuestConfigCategory>(json); // json写在代码中
 ```
 
-1. **日志管理**: 日志目录是Logs，测试前请删除，方便查找问题，All.log是整个用例的日志
-2. **代码复用**: 写用例时应该尽量调用客户端跟服务端已有的代码
-3. **结果验证**: 测试用例要检查返回的数据或者客户端的数据是否与预期一致，如果与预期不一致需要抛出异常
-4. **日志检查**: 测试跑成功后，应该去检查All.log，看日志是否与预期一致
-5. **结果判断**: 看到输出case run success则表示用例成功，看到case run fail则表示失败，可以立即结束用例进程
-6. **数据清理**: 测试用例的数据不需要清理，每个测试用例都是独立的环境
+8. **返回值约定**: 实现 `Run` 方法，返回 `ErrorCode.ERR_Success`(0) 表示成功，非0表示失败
+9. **日志管理**: 日志目录是Logs，测试前请删除，方便查找问题，All.log是整个用例的日志
+10. **代码复用**: 写用例时应该尽量调用客户端跟服务端已有的代码
+11. **结果验证**: 测试用例要检查返回的数据或者客户端的数据是否与预期一致，如果与预期不一致需要抛出异常或返回非0值
+12. **日志检查**: 测试跑成功后，应该去检查All.log，看日志是否与预期一致
+13. **结果判断**: 看到输出 `success` 则表示用例成功，看到 `fail` 则表示失败
+14. **数据清理**: 测试用例的数据不需要清理，每个测试用例都是独立的环境
+
+### 测试用例示例
+
+```csharp
+using ET.Client;
+
+namespace ET.Test
+{
+    // 注意：ATestHandler父类已有[Test]特性，子类无需重复添加
+    public class Test_CreateRobot_Test: ATestHandler
+    {
+        protected override async ETTask<int> Run(Fiber fiber, TestArgs args)
+        {
+            // 创建机器人Fiber
+            Fiber robot = await fiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.Robot, nameof(Test_CreateRobot_Test));
+            
+            // 获取地图名称
+            string mapName = robot.Root.CurrentScene().Name;
+            
+            // 获取地图Fiber
+            Fiber map = fiber.GetFiber("MapManager").GetFiber(mapName);
+            if (map == null)
+            {
+                Log.Error($"not found robot map {mapName}");
+                return ErrorCode.ERR_NotFoundMap;
+            }
+            
+            // 获取客户端Unit的Id
+            Client.PlayerComponent playerComponent = robot.Root.GetComponent<Client.PlayerComponent>();
+            
+            // 获取服务端Unit
+            Unit serverUnit = map.Root.GetComponent<UnitComponent>().Get(playerComponent.MyId);
+            if (serverUnit == null)
+            {
+                Log.Error($"not found server unit");
+                return ErrorCode.ERR_NotFoundUnit;
+            }
+            
+            return ErrorCode.ERR_Success;
+        }
+    }
+}
+```
+
+更多信息请参考：[`Packages/cn.etetet.test/README.md`](Packages/cn.etetet.test/README.md)
 
 ## 常见错误避免
 

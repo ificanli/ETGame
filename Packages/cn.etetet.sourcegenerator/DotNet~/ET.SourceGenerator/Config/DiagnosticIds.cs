@@ -77,5 +77,7 @@
         public const string CoroutineLockUsingAnalyzerRuleId = "ET0034";
 
         public const string CoroutineLockDisposeAnalyzerRuleId = "ET0035";
+
+        public const string TestCaseNamingAnalyzerRuleId = "ET0036";
     }
 }

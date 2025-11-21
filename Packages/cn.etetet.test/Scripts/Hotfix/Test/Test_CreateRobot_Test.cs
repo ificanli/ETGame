@@ -1,16 +1,13 @@
-using System.Threading;
 using ET.Client;
-using ET.Server;
 
 namespace ET.Test
 {
-    [Test(PackageType.Test)]
-    public class Test_CreateRobot: ATestHandler
+    public class Test_CreateRobot_Test: ATestHandler
     {
         protected override async ETTask<int> Run(Fiber fiber, TestArgs args)
         {
             // robotcase可以直接用subfiber，这样最简单，可以直接拿到机器人的Fiber操作机器人数据，不需要使用消息通信
-            Fiber robot = await fiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.Robot, "Test_CreateRobot");
+            Fiber robot = await fiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.Robot, nameof(Test_CreateRobot_Test));
             // robotcase可以直接用subfiber，这样最简单，可以直接拿到机器人的Fiber操作机器人数据，不需要使用消息通信
             // 直接访问服务器的数据，直接设置数据
             string mapName = robot.Root.CurrentScene().Name;
