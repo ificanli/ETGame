@@ -34,16 +34,16 @@ namespace ET.Test
                         int ret = await testHandler.Handle(new TestContext() { Fiber = fiber, Args = options });
                         if (ret == 0)
                         {
-                            Log.Console($"{testName} success");
+                            Log.Console($"\u001b[32m{testName} success\u001b[0m");
                         }
                         else
                         {
-                            Log.Console($"{testName} fail! ret: {ret}");
+                            Log.Console($"\u001b[31m{testName} fail! ret: {ret}\u001b[0m");
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Console($"{testName} fail!\n{e}");
+                        Log.Console($"\u001b[31m{testName} fail!\n{e}\u001b[0m");
                     }
                 }
             }

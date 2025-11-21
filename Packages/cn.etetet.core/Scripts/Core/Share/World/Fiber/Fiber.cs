@@ -98,7 +98,7 @@ namespace ET
                 this.Log = parent.Log;
                 // 注意调度是Parent的纤程，同步上下文必须是父亲的同步上下文
                 // 因为父亲有可能会调用其方法，如果同步上下文不一样则父亲调用的上下文会发生改变
-                // 比如RobotCase_001中，父亲会调用创建出来的子Fiber的发送消息方法，那么子fiber等call回来之后，当前上下文变成了子fiber的了
+                // 比如Test_CreateRobot_Test中，父亲会调用创建出来的子Fiber的发送消息方法，那么子fiber等call回来之后，当前上下文变成了子fiber的了
                 // 这样导致父亲在调用前的上下文跟调用后的上下文发生了改变
                 this.ThreadSynchronizationContext = parent.ThreadSynchronizationContext;
             }
