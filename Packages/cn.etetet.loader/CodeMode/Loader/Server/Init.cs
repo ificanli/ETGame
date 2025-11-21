@@ -14,18 +14,16 @@ namespace ET
                     Log.Error(e.ExceptionObject.ToString());
                 };
 
-                if (Options.Instance == null)
-                {
-                    // 命令行参数
-                    Parser.Default.ParseArguments<Options>(System.Environment.GetCommandLineArgs())
-                            .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
-                            .WithParsed((o) => World.Instance.AddSingleton(o));
-                }
+                // 命令行参数
+                Parser.Default.ParseArguments<Options>(System.Environment.GetCommandLineArgs())
+                        .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
+                        .WithParsed((o) => World.Instance.AddSingleton(o));
 
                 // 测试用例使用单线程模式，方便重置测试环境
                 if (Options.Instance.SceneName == "Test")
                 {
                     Options.Instance.SingleThread = 1;
+                    Options.Instance.Console = 1;
                 }
 				
                 World.Instance.AddSingleton<Logger>().Log = new NLogger(Options.Instance.SceneName);
