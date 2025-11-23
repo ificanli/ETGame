@@ -35,8 +35,8 @@ namespace ET.Server
                         output[configType] = File.ReadAllText(configFilePath);
                         break;
                     case ConfigType.Bson:
-                        configFilePath = Path.Combine($"Packages/cn.etetet.wow/Bundles/Bson/{configType.Name}.bytes");
-                        output[configType] = File.ReadAllBytes(configFilePath);
+                        configFilePath = Path.Combine($"Packages/cn.etetet.wow/Bundles/Json/{configType.Name}.txt");
+                        output[configType] = File.ReadAllText(configFilePath);
                         break;
                 }
             }

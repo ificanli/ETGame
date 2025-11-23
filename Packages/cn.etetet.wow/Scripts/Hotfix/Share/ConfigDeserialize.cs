@@ -28,7 +28,7 @@ namespace ET
     {
         public override object Handle(ConfigDeserialize args)
         {
-            return MongoHelper.Deserialize(args.Type, (byte[])args.ConfigBytes);
+            return MongoHelper.FromJson(args.Type, (string)args.ConfigBytes);
         }
     }
 }

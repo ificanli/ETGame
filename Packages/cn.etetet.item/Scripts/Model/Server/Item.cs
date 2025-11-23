@@ -4,7 +4,7 @@ namespace ET.Server
     /// 物品实体
     /// </summary>
     [ChildOf]
-    public class Item: Entity, IAwake, IDestroy
+    public class Item: Entity, IAwake, IDestroy, ISerializeToEntity
     {
         /// <summary>
         /// 物品配置ID

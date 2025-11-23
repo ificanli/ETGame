@@ -16,6 +16,10 @@
     public struct AfterCreateCurrentScene
     {
     }
+    
+    public struct AppStartInit
+    {
+    }
 
     public struct AppStartInitFinish
     {

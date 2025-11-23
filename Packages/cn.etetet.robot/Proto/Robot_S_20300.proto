@@ -14,3 +14,18 @@ message Console2Robot_LogoutResponse // IResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+// ResponseType Robot_LoginResponse
+message Robot_LoginRequest // IRequest
+{
+	int32 RpcId = 1;
+	string Account = 2;
+	string Password = 3;
+}
+
+message Robot_LoginResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}

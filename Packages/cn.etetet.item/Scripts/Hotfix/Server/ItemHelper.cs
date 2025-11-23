@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace ET.Server
@@ -24,20 +25,18 @@ namespace ET.Server
         /// <param name="count">物品数量</param>
         /// <param name="reason">道具变化原因</param>
         /// <returns>是否添加成功</returns>
-        public static bool AddItem(ItemComponent self, int configId, int count, ItemChangeReason reason)
+        public static void AddItem(ItemComponent self, int configId, int count, ItemChangeReason reason)
         {
             if (count <= 0)
             {
-                Log.Error("invalid item count");
-                return false;
+                throw new Exception("invalid item count");
             }
 
             ItemConfigCategory itemConfigCategory = ItemConfigCategory.Instance;
             ItemConfig itemConfig = itemConfigCategory.Get(configId);
             if (itemConfig == null)
             {
-                Log.Error($"item config not found: {configId}");
-                return false;
+                throw new Exception($"item config not found: {configId}");
             }
 
             Log.Debug($"add item: configId={configId}, count={count}, reason={reason}");
@@ -78,8 +77,7 @@ namespace ET.Server
                 int slotIndex = self.FindEmptySlot();
                 if (slotIndex < 0)
                 {
-                    Log.Error("bag is full");
-                    return false;
+                    throw new Exception("bag is full");
                 }
 
                 int addCount = System.Math.Min(remainCount, maxStack);
@@ -101,8 +99,6 @@ namespace ET.Server
                     NotifyItemUpdate(self, item);
                 }
             }
-
-            return true;
         }
 
         /// <summary>

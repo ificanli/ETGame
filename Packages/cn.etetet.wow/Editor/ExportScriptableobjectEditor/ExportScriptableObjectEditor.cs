@@ -9,7 +9,7 @@ namespace ET.Client
 {
     public static class ExportScriptableObjectEditor
     {
-        private const string ExportPath = "Packages/cn.etetet.wow/Bundles/Bson";
+        private const string ExportPath = "Packages/cn.etetet.wow/Bundles/Json";
         
         [MenuItem("ET/WOW/ExportScriptableObject")]
         public static void ExportScriptableObject()
@@ -42,7 +42,7 @@ namespace ET.Client
 
                         try
                         {
-                            spellScriptableObject.SpellConfig.ToBson();
+                            spellScriptableObject.SpellConfig.ToJson();
                         }
                         catch (Exception e)
                         {
@@ -62,7 +62,7 @@ namespace ET.Client
                         
                         try
                         {
-                            buffScriptableObject.BuffConfig.ToBson();
+                            buffScriptableObject.BuffConfig.ToJson();
                         }
                         catch (Exception e)
                         {
@@ -82,7 +82,7 @@ namespace ET.Client
                         
                         try
                         {
-                            aiScriptableObject.AIConfig.ToBson();
+                            aiScriptableObject.AIConfig.ToJson();
                         }
                         catch (Exception e)
                         {
@@ -104,9 +104,9 @@ namespace ET.Client
                 Directory.CreateDirectory(ExportPath);
             }
             
-            File.WriteAllBytes(Path.Combine(ExportPath, "SpellConfigCategory.bytes"), spellConfigCategory.ToBson());
-            File.WriteAllBytes(Path.Combine(ExportPath, "BuffConfigCategory.bytes"), buffConfigCategory.ToBson());
-            File.WriteAllBytes(Path.Combine(ExportPath, "AIConfigCategory.bytes"), aiConfigCategory.ToBson());
+            File.WriteAllText(Path.Combine(ExportPath, "SpellConfigCategory.txt"), spellConfigCategory.ToJson());
+            File.WriteAllText(Path.Combine(ExportPath, "BuffConfigCategory.txt"), buffConfigCategory.ToJson());
+            File.WriteAllText(Path.Combine(ExportPath, "AIConfigCategory.txt"), aiConfigCategory.ToJson());
             
             Debug.Log("Export ScriptableObject OK!");
         }

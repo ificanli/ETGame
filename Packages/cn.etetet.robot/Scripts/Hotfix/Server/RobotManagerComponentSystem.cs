@@ -39,7 +39,13 @@
         public static async ETTask<int> NewRobot(this RobotManagerComponent self, SchedulerType schedulerType, string account)
         {
             EntityRef<RobotManagerComponent> selfRef = self;
-            int robot = await self.Fiber().CreateFiber(schedulerType, IdGenerater.Instance.GenerateId(), 0, SceneType.Robot, account);
+            int robot = await self.Fiber().CreateFiber(schedulerType, IdGenerater.Instance.GenerateId(), 0, SceneType.Client, account);
+            self = selfRef;
+            ProcessInnerSender processInnerSender = self.Root().GetComponent<ProcessInnerSender>();
+            Robot_LoginRequest robotLoginRequest = Robot_LoginRequest.Create();
+            robotLoginRequest.Account = account;
+            robotLoginRequest.Password = "";
+            await processInnerSender.Call(new FiberInstanceId(robot, 1), robotLoginRequest);
             self = selfRef;
             self.robots.Add(account, robot);
             return robot;

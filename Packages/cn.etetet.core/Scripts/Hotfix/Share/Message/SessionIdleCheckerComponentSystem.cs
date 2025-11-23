@@ -39,7 +39,7 @@ namespace ET
 
         private const int CheckInteral = 2000;
 
-#if UNITY_EDITOR && DEBUG
+#if UNITY_EDITOR || DEBUG
         public const int SessionTimeoutTime = 400000;
 #else
         public const int SessionTimeoutTime = 40000;

@@ -16,8 +16,6 @@ namespace ET
         
         public static void Init()
         {
-
-            
             // 清理老的数据
             MethodInfo createSerializerRegistry = typeof (BsonSerializer).GetMethod("CreateSerializerRegistry", BindingFlags.Static | BindingFlags.NonPublic);
             createSerializerRegistry.Invoke(null, Array.Empty<object>());
@@ -29,7 +27,6 @@ namespace ET
             
             BsonSerializer.RegisterSerializer(typeof(ComponentsCollection), new BsonComponentsCollectionSerializer());
             BsonSerializer.RegisterSerializer(typeof(ChildrenCollection), new BsonChildrenCollectionSerializer());
-            
             
             // 自动注册IgnoreExtraElements
             ConventionPack conventionPack = new() { new IgnoreExtraElementsConvention(true) };
@@ -47,24 +44,36 @@ namespace ET
             //RegisterStruct<TSQuaternion>();
             //RegisterStruct<LSInput>();
 
-            Dictionary<string, Type> types = CodeTypes.Instance?.GetTypes();
-            if (types != null)
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                foreach (Type type in types.Values)
+                foreach (Type type in assembly.GetTypes())
                 {
-                    if (!type.IsSubclassOf(typeof(Object)))
-                    {
-                        continue;
-                    }
-
-                    if (type.IsGenericType)
-                    {
-                        continue;
-                    }
-
-                    BsonClassMap.LookupClassMap(type);
+                    RegisterClass(type);
                 }
             }
+        }
+
+        private static void RegisterClass(Type type)
+        {
+            if (!type.IsSubclassOf(typeof(Object)))
+            {
+                return;
+            }
+
+            if (type.IsGenericType)
+            {
+                return;
+            }
+
+            if (BsonClassMap.IsClassMapRegistered(type))
+            {
+                return;
+            }
+
+            BsonClassMap cm = new(type);
+            cm.AutoMap();
+            cm.SetDiscriminator(type.FullName);
+            BsonClassMap.RegisterClassMap(cm);
         }
     }
 }

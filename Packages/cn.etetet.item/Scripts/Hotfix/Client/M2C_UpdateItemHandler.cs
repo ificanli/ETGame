@@ -9,14 +9,14 @@ namespace ET.Client
         protected override async ETTask Run(Scene scene, M2C_UpdateItem message)
         {
             ItemComponent itemComponent = scene.GetComponent<ItemComponent>();
-            if (itemComponent == null)
-            {
-                Log.Error("ItemComponent not found in scene");
-                return;
-            }
 
             // 更新物品数据
             itemComponent.UpdateItem(message.ItemId, message.SlotIndex, message.ConfigId, message.Count);
+            
+            scene.GetComponent<ObjectWait>().Notify(new Wait_M2C_UpdateItem()
+            {
+                M2C_UpdateItem = message,
+            });
             
             await ETTask.CompletedTask;
         }

@@ -22,6 +22,19 @@ namespace ET.Server
         {
             self.SlotItems.Clear();
         }
+        
+        [EntitySystem]
+        private static void Deserialize(this ItemComponent self)
+        {
+            EnsureSlotContainerSize(self, self.Capacity);
+            foreach (var kv in self.Children)
+            {
+                if (kv.Value is Item item)
+                {
+                    self.SlotItems[item.SlotIndex] = item;
+                }
+            }
+        }
 
         #endregion
 
