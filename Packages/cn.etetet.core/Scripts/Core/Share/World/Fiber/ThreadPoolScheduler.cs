@@ -26,9 +26,11 @@ namespace ET
             }
         }
 
-        public void Update()
+        private void Update()
         {
             int count = 0;
+            int threadId = Environment.CurrentManagedThreadId;
+            
             while (true)
             {
                 if (count <= 0)
@@ -61,7 +63,7 @@ namespace ET
                     continue;
                 }
 
-                fiber.ThreadId = Environment.CurrentManagedThreadId;
+                fiber.ThreadId = threadId;
                 fiber.Update();
                 fiber.LateUpdate();
                 fiber.ThreadId = 0;
