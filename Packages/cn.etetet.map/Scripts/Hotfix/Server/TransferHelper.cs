@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using MongoDB.Bson;
 
 namespace ET.Server
@@ -80,30 +81,52 @@ namespace ET.Server
             // 先从AOI中移除
             unit = unitRef;
             unit.RemoveComponent<AOIEntity>();
-            
-            //3. 拼装消息
+
+            ActorId newActorId = default;
             M2M_UnitTransferRequest request = M2M_UnitTransferRequest.Create();
             request.OldActorId = oldActorId;
-            request.Unit = unit.ToBson();
             request.ChangeScene = changeScene;
-            foreach (Entity entity in unit.Components.Values)
-            {
-                if (entity is ITransfer)
-                {
-                    request.Entitys.Add(entity.ToBson());
-                }
-            }
-            unit.Dispose();
             
+            // 同一个进程
+            if (mapActorId.Address == AddressSingleton.Instance.InnerAddress)
+            {
+                foreach (Entity entity in unit.Components.Values.ToArray())
+                {
+                    if (entity is not ITransfer)
+                    {
+                        unit.RemoveComponent(entity.GetType());
+                    }
+                }
+                
+                request.Unit = unit;
+                
+                // 这里需要移除Unit，但是不能Dispose，里面会把Unit部分数据Reset
+                unit.GetParent<UnitComponent>().Remove(unit.Id, false);
+            }
+            else // 不同进程
+            {
+                //3. 拼装消息
+                request.UnitBytes = unit.ToBson();
+                foreach (Entity entity in unit.Components.Values)
+                {
+                    if (entity is ITransfer)
+                    {
+                        request.EntityBytes.Add(entity.ToBson());
+                    }
+                }
+                unit.GetParent<UnitComponent>().Remove(unit.Id);
+            }
+
             Log.Debug("start transfer2 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
             //4. 传送到副本
             root = rootRef;
             M2M_UnitTransferResponse response = await root.GetComponent<MessageSender>().Call(mapActorId, request) as M2M_UnitTransferResponse;
-            
+            newActorId = response.NewActorId;
             Log.Debug("start transfer3 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
+
             root = rootRef;
             //5. 解锁location，可以接收发给Unit的消息
-            await root.GetComponent<LocationProxyComponent>().UnLock(LocationType.Unit, unitId, oldActorId, response.NewActorId);
+            await root.GetComponent<LocationProxyComponent>().UnLock(LocationType.Unit, unitId, oldActorId, newActorId);
             
             Log.Debug("start transfer4 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
         }

@@ -9,15 +9,25 @@ namespace ET.Server
         protected override async ETTask Run(Scene scene, M2M_UnitTransferRequest request, M2M_UnitTransferResponse response)
         {
             UnitComponent unitComponent = scene.GetComponent<UnitComponent>();
-            Unit unit = MongoHelper.Deserialize<Unit>(request.Unit);
 
-            unitComponent.AddChild(unit);
-            unitComponent.Add(unit);
-
-            foreach (byte[] bytes in request.Entitys)
+            Unit unit = request.Unit;
+            if (unit != null)  // 黑科技，直接传送Unit对象
             {
-                Entity entity = MongoHelper.Deserialize<Entity>(bytes);
-                unit.AddComponent(entity);
+                unitComponent.AddChild(unit);
+                unitComponent.Add(unit);
+            }
+            else
+            {
+                unit = MongoHelper.Deserialize<Unit>(request.UnitBytes);
+
+                unitComponent.AddChild(unit);
+                unitComponent.Add(unit);
+
+                foreach (byte[] bytes in request.EntityBytes)
+                {
+                    Entity entity = MongoHelper.Deserialize<Entity>(bytes);
+                    unit.AddComponent(entity);
+                }
             }
 
             unit.AddComponent<TurnComponent>();

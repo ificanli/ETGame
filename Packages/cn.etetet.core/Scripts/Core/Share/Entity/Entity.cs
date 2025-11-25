@@ -212,7 +212,7 @@ namespace ET
                         return;
                     }
 
-                    this.parent.RemoveChildNoDispose(this);
+                    this.parent.RemoveChild(this.Id, false);
                 }
 
                 this.parent = value;
@@ -276,7 +276,7 @@ namespace ET
                         return;
                     }
 
-                    this.parent.RemoveComponentNoDispose(this);
+                    this.parent.RemoveComponent(this.GetType(), false);
                 }
 
                 this.parent = value;
@@ -392,22 +392,24 @@ namespace ET
             this.Children.Add(entity.Id, entity);
         }
 
-        public void RemoveChildNoDispose(Entity entity)
+        private void Reset()
         {
-            if (this.children == null)
+            this.InstanceId = 0;
+            this.iScene = null;
+            if (this.children != null)
             {
-                return;
+                foreach (var kv in this.children)
+                {
+                    kv.Value.Reset();
+                }
             }
 
-            if (!this.children.Remove(entity.Id))
+            if (this.components != null)
             {
-                return;
-            }
-
-            if (this.children.Count == 0)
-            {
-                this.children.Dispose();
-                this.children = null;
+                foreach (var kv in this.components)
+                {
+                    kv.Value.Reset();
+                }   
             }
         }
 
@@ -490,11 +492,11 @@ namespace ET
             {
                 if (this.IsComponent)
                 {
-                    this.parent.RemoveComponentNoDispose(this);
+                    this.parent.RemoveComponent(this.GetType(), false);
                 }
                 else
                 {
-                    this.parent.RemoveChildNoDispose(this);
+                    this.parent.RemoveChild(this.Id, false);
                 }
             }
 
@@ -515,25 +517,6 @@ namespace ET
             this.Components.Add(component.GetLongHashCode(), component);
         }
 
-        public void RemoveComponentNoDispose(Entity component)
-        {
-            if (this.components == null)
-            {
-                return;
-            }
-
-            if (!this.components.Remove(component.GetLongHashCode()))
-            {
-                return;
-            }
-
-            if (this.components.Count == 0)
-            {
-                this.components.Dispose();
-                this.components = null;
-            }
-        }
-
         public K GetChild<K>(long id) where K : Entity
         {
             if (this.children == null)
@@ -545,7 +528,7 @@ namespace ET
             return child as K;
         }
 
-        public bool RemoveChild(long id)
+        public bool RemoveChild(long id, bool isDispose = true)
         {
             if (this.children == null)
             {
@@ -562,12 +545,20 @@ namespace ET
                 this.children.Dispose();
                 this.children = null;
             }
-            
-            child.Dispose();
+
+            if (isDispose)
+            {
+                child.Dispose();
+            }
+            else
+            {
+                child.Reset();
+            }
+
             return true;
         }
 
-        public void RemoveComponent<K>() where K : Entity
+        public void RemoveComponent<K>(bool isDispose = true) where K : Entity
         {
             if (this.IsDisposed)
             {
@@ -581,13 +572,22 @@ namespace ET
 
             Type type = typeof (K);
 
-            if (this.components.Remove(this.GetComponentLongHashCode(type), out Entity c))
+            if (!this.components.Remove(this.GetComponentLongHashCode(type), out Entity c))
+            {
+                return;
+            }
+
+            if (isDispose)
             {
                 c.Dispose();
             }
+            else
+            {
+                c.Reset();
+            }
         }
 
-        public void RemoveComponent(Type type)
+        public void RemoveComponent(Type type, bool isDispose = true)
         {
             if (this.IsDisposed)
             {
@@ -599,9 +599,18 @@ namespace ET
                 return;
             }
 
-            if (this.components.Remove(this.GetComponentLongHashCode(type), out Entity c))
+            if (!this.components.Remove(this.GetComponentLongHashCode(type), out Entity c))
+            {
+                return;
+            }
+
+            if (isDispose)
             {
                 c.Dispose();
+            }
+            else
+            {
+                c.Reset();
             }
         }
 

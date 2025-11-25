@@ -46,6 +46,9 @@ namespace ET
                 return;
             }
 
+            // 检查是否实现了IEntityMessage接口，如果实现了则允许引用Entity
+            bool isEntityMessage = namedTypeSymbol.HasInterface(Definition.IEntityMessageInterface);
+
             foreach (var member in namedTypeSymbol.GetMembers())
             {
                 ITypeSymbol? memberType = null;
@@ -64,6 +67,12 @@ namespace ET
                 }
 
                 if (!memberType.IsETEntity())
+                {
+                    continue;
+                }
+
+                // 如果实现了IEntityMessage接口，则允许引用Entity
+                if (isEntityMessage)
                 {
                     continue;
                 }

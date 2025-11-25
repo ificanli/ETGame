@@ -17,12 +17,12 @@ message A2M_Reload // IResponse
 
 
 // ResponseType M2M_UnitTransferResponse
-message M2M_UnitTransferRequest // IRequest
+message M2M_UnitTransferRequest // IRequest, IEntityMessage
 {
 	int32 RpcId = 1;
 	ActorId OldActorId = 2;
-	bytes Unit = 3;
-	repeated bytes Entitys = 4;
+	bytes UnitBytes = 3;
+	repeated bytes EntityBytes = 4;
 	bool ChangeScene = 5;
 }
 

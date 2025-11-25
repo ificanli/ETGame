@@ -47,8 +47,21 @@ namespace ET
                 return;
 
             var containingType = context.Symbol.ContainingType;
+            
+            // 如果包含类型本身就是 IEntityMessage 接口，则跳过检查
+            if (containingType != null && containingType.TypeKind == TypeKind.Interface &&
+                containingType.Name == "IEntityMessage" && containingType.ContainingNamespace?.ToString() == "ET")
+            {
+                return;
+            }
             bool isInSingleton = containingType != null && IsSingletonOrDerived(containingType);
             if (containingType != null && IsEntityRef(containingType))
+            {
+                return;
+            }
+
+            // 如果包含类型实现了 IEntityMessage 接口，则允许引用 Entity
+            if (containingType != null && ImplementsIEntityMessage(containingType))
             {
                 return;
             }
@@ -186,6 +199,22 @@ namespace ET
                 return ContainsEntityRef(arrayType.ElementType);
             if (symbol is INamedTypeSymbol named && named.IsGenericType)
                 return named.TypeArguments.Any(arg => ContainsEntityRef(arg));
+            return false;
+        }
+
+        // 判断类型是否实现了 IEntityMessage 接口
+        private static bool ImplementsIEntityMessage(ITypeSymbol symbol)
+        {
+            if (symbol == null)
+                return false;
+
+            // 检查所有接口
+            foreach (var iface in symbol.AllInterfaces)
+            {
+                if (iface.Name == "IEntityMessage" && iface.ContainingNamespace?.ToString() == "ET")
+                    return true;
+            }
+
             return false;
         }
     }

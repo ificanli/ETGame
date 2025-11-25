@@ -12,10 +12,9 @@
 			return unit;
 		}
 
-		public static void Remove(this UnitComponent self, long id)
+		public static void Remove(this UnitComponent self, long id, bool isDispose = true)
 		{
-			Unit unit = self.GetChild<Unit>(id);
-			unit?.Dispose();
+			self.RemoveChild(id, isDispose);
 		}
 	}
 }

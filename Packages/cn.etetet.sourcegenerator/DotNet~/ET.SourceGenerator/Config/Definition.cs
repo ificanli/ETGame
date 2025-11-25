@@ -87,6 +87,8 @@ namespace ET
 
         public const string IMessageInterface = "ET.IMessage";
 
+        public const string IEntityMessageInterface = "ET.IEntityMessage";
+
         public const string EntityRefType = "EntityRef";
         
         public const string EntityWeakRefType = "EntityWeakRef";

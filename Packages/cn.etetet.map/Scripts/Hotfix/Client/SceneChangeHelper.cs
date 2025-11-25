@@ -10,7 +10,6 @@
             EntityRef<CurrentScenesComponent> currentScenesComponentRef = currentScenesComponent;
             
             bool changeScene = TransferSceneHelper.IsChangeScene(currentScenesComponent.Scene?.Name, sceneName);
-            
             if (changeScene)
             {
                 // 先卸载当前场景
@@ -19,24 +18,19 @@
                 currentScene.AddComponent<UnitComponent>();
                 await WaitUnitCreateFinish(root, currentScenesComponent.Scene);
             }
-
             root = rootRef;
             EventSystem.Instance.Publish(root, new SceneChangeStart() {ChangeScene = changeScene});          // 可以订阅这个事件中创建Loading界面
-
             if (changeScene)
             {
                 // 加载场景寻路数据
                 await NavmeshComponent.Instance.Load(sceneName.GetSceneConfigName());
             }
-            
             root = rootRef;
             EventSystem.Instance.Publish(root, new SceneChangeFinish());
-            
             using var _ = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
             // 通知等待场景切换的协程
             root = rootRef;
             root.GetComponent<ObjectWait>().Notify(new Wait_SceneChangeFinish());
-
             currentScenesComponent = currentScenesComponentRef;
             currentScenesComponent.Progress = 100;
         }

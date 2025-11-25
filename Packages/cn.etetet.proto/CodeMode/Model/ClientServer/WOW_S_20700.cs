@@ -61,7 +61,7 @@ namespace ET
     [MemoryPackable]
     [Message(Opcode.M2M_UnitTransferRequest)]
     [ResponseType(nameof(M2M_UnitTransferResponse))]
-    public partial class M2M_UnitTransferRequest : MessageObject, IRequest
+    public partial class M2M_UnitTransferRequest : MessageObject, IRequest, IEntityMessage
     {
         public static M2M_UnitTransferRequest Create(bool isFromPool = false)
         {
@@ -73,9 +73,9 @@ namespace ET
         [MemoryPackOrder(1)]
         public ActorId OldActorId { get; set; }
         [MemoryPackOrder(2)]
-        public byte[] Unit { get; set; }
+        public byte[] UnitBytes { get; set; }
         [MemoryPackOrder(3)]
-        public List<byte[]> Entitys { get; set; } = new();
+        public List<byte[]> EntityBytes { get; set; } = new();
 
         [MemoryPackOrder(4)]
         public bool ChangeScene { get; set; }
@@ -88,8 +88,8 @@ namespace ET
 
             this.RpcId = default;
             this.OldActorId = default;
-            this.Unit = default;
-            this.Entitys.Clear();
+            this.UnitBytes = default;
+            this.EntityBytes.Clear();
             this.ChangeScene = default;
 
             ObjectPool.Recycle(this);

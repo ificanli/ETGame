@@ -70,7 +70,7 @@ namespace ET.Server
                     item.SlotIndex = -1;
                 }
                 item.RemoveComponent<EquipmentItemComponent>();
-                self.RemoveChildNoDispose(item);
+                self.RemoveChild(item.Id, false);
                 self.EquippedItems.Remove(slotType);
             }
         }
