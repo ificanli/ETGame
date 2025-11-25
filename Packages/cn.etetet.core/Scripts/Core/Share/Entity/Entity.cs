@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 using MemoryPack;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -519,6 +521,8 @@ namespace ET
 
         public K GetChild<K>(long id) where K : Entity
         {
+            this.CheckThread();
+            
             if (this.children == null)
             {
                 return null;
@@ -530,6 +534,8 @@ namespace ET
 
         public bool RemoveChild(long id, bool isDispose = true)
         {
+            this.CheckThread();
+            
             if (this.children == null)
             {
                 return false;
@@ -560,6 +566,8 @@ namespace ET
 
         public void RemoveComponent<K>(bool isDispose = true) where K : Entity
         {
+            this.CheckThread();
+            
             if (this.IsDisposed)
             {
                 return;
@@ -589,6 +597,8 @@ namespace ET
 
         public void RemoveComponent(Type type, bool isDispose = true)
         {
+            this.CheckThread();
+            
             if (this.IsDisposed)
             {
                 return;
@@ -614,8 +624,20 @@ namespace ET
             }
         }
 
+        [Conditional("DEBUG")]
+        private void CheckThread()
+        {
+            Fiber fiber = this.IScene.Fiber;
+            if (fiber.ThreadId != Environment.CurrentManagedThreadId)
+            {
+                throw new Exception($"Fiber {fiber.Id} {fiber.Name} is not in fiber thread {fiber.ThreadId} {Environment.CurrentManagedThreadId}");
+            }
+        }
+
         public K GetComponent<K>() where K : Entity
         {
+            this.CheckThread();
+            
             if (this.components == null)
             {
                 return null;
@@ -638,6 +660,8 @@ namespace ET
 
         public Entity GetComponent(Type type)
         {
+            this.CheckThread();
+            
             if (this.components == null)
             {
                 return null;
@@ -671,6 +695,8 @@ namespace ET
 
         public Entity AddComponent(Entity component)
         {
+            this.CheckThread();
+            
             Type type = component.GetType();
             if (this.components != null && this.components.ContainsKey(this.GetComponentLongHashCode(type)))
             {
@@ -684,6 +710,8 @@ namespace ET
 
         public Entity AddComponent(Type type, bool isFromPool = false)
         {
+            this.CheckThread();
+            
             if (this.components != null && this.components.ContainsKey(this.GetComponentLongHashCode(type)))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
@@ -700,6 +728,8 @@ namespace ET
 
         public K AddComponentWithId<K>(long id, bool isFromPool = false) where K : Entity, IAwake, new()
         {
+            this.CheckThread();
+            
             Type type = typeof (K);
             if (this.components != null && this.components.ContainsKey(this.GetComponentLongHashCode(type)))
             {
@@ -717,6 +747,8 @@ namespace ET
 
         public K AddComponentWithId<K, P1>(long id, P1 p1, bool isFromPool = false) where K : Entity, IAwake<P1>, new()
         {
+            this.CheckThread();
+            
             Type type = typeof (K);
             if (this.components != null && this.components.ContainsKey(this.GetComponentLongHashCode(type)))
             {
@@ -734,6 +766,8 @@ namespace ET
 
         public K AddComponentWithId<K, P1, P2>(long id, P1 p1, P2 p2, bool isFromPool = false) where K : Entity, IAwake<P1, P2>, new()
         {
+            this.CheckThread();
+            
             Type type = typeof (K);
             if (this.components != null && this.components.ContainsKey(this.GetComponentLongHashCode(type)))
             {
@@ -751,6 +785,8 @@ namespace ET
 
         public K AddComponentWithId<K, P1, P2, P3>(long id, P1 p1, P2 p2, P3 p3, bool isFromPool = false) where K : Entity, IAwake<P1, P2, P3>, new()
         {
+            this.CheckThread();
+            
             Type type = typeof (K);
             if (this.components != null && this.components.ContainsKey(this.GetComponentLongHashCode(type)))
             {
@@ -794,6 +830,8 @@ namespace ET
 
         public T AddChild<T>(bool isFromPool = false) where T : Entity, IAwake
         {
+            this.CheckThread();
+            
             Type type = typeof (T);
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
@@ -805,6 +843,8 @@ namespace ET
 
         public T AddChild<T, A>(A a, bool isFromPool = false) where T : Entity, IAwake<A>
         {
+            this.CheckThread();
+            
             Type type = typeof (T);
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
@@ -816,6 +856,8 @@ namespace ET
 
         public T AddChild<T, A, B>(A a, B b, bool isFromPool = false) where T : Entity, IAwake<A, B>
         {
+            this.CheckThread();
+            
             Type type = typeof (T);
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
@@ -827,6 +869,8 @@ namespace ET
 
         public T AddChild<T, A, B, C>(A a, B b, C c, bool isFromPool = false) where T : Entity, IAwake<A, B, C>
         {
+            this.CheckThread();
+            
             Type type = typeof (T);
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
@@ -838,6 +882,8 @@ namespace ET
 
         public T AddChildWithId<T>(long id, bool isFromPool = false) where T : Entity, IAwake
         {
+            this.CheckThread();
+            
             Type type = typeof (T);
             T component = Entity.Create(type, isFromPool) as T;
             component.Id = id;
@@ -848,6 +894,8 @@ namespace ET
 
         public T AddChildWithId<T, A>(long id, A a, bool isFromPool = false) where T : Entity, IAwake<A>
         {
+            this.CheckThread();
+            
             Type type = typeof (T);
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = id;
@@ -859,6 +907,8 @@ namespace ET
 
         public T AddChildWithId<T, A, B>(long id, A a, B b, bool isFromPool = false) where T : Entity, IAwake<A, B>
         {
+            this.CheckThread();
+            
             Type type = typeof (T);
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = id;
@@ -870,6 +920,8 @@ namespace ET
 
         public T AddChildWithId<T, A, B, C>(long id, A a, B b, C c, bool isFromPool = false) where T : Entity, IAwake<A, B, C>
         {
+            this.CheckThread();
+            
             Type type = typeof (T);
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = id;

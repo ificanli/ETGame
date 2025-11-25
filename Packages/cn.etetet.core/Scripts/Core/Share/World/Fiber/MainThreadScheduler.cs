@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -9,6 +10,7 @@ namespace ET
         private readonly ConcurrentQueue<Fiber> fiberQueue = new();
         private readonly ConcurrentQueue<Fiber> addQueue = new();
 
+        private int ThreadId = Environment.CurrentManagedThreadId;
 
         public void Dispose()
         {
@@ -35,7 +37,7 @@ namespace ET
                     continue;
                 }
                 this.fiberQueue.Enqueue(fiber);
-                
+
                 fiber.Update();
             }
         }
@@ -61,6 +63,7 @@ namespace ET
 
                 this.fiberQueue.Enqueue(fiber);
                 
+                fiber.ThreadId = Environment.CurrentManagedThreadId;
                 fiber.LateUpdate();
             }
 
@@ -74,6 +77,7 @@ namespace ET
 
         public void AddToScheduler(Fiber fiber)
         {
+            fiber.ThreadId = this.ThreadId;
             this.addQueue.Enqueue(fiber);
         }
     }

@@ -15,6 +15,8 @@ namespace ET
         private void Update(Fiber fiber)
         {
             int fiberId = fiber.Id;
+            fiber.ThreadId = Environment.CurrentManagedThreadId;
+            
             while (true)
             {
                 if (this.isDisposed)
@@ -27,7 +29,7 @@ namespace ET
                     this.dictionary.Remove(fiberId, out _);
                     return;
                 }
-
+                
                 fiber.Update();
                 fiber.LateUpdate();
 

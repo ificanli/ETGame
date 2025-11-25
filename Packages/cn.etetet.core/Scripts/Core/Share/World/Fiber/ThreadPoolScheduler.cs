@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace ET
@@ -60,8 +61,10 @@ namespace ET
                     continue;
                 }
 
+                fiber.ThreadId = Environment.CurrentManagedThreadId;
                 fiber.Update();
                 fiber.LateUpdate();
+                fiber.ThreadId = 0;
                 
                 this.fiberQueue.Enqueue(fiber);
             }
