@@ -10,7 +10,7 @@ namespace ET
         private readonly ConcurrentQueue<Fiber> fiberQueue = new();
         private readonly ConcurrentQueue<Fiber> addQueue = new();
 
-        private int ThreadId = Environment.CurrentManagedThreadId;
+        private readonly int threadId = Environment.CurrentManagedThreadId;
 
         public void Dispose()
         {
@@ -77,7 +77,7 @@ namespace ET
 
         public void AddToScheduler(Fiber fiber)
         {
-            fiber.ThreadId = this.ThreadId;
+            fiber.ThreadId = this.threadId;
             this.addQueue.Enqueue(fiber);
         }
     }

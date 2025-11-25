@@ -15,8 +15,6 @@ namespace ET
         private void Update(Fiber fiber)
         {
             int fiberId = fiber.Id;
-            fiber.ThreadId = Environment.CurrentManagedThreadId;
-            
             while (true)
             {
                 if (this.isDisposed)
@@ -55,6 +53,9 @@ namespace ET
         public void AddToScheduler(Fiber fiber)
         {
             Thread thread = new(() => this.Update(fiber));
+            
+            fiber.ThreadId = thread.ManagedThreadId;
+            
             this.dictionary.TryAdd(fiber.Id, thread);
             thread.Start();
         }
