@@ -21,28 +21,28 @@
     "Name": "Router"
   },
   {
-    "Id": 4,
+    "Id": 14,
     "MachineId": 1,
     "Port": 0,
     "Num": 1,
     "Name": "Realm"
   },
   {
-    "Id": 5,
+    "Id": 15,
     "MachineId": 1,
     "Port": 0,
     "Num": 2,
     "Name": "Gate"
   },
   {
-    "Id": 6,
+    "Id": 25,
     "MachineId": 1,
     "Port": 0,
     "Num": 1,
     "Name": "Location"
   },
   {
-    "Id": 7,
+    "Id": 26,
     "MachineId": 1,
     "Port": 0,
     "Num": 1,

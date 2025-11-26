@@ -102,11 +102,12 @@ namespace ET
         public ushort GetProcessReplicaIndex()
         {
             // 因为改成了服务发现，支持一个进程多个副本，比如gate只需要配一个进程，可以支持多个,同一个Replica是同一个进程Id
-            if (Options.Instance.Process > 50)
+            // 需要预留出来Replica数量的进程Id
+            if (Options.Instance.Process > 50000)
             {
                 throw new Exception($"Process is too large: {Options.Instance.Process}");
             }
-            return (ushort)(Options.Instance.Process * 1000 + Options.Instance.ReplicaIndex);
+            return (ushort)(Options.Instance.Process + Options.Instance.ReplicaIndex);
         }
     }
 }
