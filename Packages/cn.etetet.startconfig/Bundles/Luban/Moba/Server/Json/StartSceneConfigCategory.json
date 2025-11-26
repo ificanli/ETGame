@@ -1,0 +1,66 @@
+[
+  {
+    "Id": 1,
+    "Process": 1,
+    "Zone": 1,
+    "SceneType": "ServiceDiscovery",
+    "Name": "ServiceDiscovery",
+    "Port": 0
+  },
+  {
+    "Id": 2,
+    "Process": 2,
+    "Zone": 1,
+    "SceneType": "RouterManager",
+    "Name": "RouterManager",
+    "Port": 10101
+  },
+  {
+    "Id": 3,
+    "Process": 3,
+    "Zone": 1,
+    "SceneType": "Router",
+    "Name": "Router",
+    "Port": 0
+  },
+  {
+    "Id": 1003,
+    "Process": 1003,
+    "Zone": 1,
+    "SceneType": "Realm",
+    "Name": "Realm",
+    "Port": 0
+  },
+  {
+    "Id": 1004,
+    "Process": 1004,
+    "Zone": 1,
+    "SceneType": "Gate",
+    "Name": "Gate",
+    "Port": 0
+  },
+  {
+    "Id": 2004,
+    "Process": 2004,
+    "Zone": 1,
+    "SceneType": "Location",
+    "Name": "Location",
+    "Port": 0
+  },
+  {
+    "Id": 2005,
+    "Process": 2005,
+    "Zone": 1,
+    "SceneType": "Match",
+    "Name": "Match",
+    "Port": 0
+  },
+  {
+    "Id": 3005,
+    "Process": 3005,
+    "Zone": 1,
+    "SceneType": "MapManager",
+    "Name": "MapManager",
+    "Port": 0
+  }
+]

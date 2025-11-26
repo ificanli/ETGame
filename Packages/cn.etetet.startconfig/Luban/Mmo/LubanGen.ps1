@@ -1,6 +1,6 @@
 # 设置变量
 $PACKAGE = "Packages/cn.etetet.startconfig"
-$CONFIG_NAME = "Localhost"
+$CONFIG_NAME = "Mmo"
 
 
 $WORKSPACE = "Packages/cn.etetet.yiuiluban"

@@ -1,0 +1,58 @@
+[
+  {
+    "Id": 1,
+    "MachineId": 1,
+    "Port": 40001,
+    "Num": 1,
+    "Name": "ServiceDiscovery"
+  },
+  {
+    "Id": 2,
+    "MachineId": 1,
+    "Port": 0,
+    "Num": 1,
+    "Name": "RouterManager"
+  },
+  {
+    "Id": 3,
+    "MachineId": 1,
+    "Port": 0,
+    "Num": 4,
+    "Name": "Router"
+  },
+  {
+    "Id": 1003,
+    "MachineId": 1,
+    "Port": 0,
+    "Num": 1,
+    "Name": "Realm"
+  },
+  {
+    "Id": 1004,
+    "MachineId": 1,
+    "Port": 0,
+    "Num": 2,
+    "Name": "Gate"
+  },
+  {
+    "Id": 2004,
+    "MachineId": 1,
+    "Port": 0,
+    "Num": 1,
+    "Name": "Location"
+  },
+  {
+    "Id": 2005,
+    "MachineId": 1,
+    "Port": 0,
+    "Num": 2,
+    "Name": "Match"
+  },
+  {
+    "Id": 3005,
+    "MachineId": 1,
+    "Port": 0,
+    "Num": 2,
+    "Name": "MapManager"
+  }
+]

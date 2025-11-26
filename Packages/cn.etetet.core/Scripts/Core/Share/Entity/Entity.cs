@@ -534,8 +534,6 @@ namespace ET
 
         public bool RemoveChild(long id, bool isDispose = true)
         {
-            this.CheckThread();
-            
             if (this.children == null)
             {
                 return false;
@@ -566,8 +564,6 @@ namespace ET
 
         public void RemoveComponent<K>(bool isDispose = true) where K : Entity
         {
-            this.CheckThread();
-            
             if (this.IsDisposed)
             {
                 return;
@@ -597,8 +593,6 @@ namespace ET
 
         public void RemoveComponent(Type type, bool isDispose = true)
         {
-            this.CheckThread();
-            
             if (this.IsDisposed)
             {
                 return;

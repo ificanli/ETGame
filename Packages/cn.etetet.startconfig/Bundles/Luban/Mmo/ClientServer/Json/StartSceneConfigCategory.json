@@ -1,0 +1,34 @@
+[
+  {
+    "Id": 1,
+    "Process": 1,
+    "Zone": 1,
+    "SceneType": "ServiceDiscovery",
+    "Name": "ServiceDiscovery",
+    "Port": 0
+  },
+  {
+    "Id": 2,
+    "Process": 2,
+    "Zone": 1,
+    "SceneType": "RouterManager",
+    "Name": "RouterManager",
+    "Port": 10101
+  },
+  {
+    "Id": 3,
+    "Process": 3,
+    "Zone": 1,
+    "SceneType": "Router",
+    "Name": "Router01",
+    "Port": 0
+  },
+  {
+    "Id": 1003,
+    "Process": 1003,
+    "Zone": 2,
+    "SceneType": "Game",
+    "Name": "Game",
+    "Port": 0
+  }
+]

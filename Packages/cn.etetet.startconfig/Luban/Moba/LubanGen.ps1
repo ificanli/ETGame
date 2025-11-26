@@ -1,6 +1,6 @@
 # 设置变量
 $PACKAGE = "Packages/cn.etetet.startconfig"
-$CONFIG_NAME = "Release"
+$CONFIG_NAME = "Moba"
 
 
 $WORKSPACE = "Packages/cn.etetet.yiuiluban"
