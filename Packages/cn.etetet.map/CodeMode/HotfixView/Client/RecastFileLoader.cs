@@ -9,7 +9,7 @@ namespace ET
     {
         public override async ETTask<byte[]> Handle(NavmeshComponent.RecastFileLoader args)
         {
-            TextAsset textAsset = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
+            TextAsset textAsset = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>($"Packages/cn.etetet.map/Bundles/Recast/{args.Name}.bytes");
             return textAsset.bytes;
         }
     }
