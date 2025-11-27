@@ -63,7 +63,7 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Packages/cn.etetet.wow/Bundles/Json
+      - CollectPath: Packages/cn.etetet.map/Bundles/Json
         CollectorGUID: b8082d5bceee043f38e89d8514f8f856
         CollectorType: 0
         AddressRuleName: AddressByFileName
@@ -76,7 +76,7 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.wow/Bundles/Scenes
+      - CollectPath: Packages/cn.etetet.map/Bundles/Scenes
         CollectorGUID: 22804885a77c3ce4dbc6faadfa0208df
         CollectorType: 0
         AddressRuleName: AddressByFileName
@@ -89,10 +89,10 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.wow/Bundles/Units
+      - CollectPath: Packages/cn.etetet.map/Bundles/Units
         CollectorGUID: b05774c2320997a4d849e31bbab2ac8b
         CollectorType: 0
-        AddressRuleName: AddressByFolderAndFileName
+        AddressRuleName: AddressByFileName
         PackRuleName: PackSeparately
         FilterRuleName: CollectPrefab
         AssetTags: 
@@ -179,7 +179,7 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.wow/Bundles/Recast
+      - CollectPath: Packages/cn.etetet.map/Bundles/Recast
         CollectorGUID: 8c763a33f34d5f84d9f48cd5e533f1e5
         CollectorType: 0
         AddressRuleName: AddressByFolderAndFileName

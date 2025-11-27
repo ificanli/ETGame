@@ -65,5 +65,10 @@
     <ItemGroup>
         <CompilerVisibleProperty Include="DotNetAssembly" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="..\..\..\cn.etetet.wow\CodeMode\">
+        <Link>cn.etetet.wow\CodeMode</Link>
+      </Folder>
+    </ItemGroup>
 
 </Project>

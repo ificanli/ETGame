@@ -157,3 +157,10 @@ message M2C_GetQuestDetail // ILocationResponse
 	string Message = 3;
 	QuestDetailInfo QuestDetail = 4;		
 }
+
+
+message Show_QuestInfo
+{
+	int32 QuestId = 1;
+	int32 Status = 2; // 0: 可接, 1: 已接, 2: 可提交，3: 已提交
+}

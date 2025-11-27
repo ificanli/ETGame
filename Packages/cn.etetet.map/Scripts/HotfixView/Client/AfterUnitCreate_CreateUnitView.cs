@@ -12,7 +12,7 @@ namespace ET.Client
             Unit unit = args.Unit;
             EntityRef<Unit> unitRef = unit;
             // Unit View层
-            string assetsName = $"Packages/cn.etetet.wow/Bundles/Units/{unit.Config().Name}.prefab";
+            string assetsName = $"Packages/cn.etetet.map/Bundles/Units/{unit.Config().Name}.prefab";
             GameObject bundleGameObject = await scene.GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(assetsName);
 
             scene = sceneRef;

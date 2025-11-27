@@ -11,9 +11,9 @@ namespace ET
         {
             await ETTask.CompletedTask;
 #if UNITY_EDITOR
-            return File.ReadAllBytes($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
+            return File.ReadAllBytes($"Packages/cn.etetet.map/Bundles/Recast/{args.Name}.bytes");
 #else
-            TextAsset textAsset = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
+            TextAsset textAsset = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>($"Packages/cn.etetet.map/Bundles/Recast/{args.Name}.bytes");
 			return textAsset.bytes;
 #endif
         }

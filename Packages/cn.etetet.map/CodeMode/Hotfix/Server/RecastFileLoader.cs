@@ -9,7 +9,7 @@ namespace ET
         public override async ETTask<byte[]> Handle(NavmeshComponent.RecastFileLoader args)
         {
             await ETTask.CompletedTask;
-            return File.ReadAllBytes($"Packages/cn.etetet.wow/Bundles/Recast/{args.Name}.bytes");
+            return File.ReadAllBytes($"Packages/cn.etetet.map/Bundles/Recast/{args.Name}.bytes");
         }
     }
 }

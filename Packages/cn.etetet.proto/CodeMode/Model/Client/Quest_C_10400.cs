@@ -655,6 +655,36 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.Show_QuestInfo)]
+    public partial class Show_QuestInfo : MessageObject
+    {
+        public static Show_QuestInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<Show_QuestInfo>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int QuestId { get; set; }
+        /// <summary>
+        /// 0: 可接, 1: 已接, 2: 可提交，3: 已提交
+        /// </summary>
+        [MemoryPackOrder(1)]
+        public int Status { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.QuestId = default;
+            this.Status = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort C2M_AcceptQuest = 10401;
@@ -676,5 +706,6 @@ namespace ET
         public const ushort C2M_GetQuestDetail = 10417;
         public const ushort QuestDetailInfo = 10418;
         public const ushort M2C_GetQuestDetail = 10419;
+        public const ushort Show_QuestInfo = 10420;
     }
 }

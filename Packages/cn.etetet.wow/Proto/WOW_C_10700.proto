@@ -22,96 +22,6 @@ message M2C_TestResponse // IResponse
 	string response = 4;
 }
 
-// ResponseType G2C_EnterMap
-message C2G_EnterMap // ISessionRequest
-{
-	int32 RpcId = 1;
-}
-
-message G2C_EnterMap // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	/// 自己的UnitId
-	int64 MyId = 4;
-}
-
-message MoveInfo
-{
-	repeated Unity.Mathematics.float3 Points = 1;
-	Unity.Mathematics.quaternion Rotation = 2;
-	int32 TurnSpeed = 3;
-}
-
-message PetInfo
-{
-	int64 OwnerId = 1;
-}
-
-message UnitInfo
-{
-	int64 UnitId = 1;
-	int32 ConfigId = 2;
-	int32 Type = 3;
-	Unity.Mathematics.float3 Position = 4;
-	Unity.Mathematics.float3 Forward = 5;
-	map<int32, int64> KV = 6;
-	MoveInfo MoveInfo = 7;
-	PetInfo PetInfo = 8;
-}
-
-message M2C_CreateUnits // IMessage
-{
-	repeated UnitInfo Units = 1;
-}
-
-message M2C_CreateMyUnit // IMessage
-{
-	UnitInfo Unit = 1;
-}
-
-message M2C_StartSceneChange // IMessage
-{
-	int64 SceneId = 1;
-	string SceneName = 2;
-}
-
-message M2C_RemoveUnits // IMessage
-{
-	repeated int64 Units = 1;
-}
-
-message C2M_PathfindingResult // ILocationMessage
-{
-	int32 RpcId = 1;
-	Unity.Mathematics.float3 Position = 2;
-}
-
-message C2M_Stop // ILocationMessage
-{
-	int32 RpcId = 1;
-}
-
-message M2C_PathfindingResult // IMessage
-{
-	int64 Id = 1;
-	Unity.Mathematics.float3 Position = 2;
-	repeated Unity.Mathematics.float3 Points = 3;
-}
-
-message M2C_Stop // IMessage
-{
-	int32 Error = 1;
-	int64 Id = 2;
-	Unity.Mathematics.float3 Position = 3;
-	Unity.Mathematics.quaternion Rotation = 4;
-}
-
-
-message G2C_Test // ISessionMessage
-{
-}
 
 // ResponseType M2C_Reload
 message C2M_Reload // ISessionRequest
@@ -129,24 +39,11 @@ message M2C_Reload // ISessionResponse
 }
 
 
-
 message G2C_TestHotfixMessage // ISessionMessage
 {
 	string Info = 1;
 }
 
-// ResponseType M2C_TransferMap
-message C2M_TransferMap // ILocationRequest
-{
-	int32 RpcId = 1;
-}
-
-message M2C_TransferMap // ILocationResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}
 
 // ResponseType G2C_Benchmark
 message C2G_Benchmark // ISessionRequest
@@ -162,27 +59,6 @@ message G2C_Benchmark // ISessionResponse
 }
 
 
-message M2C_Error // IMessage
-{
-	int32 Error = 1;
-	repeated string Values = 2;
-}
-
-message M2C_NumericChange // IMessage
-{
-	int64 UnitId = 1;
-	int32 NumericType = 2;
-	int64 Value = 3;
-}
-
-message M2C_Turn // IMessage
-{
-	int64 UnitId = 1;
-	Unity.Mathematics.quaternion Rotation = 2;
-	int32 TurnTime = 3;
-}
-
-
 // ResponseType G2C_Logout
 message C2G_Logout // ISessionRequest
 {
@@ -194,26 +70,4 @@ message G2C_Logout // ISessionResponse
 	int32 RpcId = 1;
 	int32 Error = 2;
 	string Message = 3;
-}
-
-// ResponseType M2C_ClickUnitResponse
-message C2M_ClickUnitRequest // ILocationRequest
-{
-	int32 RpcId = 1;
-	int64 UnitId = 2;
-}
-
-message M2C_ClickUnitResponse // ILocationResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	// 任务信息	
-	repeated Show_QuestInfo questInfo = 5;
-}
-
-message Show_QuestInfo
-{
-	int32 QuestId = 1;
-	int32 Status = 2; // 0: 可接, 1: 已接, 2: 可提交，3: 已提交
 }
