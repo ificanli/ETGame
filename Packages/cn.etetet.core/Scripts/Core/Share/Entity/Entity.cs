@@ -369,6 +369,7 @@ namespace ET
                     
                 if (!this.IsNew)
                 {
+                    this.IsNew = true;
                     EntitySystemSingleton.Instance.Deserialize(this);
                 }
             }
