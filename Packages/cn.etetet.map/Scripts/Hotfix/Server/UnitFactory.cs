@@ -50,6 +50,7 @@ namespace ET.Server
                 case UnitType.Player:
                 {
                     unit.AddComponent<ItemComponent>();
+                    unit.AddComponent<QuestComponent>();
                     break;
                 }
                 case UnitType.Monster:

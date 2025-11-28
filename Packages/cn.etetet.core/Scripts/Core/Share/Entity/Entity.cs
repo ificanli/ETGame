@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using MemoryPack;
 using MongoDB.Bson.Serialization.Attributes;
@@ -14,8 +15,8 @@ namespace ET
         IsFromPool = 1,
         IsRegister = 1 << 1,
         IsComponent = 1 << 2,
-        IsNew = 1 << 3,
-        IsSerilizeWithParent = 1 << 4,
+        NoDeserializeSystem = 1 << 3,  // 不需要执行反序列化System
+        IsSerializeWithParent = 1 << 4,
     }
 
     [MemoryPackable(GenerateType.NoGenerate)]
@@ -141,35 +142,35 @@ namespace ET
         }
 
         [BsonIgnore]
-        protected bool IsNew
+        protected bool IsNoDeserializeSystem
         {
-            get => (this.status & EntityStatus.IsNew) == EntityStatus.IsNew;
+            get => (this.status & EntityStatus.NoDeserializeSystem) == EntityStatus.NoDeserializeSystem;
             set
             {
                 if (value)
                 {
-                    this.status |= EntityStatus.IsNew;
+                    this.status |= EntityStatus.NoDeserializeSystem;
                 }
                 else
                 {
-                    this.status &= ~EntityStatus.IsNew;
+                    this.status &= ~EntityStatus.NoDeserializeSystem;
                 }
             }
         }
         
         [BsonIgnore]
-        public bool IsSerilizeWithParent
+        public bool IsSerializeWithParent
         {
-            get => (this.status & EntityStatus.IsSerilizeWithParent) == EntityStatus.IsSerilizeWithParent;
+            get => (this.status & EntityStatus.IsSerializeWithParent) == EntityStatus.IsSerializeWithParent;
             set
             {
                 if (value)
                 {
-                    this.status |= EntityStatus.IsSerilizeWithParent;
+                    this.status |= EntityStatus.IsSerializeWithParent;
                 }
                 else
                 {
-                    this.status &= ~EntityStatus.IsSerilizeWithParent;
+                    this.status &= ~EntityStatus.IsSerializeWithParent;
                 }
             }
         }
@@ -345,6 +346,11 @@ namespace ET
                 }
 
                 this.IsRegister = true;
+                
+                if (this is ISerializeToEntity)
+                {
+                    this.IsSerializeWithParent = true;
+                }
 
                 // 反序列化出来的需要设置父子关系
                 if (this.components != null)
@@ -367,9 +373,8 @@ namespace ET
                     }
                 }
                     
-                if (!this.IsNew)
+                if (!this.IsNoDeserializeSystem)
                 {
-                    this.IsNew = true;
                     EntitySystemSingleton.Instance.Deserialize(this);
                 }
             }
@@ -393,27 +398,6 @@ namespace ET
         private void AddToChildren(Entity entity)
         {
             this.Children.Add(entity.Id, entity);
-        }
-
-        private void Reset()
-        {
-            this.InstanceId = 0;
-            this.iScene = null;
-            if (this.children != null)
-            {
-                foreach (var kv in this.children)
-                {
-                    kv.Value.Reset();
-                }
-            }
-
-            if (this.components != null)
-            {
-                foreach (var kv in this.components)
-                {
-                    kv.Value.Reset();
-                }   
-            }
         }
 
         [MemoryPackInclude]
@@ -683,7 +667,7 @@ namespace ET
             Entity component = (Entity) ObjectPool.Fetch(type, isFromPool);
 
             component.IsFromPool = isFromPool;
-            component.IsNew = true;
+            component.IsNoDeserializeSystem = true;
             component.Id = 0;
             return component;
         }
@@ -934,26 +918,100 @@ namespace ET
                 return;
             }
             
-            if (this is not ISerializeToEntity && !this.IsSerilizeWithParent)
+            EntitySystemSingleton.Instance.Serialize(this);
+            
+            if (this.components is { Count: > 0 })
+            {
+                foreach ((long _, Entity entity) in this.components)
+                {
+                    if (entity.IsSerializeWithParent)
+                    {
+                        entity.BeginInit();
+                    }
+                }
+            }
+
+            if (this.children is { Count: > 0 })
+            {
+                foreach ((long _, Entity entity) in this.children)
+                {
+                    if (entity.IsSerializeWithParent)
+                    {
+                        entity.BeginInit();
+                    }
+                }
+            }
+        }
+        
+        private void Reset()
+        {
+            if (this.iScene == null)
             {
                 return;
             }
             
-            EntitySystemSingleton.Instance.Serialize(this);
+            this.InstanceId = 0;
+            this.iScene = null;
+            this.IsNoDeserializeSystem = false;
+            this.IsRegister = false;
             
-            if (this.components != null && this.components.Count != 0)
+            if (this.components is { Count: > 0 })
             {
                 foreach ((long _, Entity entity) in this.components)
                 {
-                    entity.BeginInit();
+                    entity.Reset();
                 }
             }
 
-            if (this.children != null && this.children.Count != 0)
+            if (this.children is { Count: > 0 })
             {
                 foreach ((long _, Entity entity) in this.children)
                 {
-                    entity.BeginInit();
+                    entity.Reset();
+                }
+            }
+        }
+        
+        // 移除不需要序列化的Entity
+        public void ClearUnSerialized()
+        {
+            if (this.components is { Count: > 0 })
+            {
+                using ListComponent<Type> types = ListComponent<Type>.Create();
+                foreach ((long _, Entity entity) in this.components)
+                {
+                    if (!entity.IsSerializeWithParent)
+                    {
+                        types.Add(entity.GetType());
+                        continue;
+                    }
+                    entity.ClearUnSerialized();
+                }
+
+                foreach (Type removeType in types)
+                {
+                    this.RemoveComponent(removeType);
+                }
+            }
+
+            if (this.children is { Count: > 0 })
+            {
+                using ListComponent<long> ids = ListComponent<long>.Create();
+                
+                foreach ((long id, Entity entity) in this.children)
+                {
+                    if (!entity.IsSerializeWithParent)
+                    {
+                        ids.Add(id);
+                        continue;
+                    }
+                    
+                    entity.ClearUnSerialized();
+                }
+                
+                foreach (long id in ids)
+                {
+                    this.RemoveChild(id);
                 }
             }
         }

@@ -31,7 +31,7 @@ namespace ET
             foreach (var kv in value)
             {
                 Entity entity = kv.Value;
-                if (entity is ISerializeToEntity || entity.IsSerilizeWithParent)
+                if (entity.IsSerializeWithParent)
                 {
                     ++count;
                     formatter.Serialize(ref writer, ref entity!);
@@ -64,7 +64,7 @@ namespace ET
             {
                 Entity entity = null!;
                 formatter.Deserialize(ref reader, ref entity!);
-                entity.IsSerilizeWithParent = true;
+                entity.IsSerializeWithParent = true;
                 long key = entity.GetLongHashCode();
                 value.Add(key, entity);
             }

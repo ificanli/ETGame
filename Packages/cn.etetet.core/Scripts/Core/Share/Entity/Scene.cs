@@ -28,7 +28,7 @@ namespace ET
             this.Name = name;
             this.InstanceId = fiber.NewInstanceId();
             this.SceneType = sceneType;
-            this.IsNew = true;
+            this.IsNoDeserializeSystem = true;
             this.Fiber = fiber;
             this.IScene = this;
             this.IsRegister = true;

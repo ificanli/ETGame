@@ -96,6 +96,13 @@ namespace ET.Server
                     {
                         unit.RemoveComponent(entity.GetType());
                     }
+                    else
+                    {
+                        // 清理掉不需要序列化的Entity
+                        entity.ClearUnSerialized();
+                        // 调用SerializeSystem
+                        entity.BeginInit();
+                    }
                 }
                 
                 request.Unit = unit;
