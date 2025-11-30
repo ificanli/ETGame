@@ -607,9 +607,9 @@ namespace ET
         private void CheckThread()
         {
             Fiber fiber = this.IScene.Fiber;
-            if (fiber.ThreadId != Environment.CurrentManagedThreadId)
+            if (fiber.ThreadSynchronizationContext.ThreadId != Environment.CurrentManagedThreadId)
             {
-                throw new Exception($"Fiber {fiber.Id} {fiber.Name} is not in fiber thread {fiber.ThreadId} {Environment.CurrentManagedThreadId}");
+                throw new Exception($"Fiber {fiber.Id} {fiber.Name} is not in fiber thread {fiber.ThreadSynchronizationContext.ThreadId} {Environment.CurrentManagedThreadId}");
             }
         }
 

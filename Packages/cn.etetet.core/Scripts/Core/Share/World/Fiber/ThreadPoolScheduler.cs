@@ -63,10 +63,10 @@ namespace ET
                     continue;
                 }
 
-                fiber.ThreadId = threadId;
+                fiber.ThreadSynchronizationContext.ThreadId = threadId;
                 fiber.Update();
                 fiber.LateUpdate();
-                fiber.ThreadId = 0;
+                fiber.ThreadSynchronizationContext.ThreadId = 0;
                 
                 this.fiberQueue.Enqueue(fiber);
             }

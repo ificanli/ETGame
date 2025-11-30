@@ -41,8 +41,6 @@ namespace ET
         public bool IsDisposed { get; private set; }
         
         public int Id { get; }
-        
-        public int ThreadId { get; set; }
 
         public int Zone { get; }
 
@@ -142,8 +140,8 @@ namespace ET
                     }
                     
                     this.schedulerQueue.Enqueue(fiber);
-
-                    fiber.Update();                    
+                    
+                    fiber.Update();
                 }
             }
             catch (Exception e)
@@ -181,7 +179,7 @@ namespace ET
                     }
                     
                     this.schedulerQueue.Enqueue(fiber);
-
+                    
                     fiber.LateUpdate();
                 }
             }
@@ -380,7 +378,6 @@ namespace ET
 
         public void AddToScheduler(Fiber fiber)
         {
-            fiber.ThreadId = this.ThreadId;
             this.schedulerQueue.Enqueue(fiber);
         }
     }

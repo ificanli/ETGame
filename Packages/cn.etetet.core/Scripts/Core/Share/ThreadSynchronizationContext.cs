@@ -10,6 +10,8 @@ namespace ET
         private readonly ConcurrentQueue<Action> queue = new();
 
         private Action a;
+        
+        internal int ThreadId { get; set; }
 
         public void Update()
         {

@@ -63,7 +63,6 @@ namespace ET
 
                 this.fiberQueue.Enqueue(fiber);
                 
-                fiber.ThreadId = Environment.CurrentManagedThreadId;
                 fiber.LateUpdate();
             }
 
@@ -77,7 +76,7 @@ namespace ET
 
         public void AddToScheduler(Fiber fiber)
         {
-            fiber.ThreadId = this.threadId;
+            fiber.ThreadSynchronizationContext.ThreadId = this.threadId;
             this.addQueue.Enqueue(fiber);
         }
     }

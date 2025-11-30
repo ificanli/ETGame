@@ -54,7 +54,7 @@ namespace ET
         {
             Thread thread = new(() => this.Update(fiber));
             
-            fiber.ThreadId = thread.ManagedThreadId;
+            fiber.ThreadSynchronizationContext.ThreadId = thread.ManagedThreadId;
             
             this.dictionary.TryAdd(fiber.Id, thread);
             thread.Start();
