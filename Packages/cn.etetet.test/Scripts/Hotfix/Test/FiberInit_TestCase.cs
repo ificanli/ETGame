@@ -30,12 +30,10 @@ namespace ET.Test
                 int sceneType = SceneTypeSingleton.Instance.GetSceneType(startConfig.SceneType);
                 if (sceneType == SceneType.ServiceDiscovery)
                 {
-                    await fiber.CreateFiberWithId(Const.ServiceDiscoveryFiberId, startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
+                    continue;
                 }
-                else
-                {
-                    await fiber.CreateFiber(startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);   
-                }
+
+                await fiber.CreateFiber(startConfig.Id, startConfig.Zone, sceneType, startConfig.Name);
             }
         }
     }

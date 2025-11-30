@@ -23,7 +23,7 @@ namespace ET.Test
                         .WithParsed(o => { options = o; });
                 
                 var testHandlers = TestDispatcher.Instance.Get(options.Name);
-
+                
                 foreach (ITestHandler testHandler in testHandlers)
                 {
                     Type testType = testHandler.GetType();

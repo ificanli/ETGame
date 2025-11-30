@@ -15,10 +15,6 @@ namespace ET.Server
         {
             protected override async ETTask Run(Scene scene, FiberDestroyEvent fiberDestroyEvent)
             {
-                if (Options.Instance.SceneName == "Test")
-                {
-                    return;
-                }
                 ServiceDiscoveryProxy serviceDiscoveryProxy = scene.GetComponent<ServiceDiscoveryProxy>();
                 if (serviceDiscoveryProxy != null)
                 {
