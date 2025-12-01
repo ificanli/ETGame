@@ -43,7 +43,7 @@ namespace ET
             //RegisterStruct<TSVector4>();
             //RegisterStruct<TSQuaternion>();
             //RegisterStruct<LSInput>();
-
+#if UNITY_EDITOR
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 foreach (Type type in assembly.GetTypes())
@@ -51,6 +51,12 @@ namespace ET
                     RegisterClass(type);
                 }
             }
+#else
+            foreach (Type type in CodeTypes.Instance.GetTypes().Values)
+            {
+                RegisterClass(type);
+            }
+#endif
         }
 
         private static void RegisterClass(Type type)
