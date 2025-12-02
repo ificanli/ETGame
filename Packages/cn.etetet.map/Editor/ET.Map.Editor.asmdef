@@ -1,0 +1,18 @@
+{
+    "name": "ET.Map.Editor",
+    "rootNamespace": "",
+    "references": [
+        "ET.Model",
+        "ET.ModelView",
+        "ET.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

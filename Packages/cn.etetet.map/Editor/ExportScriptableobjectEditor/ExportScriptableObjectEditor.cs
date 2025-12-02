@@ -11,7 +11,7 @@ namespace ET.Client
     {
         private const string ExportPath = "Packages/cn.etetet.map/Bundles/Json";
         
-        [MenuItem("ET/WOW/ExportScriptableObject")]
+        [MenuItem("ET/Map/ExportScriptableObject")]
         public static void ExportScriptableObject()
         {
             MongoRegister.Init();
