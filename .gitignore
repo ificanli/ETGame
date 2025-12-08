@@ -52,3 +52,6 @@ Unity.sln.DotSettings.user
 
 Assets/HybridCLR*
 /UIElementsSchema
+
+AssemblyReference.asmref
+AssemblyReference.asmref.meta
