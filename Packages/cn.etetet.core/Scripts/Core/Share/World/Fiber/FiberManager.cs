@@ -110,7 +110,7 @@ namespace ET
             {
                 scheduler.Dispose();
             }
-            ((IScheduler)this.mainFiber).Dispose();
+            (this.mainFiber as IScheduler)?.Dispose();
         }
 
         public async ETTask<int> CreateMainFiber(int sceneType, string sceneName)

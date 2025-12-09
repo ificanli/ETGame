@@ -55,8 +55,8 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.excel/Bundles/Luban/Config/Server/Binary
-        CollectorGUID: 3678a8659120e468991f1fe96b908cff
+      - CollectPath: Packages/cn.etetet.excel/Bundles/Luban/Config/Client/Json
+        CollectorGUID: 6d353d321450547208af01b459886be6
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory

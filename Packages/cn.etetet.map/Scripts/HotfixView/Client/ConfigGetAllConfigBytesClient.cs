@@ -46,10 +46,20 @@ namespace ET.Client
             }
             await ETTask.CompletedTask;
 #else
-            foreach (Type type in allTypes)
+            foreach (Type configType in allTypes)
             {
-                TextAsset v = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>(type.Name);
-                output[type] = v.bytes;
+                ConfigProcessAttribute configProcessAttribute = configType.GetCustomAttributes(typeof(ConfigProcessAttribute), false)[0] as ConfigProcessAttribute;
+                TextAsset v = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>(configType.Name);
+                switch (configProcessAttribute.ConfigType)
+                {
+                    case ConfigType.Luban:
+                        output[configType] = v.bytes;
+                        break;
+                    case ConfigType.Json:
+                    case ConfigType.Bson:
+                        output[configType] = v.text;
+                        break;
+                }
             }
 #endif
             return output;

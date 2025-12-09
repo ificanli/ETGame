@@ -20,13 +20,11 @@ namespace ET
 
         private async ETTask DownloadAsync()
         {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
             await ETTask.CompletedTask;
 #else
             this.dlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"ET.Model.dll");
-    #if EnableIL2CPP
             this.aotDlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"mscorlib.dll");
-    #endif
 #endif
         }
 
@@ -65,13 +63,11 @@ namespace ET
             //byte[] modelViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.ModelView.dll.bytes"));
             //byte[] modelViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.ModelView.pdb.bytes"));
 
-    #if EnableIL2CPP
             foreach (var kv in this.aotDlls)
             {
                 TextAsset textAsset = kv.Value;
                 HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(textAsset.bytes, HybridCLR.HomologousImageMode.SuperSet);
             }
-    #endif
             
             this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
             this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
