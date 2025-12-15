@@ -50,7 +50,9 @@ namespace ET.Client
                 Debug.LogError($"当前Panel 有其他IOpen 接口 需要参数传入 不允许直接调用Open");
                 return false;
             }
+
             EntityRef<YIUIPanelComponent> selfRef = self;
+
             try
             {
                 if (self.OwnerUIEntity is IYIUIOpen _)

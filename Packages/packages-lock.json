@@ -515,17 +515,14 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.yiuiframework": "2.0.4"
+        "cn.etetet.yiuiframework": "3.0.0"
       }
     },
     "cn.etetet.yiuidamagetips": {
       "version": "file:cn.etetet.yiuidamagetips",
       "depth": 0,
       "source": "embedded",
-      "dependencies": {
-        "cn.etetet.core": "4.0.0",
-        "cn.etetet.map": "1.0.0"
-      }
+      "dependencies": {}
     },
     "cn.etetet.yiuieffect": {
       "version": "file:cn.etetet.yiuieffect",
@@ -538,8 +535,8 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0",
-        "cn.etetet.yiuiinvoke": "4.0.1"
+        "cn.etetet.core": "1.0.0",
+        "cn.etetet.yiuiinvoke": "4.0.3"
       }
     },
     "cn.etetet.yiuigm": {
@@ -547,7 +544,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0"
+        "cn.etetet.core": "1.0.0"
       }
     },
     "cn.etetet.yiuiinvoke": {
@@ -555,7 +552,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0"
+        "cn.etetet.core": "1.0.0"
       }
     },
     "cn.etetet.yiuiloopscrollrectasync": {
@@ -563,7 +560,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0"
+        "cn.etetet.core": "1.0.0"
       }
     },
     "cn.etetet.yiuiluban": {
@@ -577,7 +574,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0"
+        "cn.etetet.core": "1.0.0"
       }
     },
     "cn.etetet.yiuitips": {
@@ -585,7 +582,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0"
+        "cn.etetet.core": "1.0.0"
       }
     },
     "cn.etetet.yiuiyooassets": {
@@ -593,7 +590,7 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {
-        "cn.etetet.core": "4.0.0"
+        "cn.etetet.core": "1.0.0"
       }
     },
     "cn.etetet.yooassets": {
@@ -639,7 +636,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.24",
+      "version": "1.8.23",
       "depth": 2,
       "source": "registry",
       "dependencies": {

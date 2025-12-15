@@ -5,6 +5,39 @@ namespace ET.Client
 {
     public static partial class YIUIMgrComponentSystem
     {
+        #region 判断Panel是否关闭
+
+        /*
+         * 1. 如果Panel不存在，返回true 表示已关闭
+         * 2. 如果存在,不在最前面 = 已关闭
+         * 3. 如果存在,在最前面 = 未关闭
+         * 因为Panel层同时只会显示一个 所以只要不是在前面就算关闭 哪怕你现在是显示状态
+         */
+        public static bool IsClose(this YIUIMgrComponent self, string panelName)
+        {
+            var info = self.GetPanelInfo(panelName);
+            if (info.UIBase == null) return true;
+            return self.IsClose(info.UIPanel);
+        }
+
+        public static bool IsClose<T>(this YIUIMgrComponent self) where T : Entity
+        {
+            var info = self.GetPanelInfo<T>();
+            if (info.UIBase == null) return true;
+            return self.IsClose(info.UIPanel);
+        }
+
+        public static bool IsClose(this YIUIMgrComponent self, YIUIPanelComponent panel)
+        {
+            var layerList = self.GetLayerPanelInfoList(EPanelLayer.Panel);
+            if (layerList is not { Count: > 0 }) return true;
+            var currentPanel = layerList[^1];
+            if (currentPanel.UIPanel == null) return true;
+            return currentPanel.UIPanel != panel;
+        }
+
+        #endregion
+
         /// <summary>
         /// 关闭一个窗口
         /// </summary>
@@ -32,12 +65,11 @@ namespace ET.Client
 
             self = selfRef;
 
-            await EventSystem.Instance?.PublishAsync(self.Root(),
-                new YIUIEventPanelCloseBefore
-                {
-                    UIPkgName = info.PkgName, UIResName = info.ResName, UIComponentName = info.Name,
-                    PanelLayer = info.PanelLayer,
-                });
+            await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelCloseBefore
+            {
+                UIPkgName = info.PkgName, UIResName = info.ResName, UIComponentName = info.Name,
+                PanelLayer = info.PanelLayer,
+            });
 
             if (info.UIPanel.PanelOption.HasFlag(EPanelOption.DisClose))
             {
@@ -63,7 +95,7 @@ namespace ET.Client
                 successPanel = await YIUIEventSystem.Close(info.OwnerUIEntity);
             }
 
-            if (info.UIWindow is { WindowCloseTweenBefor: true })
+            if (info.UIWindow is { WindowCloseTweenBefore: true })
             {
                 await YIUIEventSystem.WindowClose(info.UIWindow, successPanel);
             }
@@ -74,27 +106,35 @@ namespace ET.Client
                 return false;
             }
 
-            if (info.UIWindow is { WindowLastClose: false })
+            var isCloseTriggerTween = info.UIWindow is { WindowCloseTriggerTween: true };
+
+            var ignoreTween = false;
+
+            if (!isCloseTriggerTween)
             {
+                self = selfRef;
+                ignoreTween = self.IsClose(info.UIPanel);
+            }
+
+            if (!ignoreTween && info.UIWindow is { WindowLastClose: false })
+            {
+                await info.UIPanel.CloseAllView(tween);
                 await info.UIWindow.InternalOnWindowCloseTween(tween);
             }
 
-            if (!ignoreElse)
+            if (!ignoreTween && !ignoreElse)
             {
                 self = selfRef;
                 await self.RemoveUIAddElse(info);
             }
 
-            if (info.UIWindow is { WindowLastClose: true })
+            if (!ignoreTween && info.UIWindow is { WindowLastClose: true })
             {
+                await info.UIPanel.CloseAllView(tween);
                 await info.UIWindow.InternalOnWindowCloseTween(tween);
             }
 
-            //必须后关闭所有view 没有动画 也不管会不会失败
-            //如果你有其他特殊需求 请自行处理
-            await info.UIPanel.CloseAllView(false);
-
-            if (info.UIWindow is { WindowCloseTweenBefor: false })
+            if (info.UIWindow is { WindowCloseTweenBefore: false })
             {
                 await YIUIEventSystem.WindowClose(info.UIWindow, true);
             }
@@ -142,9 +182,9 @@ namespace ET.Client
         /// 关闭一个窗口
         /// 异步等待关闭动画
         /// </summary>
-        public static async ETTask<bool> ClosePanelAsync<T>(this YIUIMgrComponent self, bool tween = true, bool ignoreElse = false) where T : Entity
+        public static async ETTask<bool> ClosePanelAsync<T>(this YIUIMgrComponent self, bool tween = true, bool ignoreElse = false, bool ignoreLock = false) where T : Entity
         {
-            return await self.ClosePanelAsync(self.GetPanelName<T>(), tween, ignoreElse);
+            return await self.ClosePanelAsync(self.GetPanelName<T>(), tween, ignoreElse, ignoreLock);
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿{
   "name": "cn.etetet.yiuidamagetips",
   "displayName": "ET.YIUI.DamageTips",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "unity": "2022.3",
   "category": "UI/YIUI",
   "description": "伤害提示 >>> 文档: https://lib9kmxvq7k.feishu.cn/wiki/Yt8PwrobfiYijDkuZTWcsGyJnFh",
@@ -11,10 +11,6 @@
   },
   "repository": {},
   "relatedPackages": {},
-  "dependencies": {
-    "cn.etetet.core": "4.0.0",
-    "cn.etetet.map": "1.0.0"
-  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@ET-Packages"
   }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using ET;
 using Sirenix.OdinInspector;
@@ -161,13 +161,13 @@ namespace YIUIFramework
 
             if (this == null || gameObject == null)
             {
-                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_Release { obj = sprite });
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
                 return;
             }
 
             if (m_Image == null)
             {
-                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_Release { obj = sprite });
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
                 Logger.LogError($"{resName} 加载过程中 对象被摧毁了 m_Image == null");
                 return;
             }
@@ -200,7 +200,7 @@ namespace YIUIFramework
         {
             if (m_LastSprite != null)
             {
-                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_Release { obj = m_LastSprite });
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(YIUISingletonHelper.YIUIMgr, new YIUIInvokeEntity_ReleaseSprite { obj = m_LastSprite });
                 m_LastSprite = null;
             }
         }

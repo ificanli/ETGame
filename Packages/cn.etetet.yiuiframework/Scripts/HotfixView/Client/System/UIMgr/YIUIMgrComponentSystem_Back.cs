@@ -14,7 +14,7 @@ namespace ET.Client
         /// </summary>
         internal static async ETTask AddUICloseElse(this YIUIMgrComponent self, PanelInfo info)
         {
-            if (!(info.UIPanel is { Layer: EPanelLayer.Panel }))
+            if (info.UIPanel is not { Layer: EPanelLayer.Panel })
             {
                 return;
             }
@@ -32,13 +32,20 @@ namespace ET.Client
             {
                 var child = layerList[i];
 
-                if (child == info || child.UIPanel == null)
+                if (child == null || child == info)
                 {
                     continue;
                 }
 
+                var childPanel = child.UIPanel;
+                if (childPanel == null)
+                {
+                    Log.Error($"错误,是否在异步过程中删除了对象");
+                    continue;
+                }
+
                 //防止多级时多次触发
-                switch (child.UIPanel.StackOption)
+                switch (childPanel.StackOption)
                 {
                     case EPanelStackOption.Visible:
                         if (!child.UIBase.ActiveSelf) continue;
@@ -51,7 +58,7 @@ namespace ET.Client
                     case EPanelStackOption.Omit: //此类型表示 都忽略判断
                         break;
                     default:
-                        Debug.LogError($"新增类型未实现 {child.UIPanel.StackOption}");
+                        Debug.LogError($"新增类型未实现 {childPanel.StackOption}");
                         if (!child.UIBase.ActiveSelf) continue;
                         break;
                 }
@@ -78,18 +85,22 @@ namespace ET.Client
                     });
                 }
 
-                switch (child.UIPanel.StackOption)
+                var uiPkgName = child.PkgName;
+                var uiResName = child.ResName;
+                var uiComponentName = child.Name;
+                var panelLayer = child.PanelLayer;
+
+                childPanel = child.UIPanel;
+                if (childPanel == null)
+                {
+                    Log.Error($"错误,是否在异步过程中删除了对象");
+                    continue;
+                }
+
+                switch (childPanel.StackOption)
                 {
                     case EPanelStackOption.Omit:
-                        if (skipTween)
-                        {
-                            child.UIPanel.Close(true, true, true);
-                        }
-                        else
-                        {
-                            await child.UIPanel.CloseAsync(true, true, true);
-                        }
-
+                        await childPanel.CloseAsync(!skipTween, true, true);
                         break;
                     case EPanelStackOption.None:
                         break;
@@ -99,13 +110,22 @@ namespace ET.Client
                     case EPanelStackOption.VisibleTween:
                         if (!skipTween)
                         {
-                            await child.UIWindow.InternalOnWindowCloseTween();
+                            await childPanel.CloseAllViewTween();
+                            var childWindow = child.UIWindow;
+                            if (childWindow == null)
+                            {
+                                Log.Error($"错误,是否在异步过程中删除了对象");
+                            }
+                            else
+                            {
+                                await childWindow.InternalOnWindowCloseTween();
+                            }
                         }
 
                         child.UIBase.SetActive(false);
                         break;
                     default:
-                        Debug.LogError($"新增类型未实现 {child.UIPanel.StackOption}");
+                        Debug.LogError($"新增类型未实现 {childPanel.StackOption}");
                         child.UIBase.SetActive(false);
                         break;
                 }
@@ -114,18 +134,18 @@ namespace ET.Client
 
                 await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelCloseAfter
                 {
-                    UIPkgName = child.PkgName,
-                    UIResName = child.ResName,
-                    UIComponentName = child.Name,
+                    UIPkgName = uiPkgName,
+                    UIResName = uiResName,
+                    UIComponentName = uiComponentName,
                     StackOption = true,
-                    PanelLayer = child.PanelLayer,
+                    PanelLayer = panelLayer,
                 });
             }
         }
 
         internal static async ETTask RemoveUIAddElse(this YIUIMgrComponent self, PanelInfo info)
         {
-            if (!(info.UIPanel is { Layer: EPanelLayer.Panel }))
+            if (info.UIPanel is not { Layer: EPanelLayer.Panel })
             {
                 return;
             }
@@ -144,7 +164,7 @@ namespace ET.Client
             {
                 var child = layerList[i];
 
-                if (child == info)
+                if (child == null || child == info)
                 {
                     continue;
                 }
@@ -161,7 +181,14 @@ namespace ET.Client
                 });
 
                 var isBreak = true;
-                switch (child.UIPanel.StackOption)
+                var childPanel = child.UIPanel;
+                if (childPanel == null)
+                {
+                    Log.Error($"错误,是否在异步过程中删除了对象");
+                    continue;
+                }
+
+                switch (childPanel.StackOption)
                 {
                     case EPanelStackOption.Omit: //不可能进入这里因为他已经被关闭了 如果进入则跳过这个界面
                         isBreak = false;
@@ -172,15 +199,37 @@ namespace ET.Client
                         child.UIBase.SetActive(true);
                         break;
                     case EPanelStackOption.VisibleTween:
-                        child.UIBase.SetActive(true);
                         if (!skipTween)
                         {
-                            await child.UIWindow.InternalOnWindowOpenTween();
+                            var childWindow = child.UIWindow;
+                            if (childWindow == null)
+                            {
+                                Log.Error($"错误,是否在异步过程中删除了对象");
+                            }
+                            else
+                            {
+                                await childWindow.InternalOnWindowOpenTween();
+                            }
+
+                            childPanel = child.UIPanel;
+                            if (childPanel == null)
+                            {
+                                Log.Error($"错误,是否在异步过程中删除了对象");
+                            }
+                            else
+                            {
+                                await childPanel.OpenAllViewTween();
+                            }
+                        }
+                        else
+                        {
+                            child.UIBase.SetActive(true);
+                            await childPanel.OpenAllViewTween(false);
                         }
 
                         break;
                     default:
-                        Debug.LogError($"新增类型未实现 {child.UIPanel.StackOption}");
+                        Debug.LogError($"新增类型未实现 {childPanel.StackOption}");
                         child.UIBase.SetActive(true);
                         break;
                 }
@@ -208,13 +257,15 @@ namespace ET.Client
                 });
 
                 if (isBreak)
+                {
                     break;
+                }
             }
         }
 
         internal static async ETTask<bool> RemoveUIToHome(this YIUIMgrComponent self, PanelInfo home, bool tween = true)
         {
-            if (!(home.UIPanel is { Layer: EPanelLayer.Panel }))
+            if (home.UIPanel is not { Layer: EPanelLayer.Panel })
             {
                 return false; //home的UI必须在panel层
             }
@@ -229,6 +280,10 @@ namespace ET.Client
             for (var i = layerList.Count - 1; i >= 0; i--)
             {
                 var child = layerList[i];
+                if (child == null)
+                {
+                    continue;
+                }
 
                 if (child != home)
                 {
@@ -267,28 +322,26 @@ namespace ET.Client
 
                     self = selfRef;
 
-                    if (skipOtherCloseTween)
+                    var uiPkgName = child.PkgName;
+                    var uiResName = child.ResName;
+                    var uiComponentName = child.Name;
+                    var panelLayer = child.PanelLayer;
+
+                    var success = await self.ClosePanelAsync(child.Name, !skipOtherCloseTween, true, true);
+                    if (!success)
                     {
-                        self.ClosePanel(child.Name, false, true, true);
-                    }
-                    else
-                    {
-                        var success = await self.ClosePanelAsync(child.Name, tween, true, true);
-                        if (!success)
-                        {
-                            return false;
-                        }
+                        return false;
                     }
 
                     self = selfRef;
 
                     await EventSystem.Instance?.PublishAsync(self.Root(), new YIUIEventPanelCloseAfter
                     {
-                        UIPkgName = child.PkgName,
-                        UIResName = child.ResName,
-                        UIComponentName = child.Name,
+                        UIPkgName = uiPkgName,
+                        UIResName = uiResName,
+                        UIComponentName = uiComponentName,
                         StackOption = true,
-                        PanelLayer = child.PanelLayer,
+                        PanelLayer = panelLayer,
                     });
 
                     continue;
@@ -303,7 +356,14 @@ namespace ET.Client
                     PanelLayer = child.PanelLayer,
                 });
 
-                switch (child.UIPanel.StackOption)
+                var childPanel = child.UIPanel;
+                if (childPanel == null)
+                {
+                    Log.Error($"错误,是否在异步过程中删除了对象");
+                    continue;
+                }
+
+                switch (childPanel.StackOption)
                 {
                     case EPanelStackOption.Omit:
                     case EPanelStackOption.None:
@@ -311,15 +371,37 @@ namespace ET.Client
                         child.UIBase.SetActive(true);
                         break;
                     case EPanelStackOption.VisibleTween:
-                        child.UIBase.SetActive(true);
                         if (tween && !skipHomeOpenTween)
                         {
-                            await child.UIWindow.InternalOnWindowOpenTween();
+                            var childWindow = child.UIWindow;
+                            if (childWindow == null)
+                            {
+                                Log.Error($"错误,是否在异步过程中删除了对象");
+                            }
+                            else
+                            {
+                                await childWindow.InternalOnWindowOpenTween();
+                            }
+
+                            childPanel = child.UIPanel;
+                            if (childPanel == null)
+                            {
+                                Log.Error($"错误,是否在异步过程中删除了对象");
+                            }
+                            else
+                            {
+                                await childPanel.OpenAllViewTween();
+                            }
+                        }
+                        else
+                        {
+                            child.UIBase.SetActive(true);
+                            await childPanel.OpenAllViewTween(false);
                         }
 
                         break;
                     default:
-                        Debug.LogError($"新增类型未实现 {child.UIPanel.StackOption}");
+                        Debug.LogError($"新增类型未实现 {childPanel.StackOption}");
                         child.UIBase.SetActive(true);
                         break;
                 }

@@ -51,6 +51,7 @@ namespace ET.Client
             }
 
             EntityRef<YIUIViewComponent> selfRef = self;
+
             try
             {
                 if (self.OwnerUIEntity is IYIUIOpen _)
