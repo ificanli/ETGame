@@ -325,6 +325,21 @@ namespace ET
                     {
                         bool tryTerminates = Terminates(tryStmt.Block);
 
+                        // ★ 添加所有 catch 块的语句（catch块中也需要检查Entity访问）
+                        foreach (var catchClause in tryStmt.Catches)
+                        {
+                            if (catchClause.Block != null)
+                            {
+                                list.AddRange(catchClause.Block.Statements);
+                            }
+                        }
+
+                        // ★ 添加 finally 块的语句（finally块中也需要检查Entity访问）
+                        if (tryStmt.Finally?.Block != null)
+                        {
+                            list.AddRange(tryStmt.Finally.Block.Statements);
+                        }
+
                         // 只有当 try 块没有终止时，才将 try-catch-finally 语句之后的代码视为受影响
                         if (!tryTerminates)
                         {

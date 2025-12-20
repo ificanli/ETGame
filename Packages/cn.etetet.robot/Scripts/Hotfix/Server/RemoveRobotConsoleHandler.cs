@@ -9,6 +9,7 @@ namespace ET.Server
     {
         public async ETTask Run(Fiber fiber, ModeContex contex, string content)
         {
+            EntityRef<ModeContex> contexRef = contex;
             try
             {
                 switch (content)
@@ -42,6 +43,7 @@ namespace ET.Server
             }
             finally
             {
+                contex = contexRef;
                 contex.Parent.RemoveComponent<ModeContex>();
             }
         }

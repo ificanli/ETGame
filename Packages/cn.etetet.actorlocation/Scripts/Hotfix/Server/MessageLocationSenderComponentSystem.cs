@@ -179,8 +179,9 @@ namespace ET.Server
 
         public static async ETTask<IResponse> Call(this MessageLocationSenderOneType self, long entityId, ILocationRequest iRequest)
         {
+            EntityRef<MessageLocationSenderOneType> selfRef = self;
             MessageLocationSender messageLocationSender = self.GetOrCreate(entityId);
-
+            long messageLocationSenderId = messageLocationSender.Id;
             EntityRef<MessageLocationSender> messageLocationSenderRef = messageLocationSender;
             Scene root = self.Root();
             Type iRequestType = iRequest.GetType();
@@ -199,12 +200,14 @@ namespace ET.Server
                 }
                 catch (RpcException)
                 {
-                    self.Remove(messageLocationSender.Id);
+                    self = selfRef;
+                    self.Remove(messageLocationSenderId);
                     throw;
                 }
                 catch (Exception e)
                 {
-                    self.Remove(messageLocationSender.Id);
+                    self = selfRef;
+                    self.Remove(messageLocationSenderId);
                     throw new Exception($"{iRequestType.FullName}", e);
                 }
             }
