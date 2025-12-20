@@ -20,18 +20,24 @@ namespace ET
 
         private async ETTask DownloadAsync()
         {
+            try
+            {
 #if UNITY_EDITOR
-            await ETTask.CompletedTask;
+                await ETTask.CompletedTask;
 #else
-            this.dlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"ET.Model.dll");
-            this.aotDlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"mscorlib.dll");
+                this.dlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"ET.Model.dll");
+                this.aotDlls = await ResourcesComponent.Instance.LoadAllAssetsAsync<TextAsset>($"mscorlib.dll");
 #endif
+            }
+            catch (Exception e)
+            {
+                Log.Error(e);
+            }
         }
 
         public async ETTask Start()
         {
             await DownloadAsync();
-            
 #if UNITY_EDITOR
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (Assembly assembly in assemblies)
@@ -57,6 +63,7 @@ namespace ET
             byte[] modelPdbBytes = this.dlls["ET.Model.pdb"].bytes;
             byte[] modelViewAssBytes = this.dlls["ET.ModelView.dll"].bytes;
             byte[] modelViewPdbBytes = this.dlls["ET.ModelView.pdb"].bytes;
+
             // 如果需要测试，可替换成下面注释的代码直接加载Packages/cn.etetet.loader/Code/ET.Model.dll.bytes，但真正打包时必须使用上面的代码
             //byte[] modelAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Model.dll.bytes"));
             //byte[] modelPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Model.pdb.bytes"));
@@ -72,33 +79,60 @@ namespace ET
             this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
             this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
 #endif
-            
             (Assembly hotfixAssembly, Assembly hotfixViewAssembly) = this.LoadHotfix();
 
             World.Instance.AddSingleton<CodeTypes, Assembly[]>(new[]
             {
-                typeof (World).Assembly, typeof (Init).Assembly, this.modelAssembly, this.modelViewAssembly, hotfixAssembly,
-                hotfixViewAssembly
+                typeof (World).Assembly, typeof (Init).Assembly, this.modelAssembly, this.modelViewAssembly, hotfixAssembly, hotfixViewAssembly
             });
-
             IStaticMethod start = new StaticMethod(this.modelAssembly, "ET.Entry", "Start");
             start.Run();
         }
 
-        private (Assembly, Assembly) LoadHotfix()
+        private (Assembly, Assembly) LoadHotfix(bool isReload = false)
         {
 #if UNITY_EDITOR
-            byte[] hotfixAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.dll.bytes"));
-            byte[] hotfixPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.pdb.bytes"));
-            byte[] hotfixViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.dll.bytes"));
-            byte[] hotfixViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.pdb.bytes"));
-            Assembly hotfixAssembly = Assembly.Load(hotfixAssBytes, hotfixPdbBytes);
-            Assembly hotfixViewAssembly = Assembly.Load(hotfixViewAssBytes, hotfixViewPdbBytes);
+            Assembly hotfixAssembly = null;
+            Assembly hotfixViewAssembly = null;
+            
+            if (isReload)
+            {
+                byte[] hotfixAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.dll.bytes"));
+                byte[] hotfixPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.pdb.bytes"));
+                byte[] hotfixViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.dll.bytes"));
+                byte[] hotfixViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.HotfixView.pdb.bytes"));
+                hotfixAssembly = Assembly.Load(hotfixAssBytes, hotfixPdbBytes);
+                hotfixViewAssembly = Assembly.Load(hotfixViewAssBytes, hotfixViewPdbBytes);
+            }
+            else
+            {
+                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly assembly in assemblies)
+                {
+                    string name = assembly.GetName().Name;
+                    if (name == "ET.Hotfix")
+                    {
+                        hotfixAssembly = assembly;
+                        continue;
+                    }
+                    if (name == "ET.HotfixView")
+                    {
+                        hotfixViewAssembly = assembly;
+                        continue;
+                    }
+                    if (hotfixAssembly != null && hotfixViewAssembly != null)
+                    {
+                        break;
+                    }
+                }
+            }
+
 #else
             byte[] hotfixAssBytes = this.dlls["ET.Hotfix.dll"].bytes;
             byte[] hotfixPdbBytes = this.dlls["ET.Hotfix.pdb"].bytes;
             byte[] hotfixViewAssBytes = this.dlls["ET.HotfixView.dll"].bytes;
             byte[] hotfixViewPdbBytes = this.dlls["ET.HotfixView.pdb"].bytes;
+
             // 如果需要测试，可替换成下面注释的代码直接加载Packages/cn.etetet.loader/Code/Hotfix.dll.bytes，但真正打包时必须使用上面的代码
             //hotfixAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.dll.bytes"));
             //hotfixPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "ET.Hotfix.pdb.bytes"));
@@ -112,12 +146,11 @@ namespace ET
 
         public void Reload()
         {
-            (Assembly hotfixAssembly, Assembly hotfixViewAssembly) = this.LoadHotfix();
+            (Assembly hotfixAssembly, Assembly hotfixViewAssembly) = this.LoadHotfix(true);
 
             CodeTypes codeTypes = World.Instance.AddSingleton<CodeTypes, Assembly[]>(new[]
             {
-                typeof (World).Assembly, typeof (Init).Assembly, this.modelAssembly, this.modelViewAssembly, hotfixAssembly,
-                hotfixViewAssembly
+                typeof (World).Assembly, typeof (Init).Assembly, this.modelAssembly, this.modelViewAssembly, hotfixAssembly, hotfixViewAssembly
             });
             codeTypes.CodeProcess();
 
