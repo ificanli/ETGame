@@ -27,6 +27,9 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 100130
+    - Name: BuffId
+      Entry: 3
+      Data: 200130
     - Name: Desc
       Entry: 6
       Data: 
@@ -42,9 +45,6 @@ MonoBehaviour:
     - Name: CD
       Entry: 3
       Data: 0
-    - Name: BuffId
-      Entry: 3
-      Data: 1100130
     - Name: Cost
       Entry: 6
       Data: 
@@ -77,7 +77,7 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
-      Data: false
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule

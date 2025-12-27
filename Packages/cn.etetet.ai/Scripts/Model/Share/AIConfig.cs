@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
+using Sirenix.OdinInspector;
 
 namespace ET
 {
@@ -40,6 +41,7 @@ namespace ET
     [EnableClass]
     public class AIConfig: ProtoObject
     {
+        [ReadOnly]
         public int Id;
 
         public string Desc;

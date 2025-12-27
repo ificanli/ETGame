@@ -50,6 +50,7 @@ namespace ET
     #endif
     {
         [LabelText("ID")]
+        [ReadOnly]
         public int Id;
 
         [LabelText("描述")]

@@ -4,25 +4,8 @@ using Unity.Mathematics;
 
 namespace ET
 {
-    public struct EntryEvent1
-    {
-    }   
-    
-    public struct EntryEvent2
-    {
-    } 
-    
-    public struct EntryEvent3
-    {
-    }
-    
     public static class Entry
     {
-        public static void Init()
-        {
-            
-        }
-        
         public static void Start()
         {
             StartAsync().NoContext();

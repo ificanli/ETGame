@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -9,7 +10,7 @@ namespace ET
     {
         private AssemblyLoadContext assemblyLoadContext;
 
-        private Assembly assembly;
+        private readonly List<Assembly> assemblies = new();
 
         public void Awake()
         {
@@ -17,21 +18,30 @@ namespace ET
 
         public void Start()
         {
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (Assembly ass in assemblies)
+            HashSet<string> assemblyNames = new()
             {
-                if (ass.GetName().Name == "ET.Model")
+                "ET.Core",
+                "ET.Loader",
+                "ET.Model",
+            };
+            
+            Assembly[] domainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in domainAssemblies)
+            {
+                string name = assembly.GetName().Name;
+                if (assemblyNames.Contains(name))
                 {
-                    this.assembly = ass;
-                    break;
+                    assemblies.Add(assembly);
                 }
             }
 
             Assembly hotfixAssembly = this.LoadHotfix();
 
-            World.Instance.AddSingleton<CodeTypes, Assembly[]>(new[] {typeof (World).Assembly, typeof(Init).Assembly, this.assembly, hotfixAssembly});
+            List<Assembly> list = new(this.assemblies);
+            list.Add(hotfixAssembly);
+            World.Instance.AddSingleton<CodeTypes, Assembly[]>(list.ToArray());
 
-            IStaticMethod start = new StaticMethod(this.assembly, "ET.Entry", "Start");
+            IStaticMethod start = new StaticMethod(hotfixAssembly, "ET.Entry", "Start");
             start.Run();
         }
 
@@ -50,7 +60,9 @@ namespace ET
         {
             Assembly hotfixAssembly = this.LoadHotfix();
 			
-            CodeTypes codeTypes = World.Instance.AddSingleton<CodeTypes, Assembly[]>(new []{typeof (World).Assembly, typeof(Init).Assembly, this.assembly, hotfixAssembly});
+            List<Assembly> list = new(this.assemblies);
+            list.Add(hotfixAssembly);
+            CodeTypes codeTypes = World.Instance.AddSingleton<CodeTypes, Assembly[]>(list.ToArray());
 
             codeTypes.CodeProcess();
             Log.Debug($"reload dll finish!");

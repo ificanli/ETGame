@@ -57,7 +57,13 @@ namespace ET
     {
         [BoxGroup("技能信息")]
         [LabelText("技能 ID")]
+        [ReadOnly]
         public int Id;
+        
+        [BoxGroup("技能信息")]
+        [LabelText("Buff ID")]
+        [ReadOnly]
+        public int BuffId;
 
         [BoxGroup("技能信息")]
         [LabelText("描述")]
@@ -72,10 +78,6 @@ namespace ET
         [BoxGroup("技能信息")]
         [LabelText("技能CD（毫秒）")]
         public int CD;
-
-        [BoxGroup("技能信息")]
-        [LabelText("Buff ID")]
-        public int BuffId;
 
         [LabelText("消耗")]
         public CostNode Cost;

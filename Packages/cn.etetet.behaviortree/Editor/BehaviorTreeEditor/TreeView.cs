@@ -11,10 +11,9 @@ using UnityEngine.UIElements;
 
 namespace ET
 {
+    [UxmlElement]
     public partial class TreeView: GraphView
     {
-        public new class UxmlFactory : UxmlFactory<TreeView, UxmlTraits> { }
-        
         public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
 
         public BehaviorTreeEditor BehaviorTreeEditor;
