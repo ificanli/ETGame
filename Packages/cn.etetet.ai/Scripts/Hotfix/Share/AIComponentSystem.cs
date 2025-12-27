@@ -69,8 +69,9 @@ namespace ET
             AIRoot aiRoot = self.AIRoot;
             if (aiRoot != null)
             {
-                using BTEnv env = BTEnv.Create(self.Scene());
-                env.AddEntity(aiRoot.Unit, self.GetParent<Unit>());
+                Unit unit = self.GetParent<Unit>();
+                using BTEnv env = BTEnv.Create(self.Scene(), unit.Id);
+                env.AddEntity(aiRoot.Unit, unit);
                 BTDispatcher.Instance.Handle(self.AIRoot, env);
             }
         }

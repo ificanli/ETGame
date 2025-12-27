@@ -56,7 +56,7 @@ namespace ET.Server
                 EffectServerBuffHitted effect = buff.GetConfig().GetEffect<EffectServerBuffHitted>();
                 if (effect != null)
                 {
-                    using BTEnv env = BTEnv.Create(attacker.Scene());
+                    using BTEnv env = BTEnv.Create(attacker.Scene(), target.Id);
                     env.AddEntity(effect.Attacker, attacker);
                     env.AddEntity(effect.Unit, target);
                     env.AddEntity(effect.Buff, buff);

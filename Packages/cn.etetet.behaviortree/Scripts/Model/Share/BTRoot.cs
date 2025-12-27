@@ -5,5 +5,7 @@ namespace ET
 {
     public abstract class BTRoot: BTNode
     {
+        [DisplayAsString]
+        public long TreeId = RandomGenerator.RandInt64();
     }
 }

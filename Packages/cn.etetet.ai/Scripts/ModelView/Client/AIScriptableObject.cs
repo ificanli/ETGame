@@ -19,6 +19,14 @@ namespace ET.Client
         [HideLabel]
         [HideReferenceObjectPicker]
         public AIConfig AIConfig = new();
+        
+        private void OnValidate()
+        {
+#if UNITY_EDITOR
+            int id = int.Parse(this.name);
+            this.AIConfig.Id = id;    // ScriptableObject 的 name 就是 asset 名称
+#endif
+        }
     }
 }
 

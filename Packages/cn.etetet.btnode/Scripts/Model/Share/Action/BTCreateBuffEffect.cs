@@ -7,7 +7,7 @@ namespace ET
         [BTInput(typeof(Unit))]
         public string Unit;
         
-        [BTInput(typeof(Unit))]
+        [BTInput(typeof(Buff))]
         public string Buff;
         
         public BindPoint BindPoint;

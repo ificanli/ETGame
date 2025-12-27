@@ -1,23 +1,42 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace ET
 {
     public class BTEnv: DisposeObject, IPool
     {
-        public static BTEnv Create(Scene scene, bool isFromPool = true)
+        public long EntityId { get; private set; }
+
+        public static BTEnv Create(Scene scene, long entityId, bool isFromPool = true)
         {
             BTEnv env = ObjectPool.Fetch<BTEnv>(isFromPool);
             env.Scene = scene;
+            
+#if UNITY_EDITOR
+            env.EntityId = entityId;
+            env.RunPath = new List<int>();
+#endif
             return env;
         }
 
         public EntityRef<Scene> Scene;
 
         public bool IsFromPool { get; set; }
-        
+
         private readonly Dictionary<string, object> dict = new();
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Debug snapshot data
+        /// </summary>
+        private StringBuilder debugSnapshot;
+
+        public List<int> RunPath { get; private set; }
+#endif
 
         public override void Dispose()
         {
@@ -28,9 +47,13 @@ namespace ET
                     disposable.Dispose();
                 }
             }
-            
+
             this.dict.Clear();
             this.Scene = null;
+#if UNITY_EDITOR
+            this.debugSnapshot = null;
+            this.RunPath = null;
+#endif
         }
 
         public void CopyTo(BTEnv env)
@@ -119,6 +142,14 @@ namespace ET
         public void AddCollection<T>(string key, T list) where T: IEnumerable
         {
             this.dict[key] = list;
+            try
+            {
+                this.AddSnapshot($"{key}: {MongoHelper.ToJson(list)}");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"add snapshot fail: {typeof(T).FullName} {e}");
+            }
         }
 
         public void AddEntity<T>(string key, T entity) where T: Entity
@@ -133,6 +164,15 @@ namespace ET
             {
                 wrap = ValueTypeWrap<EntityRef<T>>.Create(entity);
                 this.dict.Add(key, wrap);
+            }
+            
+            try
+            {
+                this.AddSnapshot($"{key}: {MongoHelper.ToJson(entity)}");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"add snapshot fail: {typeof(T).FullName} {e}");
             }
         }
         
@@ -149,6 +189,54 @@ namespace ET
                 wrap = ValueTypeWrap<T>.Create(value);
                 this.dict.Add(key, wrap);
             }
+
+            try
+            {
+                this.AddSnapshot($"{key}: {MongoHelper.ToJson(value)}");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"add snapshot fail: {typeof(T).FullName} {e}");
+            }
         }
+
+        #region Debug Snapshot
+        
+        [Conditional("UNITY_EDITOR")]
+        public void AddPath(int nodeId)
+        {
+            if (nodeId == 0)
+            {
+                throw new Exception("add node error!");
+            }
+#if UNITY_EDITOR
+            this.RunPath.Add(nodeId);
+#endif
+        }
+
+        /// <summary>
+        /// Add debug snapshot line
+        /// </summary>
+        [Conditional("UNITY_EDITOR")]
+        public void AddSnapshot(string text)
+        {
+#if UNITY_EDITOR
+            this.debugSnapshot ??= new StringBuilder();
+            this.debugSnapshot.AppendLine(text);
+#endif
+        }
+
+        /// <summary>
+        /// Get debug snapshot StringBuilder (direct reference, for performance)
+        /// </summary>
+        public StringBuilder GetSnapshot()
+        {
+#if UNITY_EDITOR
+            return this.debugSnapshot;
+#else
+            return null;
+#endif
+        }
+        #endregion
     }
 }

@@ -19,7 +19,7 @@
             EffectClientBuffAdd effect = buff.GetConfig().GetEffect<EffectClientBuffAdd>();
             if (effect != null)
             {
-                using BTEnv env = BTEnv.Create(buff.Scene());
+                using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                 env.AddEntity(effect.Buff, buff);
                 env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
                 env.AddEntity(effect.Caster, buff.GetCaster());
@@ -61,7 +61,7 @@
             EffectClientBuffRemove effect = buff.GetConfig().GetEffect<EffectClientBuffRemove>();
             if (effect != null)
             {
-                using BTEnv env = BTEnv.Create(buff.Scene());
+                using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                 env.AddEntity(effect.Buff, buff);
                 env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
                 env.AddEntity(effect.Caster, buff.GetCaster());

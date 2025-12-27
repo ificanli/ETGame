@@ -146,7 +146,7 @@ namespace ET.Server
             EffectServerBuffAdd effect = buff.GetConfig().GetEffect<EffectServerBuffAdd>();
             if (effect != null)
             {
-                using BTEnv env = BTEnv.Create(buff.Scene());
+                using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                 env.AddEntity(effect.Buff, buff);
                 env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
                 env.AddEntity(effect.Caster, buff.GetCaster());
@@ -177,9 +177,10 @@ namespace ET.Server
                 EffectServerBuffTick effect = buff.GetConfig().GetEffect<EffectServerBuffTick>();
                 if (effect != null)
                 {
-                    using BTEnv env = BTEnv.Create(buff.Scene());
+                    Unit unit = buff.GetOwner();
+                    using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                     env.AddEntity(effect.Buff, buff);
-                    env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                    env.AddEntity(effect.Unit, unit);
                     env.AddEntity(effect.Caster, buff.GetCaster());
                     BTDispatcher.Instance.Handle(effect, env);
                 }
@@ -288,9 +289,9 @@ namespace ET.Server
             EffectServerBuffRemove effect = buff.GetConfig().GetEffect<EffectServerBuffRemove>();
             if (effect != null)
             {
-                using BTEnv env = BTEnv.Create(buff.Scene());
+                using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                 env.AddEntity(effect.Buff, buff);
-                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                env.AddEntity(effect.Unit, unit);
                 env.AddEntity(effect.Caster, buff.GetCaster());
                 BTDispatcher.Instance.Handle(effect, env);
             }

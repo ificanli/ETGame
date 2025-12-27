@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace ET
 {
+    public struct BTRunTreeEvent
+    {
+        public BTRoot Root;
+        public BTEnv Env;
+    }
+    
     public class BTHandlerAttribute: BaseAttribute
     {
     }
@@ -18,13 +24,15 @@ namespace ET
     {
         protected abstract int Run(Node node, BTEnv env);
 
-        public int Handle(BTNode node, BTEnv env)
+        public virtual int Handle(BTNode node, BTEnv env)
         {
             if (node is not Node c)
             {
                 throw new Exception($"AEffectHandler EffectConfig类型转换错误: {node.GetType().FullName} to {typeof (Node).Name}");
             }
-
+#if UNITY_EDITOR
+            env.AddPath(node.Id);
+#endif
             return this.Run(c, env);
         }
 

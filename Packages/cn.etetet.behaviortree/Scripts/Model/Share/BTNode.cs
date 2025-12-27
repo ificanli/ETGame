@@ -8,9 +8,8 @@ namespace ET
     [System.Serializable]
     public abstract class BTNode : Object
     {
-        [ReadOnly]
 #if UNITY
-        [UnityEngine.HideInInspector]
+        [DisplayAsString]
 #endif
         public int Id;
         
@@ -29,6 +28,7 @@ namespace ET
         //[HideInInspector]
         [PropertyOrder(99)]
         [UnityEngine.TextArea]
+        [ShowIf("@!DescCollapsed")]
         public string Desc;
         
         [BsonIgnore]
@@ -38,6 +38,10 @@ namespace ET
         [BsonIgnore]
         [UnityEngine.HideInInspector]
         public bool ChildrenCollapsed;
+
+        [BsonIgnore]
+        [UnityEngine.HideInInspector]
+        public bool DescCollapsed = true; // 默认折叠说明
 
         [BsonIgnore]
         [UnityEngine.HideInInspector]

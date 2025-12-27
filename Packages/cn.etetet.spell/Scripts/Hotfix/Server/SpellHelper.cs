@@ -60,7 +60,7 @@ namespace ET.Server
                 TargetSelector targetSelector = spellConfig.TargetSelector;
                 if (targetSelector != null)
                 {
-                    using BTEnv env = BTEnv.Create(buff.Scene());
+                    using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                     env.AddEntity(targetSelector.Buff, buff);
                     env.AddEntity(targetSelector.Caster, buff.GetCaster());
                     env.AddEntity(targetSelector.Owner, buff.GetOwner());
@@ -78,7 +78,7 @@ namespace ET.Server
             {
                 // 先检查消耗的东西是否足够
                 {
-                    using BTEnv env = BTEnv.Create(buff.Scene());
+                    using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                     env.AddEntity(costNode.Buff, buff);
                     env.AddEntity(costNode.Caster, buff.GetCaster());
                     env.AddStruct(costNode.Check, true);
@@ -92,7 +92,7 @@ namespace ET.Server
 
                 // 消耗东西
                 {
-                    using BTEnv env = BTEnv.Create(buff.Scene());
+                    using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                     env.AddEntity(costNode.Buff, buff);
                     env.AddEntity(costNode.Caster, buff.GetCaster());
                     env.AddStruct(costNode.Check, false);

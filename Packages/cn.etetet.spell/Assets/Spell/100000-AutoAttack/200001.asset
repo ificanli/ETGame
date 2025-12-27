@@ -111,6 +111,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -147,6 +150,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -159,6 +165,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 1243493200079276338
     - Name: Buff
       Entry: 1
       Data: Buff
@@ -208,6 +217,9 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: DescCollapsed
       Entry: 5
       Data: false
     - Name: Position
@@ -270,6 +282,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -321,6 +336,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -360,6 +378,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -390,6 +411,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -402,6 +426,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 1690415682219116574
     - Name: Buff
       Entry: 1
       Data: Buff

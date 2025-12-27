@@ -111,6 +111,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -159,6 +162,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -198,6 +204,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -210,6 +219,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 7062527687140831987
     - Name: Buff
       Entry: 1
       Data: Buff
@@ -261,6 +273,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -300,6 +315,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -312,6 +330,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 892299141201969128
     - Name: Buff
       Entry: 1
       Data: Buff
@@ -361,6 +382,9 @@ MonoBehaviour:
       Entry: 5
       Data: false
     - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: DescCollapsed
       Entry: 5
       Data: false
     - Name: Position
@@ -414,6 +438,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -462,6 +489,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -474,6 +504,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 4778830958770092921
     - Name: Buff
       Entry: 1
       Data: Buff
@@ -525,6 +558,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -564,6 +600,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -576,6 +615,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 7960594676935385866
     - Name: Buff
       Entry: 1
       Data: Buff
@@ -627,6 +669,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -666,6 +711,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -678,6 +726,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 3505077439561151127
     - Name: Buff
       Entry: 1
       Data: Buff

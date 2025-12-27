@@ -29,6 +29,13 @@ namespace ET
 
         public NodeView Parent { get; private set; }
 
+        private bool isDisposed;
+
+        /// <summary>
+        /// 获取节点是否已被销毁
+        /// </summary>
+        public bool IsDisposed => this.isDisposed;
+
         private readonly Port inPort;
 
         private readonly Port outPort;
@@ -124,8 +131,10 @@ namespace ET
         }
 
         private readonly IMGUIContainer imgui;
-        private readonly Button contentCollapseButton;
-        
+
+        private NodeIMGUI nodeIMGUI;
+        private Editor editor;
+
         public bool ContentCollapsed
         {
             get
@@ -137,16 +146,39 @@ namespace ET
                 this.Node.IsCollapsed = value;
                 if (!this.Node.IsCollapsed)
                 {
-                    this.contentCollapseButton.text = "隐藏节点内容";
                     this.imgui.style.display = DisplayStyle.Flex;
                 }
                 else
                 {
-                    this.contentCollapseButton.text = "显示节点内容";
                     this.imgui.style.display = DisplayStyle.None;
                 }
 
                 RefreshExpandedState();
+            }
+        }
+
+        public bool DescCollapsed
+        {
+            get
+            {
+                return this.Node.DescCollapsed;
+            }
+            set
+            {
+                this.Node.DescCollapsed = value;
+                UpdateTooltip();
+            }
+        }
+
+        private void UpdateTooltip()
+        {
+            if (this.DescCollapsed)
+            {
+                this.tooltip = "";
+            }
+            else
+            {
+                this.tooltip = this.Node.Desc;
             }
         }
 
@@ -161,27 +193,27 @@ namespace ET
                 this.Id = this.treeView.GenerateId();
             }
 
+            // 确保旧节点也默认隐藏Desc（旧节点DescCollapsed为false）
+            if (!this.Node.DescCollapsed)
+            {
+                this.Node.DescCollapsed = true;
+            }
+
             Label idLabel = new(node.Id.ToString());
             idLabel.style.width = 32;
             idLabel.style.height = 20;
             idLabel.style.marginTop = 5;
             this.titleContainer.Add(idLabel);
-            
+
             style.backgroundColor = new Color(0f, 0f, 0f, 1f);
 
-            NodeIMGUI nodeIMGUI = ScriptableObject.CreateInstance<NodeIMGUI>();
-            nodeIMGUI.Node = this.Node;
+            this.nodeIMGUI = ScriptableObject.CreateInstance<NodeIMGUI>();
+            this.nodeIMGUI.Node = this.Node;
 
-            contentCollapseButton = new Button();
-            contentCollapseButton.style.height = 20;
-            contentCollapseButton.style.marginLeft = 5;
-            contentCollapseButton.clicked += ChangeContentCollapse;
-            
-            base.contentContainer.Add(this.contentCollapseButton);
-            
-            this.tooltip = this.Node.Desc;
-            
-            Editor editor = Editor.CreateEditor(nodeIMGUI);
+            // 根据DescCollapsed状态设置tooltip
+            UpdateTooltip();
+
+            this.editor = Editor.CreateEditor(this.nodeIMGUI);
 
             this.imgui = new(() =>
             {
@@ -192,11 +224,11 @@ namespace ET
                     nodeBytes = this.treeView.BackupRoot();
                 }
 
-                editor.OnInspectorGUI(); 
-                
+                this.editor.OnInspectorGUI();
+
                 if (GUI.changed)
                 {
-                    this.tooltip = this.Node.Desc;
+                    UpdateTooltip();
                     if (nodeBytes != null)
                     {
                         this.treeView.SaveToUndo(nodeBytes);
@@ -236,29 +268,57 @@ namespace ET
         
         public void Dispose()
         {
-            long id = this.Id;
-            if (id == 0)
+            // 防止重复Dispose
+            if (this.isDisposed)
             {
                 return;
             }
-            this.Id = 0;
-            
+            this.isDisposed = true;
+
+            long id = this.Id;
+
+            // 注销事件回调，防止内存泄漏
+            UnregisterCallback<MouseDownEvent>(OnMouseDown);
+
+            // 清理IMGUIContainer
+            if (this.imgui != null)
+            {
+                this.imgui.RemoveFromHierarchy();
+            }
+
+            // 销毁Editor和NodeIMGUI，防止内存泄漏
+            if (this.editor != null)
+            {
+                UnityEngine.Object.DestroyImmediate(this.editor);
+                this.editor = null;
+            }
+
+            if (this.nodeIMGUI != null)
+            {
+                UnityEngine.Object.DestroyImmediate(this.nodeIMGUI);
+                this.nodeIMGUI = null;
+            }
+
             this.treeView.RemoveElement(this);
             if (this.edge != null)
             {
                 this.treeView.RemoveElement(this.edge);
             }
 
-            if (this.Parent != null && this.Parent.Id != 0)
+            if (this.Parent != null && !this.Parent.IsDisposed)
             {
                 this.Parent.GetChildren().Remove(this);
 
-                this.Parent.Node.Children.Remove(this.Node);
+                if (!this.treeView.IsDisposed)  // 编辑器关闭的时候，不要删除Node，只有手动delete NodeView才会删除
+                {
+                    this.Parent.Node.Children.Remove(this.Node);
+                }
             }
 
             this.treeView.RemoveNode(id);
 
-            foreach (NodeView nodeView in this.GetChildren())
+            // 使用ToList()创建副本，防止在遍历时修改集合
+            foreach (NodeView nodeView in this.GetChildren().ToList())
             {
                 nodeView.Dispose();
             }
@@ -356,7 +416,7 @@ namespace ET
             evt.menu.AppendAction("Delete", this.DeleteNode);
             evt.menu.AppendAction("Copy", this.CopyNode);
             evt.menu.AppendAction("Cut", this.CutNode);
-            if (this.treeView.CopyNode != null)
+            if (BTClipboard.Instance.HasData())
             {
                 evt.menu.AppendAction("Paste", this.PasterNode);
             }
@@ -365,6 +425,14 @@ namespace ET
             {
                 evt.menu.AppendAction("Change", (o)=>this.Change(o).NoContext());
             }
+
+            // 添加折叠/展开节点内容菜单项
+            string contentToggleText = this.ContentCollapsed ? "显示节点内容" : "隐藏节点内容";
+            evt.menu.AppendAction(contentToggleText, (o) => this.ChangeContentCollapse());
+
+            // 添加折叠/展开节点说明菜单项
+            string descToggleText = this.DescCollapsed ? "显示节点说明" : "隐藏节点说明";
+            evt.menu.AppendAction(descToggleText, (o) => this.ChangeDescCollapse());
         }
 
         private async ETTask Change(DropdownMenuAction obj)
@@ -381,16 +449,16 @@ namespace ET
             
             Type type = searchTreeEntry.userData as Type;
             BTNode btNode = Activator.CreateInstance(type) as BTNode;
-            
+
             if (btNode is BTRoot)
             {
-                this.treeView.ShowText("can not change to root node!");
+                this.treeView.BehaviorTreeEditor?.ShowText("can not change to root node!");
                 return;
             }
-            
+
             if (this.GetChildren().Count > 0)
             {
-                this.treeView.ShowText("node has child!");
+                this.treeView.BehaviorTreeEditor?.ShowText("node has child!");
                 return;
             }
 
@@ -419,6 +487,11 @@ namespace ET
             this.ContentCollapsed = !this.ContentCollapsed;
         }
 
+        private void ChangeDescCollapse()
+        {
+            this.DescCollapsed = !this.DescCollapsed;
+        }
+
         private void ChangeCollapse()
         {
             this.ChildrenCollapsed = !this.ChildrenCollapsed;
@@ -432,8 +505,7 @@ namespace ET
                 return;
             }
 
-            this.treeView.CopyNode = this;
-            this.treeView.IsCut = true;
+            BTClipboard.Instance.Cut(this.treeView, this, this.Node);
         }
 
         private static void ClearId(BTNode node)
@@ -449,32 +521,26 @@ namespace ET
 
         private void PasterNode(DropdownMenuAction obj)
         {
-            if (this.treeView.CopyNode == null)
+            BTNode clone = BTClipboard.Instance.Paste();
+            if (clone == null)
             {
                 return;
             }
-            
+
             this.treeView.SaveToUndo();
 
-            byte[] nodeBytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.treeView.CopyNode.Node, DataFormat.Binary);
-            BTNode clone = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTNode>(nodeBytes, DataFormat.Binary);
             ClearId(clone);
             this.AddChild(new NodeView(this.treeView, clone));
 
-            if (this.treeView.IsCut)
-            {
-                this.treeView.CopyNode.Parent.RemoveChild(this.treeView.CopyNode);
-            }
+            // 完成粘贴操作，如果是剪切则删除源节点
+            BTClipboard.Instance.FinishPaste();
 
-            this.treeView.CopyNode = null;
-            
             this.treeView.Layout();
         }
 
         private void CopyNode(DropdownMenuAction obj)
         {
-            this.treeView.CopyNode = this;
-            this.treeView.IsCut = false;
+            BTClipboard.Instance.Copy(this.Node);
         }
 
         private async ETTask CreateNode(DropdownMenuAction obj)

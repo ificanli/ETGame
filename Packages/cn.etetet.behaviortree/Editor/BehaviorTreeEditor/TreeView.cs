@@ -11,9 +11,10 @@ using UnityEngine.UIElements;
 
 namespace ET
 {
-    [UxmlElement]
     public partial class TreeView: GraphView
     {
+        public new class UxmlFactory : UxmlFactory<TreeView, UxmlTraits> { }
+        
         public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
 
         public BehaviorTreeEditor BehaviorTreeEditor;
@@ -24,27 +25,25 @@ namespace ET
 
         public readonly Dictionary<long, NodeView> Nodes = new();
 
+        private const int MaxUndoSteps = 50; // 最大撤销深度
         private readonly Stack<byte[]> undo = new();
         private readonly Stack<byte[]> redo = new();
 
-        public NodeView CopyNode;
-        public bool IsCut;
         private int maxId;
         public int GenerateId()
         {
             return ++this.maxId;
         }
 
-        private Label text;
-        private double messageEndTime;
-
         public NodeView MouseDownNode;
         public Vector2 MoveStartPos;
+
+        public bool IsDisposed { get; private set; }
         
         public TreeView()
         {
             Insert(0, new GridBackground());
-            
+
             SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
             this.AddManipulator(new ContentDragger());
             this.AddManipulator(new SelectionDragger());
@@ -53,12 +52,44 @@ namespace ET
 
             StyleSheet styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Packages/cn.etetet.behaviortree/Editor/BehaviorTreeEditor/BehaviorTreeEditor.uss");
             styleSheets.Add(styleSheet);
-            
+
             this.RegisterCallback<KeyDownEvent>(OnKeyDown);
             this.RegisterCallback<MouseUpEvent>(OnMouseUp);
             this.graphViewChanged = OnGraphViewChanged;
 
-            this.schedule.Execute((_)=> { this.Update(); }).Every(30);
+            // 注册DetachFromPanel事件，在TreeView从面板移除时清理资源
+            this.RegisterCallback<DetachFromPanelEvent>(OnDetachFromPanel);
+        }
+
+        private void OnDetachFromPanel(DetachFromPanelEvent evt)
+        {
+            Cleanup();
+        }
+
+        /// <summary>
+        /// 清理TreeView的资源，防止内存泄漏
+        /// </summary>
+        public void Cleanup()
+        {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
+            this.IsDisposed = true;
+            
+            this.root?.Dispose();
+            
+            // 销毁RightClickMenu，防止内存泄漏
+            if (this.RightClickMenu != null)
+            {
+                UnityEngine.Object.DestroyImmediate(this.RightClickMenu);
+            }
+
+            // 注销回调
+            this.UnregisterCallback<KeyDownEvent>(OnKeyDown);
+            this.UnregisterCallback<MouseUpEvent>(OnMouseUp);
+            this.UnregisterCallback<DetachFromPanelEvent>(OnDetachFromPanel);
         }
 
 #region 拖动节点到另外的节点上
@@ -141,27 +172,6 @@ namespace ET
             return change;
         }
 
-        public void ShowText(string s, float timeout = 1)
-        {
-            this.text = this.Q<Label>("LabelTips");
-            this.messageEndTime = EditorApplication.timeSinceStartup + timeout;
-            this.text.style.opacity = 1f;
-            this.text.text = s;
-        }
-
-        private void Update()
-        {
-            // 如果当前时间超过 _messageEndTime，就隐藏提示
-            if (EditorApplication.timeSinceStartup > this.messageEndTime)
-            {
-                if (this.text != null)
-                {
-                    this.text.style.opacity = 0f;
-                    this.text = null;
-                }
-            }
-        }
-        
         private void MoveToNode(NodeView move, NodeView to)
         {
             // 父节点不能移到子节点上
@@ -214,23 +224,25 @@ namespace ET
             {
                 return; // 如果不是当前 GraphView，直接退出
             }
-            
-            Event e = Event.current;
-            if (e.keyCode == KeyCode.Z && e.control)
+
+            // 使用 evt 参数，而不是 Event.current
+            // macOS: commandKey, Windows/Linux: ctrlKey
+            bool isModifier = evt.commandKey || evt.ctrlKey;
+
+            if (evt.keyCode == KeyCode.Z && isModifier)
             {
                 this.UnDo();
-                e.Use(); // 防止事件继续传递
+                evt.StopPropagation(); // 防止事件继续传递
             }
-            if (e.keyCode == KeyCode.Y && e.control)
+            if (evt.keyCode == KeyCode.Y && isModifier)
             {
                 this.Redo();
-                e.Use();
+                evt.StopPropagation();
             }
-
-            if (e.keyCode == KeyCode.S && e.control)
+            if (evt.keyCode == KeyCode.S && isModifier)
             {
                 this.Save();
-                e.Use();
+                evt.StopPropagation();
             }
         }
         
@@ -240,7 +252,7 @@ namespace ET
             this.scriptableObject = so;
 
             this.Nodes.Clear();
-            
+
             if (this.root != null)
             {
                 this.root.Dispose();
@@ -248,7 +260,7 @@ namespace ET
 
             this.maxId = 0;
             GetMaxId(node);
-            
+
             this.root = new NodeView(this, node);
             foreach (BTNode child in node.Children)
             {
@@ -256,6 +268,9 @@ namespace ET
             }
 
             this.Layout();
+
+            // 设置当前关注的TreeId，用于路径记录过滤
+            this.BehaviorTreeEditor.PathRecorder.SetCurrentTreeId(node.TreeId);
         }
 
         private void MoveChildrenToRoot(BTRoot node)
@@ -266,7 +281,7 @@ namespace ET
             
             this.root.Dispose();
             this.root = null;
-            this.CopyNode = null;
+            BTClipboard.Instance.Clear();
 
             btRootNode.Children.Clear();
             btRootNode.Children.AddRange(node.Children);
@@ -347,24 +362,80 @@ namespace ET
 
         public byte[] BackupRoot()
         {
-            return Sirenix.Serialization.SerializationUtility.SerializeValue(this.root.Node, DataFormat.Binary);
+            try
+            {
+                return Sirenix.Serialization.SerializationUtility.SerializeValue(this.root.Node, DataFormat.Binary);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Backup root node failed: {e.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 获取当前打开的行为树ID
+        /// </summary>
+        public long GetCurrentTreeId()
+        {
+            if (this.root?.Node is BTRoot btRoot)
+            {
+                return btRoot.TreeId;
+            }
+            return 0;
         }
 
         public void SaveToUndo(byte[] bytes = null)
         {
-            if (bytes == null)
+            try
             {
-                bytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.root.Node, DataFormat.Binary);
-            }
+                if (bytes == null)
+                {
+                    bytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.root.Node, DataFormat.Binary);
+                }
 
-            this.undo.Push(bytes);
+                this.undo.Push(bytes);
+
+                // 限制撤销栈深度，防止内存无限增长
+                if (this.undo.Count > MaxUndoSteps)
+                {
+                    // 将栈转为数组，移除最底层元素，重新压入栈
+                    byte[][] undoArray = this.undo.ToArray();
+                    this.undo.Clear();
+
+                    // 跳过最底层的元素（最旧的快照）
+                    for (int i = undoArray.Length - 2; i >= 0; i--)
+                    {
+                        this.undo.Push(undoArray[i]);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Save to undo failed: {e.Message}");
+            }
         }
         
         public void Save()
         {
+            if (this.scriptableObject == null)
+            {
+                return;
+            }
+
+            // 在保存前校验BTInput
+            if (!ValidateAllNodes(out List<string> errors))
+            {
+                // 校验失败，显示错误信息
+                string errorMessage = "Save Failed! Invalid BTInput:\n" + string.Join("\n", errors);
+                this.BehaviorTreeEditor?.ShowText(errorMessage, 5f);
+                Debug.LogError(errorMessage);
+                return;
+            }
+
             EditorUtility.SetDirty(this.scriptableObject);
             AssetDatabase.SaveAssets();
-            this.ShowText("Save Finish!");
+            this.BehaviorTreeEditor?.ShowText("Save Finish!");
         }
         
         public void UnDo()
@@ -374,13 +445,31 @@ namespace ET
                 return;
             }
 
-            
-            byte[] redoBytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.root.Node, DataFormat.Binary);
-            this.redo.Push(redoBytes);
-            
-            byte[] undoBytes = this.undo.Pop();
-            BTRoot undoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(undoBytes, DataFormat.Binary);
-            this.MoveChildrenToRoot(undoRoot);
+            try
+            {
+                byte[] redoBytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.root.Node, DataFormat.Binary);
+                this.redo.Push(redoBytes);
+
+                // 限制重做栈深度
+                if (this.redo.Count > MaxUndoSteps)
+                {
+                    byte[][] redoArray = this.redo.ToArray();
+                    this.redo.Clear();
+                    for (int i = redoArray.Length - 2; i >= 0; i--)
+                    {
+                        this.redo.Push(redoArray[i]);
+                    }
+                }
+
+                byte[] undoBytes = this.undo.Pop();
+                BTRoot undoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(undoBytes, DataFormat.Binary);
+                this.MoveChildrenToRoot(undoRoot);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Undo operation failed: {e.Message}");
+                this.BehaviorTreeEditor?.ShowText("Undo Failed! See console for details.", 3f);
+            }
         }
 
         public void Redo()
@@ -389,12 +478,32 @@ namespace ET
             {
                 return;
             }
-            byte[] undoBytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.root.Node, DataFormat.Binary);
-            this.undo.Push(undoBytes);
-            
-            byte[] redoBytes = this.redo.Pop();
-            BTRoot redoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(redoBytes, DataFormat.Binary);
-            this.MoveChildrenToRoot(redoRoot);
+
+            try
+            {
+                byte[] undoBytes = Sirenix.Serialization.SerializationUtility.SerializeValue(this.root.Node, DataFormat.Binary);
+                this.undo.Push(undoBytes);
+
+                // 限制撤销栈深度
+                if (this.undo.Count > MaxUndoSteps)
+                {
+                    byte[][] undoArray = this.undo.ToArray();
+                    this.undo.Clear();
+                    for (int i = undoArray.Length - 2; i >= 0; i--)
+                    {
+                        this.undo.Push(undoArray[i]);
+                    }
+                }
+
+                byte[] redoBytes = this.redo.Pop();
+                BTRoot redoRoot = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTRoot>(redoBytes, DataFormat.Binary);
+                this.MoveChildrenToRoot(redoRoot);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Redo operation failed: {e.Message}");
+                this.BehaviorTreeEditor?.ShowText("Redo Failed! See console for details.", 3f);
+            }
         }
         
         public void SetRed(NodeView inputNode)
@@ -421,7 +530,7 @@ namespace ET
             {
                 return false;
             }
-            
+
             FieldInfo[] fieldInfos = node.Node.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             var btInputFields = fieldInfos.Where(field =>
                     field.GetCustomAttributes(typeof(BTOutput), false).Any()
@@ -445,6 +554,168 @@ namespace ET
             }
             return true;
         }
+
+        /// <summary>
+        /// 校验整棵树的所有BTInput字段是否合法
+        /// </summary>
+        /// <param name="errors">输出错误信息列表</param>
+        /// <returns>是否所有BTInput都合法</returns>
+        private bool ValidateAllNodes(out List<string> errors)
+        {
+            errors = new List<string>();
+
+            if (this.root == null)
+            {
+                return true;
+            }
+
+            // 清除所有节点的边框颜色
+            ClearNodeViewBordColor(this.root);
+
+            // 遍历所有节点进行校验
+            ValidateNodeRecursive(this.root, new Dictionary<string, Type>(), errors);
+
+            // 如果有错误，将对应节点标记为红色
+            if (errors.Count > 0)
+            {
+                foreach ((long _, NodeView nodeView) in this.Nodes)
+                {
+                    if (HasInvalidInput(nodeView, out _))
+                    {
+                        nodeView.SetBorderColor(Color.red);
+                    }
+                }
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 递归校验节点及其子节点的BTInput
+        /// </summary>
+        /// <param name="node">当前节点</param>
+        /// <param name="availableOutputs">当前可用的BTOutput集合（名称->类型）</param>
+        /// <param name="errors">错误信息列表</param>
+        private void ValidateNodeRecursive(NodeView node, Dictionary<string, Type> availableOutputs, List<string> errors)
+        {
+            // 直接使用公共的BTNodeValidator进行校验
+            BTNodeValidator.ValidateNodeRecursive(node.Node, availableOutputs, errors);
+        }
+
+        /// <summary>
+        /// 检查节点是否有不合法的BTInput
+        /// </summary>
+        /// <param name="node">要检查的节点</param>
+        /// <param name="invalidFields">不合法的字段名列表</param>
+        /// <returns>是否有不合法的输入</returns>
+        private bool HasInvalidInput(NodeView node, out List<string> invalidFields)
+        {
+            invalidFields = new List<string>();
+
+            // 收集从root到该节点路径上所有可用的BTOutput
+            HashSet<string> availableOutputs = new HashSet<string>();
+            CollectAvailableOutputs(this.root, node, availableOutputs);
+
+            // 检查该节点的所有BTInput
+            FieldInfo[] fieldInfos = node.Node.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var btInputFields = fieldInfos.Where(field => field.GetCustomAttributes(typeof(BTInput), false).Any());
+
+            foreach (FieldInfo field in btInputFields)
+            {
+                string inputValue = field.GetValue(node.Node) as string;
+
+                if (string.IsNullOrEmpty(inputValue))
+                {
+                    continue;
+                }
+
+                if (!availableOutputs.Contains(inputValue))
+                {
+                    invalidFields.Add(field.Name);
+                }
+            }
+
+            return invalidFields.Count > 0;
+        }
+
+        /// <summary>
+        /// 收集从root到目标节点路径上所有可用的BTOutput
+        /// </summary>
+        /// <param name="currentNode">当前遍历的节点</param>
+        /// <param name="targetNode">目标节点</param>
+        /// <param name="outputs">输出集合</param>
+        /// <returns>是否找到目标节点</returns>
+        private bool CollectAvailableOutputs(NodeView currentNode, NodeView targetNode, HashSet<string> outputs)
+        {
+            if (currentNode.Id == targetNode.Id)
+            {
+                return true;
+            }
+
+            // 添加当前节点的BTOutput
+            FieldInfo[] fieldInfos = currentNode.Node.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var btOutputFields = fieldInfos.Where(field => field.GetCustomAttributes(typeof(BTOutput), false).Any());
+
+            foreach (FieldInfo field in btOutputFields)
+            {
+                string outputValue = field.GetValue(currentNode.Node) as string;
+                if (!string.IsNullOrEmpty(outputValue))
+                {
+                    outputs.Add(outputValue);
+                }
+            }
+
+            // 递归遍历子节点
+            foreach (NodeView child in currentNode.GetChildren())
+            {
+                if (CollectAvailableOutputs(child, targetNode, outputs))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        #region 调试功能
+
+        /// <summary>
+        /// 高亮显示路径中的节点
+        /// </summary>
+        /// <param name="path">节点ID列表</param>
+        public void HighlightPath(List<int> path)
+        {
+            // 清除所有节点的高亮
+            ClearHighlight();
+
+            if (path == null || path.Count == 0)
+            {
+                return;
+            }
+
+            // 高亮路径中的节点
+            foreach (int nodeId in path)
+            {
+                if (this.Nodes.TryGetValue(nodeId, out NodeView nodeView))
+                {
+                    nodeView.style.backgroundColor = new Color(0f, 0.5f, 0f, 1f); // 绿色
+                }
+            }
+        }
+
+        /// <summary>
+        /// 清除所有节点的高亮
+        /// </summary>
+        public void ClearHighlight()
+        {
+            foreach ((long _, NodeView nodeView) in this.Nodes)
+            {
+                nodeView.style.backgroundColor = new Color(0f, 0f, 0f, 1f); // 黑色
+            }
+        }
+
+        #endregion
     }
 }
 

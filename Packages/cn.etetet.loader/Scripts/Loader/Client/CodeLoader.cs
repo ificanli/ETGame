@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -8,11 +9,9 @@ namespace ET
 {
     public class CodeLoader: Singleton<CodeLoader>, ISingletonAwake
     {
-        private Assembly modelAssembly;
-        private Assembly modelViewAssembly;
-
         private Dictionary<string, TextAsset> dlls;
         private Dictionary<string, TextAsset> aotDlls;
+        private readonly List<Assembly> assemblies = new();
 
         public void Awake()
         {
@@ -38,27 +37,31 @@ namespace ET
         public async ETTask Start()
         {
             await DownloadAsync();
-#if UNITY_EDITOR
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (Assembly assembly in assemblies)
+            
+            
+            HashSet<string> assemblyNames = new()
+            {
+                "ET.Core",
+                "ET.Loader",
+#if UNITY_EDITOR     
+                "ET.Model",
+                "ET.ModelView",
+                "ET.BehaviorTree.Editor",
+#endif
+            };
+
+            Assembly[] domainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in domainAssemblies)
             {
                 string name = assembly.GetName().Name;
-                if (name == "ET.Model")
+                if (assemblyNames.Contains(name))
                 {
-                    this.modelAssembly = assembly;
-                    continue;
-                }
-                if (name == "ET.ModelView")
-                {
-                    this.modelViewAssembly = assembly;
-                    continue;
-                }
-                if (this.modelAssembly != null && this.modelViewAssembly != null)
-                {
-                    break;
+                    assemblies.Add(assembly);
                 }
             }
-#else
+            List<Assembly> list = new(this.assemblies);
+            
+#if !UNITY_EDITOR
             byte[] modelAssBytes = this.dlls["ET.Model.dll"].bytes;
             byte[] modelPdbBytes = this.dlls["ET.Model.pdb"].bytes;
             byte[] modelViewAssBytes = this.dlls["ET.ModelView.dll"].bytes;
@@ -76,16 +79,18 @@ namespace ET
                 HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(textAsset.bytes, HybridCLR.HomologousImageMode.SuperSet);
             }
             
-            this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
-            this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
+            Assembly modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
+            Assembly modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
+            list.Add(modelAssembly);
+            list.Add(modelViewAssembly);
 #endif
+            
             (Assembly hotfixAssembly, Assembly hotfixViewAssembly) = this.LoadHotfix();
-
-            World.Instance.AddSingleton<CodeTypes, Assembly[]>(new[]
-            {
-                typeof (World).Assembly, typeof (Init).Assembly, this.modelAssembly, this.modelViewAssembly, hotfixAssembly, hotfixViewAssembly
-            });
-            IStaticMethod start = new StaticMethod(this.modelAssembly, "ET.Entry", "Start");
+            
+            list.Add(hotfixViewAssembly);
+            list.Add(hotfixAssembly);
+            World.Instance.AddSingleton<CodeTypes, Assembly[]>(list.ToArray());
+            IStaticMethod start = new StaticMethod(hotfixAssembly, "ET.Entry", "Start");
             start.Run();
         }
 
@@ -106,8 +111,8 @@ namespace ET
             }
             else
             {
-                Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                foreach (Assembly assembly in assemblies)
+                Assembly[] domainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly assembly in domainAssemblies)
                 {
                     string name = assembly.GetName().Name;
                     if (name == "ET.Hotfix")
@@ -147,11 +152,10 @@ namespace ET
         public void Reload()
         {
             (Assembly hotfixAssembly, Assembly hotfixViewAssembly) = this.LoadHotfix(true);
-
-            CodeTypes codeTypes = World.Instance.AddSingleton<CodeTypes, Assembly[]>(new[]
-            {
-                typeof (World).Assembly, typeof (Init).Assembly, this.modelAssembly, this.modelViewAssembly, hotfixAssembly, hotfixViewAssembly
-            });
+            List<Assembly> list = new(this.assemblies);
+            list.Add(hotfixViewAssembly);
+            list.Add(hotfixAssembly);
+            CodeTypes codeTypes = World.Instance.AddSingleton<CodeTypes, Assembly[]>(list.ToArray());
             codeTypes.CodeProcess();
 
             Log.Info($"reload dll finish!");

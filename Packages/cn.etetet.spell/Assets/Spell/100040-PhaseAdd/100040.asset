@@ -44,7 +44,7 @@ MonoBehaviour:
       Data: 0
     - Name: BuffId
       Entry: 3
-      Data: 200040
+      Data: 1100040
     - Name: Cost
       Entry: 6
       Data: 
@@ -75,6 +75,9 @@ MonoBehaviour:
     - Name: ChildrenCollapsed
       Entry: 5
       Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -87,6 +90,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 563801883277983586
     - Name: Buff
       Entry: 1
       Data: Buff
