@@ -95,7 +95,7 @@ namespace ET.Client
                     self.DynamicEvent(new EventMain_ShowHPView
                     {
                         HPView = self
-                    }).NoContext();
+                    }).Coroutine();
                 }
 
                 if (self.UIBase.OwnerRectTransform.parent != self.YIUIMgr().UICache)

@@ -5,7 +5,7 @@
     {
         public override void Handle(MailBoxInvoker args)
         {
-            HandleInner(args).NoContext();
+            HandleInner(args).Coroutine();
         }
 
         private static async ETTask HandleInner(MailBoxInvoker args)

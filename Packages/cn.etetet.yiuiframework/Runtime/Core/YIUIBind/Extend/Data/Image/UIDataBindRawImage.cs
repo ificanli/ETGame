@@ -75,7 +75,7 @@ namespace YIUIFramework
                 return;
             }
 
-            ChangeTexture2D(dataValue).NoContext();
+            ChangeTexture2D(dataValue).Coroutine();
         }
 
         private async ETTask ChangeTexture2D(string resName)

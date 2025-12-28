@@ -14,7 +14,7 @@
     {
         public override void Handle(Entity entity, YIUIInvokeEntity_SceneOpenPanel args)
         {
-            entity.YIUISceneRoot().OpenPanelAsync(args.PanelName).NoContext();
+            entity.YIUISceneRoot().OpenPanelAsync(args.PanelName).Coroutine();
         }
     }
 }

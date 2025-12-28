@@ -38,7 +38,7 @@ namespace ET.Client
 
                 if (self.WindowBanAwaitOpenTween)
                 {
-                    self.SealedOnWindowOpenTween().NoContext();
+                    self.SealedOnWindowOpenTween().Coroutine();
                 }
                 else
                 {
@@ -59,7 +59,7 @@ namespace ET.Client
 
                 if (self.WindowBanAwaitCloseTween)
                 {
-                    self.SealedOnWindowCloseTween().NoContext();
+                    self.SealedOnWindowCloseTween().Coroutine();
                 }
                 else
                 {

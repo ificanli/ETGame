@@ -8,12 +8,12 @@ namespace ET.Client
     {
         public static void CloseView<T>(this YIUIPanelComponent self, bool tween = true) where T : Entity
         {
-            self.CloseViewAsync<T>(tween).NoContext();
+            self.CloseViewAsync<T>(tween).Coroutine();
         }
 
         public static void CloseView(this YIUIPanelComponent self, string resName, bool tween = true)
         {
-            self.CloseViewAsync(resName, tween).NoContext();
+            self.CloseViewAsync(resName, tween).Coroutine();
         }
 
         public static async ETTask<bool> CloseViewAsync<T>(this YIUIPanelComponent self, bool tween = true) where T : Entity

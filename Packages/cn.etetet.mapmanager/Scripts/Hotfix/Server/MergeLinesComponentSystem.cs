@@ -10,8 +10,8 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this MergeLinesComponent self)
         {
-            self.StartCheckAsync().NoContext();
-            self.StartTransferAsync().NoContext();
+            self.StartCheckAsync().Coroutine();
+            self.StartTransferAsync().Coroutine();
         }
         
         [EntitySystem]

@@ -60,7 +60,7 @@ namespace ET.Client
             var prefabName = paramVo.Get<string>();
             var damage = Random.Range(1, 100);
             Vector2 screenPoint = new(Screen.width / 2, Screen.height / 2);
-            DamageTipsHelper.ShowUIByScreenPoint(clientScene, prefabName, screenPoint, damage).NoContext();
+            DamageTipsHelper.ShowUIByScreenPoint(clientScene, prefabName, screenPoint, damage).Coroutine();
             await ETTask.CompletedTask;
             return true;
         }

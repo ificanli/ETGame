@@ -102,7 +102,7 @@ namespace ET
                     var lambdaAwaitExpression = invocationExpressionSyntax.GetNeareastAncestor<AwaitExpressionSyntax>();
                     if (lambdaAwaitExpression == null)
                     {
-                        // 检查是否调用了.NoContext()或WithContext()
+                        // 检查是否调用了.Coroutine()
                         if (!IsValidETTaskCall(invocationExpressionSyntax))
                         {
                             Diagnostic diagnostic = Diagnostic.Create(ETTaskInAsyncMethodAnalyzerRule.Rule, memberAccessExpressionSyntax?.Name.Identifier.GetLocation(),
@@ -113,7 +113,7 @@ namespace ET
                 }
                 else
                 {
-                    // 同步lambda中的ETTask调用，需要.NoContext()或WithContext()
+                    // 同步lambda中的ETTask调用，需要.Coroutine()
                     if (!IsValidETTaskCall(invocationExpressionSyntax))
                     {
                         Diagnostic diagnostic = Diagnostic.Create(ETTaskInSyncMethodAnalyzerRule.Rule, memberAccessExpressionSyntax?.Name.Identifier.GetLocation(),
@@ -137,7 +137,7 @@ namespace ET
             // 检查是否有正确的后缀调用
             if (IsValidETTaskCall(invocationExpressionSyntax))
             {
-                // 已经有.NoContext()或WithContext()，是正确的用法
+                // 已经有.Coroutine()是正确的用法
                 return;
             }
 
@@ -160,15 +160,15 @@ namespace ET
         }
 
         /// <summary>
-        /// 检查ETTask调用是否已经正确处理（有.NoContext()或WithContext()后缀）
+        /// 检查ETTask调用是否已经正确处理（有.Coroutine()）
         /// </summary>
         private static bool IsValidETTaskCall(InvocationExpressionSyntax invocationExpression)
         {
-            // 检查父级是否是成员访问表达式（如 .NoContext() 或 .WithContext()）
+            // 检查父级是否是成员访问表达式（如 .Coroutine()）
             if (invocationExpression.Parent is MemberAccessExpressionSyntax parentMemberAccess)
             {
                 var memberName = parentMemberAccess.Name.Identifier.ValueText;
-                if (memberName == "NoContext" || memberName == "WithContext")
+                if (memberName == "Coroutine")
                 {
                     return true;
                 }

@@ -412,7 +412,7 @@ namespace ET
         public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             evt.menu.ClearItems();
-            evt.menu.AppendAction("Create", (o)=>this.CreateNode(o).NoContext());
+            evt.menu.AppendAction("Create", (o)=>this.CreateNode(o).Coroutine());
             evt.menu.AppendAction("Delete", this.DeleteNode);
             evt.menu.AppendAction("Copy", this.CopyNode);
             evt.menu.AppendAction("Cut", this.CutNode);
@@ -423,7 +423,7 @@ namespace ET
 
             if (this.Parent != null)
             {
-                evt.menu.AppendAction("Change", (o)=>this.Change(o).NoContext());
+                evt.menu.AppendAction("Change", (o)=>this.Change(o).Coroutine());
             }
 
             // 添加折叠/展开节点内容菜单项

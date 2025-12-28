@@ -76,7 +76,7 @@ namespace YIUIFramework
             {
                 if (m_UIEvent.IsTaskEvent)
                 {
-                    m_UIEvent.InvokeAsync().NoContext();
+                    m_UIEvent.InvokeAsync().Coroutine();
                 }
                 else
                 {

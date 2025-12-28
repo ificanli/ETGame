@@ -45,7 +45,7 @@ namespace YIUIFramework
 
             if (ClickTasking) return;
 
-            TaskEvent(eventData).NoContext();
+            TaskEvent(eventData).Coroutine();
         }
 
         protected override bool IsTaskEvent => true;

@@ -29,7 +29,7 @@ namespace ET.Client
             self.m_IsFromTips = false;
             if (viewCloseResult)
             {
-                WaitFrameDynamicEvent(self.Fiber(), new EventPutTipsView() { View = self?.GetParent<YIUIWindowComponent>()?.OwnerUIEntity }).NoContext();
+                WaitFrameDynamicEvent(self.Fiber(), new EventPutTipsView() { View = self?.GetParent<YIUIWindowComponent>()?.OwnerUIEntity }).Coroutine();
             }
             else
             {

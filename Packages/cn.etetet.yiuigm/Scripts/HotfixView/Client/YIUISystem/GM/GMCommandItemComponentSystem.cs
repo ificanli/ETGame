@@ -32,7 +32,7 @@ namespace ET.Client
             self.u_DataName.SetValue(info.GMName);
             self.u_DataDesc.SetValue(info.GMDesc);
             self.u_DataShowParamLoop.SetValue(info.ParamInfoList.Count >= 1);
-            self.WaitRefresh().NoContext();
+            self.WaitRefresh().Coroutine();
         }
 
         private static async ETTask WaitRefresh(this GMCommandItemComponent self)
@@ -45,7 +45,7 @@ namespace ET.Client
         [YIUIInvoke(GMCommandItemComponent.OnEventRunInvoke)]
         private static void OnEventRunInvoke(this GMCommandItemComponent self)
         {
-            self.CommandComponent?.Run(self.Info).NoContext();
+            self.CommandComponent?.Run(self.Info).Coroutine();
         }
 
         #endregion YIUIEvent结束

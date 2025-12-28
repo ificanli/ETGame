@@ -14,7 +14,7 @@ namespace ET.Client
 
         public async ETTask<bool> Run(Scene clientScene, ParamVo paramVo)
         {
-            Test(clientScene).NoContext();
+            Test(clientScene).Coroutine();
             await ETTask.CompletedTask;
             return true;
         }
@@ -42,8 +42,8 @@ namespace ET.Client
         {
             var cancelTime = paramVo.Get<long>();
             var cancel = new ETCancellationToken();
-            Test(clientScene).WithContext(cancel);
-            WaitCancel().WithContext(cancel);
+            Test(clientScene).Coroutine(cancel);
+            WaitCancel().Coroutine(cancel);
             await ETTask.CompletedTask;
             return true;
 
@@ -78,7 +78,7 @@ namespace ET.Client
         {
             var timeout = paramVo.Get<long>();
             var cancel = new ETCancellationToken();
-            Test(clientScene, timeout).WithContext(cancel);
+            Test(clientScene, timeout).Coroutine(cancel);
             await ETTask.CompletedTask;
             return true;
         }
@@ -108,8 +108,8 @@ namespace ET.Client
             var cancelTime = paramVo.Get<long>();
             var timeout = paramVo.Get<long>(1);
             var cancel = new ETCancellationToken();
-            Test(clientScene, timeout).WithContext(cancel);
-            WaitCancel().WithContext(cancel);
+            Test(clientScene, timeout).Coroutine(cancel);
+            WaitCancel().Coroutine(cancel);
             await ETTask.CompletedTask;
             return true;
 
@@ -143,7 +143,7 @@ namespace ET.Client
         public async ETTask<bool> Run(Scene clientScene, ParamVo paramVo)
         {
             var paramString = paramVo.Get<string>();
-            Test(clientScene, paramString).NoContext();
+            Test(clientScene, paramString).Coroutine();
             await ETTask.CompletedTask;
             return true;
         }

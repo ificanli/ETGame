@@ -18,7 +18,7 @@ namespace ET.Server
 				toMap = "Map1";
 			}
 			
-			TransferHelper.TransferAtFrameFinish(unit, toMap, 0).NoContext();
+			TransferHelper.TransferAtFrameFinish(unit, toMap, 0).Coroutine();
 			
 			await ETTask.CompletedTask;
 		}

@@ -81,7 +81,7 @@ namespace ET.Client
                                               bool ignoreElse = false,
                                               bool ignoreLock = false)
         {
-            self.CloseLayerTopPanelAsync(layer, ignoreOption, tween, ignoreElse, ignoreLock).NoContext();
+            self.CloseLayerTopPanelAsync(layer, ignoreOption, tween, ignoreElse, ignoreLock).Coroutine();
         }
 
         /// <summary>

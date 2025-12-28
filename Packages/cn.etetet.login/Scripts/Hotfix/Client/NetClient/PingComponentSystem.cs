@@ -8,7 +8,7 @@ namespace ET.Client
         [EntitySystem]
         private static void Awake(this PingComponent self)
         {
-            self.PingAsync().NoContext();
+            self.PingAsync().Coroutine();
         }
         
         [EntitySystem]

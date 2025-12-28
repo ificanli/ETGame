@@ -79,7 +79,7 @@ namespace ET.Server
                     self = selfRef;
                     self.UnLock(key, actorId, actorId);
                 }
-                TimeWaitAsync().NoContext();
+                TimeWaitAsync().Coroutine();
             }
         }
 

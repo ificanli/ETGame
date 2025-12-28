@@ -77,7 +77,7 @@ namespace ET.Client
                 var value = kv.Value;
                 if (value is YIUIChild child)
                 {
-                    YIUIEventSystem.Open(child.OwnerUIEntity).NoContext();
+                    YIUIEventSystem.Open(child.OwnerUIEntity).Coroutine();
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace ET.Client
                 var value = kv.Value;
                 if (value is YIUIChild child)
                 {
-                    YIUIEventSystem.Close(child.OwnerUIEntity).NoContext();
+                    YIUIEventSystem.Close(child.OwnerUIEntity).Coroutine();
                 }
             }
         }

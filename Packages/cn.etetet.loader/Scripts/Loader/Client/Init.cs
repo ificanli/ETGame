@@ -8,7 +8,7 @@ namespace ET
     {
         private void Start()
         {
-            this.StartAsync().NoContext();
+            this.StartAsync().Coroutine();
         }
 		
         private async ETTask StartAsync()
@@ -42,7 +42,7 @@ namespace ET
 
             await World.Instance.AddSingleton<ResourcesComponent>().CreatePackageAsync("DefaultPackage", true);
             
-            World.Instance.AddSingleton<CodeLoader>().Start().NoContext();
+            World.Instance.AddSingleton<CodeLoader>().Start().Coroutine();
         }
 
         private void Update()

@@ -61,7 +61,7 @@ namespace ET
 
             if (waitFrame)
             {
-                Notify(self.Root(), task, error).NoContext();
+                Notify(self.Root(), task, error).Coroutine();
             }
             else
             {

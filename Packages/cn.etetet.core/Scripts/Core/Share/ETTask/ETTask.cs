@@ -128,14 +128,14 @@ namespace ET
         }
 
         [DebuggerHidden]
-        public void NoContext()
+        public void Coroutine()
         {
             this.SetContext(null);
             InnerCoroutine().Coroutine();
         }
         
         [DebuggerHidden]
-        public void WithContext(object context)
+        public void Coroutine(object context)
         {
             this.SetContext(context);
             InnerCoroutine().Coroutine();
@@ -303,14 +303,14 @@ namespace ET
         }
 
         [DebuggerHidden]
-        public void NoContext()
+        public void Coroutine()
         {
             this.SetContext(null);
             InnerCoroutine().Coroutine();
         }
         
         [DebuggerHidden]
-        public void WithContext(object context)
+        public void Coroutine(object context)
         {
             this.SetContext(context);
             InnerCoroutine().Coroutine();

@@ -229,7 +229,7 @@ namespace ET.Client
         [MenuItem("ET/Map/ReloadScriptableObject _F4")]
         public static void ReloadScriptableObject()
         {
-            World.Instance.AddSingleton<ConfigLoader>().LoadAsync().NoContext();
+            World.Instance.AddSingleton<ConfigLoader>().LoadAsync().Coroutine();
         }
 
         /// <summary>

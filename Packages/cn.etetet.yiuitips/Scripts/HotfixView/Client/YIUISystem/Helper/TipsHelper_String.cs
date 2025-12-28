@@ -20,7 +20,7 @@ namespace ET.Client
         //扩展同步方法
         public static void OpenSync(Scene scene, string resName, params object[] paramMore)
         {
-            Open(scene, resName, paramMore).NoContext();
+            Open(scene, resName, paramMore).Coroutine();
         }
 
         //在Tips界面打开任意一个View窗口
@@ -34,7 +34,7 @@ namespace ET.Client
         //扩展同步方法
         public static void OpenToParentSync(Scene scene, string resName, Entity parent, params object[] paramMore)
         {
-            OpenToParent(scene, resName, parent, paramMore).NoContext();
+            OpenToParent(scene, resName, parent, paramMore).Coroutine();
         }
 
         //使用paramvo参数打开
@@ -53,7 +53,7 @@ namespace ET.Client
         //使用paramvo参数 同步打开 内部还是异步 为了解决vo被回收问题
         public static void OpenToParentSync(Scene scene, string resName, ParamVo vo, Entity parent = null)
         {
-            OpenToParent2NewVo(scene, resName, vo, parent).NoContext();
+            OpenToParent2NewVo(scene, resName, vo, parent).Coroutine();
         }
 
         //在外部vo会被回收 所以不能使用同对象 所以这里会创建一个新的防止空对象

@@ -6,7 +6,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this WaitLogoutComponent self)
         {
-            self.WaitLogout().NoContext();
+            self.WaitLogout().Coroutine();
         }
 
         private static async ETTask WaitLogout(this WaitLogoutComponent self)

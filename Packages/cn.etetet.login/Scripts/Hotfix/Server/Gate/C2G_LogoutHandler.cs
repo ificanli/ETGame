@@ -13,7 +13,7 @@ namespace ET.Server
             response.Message = "Logout successful!";
 
             session = sessionRef;
-            WaitRemoveSession(session).NoContext();
+            WaitRemoveSession(session).Coroutine();
         }
 
         private static async ETTask WaitRemoveSession(Session session)

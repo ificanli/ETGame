@@ -47,7 +47,7 @@ namespace ET.Server
         {
             protected override void Run(ServiceDiscoveryProxy self)
             {
-                self.SendHeartbeat().NoContext();
+                self.SendHeartbeat().Coroutine();
             }
         }
 

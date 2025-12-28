@@ -9,7 +9,7 @@ namespace ET.Client
         [EntitySystem]
         private static void Awake(this RouterCheckComponent self)
         {
-            self.CheckAsync().NoContext();
+            self.CheckAsync().Coroutine();
         }
 
         private static async ETTask CheckAsync(this RouterCheckComponent self)

@@ -77,7 +77,7 @@ namespace ET
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(context);
+                coroutineBlocker.RunSubCoroutineAsync(task).Coroutine(context);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -95,7 +95,7 @@ namespace ET
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(context);
+                coroutineBlocker.RunSubCoroutineAsync(task).Coroutine(context);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -113,7 +113,7 @@ namespace ET
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(context);
+                coroutineBlocker.RunSubCoroutineAsync(task).Coroutine(context);
             }
 
             await coroutineBlocker.WaitAsync();
@@ -131,7 +131,7 @@ namespace ET
 
             foreach (ETTask task in tasks)
             {
-                coroutineBlocker.RunSubCoroutineAsync(task).WithContext(context);
+                coroutineBlocker.RunSubCoroutineAsync(task).Coroutine(context);
             }
 
             await coroutineBlocker.WaitAsync();

@@ -74,7 +74,7 @@ namespace YIUIFramework
                 return;
             }
 
-            ChangeSprite(dataValue).NoContext();
+            ChangeSprite(dataValue).Coroutine();
         }
 
         private async ETTask ChangeSprite(string resName)

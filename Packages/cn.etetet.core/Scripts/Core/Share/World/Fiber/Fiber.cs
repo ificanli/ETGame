@@ -291,7 +291,7 @@ namespace ET
             // 要扔到fiber线程执行，否则会出现线程竞争
             fiber.ThreadSynchronizationContext.Post(() =>
             {
-                FiberDestroy().NoContext();
+                FiberDestroy().Coroutine();
                 return;
 
                 async ETTask FiberDestroy()
@@ -372,7 +372,7 @@ namespace ET
             
             foreach (int child in this.children.Keys.ToArray())
             {
-                this.RemoveFiber(child).NoContext();
+                this.RemoveFiber(child).Coroutine();
             }
         }
 

@@ -62,14 +62,14 @@ namespace ET.Server
                 if (d1 > spellConfig.TargetSelector.MaxDistance / 1000f)
                 {
                     // 走过去
-                    unit.FindPathMoveToAsync(target.Position).WithContext(cancellationToken);
+                    unit.FindPathMoveToAsync(target.Position).Coroutine(cancellationToken);
                     continue;
                 }
                 
                 if (d1 < spellConfig.TargetSelector.MinDistance / 1000f)
                 {
                     // 反向走
-                    unit.FindPathMoveToAsync(unit.Position - target.Position + unit.Position).WithContext(cancellationToken);
+                    unit.FindPathMoveToAsync(unit.Position - target.Position + unit.Position).Coroutine(cancellationToken);
                     continue;
                 }
 

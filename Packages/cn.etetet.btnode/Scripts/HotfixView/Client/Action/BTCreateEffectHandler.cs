@@ -8,7 +8,7 @@ namespace ET.Client
         {
             Unit unit = env.GetEntity<Unit>(node.Unit);
             
-            CreateEffectOnPosAsync(unit, node.Effect.Name, node.BindPoint, node.Duration).NoContext();
+            CreateEffectOnPosAsync(unit, node.Effect.Name, node.BindPoint, node.Duration).Coroutine();
             return 0;
         }
         

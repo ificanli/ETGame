@@ -14,7 +14,7 @@ namespace ET.Client
         [EntitySystem]
         private static void Destroy(this ClientSenderComponent self)
         {
-            self.RemoveFiberAsync().NoContext();
+            self.RemoveFiberAsync().Coroutine();
         }
 
         private static async ETTask RemoveFiberAsync(this ClientSenderComponent self)

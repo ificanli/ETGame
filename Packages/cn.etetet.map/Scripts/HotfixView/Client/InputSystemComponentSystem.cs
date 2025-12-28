@@ -79,7 +79,7 @@ namespace ET.Client
             Vector3 rotV = Quaternion.Euler(eulerAngles) * new float3(v.x, 0, v.y);
             float3 targetPos = new float3(rotV) + unit.Position;
 
-            unit.MoveToAsync(targetPos).NoContext();
+            unit.MoveToAsync(targetPos).Coroutine();
         }
 
         // 鼠标左键点击目标，设置主角的目标
@@ -106,7 +106,7 @@ namespace ET.Client
                 return;
             }
             
-            UnitClickHelper.Click(self.Root(), targetUnit.Id).NoContext();
+            UnitClickHelper.Click(self.Root(), targetUnit.Id).Coroutine();
         }
 
         private static void ChangeTarget(this InputSystemComponent self, InputAction.CallbackContext context)

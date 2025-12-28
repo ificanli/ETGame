@@ -20,7 +20,7 @@ public class LoopScrollRectInspector : Editor
         
         if (GUILayout.Button("刷新"))
         {
-            scroll.RefreshCells().NoContext();
+            scroll.RefreshCells().Coroutine();
         }
         
         /*if(GUILayout.Button("Clear"))
@@ -50,7 +50,7 @@ public class LoopScrollRectInspector : Editor
                 return;
             }
             index = Mathf.Clamp(index, 0, scroll.totalCount - 1);
-            scroll.ScrollToCell(index, speed).NoContext();
+            scroll.ScrollToCell(index, speed).Coroutine();
         }
         EditorGUILayout.EndHorizontal();
         
@@ -64,7 +64,7 @@ public class LoopScrollRectInspector : Editor
                 return;
             }
             index = Mathf.Clamp(index, 0, scroll.totalCount - 1);
-            scroll.ScrollToCellWithinTime(index, time).NoContext();
+            scroll.ScrollToCellWithinTime(index, time).Coroutine();
         }
         EditorGUILayout.EndHorizontal();
     }

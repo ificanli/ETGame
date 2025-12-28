@@ -85,7 +85,7 @@ namespace YIUIFramework
                 return;
             }
 
-            ChangeSprite(dataValue).NoContext();
+            ChangeSprite(dataValue).Coroutine();
         }
 
         private string GetDataToString(UIDataSelect dataSelect)

@@ -55,7 +55,7 @@ namespace YIUIFramework
 
             if (timeSinceLastClick <= m_DoubleClickInterval)
             {
-                TaskEvent(eventData).NoContext();
+                TaskEvent(eventData).Coroutine();
                 m_LastClickTime = 0;
                 return;
             }

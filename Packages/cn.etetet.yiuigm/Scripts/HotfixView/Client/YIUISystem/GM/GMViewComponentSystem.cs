@@ -50,11 +50,11 @@ namespace ET.Client
         {
             if (self.CommandComponent.AllCommandInfo.TryGetValue(data, out var commandInfoList))
             {
-                self.GMCommandLoop.SetDataRefresh(commandInfoList).NoContext();
+                self.GMCommandLoop.SetDataRefresh(commandInfoList).Coroutine();
             }
             else
             {
-                self.GMCommandLoop.SetDataRefresh(new List<GMCommandInfo>()).NoContext();
+                self.GMCommandLoop.SetDataRefresh(new List<GMCommandInfo>()).Coroutine();
             }
         }
 

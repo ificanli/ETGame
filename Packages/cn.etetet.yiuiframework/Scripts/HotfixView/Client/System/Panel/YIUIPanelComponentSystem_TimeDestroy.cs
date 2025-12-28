@@ -14,7 +14,7 @@ namespace ET.Client
 
             self.StopCountDownDestroyPanel();
             self.m_Token = new ETCancellationToken();
-            self.DoCountDownDestroyPanel().WithContext(self.m_Token);
+            self.DoCountDownDestroyPanel().Coroutine(self.m_Token);
         }
 
         internal static void StopCountDownDestroyPanel(this YIUIPanelComponent self)

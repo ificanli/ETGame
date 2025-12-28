@@ -85,7 +85,7 @@ namespace ET.Client
         [YIUIInvoke(GMPanelComponent.OnEventOpenGMViewInvoke)]
         private static void OnEventOpenGMViewInvoke(this GMPanelComponent self)
         {
-            self.UIPanel.OpenViewAsync<GMViewComponent>().NoContext();
+            self.UIPanel.OpenViewAsync<GMViewComponent>().Coroutine();
         }
 
         #endregion YIUIEvent结束

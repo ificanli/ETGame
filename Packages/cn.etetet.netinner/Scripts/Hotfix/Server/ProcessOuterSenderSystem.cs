@@ -73,7 +73,7 @@ namespace ET.Server
                 case IRequest:
                 {
                     Address remoteAddress = session.RemoteAddress;
-                    CallInner().NoContext();
+                    CallInner().Coroutine();
                     break;
                     
                     async ETTask CallInner()
@@ -251,7 +251,7 @@ namespace ET.Server
                 }
             }
 
-            Timeout().NoContext();
+            Timeout().Coroutine();
 
             long beginTime = TimeInfo.Instance.ServerNow();
 

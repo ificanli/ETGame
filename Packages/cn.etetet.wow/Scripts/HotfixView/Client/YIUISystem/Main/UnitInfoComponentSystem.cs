@@ -113,7 +113,7 @@ namespace ET.Client
                 return;
             }
             
-            UnitClickHelper.Click(self.Root(), self.Unit.Id).NoContext();
+            UnitClickHelper.Click(self.Root(), self.Unit.Id).Coroutine();
         }
 
         #endregion YIUIEvent结束

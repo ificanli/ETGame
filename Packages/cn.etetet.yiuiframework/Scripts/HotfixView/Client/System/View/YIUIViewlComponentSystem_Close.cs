@@ -5,7 +5,7 @@
         //关闭自己 同步
         public static void Close(this YIUIViewComponent self, bool tween = true)
         {
-            self.CloseAsync(tween).NoContext();
+            self.CloseAsync(tween).Coroutine();
         }
 
         //关闭自己 异步

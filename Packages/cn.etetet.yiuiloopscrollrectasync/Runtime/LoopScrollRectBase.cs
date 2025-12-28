@@ -1337,13 +1337,13 @@ namespace UnityEngine.UI
         [Obsolete("SrollToCell(int, float) has been renamed to ScrollToCell(int, float).")]
         public void SrollToCell(int index, float speed)
         {
-            ScrollToCell(index, speed).NoContext();
+            ScrollToCell(index, speed).Coroutine();
         }
 
         [Obsolete("SrollToCellWithinTime(int, float) has been renamed to ScrollToCellWithinTime(int, float).")]
         public void SrollToCellWithinTime(int index, float time)
         {
-            ScrollToCellWithinTime(index, time).NoContext();
+            ScrollToCellWithinTime(index, time).Coroutine();
         }
 
         #endregion
@@ -1646,7 +1646,7 @@ namespace UnityEngine.UI
             if ((position - m_Content.anchoredPosition).sqrMagnitude > 0.001f)
             {
                 m_Content.anchoredPosition = position;
-                UpdateBounds(true).NoContext();
+                UpdateBounds(true).Coroutine();
             }
 
             //==========LoopScrollRect==========
@@ -1992,7 +1992,7 @@ namespace UnityEngine.UI
                 anchoredPosition[axis] = newAnchoredPosition;
                 m_Content.anchoredPosition = anchoredPosition;
                 m_Velocity[axis] = 0;
-                UpdateBounds(true).NoContext(); //==========LoopScrollRect==========
+                UpdateBounds(true).Coroutine(); //==========LoopScrollRect==========
             }
         }
 

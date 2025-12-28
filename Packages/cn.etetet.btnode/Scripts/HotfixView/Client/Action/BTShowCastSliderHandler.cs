@@ -18,7 +18,7 @@ namespace ET.Client
                 ShowDisplayName = node.ShowDisplayName,
                 IconName        = node.Icon.Name,
                 IsIncrease      = node.IsIncrease
-            }).NoContext();
+            }).Coroutine();
 
             return 0;
         }

@@ -24,7 +24,7 @@ namespace ET.Client
 
             clientScene.YIUIRoot()
                        .OpenPanelAsync<LoopScrollRectDemoPanelComponent, ELoopScrollRectDemoPanelViewEnum>((ELoopScrollRectDemoPanelViewEnum)tab)
-                       .NoContext();
+                       .Coroutine();
 
             await ETTask.CompletedTask;
             return true;

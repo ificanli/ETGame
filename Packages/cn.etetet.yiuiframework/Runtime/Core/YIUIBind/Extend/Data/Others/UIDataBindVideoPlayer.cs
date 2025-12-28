@@ -71,7 +71,7 @@ namespace YIUIFramework
                 return;
             }
 
-            this.ChangeAudio(dataValue).NoContext();
+            this.ChangeAudio(dataValue).Coroutine();
         }
 
         private async ETTask ChangeAudio(string resName)

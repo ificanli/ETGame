@@ -35,7 +35,7 @@
                 coroutineLock = await tcs;
             }
 
-            coroutineLock.SetTimeout(timeout, line, filePath).NoContext();
+            coroutineLock.SetTimeout(timeout, line, filePath).Coroutine();
 
             return coroutineLock;
         }

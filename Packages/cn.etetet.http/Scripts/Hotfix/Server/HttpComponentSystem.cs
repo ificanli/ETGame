@@ -25,7 +25,7 @@ namespace ET.Server
 
                 self.Listener.Start();
 
-                self.Accept().NoContext();
+                self.Accept().Coroutine();
             }
             catch (HttpListenerException e)
             {
@@ -95,7 +95,7 @@ namespace ET.Server
                     {
                         return;
                     }
-                    self.Handle(context).NoContext();
+                    self.Handle(context).Coroutine();
                 }
                 catch (ObjectDisposedException)
                 {

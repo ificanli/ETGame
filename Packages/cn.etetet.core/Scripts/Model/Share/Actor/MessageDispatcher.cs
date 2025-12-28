@@ -115,7 +115,7 @@ namespace ET
                 {
                     continue;
                 }
-                actorMessageDispatcherInfo.IMHandler.Handle(entity, fromFiber, message).NoContext();   
+                actorMessageDispatcherInfo.IMHandler.Handle(entity, fromFiber, message).Coroutine();   
             }
         }
     }

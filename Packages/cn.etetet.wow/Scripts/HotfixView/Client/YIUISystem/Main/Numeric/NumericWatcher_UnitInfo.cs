@@ -8,7 +8,7 @@
             //Log.Error($"HP Name:{args.Unit.Config().Name},{args.Unit.Id}, Type:{args.NumericType}, New:{args.New}, Old:{args.Old}");
 
             //临时处理全监听
-            unit.DynamicEvent(args).NoContext();
+            unit.DynamicEvent(args).Coroutine();
             
             var oldHP  = args.Old;
             var newHP  = args.New;
@@ -16,7 +16,7 @@
             if (damage > 0)
             {
                 //临时处理 只要少血就飘字
-                DamageTipsHelper.Show3D(unit.Scene(), "Damage_3D_SawNeon", args.Unit, damage).NoContext();
+                DamageTipsHelper.Show3D(unit.Scene(), "Damage_3D_SawNeon", args.Unit, damage).Coroutine();
             }
         }
     }
@@ -29,7 +29,7 @@
             //Log.Error($"MaxHP Name:{args.Unit.Config().Name},{args.Unit.Id}, Type:{args.NumericType}, New:{args.New}, Old:{args.Old}");
 
             //临时处理全监听
-            unit.DynamicEvent(args).NoContext();
+            unit.DynamicEvent(args).Coroutine();
         }
     }
 
@@ -41,7 +41,7 @@
             //Log.Error($"MP Name:{args.Unit.Config().Name},{args.Unit.Id}, Type:{args.NumericType}, New:{args.New}, Old:{args.Old}");
 
             //临时处理全监听
-            unit.DynamicEvent(args).NoContext();
+            unit.DynamicEvent(args).Coroutine();
         }
     }
 
@@ -53,7 +53,7 @@
             //Log.Error($"MaxMP Name:{args.Unit.Config().Name},{args.Unit.Id}, Type:{args.NumericType}, New:{args.New}, Old:{args.Old}");
 
             //临时处理全监听
-            unit.DynamicEvent(args).NoContext();
+            unit.DynamicEvent(args).Coroutine();
         }
     }
 }

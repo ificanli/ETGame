@@ -5,7 +5,7 @@
         public static void Add(this GateSessionKeyComponent self, long key, string account)
         {
             self.sessionKey.Add(key, account);
-            self.TimeoutRemoveKey(key).NoContext();
+            self.TimeoutRemoveKey(key).Coroutine();
         }
 
         public static string Get(this GateSessionKeyComponent self, long key)

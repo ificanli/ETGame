@@ -4,7 +4,7 @@
     {
         public static void Close(this YIUIPanelComponent self, bool tween = true, bool ignoreElse = false, bool ignoreLock = false)
         {
-            self.CloseAsync(tween, ignoreElse, ignoreLock).NoContext();
+            self.CloseAsync(tween, ignoreElse, ignoreLock).Coroutine();
         }
 
         public static async ETTask<bool> CloseAsync(this YIUIPanelComponent self, bool tween = true, bool ignoreElse = false, bool ignoreLock = false)

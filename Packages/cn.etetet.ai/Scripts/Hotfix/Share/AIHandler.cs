@@ -25,7 +25,7 @@
             aiComponent.CancellationToken = new ETCancellationToken();
             
             aiComponent.Current = node.Id;
-            this.Execute(unit, node, env).WithContext(aiComponent.CancellationToken);
+            this.Execute(unit, node, env).Coroutine(aiComponent.CancellationToken);
             return 0;
         }
 

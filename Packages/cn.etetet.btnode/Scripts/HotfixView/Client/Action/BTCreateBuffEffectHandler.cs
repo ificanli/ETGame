@@ -10,7 +10,7 @@ namespace ET.Client
             
             Buff buff = env.GetEntity<Buff>(node.Buff);
             
-            CreateBuffEffectAsync(unit, buff, node.BindPoint, node.Effect.Name, node.Duration).NoContext();
+            CreateBuffEffectAsync(unit, buff, node.BindPoint, node.Effect.Name, node.Duration).Coroutine();
             
             return 0;
         }

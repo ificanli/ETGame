@@ -36,7 +36,7 @@ namespace ET.Client
             }
 
             self.u_DataMessageContent.SetValue(content);
-            self.PlayAnimation().NoContext();
+            self.PlayAnimation().Coroutine();
             return true;
         }
 

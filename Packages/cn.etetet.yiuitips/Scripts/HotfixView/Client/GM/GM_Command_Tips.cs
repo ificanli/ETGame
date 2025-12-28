@@ -37,7 +37,7 @@ namespace ET.Client
 
         public async ETTask<bool> Run(Scene clientScene, ParamVo paramVo)
         {
-            TipsHelper.Open<TipsMessageViewComponent>(clientScene, "回调测试").NoContext();
+            TipsHelper.Open<TipsMessageViewComponent>(clientScene, "回调测试").Coroutine();
             await ETTask.CompletedTask;
             return true;
         }
@@ -53,7 +53,7 @@ namespace ET.Client
 
         public async ETTask<bool> Run(Scene clientScene, ParamVo paramVo)
         {
-            TipsHelper.Open<TipsMessageViewComponent>(clientScene, "只有确定 回调测试").NoContext();
+            TipsHelper.Open<TipsMessageViewComponent>(clientScene, "只有确定 回调测试").Coroutine();
             await ETTask.CompletedTask;
             return true;
         }
@@ -73,7 +73,7 @@ namespace ET.Client
             {
                 ConfirmName = "Confirm",
                 CancelName = "Cancel"
-            }).NoContext();
+            }).Coroutine();
             await ETTask.CompletedTask;
             return true;
         }

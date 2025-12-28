@@ -190,7 +190,7 @@ namespace ET.Client
         private static void AwakePreLoad(this YIUILoopScrollChild self)
         {
             if (self.PreLoadCount <= 0) return;
-            self.PreLoadAsync(self.PreLoadCount).NoContext();
+            self.PreLoadAsync(self.PreLoadCount).Coroutine();
         }
 
         public static async ETTask PreLoadAsync(this YIUILoopScrollChild self, int count)

@@ -25,7 +25,7 @@ namespace YIUIFramework
         {
             try
             {
-                OnTaskEvent(true).NoContext();
+                OnTaskEvent(true).Coroutine();
             }
             catch (Exception e)
             {
@@ -38,7 +38,7 @@ namespace YIUIFramework
         {
             try
             {
-                OnTaskEvent(false).NoContext();
+                OnTaskEvent(false).Coroutine();
             }
             catch (Exception e)
             {

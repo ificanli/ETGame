@@ -10,7 +10,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this ConsoleComponent self)
         {
-            self.Start().NoContext();
+            self.Start().Coroutine();
         }
         
         [EntitySystem]

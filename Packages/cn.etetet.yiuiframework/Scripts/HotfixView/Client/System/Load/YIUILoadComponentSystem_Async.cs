@@ -54,7 +54,7 @@ namespace ET.Client
         /// </summary>
         internal static void LoadAssetAsync<T>(this YIUILoadComponent self, string pkgName, string resName, Action<T> action) where T : UnityObject
         {
-            self.LoadAssetAsyncAction(pkgName, resName, action).NoContext();
+            self.LoadAssetAsyncAction(pkgName, resName, action).Coroutine();
         }
 
         private static async ETTask LoadAssetAsyncAction<T>(this YIUILoadComponent self, string pkgName, string resName, Action<T> action)

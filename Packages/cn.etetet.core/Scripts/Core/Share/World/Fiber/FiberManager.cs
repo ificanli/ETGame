@@ -154,7 +154,7 @@ namespace ET
 
                 fiber.ThreadSynchronizationContext.Post(() =>
                 {
-                    Action().NoContext();
+                    Action().Coroutine();
                 });
                 await tcs.Task;
                 

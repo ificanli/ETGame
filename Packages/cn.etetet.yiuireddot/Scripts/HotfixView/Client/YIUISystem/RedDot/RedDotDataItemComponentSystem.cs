@@ -40,19 +40,19 @@ namespace ET.Client
         [YIUIInvoke(RedDotDataItemComponent.OnEventParentInvoke)]
         private static void OnEventParentInvoke(this RedDotDataItemComponent self)
         {
-            self.DynamicEvent(new OnClickParentListEvent() { Data = self.m_Data }).NoContext();
+            self.DynamicEvent(new OnClickParentListEvent() { Data = self.m_Data }).Coroutine();
         }
 
         [YIUIInvoke(RedDotDataItemComponent.OnEventClickItemInvoke)]
         private static void OnEventClickItemInvoke(this RedDotDataItemComponent self)
         {
-            self.DynamicEvent(new OnClickItemEvent { Data = self.m_Data }).NoContext();
+            self.DynamicEvent(new OnClickItemEvent { Data = self.m_Data }).Coroutine();
         }
 
         [YIUIInvoke(RedDotDataItemComponent.OnEventChildInvoke)]
         private static void OnEventChildInvoke(this RedDotDataItemComponent self)
         {
-            self.DynamicEvent(new OnClickChildListEvent { Data = self.m_Data }).NoContext();
+            self.DynamicEvent(new OnClickChildListEvent { Data = self.m_Data }).Coroutine();
         }
 
         #endregion YIUIEvent结束

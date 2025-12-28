@@ -10,7 +10,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this MapCopy self)
         {
-            self.Fiber().RemoveFiber(self.FiberId).NoContext();
+            self.Fiber().RemoveFiber(self.FiberId).Coroutine();
         }
         [EntitySystem]
         private static void Awake(this MapCopy self, int fiberId)

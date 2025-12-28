@@ -175,7 +175,7 @@ namespace ET.Client
 
         public static void ClosePanel(this YIUIMgrComponent self, string panelName, bool tween = true, bool ignoreElse = false, bool ignoreLock = false)
         {
-            self.ClosePanelAsync(panelName, tween, ignoreElse, ignoreLock).NoContext();
+            self.ClosePanelAsync(panelName, tween, ignoreElse, ignoreLock).Coroutine();
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace ET.Client
         /// </summary>
         public static void ClosePanel<T>(this YIUIMgrComponent self, bool tween = true, bool ignoreElse = false, bool ignoreLock = false) where T : Entity
         {
-            self.ClosePanelAsync(self.GetPanelName<T>(), tween, ignoreElse, ignoreLock).NoContext();
+            self.ClosePanelAsync(self.GetPanelName<T>(), tween, ignoreElse, ignoreLock).Coroutine();
         }
 
         /// <summary>
