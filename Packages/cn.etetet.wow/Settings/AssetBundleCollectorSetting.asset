@@ -208,14 +208,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-      - CollectPath: Packages/cn.etetet.spell/Bundles/Sprite
-        CollectorGUID: 2cfc1a0219244418a9c03b3f80748dae
-        CollectorType: 0
-        AddressRuleName: AddressByFileName
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
     - GroupName: DamageTips
       GroupDesc: "\u4F24\u5BB3\u98D8\u5B57"
       AssetTags: 
@@ -234,7 +226,7 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.spell/Bundles/Effect
+      - CollectPath: Packages/cn.etetet.wow/Bundles/Effect
         CollectorGUID: 4f353bebf5d24bc47bd006812e0e3870
         CollectorType: 0
         AddressRuleName: AddressByFileName
@@ -247,7 +239,7 @@ MonoBehaviour:
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.spell/Bundles/SpellIndicator
+      - CollectPath: Packages/cn.etetet.wow/Bundles/SpellIndicator
         CollectorGUID: a49841fa1f1fe6c4da820cd4bd4e1061
         CollectorType: 0
         AddressRuleName: AddressByFileName
