@@ -11,6 +11,7 @@
   - `Test`
   - `Test --Name=CreateRobot`
   - `Test --Name=CreateRobot2`（无匹配时提示 not found test）
+- 注意测试的进程不会退出，ai在跑测试的时候，不要一直等待进程退出
 
 ## 命令参数
 - `--Name`：处理器类名正则，默认 `.*`，匹配所有测试用例。
