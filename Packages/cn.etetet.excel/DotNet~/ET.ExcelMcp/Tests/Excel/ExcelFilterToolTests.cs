@@ -6,13 +6,14 @@ using ET.Tools.Excel;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelFilterToolTests : ExcelTestBase
 {
     private readonly ExcelFilterTool _tool = new();
 
     #region Apply Tests
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyFilter_ShouldApplyAutoFilter()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_apply_filter.xlsx");
@@ -35,7 +36,7 @@ public class ExcelFilterToolTests : ExcelTestBase
         Assert.NotNull(worksheet.AutoFilter.Address);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ApplyFilter_WithSheetIndex_ShouldApplyToCorrectSheet()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_apply_filter_sheet.xlsx");
@@ -66,7 +67,7 @@ public class ExcelFilterToolTests : ExcelTestBase
 
     #region Remove Tests
 
-    [Fact]
+    [TestMethod]
     public async Task RemoveFilter_ShouldRemoveAutoFilter()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_remove_filter.xlsx");
@@ -92,7 +93,7 @@ public class ExcelFilterToolTests : ExcelTestBase
         Assert.Null(resultPackage.Workbook.Worksheets[0].AutoFilter.Address);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task RemoveFilter_NoExistingFilter_ShouldSucceed()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_remove_no_filter.xlsx", 3);
@@ -113,7 +114,7 @@ public class ExcelFilterToolTests : ExcelTestBase
 
     #region Filter by Value Tests
 
-    [Fact]
+    [TestMethod]
     public async Task Filter_ByValue_ShouldApplyCriteria()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_filter_value.xlsx");
@@ -144,7 +145,7 @@ public class ExcelFilterToolTests : ExcelTestBase
         Assert.Contains("'Active'", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Filter_WithGreaterThanOperator_ShouldApplyCustomFilter()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_filter_gt.xlsx", 5, 2);
@@ -176,7 +177,7 @@ public class ExcelFilterToolTests : ExcelTestBase
         Assert.Contains("GreaterThan", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Filter_InvalidOperator_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_filter_invalid_op.xlsx", 3, 2);
@@ -198,7 +199,7 @@ public class ExcelFilterToolTests : ExcelTestBase
 
     #region Get Status Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetFilterStatus_WithFilter_ShouldReturnEnabled()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_get_status_enabled.xlsx");
@@ -222,7 +223,7 @@ public class ExcelFilterToolTests : ExcelTestBase
         Assert.Contains("A1:C5", json.RootElement.GetProperty("filterRange").GetString());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFilterStatus_WithoutFilter_ShouldReturnDisabled()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_get_status_disabled.xlsx", 3);
@@ -243,7 +244,7 @@ public class ExcelFilterToolTests : ExcelTestBase
 
     #region Error Handling Tests
 
-    [Fact]
+    [TestMethod]
     public async Task UnknownOperation_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_unknown_op.xlsx");
@@ -257,7 +258,7 @@ public class ExcelFilterToolTests : ExcelTestBase
         Assert.Contains("未知操作", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InvalidSheetIndex_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_invalid_sheet.xlsx");
@@ -275,3 +276,5 @@ public class ExcelFilterToolTests : ExcelTestBase
 
     #endregion
 }
+
+

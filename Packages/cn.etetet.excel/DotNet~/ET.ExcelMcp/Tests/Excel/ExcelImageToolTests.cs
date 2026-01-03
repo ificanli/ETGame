@@ -6,11 +6,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelImageToolTests : ExcelTestBase
 {
     private readonly ExcelImageTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task AddImage_ShouldInsertDrawing()
     {
         var workbookPath = CreateExcelWorkbook("image_add.xlsx");
@@ -33,7 +34,7 @@ public class ExcelImageToolTests : ExcelTestBase
         Assert.Single(package.Workbook.Worksheets[0].Drawings);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetImages_ShouldReturnMetadata()
     {
         var workbookPath = CreateExcelWorkbook("image_get.xlsx");
@@ -56,7 +57,7 @@ public class ExcelImageToolTests : ExcelTestBase
         Assert.Equal(1, json.RootElement.GetProperty("count").GetInt32());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteImage_ShouldRemoveDrawing()
     {
         var workbookPath = CreateExcelWorkbook("image_delete.xlsx");
@@ -81,7 +82,7 @@ public class ExcelImageToolTests : ExcelTestBase
         Assert.Empty(packageOut.Workbook.Worksheets[0].Drawings);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ExtractImage_ShouldCreateFile()
     {
         var workbookPath = CreateExcelWorkbook("image_extract.xlsx");
@@ -106,7 +107,7 @@ public class ExcelImageToolTests : ExcelTestBase
         Assert.True(new FileInfo(exportPath).Length > 0);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddImage_UnsupportedFormat_ShouldThrow()
     {
         var workbookPath = CreateExcelWorkbook("image_invalid.xlsx");
@@ -134,3 +135,5 @@ public class ExcelImageToolTests : ExcelTestBase
         return path;
     }
 }
+
+

@@ -7,11 +7,12 @@ using OfficeOpenXml.Style;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelPrintSettingsToolTests : ExcelTestBase
 {
     private readonly ExcelPrintSettingsTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task PageSetup_ShouldUpdatePrinterSettings()
     {
         var workbookPath = CreateExcelWorkbook("print_page_setup.xlsx");
@@ -48,7 +49,7 @@ public class ExcelPrintSettingsToolTests : ExcelTestBase
         Assert.Equal(1.2m, settings.BottomMargin, 3);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task HeaderFooter_ShouldApplyTexts()
     {
         var workbookPath = CreateExcelWorkbookWithData("print_header.xlsx");
@@ -82,7 +83,7 @@ public class ExcelPrintSettingsToolTests : ExcelTestBase
         Assert.Equal("右侧", headerFooter.OddFooter.RightAlignedText);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task PrintArea_ShouldSetAndClear()
     {
         var workbookPath = CreateExcelWorkbookWithData("print_area.xlsx");
@@ -116,7 +117,7 @@ public class ExcelPrintSettingsToolTests : ExcelTestBase
         Assert.Null(clearedPackage.Workbook.Worksheets[0].PrinterSettings.PrintArea);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetPrintSettings_ShouldReturnJson()
     {
         var workbookPath = CreateExcelWorkbook("print_get.xlsx");
@@ -144,3 +145,5 @@ public class ExcelPrintSettingsToolTests : ExcelTestBase
         Assert.Equal("Left", root.GetProperty("header").GetProperty("left").GetString());
     }
 }
+
+

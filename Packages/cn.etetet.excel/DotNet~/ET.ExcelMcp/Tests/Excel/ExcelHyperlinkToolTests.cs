@@ -6,11 +6,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelHyperlinkToolTests : ExcelTestBase
 {
     private readonly ExcelHyperlinkTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task AddHyperlink_ShouldPersist()
     {
         var workbookPath = CreateExcelWorkbook("hyperlink_add.xlsx");
@@ -33,7 +34,7 @@ public class ExcelHyperlinkToolTests : ExcelTestBase
         Assert.Equal("https://example.com", hyperlink?.ToString().TrimEnd('/'));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetHyperlinks_ShouldReturnItems()
     {
         var workbookPath = CreateExcelWorkbook("hyperlink_get.xlsx");
@@ -58,7 +59,7 @@ public class ExcelHyperlinkToolTests : ExcelTestBase
         Assert.Equal(2, json.RootElement.GetProperty("count").GetInt32());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EditHyperlink_ShouldUpdateUrl()
     {
         var workbookPath = CreateExcelWorkbook("hyperlink_edit.xlsx");
@@ -88,7 +89,7 @@ public class ExcelHyperlinkToolTests : ExcelTestBase
         Assert.Equal("https://new.com", (cell.Hyperlink as Uri)?.ToString().TrimEnd('/'));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteHyperlink_ShouldRemoveLink()
     {
         var workbookPath = CreateExcelWorkbook("hyperlink_delete.xlsx");
@@ -114,7 +115,7 @@ public class ExcelHyperlinkToolTests : ExcelTestBase
         Assert.Null(packageOut.Workbook.Worksheets[0].Cells["A1"].Hyperlink);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddExistingHyperlink_ShouldThrow()
     {
         var workbookPath = CreateExcelWorkbook("hyperlink_existing.xlsx");
@@ -136,3 +137,5 @@ public class ExcelHyperlinkToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(args));
     }
 }
+
+

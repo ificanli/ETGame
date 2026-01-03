@@ -5,11 +5,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelRowColumnToolTests : ExcelTestBase
 {
     private readonly ExcelRowColumnTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task InsertRows_ShouldInsertRow()
     {
         // Arrange
@@ -32,7 +33,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.Equal(originalR2C1, newR3C1);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteRows_ShouldDeleteRow()
     {
         // Arrange
@@ -55,7 +56,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.Equal(expectedR2C1, actualR2C1);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InsertColumns_ShouldInsertColumn()
     {
         // Arrange
@@ -78,7 +79,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.Equal(originalR1C2, newR1C3);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteColumns_ShouldDeleteColumn()
     {
         // Arrange
@@ -101,7 +102,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.Equal(expectedR1C2, actualR1C2);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InsertMultipleRows_ShouldInsertMultipleRows()
     {
         // Arrange
@@ -122,7 +123,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.True(worksheet.Dimension.Rows >= 6);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteMultipleRows_ShouldDeleteMultipleRows()
     {
         // Arrange
@@ -143,7 +144,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.True(worksheet.Dimension.Rows <= 3);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task HideRows_ShouldHideRows()
     {
         // Arrange
@@ -165,7 +166,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.False(worksheet.Row(4).Hidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ShowRows_ShouldShowRows()
     {
         // Arrange
@@ -193,7 +194,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.False(worksheet2.Row(3).Hidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task HideColumns_ShouldHideColumns()
     {
         // Arrange
@@ -215,7 +216,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.False(worksheet.Column(4).Hidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ShowColumns_ShouldShowColumns()
     {
         // Arrange
@@ -243,7 +244,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.False(worksheet2.Column(3).Hidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SetSize_ShouldSetRowHeightAndColumnWidth()
     {
         // Arrange
@@ -265,7 +266,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.Equal(20, worksheet.Column(2).Width);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AutoFit_ShouldAutoFitColumns()
     {
         // Arrange
@@ -280,7 +281,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.True(File.Exists(outputPath));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetInfo_ShouldReturnRowInfo()
     {
         // Arrange
@@ -303,7 +304,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.Contains("\"index\": 2", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetInfo_ShouldReturnColumnInfo()
     {
         // Arrange
@@ -326,7 +327,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.Contains("\"index\": 2", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InvalidOperation_ShouldThrowArgumentException()
     {
         // Arrange
@@ -337,7 +338,7 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InsertRows_WithSheetIndex_ShouldInsertInCorrectSheet()
     {
         // Arrange
@@ -370,3 +371,5 @@ public class ExcelRowColumnToolTests : ExcelTestBase
         Assert.Equal("Sheet2-R2", ws.Cells["A3"].Value?.ToString());
     }
 }
+
+

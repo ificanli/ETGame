@@ -7,11 +7,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelPivotTableToolTests : ExcelTestBase
 {
     private readonly ExcelPivotTableTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task CreatePivotTable_ShouldAddPivotWithFields()
     {
         var workbookPath = CreateWorkbookWithSourceData("pivot_create.xlsx");
@@ -40,7 +41,7 @@ public class ExcelPivotTableToolTests : ExcelTestBase
         Assert.Equal("销售额合计", pivot.DataFields[0].Name);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ConfigurePivotTable_ShouldReplaceFields()
     {
         var workbookPath = CreateWorkbookWithSourceData("pivot_configure.xlsx");
@@ -72,7 +73,7 @@ public class ExcelPivotTableToolTests : ExcelTestBase
         Assert.Equal("产品", pivot.RowFields[0].Name);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task RefreshPivotTable_ShouldReturnMessage()
     {
         var workbookPath = CreateWorkbookWithSourceData("pivot_refresh.xlsx");
@@ -88,7 +89,7 @@ public class ExcelPivotTableToolTests : ExcelTestBase
         Assert.Contains("已刷新数据透视表", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetPivotTables_ShouldReturnJsonPayload()
     {
         var workbookPath = CreateWorkbookWithSourceData("pivot_get.xlsx");
@@ -137,3 +138,5 @@ public class ExcelPivotTableToolTests : ExcelTestBase
         return filePath;
     }
 }
+
+

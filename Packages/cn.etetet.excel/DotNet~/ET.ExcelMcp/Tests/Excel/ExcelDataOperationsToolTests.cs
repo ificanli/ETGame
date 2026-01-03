@@ -5,13 +5,14 @@ using ET.Tools.Excel;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelDataOperationsToolTests : ExcelTestBase
 {
     private readonly ExcelDataOperationsTool _tool = new();
 
     #region Sort Tests
 
-    [Fact]
+    [TestMethod]
     public async Task SortData_ShouldSortRange()
     {
         var workbookPath = CreateExcelWorkbook("test_sort.xlsx");
@@ -44,7 +45,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
         Assert.Equal("C", resultWorksheet.Cells["A3"].Value);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SortData_WithHasHeader_ShouldSkipHeaderRow()
     {
         var workbookPath = CreateExcelWorkbook("test_sort_with_header.xlsx");
@@ -80,7 +81,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
         Assert.Equal("C", resultWorksheet.Cells["A4"].Value);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SortData_Descending_ShouldSortDescending()
     {
         var workbookPath = CreateExcelWorkbook("test_sort_desc.xlsx");
@@ -117,7 +118,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
 
     #region FindReplace Tests
 
-    [Fact]
+    [TestMethod]
     public async Task FindReplace_ShouldReplaceText()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_find_replace.xlsx", 3);
@@ -138,7 +139,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
         Assert.Equal("Replaced", worksheet.Cells["A1"].Value);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FindReplace_WithSubstring_ShouldNotLoopInfinitely()
     {
         var workbookPath = CreateExcelWorkbook("test_find_replace_substring.xlsx");
@@ -173,7 +174,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
 
     #region BatchWrite Tests
 
-    [Fact]
+    [TestMethod]
     public async Task BatchWrite_ShouldWriteMultipleValues()
     {
         var workbookPath = CreateExcelWorkbook("test_batch_write.xlsx");
@@ -201,7 +202,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
         Assert.Equal("Value3", worksheet.Cells["A2"].Value);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task BatchWrite_WithArrayFormat_ShouldWriteValues()
     {
         var workbookPath = CreateExcelWorkbook("test_batch_write_array.xlsx");
@@ -231,7 +232,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
 
     #region GetContent Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetContent_ShouldReturnContent()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_get_content.xlsx", 3);
@@ -253,7 +254,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
 
     #region GetStatistics Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetStatistics_ShouldReturnStatistics()
     {
         var workbookPath = CreateExcelWorkbook("test_get_statistics.xlsx");
@@ -284,7 +285,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
 
     #region GetUsedRange Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetUsedRange_ShouldReturnUsedRange()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_get_used_range.xlsx", 3);
@@ -305,7 +306,7 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
 
     #region Error Handling Tests
 
-    [Fact]
+    [TestMethod]
     public async Task UnknownOperation_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_unknown_op.xlsx");
@@ -321,3 +322,5 @@ public class ExcelDataOperationsToolTests : ExcelTestBase
 
     #endregion
 }
+
+

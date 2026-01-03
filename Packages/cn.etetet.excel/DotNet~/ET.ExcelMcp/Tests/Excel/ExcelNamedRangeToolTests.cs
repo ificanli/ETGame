@@ -6,13 +6,14 @@ using ET.Tools.Excel;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelNamedRangeToolTests : ExcelTestBase
 {
     private readonly ExcelNamedRangeTool _tool = new();
 
     #region Add Tests
 
-    [Fact]
+    [TestMethod]
     public async Task AddNamedRange_ShouldAddNamedRange()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_add_named_range.xlsx", 5, 5);
@@ -35,7 +36,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         Assert.NotNull(package.Workbook.Names["TestRange"]);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddNamedRange_SingleCell_ShouldAddRange()
     {
         var workbookPath = CreateExcelWorkbook("test_add_single_cell.xlsx");
@@ -57,7 +58,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         Assert.NotNull(package.Workbook.Names["SingleCell"]);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddNamedRange_WithSheetReference_ShouldAddToCorrectSheet()
     {
         var workbookPath = CreateExcelWorkbook("test_add_sheet_ref.xlsx");
@@ -86,7 +87,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         Assert.NotNull(namedRange);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddNamedRange_DuplicateName_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_add_duplicate.xlsx");
@@ -108,7 +109,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         Assert.Contains("已存在", exception.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddNamedRange_InvalidSheetIndex_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_add_invalid_sheet.xlsx");
@@ -124,7 +125,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddNamedRange_InvalidSheetReference_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_add_invalid_sheet_ref.xlsx");
@@ -140,7 +141,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         Assert.Contains("不存在", exception.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddNamedRange_WithSheetIndex_ShouldAddToCorrectSheet()
     {
         var workbookPath = CreateExcelWorkbook("test_add_with_sheet_index.xlsx");
@@ -174,7 +175,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
 
     #region Delete Tests
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteNamedRange_ShouldDeleteNamedRange()
     {
         var workbookPath = CreateExcelWorkbook("test_delete_named_range.xlsx");
@@ -201,7 +202,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         Assert.False(resultPackage.Workbook.Names.ContainsKey("RangeToDelete"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteNamedRange_NonExistent_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_delete_nonexistent.xlsx");
@@ -220,7 +221,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
 
     #region Get Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetNamedRanges_ShouldReturnAllNamedRanges()
     {
         var workbookPath = CreateExcelWorkbook("test_get_named_ranges.xlsx");
@@ -250,7 +251,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         Assert.Contains("Range2", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetNamedRanges_WithNoNamedRanges_ShouldReturnEmptyMessage()
     {
         var workbookPath = CreateExcelWorkbook("test_get_empty_named_ranges.xlsx");
@@ -269,7 +270,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
         Assert.Equal("未找到命名范围", root.GetProperty("message").GetString());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetNamedRanges_ShouldIncludeAllProperties()
     {
         var workbookPath = CreateExcelWorkbook("test_get_properties.xlsx");
@@ -300,7 +301,7 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
 
     #region Error Handling Tests
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteAsync_InvalidOperation_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_invalid_op.xlsx");
@@ -316,3 +317,5 @@ public class ExcelNamedRangeToolTests : ExcelTestBase
 
     #endregion
 }
+
+

@@ -5,11 +5,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelProtectToolTests : ExcelTestBase
 {
     private readonly ExcelProtectTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task ProtectSheet_ShouldEnableProtectionWithOptions()
     {
         var workbookPath = CreateExcelWorkbook("protect_sheet.xlsx");
@@ -38,7 +39,7 @@ public class ExcelProtectToolTests : ExcelTestBase
         Assert.True(worksheet.Protection.AllowAutoFilter);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UnprotectSheet_ShouldDisableProtection()
     {
         var workbookPath = CreateExcelWorkbook("unprotect_sheet.xlsx");
@@ -65,7 +66,7 @@ public class ExcelProtectToolTests : ExcelTestBase
         Assert.False(package.Workbook.Worksheets[0].Protection.IsProtected);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ProtectWorkbook_ShouldLockStructureAndWindows()
     {
         var workbookPath = CreateExcelWorkbook("protect_workbook.xlsx");
@@ -87,7 +88,7 @@ public class ExcelProtectToolTests : ExcelTestBase
         Assert.False(protection.LockRevision);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task LockAndUnlockCells_ShouldToggleLockedFlag()
     {
         var workbookPath = CreateExcelWorkbookWithData("lock_cells.xlsx");
@@ -123,3 +124,5 @@ public class ExcelProtectToolTests : ExcelTestBase
         Assert.True(packageLocked.Workbook.Worksheets[0].Cells["C3"].Style.Locked);
     }
 }
+
+

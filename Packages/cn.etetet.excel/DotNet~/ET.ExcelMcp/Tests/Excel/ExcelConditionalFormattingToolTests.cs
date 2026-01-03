@@ -9,11 +9,12 @@ using OfficeOpenXml.ConditionalFormatting;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelConditionalFormattingToolTests : ExcelTestBase
 {
     private readonly ExcelConditionalFormattingTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task AddColorScale_ShouldCreateRule()
     {
         var workbookPath = CreateWorkbookWithValues("cf_color_scale.xlsx");
@@ -31,7 +32,7 @@ public class ExcelConditionalFormattingToolTests : ExcelTestBase
         Assert.Equal(eExcelConditionalFormattingRuleType.ThreeColorScale, rules[0].Type);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddGreaterThan_WithStyle_ShouldApplyFormatting()
     {
         var workbookPath = CreateWorkbookWithValues("cf_style.xlsx");
@@ -56,7 +57,7 @@ public class ExcelConditionalFormattingToolTests : ExcelTestBase
         Assert.True(rule.Style.Font.Bold);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ClearRules_ShouldRemoveAllForRange()
     {
         var workbookPath = CreateWorkbookWithValues("cf_clear.xlsx");
@@ -75,7 +76,7 @@ public class ExcelConditionalFormattingToolTests : ExcelTestBase
         Assert.Empty(package.Workbook.Worksheets[0].ConditionalFormatting);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteRuleByIndex_ShouldReduceCount()
     {
         var workbookPath = CreateWorkbookWithValues("cf_delete.xlsx");
@@ -100,7 +101,7 @@ public class ExcelConditionalFormattingToolTests : ExcelTestBase
         Assert.Single(package.Workbook.Worksheets[0].ConditionalFormatting);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetRules_ShouldReturnMetadata()
     {
         var workbookPath = CreateWorkbookWithValues("cf_get.xlsx");
@@ -140,3 +141,5 @@ public class ExcelConditionalFormattingToolTests : ExcelTestBase
         return filePath;
     }
 }
+
+

@@ -8,6 +8,7 @@ using OfficeOpenXml.Drawing.Chart;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelChartToolTests : ExcelTestBase
 {
     private readonly ExcelChartTool _tool = new();
@@ -30,7 +31,7 @@ public class ExcelChartToolTests : ExcelTestBase
         return filePath;
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddChart_ShouldAddChart()
     {
         var workbookPath = CreateWorkbookWithData("chart_add.xlsx");
@@ -48,7 +49,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.Equal(eChartType.ColumnClustered, charts[0].ChartType);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetCharts_ShouldReturnInfo()
     {
         var workbookPath = CreateWorkbookWithData("chart_get.xlsx");
@@ -65,7 +66,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.Contains("\"type\": \"Line\"", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteChart_ShouldRemoveChart()
     {
         var workbookPath = CreateWorkbookWithData("chart_delete.xlsx");
@@ -85,7 +86,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.Empty(charts);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EditChart_ShouldChangeType()
     {
         var workbookPath = CreateWorkbookWithData("chart_edit.xlsx");
@@ -106,7 +107,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.Equal(eChartType.Pie, chart.ChartType);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UpdateChartData_ShouldChangeRange()
     {
         var workbookPath = CreateWorkbookWithData("chart_update.xlsx");
@@ -130,7 +131,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.Contains("$A$1:$A$3", chart.Series[0].XSeries);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SetChartProperties_ShouldUpdateTitle()
     {
         var workbookPath = CreateWorkbookWithData("chart_props.xlsx");
@@ -152,7 +153,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.Equal("Sales 2024", chart.Title.Text);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Add_WithMultipleSeries_ShouldCreateSeries()
     {
         var workbookPath = CreateWorkbookWithData("chart_multi.xlsx", 5, 1);
@@ -169,7 +170,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.True(chart.Series.Count >= 2, $"Expect at least 2 series, got {chart.Series.Count}");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Add_WithInvalidChartType_ShouldFallbackToColumn()
     {
         var workbookPath = CreateWorkbookWithData("chart_invalid_type.xlsx");
@@ -185,7 +186,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.Equal(eChartType.ColumnClustered, chart.ChartType);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Edit_WithInvalidIndex_ShouldThrow()
     {
         var workbookPath = CreateWorkbookWithData("chart_invalid_index.xlsx");
@@ -197,7 +198,7 @@ public class ExcelChartToolTests : ExcelTestBase
         Assert.Contains("超出范围", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_WithNoCharts_ShouldReturnEmptyPayload()
     {
         var workbookPath = CreateWorkbookWithData("chart_none.xlsx");
@@ -217,3 +218,5 @@ public class ExcelChartToolTests : ExcelTestBase
             .ToList();
     }
 }
+
+

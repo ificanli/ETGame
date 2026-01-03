@@ -5,11 +5,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelGroupToolTests : ExcelTestBase
 {
     private readonly ExcelGroupTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task GroupRows_ShouldIncreaseOutlineLevel()
     {
         var workbookPath = CreateExcelWorkbookWithData("group_rows.xlsx", 10, 3);
@@ -31,7 +32,7 @@ public class ExcelGroupToolTests : ExcelTestBase
         Assert.True(row.Hidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UngroupRows_ShouldResetOutline()
     {
         var workbookPath = CreateExcelWorkbookWithData("ungroup_rows.xlsx", 10, 3);
@@ -59,7 +60,7 @@ public class ExcelGroupToolTests : ExcelTestBase
         Assert.False(packageOut.Workbook.Worksheets[0].Row(2).Hidden);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GroupColumns_ShouldUpdateOutline()
     {
         var workbookPath = CreateExcelWorkbookWithData("group_cols.xlsx", 5, 10);
@@ -78,3 +79,5 @@ public class ExcelGroupToolTests : ExcelTestBase
         Assert.True(package.Workbook.Worksheets[0].Column(2).OutlineLevel > 0);
     }
 }
+
+

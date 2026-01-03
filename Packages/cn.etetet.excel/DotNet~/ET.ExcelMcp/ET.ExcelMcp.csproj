@@ -7,16 +7,22 @@
     <Nullable>enable</Nullable>
     <UseUTF8Encoding>true</UseUTF8Encoding>
     <Version>1.0.0</Version>
-    <RootNamespace>EpplusMcpServer</RootNamespace>
+    <RootNamespace>ET</RootNamespace>
     <LangVersion>default</LangVersion>
+    <RepoRoot Condition="'$(RepoRoot)' == ''">$(MSBuildThisFileDirectory)..\..\..\..\..\</RepoRoot>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>$(SolutionDir)/Bin</OutputPath>
+    <OutputPath>$(RepoRoot)Bin</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>$(SolutionDir)/Bin</OutputPath>
+    <OutputPath>$(RepoRoot)Bin</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

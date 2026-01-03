@@ -7,13 +7,14 @@ using ET.Tools.Excel;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelDataValidationToolTests : ExcelTestBase
 {
     private readonly ExcelDataValidationTool _tool = new();
 
     #region Add Tests
 
-    [Fact]
+    [TestMethod]
     public async Task AddDataValidation_WithList_ShouldAddListValidation()
     {
         var workbookPath = CreateExcelWorkbookWithData("test_add_validation.xlsx");
@@ -38,7 +39,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.True(worksheet.DataValidations.Count > 0);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddDataValidation_WithWholeNumber_ShouldAddNumberValidation()
     {
         var workbookPath = CreateExcelWorkbook("test_add_number_validation.xlsx");
@@ -63,7 +64,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.Equal(ExcelDataValidationOperator.between, validation.Operator);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddDataValidation_WithOperatorGreaterThan_ShouldUseGreaterThanOperator()
     {
         var workbookPath = CreateExcelWorkbook("test_add_greater_than.xlsx");
@@ -88,7 +89,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.Equal(ExcelDataValidationOperator.greaterThan, validation.Operator);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddDataValidation_WithMessages_ShouldSetMessages()
     {
         var workbookPath = CreateExcelWorkbook("test_add_with_messages.xlsx");
@@ -116,7 +117,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.True(validation.ShowErrorMessage);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddDataValidation_AllValidationTypes_ShouldWork()
     {
         var validationTypes = new[] { "WholeNumber", "Decimal", "TextLength", "Custom" };
@@ -144,7 +145,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
 
     #region Get Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetDataValidation_ShouldReturnValidationInfo()
     {
         var workbookPath = CreateExcelWorkbook("test_get_validation.xlsx");
@@ -172,7 +173,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.True(json.RootElement.GetProperty("items").GetArrayLength() > 0);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetDataValidation_EmptyWorksheet_ShouldReturnEmptyList()
     {
         var workbookPath = CreateExcelWorkbook("test_get_empty.xlsx");
@@ -193,7 +194,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
 
     #region SetMessages Tests
 
-    [Fact]
+    [TestMethod]
     public async Task SetMessages_ShouldSetInputAndErrorMessage()
     {
         var workbookPath = CreateExcelWorkbook("test_set_messages.xlsx");
@@ -229,7 +230,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.Equal("Invalid value selected", resultValidation.Error);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SetMessages_ClearMessage_ShouldClearAndDisableShow()
     {
         var workbookPath = CreateExcelWorkbook("test_clear_messages.xlsx");
@@ -265,7 +266,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
 
     #region Delete Tests
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteDataValidation_ShouldDeleteValidation()
     {
         var workbookPath = CreateExcelWorkbook("test_delete_validation.xlsx");
@@ -295,7 +296,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.Equal(0, resultPackage.Workbook.Worksheets[0].DataValidations.Count);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteDataValidation_InvalidIndex_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_delete_invalid.xlsx");
@@ -314,7 +315,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
 
     #region Edit Tests
 
-    [Fact]
+    [TestMethod]
     public async Task EditDataValidation_ShouldEditValidation()
     {
         var workbookPath = CreateExcelWorkbook("test_edit_validation.xlsx");
@@ -344,7 +345,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.Contains("InputMessage=New message", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EditDataValidation_InvalidIndex_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_edit_invalid.xlsx");
@@ -364,7 +365,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
 
     #region Error Handling Tests
 
-    [Fact]
+    [TestMethod]
     public async Task AddDataValidation_InvalidValidationType_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_add_invalid_type.xlsx");
@@ -381,7 +382,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.Contains("不支持的验证类型", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddDataValidation_InvalidOperatorType_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_add_invalid_operator.xlsx");
@@ -399,7 +400,7 @@ public class ExcelDataValidationToolTests : ExcelTestBase
         Assert.Contains("不支持的运算符类型", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UnknownOperation_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_unknown_op.xlsx");
@@ -415,3 +416,5 @@ public class ExcelDataValidationToolTests : ExcelTestBase
 
     #endregion
 }
+
+

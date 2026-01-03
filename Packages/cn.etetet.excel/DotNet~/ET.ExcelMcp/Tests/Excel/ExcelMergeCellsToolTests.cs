@@ -6,11 +6,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelMergeCellsToolTests : ExcelTestBase
 {
     private readonly ExcelMergeCellsTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task MergeCells_ShouldMergeRange()
     {
         // Arrange
@@ -36,7 +37,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.True(worksheet.Cells["A1:C1"].Merge);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task MergeCells_MultipleRows_ShouldMerge()
     {
         // Arrange
@@ -62,7 +63,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.True(worksheet.Cells["A1:B3"].Merge);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task MergeCells_InvalidSheetIndex_ShouldThrowException()
     {
         // Arrange
@@ -79,7 +80,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UnmergeCells_ShouldUnmergeRange()
     {
         // Arrange
@@ -112,7 +113,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.False(resultWorksheet.Cells["A1:C1"].Merge);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UnmergeCells_WithKeepValue_ShouldKeepValue()
     {
         // Arrange
@@ -146,7 +147,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.Equal("MergedValue", resultWorksheet.Cells["C1"].Value?.ToString());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task UnmergeCells_InvalidSheetIndex_ShouldThrowException()
     {
         // Arrange
@@ -163,7 +164,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetMergedCells_ShouldReturnMergedCells()
     {
         // Arrange
@@ -204,7 +205,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.Equal("Header", firstItem.GetProperty("value").GetString());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetMergedCells_EmptyWorksheet_ShouldReturnEmptyResult()
     {
         // Arrange
@@ -225,7 +226,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.Equal(0, root.GetProperty("mergedCellsCount").GetInt32());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetMergedCells_MultipleMergedRanges_ShouldReturnAll()
     {
         // Arrange
@@ -255,7 +256,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.Equal(2, root.GetProperty("mergedCells").GetArrayLength());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetMergedCells_InvalidSheetIndex_ShouldThrowException()
     {
         // Arrange
@@ -271,7 +272,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteAsync_InvalidOperation_ShouldThrowException()
     {
         // Arrange
@@ -287,7 +288,7 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.Contains("未知操作", exception.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task MergeCells_WithSheetIndex_ShouldMergeCorrectSheet()
     {
         // Arrange
@@ -322,3 +323,5 @@ public class ExcelMergeCellsToolTests : ExcelTestBase
         Assert.True(package2.Workbook.Worksheets[1].Cells["A1:C1"].Merge);
     }
 }
+
+

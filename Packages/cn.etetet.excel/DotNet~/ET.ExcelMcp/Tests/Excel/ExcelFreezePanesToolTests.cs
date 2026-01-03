@@ -6,11 +6,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelFreezePanesToolTests : ExcelTestBase
 {
     private readonly ExcelFreezePanesTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task Freeze_ShouldUpdateView()
     {
         var workbookPath = CreateExcelWorkbookWithData("freeze.xlsx");
@@ -30,7 +31,7 @@ public class ExcelFreezePanesToolTests : ExcelTestBase
         Assert.Equal(ePaneState.Frozen, paneState);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Unfreeze_ShouldClearState()
     {
         var workbookPath = CreateExcelWorkbookWithData("unfreeze.xlsx");
@@ -63,7 +64,7 @@ public class ExcelFreezePanesToolTests : ExcelTestBase
         }
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetStatus_ShouldReturnJson()
     {
         var workbookPath = CreateExcelWorkbookWithData("freeze_status.xlsx");
@@ -86,3 +87,5 @@ public class ExcelFreezePanesToolTests : ExcelTestBase
         Assert.Equal(1, json.RootElement.GetProperty("frozenColumn").GetInt32());
     }
 }
+
+

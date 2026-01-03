@@ -6,11 +6,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelViewSettingsToolTests : ExcelTestBase
 {
     private readonly ExcelViewSettingsTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task SetViewSettings_ShouldPersistChanges()
     {
         var workbookPath = CreateExcelWorkbook("view_set.xlsx");
@@ -38,7 +39,7 @@ public class ExcelViewSettingsToolTests : ExcelTestBase
         Assert.False(view.PageLayoutView);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetViewSettings_ShouldReturnJsonSnapshot()
     {
         var workbookPath = CreateExcelWorkbook("view_get.xlsx");
@@ -65,3 +66,5 @@ public class ExcelViewSettingsToolTests : ExcelTestBase
         Assert.Equal("PageBreak", root.GetProperty("viewType").GetString());
     }
 }
+
+

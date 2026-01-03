@@ -6,13 +6,14 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelRangeToolTests : ExcelTestBase
 {
     private readonly ExcelRangeTool _tool = new();
 
     #region Move Tests
 
-    [Fact]
+    [TestMethod]
     public async Task MoveRange_ShouldMoveRangeToDestination()
     {
         // Arrange
@@ -47,7 +48,7 @@ public class ExcelRangeToolTests : ExcelTestBase
 
     #region Write Tests
 
-    [Fact]
+    [TestMethod]
     public async Task WriteRange_ShouldWriteDataToRange()
     {
         // Arrange
@@ -73,7 +74,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.Equal("D", worksheet.Cells["B2"].Value);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteRange_WithObjectFormat_ShouldWriteData()
     {
         // Arrange
@@ -97,7 +98,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.Equal(20.0, Convert.ToDouble(worksheet.Cells["B2"].Value));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteRange_WithNumericValues_ShouldStoreAsNumbers()
     {
         // Arrange
@@ -121,7 +122,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.Equal(true, worksheet.Cells["C1"].Value);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteRange_WithInvalidSheetIndex_ShouldThrowException()
     {
         // Arrange
@@ -140,7 +141,7 @@ public class ExcelRangeToolTests : ExcelTestBase
 
     #region Get Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetRange_ShouldReturnRangeData()
     {
         // Arrange
@@ -158,7 +159,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.Contains("R1C2", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetRange_WithCalculateFormulas_ShouldRecalculate()
     {
         // Arrange
@@ -183,7 +184,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.Contains("30", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetRange_WithIncludeFormat_ShouldReturnFormatInfo()
     {
         // Arrange
@@ -202,7 +203,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.True(format.TryGetProperty("fontName", out _));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetRange_WithInvalidSheetIndex_ShouldThrowException()
     {
         // Arrange
@@ -219,7 +220,7 @@ public class ExcelRangeToolTests : ExcelTestBase
 
     #region Clear Tests
 
-    [Fact]
+    [TestMethod]
     public async Task ClearRange_ShouldClearRangeContent()
     {
         // Arrange
@@ -240,7 +241,7 @@ public class ExcelRangeToolTests : ExcelTestBase
             $"Cell A1 should be cleared, got: {a1Value}");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ClearRange_WithClearFormat_ShouldClearFormat()
     {
         // Arrange
@@ -272,7 +273,7 @@ public class ExcelRangeToolTests : ExcelTestBase
 
     #region Copy Tests
 
-    [Fact]
+    [TestMethod]
     public async Task CopyRange_ShouldCopyRangeToDestination()
     {
         // Arrange
@@ -294,7 +295,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.Equal(sourceA1, destC1);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CopyRange_WithValuesOnly_ShouldCopyValuesOnly()
     {
         // Arrange
@@ -328,7 +329,7 @@ public class ExcelRangeToolTests : ExcelTestBase
 
     #region Edit Tests
 
-    [Fact]
+    [TestMethod]
     public async Task EditRange_ShouldEditRangeData()
     {
         // Arrange
@@ -354,7 +355,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.Equal("W", worksheet.Cells["B2"].Value);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EditRange_WithClearRange_ShouldClearBeforeEdit()
     {
         // Arrange
@@ -383,7 +384,7 @@ public class ExcelRangeToolTests : ExcelTestBase
 
     #region CopyFormat Tests
 
-    [Fact]
+    [TestMethod]
     public async Task CopyFormat_ShouldCopyFormatOnly()
     {
         // Arrange
@@ -414,7 +415,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.Equal(14, destStyle.Font.Size);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CopyFormat_WithCopyValue_ShouldCopyFormatAndValues()
     {
         // Arrange
@@ -444,7 +445,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         Assert.True(destStyle.Font.Bold);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CopyFormat_WithMissingDestination_ShouldThrowException()
     {
         // Arrange
@@ -461,7 +462,7 @@ public class ExcelRangeToolTests : ExcelTestBase
 
     #region Error Handling Tests
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteAsync_WithUnknownOperation_ShouldThrowException()
     {
         // Arrange
@@ -476,7 +477,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ExecuteAsync_WithMissingPath_ShouldThrowException()
     {
         // Arrange
@@ -489,7 +490,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteRange_WithMissingRange_ShouldThrowException()
     {
         // Arrange
@@ -499,10 +500,10 @@ public class ExcelRangeToolTests : ExcelTestBase
         arguments["data"] = new JsonArray { new JsonArray { "A" } };
 
         // Act & Assert
-        await Assert.ThrowsAnyAsync<Exception>(() => _tool.ExecuteAsync(arguments));
+        await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetRange_WithMissingRange_ShouldThrowException()
     {
         // Arrange
@@ -513,7 +514,7 @@ public class ExcelRangeToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CopyRange_WithMissingSourceRange_ShouldThrowException()
     {
         // Arrange
@@ -528,3 +529,4 @@ public class ExcelRangeToolTests : ExcelTestBase
 
     #endregion
 }
+

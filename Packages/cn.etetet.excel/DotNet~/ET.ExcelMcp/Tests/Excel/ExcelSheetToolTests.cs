@@ -5,11 +5,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelSheetToolTests : ExcelTestBase
 {
     private readonly ExcelSheetTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task CreateSheet_ShouldAddWorksheet()
     {
         var workbookPath = CreateExcelWorkbook("sheet_create.xlsx");
@@ -23,7 +24,7 @@ public class ExcelSheetToolTests : ExcelTestBase
         Assert.Contains(package.Workbook.Worksheets, ws => ws.Name == "DataSheet");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteSheet_ShouldRemoveWorksheet()
     {
         var workbookPath = CreateExcelWorkbook("sheet_delete.xlsx");
@@ -43,7 +44,7 @@ public class ExcelSheetToolTests : ExcelTestBase
         Assert.Equal(1, resultPackage.Workbook.Worksheets.Count);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task RenameSheet_ShouldUpdateName()
     {
         var workbookPath = CreateExcelWorkbook("sheet_rename.xlsx");
@@ -58,7 +59,7 @@ public class ExcelSheetToolTests : ExcelTestBase
         Assert.Equal("Summary", package.Workbook.Worksheets[0].Name);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ListSheets_ShouldReturnSheetInfo()
     {
         var workbookPath = CreateExcelWorkbookWithData("sheet_list.xlsx", 5, 2);
@@ -81,7 +82,7 @@ public class ExcelSheetToolTests : ExcelTestBase
         Assert.True(firstSheet.GetProperty("columnCount").GetInt32() > 0);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteSheet_WithInvalidIndex_ShouldThrow()
     {
         var workbookPath = CreateExcelWorkbook("sheet_delete_invalid.xlsx");
@@ -93,3 +94,5 @@ public class ExcelSheetToolTests : ExcelTestBase
         Assert.Contains("无效的工作表索引", ex.Message);
     }
 }
+
+

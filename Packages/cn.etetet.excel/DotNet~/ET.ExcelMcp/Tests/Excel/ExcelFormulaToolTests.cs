@@ -6,13 +6,14 @@ using ET.Tools.Excel;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelFormulaToolTests : ExcelTestBase
 {
     private readonly ExcelFormulaTool _tool = new();
 
     #region Calculate Tests
 
-    [Fact]
+    [TestMethod]
     public async Task CalculateFormulas_ShouldCalculateAllFormulas()
     {
         var workbookPath = CreateExcelWorkbook("test_calculate_formulas.xlsx");
@@ -42,7 +43,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
 
     #region Add Tests
 
-    [Fact]
+    [TestMethod]
     public async Task AddFormula_WithSum_ShouldAddSumFormula()
     {
         var workbookPath = CreateExcelWorkbook("test_formula_sum.xlsx");
@@ -71,7 +72,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
         Assert.Equal("SUM(A1:A3)", worksheet.Cells["A4"].Formula);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddFormula_WithAutoCalculateFalse_ShouldNotCalculate()
     {
         var workbookPath = CreateExcelWorkbook("test_formula_no_calc.xlsx");
@@ -99,7 +100,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
         Assert.True(File.Exists(outputPath));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddFormula_WithAverage_ShouldAddAverageFormula()
     {
         var workbookPath = CreateExcelWorkbook("test_formula_average.xlsx");
@@ -127,7 +128,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
         Assert.Equal("AVERAGE(A1:A3)", resultPackage.Workbook.Worksheets[0].Cells["A4"].Formula);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task AddFormula_WithSheetIndex_ShouldApplyToCorrectSheet()
     {
         var workbookPath = CreateExcelWorkbook("test_formula_sheet.xlsx");
@@ -159,7 +160,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
 
     #region Get Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormula_ShouldReturnFormula()
     {
         var workbookPath = CreateExcelWorkbook("test_get_formula.xlsx");
@@ -182,7 +183,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
         Assert.Contains("SUM", result, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormula_WithRange_ShouldReturnFormulasInRange()
     {
         var workbookPath = CreateExcelWorkbook("test_get_formula_range.xlsx");
@@ -207,7 +208,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
         Assert.Equal(2, json.RootElement.GetProperty("count").GetInt32());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormula_NoFormulas_ShouldReturnEmptyResult()
     {
         var workbookPath = CreateExcelWorkbook("test_get_formula_empty.xlsx");
@@ -234,7 +235,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
 
     #region GetResult Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormulaResult_ShouldReturnResult()
     {
         var workbookPath = CreateExcelWorkbook("test_get_formula_result.xlsx");
@@ -266,7 +267,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
 
     #region SetArray Tests
 
-    [Fact]
+    [TestMethod]
     public async Task SetArrayFormula_ShouldSetArrayFormula()
     {
         var workbookPath = CreateExcelWorkbook("test_array_formula.xlsx");
@@ -298,7 +299,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
 
     #region GetArray Tests
 
-    [Fact]
+    [TestMethod]
     public async Task GetArrayFormula_ShouldReturnArrayFormula()
     {
         var workbookPath = CreateExcelWorkbook("test_get_array_formula.xlsx");
@@ -323,7 +324,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
         Assert.True(json.RootElement.GetProperty("isArrayFormula").GetBoolean());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetArrayFormula_NotArrayFormula_ShouldReturnFalse()
     {
         var workbookPath = CreateExcelWorkbook("test_get_array_not.xlsx");
@@ -350,7 +351,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
 
     #region Error Handling Tests
 
-    [Fact]
+    [TestMethod]
     public async Task UnknownOperation_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_unknown_op.xlsx");
@@ -364,7 +365,7 @@ public class ExcelFormulaToolTests : ExcelTestBase
         Assert.Contains("未知操作", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InvalidSheetIndex_ShouldThrowException()
     {
         var workbookPath = CreateExcelWorkbook("test_invalid_sheet.xlsx");
@@ -383,3 +384,5 @@ public class ExcelFormulaToolTests : ExcelTestBase
 
     #endregion
 }
+
+

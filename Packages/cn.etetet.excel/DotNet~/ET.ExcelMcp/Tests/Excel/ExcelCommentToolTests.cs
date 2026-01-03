@@ -6,11 +6,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelCommentToolTests : ExcelTestBase
 {
     private readonly ExcelCommentTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task AddComment_ShouldCreateComment()
     {
         var workbookPath = CreateExcelWorkbook("comment_add.xlsx");
@@ -32,7 +33,7 @@ public class ExcelCommentToolTests : ExcelTestBase
         Assert.Equal("Test comment", comment.Text);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetComments_ShouldReturnInfo()
     {
         var workbookPath = CreateExcelWorkbook("comment_get.xlsx");
@@ -54,7 +55,7 @@ public class ExcelCommentToolTests : ExcelTestBase
         Assert.Equal(1, json.RootElement.GetProperty("count").GetInt32());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EditComment_ShouldUpdateText()
     {
         var workbookPath = CreateExcelWorkbook("comment_edit.xlsx");
@@ -81,7 +82,7 @@ public class ExcelCommentToolTests : ExcelTestBase
         Assert.Equal("New comment", comment?.Text);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task DeleteComment_ShouldRemoveComment()
     {
         var workbookPath = CreateExcelWorkbook("comment_delete.xlsx");
@@ -106,7 +107,7 @@ public class ExcelCommentToolTests : ExcelTestBase
         Assert.Null(packageOut.Workbook.Worksheets[0].Cells["A1"].Comment);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Add_InvalidCell_ShouldThrow()
     {
         var workbookPath = CreateExcelWorkbook("comment_invalid_cell.xlsx");
@@ -121,7 +122,7 @@ public class ExcelCommentToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(args));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Get_NoComments_ShouldReturnZero()
     {
         var workbookPath = CreateExcelWorkbook("comment_none.xlsx");
@@ -135,3 +136,5 @@ public class ExcelCommentToolTests : ExcelTestBase
         Assert.Contains("\"count\": 0", result);
     }
 }
+
+

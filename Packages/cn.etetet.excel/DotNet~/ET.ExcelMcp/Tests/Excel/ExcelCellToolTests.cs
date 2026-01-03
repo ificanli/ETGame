@@ -4,11 +4,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelCellToolTests : ExcelTestBase
 {
     private readonly ExcelCellTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task GetCellValue_ShouldReturnValue()
     {
         var workbookPath = CreateExcelWorkbookWithData("cell_get.xlsx", 3);
@@ -21,7 +22,7 @@ public class ExcelCellToolTests : ExcelTestBase
         Assert.Contains("\"cell\": \"A1\"", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteCellValue_ShouldPersistValue()
     {
         var workbookPath = CreateExcelWorkbook("cell_write.xlsx");
@@ -36,7 +37,7 @@ public class ExcelCellToolTests : ExcelTestBase
         Assert.Equal("Hello", package.Workbook.Worksheets[0].Cells["B2"].Value);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EditCellFormula_ShouldApplyFormula()
     {
         var workbookPath = CreateExcelWorkbook("cell_formula.xlsx");
@@ -59,7 +60,7 @@ public class ExcelCellToolTests : ExcelTestBase
         Assert.Equal("A1+B1", worksheet.Cells["C1"].Formula);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ClearCell_ShouldRemoveValue()
     {
         var workbookPath = CreateExcelWorkbook("cell_clear.xlsx");
@@ -80,7 +81,7 @@ public class ExcelCellToolTests : ExcelTestBase
         Assert.True(string.IsNullOrEmpty(clearedCell.Text));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Write_ShouldHandleMultipleDataTypes()
     {
         var workbookPath = CreateExcelWorkbook("cell_types.xlsx");
@@ -109,7 +110,7 @@ public class ExcelCellToolTests : ExcelTestBase
         Assert.Equal(new DateTime(2024, 1, 15), worksheet.Cells["A3"].GetValue<DateTime>().Date);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetCell_FromDifferentSheet_ShouldReturnValue()
     {
         var workbookPath = CreateExcelWorkbook("cell_get_sheet.xlsx");
@@ -129,7 +130,7 @@ public class ExcelCellToolTests : ExcelTestBase
         Assert.Contains("Sheet2Data", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task WriteCell_WithInvalidAddress_ShouldThrow()
     {
         var workbookPath = CreateExcelWorkbook("cell_invalid.xlsx");
@@ -142,7 +143,7 @@ public class ExcelCellToolTests : ExcelTestBase
         Assert.Contains("单元格地址格式无效", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EditCell_WithoutValueOrFormula_ShouldThrow()
     {
         var workbookPath = CreateExcelWorkbook("cell_edit_missing.xlsx");
@@ -154,3 +155,5 @@ public class ExcelCellToolTests : ExcelTestBase
         Assert.Contains("必须提供 value 或 formula", ex.Message);
     }
 }
+
+

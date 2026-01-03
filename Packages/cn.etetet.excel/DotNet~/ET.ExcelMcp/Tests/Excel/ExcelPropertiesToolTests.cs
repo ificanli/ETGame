@@ -7,6 +7,7 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelPropertiesToolTests : ExcelTestBase
 {
     private readonly ExcelPropertiesTool _tool = new();
@@ -21,7 +22,7 @@ public class ExcelPropertiesToolTests : ExcelTestBase
         return path;
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetWorkbookProperties_ShouldReturnMetadata()
     {
         var path = CreateWorkbook("props_get.xlsx", package =>
@@ -42,7 +43,7 @@ public class ExcelPropertiesToolTests : ExcelTestBase
         Assert.Equal(1, root.GetProperty("customProperties").GetArrayLength());
     }
 
-    [Fact]
+    [TestMethod]
     public async Task SetWorkbookProperties_ShouldPersistValues()
     {
         var path = CreateWorkbook("props_set.xlsx");
@@ -66,7 +67,7 @@ public class ExcelPropertiesToolTests : ExcelTestBase
         Assert.Equal("Finance", props.GetCustomPropertyValue("Department"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task EditSheetProperties_ShouldApplyChanges()
     {
         var path = CreateWorkbook("props_sheet_edit.xlsx", package =>
@@ -89,7 +90,7 @@ public class ExcelPropertiesToolTests : ExcelTestBase
         Assert.Equal(Color.FromArgb(0, 255, 0), worksheet.TabColor);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetSheetProperties_ShouldReportUsage()
     {
         var path = CreateWorkbook("props_sheet_get.xlsx", package =>
@@ -107,7 +108,7 @@ public class ExcelPropertiesToolTests : ExcelTestBase
         Assert.Contains("\"dataRowCount\": 1", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetSheetInfo_ShouldListAllSheets()
     {
         var path = CreateTestFilePath("props_sheet_info.xlsx");
@@ -127,3 +128,5 @@ public class ExcelPropertiesToolTests : ExcelTestBase
         Assert.Equal(2, root.GetProperty("totalWorksheets").GetInt32());
     }
 }
+
+

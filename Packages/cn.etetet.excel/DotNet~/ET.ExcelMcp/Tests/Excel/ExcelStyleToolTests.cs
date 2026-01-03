@@ -6,11 +6,12 @@ using OfficeOpenXml.Style;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelStyleToolTests : ExcelTestBase
 {
     private readonly ExcelStyleTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithFontOptions_ShouldApplyFontFormatting()
     {
         // Arrange
@@ -47,7 +48,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.True(style.Font.Italic);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithColors_ShouldApplyColors()
     {
         // Arrange
@@ -83,7 +84,7 @@ public class ExcelStyleToolTests : ExcelTestBase
             $"Colors should be applied. Font: {fontColorRgb}, Background: {bgColorRgb}");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithAlignment_ShouldApplyAlignment()
     {
         // Arrange
@@ -116,7 +117,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Equal(ExcelVerticalAlignment.Center, style.VerticalAlignment);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithBorder_ShouldApplyBorder()
     {
         // Arrange
@@ -153,7 +154,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.True(hasBorder, "Border should be applied");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithNumberFormat_ShouldApplyNumberFormat()
     {
         // Arrange
@@ -185,7 +186,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("#,##0.00", style.Numberformat.Format);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithAllFormattingOptions_ShouldApplyAllFormats()
     {
         // Arrange
@@ -229,7 +230,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Equal(ExcelVerticalAlignment.Center, style.VerticalAlignment);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_ShouldReturnFormatInfo()
     {
         // Arrange
@@ -260,7 +261,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("A1", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CopySheetFormat_ShouldCopyFormat()
     {
         // Arrange
@@ -294,7 +295,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.True(File.Exists(outputPath), "Output workbook should be created");
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithBatchRanges_ShouldApplyToAllRanges()
     {
         // Arrange
@@ -325,7 +326,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.True(resultPackage.Workbook.Worksheets[0].Cells["B2"].Style.Font.Bold);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithoutRangeOrRanges_ShouldThrowArgumentException()
     {
         // Arrange
@@ -342,7 +343,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("range", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithInvalidColor_ShouldThrowArgumentException()
     {
         // Arrange
@@ -359,7 +360,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         await Assert.ThrowsAsync<ArgumentException>(() => _tool.ExecuteAsync(arguments));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithCellParameter_ShouldReturnFormatInfo()
     {
         // Arrange
@@ -386,7 +387,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("fontName", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithoutCellOrRange_ShouldThrowArgumentException()
     {
         // Arrange
@@ -402,7 +403,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("cell", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithInvalidRange_ShouldThrowArgumentException()
     {
         // Arrange
@@ -419,7 +420,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("Invalid", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithMultipleCells_ShouldReturnAllCellFormats()
     {
         // Arrange
@@ -448,7 +449,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("\"count\": 2", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CopySheetFormat_WithColumnWidthsOnly_ShouldCopyColumnWidths()
     {
         // Arrange
@@ -485,7 +486,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Equal(20, targetSheet.Column(1).Width, 1);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task InvalidOperation_ShouldThrowArgumentException()
     {
         // Arrange
@@ -501,7 +502,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("未知操作", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithBuiltInNumberFormat_ShouldApplyFormat()
     {
         // Arrange
@@ -531,7 +532,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.NotNull(style.Numberformat.Format);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithDifferentBorderStyles_ShouldApplyCorrectStyle()
     {
         // Arrange
@@ -561,7 +562,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Equal(ExcelBorderStyle.Double, style.Border.Top.Style);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithPatternFill_ShouldApplyPattern()
     {
         // Arrange
@@ -593,7 +594,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.NotEqual(ExcelFillStyle.None, style.Fill.PatternType);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task FormatCells_WithGray50Pattern_ShouldApplyPattern()
     {
         // Arrange
@@ -624,7 +625,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.NotEqual(ExcelFillStyle.None, style.Fill.PatternType);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithFieldsParameter_ShouldReturnOnlyRequestedFields()
     {
         // Arrange
@@ -654,7 +655,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.DoesNotContain("horizontalAlignment", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithMultipleFields_ShouldReturnRequestedFields()
     {
         // Arrange
@@ -684,7 +685,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.DoesNotContain("borders", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithColorField_ShouldIncludePatternType()
     {
         // Arrange
@@ -716,7 +717,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.Contains("backgroundColor", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithAlignmentField_ShouldReturnAlignmentOnly()
     {
         // Arrange
@@ -746,7 +747,7 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.DoesNotContain("borders", result);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task GetFormat_WithValueField_ShouldReturnValueInfo()
     {
         // Arrange
@@ -775,3 +776,5 @@ public class ExcelStyleToolTests : ExcelTestBase
         Assert.DoesNotContain("fontName", result);
     }
 }
+
+

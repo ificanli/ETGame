@@ -5,11 +5,12 @@ using OfficeOpenXml;
 
 namespace ET.Test;
 
+[TestClass]
 public class ExcelFileOperationsToolTests : ExcelTestBase
 {
     private readonly ExcelFileOperationsTool _tool = new();
 
-    [Fact]
+    [TestMethod]
     public async Task CreateWorkbook_ShouldCreateFileWithSheetName()
     {
         var outputPath = CreateTestFilePath("file_ops_create.xlsx");
@@ -27,7 +28,7 @@ public class ExcelFileOperationsToolTests : ExcelTestBase
         Assert.Equal("DataSheet", package.Workbook.Worksheets[0].Name);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task CreateWorkbook_WithOutputPathOnly_ShouldUseOutput()
     {
         var outputPath = CreateTestFilePath("file_ops_create_no_path.xlsx");
@@ -44,7 +45,7 @@ public class ExcelFileOperationsToolTests : ExcelTestBase
         Assert.Equal("Sheet1", package.Workbook.Worksheets[0].Name);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ConvertWorkbook_ToCsv_ShouldGenerateCsv()
     {
         var inputPath = CreateExcelWorkbookWithData("file_ops_convert.xlsx", 2, 2);
@@ -66,7 +67,7 @@ public class ExcelFileOperationsToolTests : ExcelTestBase
         Assert.Contains("\"R2C2\"", csvContent);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task ConvertWorkbook_WithUnsupportedFormat_ShouldThrow()
     {
         var inputPath = CreateExcelWorkbookWithData("file_ops_convert_invalid.xlsx");
@@ -83,7 +84,7 @@ public class ExcelFileOperationsToolTests : ExcelTestBase
         Assert.Contains("暂不支持", ex.Message);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Execute_WithUnknownOperation_ShouldThrow()
     {
         var args = new JsonObject
@@ -95,3 +96,5 @@ public class ExcelFileOperationsToolTests : ExcelTestBase
         Assert.Contains("未知操作", ex.Message);
     }
 }
+
+
