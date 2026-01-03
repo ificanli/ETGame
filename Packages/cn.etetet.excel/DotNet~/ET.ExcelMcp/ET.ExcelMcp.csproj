@@ -11,6 +11,14 @@
     <LangVersion>default</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>$(SolutionDir)/Bin</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>$(SolutionDir)/Bin</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <!-- EPPlus for Excel operations -->
     <PackageReference Include="EPPlus" Version="7.5.2" />
