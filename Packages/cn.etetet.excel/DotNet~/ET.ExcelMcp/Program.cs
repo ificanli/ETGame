@@ -11,11 +11,22 @@ try
     Console.OutputEncoding = Encoding.UTF8;
     Console.InputEncoding = Encoding.UTF8;
 
-    Console.Error.WriteLine("[INFO] EPPlus MCP Server - Excel专用服务器");
-    await Console.Error.FlushAsync();
+    // Check if running in CLI mode
+    if (args.Length > 0 && args[0].ToLower() == "cli")
+    {
+        // CLI mode: direct command line execution
+        var exitCode = await CliRunner.RunAsync(args);
+        Environment.Exit(exitCode);
+    }
+    else
+    {
+        // MCP mode: JSON-RPC server via stdin/stdout
+        Console.Error.WriteLine("[INFO] EPPlus MCP Server - Excel专用服务器");
+        await Console.Error.FlushAsync();
 
-    var server = new McpServer();
-    await server.RunAsync();
+        var server = new McpServer();
+        await server.RunAsync();
+    }
 }
 catch (Exception ex)
 {

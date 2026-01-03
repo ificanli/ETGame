@@ -9,7 +9,7 @@
     <Version>1.0.0</Version>
     <RootNamespace>ET</RootNamespace>
     <LangVersion>default</LangVersion>
-    <RepoRoot Condition="'$(RepoRoot)' == ''">$(MSBuildThisFileDirectory)..\..\..\..\..\</RepoRoot>
+    <RepoRoot Condition="'$(RepoRoot)' == ''">$(MSBuildThisFileDirectory)..\..\..\..\</RepoRoot>
   </PropertyGroup>
 
   <PropertyGroup>

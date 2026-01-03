@@ -1,11 +1,4 @@
 {
   "mcpServers": {
-    "et-excel": {
-      "command": "dotnet",
-      "args": [
-        "./Bin/ET.ExcelMcp.dll"
-      ],
-      "cwd": "."
-    }
   }
 }
