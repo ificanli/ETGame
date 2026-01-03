@@ -10,7 +10,7 @@ public abstract class ExcelTestBase : TestBase
     static ExcelTestBase()
     {
         // 设置 EPPlus 的许可证上下文
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        ExcelPackage.License.SetNonCommercialOrganization("ETET");
     }
 
     /// <summary>

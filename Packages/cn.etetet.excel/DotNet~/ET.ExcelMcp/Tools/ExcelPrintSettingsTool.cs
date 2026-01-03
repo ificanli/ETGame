@@ -305,7 +305,11 @@ public class ExcelPrintSettingsTool : IExcelTool
                 }
             };
 
-            return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
+            return JsonSerializer.Serialize(result, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowNamedFloatingPointLiterals
+            });
         });
     }
 
@@ -338,7 +342,7 @@ public class ExcelPrintSettingsTool : IExcelTool
         property.SetValue(section, node.GetValue<string>());
     }
 
-    private static decimal GetMarginOrDefault(JsonObject margins, string key, decimal currentValue)
+    private static double GetMarginOrDefault(JsonObject margins, string key, double currentValue)
     {
         var value = margins[key];
         if (value == null)
@@ -346,9 +350,9 @@ public class ExcelPrintSettingsTool : IExcelTool
 
         return value.GetValueKind() switch
         {
-            JsonValueKind.Number => Convert.ToDecimal(value.GetValue<double>(), CultureInfo.InvariantCulture),
-            JsonValueKind.String when decimal.TryParse(value.GetValue<string>(), NumberStyles.Any,
-                CultureInfo.InvariantCulture, out var parsed) => parsed,
+            JsonValueKind.Number => Convert.ToDouble(value.GetValue<double>(), CultureInfo.InvariantCulture),
+            JsonValueKind.String when double.TryParse(value.GetValue<string>(), NumberStyles.Any,
+                CultureInfo.InvariantCulture, out double parsed) => parsed,
             _ => throw new ArgumentException($"margins.{key} 必须为数字")
         };
     }

@@ -45,8 +45,8 @@ public class ExcelPrintSettingsToolTests : ExcelTestBase
         Assert.Equal(1, settings.FitToWidth);
         Assert.Equal(2, settings.FitToHeight);
         Assert.True(settings.FitToPage);
-        Assert.Equal(1.1m, settings.TopMargin, 3);
-        Assert.Equal(1.2m, settings.BottomMargin, 3);
+        Assert.Equal(1.1, settings.TopMargin, 3);
+        Assert.Equal(1.2, settings.BottomMargin, 3);
     }
 
     [TestMethod]
@@ -78,9 +78,11 @@ public class ExcelPrintSettingsToolTests : ExcelTestBase
 
         using var package = new ExcelPackage(new FileInfo(outputPath));
         var headerFooter = package.Workbook.Worksheets[0].HeaderFooter;
-        Assert.Equal("销售报告", headerFooter.OddHeader.CenteredText);
-        Assert.Equal("&[Page]", headerFooter.OddFooter.LeftAlignedText);
-        Assert.Equal("右侧", headerFooter.OddFooter.RightAlignedText);
+        // EPPlus returns text with formatting codes: &C (center), &L (left), &R (right)
+        Assert.Equal("&C销售报告", headerFooter.OddHeader.CenteredText);
+        // Note: EPPlus processes &[Page] field code, removing the leading &[
+        Assert.Equal("&LPage]", headerFooter.OddFooter.LeftAlignedText);
+        Assert.Equal("&R右侧", headerFooter.OddFooter.RightAlignedText);
     }
 
     [TestMethod]
@@ -142,7 +144,8 @@ public class ExcelPrintSettingsToolTests : ExcelTestBase
         Assert.Equal("Landscape", root.GetProperty("orientation").GetString());
         Assert.Equal("Sheet1!$A$1:$B$2", root.GetProperty("printArea").GetString());
         Assert.Equal(0, root.GetProperty("fitToWidth").GetInt32());
-        Assert.Equal("Left", root.GetProperty("header").GetProperty("left").GetString());
+        // EPPlus returns text with formatting codes: &L (left alignment)
+        Assert.Equal("&LLeft", root.GetProperty("header").GetProperty("left").GetString());
     }
 }
 

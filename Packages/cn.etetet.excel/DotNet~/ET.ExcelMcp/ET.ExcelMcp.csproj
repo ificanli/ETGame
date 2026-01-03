@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <!-- EPPlus for Excel operations -->
-    <PackageReference Include="EPPlus" Version="7.5.2" />
+    <PackageReference Include="EPPlus" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>

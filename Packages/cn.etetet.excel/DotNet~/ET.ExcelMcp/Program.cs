@@ -3,7 +3,7 @@ using ET;
 using OfficeOpenXml;
 
 // Set EPPlus license context (NonCommercial or Commercial)
-ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+ExcelPackage.License.SetNonCommercialOrganization("ETET");
 
 try
 {
