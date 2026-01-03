@@ -16,7 +16,7 @@ public static class ToolRegistry
         var toolTypes = assembly.GetTypes()
             .Where(t => typeof(IExcelTool).IsAssignableFrom(t)
                         && t is { IsInterface: false, IsAbstract: false, Namespace: { } ns } &&
-                        ns.StartsWith("ET.ExcelMcp.Tools"))
+                        ns.StartsWith("ET"))
             .ToList();
 
         foreach (var toolType in toolTypes)

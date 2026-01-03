@@ -76,9 +76,9 @@ dotnet $serverDll
       "args": [
         "-NoProfile",
         "-Command",
-        "dotnet /Users/tanghai/Documents/WOW/Bin/ET.ExcelMcp.dll"
+        "dotnet ${workspaceFolder}/Bin/ET.ExcelMcp.dll"
       ],
-      "cwd": "/Users/tanghai/Documents/WOW"
+      "cwd": "${workspaceFolder}"
     }
   }
 }
@@ -653,7 +653,6 @@ ET.ExcelMcp/
 │   └── ET.ExcelMcp.Tests.csproj
 ├── Program.cs                 # 入口程序
 ├── ET.ExcelMcp.csproj
-└── README.md
 ```
 
 ### 工具自动发现
