@@ -1,6 +1,32 @@
-# EPPlus MCP Server
+# ET.ExcelMcp (EPPlus)
 
-基于 EPPlus 库的 Excel 操作 MCP (Model Context Protocol) 服务器。
+`ET.ExcelMcp` 位于 WOW 仓库 `Packages/cn.etetet.excel/DotNet~/ET.ExcelMcp` 目录，是一个基于 EPPlus 的 Excel 专用 MCP (Model Context Protocol) 服务器。该工程整体能力移植自 `../aspose-mcp-server`，并对 EPPlus 做了适配，以便在不依赖商业组件的情况下在 ET 框架内默认启用。
+
+## 项目背景
+
+- 🧬 **移植来源**：沿用 aspose 版本的工具设计、协议与测试集合，只是底层由 Aspose.Cells 更换为 EPPlus 7.5.2。
+- 🧱 **工程形态**：通过 `.csproj` 直接集成在 ET Package 体系中，目标框架为 `net10.0`。
+- 🛡️ **安全收敛**：提供 `SecurityHelper`、`ArgumentHelper` 等辅助类，约束输入路径、数组尺寸与字符串长度，防止上下文溢出。
+
+## 快速开始
+
+> ⚠️ 所有命令请在 PowerShell 中执行，默认当前工作目录为 WOW 仓库根目录。
+
+```powershell
+$project = "Packages/cn.etetet.excel/DotNet~/ET.ExcelMcp/ET.ExcelMcp.csproj"
+$serverDll = Join-Path $PWD "Bin/ET.ExcelMcp.dll"
+
+# 推荐直接构建 ET.sln，生成 WOW/Bin/ET.ExcelMcp.dll
+dotnet build ET.sln
+
+# 若仅需局部验证，也可单独构建
+dotnet build $project
+
+# 必须通过 Bin 目录下的成品 DLL 启动 MCP
+dotnet $serverDll
+```
+
+启动成功后，控制台会输出 `EPPlus MCP Server - Excel专用服务器`，并等待 MCP 客户端通过 STDIN/STDOUT 交互。
 
 ## 功能特性
 
@@ -19,13 +45,85 @@
 
 ## 构建和运行
 
-```bash
-# 构建项目
-dotnet build EpplusMcpServer.csproj
+```powershell
+$project = "Packages/cn.etetet.excel/DotNet~/ET.ExcelMcp/ET.ExcelMcp.csproj"
+$serverDll = Join-Path $PWD "Bin/ET.ExcelMcp.dll"
 
-# 运行服务器
-dotnet run --project EpplusMcpServer.csproj
+# 统一构建
+dotnet build ET.sln
+
+# 或单独构建
+dotnet build $project
+
+# 始终通过 Bin 中的 DLL 启动
+dotnet $serverDll
 ```
+
+> 注意：运行 `dotnet run --project ...` 仅适合开发调试。正式启动请确保使用 `Bin/ET.ExcelMcp.dll`，避免重复编译开销并与 Claude/IDE 配置保持一致。
+
+## MCP 客户端配置与使用
+
+### 1. Claude Desktop
+
+1. 打开 `claude_desktop_config.json`（macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`，Windows: `%APPDATA%/Claude/claude_desktop_config.json`）。
+2. 在 `mcpServers` 中新增条目，命令使用 PowerShell，以保证与仓库脚手架一致：
+
+```json
+{
+  "mcpServers": {
+    "et-excel": {
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "dotnet /Users/tanghai/Documents/WOW/Bin/ET.ExcelMcp.dll"
+      ],
+      "cwd": "/Users/tanghai/Documents/WOW"
+    }
+  }
+}
+```
+
+3. 保存后重启 Claude Desktop，`et-excel` 就会作为自定义工具列在侧边栏，可直接调用任意 Excel 能力。
+
+### 2. Claude Code / VSCode
+
+VSCode 插件读取仓库内的 `.claude/settings.local.json`。保留已有的 `permissions`，并添加：
+
+```jsonc
+{
+  "permissions": { /* ... */ },
+  "mcpServers": {
+    "et-excel": {
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "dotnet ${workspaceFolder}/Bin/ET.ExcelMcp.dll"
+      ],
+      "cwd": "${workspaceFolder}"
+    }
+  }
+}
+```
+
+这样即可在 Claude Code 面板中直接点选 `excel_*` 工具。
+
+### 3. 命令行快速验证
+
+MCP 服务采用 STDIO 协议，可以通过 PowerShell 将 JSON 请求直接管道到进程：
+
+```powershell
+$serverDll = Join-Path $PWD "Bin/ET.ExcelMcp.dll"
+$payload = @'
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","clientInfo":{"name":"cli","version":"1.0.0"}}}
+{"jsonrpc":"2.0","id":2,"method":"tools/list"}
+'@
+
+$payload | dotnet $serverDll
+```
+
+输出中可看到 `tools/list` 的完整工具清单，用于确认安装是否成功。
 
 ## 可用工具
 
@@ -534,23 +632,28 @@ dotnet run --project EpplusMcpServer.csproj
 ### 目录结构
 
 ```
-epplus-mcp-server/
+ET.ExcelMcp/
 ├── Core/
-│   ├── McpServer.cs           # MCP服务器核心
-│   ├── ToolRegistry.cs        # 工具自动发现和注册
-│   ├── ArgumentHelper.cs      # 参数解析辅助类
-│   ├── ExcelHelper.cs         # Excel操作辅助类
-│   ├── McpErrorHandler.cs     # 错误处理
-│   └── VersionHelper.cs       # 版本管理
+│   ├── ArgumentHelper.cs      # 参数解析、类型推断
+│   ├── ExcelHelper.cs         # 通用 EPPlus 操作封装
+│   ├── IExcelTool.cs          # 工具接口/注解约定
+│   ├── McpErrorHandler.cs     # JSON-RPC 错误转换
+│   ├── McpModels.cs           # MCP 数据模型
+│   ├── McpServer.cs           # STDIO 服务器实现
+│   ├── SecurityHelper.cs      # 路径/输入安全校验
+│   ├── ToolRegistry.cs        # 自动发现工具
+│   └── VersionHelper.cs       # 版本号读取
 ├── Tools/
-│   ├── IExcelTool.cs          # Excel工具接口
-│   └── Excel/
-│       ├── ExcelCellTool.cs           # 单元格操作工具
-│       ├── ExcelSheetTool.cs          # 工作表操作工具
-│       └── ExcelFileOperationsTool.cs # 文件操作工具
-├── Models/
-│   └── McpModels.cs           # MCP协议数据模型
-└── Program.cs                 # 入口程序
+│   ├── ExcelCellTool.cs
+│   ├── ...
+│   └── ExcelViewSettingsTool.cs
+├── Tests/
+│   ├── Helpers/               # MSTest 基类与断言适配
+│   ├── Excel/                 # 覆盖 25 个工具的单测
+│   └── ET.ExcelMcp.Tests.csproj
+├── Program.cs                 # 入口程序
+├── ET.ExcelMcp.csproj
+└── README.md
 ```
 
 ### 工具自动发现
@@ -558,7 +661,7 @@ epplus-mcp-server/
 本服务器使用反射机制自动发现和注册所有实现了 `IExcelTool` 接口的工具类：
 
 1. 工具类名会自动转换为snake_case格式（如：`ExcelCellTool` → `excel_cell`）
-2. 工具类必须位于 `EpplusMcpServer.Tools` 命名空间下
+2. 工具类必须位于 `ET.ExcelMcp.Tools` 命名空间下
 3. 工具类必须实现 `IExcelTool` 接口
 
 ### 类型自动转换
@@ -583,31 +686,22 @@ ExcelPackage.LicenseContext = LicenseContext.Commercial;
 - [MCP 协议规范](https://spec.modelcontextprotocol.io/)
 - 参考实现: aspose-mcp-server
 
+## 与 aspose-mcp-server 的差异
+
+- **依赖替换**：核心由 Aspose.Cells 换成 EPPlus 7.5.2，API 层保持一致。遇到 Aspose 才支持的 API 时，可在 `ExcelHelper` 中补充等价封装后再调用。
+- **项目位置**：此实现位于 `Packages/cn.etetet.excel/DotNet~/ET.ExcelMcp` 并参与 `ET.sln`，无需单独仓库；所有输出统一写入 `Bin`。
+- **安全策略**：新增 `SecurityHelper`、`ArgumentHelper` 等通用校验逻辑，防止路径穿越、过大数组/字符串导致的资源耗尽。
+- **测试体系**：使用 `Tests/ET.ExcelMcp.Tests.csproj` 覆盖 25 个工具，与原 aspose 仓库的脚本式测试不同。
+
 ## 实现进度
 
-### ✅ 已实现 (24/24 工具)
+### ✅ 已实现 (25/25 工具)
 
-1. **excel_cell** - 单元格操作
-2. **excel_sheet** - 工作表操作
-3. **excel_file_operations** - 文件操作
-4. **excel_range** - 范围操作 ⭐ NEW
-5. **excel_style** - 样式操作 ⭐ NEW
-6. **excel_row_column** - 行列操作 ⭐ NEW
-7. **excel_merge_cells** - 合并单元格 ⭐ NEW
-8. **excel_formula** - 公式操作 ⭐ NEW
-9. **excel_data_operations** - 数据操作 ⭐ NEW
-10. **excel_filter** - 筛选功能 ⭐ NEW
-11. **excel_data_validation** - 数据验证 ⭐ NEW
-12. **excel_named_range** - 命名范围 ⭐ NEW
-13. **excel_chart** - 图表操作 ⭐ NEW
-14. **excel_protect** - 保护与锁定 ⭐ NEW
-15. **excel_properties** - 文档属性 ⭐ NEW
-16. **excel_view_settings** - 视图设置 ⭐ NEW
-17. **excel_print_settings** - 打印设置 ⭐ NEW
+当前仓库的 25 个 `excel_*` 工具均已落地
 
-### 🚧 待实现功能 (参考 aspose-mcp-server)
-
-#### ✅ 第一优先级 - 核心增强 (已完成!)
+- [x] **excel_cell** - 单元格操作
+- [x] **excel_sheet** - 工作表操作
+- [x] **excel_file_operations** - 文件操作
 
 - [x] **excel_range** - 范围操作
   - 批量写入/读取数据 (write, edit, get)
@@ -629,8 +723,6 @@ ExcelPackage.LicenseContext = LicenseContext.Commercial;
 - [x] **excel_merge_cells** - 合并单元格
   - 合并/取消合并单元格
   - 获取合并区域信息
-
-#### ✅ 第二优先级 - 数据处理 (已完成!)
 
 - [x] **excel_formula** - 公式操作 (增强版)
   - 添加公式
@@ -658,8 +750,6 @@ ExcelPackage.LicenseContext = LicenseContext.Commercial;
   - 获取命名范围列表
   - 引用命名范围
 
-#### 第三优先级 - 高级功能
-
 - [x] **excel_chart** - 图表操作
   - 创建图表 (柱状图、折线图、饼图等)
   - 设置图表数据源
@@ -674,8 +764,6 @@ ExcelPackage.LicenseContext = LicenseContext.Commercial;
   - 颜色比较、文本匹配、色阶、数据条、图标集
   - 自定义公式及样式 (字体/背景/加粗/斜体)
   - 查询、清除、按索引删除规则
-
-#### 第四优先级 - 辅助功能
 
 - [x] **excel_comment** - 批注操作
   - 添加/删除批注
@@ -702,8 +790,6 @@ ExcelPackage.LicenseContext = LicenseContext.Commercial;
   - 展开/折叠分组
   - 删除分组
 
-#### 第五优先级 - 保护和属性
-
 - [x] **excel_protect** - 保护功能
   - 工作表保护/取消保护
   - 工作簿保护
@@ -712,8 +798,6 @@ ExcelPackage.LicenseContext = LicenseContext.Commercial;
 - [x] **excel_properties** - 文档属性
   - 设置/获取文档元数据
   - 作者、标题、主题、关键字
-
-#### ✅ 第六优先级 - 视图和打印
 
 - [x] **excel_view_settings** - 视图设置
   - 缩放级别
@@ -725,29 +809,23 @@ ExcelPackage.LicenseContext = LicenseContext.Commercial;
   - 页眉页脚
   - 打印区域
 
-#### 辅助工具
-
 - [x] **excel_get_cell_address** - 地址转换
   - 行列号转单元格地址 (0,0 → A1)
   - 单元格地址转行列号 (A1 → 0,0)
 
 ## 测试
 
-项目包含了完整的测试脚本 `test_mcp.sh`，可以运行以验证所有功能：
+本项目提供 `Tests/ET.ExcelMcp.Tests.csproj`（MSTest）覆盖 25 个工具的核心读写路径与安全校验，可以直接在仓库根目录执行：
 
-```bash
-# 运行测试
-bash test_mcp.sh
+```powershell
+dotnet test Packages/cn.etetet.excel/DotNet~/ET.ExcelMcp/Tests/ET.ExcelMcp.Tests.csproj
 ```
 
-测试包括：
-- ✅ 服务器初始化
-- ✅ 工具列表获取
-- ✅ 创建Excel文件
-- ✅ 写入单元格数据
-- ✅ 读取单元格数据
-- ✅ 工作表管理
-- ✅ 公式设置和读取
+测试会自动生成临时 Excel 文件并验证以下内容：
+- ✅ MCP 初始化/`tools/list`
+- ✅ 各 `excel_*` 工具的读写、过滤、格式、保护等主流程
+- ✅ 错误处理与输入校验（如非法路径、越界索引）
+- ✅ 透视表/条件格式/图片/批注等复杂对象的序列化
 
 ## 开发说明
 
@@ -768,11 +846,3 @@ bash test_mcp.sh
 - `InvalidOperationException`: 操作无效
 
 这些异常会被 `McpErrorHandler` 自动转换为标准的JSON-RPC错误响应。
-
-## 贡献
-
-欢迎提交Issue和Pull Request！
-
-## 作者
-
-基于 aspose-mcp-server 参考实现开发  参考 ../aspose-mcp-server 进行移植
