@@ -47,6 +47,7 @@ namespace Microsoft.Unity.VisualStudio.Editor
 
 		// Use this to have the same newline ending on all platforms for consistency.
 		internal const string k_WindowsNewline = "\r\n";
+		const string k_IgnoreAsmdefPrefix = "Ignore";
 
 		const string m_SolutionProjectEntryTemplate = @"Project(""{{{0}}}"") = ""{1}"", ""{2}"", ""{{{3}}}""{4}EndProject";
 
@@ -924,7 +925,9 @@ namespace Microsoft.Unity.VisualStudio.Editor
 
 		private static IEnumerable<Assembly> RelevantAssembliesForMode(IEnumerable<Assembly> assemblies)
 		{
-			return assemblies.Where(i => ScriptingLanguage.CSharp == ScriptingLanguageFor(i));
+			return assemblies.Where(i =>
+				ScriptingLanguage.CSharp == ScriptingLanguageFor(i) &&
+				!i.name.StartsWith(k_IgnoreAsmdefPrefix, StringComparison.OrdinalIgnoreCase));
 		}
 
 		private static string GetPropertiesText(SolutionProperties[] array)

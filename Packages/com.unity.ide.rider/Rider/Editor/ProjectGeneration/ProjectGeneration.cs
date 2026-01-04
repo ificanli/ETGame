@@ -65,6 +65,8 @@ namespace Packages.Rider.Editor.ProjectGeneration
 
     internal static bool isRiderProjectGeneration; // workaround to https://github.cds.internal.unity3d.com/unity/com.unity.ide.rider/issues/28
 
+    private const string k_IgnoreAsmdefPrefix = "Ignore";
+
     IAssemblyNameProvider IGenerator.AssemblyNameProvider => m_AssemblyNameProvider;
 
     public ProjectGeneration()
@@ -224,6 +226,12 @@ namespace Packages.Rider.Editor.ProjectGeneration
       var assemblyUsage = new AssemblyUsage();
       foreach (var assembly in allAssemblies)
       {
+        if (assembly.name.StartsWith(k_IgnoreAsmdefPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+          assemblyUsage.AddPrecompiledAssembly(assembly);
+          continue;
+        }
+
         if (assembly.sourceFiles.Any(ShouldFileBePartOfSolution))
           assemblyUsage.AddProjectAssembly(assembly);
         else
@@ -263,6 +271,9 @@ namespace Packages.Rider.Editor.ProjectGeneration
       {
         var assembly = pair.Key;
         var additionalAssets = pair.Value;
+
+        if (assembly.StartsWith(k_IgnoreAsmdefPrefix, StringComparison.OrdinalIgnoreCase))
+          continue;
 
         if (!assemblyNamesWithSource.Contains(assembly))
         {
