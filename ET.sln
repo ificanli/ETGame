@@ -96,8 +96,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ET.ExcelExporter", "Package
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ET.ExcelMcp", "Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\ET.ExcelMcp.csproj", "{984D6790-93AB-43DD-8AFC-11495DA12716}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ET.ExcelMcp.Tests", "Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\Tests\ET.ExcelMcp.Tests.csproj", "{DF5F42AF-AE07-4C79-81BC-58509C86706B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -576,18 +574,6 @@ Global
 		{984D6790-93AB-43DD-8AFC-11495DA12716}.Release|x64.Build.0 = Release|Any CPU
 		{984D6790-93AB-43DD-8AFC-11495DA12716}.Release|x86.ActiveCfg = Release|Any CPU
 		{984D6790-93AB-43DD-8AFC-11495DA12716}.Release|x86.Build.0 = Release|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Debug|x64.Build.0 = Debug|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Debug|x86.Build.0 = Debug|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Release|x64.ActiveCfg = Release|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Release|x64.Build.0 = Release|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Release|x86.ActiveCfg = Release|Any CPU
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -634,7 +620,6 @@ Global
 		{ED7866FB-29BE-48BB-9AA9-1C160EA30111} = {2BB89404-3A3A-4F05-B9FA-52FC02E1FF5C}
 		{6D1C3130-EC03-43D5-955E-36F0EBACAB70} = {2BB89404-3A3A-4F05-B9FA-52FC02E1FF5C}
 		{984D6790-93AB-43DD-8AFC-11495DA12716} = {2BB89404-3A3A-4F05-B9FA-52FC02E1FF5C}
-		{DF5F42AF-AE07-4C79-81BC-58509C86706B} = {2BB89404-3A3A-4F05-B9FA-52FC02E1FF5C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EABC01E3-3EB5-47EF-B46E-AAD8BB3585F1}
