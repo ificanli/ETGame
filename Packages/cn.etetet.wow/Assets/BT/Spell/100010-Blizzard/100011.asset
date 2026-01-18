@@ -45,6 +45,9 @@ MonoBehaviour:
     - Name: CD
       Entry: 3
       Data: 0
+    - Name: DamageMultiplier
+      Entry: 3
+      Data: 0
     - Name: Cost
       Entry: 7
       Data: 2|ET.CostNode, ET.Model
@@ -93,12 +96,9 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
-    - Name: Caster
+    - Name: Unit
       Entry: 1
-      Data: Caster
-    - Name: Owner
-      Entry: 1
-      Data: Owner
+      Data: Unit
     - Name: Check
       Entry: 1
       Data: Check
@@ -178,7 +178,13 @@ MonoBehaviour:
       Entry: 3
       Data: 15
     - Name: SpellIndicator
-      Entry: 6
+      Entry: 7
+      Data: 6|ET.OdinUnityObject, ET.Model
+    - Name: Name
+      Entry: 1
+      Data: RoundIndicator
+    - Name: 
+      Entry: 8
       Data: 
     - Name: 
       Entry: 8

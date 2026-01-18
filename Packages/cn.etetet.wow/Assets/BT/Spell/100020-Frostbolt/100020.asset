@@ -45,6 +45,9 @@ MonoBehaviour:
     - Name: CD
       Entry: 3
       Data: 5000
+    - Name: DamageMultiplier
+      Entry: 3
+      Data: 0
     - Name: Cost
       Entry: 7
       Data: 2|ET.CostNode, ET.Model
@@ -93,12 +96,9 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
-    - Name: Caster
+    - Name: Unit
       Entry: 1
-      Data: Caster
-    - Name: Owner
-      Entry: 1
-      Data: Owner
+      Data: Unit
     - Name: Check
       Entry: 1
       Data: Check
