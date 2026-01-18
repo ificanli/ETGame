@@ -1,6 +1,41 @@
 {
   "_t" : "ET.BuffConfigCategory",
-  "dict" : [[200000, {
+  "dict" : [[300001, {
+        "_id" : 300001,
+        "Desc" : "怪物AI",
+        "Duration" : -1,
+        "TickTime" : 100,
+        "MaxStack" : 1,
+        "Stack" : 81,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffHitted",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.AI_MonsterReturn",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit"
+              }, {
+                "_t" : "ET.AI_MonsterZhuiJi",
+                "_id" : 3,
+                "Children" : [],
+                "Unit" : "Unit"
+              }, {
+                "_t" : "ET.AI_MonsterXunLuo",
+                "_id" : 4,
+                "Children" : [],
+                "Unit" : "Unit"
+              }],
+            "TreeId" : 3201153204349503918,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster",
+            "Attacker" : "Attacker"
+          }]
+      }], [200000, {
         "_id" : 200000,
         "Desc" : "普攻自动Tick Buff",
         "Duration" : 1000000,
@@ -672,6 +707,45 @@
             "Unit" : "Unit",
             "Caster" : "Caster"
           }]
+      }], [200032, {
+        "_id" : 200032,
+        "Desc" : "宠物AI",
+        "Duration" : -1,
+        "TickTime" : 1000,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffTick",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.AI_PetZhuiJi",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit"
+              }, {
+                "_t" : "ET.AI_PetReturn",
+                "_id" : 3,
+                "Children" : [],
+                "Unit" : "Unit"
+              }, {
+                "_t" : "ET.AI_PetFollow",
+                "_id" : 4,
+                "Children" : [],
+                "Unit" : "Unit"
+              }, {
+                "_t" : "ET.AI_PetIdle",
+                "_id" : 5,
+                "Children" : [],
+                "Unit" : "Unit"
+              }],
+            "TreeId" : 7821291767413523228,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
       }], [200040, {
         "_id" : 200040,
         "Desc" : null,
@@ -994,6 +1068,32 @@
             "Unit" : "Unit",
             "Caster" : "Caster"
           }]
+      }], [200121, {
+        "_id" : 200121,
+        "Desc" : "传送",
+        "Duration" : -1,
+        "TickTime" : 500,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffTick",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTCreateSpell",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit",
+                "Buff" : null,
+                "SpellConfigId" : 100120
+              }],
+            "TreeId" : 6153392924137937051,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
       }], [200130, {
         "_id" : 200130,
         "Desc" : "传送",
@@ -1029,6 +1129,32 @@
                 "Unit" : "Target"
               }],
             "TreeId" : 6319847410496909763,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200131, {
+        "_id" : 200131,
+        "Desc" : "传送",
+        "Duration" : -1,
+        "TickTime" : 500,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffTick",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTCreateSpell",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit",
+                "Buff" : null,
+                "SpellConfigId" : 100130
+              }],
+            "TreeId" : 8260875540629730541,
             "Buff" : "Buff",
             "Unit" : "Unit",
             "Caster" : "Caster"
