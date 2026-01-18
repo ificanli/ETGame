@@ -5,12 +5,15 @@ namespace ET.Test
 {
     public class Item_AddStack_Test : ATestHandler
     {
-        protected override async ETTask<int> Run(Fiber fiber, TestArgs args)
+        public override async ETTask<int> Handle(TestContext context)
         {
-            Fiber robot = await TestHelper.CreateRobot(fiber, "Client");
+            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Item_AddStack_Test));
+            Fiber testFiber = scope.TestFiber;
+
+            Fiber robot = await TestHelper.CreateRobot(testFiber, "Client");
             Scene clientScene = robot.Root;
             
-            Unit unit = TestHelper.GetServerUnit(fiber, robot);
+            Unit unit = TestHelper.GetServerUnit(testFiber, robot);
             
             Server.ItemComponent serverItem = unit.GetComponent<Server.ItemComponent>();
             Client.ItemComponent clientItem = clientScene.GetComponent<Client.ItemComponent>();

@@ -54,7 +54,7 @@ namespace ET.Test
                 
                 result.Add(iTestHandler);
             }
-            
+
             if (result.Count == 0)
             {
                 throw new Exception($"not found test! name: {name}");

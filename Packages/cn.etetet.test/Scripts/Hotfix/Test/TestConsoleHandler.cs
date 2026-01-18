@@ -23,12 +23,19 @@ namespace ET.Test
                         .WithParsed(o => { options = o; });
                 
                 var testHandlers = TestDispatcher.Instance.Get(options.Name);
+
+                if (testHandlers.Count == 0)
+                {
+                    Log.Console("not found test!");
+                    return;
+                }
                 
                 foreach (ITestHandler testHandler in testHandlers)
                 {
                     Type testType = testHandler.GetType();
                     string testName = testType.Name;
-                    Log.Console($"{testName} start");
+                    Log.Console($"--------------------------------------------------------------------");
+                    Log.Console($"\u001b[34m{testName} start\u001b[0m");
                     try
                     {
                         int ret = await testHandler.Handle(new TestContext() { Fiber = fiber, Args = options });
@@ -46,6 +53,7 @@ namespace ET.Test
                         Log.Console($"\u001b[31m{testName} fail!\n{e}\u001b[0m");
                     }
                 }
+                Environment.Exit(0);
             }
             catch (Exception e)
             {

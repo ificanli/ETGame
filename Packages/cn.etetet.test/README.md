@@ -11,7 +11,7 @@
   - `Test`
   - `Test --Name=CreateRobot`
   - `Test --Name=CreateRobot2`（无匹配时提示 not found test）
-- 注意测试的进程不会退出，ai在跑测试的时候，不要一直等待进程退出
+- 注意测试执行完成会退出进程
 
 ## 命令参数
 - `--Name`：处理器类名正则，默认 `.*`，匹配所有测试用例。
@@ -23,7 +23,8 @@
 - `Scripts/Model/Test/TestDispatcher.cs:48`：按包名与处理器名正则筛选并返回匹配的 `ITestHandler` 列表。
 - `Scripts/Model/Test/TestArgs.cs:7`：命令行参数定义，`Package/Name` 默认 `.*`。
 - `Scripts/Model/Test/ITestHandler.cs:5`：测试处理器接口约定。
-- `Scripts/Hotfix/Test/ATestHandler.cs:11`：统一处理流程，自动创建/移除 `TestCase` 子纤程并调用 `Run(...)`。
+- `Scripts/Hotfix/Test/ATestHandler.cs:11`：测试用例基类，约定 `Handle(...)` 接口。
+- `Scripts/Model/Test/TestFiberScope.cs:7`：创建/释放 `TestCase` 子纤程的作用域工具。
 - `Scripts/Hotfix/Test/FiberInit_TestCase.cs:8`：`TestCase` 场景初始化，每个用例均为全新服务器环境。
 
 ## 测试用例命名规范（强制）
@@ -69,7 +70,7 @@ public class Robot_CreateRobot_Test : ATestHandler { }
 1. 新建类继承 `ATestHandler`（注意：父类已有 `[Test]` 特性，子类无需重复添加）。
 2. **严格遵守上述命名规范**，类名格式为 `Test_{描述}_Test`。
 3. 文件必须放在 `Scripts/Hotfix/Test/` 目录下。
-4. 实现 `protected override ETTask<int> Run(Fiber fiber, TestArgs args)` 并返回约定值（`0` 成功，非 `0` 失败）。
+4. 实现 `public override ETTask<int> Handle(TestContext context)`，并用 `TestFiberScope` 创建 `TestCase` 纤程。
 5. 示例：
 ```csharp
 using ET.Test;
@@ -79,8 +80,11 @@ namespace ET.Test
 {
     public class Test_MyCase_Test : ATestHandler
     {
-        protected override async ETTask<int> Run(Fiber fiber, TestArgs args)
+        public override async ETTask<int> Handle(TestContext context)
         {
+            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Test_MyCase_Test));
+            Fiber testFiber = scope.TestFiber;
+            
             await ETTask.CompletedTask;
             return ErrorCode.ERR_Success;
         }
@@ -96,7 +100,7 @@ namespace ET.Test
 - `dotnet ./Bin/ET.App.dll --Console=1 --SceneName=Test`
 - `> Test` → `Test.Test_CreateRobot start` → `Test.Test_CreateRobot success`
 - `> Test --Name=CreateRobot` → `Test.Test_CreateRobot start` → `Test.Test_CreateRobot success`
-- `> Test --Name=CreateRobot2` → `not found test! package: .* name: CreateRobot2`
+- `> Test --Name=CreateRobot2` → `not found test! name: CreateRobot2`
 
 ## 常见问题
 - `not found test`：无匹配用例。检查类名与正则是否匹配，是否继承了 `ATestHandler`，热更/编译是否完成。
