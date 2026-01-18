@@ -10,11 +10,11 @@ namespace ET.Server
             Unit target = env.GetEntity<Unit>(node.Target);
             Buff parentBuff = env.GetEntity<Buff>(node.Buff);
 
-            Buff newBuff = BuffHelper.CreateBuffWithoutInit(target, caster.Id, IdGenerater.Instance.GenerateId(), node.ConfigId);
+            Buff newBuff = BuffHelper.CreateBuffWithoutInit(target, caster.Id, IdGenerater.Instance.GenerateId(), node.ConfigId, null);
             int flyTime = (int)(math.distance(caster.Position, target.Position) / (node.Speed / 1000f) * 1000);
             newBuff.ExpireTime = newBuff.CreateTime + flyTime;
             
-            Buff bulletBuff = BuffHelper.InitBuff(newBuff, parentBuff);
+            Buff bulletBuff = BuffHelper.InitBuff(newBuff);
 
             if (!string.IsNullOrEmpty(node.OutputBuff))
             {

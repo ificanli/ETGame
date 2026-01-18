@@ -8,7 +8,7 @@
 
             Unit unit = buff.GetCaster();
             
-            buff.GetComponent<SpellTargetComponent>().Units.Add(unit.Id);
+            buff.GetBuffData().GetComponent<SpellTargetComponent>().Units.Add(unit.Id);
             
             return 0;
         }

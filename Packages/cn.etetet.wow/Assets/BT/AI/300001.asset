@@ -68,7 +68,7 @@ MonoBehaviour:
       Data: 1
     - Name: 
       Entry: 7
-      Data: 3|ET.EffectServerBuffHitted, ET.Model
+      Data: 3|ET.EffectServerBuffTick, ET.Model
     - Name: Id
       Entry: 3
       Data: 1
@@ -123,6 +123,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
     - Name: 
       Entry: 8
       Data: 
@@ -171,6 +174,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
     - Name: 
       Entry: 8
       Data: 
@@ -219,6 +225,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
     - Name: 
       Entry: 8
       Data: 
@@ -254,7 +263,7 @@ MonoBehaviour:
       Data: 
     - Name: TreeId
       Entry: 3
-      Data: 3201153204349503918
+      Data: 9160521892227564777
     - Name: Buff
       Entry: 1
       Data: Buff
@@ -264,9 +273,9 @@ MonoBehaviour:
     - Name: Caster
       Entry: 1
       Data: Caster
-    - Name: Attacker
-      Entry: 1
-      Data: Attacker
+    - Name: Override
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 

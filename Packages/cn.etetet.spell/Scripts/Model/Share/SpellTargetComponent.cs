@@ -3,7 +3,7 @@ using Unity.Mathematics;
 
 namespace ET
 {
-    [ComponentOf(typeof(Buff))]
+    [ComponentOf(typeof(BuffData))]
     public class SpellTargetComponent: Entity, IAwake
     {
         public List<long> Units { get; } = new();

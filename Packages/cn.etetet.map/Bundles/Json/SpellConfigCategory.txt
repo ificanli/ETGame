@@ -8,6 +8,7 @@
           "Name" : "Ability_Warrior_OffensiveStance"
         },
         "CD" : 2000,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorSingle",
@@ -30,6 +31,7 @@
           "Name" : null
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorSingle",
@@ -52,6 +54,7 @@
           "Name" : null
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorSingle",
@@ -74,13 +77,13 @@
           "Name" : "Spell_Frost_IceStorm"
         },
         "CD" : 5000,
+        "DamageMultiplier" : 0,
         "Cost" : {
           "_id" : 1,
           "Children" : [],
           "TreeId" : 546798687428771539,
           "Buff" : "Buff",
-          "Caster" : "Caster",
-          "Owner" : "Owner",
+          "Unit" : null,
           "Check" : "Check"
         },
         "TargetSelector" : {
@@ -107,13 +110,13 @@
           "Name" : null
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : {
           "_id" : 1,
           "Children" : [],
           "TreeId" : 6880836831554164778,
           "Buff" : "Buff",
-          "Caster" : "Caster",
-          "Owner" : "Owner",
+          "Unit" : null,
           "Check" : "Check"
         },
         "TargetSelector" : {
@@ -140,13 +143,13 @@
           "Name" : "Spell_Frost_FrostBolt02"
         },
         "CD" : 5000,
+        "DamageMultiplier" : 0,
         "Cost" : {
           "_id" : 1,
           "Children" : [],
           "TreeId" : 5765865364704420295,
           "Buff" : "Buff",
-          "Caster" : "Caster",
-          "Owner" : "Owner",
+          "Unit" : null,
           "Check" : "Check"
         },
         "TargetSelector" : {
@@ -170,6 +173,7 @@
           "Name" : "Spell_Druid_stampedingroar_cat"
         },
         "CD" : 5000,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorSingle",
@@ -192,6 +196,7 @@
           "Name" : "Ability_Druid_BalanceofPower"
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorCaster",
@@ -212,6 +217,7 @@
           "Name" : "Ability_Druid_Bash"
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorCaster",
@@ -232,6 +238,7 @@
           "Name" : "Ability_Druid_Berserk"
         },
         "CD" : 2000,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorSingle",
@@ -254,6 +261,7 @@
           "Name" : null
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorSingle",
@@ -276,6 +284,7 @@
           "Name" : null
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorSingle",
@@ -298,6 +307,7 @@
           "Name" : "ABILITY_DRUID_DEMORALIZINGROAR"
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorCaster",
@@ -318,6 +328,7 @@
           "Name" : null
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorRectangle",
@@ -342,6 +353,7 @@
           "Name" : null
         },
         "CD" : 0,
+        "DamageMultiplier" : 0,
         "Cost" : null,
         "TargetSelector" : {
           "_t" : "ET.TargetSelectorRectangle",

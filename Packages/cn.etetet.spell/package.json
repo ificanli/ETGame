@@ -14,13 +14,10 @@
     "cn.etetet.startconfig": "4.0.0",
     "cn.etetet.console": "4.0.0",
     "cn.etetet.numeric": "4.0.0",
-    "cn.etetet.move": "4.0.0",
-    "cn.etetet.recast": "4.0.0",
     "cn.etetet.netinner": "4.0.0",
     "cn.etetet.router": "4.0.0",
     "cn.etetet.actorlocation": "4.0.0",
     "cn.etetet.aoi": "4.0.0",
-    "cn.etetet.ai": "4.0.0",
     "cn.etetet.yooassets": "4.0.0",
     "cn.etetet.yiuiframework": "4.0.0"
   }

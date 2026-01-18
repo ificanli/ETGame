@@ -11,7 +11,7 @@
             buff.Stack = buffAdd.Stack;
             if (buffAdd.SpellTarget != null)
             {
-                SpellTargetComponent spellTargetComponent = buff.AddComponent<SpellTargetComponent>();
+                SpellTargetComponent spellTargetComponent = buff.GetBuffData().AddComponent<SpellTargetComponent>();
                 spellTargetComponent.Units.AddRange(buffAdd.SpellTarget.TargetUnitId);
                 spellTargetComponent.Position = buffAdd.SpellTarget.TargetPosition;
             }
@@ -21,11 +21,12 @@
             {
                 using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                 env.AddEntity(effect.Buff, buff);
-                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                env.AddEntity(effect.Unit, unit);
                 env.AddEntity(effect.Caster, buff.GetCaster());
-                BTDispatcher.Instance.Handle(effect, env);
+                BTHelper.RunTree(effect, env);
             }
 
+            Log.Debug($"Buff Create: {buffAdd.BuffConfigId}");
             return buff;
         }
         
@@ -63,9 +64,9 @@
             {
                 using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                 env.AddEntity(effect.Buff, buff);
-                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                env.AddEntity(effect.Unit, unit);
                 env.AddEntity(effect.Caster, buff.GetCaster());
-                BTDispatcher.Instance.Handle(effect, env);
+                BTHelper.RunTree(effect, env);
             }
 
             buffComponent.RemoveBuff(buff);

@@ -123,6 +123,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Buff
+      Entry: 6
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -171,6 +174,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
     - Name: 
       Entry: 8
       Data: 
@@ -219,6 +225,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
     - Name: 
       Entry: 8
       Data: 
@@ -267,6 +276,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
     - Name: 
       Entry: 8
       Data: 
@@ -312,6 +324,9 @@ MonoBehaviour:
     - Name: Caster
       Entry: 1
       Data: Caster
+    - Name: Override
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 

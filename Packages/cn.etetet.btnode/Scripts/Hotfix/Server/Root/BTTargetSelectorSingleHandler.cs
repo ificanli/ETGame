@@ -52,7 +52,7 @@ namespace ET.Server
                 return TextConstDefine.SpellCast_TargetNotInFrontOfCaster;
             }
             
-            buff.GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit.Id);
+            buff.GetBuffData().GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit.Id);
             
             return 0;
         }

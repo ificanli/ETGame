@@ -71,7 +71,7 @@ namespace ET.Client
         {
             if (!this.handlers.TryGetValue(node.GetType(), out ITargetSelectHandler targetSelectHandler))
             {
-                throw new Exception($"not found target select handler: {node.GetType().FullName}");
+                return 0;
             }
             return await targetSelectHandler.Handle(node, unit, spellConfig);
         }

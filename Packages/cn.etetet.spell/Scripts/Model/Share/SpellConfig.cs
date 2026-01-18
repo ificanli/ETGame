@@ -55,14 +55,14 @@ namespace ET
     [HideReferenceObjectPicker]
     public partial class SpellConfig : ProtoObject
     {
+        [ReadOnly]
         [BoxGroup("技能信息")]
         [LabelText("技能 ID")]
-        [ReadOnly]
         public int Id;
         
+        [ReadOnly]
         [BoxGroup("技能信息")]
         [LabelText("Buff ID")]
-        [ReadOnly]
         public int BuffId;
 
         [BoxGroup("技能信息")]
@@ -79,6 +79,10 @@ namespace ET
         [LabelText("技能CD（毫秒）")]
         public int CD;
 
+        [BoxGroup("技能信息")]
+        [LabelText("伤害系数（百分比）")]
+        public int DamageMultiplier = 100;
+        
         [LabelText("消耗")]
         public CostNode Cost;
 

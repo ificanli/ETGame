@@ -49,8 +49,8 @@ namespace ET
             ,UnityEngine.ISerializationCallbackReceiver
     #endif
     {
-        [LabelText("ID")]
         [ReadOnly]
+        [LabelText("ID")]
         public int Id;
 
         [LabelText("描述")]

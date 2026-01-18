@@ -19,7 +19,7 @@ namespace ET.Server
             }
             targetComponent.Position = pos;
             
-            buff.GetComponent<SpellTargetComponent>().Position = pos;
+            buff.GetBuffData().GetComponent<SpellTargetComponent>().Position = pos;
 
             env.AddStruct(node.Pos, pos);
             return 0;

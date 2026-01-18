@@ -11,29 +11,32 @@
         "Flags" : [],
         "NoticeType" : 0,
         "Effects" : [{
-            "_t" : "ET.EffectServerBuffHitted",
+            "_t" : "ET.EffectServerBuffTick",
             "_id" : 1,
             "Children" : [{
                 "_t" : "ET.AI_MonsterReturn",
                 "_id" : 2,
                 "Children" : [],
-                "Unit" : "Unit"
+                "Unit" : "Unit",
+                "Buff" : "Buff"
               }, {
                 "_t" : "ET.AI_MonsterZhuiJi",
                 "_id" : 3,
                 "Children" : [],
-                "Unit" : "Unit"
+                "Unit" : "Unit",
+                "Buff" : "Buff"
               }, {
                 "_t" : "ET.AI_MonsterXunLuo",
                 "_id" : 4,
                 "Children" : [],
-                "Unit" : "Unit"
+                "Unit" : "Unit",
+                "Buff" : "Buff"
               }],
-            "TreeId" : 3201153204349503918,
+            "TreeId" : 9160521892227564777,
             "Buff" : "Buff",
             "Unit" : "Unit",
             "Caster" : "Caster",
-            "Attacker" : "Attacker"
+            "Override" : true
           }]
       }], [200000, {
         "_id" : 200000,
@@ -70,7 +73,8 @@
             "TreeId" : 3815612886719013578,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster"
+            "Caster" : "Caster",
+            "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffAdd",
             "_id" : 1,
@@ -233,7 +237,8 @@
             "TreeId" : 892299141201969128,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster"
+            "Caster" : "Caster",
+            "Override" : false
           }, {
             "_t" : "ET.EffectClientBuffAdd",
             "_id" : 25,
@@ -453,7 +458,8 @@
             "TreeId" : 911151293205797089,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster"
+            "Caster" : "Caster",
+            "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffHitted",
             "_id" : 1,
@@ -614,7 +620,7 @@
                 "Unit" : "Caster",
                 "Target" : "Target",
                 "Buff" : "Buff",
-                "AIConfigId" : 300001
+                "AIConfigId" : 200032
               }],
             "TreeId" : 1655162310235262046,
             "Buff" : "Buff",
@@ -724,27 +730,32 @@
                 "_t" : "ET.AI_PetZhuiJi",
                 "_id" : 2,
                 "Children" : [],
-                "Unit" : "Unit"
+                "Unit" : "Unit",
+                "Buff" : null
               }, {
                 "_t" : "ET.AI_PetReturn",
                 "_id" : 3,
                 "Children" : [],
-                "Unit" : "Unit"
+                "Unit" : "Unit",
+                "Buff" : "Buff"
               }, {
                 "_t" : "ET.AI_PetFollow",
                 "_id" : 4,
                 "Children" : [],
-                "Unit" : "Unit"
+                "Unit" : "Unit",
+                "Buff" : "Buff"
               }, {
                 "_t" : "ET.AI_PetIdle",
                 "_id" : 5,
                 "Children" : [],
-                "Unit" : "Unit"
+                "Unit" : "Unit",
+                "Buff" : "Buff"
               }],
             "TreeId" : 7821291767413523228,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster"
+            "Caster" : "Caster",
+            "Override" : true
           }]
       }], [200040, {
         "_id" : 200040,
@@ -844,7 +855,8 @@
             "TreeId" : 564552055616284588,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster"
+            "Caster" : "Caster",
+            "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffAdd",
             "_id" : 1,
@@ -1086,13 +1098,14 @@
                 "_id" : 2,
                 "Children" : [],
                 "Unit" : "Unit",
-                "Buff" : null,
+                "Buff" : "Buff",
                 "SpellConfigId" : 100120
               }],
             "TreeId" : 6153392924137937051,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster"
+            "Caster" : "Caster",
+            "Override" : true
           }]
       }], [200130, {
         "_id" : 200130,
@@ -1151,13 +1164,14 @@
                 "_id" : 2,
                 "Children" : [],
                 "Unit" : "Unit",
-                "Buff" : null,
+                "Buff" : "Buff",
                 "SpellConfigId" : 100130
               }],
             "TreeId" : 8260875540629730541,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster"
+            "Caster" : "Caster",
+            "Override" : true
           }]
       }]]
 }

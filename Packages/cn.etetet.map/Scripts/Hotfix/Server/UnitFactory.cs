@@ -72,7 +72,7 @@ namespace ET.Server
             int ai = numericComponent.GetAsInt(NumericType.AI);
             if (ai != 0)
             {
-                unit.AddComponent<AIComponent, int>(ai);
+                BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), ai, null);
             }
             
             unitComponent.Add(unit);

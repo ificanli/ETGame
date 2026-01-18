@@ -19,6 +19,6 @@ namespace ET
                 this.unit = value;
             }
         }
-        public float3          Position { get; set; }
+        public float3 Position { get; set; }
     }
 }

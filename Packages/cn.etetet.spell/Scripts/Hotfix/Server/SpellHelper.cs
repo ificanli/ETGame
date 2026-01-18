@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Unity.Mathematics;
 
 namespace ET.Server
@@ -14,12 +14,12 @@ namespace ET.Server
 #region Check
             // check
             {
-                // 子技能不检查CD
-                if (parent == null)
+                // 通用流程，子技能不检查CD
+                if (SpellConfigHelper.IsMainSpell(spellConfigId))
                 {
-                    if (!spellComponent.CheckCD(spellConfig))
+                    bool ret = spellComponent.CheckCD(spellConfig);
+                    if (!ret)
                     {
-                        ErrorHelper.MapError(unit, TextConstDefine.SpellCast_SpellInCD);
                         return TextConstDefine.SpellCast_SpellInCD;
                     }
                 }
@@ -27,7 +27,47 @@ namespace ET.Server
 #endregion
             
             // add
-            Buff buff = BuffHelper.CreateBuffWithoutInit(unit, unit.Id, IdGenerater.Instance.GenerateId(), spellConfig.BuffId);
+            Buff buff = BuffHelper.CreateBuffWithoutInit(unit, unit.Id, IdGenerater.Instance.GenerateId(), spellConfig.BuffId, parent);
+            int castRet = SpellCasting(unit, buff, spellConfig, parent);
+            if (castRet != 0)
+            {
+                unit.GetComponent<BuffComponent>().RemoveBuff(buff);
+            }
+
+            return castRet;
+        }
+        
+        /// <summary>
+        /// 指定目标Unit施放技能
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="spellConfigId"></param>
+        /// <param name="target"></param>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        public static int Cast(Unit unit, int spellConfigId, Unit target, Buff parent = null)
+        {
+            SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
+
+            SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+            
+            #region Check
+            // check
+            {
+                if (SpellConfigHelper.IsMainSpell(spellConfigId))
+                {
+                    bool ret = spellComponent.CheckCD(spellConfig);
+                    if (!ret)
+                    {
+                        return TextConstDefine.SpellCast_SpellInCD;
+                    }
+                }
+            }
+            #endregion
+            
+            // add
+            Buff buff = BuffHelper.CreateBuffWithoutInit(unit, unit.Id, IdGenerater.Instance.GenerateId(), spellConfig.BuffId, parent);
+            buff.GetBuffData().AddComponent<SpellTargetComponent>().Units.Add(target.Id);
             int castRet = SpellCasting(unit, buff, spellConfig, parent);
             if (castRet != 0)
             {
@@ -56,19 +96,23 @@ namespace ET.Server
 
             // 选择目标
             {
-                buff.AddComponent<SpellTargetComponent>();
-                TargetSelector targetSelector = spellConfig.TargetSelector;
-                if (targetSelector != null)
+                SpellTargetComponent spellTargetComponent = buff.GetBuffData().GetComponent<SpellTargetComponent>();
+                // 不为null表示已经指定了目标
+                if (spellTargetComponent == null)
                 {
-                    using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
-                    env.AddEntity(targetSelector.Buff, buff);
-                    env.AddEntity(targetSelector.Caster, buff.GetCaster());
-                    env.AddEntity(targetSelector.Owner, buff.GetOwner());
-                    int ret = BTDispatcher.Instance.Handle(spellConfig.TargetSelector, env);
-                    if (ret != 0)
+                    buff.GetBuffData().AddComponent<SpellTargetComponent>();
+                    TargetSelector targetSelector = spellConfig.TargetSelector;
+                    if (targetSelector != null)
                     {
-                        ErrorHelper.MapError(unit, ret);
-                        return ret;
+                        using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
+                        env.AddEntity(targetSelector.Buff, buff);
+                        env.AddEntity(targetSelector.Caster, buff.GetCaster());
+                        env.AddEntity(targetSelector.Owner, buff.GetOwner());
+                        int ret = BTHelper.RunTree(spellConfig.TargetSelector, env);
+                        if (ret != 0)
+                        {
+                            return ret;
+                        }
                     }
                 }
             }
@@ -80,12 +124,11 @@ namespace ET.Server
                 {
                     using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                     env.AddEntity(costNode.Buff, buff);
-                    env.AddEntity(costNode.Caster, buff.GetCaster());
+                    env.AddEntity(costNode.Unit, unit);
                     env.AddStruct(costNode.Check, true);
-                    int ret = BTDispatcher.Instance.Handle(costNode, env);
+                    int ret = BTHelper.RunTree(costNode, env);
                     if (ret != 0)
                     {
-                        ErrorHelper.MapError(unit, ret);
                         return ret;
                     }
                 }
@@ -94,32 +137,23 @@ namespace ET.Server
                 {
                     using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                     env.AddEntity(costNode.Buff, buff);
-                    env.AddEntity(costNode.Caster, buff.GetCaster());
+                    env.AddEntity(costNode.Unit, unit);
                     env.AddStruct(costNode.Check, false);
-                    int ret = BTDispatcher.Instance.Handle(costNode, env);
+                    int ret = BTHelper.RunTree(costNode, env);
                     if (ret != 0)
                     {
-                        ErrorHelper.MapError(unit, ret);
                         return ret;
                     }
                 }
             }
-            // 主技能更新CD
-            if (parent == null)
+            
+            // 这里不管是否检查，都会更新cd
+            if (spellConfig.CD > 0)
             {
-                spellComponent.UpdateCD(spellConfig.Id, TimeInfo.Instance.ServerNow());
-                if (unit.UnitType.IsSame(UnitType.Player))
-                {
-                    M2C_UpdateCD m2CUpdateCd = M2C_UpdateCD.Create();
-                    m2CUpdateCd.UnitId = unit.Id;
-                    m2CUpdateCd.SpellConfigId = spellConfig.Id;
-                    m2CUpdateCd.Time = TimeInfo.Instance.ServerNow();
-                    MapMessageHelper.NoticeClient(unit, m2CUpdateCd, NoticeType.Self);
-                }
+                UpdateCD(unit, spellConfig.Id, TimeInfo.Instance.ServerNow());
             }
             
-            
-            BuffHelper.InitBuff(buff, parent);
+            BuffHelper.InitBuff(buff);
             
             if (buff.ExpireTime < TimeInfo.Instance.ServerNow())
             {
@@ -137,6 +171,21 @@ namespace ET.Server
                 return;
             }
             BuffHelper.RemoveBuff(buff, buffFlags);
+        }
+
+        public static void UpdateCD(Unit unit, int spellConfigId, long time)
+        {
+            SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
+            spellComponent.UpdateCD(spellConfigId, time);
+
+            if (unit.UnitType == UnitType.Player)
+            {
+                M2C_UpdateCD m2CUpdateCd = M2C_UpdateCD.Create();
+                m2CUpdateCd.UnitId = unit.Id;
+                m2CUpdateCd.SpellConfigId = spellConfigId;
+                m2CUpdateCd.Time = time;
+                MapMessageHelper.NoticeClient(unit, m2CUpdateCd, NoticeType.Self);
+            }
         }
     }
 }

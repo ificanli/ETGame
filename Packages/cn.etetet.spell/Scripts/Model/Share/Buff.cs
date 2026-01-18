@@ -1,4 +1,7 @@
-﻿namespace ET
+﻿using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace ET
 {
     [ChildOf(typeof(BuffComponent))]
     public class Buff: Entity, IAwake<int>, IDestroy
@@ -10,5 +13,8 @@
         public long ExpireTime { get; set; }
         public int Stack { get; set; }
         public long TimeoutTimer;
+
+        [BsonIgnore]
+        public EntityRef<BuffData> BuffData;
     }
 }

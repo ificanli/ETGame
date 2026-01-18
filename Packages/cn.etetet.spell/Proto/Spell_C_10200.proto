@@ -7,7 +7,8 @@ message C2M_SpellCast // ILocationMessage
 {
 	int32 RpcId = 1;
 	int32 SpellConfigId = 2;	
-	Unity.Mathematics.float3 TargetPosition = 3;
+	Unity.Mathematics.float2 TargetPosition = 3;
+	int64 TargetUnitId = 4;
 }
 
 message M2C_SpellAdd // IMessage
@@ -17,7 +18,7 @@ message M2C_SpellAdd // IMessage
 	int32 SpellConfigId = 3;
 
 	repeated int64 TargetUnitId = 3;
-	Unity.Mathematics.float3 TargetPosition = 4;
+	Unity.Mathematics.float2 TargetPosition = 4;
 }
 
 message M2C_SpellRemove // IMessage
@@ -30,7 +31,7 @@ message M2C_SpellRemove // IMessage
 message SpellTarget
 {
 	repeated int64 TargetUnitId = 3;
-	Unity.Mathematics.float3 TargetPosition = 4;
+	Unity.Mathematics.float2 TargetPosition = 4;
 }
 
 // Buff相关消息定义

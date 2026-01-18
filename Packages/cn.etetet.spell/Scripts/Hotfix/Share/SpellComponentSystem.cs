@@ -11,10 +11,10 @@ namespace ET
 
         }
 
-        public static bool CheckCD(this SpellComponent self, SpellConfig spellConfig)    
+        public static bool CheckCD(this SpellComponent self, SpellConfig spellConfig)
         {
             long timeNow = TimeInfo.Instance.ServerNow();
-            if (self.CDTime + 2000 > timeNow)
+            if (self.CDTime + 500 > timeNow)  // 公共CD
             {
                 return false;
             }

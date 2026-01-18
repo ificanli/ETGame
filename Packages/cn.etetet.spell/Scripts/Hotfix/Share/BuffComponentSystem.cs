@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ET
 {
@@ -29,36 +31,43 @@ namespace ET
 
         public static Buff CreateBuff(this BuffComponent self, long buffId, int buffConfigId, long casterId)
         {
-            Buff buff = self.AddChildWithId<Buff, int>(buffId, buffConfigId);
-            buff.Caster = casterId;
-            buff.CreateTime = TimeInfo.Instance.ServerNow();
-            BuffConfig buffConfig = buff.GetConfig();
-            buff.Stack = buffConfig.Stack;
-            foreach (BuffFlags buffFlag in buffConfig.Flags)
+            try
             {
-                self.flagBuffs.Add((int)buffFlag, buff);
-            }
+                Buff buff = self.AddChildWithId<Buff, int>(buffId, buffConfigId);
+                buff.Caster = casterId;
+                buff.CreateTime = TimeInfo.Instance.ServerNow();
+                BuffConfig buffConfig = buff.GetConfig();
+                buff.Stack = buffConfig.Stack;
+                foreach (BuffFlags buffFlag in buffConfig.Flags)
+                {
+                    self.flagBuffs.Add((int)buffFlag, buff);
+                }
 
-            foreach (EffectNode effectNode in buffConfig.Effects)
-            {
-                self.effectBuffs.Add(effectNode.GetType(), buff);
-            }
+                foreach (EffectNode effectNode in buffConfig.Effects)
+                {
+                    self.effectBuffs.Add(effectNode.GetType(), buff);
+                }
             
-            self.configIdBuffs.Add(buffConfigId, buff);
+                self.configIdBuffs.Add(buffConfigId, buff);
             
-            if (buffConfig.TickTime > 0)
-            {
-                buff.TickTime = buffConfig.TickTime;
+                if (buffConfig.TickTime > 0)
+                {
+                    buff.TickTime = buffConfig.TickTime;
+                }
+                if (buffConfig.Duration >= 0)
+                {
+                    buff.ExpireTime = TimeInfo.Instance.ServerNow() + buffConfig.Duration;
+                }
+                else
+                {
+                    buff.ExpireTime = long.MaxValue;
+                }
+                return buff;
             }
-            if (buffConfig.Duration >= 0)
+            catch (Exception e)
             {
-                buff.ExpireTime = TimeInfo.Instance.ServerNow() + buffConfig.Duration;
+                throw new Exception($"create buff fail: {buffId} {buffConfigId} {casterId}", e);
             }
-            else
-            {
-                buff.ExpireTime = long.MaxValue;
-            }
-            return buff;
         }
 
         public static void RemoveBuffByConfigId(this BuffComponent self, int configId)
@@ -94,6 +103,10 @@ namespace ET
             }
 
             self.configIdBuffs.Remove(buffConfig.Id, buff);
+            
+            Log.Debug($"remove buff: {buff.Id} {buff.ConfigId}");
+            // BuffData靠GC回收，方便传递数据
+            buff.RemoveComponent<BuffData>(false);
             self.RemoveChild(buff.Id);
         }
         
@@ -101,6 +114,16 @@ namespace ET
         {
             Buff buff = self.GetChild<Buff>(buffId);
             self.RemoveBuff(buff);
+        }
+
+        public static bool HasBuff(this BuffComponent self, int configId)
+        {
+            var buffs = self.GetByConfigId(configId);
+            if (buffs == null)
+            {
+                return false;
+            }
+            return buffs.Count > 0;
         }
 
         public static HashSet<EntityRef<Buff>> GetByFlag(this BuffComponent self, BuffFlags flag)
@@ -113,6 +136,12 @@ namespace ET
         {
             self.configIdBuffs.TryGetValue(configId, out var set);
             return set;
+        }
+        
+        public static Buff GetOneByConfigId(this BuffComponent self, int configId)
+        {
+            self.configIdBuffs.TryGetValue(configId, out var set);
+            return set?.FirstOrDefault();
         }
         
         public static void RemoveBuffFlag(this BuffComponent self, BuffFlags flag)

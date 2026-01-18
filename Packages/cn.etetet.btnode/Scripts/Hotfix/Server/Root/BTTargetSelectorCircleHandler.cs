@@ -9,7 +9,7 @@ namespace ET.Server
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit caster = env.GetEntity<Unit>(node.Caster);
-            SpellTargetComponent spellTargetComponent = buff.GetComponent<SpellTargetComponent>();
+            SpellTargetComponent spellTargetComponent = buff.GetBuffData().GetComponent<SpellTargetComponent>();
         
             Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
 

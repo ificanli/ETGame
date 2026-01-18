@@ -508,7 +508,6 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 ```
 ├── cn.etetet.actorlocation (location消息系统) 依赖netinner
 ├── cn.etetet.aoi           (数值系统) 依赖unit，numeric
-├── cn.etetet.ai            (AI系统) 依赖unit,behaviortree
 ```
 
 #### 第3层

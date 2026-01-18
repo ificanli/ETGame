@@ -16,19 +16,48 @@ namespace ET.Server
             }
         }
 
-        public static Buff CreateBuffWithoutInit(Unit unit, long casterId, long buffId, int buffConfigId)
+        public static Buff CreateBuffWithoutInit(Unit unit, long casterId, long buffId, int buffConfigId, Buff parent)
         {
             Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffId, buffConfigId, casterId);
+            BuffConfig buffConfig = buff.GetConfig();
+            
+            if (parent != null)
+            {
+                buff.GetBuffData().ParentData = parent.GetBuffData();
+                
+                if (buffConfig.Flags.Contains(BuffFlags.ParentRemoveRemove))
+                {
+                    BuffChildrenComponent buffChildrenComponent =
+                            parent.GetComponent<BuffChildrenComponent>() ?? parent.AddComponent<BuffChildrenComponent>();
+                    buffChildrenComponent.Buffs.Add(buff);
+                }
+            }
+            
+            Log.Debug($"Buff Create: {buffConfigId}");
             return buff;
         }
 
         public static Buff CreateBuff(Unit unit, long casterId, long buffId, int buffConfigId, Buff parent)
         {
             Buff buff = unit.GetComponent<BuffComponent>().CreateBuff(buffId, buffConfigId, casterId);
-            return InitBuff(buff, parent);
+
+            if (parent != null)
+            {
+                buff.GetBuffData().ParentData = parent.GetBuffData();
+                BuffConfig buffConfig = buff.GetConfig();
+                if (buffConfig.Flags.Contains(BuffFlags.ParentRemoveRemove))
+                {
+                    BuffChildrenComponent buffChildrenComponent =
+                            parent.GetComponent<BuffChildrenComponent>() ?? parent.AddComponent<BuffChildrenComponent>();
+                    buffChildrenComponent.Buffs.Add(buff);
+                }
+            }
+
+            Log.Debug($"Buff Create: {buffConfigId}");
+            return InitBuff(buff);
         }
         
-        public static Buff InitBuff(Buff buff, Buff parent)
+        public static Buff InitBuff(Buff buff)
         {
             Unit unit = buff.Parent.GetParent<Unit>();
             BuffComponent buffComponent = buff.GetParent<BuffComponent>();
@@ -37,7 +66,6 @@ namespace ET.Server
             // 处理叠加规则
             if (buffConfig.OverLayRuleType != OverLayRuleType.None)
             {
-                buffComponent.configIdBuffs.Remove(buff.ConfigId, buff);
                 var oldBuffs = buffComponent.GetByConfigId(buffConfig.Id);
                 if (oldBuffs != null && oldBuffs.Count > 0)
                 {
@@ -62,14 +90,17 @@ namespace ET.Server
                         }
                         case OverLayRuleType.Replace:
                         {
-                            Buff oldBuff = oldBuffs.First();
-                            RemoveBuff(oldBuff, BuffFlags.SameConfigIdReplaceRemove);
-                            buffComponent.configIdBuffs.Add(buff.ConfigId, buff);
+                            foreach (Buff oldBuff in oldBuffs.ToArray())
+                            {
+                                if (oldBuff.Id != buff.Id)
+                                {
+                                    RemoveBuff(oldBuff, BuffFlags.SameConfigIdReplaceRemove);
+                                }
+                            }
                             break;
                         }
                         case OverLayRuleType.None:
                         {
-                            buffComponent.configIdBuffs.Add(buff.ConfigId, buff);
                             break;
                         }
                         default:
@@ -77,32 +108,10 @@ namespace ET.Server
                     }
                 }
             }
-
-            
-            if (parent != null)
-            {
-                BuffParentComponent buffParentComponent = parent.GetComponent<BuffParentComponent>();
-                Buff rootBuff = buffParentComponent.RootBuff;
-                BuffParentComponent c = buff.AddComponent<BuffParentComponent>();
-                c.ParentBuff = parent;
-                if (rootBuff != null)
-                {
-                    c.RootBuff = rootBuff;
-                }
-            }
-            else
-            {
-                BuffParentComponent c = buff.AddComponent<BuffParentComponent>();
-                c.ParentBuff = buff;
-                c.RootBuff = buff;
-            }
             
             TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
-            
-            if (buff.TickTime > 0)
-            {
-                WaitTick(buff, timerComponent).Coroutine();
-            }
+
+            RefreshTickComponent(buff);
             
             if (buff.ExpireTime > 0 && buff.ExpireTime < long.MaxValue)
             {
@@ -113,11 +122,14 @@ namespace ET.Server
                 buff.TimeoutTimer = timerComponent.NewOnceTimer(buff.ExpireTime, TimerInvokeType.BuffTimeoutTimer, buff);
             }
             
-            if (buffConfig.Flags.Contains(BuffFlags.ParentRemoveRemove))
+            EffectServerBuffAdd effect = buff.GetConfig().GetEffect<EffectServerBuffAdd>();
+            if (effect != null)
             {
-                BuffChildrenComponent buffChildrenComponent =
-                        parent.GetComponent<BuffChildrenComponent>() ?? parent.AddComponent<BuffChildrenComponent>();
-                buffChildrenComponent.Buffs.Add(buff);
+                using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
+                env.AddEntity(effect.Buff, buff);
+                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
+                env.AddEntity(effect.Caster, buff.GetCaster());
+                BTHelper.RunTree(effect, env);
             }
             
             
@@ -130,7 +142,7 @@ namespace ET.Server
             m2CBuffAdd.ExpireTime = buff.ExpireTime;
             m2CBuffAdd.Stack = buff.Stack;
             m2CBuffAdd.CasterId = buff.Caster;
-            SpellTargetComponent spellTargetComponent = buff.GetComponent<SpellTargetComponent>();
+            SpellTargetComponent spellTargetComponent = buff.GetBuffData().GetComponent<SpellTargetComponent>();
             if (spellTargetComponent != null)
             {
                 m2CBuffAdd.SpellTarget = SpellTarget.Create();
@@ -143,47 +155,16 @@ namespace ET.Server
             
             MapMessageHelper.NoticeClient(unit, m2CBuffAdd, buffConfig.NoticeType);
 
-            EffectServerBuffAdd effect = buff.GetConfig().GetEffect<EffectServerBuffAdd>();
-            if (effect != null)
-            {
-                using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
-                env.AddEntity(effect.Buff, buff);
-                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
-                env.AddEntity(effect.Caster, buff.GetCaster());
-                BTDispatcher.Instance.Handle(effect, env);
-            }
-
             return buff;
         }
 
-        private static async ETTask WaitTick(Buff buff, TimerComponent timerComponent)
+        private static void RefreshTickComponent(Buff buff)
         {
-            BuffConfig buffConfig = buff.GetConfig();
+            buff.RemoveComponent<BuffTickComponent>();
 
-            EntityRef<Buff> buffRef = buff;
-            int i = 0;
-            while (true)
+            if (buff.TickTime > 0)
             {
-                ++i;
-                // 新版本的buff tick会立刻受到急速属性影响，这里每次tick完成都要重新计算
-                long nextTick = buff.CreateTime + buffConfig.TickTime * i;
-                await timerComponent.WaitTillAsync(nextTick);
-                buff = buffRef;
-                if (buff == null)
-                {
-                    return;
-                }
-                
-                EffectServerBuffTick effect = buff.GetConfig().GetEffect<EffectServerBuffTick>();
-                if (effect != null)
-                {
-                    Unit unit = buff.GetOwner();
-                    using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
-                    env.AddEntity(effect.Buff, buff);
-                    env.AddEntity(effect.Unit, unit);
-                    env.AddEntity(effect.Caster, buff.GetCaster());
-                    BTDispatcher.Instance.Handle(effect, env);
-                }
+                buff.AddComponent<BuffTickComponent>();
             }
         }
         
@@ -219,8 +200,16 @@ namespace ET.Server
         
         public static void UpdateTickTime(Buff buff, int tickTime)
         {
+            int oldTickTime = buff.TickTime;
             buff.TickTime = tickTime;
-            
+
+            if (oldTickTime <= 0 && tickTime > 0 && buff.ExpireTime > 0 && buff.ExpireTime < long.MaxValue)
+            {
+                UpdateExpireTime(buff, buff.ExpireTime + 1);
+            }
+
+            RefreshTickComponent(buff);
+             
             Unit unit = buff.Parent.GetParent<Unit>();
             M2C_BuffUpdate m2CBuffUpdate = M2C_BuffUpdate.Create();
             m2CBuffUpdate.BuffId = buff.Id;
@@ -293,7 +282,7 @@ namespace ET.Server
                 env.AddEntity(effect.Buff, buff);
                 env.AddEntity(effect.Unit, unit);
                 env.AddEntity(effect.Caster, buff.GetCaster());
-                BTDispatcher.Instance.Handle(effect, env);
+                BTHelper.RunTree(effect, env);
             }
 
             buffComponent.RemoveBuff(buff);
@@ -343,6 +332,24 @@ namespace ET.Server
             foreach (EntityRef<Buff> buff in buffs.ToArray())
             {
                 RemoveBuff(buff, flag);
+            }
+        }
+
+        public static void RemoveBuffsByFlag(Unit unit, BuffFlags flag, BuffFlags removeType)
+        {
+            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
+            if (buffComponent == null)
+            {
+                return;
+            }
+            HashSet<EntityRef<Buff>> buffs = buffComponent.GetByFlag(flag);
+            if (buffs == null)
+            {
+                return;
+            }
+            foreach (EntityRef<Buff> buff in buffs.ToArray())
+            {
+                RemoveBuff(buff, removeType);
             }
         }
     }

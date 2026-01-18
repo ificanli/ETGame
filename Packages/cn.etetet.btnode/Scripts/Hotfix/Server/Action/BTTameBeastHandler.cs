@@ -17,8 +17,7 @@
             target.GetComponent<TargetComponent>().Unit = null;
             
             target.AddComponent<PetComponent>().OwnerId = unit.Id;
-            target.RemoveComponent<AIComponent>();
-            target.AddComponent<AIComponent, int>(node.AIConfigId);
+            BuffHelper.CreateBuff(target, unit.Id, IdGenerater.Instance.GenerateId(), node.AIConfigId, null);
             return 0;
         }
     }

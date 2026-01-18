@@ -20,9 +20,26 @@
         {
             self.ConfigId = configId;
         }
+        
+        public static Buff GetParentBuff(this Buff self)
+        {
+            BuffData parentData = self.GetBuffData().ParentData;
+            if (parentData == null)
+            {
+                return null;
+            }
+            return parentData.GetParent<Buff>();
+        }
+        
+        public static BuffData GetBuffData(this Buff buff)
+        {
+            BuffData buffData = buff.BuffData;
+            return buffData ?? buff.AddComponent<BuffData>();
+        }
 
         public static BuffConfig GetConfig(this Buff self)
         {
+            
             return BuffConfigCategory.Instance.Get(self.ConfigId);
         }
 

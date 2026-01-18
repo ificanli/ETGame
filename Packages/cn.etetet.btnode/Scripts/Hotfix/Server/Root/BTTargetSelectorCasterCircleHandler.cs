@@ -8,7 +8,7 @@ namespace ET.Server
         protected override int Run(TargetSelectorCasterCircle node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
-            SpellTargetComponent spellTargetComponent = buff.GetComponent<SpellTargetComponent>();
+            SpellTargetComponent spellTargetComponent = buff.GetBuffData().GetComponent<SpellTargetComponent>();
 
             Unit caster = buff.GetCaster();
             spellTargetComponent.Position = caster.Position;
