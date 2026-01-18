@@ -39,7 +39,7 @@ namespace ET.Server
         {
             self.MessageSender = self.Root().GetComponent<MessageSender>();
             StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(nameof(SceneType.ServiceDiscovery));
-            self.ServiceDiscoveryActorId = new ActorId(startSceneConfig.Address, new FiberInstanceId(Const.ServiceDiscoveryFiberId));
+            self.ServiceDiscoveryActorId = new ActorId(startSceneConfig.Address, new FiberInstanceId(ConstFiberId.ServiceDiscoveryFiberId));
         }
 
         [Invoke(TimerInvokeType.ServiceDiscoveryProxyHeartbeat)]

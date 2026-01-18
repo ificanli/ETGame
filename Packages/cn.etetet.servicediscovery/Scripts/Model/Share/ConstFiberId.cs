@@ -1,6 +1,7 @@
 namespace ET
 {
-    public static partial class Const
+    [UniqueId(int.MinValue, -1)]
+    public static partial class ConstFiberId
     {
         public const int ServiceDiscoveryFiberId = -2;
     }

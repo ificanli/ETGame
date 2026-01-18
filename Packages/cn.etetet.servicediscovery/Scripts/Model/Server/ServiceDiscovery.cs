@@ -9,8 +9,6 @@ namespace ET.Server
     [ComponentOf(typeof(Scene))]
     public class ServiceDiscovery : Entity, IAwake, IDestroy, IUpdate
     {
-        public const int ServiceDiscoveryFiberId = -2;
-
         // 这里可以指定索引
         public readonly string[] Indexs = { ServiceMetaKey.SceneType, ServiceMetaKey.Zone };
 

@@ -15,8 +15,7 @@ namespace ET.Test
             
             StartSceneConfig startConfig = StartSceneConfigCategory.Instance.GetBySceneName(nameof(SceneType.ServiceDiscovery));
             scope.serviceDiscoveryFiberId = await fiber.CreateFiberWithId(
-                ServiceDiscovery.ServiceDiscoveryFiberId, SchedulerType.Parent, startConfig.Id, startConfig.Zone,
-                SceneType.ServiceDiscovery, startConfig.Name);
+                ConstFiberId.ServiceDiscoveryFiberId, SchedulerType.Parent, startConfig.Id, startConfig.Zone, SceneType.ServiceDiscovery, startConfig.Name);
 
             scope.TestFiber = await fiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.TestCase, testName);
             
