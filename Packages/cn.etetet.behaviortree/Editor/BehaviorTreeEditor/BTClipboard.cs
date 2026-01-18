@@ -16,10 +16,7 @@ namespace ET
         {
             get
             {
-                if (instance == null)
-                {
-                    instance = new BTClipboard();
-                }
+                instance ??= new BTClipboard();
                 return instance;
             }
         }
@@ -122,14 +119,11 @@ namespace ET
         /// </summary>
         public void FinishPaste()
         {
-            if (this.isCut && this.cutSourceTreeView != null && this.cutSourceNodeView != null)
+            if (this.isCut && this.cutSourceTreeView != null && this.cutSourceNodeView is { Parent: not null })
+                    // 检查源TreeView和NodeView是否仍然有效
             {
-                // 检查源TreeView和NodeView是否仍然有效
-                if (this.cutSourceNodeView.Parent != null)
-                {
-                    this.cutSourceNodeView.Parent.RemoveChild(this.cutSourceNodeView);
-                    this.cutSourceTreeView.Layout();
-                }
+                this.cutSourceNodeView.Parent.RemoveChild(this.cutSourceNodeView);
+                this.cutSourceTreeView.Layout();
             }
 
             // 清空剪贴板

@@ -73,6 +73,32 @@ namespace ET
             
             return (T)value;
         }
+        
+        
+        public bool TryGetStruct<T>(string key, out T t) where T: struct
+        {
+            t = default;
+            if (key == null)
+            {
+                return false;
+            }
+            
+            if (!this.dict.TryGetValue(key, out object value))
+            {
+                return false;
+            }
+
+            try
+            {
+                IValue<T> iValue = (IValue<T>) value;
+                t = iValue.Value;
+                return true;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new Exception($"不能把{value.GetType()}转换为{typeof (T)}", e);
+            }
+        }
 
         public T GetStruct<T>(string key) where T : struct
         {
@@ -94,11 +120,13 @@ namespace ET
         
         public bool TryGetEntity<T>(string key, out T t) where T: Entity
         {
-            t = null; 
+            t = null;
+            
             if (key == null)
             {
                 return false;
             }
+            
             if (!this.dict.TryGetValue(key, out object value))
             {
                 return false;

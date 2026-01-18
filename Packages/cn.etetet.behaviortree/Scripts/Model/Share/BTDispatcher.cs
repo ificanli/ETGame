@@ -71,7 +71,7 @@ namespace ET
             }
 
             Type nodeType = ibtHandler.GetNodeType();
-            this.btHandlers.TryAdd(nodeType, ibtHandler);
+            this.btHandlers.Add(nodeType, ibtHandler);
         }
         
         
@@ -85,7 +85,12 @@ namespace ET
             {
                 throw new Exception($"not found bt handler: {node.GetType().FullName}");
             }
-            return ibtHandler.Handle(node, env);
+            int ret = ibtHandler.Handle(node, env);
+            
+#if UNITY_EDITOR
+            env.AddSnapshot($"Node {node.GetType().Name} {node.Id} return {ret}");
+#endif
+            return ret;
         }
     }
 }

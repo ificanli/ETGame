@@ -11,9 +11,12 @@ using UnityEngine.UIElements;
 
 namespace ET
 {
-    [UxmlElement]
     public partial class TreeView: GraphView
     {
+#pragma warning disable CS0618 // Type or member is obsolete
+        public new class UxmlFactory : UxmlFactory<TreeView, UxmlTraits> { }
+#pragma warning restore CS0618 // Type or member is obsolete
+        
         public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
 
         public BehaviorTreeEditor BehaviorTreeEditor;
@@ -38,6 +41,8 @@ namespace ET
         public Vector2 MoveStartPos;
 
         public bool IsDisposed { get; private set; }
+
+        private bool isShiftPressed;
         
         public TreeView()
         {
@@ -53,7 +58,10 @@ namespace ET
             styleSheets.Add(styleSheet);
 
             this.RegisterCallback<KeyDownEvent>(OnKeyDown);
+            this.RegisterCallback<KeyUpEvent>(OnKeyUp);
             this.RegisterCallback<MouseUpEvent>(OnMouseUp);
+            this.RegisterCallback<MouseDownEvent>(OnMouseDown);
+            this.RegisterCallback<MouseMoveEvent>(OnMouseMove);
             this.graphViewChanged = OnGraphViewChanged;
 
             // 注册DetachFromPanel事件，在TreeView从面板移除时清理资源
@@ -87,14 +95,27 @@ namespace ET
 
             // 注销回调
             this.UnregisterCallback<KeyDownEvent>(OnKeyDown);
+            this.UnregisterCallback<KeyUpEvent>(OnKeyUp);
             this.UnregisterCallback<MouseUpEvent>(OnMouseUp);
+            this.UnregisterCallback<MouseDownEvent>(OnMouseDown);
+            this.UnregisterCallback<MouseMoveEvent>(OnMouseMove);
             this.UnregisterCallback<DetachFromPanelEvent>(OnDetachFromPanel);
         }
 
 #region 拖动节点到另外的节点上
+        private void OnMouseDown(MouseDownEvent evt)
+        {
+            this.isShiftPressed = evt.shiftKey;
+        }
+
+        private void OnMouseMove(MouseMoveEvent evt)
+        {
+            this.isShiftPressed = evt.shiftKey;
+        }
 
         public void OnMouseUp(MouseUpEvent evt)
         {
+            this.isShiftPressed = evt.shiftKey;
             this.MouseDownNode = null;
             
             this.Layout();
@@ -166,12 +187,12 @@ namespace ET
             }
             if (targetNode != null)
             {
-                this.MoveToNode(moveNode, targetNode);
+                this.MoveToNode(moveNode, targetNode, this.isShiftPressed);
             }
             return change;
         }
 
-        private void MoveToNode(NodeView move, NodeView to)
+        private void MoveToNode(NodeView move, NodeView to, bool forceAsChild)
         {
             // 父节点不能移到子节点上
             NodeView tmp = to;
@@ -189,29 +210,32 @@ namespace ET
             }
             
             //Debug.Log($"Node {move.Id} overlapped with Node {to.Id}");
-            if (move.Parent == to.Parent)
+            if (!forceAsChild && move.Parent == to.Parent)
             {
                 this.SaveToUndo();
                 
                 int toIndex = to.Parent.GetChildren().IndexOf(to);
                 
-                BTNode btNode = move.Node;
+                byte[] nodeData = Sirenix.Serialization.SerializationUtility.SerializeValue(move.Node, DataFormat.Binary);
                 move.Dispose();
-                to.Parent.AddChild(new NodeView(this, btNode), toIndex);
+                BTNode clone = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTNode>(nodeData, DataFormat.Binary);
+                to.Parent.AddChild(new NodeView(this, clone), toIndex);
             }
             else
             {
-                // 不同父节点下，移动到另一个节点下
+                // 不同父节点下 / 或者按住Shift强制作为目标子节点
                 if (to.Node is not BTComposite && to.Node is not BTDecorate && to.Node is not BTRoot)
                 {
+                    this.BehaviorTreeEditor?.ShowText("目标节点不支持添加子节点");
                     return;
                 }
                 
                 this.SaveToUndo();
                 
-                BTNode btNode = move.Node;
+                byte[] nodeData = Sirenix.Serialization.SerializationUtility.SerializeValue(move.Node, DataFormat.Binary);
                 move.Dispose();
-                to.AddChild(new NodeView(this, btNode));
+                BTNode clone = Sirenix.Serialization.SerializationUtility.DeserializeValue<BTNode>(nodeData, DataFormat.Binary);
+                to.AddChild(new NodeView(this, clone));
             }
         }
 #endregion
@@ -243,6 +267,13 @@ namespace ET
                 this.Save();
                 evt.StopPropagation();
             }
+
+            this.isShiftPressed = evt.shiftKey;
+        }
+
+        private void OnKeyUp(KeyUpEvent evt)
+        {
+            this.isShiftPressed = evt.shiftKey;
         }
         
         public void InitTree(BehaviorTreeEditor behaviorTreeEditor, UnityEngine.Object so, BTRoot node)
@@ -382,6 +413,25 @@ namespace ET
                 return btRoot.TreeId;
             }
             return 0;
+        }
+
+        public UnityEngine.Object GetCurrentScriptableObject()
+        {
+            return this.scriptableObject;
+        }
+
+        public bool TrySetCurrentTreeId(long treeId, out long oldTreeId)
+        {
+            oldTreeId = 0;
+            if (this.root?.Node is not BTRoot btRoot)
+            {
+                return false;
+            }
+
+            oldTreeId = btRoot.TreeId;
+            btRoot.TreeId = treeId;
+            this.BehaviorTreeEditor?.PathRecorder.SetCurrentTreeId(treeId);
+            return true;
         }
 
         public void SaveToUndo(byte[] bytes = null)
@@ -717,5 +767,3 @@ namespace ET
         #endregion
     }
 }
-
-

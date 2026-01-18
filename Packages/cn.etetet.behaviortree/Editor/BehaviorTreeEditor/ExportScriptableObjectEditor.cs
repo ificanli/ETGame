@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using UnityEditor;
@@ -22,72 +24,12 @@ namespace ET.Client
             // 1.获取所有的ScriptableObject
             string[] allScriptableObjects = UnityEditor.AssetDatabase.FindAssets("t:ScriptableObject");
 
-            // 1.5 第一遍遍历：检查并设置TreeId
-            foreach (var guid in allScriptableObjects)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                var scriptableObject = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
-                if (scriptableObject == null)
-                {
-                    continue;
-                }
-
-                bool needsSave = false;
-
-                try
-                {
-                    if (scriptableObject is SpellScriptableObject spellScriptableObject)
-                    {
-                        if (CheckAndSetTreeId(spellScriptableObject.SpellConfig.Cost))
-                        {
-                            needsSave = true;
-                        }
-                        if (CheckAndSetTreeId(spellScriptableObject.SpellConfig.TargetSelector))
-                        {
-                            needsSave = true;
-                        }
-                    }
-                    else if (scriptableObject is BuffScriptableObject buffScriptableObject)
-                    {
-                        if (buffScriptableObject.BuffConfig.Effects != null)
-                        {
-                            foreach (EffectNode effect in buffScriptableObject.BuffConfig.Effects)
-                            {
-                                if (CheckAndSetTreeId(effect))
-                                {
-                                    needsSave = true;
-                                }
-                            }
-                        }
-                    }
-                    else if (scriptableObject is AIScriptableObject aiScriptableObject)
-                    {
-                        if (CheckAndSetTreeId(aiScriptableObject.AIConfig.Root))
-                        {
-                            needsSave = true;
-                        }
-                    }
-
-                    // 如果有修改，保存资源
-                    if (needsSave)
-                    {
-                        EditorUtility.SetDirty(scriptableObject);
-                        Debug.Log($"Updated TreeId for: {scriptableObject.name}");
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Error checking TreeId for {path}: {e}");
-                }
-            }
-
-            // 保存所有修改的资源
-            AssetDatabase.SaveAssets();
+            // 1.5 第一遍遍历：确保TreeId非0且全局唯一（发现重复则自动修复并保存）
+            EnsureAllTreeIdUniqueAndSave(allScriptableObjects);
 
             // 2. 第二遍遍历：导出数据
             SpellConfigCategory spellConfigCategory = new();
             BuffConfigCategory buffConfigCategory = new();
-            AIConfigCategory aiConfigCategory = new();
             foreach (var guid in allScriptableObjects)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
@@ -176,35 +118,6 @@ namespace ET.Client
                         }
 
                         buffConfigCategory.Add(buffScriptableObject.BuffConfig);
-                        continue;
-                    }
-                
-                    if (scriptableObject is AIScriptableObject aiScriptableObject)
-                    {
-                        if (scriptableObject.name != aiScriptableObject.AIConfig.Id.ToString())
-                        {
-                            Log.Error($"File name not match Id: {aiScriptableObject.name}");
-                        }
-
-                        // 校验BTInput的合法性
-                        if (!ValidateBTRoot(aiScriptableObject.AIConfig.Root, out List<string> errors))
-                        {
-                            string errorMessage = $"Validation failed for AIConfig {aiScriptableObject.name}:\n" + string.Join("\n", errors);
-                            Debug.LogError(errorMessage);
-                            throw new Exception(errorMessage);
-                        }
-
-                        try
-                        {
-                            aiScriptableObject.AIConfig.ToJson();
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError($"error: {scriptableObject.name}, {e}");
-                        }
-
-                        aiConfigCategory.Add(aiScriptableObject.AIConfig);
-                        continue;
                     }
                 }
                 catch (Exception e)
@@ -218,9 +131,8 @@ namespace ET.Client
                 Directory.CreateDirectory(ExportPath);
             }
             
-            File.WriteAllText(Path.Combine(ExportPath, "SpellConfigCategory.txt"), spellConfigCategory.ToJson());
-            File.WriteAllText(Path.Combine(ExportPath, "BuffConfigCategory.txt"), buffConfigCategory.ToJson());
-            File.WriteAllText(Path.Combine(ExportPath, "AIConfigCategory.txt"), aiConfigCategory.ToJson());
+            File.WriteAllText(Path.Combine(ExportPath, "SpellConfigCategory.txt"), ((object)spellConfigCategory).ToJson(new JsonWriterSettings {Indent = true, OutputMode = JsonOutputMode.RelaxedExtendedJson}));
+            File.WriteAllText(Path.Combine(ExportPath, "BuffConfigCategory.txt"), ((object)buffConfigCategory).ToJson(new JsonWriterSettings {Indent = true, OutputMode = JsonOutputMode.RelaxedExtendedJson}));
             
             Debug.Log("Export ScriptableObject OK!");
         }
@@ -253,27 +165,144 @@ namespace ET.Client
             return errors.Count == 0;
         }
 
-        /// <summary>
-        /// 检查并设置BTRoot的TreeId
-        /// </summary>
-        /// <param name="root">BTRoot节点</param>
-        /// <returns>是否TreeId被修改</returns>
-        private static bool CheckAndSetTreeId(BTRoot root)
+        private sealed class TreeIdOwnerInfo
+        {
+            public string AssetPath;
+            public string AssetName;
+            public string FieldPath;
+            public string NodeType;
+        }
+
+        private static void EnsureAllTreeIdUniqueAndSave(string[] allScriptableObjects)
+        {
+            Dictionary<long, TreeIdOwnerInfo> firstOwnerByTreeId = new();
+            HashSet<long> usedTreeIds = new();
+            HashSet<ScriptableObject> dirtyAssets = new();
+
+            int totalNodes = 0;
+            int fixedZeroCount = 0;
+            int fixedDuplicateCount = 0;
+
+            foreach (string guid in allScriptableObjects)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                ScriptableObject asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(assetPath);
+                if (asset == null)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    if (asset is SpellScriptableObject spellScriptableObject)
+                    {
+                        ProcessTreeId(asset, assetPath, "SpellConfig.Cost", spellScriptableObject.SpellConfig.Cost, usedTreeIds, firstOwnerByTreeId, dirtyAssets, ref totalNodes, ref fixedZeroCount, ref fixedDuplicateCount);
+                        ProcessTreeId(asset, assetPath, "SpellConfig.TargetSelector", spellScriptableObject.SpellConfig.TargetSelector, usedTreeIds, firstOwnerByTreeId, dirtyAssets, ref totalNodes, ref fixedZeroCount, ref fixedDuplicateCount);
+                        continue;
+                    }
+
+                    if (asset is BuffScriptableObject buffScriptableObject)
+                    {
+                        if (buffScriptableObject.BuffConfig.Effects != null)
+                        {
+                            for (int i = 0; i < buffScriptableObject.BuffConfig.Effects.Count; i++)
+                            {
+                                EffectNode effect = buffScriptableObject.BuffConfig.Effects[i];
+                                ProcessTreeId(asset, assetPath, $"BuffConfig.Effects[{i}]", effect, usedTreeIds, firstOwnerByTreeId, dirtyAssets, ref totalNodes, ref fixedZeroCount, ref fixedDuplicateCount);
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error checking TreeId for {assetPath}: {e}");
+                }
+            }
+
+            if (dirtyAssets.Count > 0)
+            {
+                foreach (ScriptableObject dirtyAsset in dirtyAssets)
+                {
+                    EditorUtility.SetDirty(dirtyAsset);
+                }
+
+                AssetDatabase.SaveAssets();
+            }
+
+            if (fixedZeroCount > 0 || fixedDuplicateCount > 0)
+            {
+                Debug.Log($"TreeId check finished. TotalNodes={totalNodes}, FixedZero={fixedZeroCount}, FixedDuplicate={fixedDuplicateCount}, SavedAssets={dirtyAssets.Count}");
+            }
+        }
+
+        private static void ProcessTreeId(
+            ScriptableObject asset,
+            string assetPath,
+            string fieldPath,
+            BTRoot root,
+            HashSet<long> usedTreeIds,
+            Dictionary<long, TreeIdOwnerInfo> firstOwnerByTreeId,
+            HashSet<ScriptableObject> dirtyAssets,
+            ref int totalNodes,
+            ref int fixedZeroCount,
+            ref int fixedDuplicateCount)
         {
             if (root == null)
             {
-                return false;
+                return;
             }
 
-            // 检查根节点的TreeId
-            if (root.TreeId == 0)
+            totalNodes++;
+
+            TreeIdOwnerInfo ownerInfo = new()
             {
-                root.TreeId = RandomGenerator.RandInt64();
-                Debug.Log($"Set TreeId for {root.GetType().Name}: {root.TreeId}");
-                return true;
+                AssetPath = assetPath,
+                AssetName = asset.name,
+                FieldPath = fieldPath,
+                NodeType = root.GetType().Name,
+            };
+
+            long oldTreeId = root.TreeId;
+
+            if (oldTreeId != 0 && usedTreeIds.Add(oldTreeId))
+            {
+                firstOwnerByTreeId[oldTreeId] = ownerInfo;
+                return;
             }
 
-            return false;
+            long newTreeId = GenerateUniqueTreeId(usedTreeIds);
+            root.TreeId = newTreeId;
+            dirtyAssets.Add(asset);
+            firstOwnerByTreeId[newTreeId] = ownerInfo;
+
+            if (oldTreeId == 0)
+            {
+                fixedZeroCount++;
+                Debug.Log($"Set TreeId for {ownerInfo.NodeType}: {newTreeId} ({ownerInfo.AssetName} @ {ownerInfo.FieldPath})");
+                return;
+            }
+
+            fixedDuplicateCount++;
+            if (firstOwnerByTreeId.TryGetValue(oldTreeId, out TreeIdOwnerInfo firstOwner))
+            {
+                Debug.LogWarning($"Duplicate TreeId detected: {oldTreeId}\nFirst: {firstOwner.AssetPath} ({firstOwner.AssetName} @ {firstOwner.FieldPath}, {firstOwner.NodeType})\nNow:   {ownerInfo.AssetPath} ({ownerInfo.AssetName} @ {ownerInfo.FieldPath}, {ownerInfo.NodeType})\nReset: {oldTreeId} -> {newTreeId}");
+            }
+            else
+            {
+                Debug.LogWarning($"Duplicate TreeId detected: {oldTreeId} @ {ownerInfo.AssetPath} ({ownerInfo.AssetName} @ {ownerInfo.FieldPath}, {ownerInfo.NodeType}) -> Reset to {newTreeId}");
+            }
+        }
+
+        private static long GenerateUniqueTreeId(HashSet<long> usedTreeIds)
+        {
+            long treeId;
+            do
+            {
+                treeId = RandomGenerator.RandInt64();
+            } while (treeId == 0 || usedTreeIds.Contains(treeId));
+
+            usedTreeIds.Add(treeId);
+            return treeId;
         }
     }
 }

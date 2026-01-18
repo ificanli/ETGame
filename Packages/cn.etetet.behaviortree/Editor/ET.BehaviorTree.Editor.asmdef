@@ -7,7 +7,7 @@
         "Unity.TextMeshPro",
         "ET.HybridCLR.Editor",
         "ET.Proto.Editor",
-        "ET.Loader.Editor",
+        "",
         "ET.Model",
         "ET.ModelView",
         "ET.Core",

@@ -1,7 +1,9 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ET
 {
@@ -11,19 +13,27 @@ namespace ET
 
         private Label text;
         private double messageEndTime;
+        private VisualElement leftPanel;
         private VisualElement debugPanel;
+        private VisualElement searchPanel;
         private VisualElement pathList;
         private VisualElement snapshotContent;
         private TextField entityIdFilterField;
         private bool isDebugPanelVisible = true;
+        private bool isSearchPanelVisible;
+
+        private TextField nodeTypeSearchField;
+        private Label searchResultsLabel;
+        private VisualElement searchResultsList;
+        private List<SearchTreeInfo> searchIndex;
 
         // 用于检测路径列表是否需要更新
-        private int lastPathCount = 0;
-        private int lastPathExecuteCount = 0;
+        private int lastPathCount;
+        private int lastPathExecuteCount;
         private string lastFilterEntityId = "";
 
         // 路径按钮缓存，避免频繁重建
-        private List<Button> pathButtons = new List<Button>();
+        private readonly List<Button> pathButtons = new List<Button>();
 
         // 可拖动分隔条
         private VisualElement splitter;
@@ -33,10 +43,16 @@ namespace ET
         private const float MaxDebugPanelWidth = 500f;
 
         // 所有窗口实例列表
-        private static List<BehaviorTreeEditor> instances = new List<BehaviorTreeEditor>();
+        private static readonly List<BehaviorTreeEditor> instances = new List<BehaviorTreeEditor>();
 
         // 路径记录器实例
         public BTDebugPathRecorder PathRecorder { get; private set; }
+
+        private sealed class SearchTreeInfo
+        {
+            public ScriptableObject Asset;
+            public BTRoot Root;
+        }
 
         [MenuItem("ET/BehaviorTreeEditor _F8")]
         public static void ShowWindow()
@@ -55,6 +71,57 @@ namespace ET
 
             // 添加到实例列表
             instances.Add(wnd);
+        }
+
+        private void ResetCurrentTreeIdWithDialog()
+        {
+            if (this.TreeView == null)
+            {
+                EditorUtility.DisplayDialog("重置 TreeId", "当前窗口未初始化 TreeView。", "确定");
+                return;
+            }
+
+            long currentTreeId = this.TreeView.GetCurrentTreeId();
+            if (currentTreeId == 0)
+            {
+                EditorUtility.DisplayDialog("重置 TreeId", "当前没有打开行为树，或当前 TreeId 为 0。", "确定");
+                return;
+            }
+
+            int choice = EditorUtility.DisplayDialogComplex(
+                "重置 TreeId",
+                $"当前 TreeId: {currentTreeId}\n\n请选择重置方式：",
+                "重置为随机值",
+                "取消",
+                "置为 0（下次导出自动生成）");
+
+            if (choice == 1)
+            {
+                return;
+            }
+
+            long newTreeId = choice == 2 ? 0 : RandomGenerator.RandInt64();
+
+            if (!this.TreeView.TrySetCurrentTreeId(newTreeId, out long oldTreeId))
+            {
+                EditorUtility.DisplayDialog("重置 TreeId", "重置失败：未找到当前 BTRoot。", "确定");
+                return;
+            }
+
+            UnityEngine.Object so = this.TreeView.GetCurrentScriptableObject();
+            if (so != null)
+            {
+                EditorUtility.SetDirty(so);
+            }
+
+            AssetDatabase.SaveAssets();
+
+            this.PathRecorder?.Clear();
+            this.lastPathCount = 0;
+            this.lastPathExecuteCount = 0;
+            this.UpdatePathList();
+
+            this.ShowText($"TreeId Reset: {oldTreeId} -> {newTreeId}");
         }
 
         /// <summary>
@@ -96,11 +163,47 @@ namespace ET
                 debugButton.clicked += OnDebugButtonClicked;
             }
 
+            Button searchButton = root.Q<Button>("SearchButton");
+            if (searchButton != null)
+            {
+                searchButton.clicked += OnSearchButtonClicked;
+            }
+
             // Get debug panel and path list
+            this.leftPanel = root.Q<VisualElement>("LeftPanel");
             this.debugPanel = root.Q<VisualElement>("DebugPanel");
+            this.searchPanel = root.Q<VisualElement>("SearchPanel");
             this.pathList = root.Q<VisualElement>("PathList");
             this.snapshotContent = root.Q<VisualElement>("SnapshotContent");
             this.entityIdFilterField = root.Q<TextField>("EntityIdFilterField");
+
+            this.nodeTypeSearchField = root.Q<TextField>("NodeTypeSearchField");
+            this.searchResultsLabel = root.Q<Label>("SearchResultsLabel");
+            this.searchResultsList = root.Q<VisualElement>("SearchResultsList");
+
+            Button nodeSearchButton = root.Q<Button>("NodeSearchButton");
+            if (nodeSearchButton != null)
+            {
+                nodeSearchButton.clicked += () => { this.RunNodeSearch(false); };
+            }
+
+            Button nodeSearchRefreshButton = root.Q<Button>("NodeSearchRefreshButton");
+            if (nodeSearchRefreshButton != null)
+            {
+                nodeSearchRefreshButton.clicked += () => { this.RunNodeSearch(true); };
+            }
+
+            if (this.nodeTypeSearchField != null)
+            {
+                this.nodeTypeSearchField.RegisterCallback<KeyDownEvent>(evt =>
+                {
+                    if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
+                    {
+                        this.RunNodeSearch(false);
+                        evt.StopPropagation();
+                    }
+                });
+            }
 
             // Get splitter
             this.splitter = root.Q<VisualElement>("Splitter");
@@ -119,19 +222,11 @@ namespace ET
                 this.entityIdFilterField.RegisterValueChangedCallback(_ => { this.OnEntityIdFilterChanged(); });
             }
 
-            // Set debug panel to be visible by default
-            if (this.debugPanel != null)
-            {
-                this.debugPanel.style.display = DisplayStyle.Flex;
-                this.debugPanel.style.width = this.debugPanelWidth;
-                this.UpdatePathList();
-            }
-
-            // Set splitter to be visible by default
-            if (this.splitter != null)
-            {
-                this.splitter.style.display = DisplayStyle.Flex;
-            }
+            // Set panels visible by default
+            this.isDebugPanelVisible = true;
+            this.isSearchPanelVisible = false;
+            this.UpdateLeftPanelVisibility();
+            this.UpdatePathList();
 
             // Bind clear paths button
             Button clearPathsButton = root.Q<Button>("ClearPathsButton");
@@ -159,15 +254,7 @@ namespace ET
         {
             this.isDebugPanelVisible = !this.isDebugPanelVisible;
 
-            if (this.debugPanel != null)
-            {
-                this.debugPanel.style.display = this.isDebugPanelVisible ? DisplayStyle.Flex : DisplayStyle.None;
-            }
-
-            if (this.splitter != null)
-            {
-                this.splitter.style.display = this.isDebugPanelVisible ? DisplayStyle.Flex : DisplayStyle.None;
-            }
+            this.UpdateLeftPanelVisibility();
 
             // 如果打开面板，更新路径列表
             if (this.isDebugPanelVisible)
@@ -178,6 +265,46 @@ namespace ET
             {
                 // 关闭面板时，清除节点的高亮状态
                 this.TreeView?.ClearHighlight();
+            }
+        }
+
+        private void OnSearchButtonClicked()
+        {
+            this.isSearchPanelVisible = !this.isSearchPanelVisible;
+            this.UpdateLeftPanelVisibility();
+
+            if (this.isSearchPanelVisible)
+            {
+                this.EnsureSearchIndex(false);
+            }
+        }
+
+        private void UpdateLeftPanelVisibility()
+        {
+            bool anyVisible = this.isDebugPanelVisible || this.isSearchPanelVisible;
+
+            if (this.leftPanel != null)
+            {
+                this.leftPanel.style.display = anyVisible ? DisplayStyle.Flex : DisplayStyle.None;
+                if (anyVisible)
+                {
+                    this.leftPanel.style.width = this.debugPanelWidth;
+                }
+            }
+
+            if (this.searchPanel != null)
+            {
+                this.searchPanel.style.display = this.isSearchPanelVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+
+            if (this.debugPanel != null)
+            {
+                this.debugPanel.style.display = this.isDebugPanelVisible ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+
+            if (this.splitter != null)
+            {
+                this.splitter.style.display = anyVisible ? DisplayStyle.Flex : DisplayStyle.None;
             }
         }
 
@@ -211,17 +338,17 @@ namespace ET
         /// </summary>
         private void OnSplitterMouseMove(MouseMoveEvent evt)
         {
-            if (this.isDraggingSplitter && this.debugPanel != null)
+            if (this.isDraggingSplitter && this.leftPanel != null)
             {
                 // 计算新的宽度
-                float newWidth = evt.localMousePosition.x + this.debugPanel.resolvedStyle.width;
+                float newWidth = evt.localMousePosition.x + this.leftPanel.resolvedStyle.width;
 
                 // 限制宽度范围
                 newWidth = Mathf.Clamp(newWidth, MinDebugPanelWidth, MaxDebugPanelWidth);
 
                 // 应用新宽度
                 this.debugPanelWidth = newWidth;
-                this.debugPanel.style.width = newWidth;
+                this.leftPanel.style.width = newWidth;
 
                 evt.StopPropagation();
             }
@@ -438,6 +565,283 @@ namespace ET
             }
         }
 
+        private void RunNodeSearch(bool forceRefreshIndex)
+        {
+            if (this.searchResultsList == null || this.searchResultsLabel == null)
+            {
+                return;
+            }
+
+            string query = this.nodeTypeSearchField?.value?.Trim() ?? "";
+            this.searchResultsList.Clear();
+
+            if (string.IsNullOrEmpty(query))
+            {
+                this.searchResultsLabel.text = "请输入节点类型名（例如：BTSelector）";
+                return;
+            }
+
+            this.EnsureSearchIndex(forceRefreshIndex);
+            if (this.searchIndex == null || this.searchIndex.Count == 0)
+            {
+                this.searchResultsLabel.text = "未找到任何可搜索的行为树（索引为空）";
+                return;
+            }
+
+            List<SearchTreeInfo> matches = new List<SearchTreeInfo>();
+            foreach (SearchTreeInfo info in this.searchIndex)
+            {
+                if (info?.Root == null)
+                {
+                    continue;
+                }
+
+                if (TreeContainsNodeType(info.Root, query))
+                {
+                    matches.Add(info);
+                }
+            }
+
+            this.searchResultsLabel.text = $"找到 {matches.Count} 棵树包含节点：{query}";
+
+            if (matches.Count == 0)
+            {
+                return;
+            }
+
+            foreach (SearchTreeInfo info in matches)
+            {
+                string assetName = info.Asset != null ? info.Asset.name : "(Missing)";
+                string rootTypeName = info.Root != null ? info.Root.GetType().Name : "(Null)";
+                string treeId = info.Root != null ? info.Root.TreeId.ToString() : "0";
+                string text2 = $"{assetName} / {rootTypeName} / TreeId:{treeId}";
+
+                Button button = new Button(() => this.OpenSearchResult(info))
+                {
+                    text = text2
+                };
+                button.style.marginBottom = 2;
+                button.style.backgroundColor = new StyleColor(new Color(0.25f, 0.25f, 0.25f));
+                this.searchResultsList.Add(button);
+            }
+        }
+
+        private void OpenSearchResult(SearchTreeInfo info)
+        {
+            if (info?.Asset == null || info.Root == null)
+            {
+                return;
+            }
+
+            // 兼容原本 BTNodeDrawer 的打开方式
+            BTNodeDrawer.OpenNode = info.Root;
+            BTNodeDrawer.ScriptableObject = info.Asset;
+
+            this.TreeView?.InitTree(this, info.Asset, info.Root);
+            this.PathRecorder?.Clear();
+            this.lastPathCount = 0;
+            this.lastPathExecuteCount = 0;
+            this.lastFilterEntityId = this.entityIdFilterField?.value?.Trim() ?? "";
+            this.TreeView?.ClearHighlight();
+            this.ShowText($"已打开：{info.Asset.name} / {info.Root.GetType().Name}");
+
+            EditorGUIUtility.PingObject(info.Asset);
+        }
+
+        private void EnsureSearchIndex(bool forceRebuild)
+        {
+            if (!forceRebuild && this.searchIndex != null)
+            {
+                return;
+            }
+
+            string[] guids = AssetDatabase.FindAssets("t:ScriptableObject");
+            List<SearchTreeInfo> index = new List<SearchTreeInfo>(guids.Length);
+
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                ScriptableObject so = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                if (so == null)
+                {
+                    continue;
+                }
+
+                foreach (BTRoot root in ExtractBTRoots(so))
+                {
+                    index.Add(new SearchTreeInfo
+                    {
+                        Asset = so,
+                        Root = root,
+                    });
+                }
+            }
+
+            this.searchIndex = index;
+        }
+
+        private static IEnumerable<BTRoot> ExtractBTRoots(ScriptableObject so)
+        {
+            if (so == null)
+            {
+                yield break;
+            }
+
+            HashSet<BTRoot> roots = new HashSet<BTRoot>();
+            HashSet<object> visited = new HashSet<object>();
+
+            CollectBTRootsFromObject(so, visited, roots, 0);
+
+            foreach (BTRoot root in roots)
+            {
+                if (root != null)
+                {
+                    yield return root;
+                }
+            }
+        }
+
+        private const int MaxSearchObjectGraphDepth = 64;
+
+        private static void CollectBTRootsFromObject(object obj, HashSet<object> visited, HashSet<BTRoot> roots, int depth)
+        {
+            if (obj == null)
+            {
+                return;
+            }
+
+            // 防止极端情况下（比如 Dictionary/反射对象/循环引用）导致栈溢出
+            if (depth > MaxSearchObjectGraphDepth)
+            {
+                return;
+            }
+
+            if (obj is BTRoot btRoot)
+            {
+                roots.Add(btRoot);
+                return;
+            }
+
+            Type type = obj.GetType();
+
+            if (type.IsPrimitive || type.IsEnum || type == typeof(string))
+            {
+                return;
+            }
+
+            // 关键修复：不要递归展开任何 ValueType（例如 Dictionary 的 KeyValuePair、Vector3 等）
+            // 否则会在 IEnumerable + 反射的组合下产生极深递归，直接把编辑器栈打爆。
+            if (type.IsValueType)
+            {
+                return;
+            }
+
+            // 避免把 Unity 引用对象也一路递归进去（会非常大），但 ScriptableObject 本身需要展开
+            if (obj is UnityEngine.Object and not ScriptableObject)
+            {
+                return;
+            }
+
+            if (!visited.Add(obj))
+            {
+                return;
+            }
+
+            if (obj is System.Collections.IEnumerable enumerable)
+            {
+                foreach (object item in enumerable)
+                {
+                    CollectBTRootsFromObject(item, visited, roots, depth + 1);
+                }
+                return;
+            }
+
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.IsStatic)
+                {
+                    continue;
+                }
+
+                object value;
+                try
+                {
+                    value = field.GetValue(obj);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                CollectBTRootsFromObject(value, visited, roots, depth + 1);
+            }
+        }
+
+        private static bool TreeContainsNodeType(BTNode root, string query)
+        {
+            if (root == null || string.IsNullOrEmpty(query))
+            {
+                return false;
+            }
+
+            Stack<BTNode> stack = new Stack<BTNode>();
+            HashSet<BTNode> visited = new HashSet<BTNode>();
+            stack.Push(root);
+
+            while (stack.Count > 0)
+            {
+                BTNode node = stack.Pop();
+                if (node == null)
+                {
+                    continue;
+                }
+
+                if (!visited.Add(node))
+                {
+                    continue;
+                }
+
+                if (IsNodeTypeMatch(node.GetType(), query))
+                {
+                    return true;
+                }
+
+                if (node.Children == null)
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < node.Children.Count; i++)
+                {
+                    stack.Push(node.Children[i]);
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsNodeTypeMatch(Type type, string query)
+        {
+            if (type == null || string.IsNullOrEmpty(query))
+            {
+                return false;
+            }
+
+            if (string.Equals(type.Name, query, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(type.FullName) &&
+                string.Equals(type.FullName, query, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return type.Name.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         /// <summary>
         /// 检查并更新路径列表（如果有变化）
         /// </summary>
@@ -467,7 +871,7 @@ namespace ET
             if (currentPaths.Count != this.lastPathCount)
             {
                 this.lastPathCount = currentPaths.Count;
-                this.lastPathExecuteCount = currentPaths.Count > 0 ? currentPaths[currentPaths.Count - 1].Count : 0;
+                this.lastPathExecuteCount = currentPaths.Count > 0 ? currentPaths[^1].Count : 0;
                 this.UpdatePathList();
                 return;
             }
@@ -475,7 +879,7 @@ namespace ET
             // 检查最新路径的执行次数是否变化 - 只需要更新文本
             if (currentPaths.Count > 0)
             {
-                int currentExecuteCount = currentPaths[currentPaths.Count - 1].Count;
+                int currentExecuteCount = currentPaths[^1].Count;
                 if (currentExecuteCount != this.lastPathExecuteCount)
                 {
                     this.lastPathExecuteCount = currentExecuteCount;

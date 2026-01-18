@@ -27,6 +27,9 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 100102
+    - Name: BuffId
+      Entry: 3
+      Data: 200102
     - Name: Desc
       Entry: 1
       Data: "\u666E\u901A\u653B\u51FB\u5B50\u6280\u80FD\u7684\u5B50\u6280\u80FD\uFF0C\u7528\u6765\u4F24\u5BB3\u6280\u80FD"
@@ -42,9 +45,6 @@ MonoBehaviour:
     - Name: CD
       Entry: 3
       Data: 0
-    - Name: BuffId
-      Entry: 3
-      Data: 1100102
     - Name: Cost
       Entry: 6
       Data: 
@@ -53,7 +53,7 @@ MonoBehaviour:
       Data: 2|ET.TargetSelectorSingle, ET.Model
     - Name: Id
       Entry: 3
-      Data: 0
+      Data: 1
     - Name: Children
       Entry: 7
       Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -77,7 +77,7 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
-      Data: false
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule

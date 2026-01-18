@@ -4,24 +4,42 @@
         <ui:VisualElement name="Toolbar" style="flex-direction: row; background-color: rgb(56, 56, 56); min-height: 30px; padding-left: 5px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px;">
             <ui:Button name="SaveButton" text="Save" style="width: 80px; margin-right: 5px;" />
             <ui:Button name="ExportButton" text="Export" style="width: 80px; margin-right: 5px;" />
-            <ui:Button name="DebugButton" text="Debug" style="width: 80px;" />
+            <ui:Button name="DebugButton" text="Debug" style="width: 80px; margin-right: 5px;" />
+            <ui:Button name="SearchButton" text="Search" style="width: 80px;" />
         </ui:VisualElement>
         <ui:VisualElement name="ContentArea" style="flex-grow: 1; flex-direction: row;">
-            <ui:VisualElement name="DebugPanel" style="width: 200px; background-color: rgb(40, 40, 40); border-right-width: 1px; border-right-color: rgb(30, 30, 30); display: none; flex-direction: column;">
-                <ui:Label text="Run Paths" style="padding: 5px; font-size: 14px; -unity-font-style: bold; background-color: rgb(50, 50, 50);" />
-                <ui:VisualElement style="padding: 5px; flex-direction: column;">
-                    <ui:Label text="Filter by EntityId:" style="font-size: 12px; margin-bottom: 2px;" />
-                    <ui:TextField name="EntityIdFilterField" placeholder-text="Leave empty for all" style="margin-bottom: 5px;" />
-                </ui:VisualElement>
-                <ui:ScrollView name="PathListScrollView" style="flex-grow: 1; max-height: 50%;">
-                    <ui:VisualElement name="PathList" style="flex-grow: 1; padding: 5px;" />
-                </ui:ScrollView>
-                <ui:Button name="ClearPathsButton" text="Clear Paths" style="margin: 5px;" />
-                <ui:VisualElement name="SnapshotPanel" style="flex-grow: 1; border-top-width: 1px; border-top-color: rgb(30, 30, 30); display: flex;">
-                    <ui:Label text="BT Env" style="padding: 5px; font-size: 14px; -unity-font-style: bold; background-color: rgb(50, 50, 50);" />
-                    <ui:ScrollView name="SnapshotScrollView" style="flex-grow: 1;">
-                        <ui:VisualElement name="SnapshotContent" style="padding: 5px;" />
+            <ui:VisualElement name="LeftPanel" style="width: 200px; background-color: rgb(40, 40, 40); border-right-width: 1px; border-right-color: rgb(30, 30, 30); display: none; flex-direction: column;">
+                <ui:VisualElement name="SearchPanel" style="display: none; flex-direction: column; border-bottom-width: 1px; border-bottom-color: rgb(30, 30, 30);">
+                    <ui:Label text="Search Nodes" style="padding: 5px; font-size: 14px; -unity-font-style: bold; background-color: rgb(50, 50, 50);" />
+                    <ui:VisualElement style="padding: 5px; flex-direction: column;">
+                        <ui:Label text="Node Type:" style="font-size: 12px; margin-bottom: 2px;" />
+                        <ui:TextField name="NodeTypeSearchField" placeholder-text="例如：BTSelector" style="margin-bottom: 5px;" />
+                        <ui:VisualElement style="flex-direction: row;">
+                            <ui:Button name="NodeSearchButton" text="Search" style="width: 80px; margin-right: 5px;" />
+                            <ui:Button name="NodeSearchRefreshButton" text="Refresh" style="width: 80px;" />
+                        </ui:VisualElement>
+                        <ui:Label name="SearchResultsLabel" text="No search yet" style="font-size: 12px; margin-top: 6px; color: rgb(180, 180, 180);" />
+                    </ui:VisualElement>
+                    <ui:ScrollView name="SearchResultsScrollView" style="flex-grow: 1; max-height: 45%;">
+                        <ui:VisualElement name="SearchResultsList" style="flex-grow: 1; padding: 5px;" />
                     </ui:ScrollView>
+                </ui:VisualElement>
+                <ui:VisualElement name="DebugPanel" style="display: none; flex-direction: column; flex-grow: 1;">
+                    <ui:Label text="Run Paths" style="padding: 5px; font-size: 14px; -unity-font-style: bold; background-color: rgb(50, 50, 50);" />
+                    <ui:VisualElement style="padding: 5px; flex-direction: column;">
+                        <ui:Label text="Filter by EntityId:" style="font-size: 12px; margin-bottom: 2px;" />
+                        <ui:TextField name="EntityIdFilterField" placeholder-text="Leave empty for all" style="margin-bottom: 5px;" />
+                    </ui:VisualElement>
+                    <ui:ScrollView name="PathListScrollView" style="flex-grow: 1; max-height: 50%;">
+                        <ui:VisualElement name="PathList" style="flex-grow: 1; padding: 5px;" />
+                    </ui:ScrollView>
+                    <ui:Button name="ClearPathsButton" text="Clear Paths" style="margin: 5px;" />
+                    <ui:VisualElement name="SnapshotPanel" style="flex-grow: 1; border-top-width: 1px; border-top-color: rgb(30, 30, 30); display: flex;">
+                        <ui:Label text="BT Env" style="padding: 5px; font-size: 14px; -unity-font-style: bold; background-color: rgb(50, 50, 50);" />
+                        <ui:ScrollView name="SnapshotScrollView" style="flex-grow: 1;">
+                            <ui:VisualElement name="SnapshotContent" style="padding: 5px;" />
+                        </ui:ScrollView>
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="Splitter" style="width: 4px; background-color: rgb(60, 60, 60); cursor: resize-horizontal; display: none;">

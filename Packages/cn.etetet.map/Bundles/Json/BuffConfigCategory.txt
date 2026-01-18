@@ -1,1 +1,1037 @@
-{ "_t" : "ET.BuffConfigCategory", "dict" : [[200000, { "_id" : 200000, "Desc" : "普攻自动Tick Buff", "Duration" : 1000000, "TickTime" : 2000, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [15, 5], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffTick", "_id" : 1, "Children" : [{ "_t" : "ET.BTSelector", "_id" : 17, "Children" : [{ "_t" : "ET.BTCreateSpell", "_id" : 18, "Children" : [], "Unit" : "Unit", "Buff" : "Buff", "SpellConfigId" : 100001 }, { "_t" : "ET.BTRemoveBuff", "_id" : 23, "Children" : [], "Unit" : "Unit", "ConfigId" : 200000, "RemoveType" : 14 }] }], "TreeId" : 3815612886719013578, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTSelector", "_id" : 2, "Children" : [{ "_t" : "ET.BTCreateSpell", "_id" : 3, "Children" : [], "Unit" : "Unit", "Buff" : "Buff", "SpellConfigId" : 100001 }, { "_t" : "ET.BTRemoveBuff", "_id" : 4, "Children" : [], "Unit" : "Unit", "ConfigId" : 200000, "RemoveType" : 14 }] }], "TreeId" : 1608215900522174860, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200001, { "_id" : 200001, "Desc" : "普攻子技能Buff", "Duration" : 300, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [15, 5], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectClientBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTAnimatorSetTrigger", "_id" : 2, "Children" : [], "Unit" : "Caster", "MotionType" : 4 }], "TreeId" : 1243493200079276338, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffRemove", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnit", "_id" : 2, "Children" : [], "Buff" : "Buff", "Unit" : "Target" }, { "_t" : "ET.BTSelector", "_id" : 3, "Children" : [{ "_t" : "ET.BTCreateSpell", "_id" : 4, "Children" : [], "Unit" : "Caster", "Buff" : "Buff", "SpellConfigId" : 100002 }, { "_t" : "ET.BTRemoveBuff", "_id" : 5, "Children" : [], "Unit" : "Caster", "ConfigId" : 200000, "RemoveType" : 14 }] }], "TreeId" : 1690415682219116574, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200002, { "_id" : 200002, "Desc" : "普攻子技能的伤害技能Buff", "Duration" : 0, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnit", "_id" : 2, "Children" : [], "Buff" : "Buff", "Unit" : "Unit" }, { "_t" : "ET.BTDamage", "_id" : 3, "Children" : [], "Caster" : "Caster", "Target" : "Unit", "Buff" : "Buff", "Value" : 20 }], "TreeId" : 8351657984999199897, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200010, { "_id" : 200010, "Desc" : "暴风雪引导Buff", "Duration" : 8000, "TickTime" : 1000, "MaxStack" : 8, "Stack" : 8, "OverLayRuleType" : 3, "Flags" : [15, 5], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetPos", "_id" : 2, "Children" : [], "Buff" : "Buff", "Pos" : "Pos" }, { "_t" : "ET.BTTurnToPos", "_id" : 3, "Children" : [], "Caster" : "Caster", "Pos" : "Pos", "Buff" : "Buff" }], "TreeId" : 7062527687140831987, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffTick", "_id" : 1, "Children" : [{ "_t" : "ET.BTCreateSpell", "_id" : 2, "Children" : [], "Unit" : "Unit", "Buff" : "Buff", "SpellConfigId" : 100011 }], "TreeId" : 892299141201969128, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffAdd", "_id" : 25, "Children" : [{ "_t" : "ET.BTAnimatorSetBool", "_id" : 29, "Children" : [], "Unit" : "Unit", "MotionType" : 11, "Value" : true }, { "_t" : "ET.BTShowCastSlider", "_id" : 28, "Children" : [], "Buff" : "Buff", "IsIncrease" : false, "ShowDisplayName" : "Blizzard", "Icon" : { "Name" : "Spell_Frost_IceStorm" } }], "TreeId" : 4778830958770092921, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffRemove", "_id" : 1, "Children" : [{ "_t" : "ET.BTAnimatorSetBool", "_id" : 2, "Children" : [], "Unit" : "Unit", "MotionType" : 11, "Value" : false }], "TreeId" : 7960594676935385866, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffHitted", "_id" : 1, "Children" : [{ "_t" : "ET.BTBuffAddExpireTime", "_id" : 2, "Children" : [], "Buff" : "Buff", "Value" : 0, "Pct" : -25 }], "TreeId" : 3505077439561151127, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster", "Attacker" : "Attacker" }] }], [200011, { "_id" : 200011, "Desc" : "暴风雪每波雪技能Buff", "Duration" : 500, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [15, 5], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectServerBuffRemove", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnits", "_id" : 2, "Children" : [], "Buff" : "Buff", "Units" : "Units" }, { "_t" : "ET.BTForeachUnit", "_id" : 3, "Children" : [{ "_t" : "ET.BTDamage", "_id" : 4, "Children" : [], "Caster" : "Caster", "Target" : "Unit", "Buff" : "Buff", "Value" : 3 }], "Units" : "Units", "Unit" : "Unit" }], "TreeId" : 209691278119582624, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetPos", "_id" : 4, "Children" : [], "Buff" : "Buff", "Pos" : "Pos" }, { "_t" : "ET.BTCreateEffectOnPos", "_id" : 2, "Children" : [], "Pos" : "Pos", "Effect" : { "Name" : "effect_top_down_ice_circle" }, "Duration" : 5000 }], "TreeId" : 3762043687207928539, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200020, { "_id" : 200020, "Desc" : "寒冰箭读条Buff", "Duration" : 2000, "TickTime" : 300, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [15, 5], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectServerBuffRemove", "_id" : 1, "Children" : [{ "_t" : "ET.BTBuffRemoveTypeCase", "_id" : 2, "Children" : [], "Buff" : "Buff", "BuffRemoveType" : 1 }, { "_t" : "ET.BTGetSpellTargetUnit", "_id" : 3, "Children" : [], "Buff" : "Buff", "Unit" : "Target" }, { "_t" : "ET.BTAddFakeBulletBuff", "_id" : 4, "Children" : [], "Caster" : "Caster", "Target" : "Target", "Buff" : "Buff", "OutputBuff" : null, "ConfigId" : 200021, "Speed" : 30000 }], "TreeId" : 4121427416966516998, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTAnimatorSetBool", "_id" : 2, "Children" : [], "Unit" : "Unit", "MotionType" : 10, "Value" : true }, { "_t" : "ET.BTShowCastSlider", "_id" : 3, "Children" : [], "Buff" : "Buff", "IsIncrease" : true, "ShowDisplayName" : "Frostbolt", "Icon" : { "Name" : "Spell_Frost_FrostBolt02" } }], "TreeId" : 2024985502994765610, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffRemove", "_id" : 1, "Children" : [{ "_t" : "ET.BTAnimatorSetBool", "_id" : 3, "Children" : [], "Unit" : "Unit", "MotionType" : 10, "Value" : false }], "TreeId" : 6591626644144125003, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffTick", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnit", "_id" : 2, "Children" : [], "Buff" : "Buff", "Unit" : "Target" }, { "_t" : "ET.BTTurnToUnit", "_id" : 3, "Children" : [], "Caster" : "Caster", "Target" : "Target", "Buff" : "Buff" }], "TreeId" : 911151293205797089, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffHitted", "_id" : 1, "Children" : [{ "_t" : "ET.BTBuffAddExpireTime", "_id" : 2, "Children" : [], "Buff" : "Buff", "Value" : 500, "Pct" : 0 }], "TreeId" : 2288881389643698692, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster", "Attacker" : "Attacker" }] }], [200021, { "_id" : 200021, "Desc" : "寒冰箭假子弹Buff", "Duration" : 0, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectServerBuffRemove", "_id" : 1, "Children" : [{ "_t" : "ET.BTAddBuff", "_id" : 2, "Children" : [], "Caster" : "Caster", "Target" : "Unit", "Buff" : "Buff", "ConfigId" : 200022 }, { "_t" : "ET.BTDamage", "_id" : 3, "Children" : [], "Caster" : "Caster", "Target" : "Unit", "Buff" : "Buff", "Value" : 5 }], "TreeId" : 8629936956201689519, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTAnimatorSetTrigger", "_id" : 2, "Children" : [], "Unit" : "Caster", "MotionType" : 9 }, { "_t" : "ET.BTCreateFakeBullet", "_id" : 3, "Children" : [], "Caster" : "Caster", "Target" : "Unit", "CasterBindPoint" : 1, "TargetBindPoint" : 9, "Speed" : 30000, "Effect" : { "Name" : "effect_Frost Bolt" }, "Duration" : 60000 }], "TreeId" : 4087138501667181464, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200022, { "_id" : 200022, "Desc" : "寒冰箭减速", "Duration" : 5000, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 3, "Flags" : [], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTNumericChange", "_id" : 2, "Children" : [], "Unit" : "Unit", "Buff" : "Buff", "NumericType" : 10003, "Value" : -30 }], "TreeId" : 767928858192354693, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200030, { "_id" : 200030, "Desc" : "捕获宠物", "Duration" : 8000, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [15, 5], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnit", "_id" : 2, "Children" : [], "Buff" : "Buff", "Unit" : "Target" }, { "_t" : "ET.BTAddBuff", "_id" : 3, "Children" : [], "Caster" : "Caster", "Target" : "Target", "Buff" : "Buff", "ConfigId" : 200031 }], "TreeId" : 305420984166975435, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffRemove", "_id" : 0, "Children" : [{ "_t" : "ET.BTBuffRemoveTypeCase", "_id" : 0, "Children" : null, "Buff" : "Buff", "BuffRemoveType" : 1 }, { "_t" : "ET.BTGetSpellTargetUnit", "_id" : 0, "Children" : null, "Buff" : "Buff", "Unit" : "Target" }, { "_t" : "ET.BTTameBeast", "_id" : 0, "Children" : null, "Unit" : "Caster", "Target" : "Target", "Buff" : "Buff", "AIConfigId" : 300001 }], "TreeId" : 1655162310235262046, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTAnimatorSetBool", "_id" : 2, "Children" : null, "Unit" : "Caster", "MotionType" : 13, "Value" : true }, { "_t" : "ET.BTShowCastSlider", "_id" : 3, "Children" : null, "Buff" : "Buff", "IsIncrease" : false, "ShowDisplayName" : "TameBeast", "Icon" : { "Name" : "Ability_Druid_Berserk" } }], "TreeId" : 5929167979800978287, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffRemove", "_id" : 0, "Children" : [{ "_t" : "ET.BTAnimatorSetBool", "_id" : 0, "Children" : null, "Unit" : "Caster", "MotionType" : 13, "Value" : false }], "TreeId" : 8552968827601575299, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200031, { "_id" : 200031, "Desc" : "捕获宠物眩晕Buff", "Duration" : 20000, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [13], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 0, "Children" : [{ "_t" : "ET.BTNumericChange", "_id" : 0, "Children" : null, "Unit" : "Unit", "Buff" : "Buff", "NumericType" : 10132, "Value" : 1 }], "TreeId" : 5945471701987250448, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectClientBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTCreateBuffEffect", "_id" : 2, "Children" : [], "Unit" : "Unit", "Buff" : "Buff", "BindPoint" : 3, "Effect" : { "Name" : "effect_heart" }, "Duration" : 5000 }], "TreeId" : 376364807517838246, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200040, { "_id" : 200040, "Desc" : null, "Duration" : 0, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTPhaseAdd", "_id" : 2, "Children" : [], "Unit" : "Caster", "phaseType" : 2 }], "TreeId" : 6680604004401102092, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200050, { "_id" : 200050, "Desc" : null, "Duration" : 0, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTPhaseRemove", "_id" : 2, "Children" : [], "Unit" : "Caster", "phaseType" : 2 }], "TreeId" : 2997626495283858521, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200100, { "_id" : 200100, "Desc" : "普攻自动Tick Buff", "Duration" : 1000000, "TickTime" : 2000, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [15, 5], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffTick", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnit", "_id" : 2, "Children" : [], "Buff" : "Buff", "Unit" : "Target" }, { "_t" : "ET.BTTurnToUnit", "_id" : 3, "Children" : [], "Caster" : "Caster", "Target" : "Target", "Buff" : "Buff" }, { "_t" : "ET.BTSelector", "_id" : 4, "Children" : [{ "_t" : "ET.BTCreateSpell", "_id" : 5, "Children" : [], "Unit" : "Unit", "Buff" : "Buff", "SpellConfigId" : 100101 }, { "_t" : "ET.BTRemoveBuff", "_id" : 6, "Children" : [], "Unit" : "Unit", "ConfigId" : 200100, "RemoveType" : 14 }] }], "TreeId" : 564552055616284588, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffAdd", "_id" : 0, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnit", "_id" : 0, "Children" : [], "Buff" : "Buff", "Unit" : "Target" }, { "_t" : "ET.BTTurnToUnit", "_id" : 0, "Children" : [], "Caster" : "Caster", "Target" : "Target", "Buff" : "Buff" }, { "_t" : "ET.BTSelector", "_id" : 0, "Children" : [{ "_t" : "ET.BTCreateSpell", "_id" : 0, "Children" : [], "Unit" : "Unit", "Buff" : "Buff", "SpellConfigId" : 100101 }, { "_t" : "ET.BTRemoveBuff", "_id" : 0, "Children" : [], "Unit" : "Unit", "ConfigId" : 200100, "RemoveType" : 14 }] }], "TreeId" : 1625451776993338754, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200101, { "_id" : 200101, "Desc" : "普攻子技能Buff", "Duration" : 300, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [15, 5], "NoticeType" : 2, "Effects" : [{ "_t" : "ET.EffectClientBuffAdd", "_id" : 0, "Children" : [{ "_t" : "ET.BTAnimatorSetTrigger", "_id" : 0, "Children" : [], "Unit" : "Caster", "MotionType" : 4 }], "TreeId" : 3902510254283413831, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }, { "_t" : "ET.EffectServerBuffRemove", "_id" : 0, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnit", "_id" : 0, "Children" : [], "Buff" : "Buff", "Unit" : "Target" }, { "_t" : "ET.BTSelector", "_id" : 0, "Children" : [{ "_t" : "ET.BTCreateSpell", "_id" : 0, "Children" : [], "Unit" : "Caster", "Buff" : "Buff", "SpellConfigId" : 100102 }, { "_t" : "ET.BTRemoveBuff", "_id" : 0, "Children" : [], "Unit" : "Caster", "ConfigId" : 200100, "RemoveType" : 14 }] }], "TreeId" : 3456085038844290628, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200102, { "_id" : 200102, "Desc" : "普攻子技能的伤害技能Buff", "Duration" : 0, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 0, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnit", "_id" : 0, "Children" : [], "Buff" : "Buff", "Unit" : "Unit" }, { "_t" : "ET.BTDamage", "_id" : 0, "Children" : [], "Caster" : "Caster", "Target" : "Unit", "Buff" : "Buff", "Value" : 10 }], "TreeId" : 1275168519374152276, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200110, { "_id" : 200110, "Desc" : "怪物战斗状态", "Duration" : 0, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [15, 5], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTAddBuff", "_id" : 2, "Children" : null, "Caster" : "Caster", "Target" : "Caster", "Buff" : "Buff", "ConfigId" : 200111 }], "TreeId" : 8182950534952635943, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200111, { "_id" : 200111, "Desc" : "怪物战斗状态提速Buff", "Duration" : -1, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 0, "Children" : [{ "_t" : "ET.BTNumericChange", "_id" : 0, "Children" : [], "Unit" : "Caster", "Buff" : "Buff", "NumericType" : 10005, "Value" : 100 }], "TreeId" : 1630117608744012799, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200120, { "_id" : 200120, "Desc" : "传送", "Duration" : 0, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnits", "_id" : 4, "Children" : [], "Buff" : "Buff", "Units" : "Targets" }, { "_t" : "ET.BTForeachUnit", "_id" : 6, "Children" : [{ "_t" : "ET.BTTransfer", "_id" : 8, "Children" : [], "Caster" : "Caster", "Target" : "Target", "Buff" : "Buff", "TransferId" : 1 }], "Units" : "Targets", "Unit" : "Target" }], "TreeId" : 788757847158858200, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }], [200130, { "_id" : 200130, "Desc" : "传送", "Duration" : 0, "TickTime" : 0, "MaxStack" : 1, "Stack" : 1, "OverLayRuleType" : 0, "Flags" : [], "NoticeType" : 0, "Effects" : [{ "_t" : "ET.EffectServerBuffAdd", "_id" : 1, "Children" : [{ "_t" : "ET.BTGetSpellTargetUnits", "_id" : 4, "Children" : [], "Buff" : "Buff", "Units" : "Targets" }, { "_t" : "ET.BTForeachUnit", "_id" : 6, "Children" : [{ "_t" : "ET.BTTransfer", "_id" : 7, "Children" : [], "Caster" : "Caster", "Target" : "Target", "Buff" : "Buff", "TransferId" : 2 }], "Units" : "Targets", "Unit" : "Target" }], "TreeId" : 6319847410496909763, "Buff" : "Buff", "Unit" : "Unit", "Caster" : "Caster" }] }]] }
+{
+  "_t" : "ET.BuffConfigCategory",
+  "dict" : [[200000, {
+        "_id" : 200000,
+        "Desc" : "普攻自动Tick Buff",
+        "Duration" : 1000000,
+        "TickTime" : 2000,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [15, 5],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffTick",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTSelector",
+                "_id" : 17,
+                "Children" : [{
+                    "_t" : "ET.BTCreateSpell",
+                    "_id" : 18,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff",
+                    "SpellConfigId" : 100001
+                  }, {
+                    "_t" : "ET.BTRemoveBuff",
+                    "_id" : 23,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "ConfigId" : 200000,
+                    "RemoveType" : 14
+                  }]
+              }],
+            "TreeId" : 3815612886719013578,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTSelector",
+                "_id" : 2,
+                "Children" : [{
+                    "_t" : "ET.BTCreateSpell",
+                    "_id" : 3,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff",
+                    "SpellConfigId" : 100001
+                  }, {
+                    "_t" : "ET.BTRemoveBuff",
+                    "_id" : 4,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "ConfigId" : 200000,
+                    "RemoveType" : 14
+                  }]
+              }],
+            "TreeId" : 1608215900522174860,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200001, {
+        "_id" : 200001,
+        "Desc" : "普攻子技能Buff",
+        "Duration" : 300,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [15, 5],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectClientBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetTrigger",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Caster",
+                "MotionType" : 4
+              }],
+            "TreeId" : 1243493200079276338,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Target"
+              }, {
+                "_t" : "ET.BTSelector",
+                "_id" : 3,
+                "Children" : [{
+                    "_t" : "ET.BTCreateSpell",
+                    "_id" : 4,
+                    "Children" : [],
+                    "Unit" : "Caster",
+                    "Buff" : "Buff",
+                    "SpellConfigId" : 100002
+                  }, {
+                    "_t" : "ET.BTRemoveBuff",
+                    "_id" : 5,
+                    "Children" : [],
+                    "Unit" : "Caster",
+                    "ConfigId" : 200000,
+                    "RemoveType" : 14
+                  }]
+              }],
+            "TreeId" : 1690415682219116574,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200002, {
+        "_id" : 200002,
+        "Desc" : "普攻子技能的伤害技能Buff",
+        "Duration" : 0,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Unit"
+              }, {
+                "_t" : "ET.BTDamage",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Unit",
+                "Buff" : "Buff",
+                "Value" : 20
+              }],
+            "TreeId" : 8351657984999199897,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200010, {
+        "_id" : 200010,
+        "Desc" : "暴风雪引导Buff",
+        "Duration" : 8000,
+        "TickTime" : 1000,
+        "MaxStack" : 8,
+        "Stack" : 8,
+        "OverLayRuleType" : 3,
+        "Flags" : [15, 5],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetPos",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Pos" : "Pos"
+              }, {
+                "_t" : "ET.BTTurnToPos",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Pos" : "Pos",
+                "Buff" : "Buff"
+              }],
+            "TreeId" : 7062527687140831987,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffTick",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTCreateSpell",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit",
+                "Buff" : "Buff",
+                "SpellConfigId" : 100011
+              }],
+            "TreeId" : 892299141201969128,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffAdd",
+            "_id" : 25,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetBool",
+                "_id" : 29,
+                "Children" : [],
+                "Unit" : "Unit",
+                "MotionType" : 11,
+                "Value" : true
+              }, {
+                "_t" : "ET.BTShowCastSlider",
+                "_id" : 28,
+                "Children" : [],
+                "Buff" : "Buff",
+                "IsIncrease" : false,
+                "ShowDisplayName" : "Blizzard",
+                "Icon" : {
+                  "Name" : "Spell_Frost_IceStorm"
+                }
+              }],
+            "TreeId" : 4778830958770092921,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetBool",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit",
+                "MotionType" : 11,
+                "Value" : false
+              }],
+            "TreeId" : 7960594676935385866,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffHitted",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTBuffAddExpireTime",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Value" : 0,
+                "Pct" : -25
+              }],
+            "TreeId" : 3505077439561151127,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster",
+            "Attacker" : "Attacker"
+          }]
+      }], [200011, {
+        "_id" : 200011,
+        "Desc" : "暴风雪每波雪技能Buff",
+        "Duration" : 500,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [15, 5],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnits",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Units" : "Units"
+              }, {
+                "_t" : "ET.BTForeachUnit",
+                "_id" : 3,
+                "Children" : [{
+                    "_t" : "ET.BTDamage",
+                    "_id" : 4,
+                    "Children" : [],
+                    "Caster" : "Caster",
+                    "Target" : "Unit",
+                    "Buff" : "Buff",
+                    "Value" : 3
+                  }],
+                "Units" : "Units",
+                "Unit" : "Unit"
+              }],
+            "TreeId" : 209691278119582624,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetPos",
+                "_id" : 4,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Pos" : "Pos"
+              }, {
+                "_t" : "ET.BTCreateEffectOnPos",
+                "_id" : 2,
+                "Children" : [],
+                "Pos" : "Pos",
+                "Effect" : {
+                  "Name" : "effect_top_down_ice_circle"
+                },
+                "Duration" : 5000
+              }],
+            "TreeId" : 3762043687207928539,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200020, {
+        "_id" : 200020,
+        "Desc" : "寒冰箭读条Buff",
+        "Duration" : 2000,
+        "TickTime" : 300,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [15, 5],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTBuffRemoveTypeCase",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "BuffRemoveType" : 1
+              }, {
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 3,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Target"
+              }, {
+                "_t" : "ET.BTAddFakeBulletBuff",
+                "_id" : 4,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Target",
+                "Buff" : "Buff",
+                "OutputBuff" : null,
+                "ConfigId" : 200021,
+                "Speed" : 30000
+              }],
+            "TreeId" : 4121427416966516998,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetBool",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit",
+                "MotionType" : 10,
+                "Value" : true
+              }, {
+                "_t" : "ET.BTShowCastSlider",
+                "_id" : 3,
+                "Children" : [],
+                "Buff" : "Buff",
+                "IsIncrease" : true,
+                "ShowDisplayName" : "Frostbolt",
+                "Icon" : {
+                  "Name" : "Spell_Frost_FrostBolt02"
+                }
+              }],
+            "TreeId" : 2024985502994765610,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetBool",
+                "_id" : 3,
+                "Children" : [],
+                "Unit" : "Unit",
+                "MotionType" : 10,
+                "Value" : false
+              }],
+            "TreeId" : 6591626644144125003,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffTick",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Target"
+              }, {
+                "_t" : "ET.BTTurnToUnit",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Target",
+                "Buff" : "Buff"
+              }],
+            "TreeId" : 911151293205797089,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffHitted",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTBuffAddExpireTime",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Value" : 500,
+                "Pct" : 0
+              }],
+            "TreeId" : 2288881389643698692,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster",
+            "Attacker" : "Attacker"
+          }]
+      }], [200021, {
+        "_id" : 200021,
+        "Desc" : "寒冰箭假子弹Buff",
+        "Duration" : 0,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAddBuff",
+                "_id" : 2,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Unit",
+                "Buff" : "Buff",
+                "ConfigId" : 200022
+              }, {
+                "_t" : "ET.BTDamage",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Unit",
+                "Buff" : "Buff",
+                "Value" : 5
+              }],
+            "TreeId" : 8629936956201689519,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetTrigger",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Caster",
+                "MotionType" : 9
+              }, {
+                "_t" : "ET.BTCreateFakeBullet",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Unit",
+                "CasterBindPoint" : 1,
+                "TargetBindPoint" : 9,
+                "Speed" : 30000,
+                "Effect" : {
+                  "Name" : "effect_Frost Bolt"
+                },
+                "Duration" : 60000
+              }],
+            "TreeId" : 4087138501667181464,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200022, {
+        "_id" : 200022,
+        "Desc" : "寒冰箭减速",
+        "Duration" : 5000,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 3,
+        "Flags" : [],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTNumericChange",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit",
+                "Buff" : "Buff",
+                "NumericType" : 10003,
+                "Value" : -30
+              }],
+            "TreeId" : 767928858192354693,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200030, {
+        "_id" : 200030,
+        "Desc" : "捕获宠物",
+        "Duration" : 8000,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [15, 5],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Target"
+              }, {
+                "_t" : "ET.BTAddBuff",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Target",
+                "Buff" : "Buff",
+                "ConfigId" : 200031
+              }],
+            "TreeId" : 305420984166975435,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTBuffRemoveTypeCase",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "BuffRemoveType" : 1
+              }, {
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 3,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Target"
+              }, {
+                "_t" : "ET.BTTameBeast",
+                "_id" : 4,
+                "Children" : [],
+                "Unit" : "Caster",
+                "Target" : "Target",
+                "Buff" : "Buff",
+                "AIConfigId" : 300001
+              }],
+            "TreeId" : 1655162310235262046,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetBool",
+                "_id" : 2,
+                "Children" : null,
+                "Unit" : "Caster",
+                "MotionType" : 13,
+                "Value" : true
+              }, {
+                "_t" : "ET.BTShowCastSlider",
+                "_id" : 3,
+                "Children" : null,
+                "Buff" : "Buff",
+                "IsIncrease" : false,
+                "ShowDisplayName" : "TameBeast",
+                "Icon" : {
+                  "Name" : "Ability_Druid_Berserk"
+                }
+              }],
+            "TreeId" : 5929167979800978287,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetBool",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Caster",
+                "MotionType" : 13,
+                "Value" : false
+              }],
+            "TreeId" : 8552968827601575299,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200031, {
+        "_id" : 200031,
+        "Desc" : "捕获宠物眩晕Buff",
+        "Duration" : 20000,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [13],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTNumericChange",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit",
+                "Buff" : "Buff",
+                "NumericType" : 10132,
+                "Value" : 1
+              }],
+            "TreeId" : 5945471701987250448,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectClientBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTCreateBuffEffect",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Unit",
+                "Buff" : "Buff",
+                "BindPoint" : 3,
+                "Effect" : {
+                  "Name" : "effect_heart"
+                },
+                "Duration" : 5000
+              }],
+            "TreeId" : 376364807517838246,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200040, {
+        "_id" : 200040,
+        "Desc" : null,
+        "Duration" : 0,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTPhaseAdd",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Caster",
+                "phaseType" : 2
+              }],
+            "TreeId" : 6680604004401102092,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200050, {
+        "_id" : 200050,
+        "Desc" : null,
+        "Duration" : 0,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTPhaseRemove",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Caster",
+                "phaseType" : 2
+              }],
+            "TreeId" : 2997626495283858521,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200100, {
+        "_id" : 200100,
+        "Desc" : "普攻自动Tick Buff",
+        "Duration" : 1000000,
+        "TickTime" : 2000,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [15, 5],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffTick",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Target"
+              }, {
+                "_t" : "ET.BTTurnToUnit",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Target",
+                "Buff" : "Buff"
+              }, {
+                "_t" : "ET.BTSelector",
+                "_id" : 4,
+                "Children" : [{
+                    "_t" : "ET.BTCreateSpell",
+                    "_id" : 5,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff",
+                    "SpellConfigId" : 100101
+                  }, {
+                    "_t" : "ET.BTRemoveBuff",
+                    "_id" : 6,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "ConfigId" : 200100,
+                    "RemoveType" : 14
+                  }]
+              }],
+            "TreeId" : 564552055616284588,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Target"
+              }, {
+                "_t" : "ET.BTTurnToUnit",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Target",
+                "Buff" : "Buff"
+              }, {
+                "_t" : "ET.BTSelector",
+                "_id" : 4,
+                "Children" : [{
+                    "_t" : "ET.BTCreateSpell",
+                    "_id" : 5,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff",
+                    "SpellConfigId" : 100101
+                  }, {
+                    "_t" : "ET.BTRemoveBuff",
+                    "_id" : 6,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "ConfigId" : 200100,
+                    "RemoveType" : 14
+                  }]
+              }],
+            "TreeId" : 1625451776993338754,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200101, {
+        "_id" : 200101,
+        "Desc" : "普攻子技能Buff",
+        "Duration" : 300,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [15, 5],
+        "NoticeType" : 2,
+        "Effects" : [{
+            "_t" : "ET.EffectClientBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAnimatorSetTrigger",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Caster",
+                "MotionType" : 4
+              }],
+            "TreeId" : 3902510254283413831,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }, {
+            "_t" : "ET.EffectServerBuffRemove",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Target"
+              }, {
+                "_t" : "ET.BTSelector",
+                "_id" : 3,
+                "Children" : [{
+                    "_t" : "ET.BTCreateSpell",
+                    "_id" : 4,
+                    "Children" : [],
+                    "Unit" : "Caster",
+                    "Buff" : "Buff",
+                    "SpellConfigId" : 100102
+                  }, {
+                    "_t" : "ET.BTRemoveBuff",
+                    "_id" : 5,
+                    "Children" : [],
+                    "Unit" : "Caster",
+                    "ConfigId" : 200100,
+                    "RemoveType" : 14
+                  }]
+              }],
+            "TreeId" : 3456085038844290628,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200102, {
+        "_id" : 200102,
+        "Desc" : "普攻子技能的伤害技能Buff",
+        "Duration" : 0,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnit",
+                "_id" : 2,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Unit" : "Unit"
+              }, {
+                "_t" : "ET.BTDamage",
+                "_id" : 3,
+                "Children" : [],
+                "Caster" : "Caster",
+                "Target" : "Unit",
+                "Buff" : "Buff",
+                "Value" : 10
+              }],
+            "TreeId" : 1275168519374152276,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200110, {
+        "_id" : 200110,
+        "Desc" : "怪物战斗状态",
+        "Duration" : 0,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [15, 5],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTAddBuff",
+                "_id" : 2,
+                "Children" : null,
+                "Caster" : "Caster",
+                "Target" : "Caster",
+                "Buff" : "Buff",
+                "ConfigId" : 200111
+              }],
+            "TreeId" : 8182950534952635943,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200111, {
+        "_id" : 200111,
+        "Desc" : "怪物战斗状态提速Buff",
+        "Duration" : -1,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTNumericChange",
+                "_id" : 2,
+                "Children" : [],
+                "Unit" : "Caster",
+                "Buff" : "Buff",
+                "NumericType" : 10005,
+                "Value" : 100
+              }],
+            "TreeId" : 1630117608744012799,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200120, {
+        "_id" : 200120,
+        "Desc" : "传送",
+        "Duration" : 0,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnits",
+                "_id" : 4,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Units" : "Targets"
+              }, {
+                "_t" : "ET.BTForeachUnit",
+                "_id" : 6,
+                "Children" : [{
+                    "_t" : "ET.BTTransfer",
+                    "_id" : 8,
+                    "Children" : [],
+                    "Caster" : "Caster",
+                    "Target" : "Target",
+                    "Buff" : "Buff",
+                    "TransferId" : 1
+                  }],
+                "Units" : "Targets",
+                "Unit" : "Target"
+              }],
+            "TreeId" : 788757847158858200,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }], [200130, {
+        "_id" : 200130,
+        "Desc" : "传送",
+        "Duration" : 0,
+        "TickTime" : 0,
+        "MaxStack" : 1,
+        "Stack" : 1,
+        "OverLayRuleType" : 0,
+        "Flags" : [],
+        "NoticeType" : 0,
+        "Effects" : [{
+            "_t" : "ET.EffectServerBuffAdd",
+            "_id" : 1,
+            "Children" : [{
+                "_t" : "ET.BTGetSpellTargetUnits",
+                "_id" : 4,
+                "Children" : [],
+                "Buff" : "Buff",
+                "Units" : "Targets"
+              }, {
+                "_t" : "ET.BTForeachUnit",
+                "_id" : 6,
+                "Children" : [{
+                    "_t" : "ET.BTTransfer",
+                    "_id" : 7,
+                    "Children" : [],
+                    "Caster" : "Caster",
+                    "Target" : "Target",
+                    "Buff" : "Buff",
+                    "TransferId" : 2
+                  }],
+                "Units" : "Targets",
+                "Unit" : "Target"
+              }],
+            "TreeId" : 6319847410496909763,
+            "Buff" : "Buff",
+            "Unit" : "Unit",
+            "Caster" : "Caster"
+          }]
+      }]]
+}

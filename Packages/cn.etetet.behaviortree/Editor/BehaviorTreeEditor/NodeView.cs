@@ -21,9 +21,9 @@ namespace ET
         public BTNode Node;
     }
     
-    public class NodeView : Node, IDisposable
-    {
-        private readonly TreeView treeView;
+	    public class NodeView : Node, IDisposable
+	    {
+	        private readonly TreeView treeView;
 
         public BTNode Node { get; private set; }
 
@@ -42,7 +42,7 @@ namespace ET
 
         private Edge edge;
 
-        private readonly List<NodeView> children = new();
+	        private readonly List<NodeView> children = new();
 
         private readonly Button collapseButton;
 
@@ -217,6 +217,10 @@ namespace ET
 
             this.imgui = new(() =>
             {
+                if (this.isDisposed)
+                {
+                    return;
+                }
                 byte[] nodeBytes = null;
                 Event evt = Event.current;
                 if (evt != null && (evt.type == EventType.KeyDown || evt.type == EventType.MouseDown || evt.type == EventType.DragPerform))
@@ -344,15 +348,15 @@ namespace ET
             style.borderLeftWidth   = 2;
         }
 
-        public List<NodeView> GetChildren()
-        {
-            return this.children;
-        }
-        
-        public List<NodeView> GetNotCollapsedChildren()
-        {
-            if (this.ChildrenCollapsed)
-            {
+	        public List<NodeView> GetChildren()
+	        {
+	            return this.children;
+	        }
+	        
+	        public List<NodeView> GetNotCollapsedChildren()
+	        {
+	            if (this.ChildrenCollapsed)
+	            {
                 return new List<NodeView>();
             }
             return this.children;

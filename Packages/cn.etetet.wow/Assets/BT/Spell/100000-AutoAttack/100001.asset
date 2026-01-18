@@ -27,6 +27,9 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 100001
+    - Name: BuffId
+      Entry: 3
+      Data: 200001
     - Name: Desc
       Entry: 1
       Data: "\u666E\u901A\u653B\u51FB\u5B50\u6280\u80FD"
@@ -42,9 +45,6 @@ MonoBehaviour:
     - Name: CD
       Entry: 3
       Data: 0
-    - Name: BuffId
-      Entry: 3
-      Data: 1100001
     - Name: Cost
       Entry: 6
       Data: 
