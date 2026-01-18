@@ -95,7 +95,7 @@ namespace ET.Client
             self.m_SpellComponent = player.GetComponent<SpellComponent>();
 
             //设置技能图片
-            //self.u_DataIcon.SetValue(self.m_SpellConfig.Icon);
+            self.u_DataIcon.SetValue(self.m_SpellConfig.Icon.Name);
         }
 
         private static void ResetInfo(this ActionBarSlotComponent self)
