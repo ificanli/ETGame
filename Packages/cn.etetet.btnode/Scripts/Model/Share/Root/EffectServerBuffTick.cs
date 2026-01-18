@@ -12,9 +12,13 @@ namespace ET
         public string Buff = "Buff";
         
         [BTOutput(typeof(Unit))]
-        //[Sirenix.OdinInspector.ReadOnly]
-        [Sirenix.OdinInspector.BoxGroup("输出参数")]
+        [BoxGroup("输出参数")]
         public string Unit = "Unit";
+        
+        // 用来允许BTAsyncNode作为孩子
+        [BTOutput(typeof(BTAsyncNode))]
+        [BoxGroup("输出参数")]
+        public string RootMustBeBuffTick = "RootMustBeBuffTick";
 
         public bool Override;
     }

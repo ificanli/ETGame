@@ -2,10 +2,11 @@
 
 namespace ET.Server
 {
-    public class AI_MonsterReturnHandler: AIHandler<AI_MonsterReturn>
+    public class AI_MonsterReturnHandler: ABTAsyncHandler<AI_MonsterReturn>
     {
-        protected override int Check(Unit unit, AI_MonsterReturn node, BTEnv env)
+        protected override int Check(Buff buff, AI_MonsterReturn node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
             float3 birthPos = new(
                 numericComponent.GetAsFloat(NumericType.X), 
@@ -18,8 +19,9 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask RunAsync(Unit unit, AI_MonsterReturn node, BTEnv env)
+        protected override async ETTask RunAsync(Buff buff, AI_MonsterReturn node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
 
             float3 birthPos = new(

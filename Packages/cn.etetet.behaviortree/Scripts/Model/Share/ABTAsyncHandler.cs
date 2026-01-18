@@ -1,17 +1,21 @@
 using System;
-using System.Collections.Generic;
 
 namespace ET
 {
-    public abstract class AIHandler<T>: ABTHandler<T> where T: AINode
+    [BTHandler]
+    public abstract class ABTAsyncHandler<Node>: HandlerObject, IBTHandler where Node: BTAsyncNode
     {
-        public override int Handle(BTNode btNode, BTEnv env)
+        public virtual Type GetNodeType()
         {
-            T node = (T)btNode;
-            Unit unit = env.GetEntity<Unit>(node.Unit);
+            return typeof (Node);
+        }
+        
+        public virtual int Handle(BTNode btNode, BTEnv env)
+        {
+            Node node = (Node)btNode;
             Buff buff = env.GetEntity<Buff>(node.Buff);
 
-            int ret = this.Check(unit, node, env);
+            int ret = this.Check(buff, node, env);
             
             if (ret != 0)
             {
@@ -41,15 +45,15 @@ namespace ET
             
             buffTickComponent.Current = node.Id;
             buffTickComponent.HashCode = this.GetHashCode();
-            this.RunAsync(unit, node, env).Coroutine(buffTickComponent.CancellationToken);
+            this.RunAsync(buff, node, env).Coroutine(buffTickComponent.CancellationToken);
             return 0;
         }
 
-        protected virtual int Check(Unit unit, T node, BTEnv env)
+        protected virtual int Check(Buff buff, Node node, BTEnv env)
         {
             return 0;
         }
         
-        protected abstract ETTask RunAsync(Unit unit, T node, BTEnv env);
+        protected abstract ETTask RunAsync(Buff buff, Node node, BTEnv env);
     }
 }

@@ -2,10 +2,11 @@
 
 namespace ET.Server
 {
-    public class AI_PetFollowHandler: AIHandler<AI_PetFollow>
+    public class AI_PetFollowHandler: ABTAsyncHandler<AI_PetFollow>
     {
-        protected override int Check(Unit unit, AI_PetFollow node, BTEnv env)
+        protected override int Check(Buff buff, AI_PetFollow node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             Unit target = targetComponent.Unit;
             if (target != null)
@@ -23,8 +24,9 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask RunAsync(Unit unit, AI_PetFollow node, BTEnv env)
+        protected override async ETTask RunAsync(Buff buff, AI_PetFollow node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             Unit owner = PetHelper.GetOwner(unit);
             
             EntityRef<Unit> unitRef = unit;

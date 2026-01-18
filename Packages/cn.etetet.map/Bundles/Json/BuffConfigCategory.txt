@@ -20,25 +20,26 @@
                     "_t" : "ET.AI_MonsterReturn",
                     "_id" : 6,
                     "Children" : [],
-                    "Unit" : "Unit",
-                    "Buff" : "Buff"
+                    "Buff" : "Buff",
+                    "RootMustBeBuffTick" : "RootMustBeBuffTick"
                   }, {
                     "_t" : "ET.AI_MonsterZhuiJi",
                     "_id" : 7,
                     "Children" : [],
-                    "Unit" : "Unit",
-                    "Buff" : "Buff"
+                    "Buff" : "Buff",
+                    "RootMustBeBuffTick" : "RootMustBeBuffTick"
                   }, {
                     "_t" : "ET.AI_MonsterXunLuo",
                     "_id" : 8,
                     "Children" : [],
-                    "Unit" : "Unit",
-                    "Buff" : "Buff"
+                    "Buff" : "Buff",
+                    "RootMustBeBuffTick" : "RootMustBeBuffTick"
                   }]
               }],
             "TreeId" : 9160521892227564777,
             "Buff" : "Buff",
             "Unit" : "Unit",
+            "RootMustBeBuffTick" : "RootMustBeBuffTick",
             "Override" : true
           }]
       }], [200000, {
@@ -76,6 +77,7 @@
             "TreeId" : 3815612886719013578,
             "Buff" : "Buff",
             "Unit" : "Unit",
+            "RootMustBeBuffTick" : null,
             "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffAdd",
@@ -239,6 +241,7 @@
             "TreeId" : 892299141201969128,
             "Buff" : "Buff",
             "Unit" : "Unit",
+            "RootMustBeBuffTick" : null,
             "Override" : false
           }, {
             "_t" : "ET.EffectClientBuffAdd",
@@ -459,6 +462,7 @@
             "TreeId" : 911151293205797089,
             "Buff" : "Buff",
             "Unit" : "Unit",
+            "RootMustBeBuffTick" : null,
             "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffHitted",
@@ -733,31 +737,32 @@
                     "_t" : "ET.AI_PetZhuiJi",
                     "_id" : 7,
                     "Children" : [],
-                    "Unit" : "Unit",
-                    "Buff" : null
+                    "Buff" : "Buff",
+                    "RootMustBeBuffTick" : "ootMusRtBeBuffTick"
                   }, {
                     "_t" : "ET.AI_PetReturn",
                     "_id" : 8,
                     "Children" : [],
-                    "Unit" : "Unit",
-                    "Buff" : "Buff"
+                    "Buff" : "Buff",
+                    "RootMustBeBuffTick" : "ootMusRtBeBuffTick"
                   }, {
                     "_t" : "ET.AI_PetFollow",
                     "_id" : 9,
                     "Children" : [],
-                    "Unit" : "Unit",
-                    "Buff" : "Buff"
+                    "Buff" : "Buff",
+                    "RootMustBeBuffTick" : "ootMusRtBeBuffTick"
                   }, {
                     "_t" : "ET.AI_PetIdle",
                     "_id" : 10,
                     "Children" : [],
-                    "Unit" : "Unit",
-                    "Buff" : "Buff"
+                    "Buff" : "Buff",
+                    "RootMustBeBuffTick" : "ootMusRtBeBuffTick"
                   }]
               }],
             "TreeId" : 7821291767413523228,
             "Buff" : "Buff",
             "Unit" : "Unit",
+            "RootMustBeBuffTick" : "ootMusRtBeBuffTick",
             "Override" : true
           }]
       }], [200040, {
@@ -858,6 +863,7 @@
             "TreeId" : 564552055616284588,
             "Buff" : "Buff",
             "Unit" : "Unit",
+            "RootMustBeBuffTick" : null,
             "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffAdd",
@@ -1106,6 +1112,7 @@
             "TreeId" : 6153392924137937051,
             "Buff" : "Buff",
             "Unit" : "Unit",
+            "RootMustBeBuffTick" : null,
             "Override" : true
           }]
       }], [200130, {
@@ -1171,6 +1178,7 @@
             "TreeId" : 8260875540629730541,
             "Buff" : "Buff",
             "Unit" : "Unit",
+            "RootMustBeBuffTick" : null,
             "Override" : true
           }]
       }]]

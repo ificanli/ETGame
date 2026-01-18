@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class AI_MonsterXunLuo: AINode
+    public class AI_MonsterXunLuo: BTAsyncNode
     {
         
     }

@@ -3,10 +3,11 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
-    public class AI_PetReturnHandler: AIHandler<AI_PetReturn>
+    public class AI_PetReturnHandler: ABTAsyncHandler<AI_PetReturn>
     {
-        protected override int Check(Unit unit, AI_PetReturn node, BTEnv env)
+        protected override int Check(Buff buff, AI_PetReturn node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             Unit owner = PetHelper.GetOwner(unit);
             if (math.distance(unit.Position, owner.Position) < 30f)
             {
@@ -15,8 +16,9 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask RunAsync(Unit unit, AI_PetReturn node, BTEnv env)
+        protected override async ETTask RunAsync(Buff buff, AI_PetReturn node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             unit.GetComponent<TargetComponent>().Unit = null;
 
             TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();

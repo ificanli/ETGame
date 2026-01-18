@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class AI_PetReturn: AINode
+    public class AI_PetReturn: BTAsyncNode
     {
         
     }

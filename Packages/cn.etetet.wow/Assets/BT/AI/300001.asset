@@ -132,12 +132,12 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: RootMustBeBuffTick
+      Entry: 1
+      Data: RootMustBeBuffTick
     - Name: 
       Entry: 8
       Data: 
@@ -183,12 +183,12 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: RootMustBeBuffTick
+      Entry: 1
+      Data: RootMustBeBuffTick
     - Name: 
       Entry: 8
       Data: 
@@ -234,12 +234,12 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: RootMustBeBuffTick
+      Entry: 1
+      Data: RootMustBeBuffTick
     - Name: 
       Entry: 8
       Data: 
@@ -315,6 +315,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
+    - Name: RootMustBeBuffTick
+      Entry: 1
+      Data: RootMustBeBuffTick
     - Name: Override
       Entry: 5
       Data: true

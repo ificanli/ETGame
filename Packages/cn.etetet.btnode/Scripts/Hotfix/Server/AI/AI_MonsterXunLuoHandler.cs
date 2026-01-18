@@ -2,10 +2,11 @@
 
 namespace ET.Server
 {
-    public class AI_MonsterXunLuoHandler: AIHandler<AI_MonsterXunLuo>
+    public class AI_MonsterXunLuoHandler: ABTAsyncHandler<AI_MonsterXunLuo>
     {
-        protected override int Check(Unit unit, AI_MonsterXunLuo node, BTEnv env)
+        protected override int Check(Buff buff, AI_MonsterXunLuo node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
             if (threatComponent.GetCount() > 0)
             {
@@ -14,9 +15,10 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask RunAsync(Unit unit, AI_MonsterXunLuo node, BTEnv env)
+        protected override async ETTask RunAsync(Buff buff, AI_MonsterXunLuo node, BTEnv env)
         {
-            Scene root = unit.Root();
+            Unit unit = buff.GetOwner();
+            Scene root = buff.Root();
             EntityRef<Scene> rootRef = root;
             EntityRef<Unit> unitRef = unit;
 

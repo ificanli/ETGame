@@ -2,10 +2,11 @@
 
 namespace ET.Server
 {
-    public class AI_PetZhuiJiHandler: AIHandler<AI_PetZhuiJi>
+    public class AI_PetZhuiJiHandler: ABTAsyncHandler<AI_PetZhuiJi>
     {
-        protected override int Check(Unit unit, AI_PetZhuiJi node, BTEnv env)
+        protected override int Check(Buff buff, AI_PetZhuiJi node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             Unit target = targetComponent.Unit;
             if (target == null)
@@ -21,8 +22,9 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask RunAsync(Unit unit, AI_PetZhuiJi node, BTEnv env)
+        protected override async ETTask RunAsync(Buff buff, AI_PetZhuiJi node, BTEnv env)
         {
+            Unit unit = buff.GetOwner();
             EntityRef<Unit> unitRef = unit;
 
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
