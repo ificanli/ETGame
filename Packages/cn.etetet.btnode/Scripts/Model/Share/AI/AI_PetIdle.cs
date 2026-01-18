@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class AI_PetIdle: BTAsyncNode
+    public class AI_PetIdle: BTCoroutine
     {
     }
 }

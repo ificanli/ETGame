@@ -29,8 +29,8 @@ namespace ET
                 Unit unit = buff.Parent.GetParent<Unit>();
                 self.UnitId = unit.Id;
 
-                AIComponent aiComponent = unit.GetComponent<AIComponent>() ?? unit.AddComponent<AIComponent>();
-                aiComponent.AddAI(buff);
+                BTCoroutineComponent btCoroutineComponent = unit.GetComponent<BTCoroutineComponent>() ?? unit.AddComponent<BTCoroutineComponent>();
+                btCoroutineComponent.AddAI(buff);
             }
             
             self.Start();
@@ -44,7 +44,7 @@ namespace ET
             if (self.Override)
             {
                 Unit unit = self.Scene()?.GetComponent<UnitComponent>()?.Get(self.UnitId);
-                unit?.GetComponent<AIComponent>()?.ResumeAI();
+                unit?.GetComponent<BTCoroutineComponent>()?.ResumeAI();
             }
         }
 

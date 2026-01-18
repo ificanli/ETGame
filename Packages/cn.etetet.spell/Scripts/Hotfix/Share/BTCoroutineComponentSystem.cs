@@ -1,19 +1,19 @@
 namespace ET
 {
-    [EntitySystemOf(typeof(AIComponent))]
-    public static partial class AIComponentSystem
+    [EntitySystemOf(typeof(BTCoroutineComponent))]
+    public static partial class BTCoroutineComponentSystem
     {
         [EntitySystem]
-        private static void Awake(this AIComponent self)
+        private static void Awake(this BTCoroutineComponent self)
         {
         }
 
         [EntitySystem]
-        private static void Destroy(this AIComponent self)
+        private static void Destroy(this BTCoroutineComponent self)
         {
         }
 
-        public static void AddAI(this AIComponent self, Buff buff)
+        public static void AddAI(this BTCoroutineComponent self, Buff buff)
         {
             Buff oldTop = self.GetTopInvalid();
             oldTop?.GetComponent<BuffTickComponent>().Stop();
@@ -22,13 +22,13 @@ namespace ET
             buff.GetComponent<BuffTickComponent>().Start();
         }
 
-        public static void ResumeAI(this AIComponent self)
+        public static void ResumeAI(this BTCoroutineComponent self)
         {
             Buff buff = self.GetTopInvalid();
             buff?.GetComponent<BuffTickComponent>().Start();
         }
 
-        private static Buff GetTopInvalid(this AIComponent self)
+        private static Buff GetTopInvalid(this BTCoroutineComponent self)
         {
             while (self.AIStack.Count > 0)
             {

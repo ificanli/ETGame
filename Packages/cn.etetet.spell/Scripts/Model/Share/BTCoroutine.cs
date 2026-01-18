@@ -2,7 +2,7 @@
 
 namespace ET
 {
-    public abstract class BTAsyncNode: BTNode
+    public abstract class BTCoroutine: BTNode
     {
         [BoxGroup("输入参数")]
         [BTInput(typeof(Buff))]
@@ -10,7 +10,7 @@ namespace ET
         public string Buff = "Buff";
         
         // 用来防止这种节点挂到非BuffTick上
-        [BTInput(typeof(BTAsyncNode))]
+        [BTInput(typeof(BTCoroutine))]
         [BoxGroup("输入参数")]
         public string RootMustBeBuffTick = "RootMustBeBuffTick";
     }

@@ -3,7 +3,7 @@ using Unity.Mathematics;
 
 namespace ET.Server
 {
-    public class AI_PetReturnHandler: ABTAsyncHandler<AI_PetReturn>
+    public class AI_PetReturnHandler: ABTCoroutineHandler<AI_PetReturn>
     {
         protected override int Check(Buff buff, AI_PetReturn node, BTEnv env)
         {

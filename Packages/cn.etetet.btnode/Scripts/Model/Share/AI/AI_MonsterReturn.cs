@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class AI_MonsterReturn: BTAsyncNode
+    public class AI_MonsterReturn: BTCoroutine
     {
     }
 }

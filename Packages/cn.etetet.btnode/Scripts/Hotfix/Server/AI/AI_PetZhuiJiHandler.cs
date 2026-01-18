@@ -2,7 +2,7 @@
 
 namespace ET.Server
 {
-    public class AI_PetZhuiJiHandler: ABTAsyncHandler<AI_PetZhuiJi>
+    public class AI_PetZhuiJiHandler: ABTCoroutineHandler<AI_PetZhuiJi>
     {
         protected override int Check(Buff buff, AI_PetZhuiJi node, BTEnv env)
         {

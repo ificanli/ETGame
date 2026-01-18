@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class AI_PetZhuiJi: BTAsyncNode
+    public class AI_PetZhuiJi: BTCoroutine
     {
         
     }

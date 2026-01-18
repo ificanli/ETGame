@@ -2,7 +2,7 @@
 
 namespace ET.Server
 {
-    public class AI_PetFollowHandler: ABTAsyncHandler<AI_PetFollow>
+    public class AI_PetFollowHandler: ABTCoroutineHandler<AI_PetFollow>
     {
         protected override int Check(Buff buff, AI_PetFollow node, BTEnv env)
         {

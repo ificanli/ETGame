@@ -15,8 +15,8 @@ namespace ET
         [BoxGroup("输出参数")]
         public string Unit = "Unit";
         
-        // 用来允许BTAsyncNode作为孩子
-        [BTOutput(typeof(BTAsyncNode))]
+        // 用来允许BTCoroutine作为孩子
+        [BTOutput(typeof(BTCoroutine))]
         [BoxGroup("输出参数")]
         public string RootMustBeBuffTick = "RootMustBeBuffTick";
 

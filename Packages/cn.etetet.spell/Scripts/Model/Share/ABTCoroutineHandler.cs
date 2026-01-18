@@ -3,7 +3,7 @@ using System;
 namespace ET
 {
     [BTHandler]
-    public abstract class ABTAsyncHandler<Node>: HandlerObject, IBTHandler where Node: BTAsyncNode
+    public abstract class ABTCoroutineHandler<Node>: HandlerObject, IBTHandler where Node: BTCoroutine
     {
         public virtual Type GetNodeType()
         {

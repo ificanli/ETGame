@@ -2,7 +2,7 @@
 
 namespace ET.Server
 {
-    public class AI_MonsterReturnHandler: ABTAsyncHandler<AI_MonsterReturn>
+    public class AI_MonsterReturnHandler: ABTCoroutineHandler<AI_MonsterReturn>
     {
         protected override int Check(Buff buff, AI_MonsterReturn node, BTEnv env)
         {

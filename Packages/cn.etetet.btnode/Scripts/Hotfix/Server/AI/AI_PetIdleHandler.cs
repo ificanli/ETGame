@@ -2,7 +2,7 @@
 
 namespace ET.Server
 {
-    public class AI_PetIdleHandler: ABTAsyncHandler<AI_PetIdle>
+    public class AI_PetIdleHandler: ABTCoroutineHandler<AI_PetIdle>
     {
         protected override int Check(Buff buff, AI_PetIdle node, BTEnv env)
         {

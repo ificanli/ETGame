@@ -2,7 +2,7 @@
 
 namespace ET.Server
 {
-    public class AI_MonsterXunLuoHandler: ABTAsyncHandler<AI_MonsterXunLuo>
+    public class AI_MonsterXunLuoHandler: ABTCoroutineHandler<AI_MonsterXunLuo>
     {
         protected override int Check(Buff buff, AI_MonsterXunLuo node, BTEnv env)
         {
