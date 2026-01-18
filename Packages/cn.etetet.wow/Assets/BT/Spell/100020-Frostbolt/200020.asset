@@ -620,7 +620,7 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
-      Data: false
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -671,7 +671,7 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
-      Data: false
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -686,7 +686,7 @@ MonoBehaviour:
       Data: 
     - Name: Caster
       Entry: 1
-      Data: Caster
+      Data: Unit
     - Name: Target
       Entry: 1
       Data: Target
@@ -713,7 +713,7 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
-      Data: false
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -735,9 +735,9 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
+    - Name: Override
+      Entry: 5
+      Data: false
     - Name: 
       Entry: 8
       Data: 

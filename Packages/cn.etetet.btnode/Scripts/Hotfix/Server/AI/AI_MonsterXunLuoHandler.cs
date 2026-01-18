@@ -14,7 +14,7 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(Unit unit, AI_MonsterXunLuo node, BTEnv env)
+        protected override async ETTask RunAsync(Unit unit, AI_MonsterXunLuo node, BTEnv env)
         {
             Scene root = unit.Root();
             EntityRef<Scene> rootRef = root;

@@ -15,7 +15,7 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(Unit unit, AI_PetReturn node, BTEnv env)
+        protected override async ETTask RunAsync(Unit unit, AI_PetReturn node, BTEnv env)
         {
             unit.GetComponent<TargetComponent>().Unit = null;
 

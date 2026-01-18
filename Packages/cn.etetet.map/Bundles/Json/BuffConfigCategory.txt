@@ -4,9 +4,9 @@
         "_id" : 300001,
         "Desc" : "怪物AI",
         "Duration" : -1,
-        "TickTime" : 100,
+        "TickTime" : 500,
         "MaxStack" : 1,
-        "Stack" : 81,
+        "Stack" : 1,
         "OverLayRuleType" : 0,
         "Flags" : [],
         "NoticeType" : 0,
@@ -14,28 +14,31 @@
             "_t" : "ET.EffectServerBuffTick",
             "_id" : 1,
             "Children" : [{
-                "_t" : "ET.AI_MonsterReturn",
-                "_id" : 2,
-                "Children" : [],
-                "Unit" : "Unit",
-                "Buff" : "Buff"
-              }, {
-                "_t" : "ET.AI_MonsterZhuiJi",
-                "_id" : 3,
-                "Children" : [],
-                "Unit" : "Unit",
-                "Buff" : "Buff"
-              }, {
-                "_t" : "ET.AI_MonsterXunLuo",
-                "_id" : 4,
-                "Children" : [],
-                "Unit" : "Unit",
-                "Buff" : "Buff"
+                "_t" : "ET.BTSelector",
+                "_id" : 5,
+                "Children" : [{
+                    "_t" : "ET.AI_MonsterReturn",
+                    "_id" : 6,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff"
+                  }, {
+                    "_t" : "ET.AI_MonsterZhuiJi",
+                    "_id" : 7,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff"
+                  }, {
+                    "_t" : "ET.AI_MonsterXunLuo",
+                    "_id" : 8,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff"
+                  }]
               }],
             "TreeId" : 9160521892227564777,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster",
             "Override" : true
           }]
       }], [200000, {
@@ -73,7 +76,6 @@
             "TreeId" : 3815612886719013578,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster",
             "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffAdd",
@@ -237,7 +239,6 @@
             "TreeId" : 892299141201969128,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster",
             "Override" : false
           }, {
             "_t" : "ET.EffectClientBuffAdd",
@@ -451,14 +452,13 @@
                 "_t" : "ET.BTTurnToUnit",
                 "_id" : 3,
                 "Children" : [],
-                "Caster" : "Caster",
+                "Caster" : "Unit",
                 "Target" : "Target",
                 "Buff" : "Buff"
               }],
             "TreeId" : 911151293205797089,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster",
             "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffHitted",
@@ -727,34 +727,37 @@
             "_t" : "ET.EffectServerBuffTick",
             "_id" : 1,
             "Children" : [{
-                "_t" : "ET.AI_PetZhuiJi",
-                "_id" : 2,
-                "Children" : [],
-                "Unit" : "Unit",
-                "Buff" : null
-              }, {
-                "_t" : "ET.AI_PetReturn",
-                "_id" : 3,
-                "Children" : [],
-                "Unit" : "Unit",
-                "Buff" : "Buff"
-              }, {
-                "_t" : "ET.AI_PetFollow",
-                "_id" : 4,
-                "Children" : [],
-                "Unit" : "Unit",
-                "Buff" : "Buff"
-              }, {
-                "_t" : "ET.AI_PetIdle",
-                "_id" : 5,
-                "Children" : [],
-                "Unit" : "Unit",
-                "Buff" : "Buff"
+                "_t" : "ET.BTSelector",
+                "_id" : 6,
+                "Children" : [{
+                    "_t" : "ET.AI_PetZhuiJi",
+                    "_id" : 7,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : null
+                  }, {
+                    "_t" : "ET.AI_PetReturn",
+                    "_id" : 8,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff"
+                  }, {
+                    "_t" : "ET.AI_PetFollow",
+                    "_id" : 9,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff"
+                  }, {
+                    "_t" : "ET.AI_PetIdle",
+                    "_id" : 10,
+                    "Children" : [],
+                    "Unit" : "Unit",
+                    "Buff" : "Buff"
+                  }]
               }],
             "TreeId" : 7821291767413523228,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster",
             "Override" : true
           }]
       }], [200040, {
@@ -830,7 +833,7 @@
                 "_t" : "ET.BTTurnToUnit",
                 "_id" : 3,
                 "Children" : [],
-                "Caster" : "Caster",
+                "Caster" : "Unit",
                 "Target" : "Target",
                 "Buff" : "Buff"
               }, {
@@ -855,7 +858,6 @@
             "TreeId" : 564552055616284588,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster",
             "Override" : false
           }, {
             "_t" : "ET.EffectServerBuffAdd",
@@ -1104,7 +1106,6 @@
             "TreeId" : 6153392924137937051,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster",
             "Override" : true
           }]
       }], [200130, {
@@ -1170,7 +1171,6 @@
             "TreeId" : 8260875540629730541,
             "Buff" : "Buff",
             "Unit" : "Unit",
-            "Caster" : "Caster",
             "Override" : true
           }]
       }]]

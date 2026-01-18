@@ -171,9 +171,6 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
     - Name: Override
       Entry: 5
       Data: true

@@ -15,11 +15,6 @@ namespace ET
         //[Sirenix.OdinInspector.ReadOnly]
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
         public string Unit = "Unit";
-        
-        [BTOutput(typeof(Unit))]
-        //[Sirenix.OdinInspector.ReadOnly]
-        [Sirenix.OdinInspector.BoxGroup("输出参数")]
-        public string Caster = "Caster";
 
         public bool Override;
     }

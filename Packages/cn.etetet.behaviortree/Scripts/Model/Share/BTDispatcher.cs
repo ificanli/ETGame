@@ -22,7 +22,10 @@ namespace ET
     [BTHandler]
     public abstract class ABTHandler<Node>: HandlerObject, IBTHandler where Node : BTNode
     {
-        protected abstract int Run(Node node, BTEnv env);
+        protected virtual int Run(Node node, BTEnv env)
+        {
+            return 0;
+        }
 
         public virtual int Handle(BTNode node, BTEnv env)
         {

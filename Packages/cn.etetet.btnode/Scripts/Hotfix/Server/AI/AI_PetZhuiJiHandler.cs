@@ -21,7 +21,7 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(Unit unit, AI_PetZhuiJi node, BTEnv env)
+        protected override async ETTask RunAsync(Unit unit, AI_PetZhuiJi node, BTEnv env)
         {
             EntityRef<Unit> unitRef = unit;
 

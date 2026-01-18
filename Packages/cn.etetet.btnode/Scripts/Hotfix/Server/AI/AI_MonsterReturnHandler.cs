@@ -18,7 +18,7 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask Execute(Unit unit, AI_MonsterReturn node, BTEnv env)
+        protected override async ETTask RunAsync(Unit unit, AI_MonsterReturn node, BTEnv env)
         {
             NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
 

@@ -5,11 +5,6 @@ namespace ET
 {
     public abstract class AIHandler<T>: ABTHandler<T> where T: AINode
     {
-        protected override int Run(T node, BTEnv env)
-        {
-            return 0;
-        }
-        
         public override int Handle(BTNode btNode, BTEnv env)
         {
             T node = (T)btNode;
@@ -46,12 +41,15 @@ namespace ET
             
             buffTickComponent.Current = node.Id;
             buffTickComponent.HashCode = this.GetHashCode();
-            this.Execute(unit, node, env).Coroutine(buffTickComponent.CancellationToken);
+            this.RunAsync(unit, node, env).Coroutine(buffTickComponent.CancellationToken);
             return 0;
         }
 
-        protected abstract int Check(Unit unit, T node, BTEnv env);
+        protected virtual int Check(Unit unit, T node, BTEnv env)
+        {
+            return 0;
+        }
         
-        protected abstract ETTask Execute(Unit unit, T node, BTEnv env);
+        protected abstract ETTask RunAsync(Unit unit, T node, BTEnv env);
     }
 }

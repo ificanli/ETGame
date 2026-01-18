@@ -133,7 +133,9 @@
           "Units" : "Units",
           "Radius" : 6000,
           "UnitType" : 15,
-          "SpellIndicator" : null
+          "SpellIndicator" : {
+            "Name" : "RoundIndicator"
+          }
         }
       }], [100020, {
         "_id" : 100020,

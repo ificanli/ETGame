@@ -35,13 +35,13 @@ MonoBehaviour:
       Data: -1
     - Name: TickTime
       Entry: 3
-      Data: 100
+      Data: 500
     - Name: MaxStack
       Entry: 3
       Data: 1
     - Name: Stack
       Entry: 3
-      Data: 81
+      Data: 1
     - Name: OverLayRuleType
       Entry: 3
       Data: 0
@@ -77,64 +77,25 @@ MonoBehaviour:
       Data: 4|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 5|ET.AI_MonsterReturn, ET.Model
+      Data: 5|ET.BTSelector, ET.Model
     - Name: Id
       Entry: 3
-      Data: 2
+      Data: 5
     - Name: Children
       Entry: 7
       Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Desc
-      Entry: 6
-      Data: 
-    - Name: IsCollapsed
-      Entry: 5
-      Data: false
-    - Name: ChildrenCollapsed
-      Entry: 5
-      Data: false
-    - Name: DescCollapsed
-      Entry: 5
-      Data: true
-    - Name: Position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 300
-    - Name: 
-      Entry: 4
-      Data: -200
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 3
     - Name: 
       Entry: 7
-      Data: 7|ET.AI_MonsterZhuiJi, ET.Model
+      Data: 7|ET.AI_MonsterReturn, ET.Model
     - Name: Id
       Entry: 3
-      Data: 3
+      Data: 6
     - Name: Children
       Entry: 7
       Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -164,10 +125,10 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 300
+      Data: 600
     - Name: 
       Entry: 4
-      Data: 0
+      Data: -200
     - Name: 
       Entry: 8
       Data: 
@@ -182,10 +143,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 9|ET.AI_MonsterXunLuo, ET.Model
+      Data: 9|ET.AI_MonsterZhuiJi, ET.Model
     - Name: Id
       Entry: 3
-      Data: 4
+      Data: 7
     - Name: Children
       Entry: 7
       Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -215,7 +176,58 @@ MonoBehaviour:
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: 300
+      Data: 600
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 11|ET.AI_MonsterXunLuo, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 8
+    - Name: Children
+      Entry: 7
+      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: true
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 600
     - Name: 
       Entry: 4
       Data: 200
@@ -228,6 +240,39 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: true
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 300
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 8
       Data: 
@@ -270,9 +315,6 @@ MonoBehaviour:
     - Name: Unit
       Entry: 1
       Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
     - Name: Override
       Entry: 5
       Data: true
