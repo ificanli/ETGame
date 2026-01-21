@@ -64,6 +64,20 @@ namespace ET
             ObjectPool.Recycle(this);
         }
 
+        public BTEnv Clone()
+        {
+            BTEnv env = Create(this.Scene, this.EntityId);
+            
+            ObjectHelper.Swap(ref env.dict, ref this.dict);
+            
+#if UNITY_EDITOR
+            env.RunPath.AddRange(this.RunPath);
+            env.EntityId = this.EntityId;
+            env.TreeId = this.TreeId;
+#endif
+            return env;
+        }
+
         public void SetTreeId(long treeId)
         {
 #if UNITY_EDITOR
