@@ -26,7 +26,7 @@ namespace ET
                 OpenNode = node;
                 ScriptableObject = this.Property.Tree.WeakTargets[0] as UnityEngine.Object;
 
-                EditorApplication.ExecuteMenuItem("ET/BehaviorTreeEditor");
+                EditorApplication.ExecuteMenuItem("ET/BehaviorTree/BehaviorTreeEditor");
             }
 
             // 分割线

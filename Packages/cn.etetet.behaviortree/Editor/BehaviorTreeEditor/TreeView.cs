@@ -11,12 +11,12 @@ using UnityEngine.UIElements;
 
 namespace ET
 {
+    [UxmlElement]
     public partial class TreeView: GraphView
     {
-#pragma warning disable CS0618 // Type or member is obsolete
-        public new class UxmlFactory : UxmlFactory<TreeView, UxmlTraits> { }
-#pragma warning restore CS0618 // Type or member is obsolete
-        
+
+        public static TreeView ActiveTreeView { get; private set; }
+
         public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
 
         public BehaviorTreeEditor BehaviorTreeEditor;
@@ -42,7 +42,7 @@ namespace ET
 
         public bool IsDisposed { get; private set; }
 
-        private bool isShiftPressed;
+        private bool isForceAsChildPressed;
         
         public TreeView()
         {
@@ -84,6 +84,11 @@ namespace ET
             }
 
             this.IsDisposed = true;
+
+            if (ReferenceEquals(ActiveTreeView, this))
+            {
+                ActiveTreeView = null;
+            }
             
             this.root?.Dispose();
             
@@ -105,17 +110,20 @@ namespace ET
 #region 拖动节点到另外的节点上
         private void OnMouseDown(MouseDownEvent evt)
         {
-            this.isShiftPressed = evt.shiftKey;
+            // 按住 Alt(Option) 拖动到目标节点：强制作为目标节点的子节点
+            // 兼容旧逻辑：Shift 同样可触发该行为
+            this.isForceAsChildPressed = evt.altKey || evt.shiftKey;
+            ActiveTreeView = this;
         }
 
         private void OnMouseMove(MouseMoveEvent evt)
         {
-            this.isShiftPressed = evt.shiftKey;
+            this.isForceAsChildPressed = evt.altKey || evt.shiftKey;
         }
 
         public void OnMouseUp(MouseUpEvent evt)
         {
-            this.isShiftPressed = evt.shiftKey;
+            this.isForceAsChildPressed = evt.altKey || evt.shiftKey;
             this.MouseDownNode = null;
             
             this.Layout();
@@ -187,13 +195,15 @@ namespace ET
             }
             if (targetNode != null)
             {
-                this.MoveToNode(moveNode, targetNode, this.isShiftPressed);
+                this.MoveToNode(moveNode, targetNode, this.isForceAsChildPressed);
             }
             return change;
         }
 
         private void MoveToNode(NodeView move, NodeView to, bool forceAsChild)
         {
+            ActiveTreeView = this;
+
             // 父节点不能移到子节点上
             NodeView tmp = to;
             while (true)
@@ -268,12 +278,12 @@ namespace ET
                 evt.StopPropagation();
             }
 
-            this.isShiftPressed = evt.shiftKey;
+            this.isForceAsChildPressed = evt.altKey || evt.shiftKey;
         }
 
         private void OnKeyUp(KeyUpEvent evt)
         {
-            this.isShiftPressed = evt.shiftKey;
+            this.isForceAsChildPressed = evt.altKey || evt.shiftKey;
         }
         
         public void InitTree(BehaviorTreeEditor behaviorTreeEditor, UnityEngine.Object so, BTRoot node)
@@ -558,7 +568,9 @@ namespace ET
         public void SetRed(NodeView inputNode)
         {
             ClearNodeViewBordColor(this.root);
-            
+
+            ActiveTreeView = this;
+            this.MouseDownNode = inputNode;
             List<string> inputs = NodeFieldHelper.GetInputs(inputNode, typeof(BTInput));
             this.SetRed(this.root, inputNode, inputs);
         }

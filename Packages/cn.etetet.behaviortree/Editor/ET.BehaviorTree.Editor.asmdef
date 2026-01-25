@@ -7,7 +7,6 @@
         "Unity.TextMeshPro",
         "ET.HybridCLR.Editor",
         "ET.Proto.Editor",
-        "",
         "ET.Model",
         "ET.ModelView",
         "ET.Core",
@@ -16,7 +15,9 @@
         "ET.Init.Editor",
         "ET.Loader",
         "ET.YIUIFramework",
-        "ET.Scripts.Editor"
+        "ET.Scripts.Editor",
+        "ET.Hotfix",
+        "ET.HotfixView"
     ],
     "includePlatforms": [
         "Editor"

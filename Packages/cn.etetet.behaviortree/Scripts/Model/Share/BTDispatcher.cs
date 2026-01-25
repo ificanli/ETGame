@@ -19,8 +19,6 @@ namespace ET
         Type GetNodeType();
     }
     
-
-    
     /// <summary>
     /// Actor消息分发组件
     /// </summary>

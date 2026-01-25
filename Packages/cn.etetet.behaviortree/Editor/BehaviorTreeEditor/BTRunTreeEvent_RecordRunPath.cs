@@ -19,7 +19,7 @@ namespace ET.Client
             }
 
             List<int> path = args.Env.RunPath;
-            long treeId = args.Root.TreeId;
+            long treeId = args.Env.TreeId != 0 ? args.Env.TreeId : args.Root?.TreeId ?? 0;
             long entityId = args.Env.EntityId;
             // 直接获取env字典中的StringBuilder引用，不复制
             System.Text.StringBuilder snapshot = args.Env.GetSnapshot();

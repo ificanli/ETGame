@@ -62,6 +62,11 @@ namespace ET
         private readonly List<BTDebugPathInfo> pathInfos = new();
 
         /// <summary>
+        /// 每个Entity/Tree的上一条记录（用于路径合并计数）
+        /// </summary>
+        private readonly Dictionary<(long EntityId, long TreeId), BTDebugPathInfo> lastInfoByEntityAndTree = new();
+
+        /// <summary>
         /// 当前关注的TreeId（只记录此TreeId的路径）
         /// </summary>
         private long currentTreeId;
@@ -109,22 +114,20 @@ namespace ET
                 return;
             }
 
-            // 检查是否与上次路径相同（包括entityId），如果相同则增加计数
-            if (this.pathInfos.Count > 0)
+            // 检查是否与相同EntityId/TreeId的上一条路径相同，如果相同则增加计数（避免不同Entity交错执行导致路径刷屏）
+            (long EntityId, long TreeId) key = (entityId, treeId);
+            if (this.lastInfoByEntityAndTree.TryGetValue(key, out BTDebugPathInfo lastInfo) && IsPathEqual(lastInfo.Path, path))
             {
-                BTDebugPathInfo lastInfo = this.pathInfos[this.pathInfos.Count - 1];
-                if (lastInfo.EntityId == entityId && IsPathEqual(lastInfo.Path, path))
-                {
-                    lastInfo.Count++;
-                    lastInfo.RecordTime = DateTime.Now;
-                    lastInfo.Snapshot = snapshot;
-                    return;
-                }
+                lastInfo.Count++;
+                lastInfo.RecordTime = DateTime.Now;
+                lastInfo.Snapshot = snapshot;
+                return;
             }
 
             // 记录路径
             BTDebugPathInfo info = new(entityId, treeId, path, snapshot);
             this.pathInfos.Add(info);
+            this.lastInfoByEntityAndTree[key] = info;
         }
 
         /// <summary>
@@ -162,6 +165,7 @@ namespace ET
         public void Clear()
         {
             this.pathInfos.Clear();
+            this.lastInfoByEntityAndTree.Clear();
         }
     }
 }

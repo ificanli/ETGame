@@ -130,9 +130,16 @@ namespace ET.Client
             {
                 Directory.CreateDirectory(ExportPath);
             }
-            
-            File.WriteAllText(Path.Combine(ExportPath, "SpellConfigCategory.txt"), ((object)spellConfigCategory).ToJson(new JsonWriterSettings {Indent = true, OutputMode = JsonOutputMode.RelaxedExtendedJson}));
-            File.WriteAllText(Path.Combine(ExportPath, "BuffConfigCategory.txt"), ((object)buffConfigCategory).ToJson(new JsonWriterSettings {Indent = true, OutputMode = JsonOutputMode.RelaxedExtendedJson}));
+
+            JsonWriterSettings jsonWriterSettings = new JsonWriterSettings() 
+            { 
+                Indent = true, 
+                IndentChars = "\t", 
+                NewLineChars = "\n", 
+                OutputMode = JsonOutputMode.Shell 
+            };
+            File.WriteAllText(Path.Combine(ExportPath, "SpellConfigCategory.txt"), ((object)spellConfigCategory).ToJson(jsonWriterSettings));
+            File.WriteAllText(Path.Combine(ExportPath, "BuffConfigCategory.txt"), ((object)buffConfigCategory).ToJson(jsonWriterSettings));
             
             Debug.Log("Export ScriptableObject OK!");
         }
@@ -141,7 +148,13 @@ namespace ET.Client
         [MenuItem("ET/Map/ReloadScriptableObject _F4")]
         public static void ReloadScriptableObject()
         {
-            World.Instance.AddSingleton<ConfigLoader>().LoadAsync().Coroutine();
+            Reload().Coroutine();
+            
+            async ETTask Reload()
+            {
+                await World.Instance.AddSingleton<ConfigLoader>().LoadAsync();
+                Log.Debug($"reload config finish!");
+            }
         }
 
         /// <summary>

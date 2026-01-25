@@ -17,6 +17,7 @@ namespace ET
             env.Scene = scene;
             
 #if UNITY_EDITOR
+            env.TreeId = 0;
             env.EntityId = entityId;
             env.RunPath = new List<int>();
 #endif
@@ -27,19 +28,24 @@ namespace ET
 
         public bool IsFromPool { get; set; }
 
-        private readonly Dictionary<string, object> dict = new();
+        private Dictionary<string, object> dict = new();
 
 #if UNITY_EDITOR
         /// <summary>
         /// Debug snapshot data
         /// </summary>
         private StringBuilder debugSnapshot;
-
         public List<int> RunPath { get; private set; }
+        public long TreeId { get; private set; }
 #endif
 
         public override void Dispose()
         {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+            
             foreach (var kv in dict)
             {
                 if (kv.Value is IDisposable disposable)
@@ -54,14 +60,15 @@ namespace ET
             this.debugSnapshot = null;
             this.RunPath = null;
 #endif
+
+            ObjectPool.Recycle(this);
         }
 
-        public void CopyTo(BTEnv env)
+        public void SetTreeId(long treeId)
         {
-            foreach (KeyValuePair<string, object> keyValuePair in this.dict)
-            {
-                env.dict.Add(keyValuePair.Key, keyValuePair.Value);
-            }
+#if UNITY_EDITOR
+            this.TreeId = treeId;
+#endif
         }
         
         public T GetCollection<T>(string key) where T: IEnumerable
@@ -218,6 +225,60 @@ namespace ET
                 this.dict.Add(key, wrap);
             }
 
+            try
+            {
+                this.AddSnapshot($"{key}: {MongoHelper.ToJson(value)}");
+            }
+            catch (Exception e)
+            {
+                Log.Error($"add snapshot fail: {typeof(T).FullName} {e}");
+            }
+        }
+
+        public bool TryGetObject<T>(string key, out T t) where T: class
+        {
+            t = null;
+            if (key == null)
+            {
+                return false;
+            }
+            
+            if (!this.dict.TryGetValue(key, out object value))
+            {
+                return false;
+            }
+
+            try
+            {
+                t = (T)value;
+                return true;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new Exception($"不能把{value.GetType()}转换为{typeof (T)}", e);
+            }
+        }
+
+        public T GetObject<T>(string key) where T: class
+        {
+            if (!this.dict.TryGetValue(key, out object value))
+            {
+                throw new Exception($"btenv not found key: {key} {typeof(T).FullName}");
+            }
+            
+            try
+            {
+                return (T)value;
+            }
+            catch (InvalidCastException e)
+            {
+                throw new Exception($"不能把{value.GetType()}转换为{typeof (T)}", e);
+            }
+        }
+        
+        public void AddObject<T>(string key, T value) where T: class
+        {
+            this.dict[key] = value;
             try
             {
                 this.AddSnapshot($"{key}: {MongoHelper.ToJson(value)}");

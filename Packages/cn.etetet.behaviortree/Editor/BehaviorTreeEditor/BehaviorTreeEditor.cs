@@ -54,7 +54,7 @@ namespace ET
             public BTRoot Root;
         }
 
-        [MenuItem("ET/BehaviorTreeEditor _F8")]
+        [MenuItem("ET/BehaviorTree/BehaviorTreeEditor _F8")]
         public static void ShowWindow()
         {
             if (BTNodeDrawer.ScriptableObject == null)

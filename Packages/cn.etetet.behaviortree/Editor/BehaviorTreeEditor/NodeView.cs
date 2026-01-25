@@ -193,6 +193,8 @@ namespace ET
                 this.Id = this.treeView.GenerateId();
             }
 
+            this.TryApplyTitleColor(node.GetType());
+
             // 确保旧节点也默认隐藏Desc（旧节点DescCollapsed为false）
             if (!this.Node.DescCollapsed)
             {
@@ -268,6 +270,17 @@ namespace ET
             this.Position = this.Node.Position;
 
             RegisterCallback<MouseDownEvent>(OnMouseDown);
+        }
+
+        private void TryApplyTitleColor(Type nodeType)
+        {
+            BTNodeTitleColorAttribute titleColor = nodeType.GetCustomAttribute<BTNodeTitleColorAttribute>(inherit: true);
+            if (titleColor == null)
+            {
+                return;
+            }
+
+            this.titleContainer.style.backgroundColor = new StyleColor(new Color(titleColor.R, titleColor.G, titleColor.B, titleColor.A));
         }
         
         public void Dispose()
