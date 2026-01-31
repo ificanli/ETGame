@@ -17,29 +17,51 @@
 								"_t" : "ET.BTSelector",
 								"_id" : 5,
 								"Children" : [{
-										"_t" : "ET.AI_MonsterReturn",
-										"_id" : 6,
-										"Children" : [],
-										"Buff" : "Buff",
-										"RootMustBeBuffTick" : "RootMustBeBuffTick"
+										"_t" : "ET.BTSequence",
+										"_id" : 9,
+										"Children" : [{
+												"_t" : "ET.AI_MonsterReturnCheck",
+												"_id" : 10,
+												"Children" : [],
+												"Buff" : "Buff"
+											}, {
+												"_t" : "ET.AI_MonsterReturn",
+												"_id" : 6,
+												"Children" : [],
+												"Buff" : "Buff"
+											}]
 									}, {
-										"_t" : "ET.AI_MonsterZhuiJi",
-										"_id" : 7,
-										"Children" : [],
-										"Buff" : "Buff",
-										"RootMustBeBuffTick" : "RootMustBeBuffTick"
+										"_t" : "ET.BTSequence",
+										"_id" : 11,
+										"Children" : [{
+												"_t" : "ET.AI_MonsterZhuiJiCheck",
+												"_id" : 12,
+												"Children" : [],
+												"Buff" : "Buff"
+											}, {
+												"_t" : "ET.AI_MonsterZhuiJi",
+												"_id" : 7,
+												"Children" : [],
+												"Buff" : "Buff"
+											}]
 									}, {
-										"_t" : "ET.AI_MonsterXunLuo",
-										"_id" : 8,
-										"Children" : [],
-										"Buff" : "Buff",
-										"RootMustBeBuffTick" : "RootMustBeBuffTick"
+										"_t" : "ET.BTSequence",
+										"_id" : 13,
+										"Children" : [{
+												"_t" : "ET.AI_MonsterXunLuoCheck",
+												"_id" : 14,
+												"Children" : [],
+												"Buff" : "Buff"
+											}, {
+												"_t" : "ET.AI_MonsterXunLuo",
+												"_id" : 8,
+												"Children" : [],
+												"Buff" : "Buff"
+											}]
 									}]
 							}],
 						"TreeId" : NumberLong("9160521892227564777"),
 						"Buff" : "Buff",
-						"Unit" : "Unit",
-						"RootMustBeBuffTick" : "RootMustBeBuffTick",
 						"Override" : true
 					}]
 			}], [200000, {
@@ -59,6 +81,12 @@
 								"_t" : "ET.BTSelector",
 								"_id" : 17,
 								"Children" : [{
+										"_t" : "ET.BTGetBuffOwner",
+										"_id" : 24,
+										"Children" : [],
+										"Buff" : "Buff",
+										"Unit" : "Unit"
+									}, {
 										"_t" : "ET.BTCreateSpell",
 										"_id" : 18,
 										"Children" : [],
@@ -76,9 +104,7 @@
 							}],
 						"TreeId" : NumberLong("3815612886719013578"),
 						"Buff" : "Buff",
-						"Unit" : "Unit",
-						"RootMustBeBuffTick" : null,
-						"Override" : false
+						"Override" : true
 					}, {
 						"_t" : "ET.EffectServerBuffAdd",
 						"_id" : 1,
@@ -231,6 +257,12 @@
 						"_t" : "ET.EffectServerBuffTick",
 						"_id" : 1,
 						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 3,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
 								"_t" : "ET.BTCreateSpell",
 								"_id" : 2,
 								"Children" : [],
@@ -240,8 +272,6 @@
 							}],
 						"TreeId" : NumberLong("892299141201969128"),
 						"Buff" : "Buff",
-						"Unit" : "Unit",
-						"RootMustBeBuffTick" : null,
 						"Override" : false
 					}, {
 						"_t" : "ET.EffectClientBuffAdd",
@@ -446,6 +476,12 @@
 						"_t" : "ET.EffectServerBuffTick",
 						"_id" : 1,
 						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 4,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
 								"_t" : "ET.BTGetSpellTargetUnit",
 								"_id" : 2,
 								"Children" : [],
@@ -461,8 +497,6 @@
 							}],
 						"TreeId" : NumberLong("911151293205797089"),
 						"Buff" : "Buff",
-						"Unit" : "Unit",
-						"RootMustBeBuffTick" : null,
 						"Override" : false
 					}, {
 						"_t" : "ET.EffectServerBuffHitted",
@@ -734,35 +768,65 @@
 								"_t" : "ET.BTSelector",
 								"_id" : 6,
 								"Children" : [{
-										"_t" : "ET.AI_PetZhuiJi",
-										"_id" : 7,
-										"Children" : [],
-										"Buff" : "Buff",
-										"RootMustBeBuffTick" : "ootMusRtBeBuffTick"
+										"_t" : "ET.BTSequence",
+										"_id" : 11,
+										"Children" : [{
+												"_t" : "ET.AI_PetZhuiJiCheck",
+												"_id" : 15,
+												"Children" : [],
+												"Buff" : "Buff"
+											}, {
+												"_t" : "ET.AI_PetZhuiJi",
+												"_id" : 7,
+												"Children" : [],
+												"Buff" : "Buff"
+											}]
 									}, {
-										"_t" : "ET.AI_PetReturn",
-										"_id" : 8,
-										"Children" : [],
-										"Buff" : "Buff",
-										"RootMustBeBuffTick" : "ootMusRtBeBuffTick"
+										"_t" : "ET.BTSequence",
+										"_id" : 13,
+										"Children" : [{
+												"_t" : "ET.AI_PetReturnCheck",
+												"_id" : 16,
+												"Children" : [],
+												"Buff" : "Buff"
+											}, {
+												"_t" : "ET.AI_PetReturn",
+												"_id" : 8,
+												"Children" : [],
+												"Buff" : "Buff"
+											}]
 									}, {
-										"_t" : "ET.AI_PetFollow",
-										"_id" : 9,
-										"Children" : [],
-										"Buff" : "Buff",
-										"RootMustBeBuffTick" : "ootMusRtBeBuffTick"
+										"_t" : "ET.BTSequence",
+										"_id" : 17,
+										"Children" : [{
+												"_t" : "ET.AI_PetFollowCheck",
+												"_id" : 18,
+												"Children" : [],
+												"Buff" : "Buff"
+											}, {
+												"_t" : "ET.AI_PetFollow",
+												"_id" : 9,
+												"Children" : [],
+												"Buff" : "Buff"
+											}]
 									}, {
-										"_t" : "ET.AI_PetIdle",
-										"_id" : 10,
-										"Children" : [],
-										"Buff" : "Buff",
-										"RootMustBeBuffTick" : "ootMusRtBeBuffTick"
+										"_t" : "ET.BTSequence",
+										"_id" : 19,
+										"Children" : [{
+												"_t" : "ET.AI_PetIdleCheck",
+												"_id" : 20,
+												"Children" : [],
+												"Buff" : "Buff"
+											}, {
+												"_t" : "ET.AI_PetIdle",
+												"_id" : 10,
+												"Children" : [],
+												"Buff" : "Buff"
+											}]
 									}]
 							}],
 						"TreeId" : NumberLong("7821291767413523228"),
 						"Buff" : "Buff",
-						"Unit" : "Unit",
-						"RootMustBeBuffTick" : "ootMusRtBeBuffTick",
 						"Override" : true
 					}]
 			}], [200040, {
@@ -829,6 +893,12 @@
 						"_t" : "ET.EffectServerBuffTick",
 						"_id" : 1,
 						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 7,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
 								"_t" : "ET.BTGetSpellTargetUnit",
 								"_id" : 2,
 								"Children" : [],
@@ -862,8 +932,6 @@
 							}],
 						"TreeId" : NumberLong("564552055616284588"),
 						"Buff" : "Buff",
-						"Unit" : "Unit",
-						"RootMustBeBuffTick" : null,
 						"Override" : false
 					}, {
 						"_t" : "ET.EffectServerBuffAdd",
@@ -1102,6 +1170,12 @@
 						"_t" : "ET.EffectServerBuffTick",
 						"_id" : 1,
 						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 3,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
 								"_t" : "ET.BTCreateSpell",
 								"_id" : 2,
 								"Children" : [],
@@ -1111,8 +1185,6 @@
 							}],
 						"TreeId" : NumberLong("6153392924137937051"),
 						"Buff" : "Buff",
-						"Unit" : "Unit",
-						"RootMustBeBuffTick" : null,
 						"Override" : true
 					}]
 			}], [200130, {
@@ -1168,6 +1240,12 @@
 						"_t" : "ET.EffectServerBuffTick",
 						"_id" : 1,
 						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 3,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
 								"_t" : "ET.BTCreateSpell",
 								"_id" : 2,
 								"Children" : [],
@@ -1177,8 +1255,6 @@
 							}],
 						"TreeId" : NumberLong("8260875540629730541"),
 						"Buff" : "Buff",
-						"Unit" : "Unit",
-						"RootMustBeBuffTick" : null,
 						"Override" : true
 					}]
 			}]]

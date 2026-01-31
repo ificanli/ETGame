@@ -95,13 +95,13 @@ MonoBehaviour:
       Data: 6|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 3
     - Name: 
       Entry: 7
-      Data: 7|ET.BTCreateSpell, ET.Model
+      Data: 7|ET.BTGetBuffOwner, ET.Model
     - Name: Id
       Entry: 3
-      Data: 18
+      Data: 24
     - Name: Children
       Entry: 7
       Data: 8|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -125,7 +125,16 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
+      Data: true
+    - Name: EditorLayoutVisible
+      Entry: 5
       Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 300
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -134,28 +143,25 @@ MonoBehaviour:
       Data: 600
     - Name: 
       Entry: 4
-      Data: -100
+      Data: -285
     - Name: 
       Entry: 8
       Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
     - Name: Buff
       Entry: 1
       Data: Buff
-    - Name: SpellConfigId
-      Entry: 3
-      Data: 100001
+    - Name: Unit
+      Entry: 1
+      Data: Unit
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 9|ET.BTRemoveBuff, ET.Model
+      Data: 9|ET.BTCreateSpell, ET.Model
     - Name: Id
       Entry: 3
-      Data: 23
+      Data: 18
     - Name: Children
       Entry: 7
       Data: 10|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -179,7 +185,16 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
+      Data: true
+    - Name: EditorLayoutVisible
+      Entry: 5
       Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 250
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -188,7 +203,70 @@ MonoBehaviour:
       Data: 600
     - Name: 
       Entry: 4
-      Data: 100
+      Data: -40
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: SpellConfigId
+      Entry: 3
+      Data: 100001
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 11|ET.BTRemoveBuff, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 23
+    - Name: Children
+      Entry: 7
+      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: true
+    - Name: EditorLayoutVisible
+      Entry: 5
+      Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 250
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 50
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 600
+    - Name: 
+      Entry: 4
+      Data: 198
     - Name: 
       Entry: 8
       Data: 
@@ -221,7 +299,16 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
+      Data: true
+    - Name: EditorLayoutVisible
+      Entry: 5
       Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 250
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -254,7 +341,16 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
+      Data: true
+    - Name: EditorLayoutVisible
+      Entry: 5
       Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 250
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -273,99 +369,45 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Caster
-      Entry: 1
-      Data: Caster
+    - Name: RootMustBeBuffTick
+      Entry: 6
+      Data: 
+    - Name: Override
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 7
-      Data: 11|ET.EffectServerBuffAdd, ET.Model
+      Data: 13|ET.EffectServerBuffAdd, ET.Model
     - Name: Id
       Entry: 3
       Data: 1
-    - Name: Children
-      Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
-    - Name: 
-      Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 13|ET.BTSelector, ET.Model
-    - Name: Id
-      Entry: 3
-      Data: 2
     - Name: Children
       Entry: 7
       Data: 14|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 1
     - Name: 
       Entry: 7
-      Data: 15|ET.BTCreateSpell, ET.Model
+      Data: 15|ET.BTSelector, ET.Model
     - Name: Id
       Entry: 3
-      Data: 3
+      Data: 2
     - Name: Children
       Entry: 7
       Data: 16|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Desc
-      Entry: 6
-      Data: 
-    - Name: IsCollapsed
-      Entry: 5
-      Data: false
-    - Name: ChildrenCollapsed
-      Entry: 5
-      Data: false
-    - Name: DescCollapsed
-      Entry: 5
-      Data: false
-    - Name: Position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 600
-    - Name: 
-      Entry: 4
-      Data: -100
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: Unit
-      Entry: 1
-      Data: Unit
-    - Name: Buff
-      Entry: 1
-      Data: Buff
-    - Name: SpellConfigId
-      Entry: 3
-      Data: 100001
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 2
     - Name: 
       Entry: 7
-      Data: 17|ET.BTRemoveBuff, ET.Model
+      Data: 17|ET.BTCreateSpell, ET.Model
     - Name: Id
       Entry: 3
-      Data: 4
+      Data: 3
     - Name: Children
       Entry: 7
       Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -390,6 +432,78 @@ MonoBehaviour:
     - Name: DescCollapsed
       Entry: 5
       Data: false
+    - Name: EditorLayoutVisible
+      Entry: 5
+      Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 0
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 0
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 600
+    - Name: 
+      Entry: 4
+      Data: -100
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: SpellConfigId
+      Entry: 3
+      Data: 100001
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 19|ET.BTRemoveBuff, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 4
+    - Name: Children
+      Entry: 7
+      Data: 20|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: false
+    - Name: EditorLayoutVisible
+      Entry: 5
+      Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 0
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 0
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -432,6 +546,15 @@ MonoBehaviour:
     - Name: DescCollapsed
       Entry: 5
       Data: false
+    - Name: EditorLayoutVisible
+      Entry: 5
+      Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 0
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 0
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -465,6 +588,15 @@ MonoBehaviour:
     - Name: DescCollapsed
       Entry: 5
       Data: false
+    - Name: EditorLayoutVisible
+      Entry: 5
+      Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 0
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 0
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule

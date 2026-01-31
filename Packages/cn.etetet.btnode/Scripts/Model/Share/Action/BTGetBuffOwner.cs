@@ -7,7 +7,7 @@
         public string Buff;
         
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
-        [BTInput(typeof(Unit))]
+        [BTOutput(typeof(Unit))]
         public string Unit;
     }
 }

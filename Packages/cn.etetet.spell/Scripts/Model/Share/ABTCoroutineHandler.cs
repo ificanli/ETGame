@@ -10,23 +10,11 @@ namespace ET
             return typeof (Node);
         }
         
-        protected virtual int Check(Node node, BTEnv env)
-        {
-            return 0;
-        }
-        
         public virtual int Handle(BTNode btNode, BTEnv env)
         {
             Node node = (Node)btNode;
             Buff buff = env.GetEntity<Buff>(node.Buff);
 
-            int ret = this.Check(node, env);
-            
-            if (ret != 0)
-            {
-                return ret;
-            }
-            
 #if UNITY_EDITOR
             env.AddPath(node.Id);
 #endif

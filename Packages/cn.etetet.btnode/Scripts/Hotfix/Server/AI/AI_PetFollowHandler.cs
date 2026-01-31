@@ -4,27 +4,6 @@ namespace ET.Server
 {
     public class AI_PetFollowHandler: ABTCoroutineHandler<AI_PetFollow>
     {
-        protected override int Check(AI_PetFollow node, BTEnv env)
-        {
-            Buff buff = env.GetEntity<Buff>(node.Buff);
-            Unit unit = buff.GetOwner();
-            TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
-            Unit target = targetComponent.Unit;
-            if (target != null)
-            {
-                return 1;
-            }
-            
-            long ownerId = unit.GetComponent<PetComponent>().OwnerId;
-            Unit owner = unit.GetParent<UnitComponent>().Get(ownerId);
-            if (math.distance(unit.Position, owner.Position) < 3f)
-            {
-                return 1;
-            }
-            
-            return 0;
-        }
-
         protected override async ETTask RunAsync(AI_PetFollow node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);

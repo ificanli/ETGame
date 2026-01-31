@@ -5,18 +5,6 @@ namespace ET.Server
 {
     public class AI_PetReturnHandler: ABTCoroutineHandler<AI_PetReturn>
     {
-        protected override int Check(AI_PetReturn node, BTEnv env)
-        {
-            Buff buff = env.GetEntity<Buff>(node.Buff);
-            Unit unit = buff.GetOwner();
-            Unit owner = PetHelper.GetOwner(unit);
-            if (math.distance(unit.Position, owner.Position) < 30f)
-            {
-                return 1;
-            }
-            return 0;
-        }
-
         protected override async ETTask RunAsync(AI_PetReturn node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);

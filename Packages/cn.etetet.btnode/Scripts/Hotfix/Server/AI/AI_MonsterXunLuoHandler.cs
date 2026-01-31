@@ -4,18 +4,6 @@ namespace ET.Server
 {
     public class AI_MonsterXunLuoHandler: ABTCoroutineHandler<AI_MonsterXunLuo>
     {
-        protected override int Check(AI_MonsterXunLuo node, BTEnv env)
-        {
-            Buff buff = env.GetEntity<Buff>(node.Buff);
-            Unit unit = buff.GetOwner();
-            ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
-            if (threatComponent.GetCount() > 0)
-            {
-                return 1;
-            }
-            return 0;
-        }
-
         protected override async ETTask RunAsync(AI_MonsterXunLuo node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
