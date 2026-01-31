@@ -335,10 +335,10 @@ MonoBehaviour:
       Data: 2
     - Name: 
       Entry: 7
-      Data: 17|ET.AI_MonsterZhuiJiCheck, ET.Model
+      Data: 17|ET.BTHasThreat, ET.Model
     - Name: Id
       Entry: 3
-      Data: 12
+      Data: 17
     - Name: Children
       Entry: 7
       Data: 18|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
@@ -384,9 +384,9 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: Buff
+    - Name: Unit
       Entry: 1
-      Data: Buff
+      Data: Unit
     - Name: 
       Entry: 8
       Data: 
