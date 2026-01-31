@@ -69,7 +69,7 @@ namespace ET
 
         public void Error(Exception e)
         {
-            LogEventInfo logEvent = new(LogLevel.Info, logger.Name, e.ToString());
+            LogEventInfo logEvent = new(LogLevel.Error, logger.Name, e.ToString());
             logEvent.Properties["sceneName"] = this.sceneName;
             logger.Log(logEvent);
         }

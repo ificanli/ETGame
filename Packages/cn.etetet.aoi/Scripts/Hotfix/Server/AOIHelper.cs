@@ -13,7 +13,7 @@ namespace ET.Server
         {
             enterCell.Clear();
             leaveCell.Clear();
-            int viewDistance = (int)aoiEntity.NumericComponent.GetAsFloat(NumericType.AOI);
+            int viewDistance = aoiEntity.NumericComponent.Get(NumericType.AOI);
             if (viewDistance <= 0)
             {
                 viewDistance = 1;
