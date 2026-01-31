@@ -14,6 +14,12 @@
 						"_t" : "ET.EffectServerBuffTick",
 						"_id" : 1,
 						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 16,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
 								"_t" : "ET.BTSelector",
 								"_id" : 5,
 								"Children" : [{
@@ -48,10 +54,14 @@
 										"_t" : "ET.BTSequence",
 										"_id" : 13,
 										"Children" : [{
-												"_t" : "ET.AI_MonsterXunLuoCheck",
-												"_id" : 14,
-												"Children" : [],
-												"Buff" : "Buff"
+												"_t" : "ET.BTNot",
+												"_id" : 15,
+												"Children" : [{
+														"_t" : "ET.BTHasThreat",
+														"_id" : 14,
+														"Children" : [],
+														"Unit" : "Unit"
+													}]
 											}, {
 												"_t" : "ET.AI_MonsterXunLuo",
 												"_id" : 8,
