@@ -12,7 +12,7 @@ namespace ET
         public string Buff = "Buff";
         
 #if UNITY_EDITOR
-        //[HideIf("@true")]
+        [HideIf("@true")]
         [BsonIgnore]
         // 用来防止这种节点挂到非BuffTick上
         [BTInput(typeof(BTCoroutine))]
