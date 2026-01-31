@@ -47,14 +47,14 @@ namespace ET
             self.From = self.GetParent<Unit>().Rotation;
             self.To = to;
             self.TurnTime = turnTime;
-            TimerComponent timerComponent = self.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = self.Root().TimerComponent;
             timerComponent.Remove(ref self.timer);
             self.timer = timerComponent.NewFrameTimer(TimerInvokeType.TurnTimer, self);
         }
 
         public static void Stop(this TurnComponent self)
         {
-            self.Root().GetComponent<TimerComponent>().Remove(ref self.timer);
+            self.Root().TimerComponent.Remove(ref self.timer);
         }
     }
 }

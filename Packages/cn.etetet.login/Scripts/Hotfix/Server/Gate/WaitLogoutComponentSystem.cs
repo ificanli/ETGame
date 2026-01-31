@@ -12,7 +12,7 @@ namespace ET.Server
         private static async ETTask WaitLogout(this WaitLogoutComponent self)
         {
             EntityRef<WaitLogoutComponent> selfRef = self;
-            await self.Root().GetComponent<TimerComponent>().WaitAsync(60 * 1000);
+            await self.Root().TimerComponent.WaitAsync(60 * 1000);
 
             self = selfRef;
             if (self == null)

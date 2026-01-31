@@ -8,7 +8,7 @@ namespace ET.Server
         {
             // 计算命中
             
-            NumericComponent numericComponent = target.GetComponent<NumericComponent>();
+            NumericComponent numericComponent = target.NumericComponent;
             long hp = numericComponent.Get(NumericType.HP);
             if (hp < value)
             {

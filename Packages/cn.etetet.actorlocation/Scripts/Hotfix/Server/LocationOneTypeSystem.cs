@@ -33,7 +33,7 @@ namespace ET.Server
         {
             EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
-            using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key))
+            using (await self.Root().CoroutineLockComponent.Wait(coroutineLockType, key))
             {
                 self = selfRef;
                 self.locations[key] = instanceId;
@@ -45,7 +45,7 @@ namespace ET.Server
         {
             EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
-            using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key))
+            using (await self.Root().CoroutineLockComponent.Wait(coroutineLockType, key))
             {
                 self = selfRef;
                 self.locations.Remove(key);
@@ -57,7 +57,7 @@ namespace ET.Server
         {
             EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
-            EntityRef<CoroutineLock> coroutineLock = await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key);
+            EntityRef<CoroutineLock> coroutineLock = await self.Root().CoroutineLockComponent.Wait(coroutineLockType, key);
             self = selfRef;
             LockInfo lockInfo = self.AddChild<LockInfo, ActorId, EntityRef<CoroutineLock>>(actorId, coroutineLock);
             EntityRef<LockInfo> lockInfoRef = lockInfo;
@@ -69,7 +69,7 @@ namespace ET.Server
             {
                 async ETTask TimeWaitAsync()
                 {
-                    await self.Root().GetComponent<TimerComponent>().WaitAsync(time);
+                    await self.Root().TimerComponent.WaitAsync(time);
                     lockInfo = lockInfoRef;
                     if (lockInfo == null)
                     {
@@ -112,7 +112,7 @@ namespace ET.Server
         {
             EntityRef<LocationOneType> selfRef = self;
             long coroutineLockType = (self.Id << 32) | CoroutineLockType.Location;
-            using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(coroutineLockType, key))
+            using (await self.Root().CoroutineLockComponent.Wait(coroutineLockType, key))
             {
                 self = selfRef;
                 self.locations.TryGetValue(key, out ActorId actorId);

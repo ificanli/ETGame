@@ -32,7 +32,7 @@ namespace ET.Server
             EntityRef<Unit> unitRef = unit;
             EntityRef<Unit> ownerRef = owner;
 
-            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().TimerComponent;
             
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             

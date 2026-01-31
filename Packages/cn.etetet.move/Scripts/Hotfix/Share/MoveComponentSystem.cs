@@ -187,7 +187,7 @@ namespace ET
             self.StartTime = self.BeginTime;
             self.SetNextTarget();
 
-            self.MoveTimer = self.Root().GetComponent<TimerComponent>().NewFrameTimer(TimerInvokeType.MoveTimer, self);
+            self.MoveTimer = self.Root().TimerComponent.NewFrameTimer(TimerInvokeType.MoveTimer, self);
         }
 
         private static void SetNextTarget(this MoveComponent self)
@@ -290,7 +290,7 @@ namespace ET
             Scene root = self.Root();
             if (root != null)
             {
-                root.GetComponent<TimerComponent>()?.Remove(ref self.MoveTimer);    
+                root.TimerComponent?.Remove(ref self.MoveTimer);    
             }
 
             if (self.tcs != null)

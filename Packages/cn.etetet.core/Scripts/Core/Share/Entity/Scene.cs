@@ -5,7 +5,7 @@ namespace ET
 {
     [EnableMethod]
     [ChildOf]
-    public class Scene: Entity, IScene
+    public partial class Scene: Entity, IScene
     {
         [BsonIgnore]
         public Fiber Fiber { get; set; }

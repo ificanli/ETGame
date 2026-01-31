@@ -25,7 +25,7 @@ namespace ET.Server
             PathfindingComponent pathfindingComponent = unit.GetComponent<PathfindingComponent>();
             EntityRef<PathfindingComponent> pathfindingComponentRef = pathfindingComponent;
             
-            NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            NumericComponent numericComponent = unit.NumericComponent;
             float3 birthPos = new(numericComponent.GetAsFloat(NumericType.X), numericComponent.GetAsFloat(NumericType.Y), numericComponent.GetAsFloat(NumericType.Z));
             float aoi = numericComponent.GetAsFloat(NumericType.AOI);
             
@@ -54,7 +54,7 @@ namespace ET.Server
                 {
                     return;
                 }
-                await root.GetComponent<TimerComponent>().WaitAsync(RandomGenerator.RandomNumber(1000, 4000));
+                await root.TimerComponent.WaitAsync(RandomGenerator.RandomNumber(1000, 4000));
                 if (cancellationToken.IsCancel())
                 {
                     return;

@@ -21,7 +21,7 @@
             }
 
             EntityRef<MailBoxComponent> mailBoxComponentRef = mailBoxComponent;
-            using EntityRef<CoroutineLock> coroutineLockRef = await fiber.Root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.Mailbox, mailBoxComponent.Parent.Id, 5000);
+            using EntityRef<CoroutineLock> coroutineLockRef = await fiber.Root.CoroutineLockComponent.Wait(CoroutineLockType.Mailbox, mailBoxComponent.Parent.Id, 5000);
             
             mailBoxComponent = mailBoxComponentRef;
             if (mailBoxComponent == null)

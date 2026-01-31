@@ -29,6 +29,24 @@ namespace ET
         public EntityRef<Entity> Args;
     }
 
+    public partial class Scene
+    {
+        private EntityRef<TimerComponent> timerComponent;
+
+        public TimerComponent TimerComponent
+        {
+            get
+            {
+                return this.timerComponent;
+            }
+            set
+            {
+                this.timerComponent = value;
+            }
+        }
+    }
+
+    [DisableGetComponent]
     [SkipAwaitEntityCheck]
     [ComponentOf(typeof(Scene))]
     public class TimerComponent: Entity, IAwake, IUpdate

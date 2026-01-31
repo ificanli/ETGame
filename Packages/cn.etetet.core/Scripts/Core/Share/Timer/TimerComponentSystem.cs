@@ -40,6 +40,7 @@ namespace ET
         [EntitySystem]
         private static void Awake(this TimerComponent self)
         {
+            self.GetParent<Scene>().TimerComponent = self;
         }
 
         [EntitySystem]
@@ -294,9 +295,9 @@ namespace ET
         private static long NewRepeatedTimerInner(this TimerComponent self, long time, int type, Entity args)
         {
 #if DOTNET
-            if (time < 100)
+            if (time < 50)
             {
-                throw new Exception($"repeated timer < 100, timerType: time: {time}");
+                throw new Exception($"repeated timer < 50, timerType: time: {time}");
             }
 #endif
 
@@ -309,12 +310,6 @@ namespace ET
 
         public static long NewRepeatedTimer(this TimerComponent self, long time, int type, Entity args)
         {
-            if (time < 100)
-            {
-                Log.Error($"time too small: {time}");
-                return 0;
-            }
-
             return self.NewRepeatedTimerInner(time, type, args);
         }
     }

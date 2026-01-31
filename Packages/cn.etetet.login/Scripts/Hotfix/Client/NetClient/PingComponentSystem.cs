@@ -28,7 +28,7 @@ namespace ET.Client
             {
                 try
                 {
-                    await fiber.Root.GetComponent<TimerComponent>().WaitAsync(2000);
+                    await fiber.Root.TimerComponent.WaitAsync(2000);
                     self = selfRef;
                     if (self == null)
                     {

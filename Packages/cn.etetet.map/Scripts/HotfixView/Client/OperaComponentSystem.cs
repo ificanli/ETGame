@@ -25,9 +25,9 @@ namespace ET.Client
         private static async ETTask Test1(this OperaComponent self)
         {
             Log.Debug($"Croutine 1 start1 ");
-            using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(1, 20000, 3000))
+            using (await self.Root().CoroutineLockComponent.Wait(1, 20000, 3000))
             {
-                await self.Root().GetComponent<TimerComponent>().WaitAsync(6000);
+                await self.Root().TimerComponent.WaitAsync(6000);
             }
 
             Log.Debug($"Croutine 1 end1");
@@ -37,9 +37,9 @@ namespace ET.Client
         {
             ETCancellationToken oldCancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             Log.Debug($"Croutine 2 start2");
-            using (await self.Root().GetComponent<CoroutineLockComponent>().Wait(1, 20000, 3000))
+            using (await self.Root().CoroutineLockComponent.Wait(1, 20000, 3000))
             {
-                await self.Root().GetComponent<TimerComponent>().WaitAsync(1000);
+                await self.Root().TimerComponent.WaitAsync(1000);
             }
             Log.Debug($"Croutine 2 end2");
         }
@@ -50,7 +50,7 @@ namespace ET.Client
             
             Log.Debug($"TestCancelAfter start");
             ETCancellationToken newCancellationToken = new();
-            await self.Root().GetComponent<TimerComponent>().WaitAsync(3000).TimeoutAsync(newCancellationToken, 1000);
+            await self.Root().TimerComponent.WaitAsync(3000).TimeoutAsync(newCancellationToken, 1000);
             if (newCancellationToken.IsCancel())
             {
                 Log.Debug($"TestCancelAfter newCancellationToken is cancel!");

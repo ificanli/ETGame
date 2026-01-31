@@ -25,7 +25,7 @@ namespace ET.Server
         protected override async ETTask RunAsync(Buff buff, AI_PetIdle node, BTEnv env)
         {
             Unit unit = buff.GetOwner();
-            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().TimerComponent;
             EntityRef<Unit> unitRef = unit;
             Unit owner = PetHelper.GetOwner(unit);
             EntityRef<Unit> ownerRef = owner;

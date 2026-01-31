@@ -50,7 +50,7 @@ namespace ET.Client
             async ETTask WaitCancel()
             {
                 //模拟等待X秒后取消
-                await clientScene.Root().GetComponent<TimerComponent>().WaitAsync(cancelTime);
+                await clientScene.Root().TimerComponent.WaitAsync(cancelTime);
                 cancel.Cancel();
             }
         }
@@ -116,7 +116,7 @@ namespace ET.Client
             async ETTask WaitCancel()
             {
                 //模拟等待X秒后取消
-                await clientScene.Root().GetComponent<TimerComponent>().WaitAsync(cancelTime);
+                await clientScene.Root().TimerComponent.WaitAsync(cancelTime);
                 cancel.Cancel();
             }
         }

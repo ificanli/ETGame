@@ -79,5 +79,9 @@
         public const string CoroutineLockDisposeAnalyzerRuleId = "ET0035";
 
         public const string TestCaseNamingAnalyzerRuleId = "ET0036";
+        
+        public const string DisableGetComponentAnalyzerRuleId = "ET0037";
+        
+        public const string EntitySystemLocationAnalyzerRuleId = "ET0038";
     }
 }

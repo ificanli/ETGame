@@ -47,7 +47,7 @@ namespace ET.Client
                 return load.Object;
             }
 
-            using var _ = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUILoad, load.NameCode);
+            using var _ = await self.Root().CoroutineLockComponent.Wait(CoroutineLockType.YIUILoad, load.NameCode);
 
             if (load.Object != null)
             {

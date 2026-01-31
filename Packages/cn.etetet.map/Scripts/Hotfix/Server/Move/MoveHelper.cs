@@ -8,7 +8,7 @@ namespace ET.Server
         // 可以多次调用，多次调用的话会取消上一次的协程
         public static async ETTask FindPathMoveToAsync(this Unit unit, float3 target, int turnTime = 100)
         {
-            float speed = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Speed);
+            float speed = unit.NumericComponent.GetAsFloat(NumericType.Speed);
             if (speed < 0.01)
             {
                 unit.SendStop(2);

@@ -10,7 +10,7 @@ namespace ET.Server
         private static void Awake(this AOIEntity self)
         {
             Unit unit = self.GetParent<Unit>();
-            NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            NumericComponent numericComponent = unit.NumericComponent;
             self.Phase = (PhaseType)numericComponent.Get(NumericType.Phase);
             self.NumericComponent = numericComponent;
             self.Scene().GetComponent<AOIManagerComponent>().Add(self, unit.Position.x, unit.Position.z);

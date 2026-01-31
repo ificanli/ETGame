@@ -78,7 +78,7 @@ namespace ET
             {
                 return;
             }
-            TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = buff.Root().TimerComponent;
             self.TimerId = timerComponent.NewRepeatedTimer(tickTime, TimerInvokeType.BuffTickTimer, self);
         }
 
@@ -89,7 +89,7 @@ namespace ET
             {
                 return;
             }
-            root.GetComponent<TimerComponent>()?.Remove(ref self.TimerId);
+            root.TimerComponent?.Remove(ref self.TimerId);
 
             self.CancellationToken?.Cancel();
             self.CancellationToken = null;

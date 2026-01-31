@@ -378,6 +378,24 @@ namespace ET
                     Description);
     }
 
+    public static class EntitySystemLocationAnalyzerRule
+    {
+        private const string Title = "EntitySystemOf的System类位置不一致";
+
+        private const string MessageFormat = "System类:{0} 位于:{1} 需与Entity:{2} 的相对目录一致，期望目录:{3}";
+
+        private const string Description = "Entity在Model/ModelView的相对位置，System必须在Hotfix/HotfixView对应的相对位置.";
+
+        public static readonly DiagnosticDescriptor Rule =
+                new DiagnosticDescriptor(DiagnosticIds.EntitySystemLocationAnalyzerRuleId,
+                    Title,
+                    MessageFormat,
+                    DiagnosticCategories.Hotfix,
+                    DiagnosticSeverity.Error,
+                    true,
+                    Description);
+    }
+
     public static class FiberLogAnalyzerRule
     {
         private const string Title = "实体类内部或含有实体类参数的函数内部必须使用Fiber输出日志";
@@ -478,6 +496,24 @@ namespace ET
 
         public static readonly DiagnosticDescriptor Rule =
                 new DiagnosticDescriptor(DiagnosticIds.DisableNewAnalyzerRuleId,
+                    Title,
+                    MessageFormat,
+                    DiagnosticCategories.All,
+                    DiagnosticSeverity.Error,
+                    true,
+                    Description);
+    }
+
+    public static class DisableGetComponentAnalyzerRule
+    {
+        private const string Title = "禁止直接使用GetComponent获取被禁用的组件";
+
+        private const string MessageFormat = "组件类型: {0} 禁止直接使用GetComponent获取, 请在方法上添加[EnableGetComponent(typeof({0}))]";
+
+        private const string Description = "被DisableGetComponent标记的组件禁止直接通过GetComponent获取.";
+
+        public static readonly DiagnosticDescriptor Rule =
+                new DiagnosticDescriptor(DiagnosticIds.DisableGetComponentAnalyzerRuleId,
                     Title,
                     MessageFormat,
                     DiagnosticCategories.All,

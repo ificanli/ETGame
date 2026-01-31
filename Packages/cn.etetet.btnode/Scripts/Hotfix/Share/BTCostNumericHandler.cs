@@ -7,7 +7,7 @@
             Unit caster = env.GetEntity<Unit>(node.Caster);
             bool check = env.GetStruct<bool>(node.Check);
 
-            NumericComponent numericComponent = caster.GetComponent<NumericComponent>();
+            NumericComponent numericComponent = caster.NumericComponent;
             long a = numericComponent.Get(node.NumericType);
             
             if (check)

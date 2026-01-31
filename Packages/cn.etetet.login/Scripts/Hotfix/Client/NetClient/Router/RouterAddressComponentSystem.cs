@@ -44,7 +44,7 @@ namespace ET.Client
         public static async ETTask WaitTenMinGetAllRouter(this RouterAddressComponent self)
         {
             EntityRef<RouterAddressComponent> selfRef = self;
-            await self.Root().GetComponent<TimerComponent>().WaitAsync(5 * 60 * 1000);
+            await self.Root().TimerComponent.WaitAsync(5 * 60 * 1000);
             self = selfRef;
             if (self.IsDisposed)
             {

@@ -30,7 +30,7 @@ namespace ET.Client
         
         private static async ETTask MoveToTarget(Scene root, Transform gameObject, Transform bindPoint, BTCreateFakeBullet node)
         {
-            TimerComponent timerComponent = root.GetComponent<TimerComponent>();
+            TimerComponent timerComponent = root.TimerComponent;
             float startTime = Time.time;
             while (Time.time - startTime < node.Duration)
             {

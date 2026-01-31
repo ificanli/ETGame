@@ -27,7 +27,7 @@ namespace ET.Client
             EntityRef<NetComponent> netComponentRef = netComponent;
             while (true)
             {
-                await fiber.Root.GetComponent<TimerComponent>().WaitAsync(1000);
+                await fiber.Root.TimerComponent.WaitAsync(1000);
                 
                 self = selfRef;
                 session = sessionRef;

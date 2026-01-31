@@ -12,21 +12,21 @@ namespace ET.Server
         {
             AOIEntity aoiEntity = self.GetComponent<AOIEntity>();
             aoiEntity.Phase = phaseType;
-            self.GetComponent<NumericComponent>()?.Set(NumericType.Phase, (long)aoiEntity.Phase);
+            self.NumericComponent?.Set(NumericType.Phase, (long)aoiEntity.Phase);
         }
 
         public static void AddPhase(this Unit self, PhaseType phaseType)
         {
             AOIEntity aoiEntity = self.GetComponent<AOIEntity>();
             aoiEntity.Phase |= phaseType;
-            self.GetComponent<NumericComponent>()?.Set(NumericType.Phase, (long)aoiEntity.Phase);
+            self.NumericComponent?.Set(NumericType.Phase, (long)aoiEntity.Phase);
         }
 
         public static void RemovePhase(this Unit self, PhaseType phaseType)
         {
             AOIEntity aoiEntity = self.GetComponent<AOIEntity>();
             aoiEntity.Phase &= ~phaseType;
-            self.GetComponent<NumericComponent>()?.Set(NumericType.Phase, (long)aoiEntity.Phase);
+            self.NumericComponent?.Set(NumericType.Phase, (long)aoiEntity.Phase);
         }
     }
 }

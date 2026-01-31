@@ -96,6 +96,11 @@ namespace ET
         public const string DisableNewAttribute = "ET.DisableNewAttribute";
 
         public const string EnableClassAttribute = "ET.EnableClassAttribute";
+        
+        public const string EnableHotfixStructAttribute = "ET.EnableHotfixStructAttribute";
+
+        public const string DisableGetComponentAttribute = "ET.DisableGetComponentAttribute";
+
+        public const string EnableGetComponentAttribute = "ET.EnableGetComponentAttribute";
     }
 }
-

@@ -22,7 +22,7 @@ namespace ET.Server
         private static async ETTask StartTransferAsync(this MergeLinesComponent self)
         {
             EntityRef<MergeLinesComponent> selfRef = self;
-            TimerComponent timer = self.Root().GetComponent<TimerComponent>();
+            TimerComponent timer = self.Root().TimerComponent;
             while (true)
             {
                 await timer.WaitAsync(100);
@@ -113,7 +113,7 @@ namespace ET.Server
         private static async ETTask StartCheckAsync(this MergeLinesComponent self)
         {
             EntityRef<MergeLinesComponent> selfRef = self;
-            TimerComponent timer = self.Root().GetComponent<TimerComponent>();
+            TimerComponent timer = self.Root().TimerComponent;
             while (true)
             {
                 await timer.WaitAsync(1000);

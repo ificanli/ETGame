@@ -44,7 +44,7 @@ namespace ET.Client
                 return;
             }
 
-            self.m_Numeric = self.Unit.GetComponent<NumericComponent>();
+            self.m_Numeric = self.Unit.NumericComponent;
             if (self.Numeric == null)
             {
                 Log.Error($"没有找到目标的NumericComponent  {self.Unit.ConfigId},{self.Unit.Config().Name}");

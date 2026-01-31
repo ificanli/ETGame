@@ -42,7 +42,7 @@ namespace ET.Server
 		private async ETTask CloseSession(Session session)
 		{
 			EntityRef<Session> sessionRef = session;
-			await session.Root().GetComponent<TimerComponent>().WaitAsync(1000);
+			await session.Root().TimerComponent.WaitAsync(1000);
 			session = sessionRef;
 			session?.Dispose();
 		}

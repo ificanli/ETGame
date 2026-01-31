@@ -31,7 +31,7 @@ namespace ET.Server
             {
                 return;
             }
-            root.GetComponent<TimerComponent>().Remove(ref self.HeartbeatTimer);
+            root.TimerComponent.Remove(ref self.HeartbeatTimer);
         }
         
         [EntitySystem]
@@ -90,7 +90,7 @@ namespace ET.Server
                 return;
             }
 
-            self.HeartbeatTimer = self.Root().GetComponent<TimerComponent>().NewRepeatedTimer(self.HeartbeatInterval, TimerInvokeType.ServiceDiscoveryProxyHeartbeat, self);
+            self.HeartbeatTimer = self.Root().TimerComponent.NewRepeatedTimer(self.HeartbeatInterval, TimerInvokeType.ServiceDiscoveryProxyHeartbeat, self);
             Log.Debug($"Service registered successfully: {request}");
         }
 

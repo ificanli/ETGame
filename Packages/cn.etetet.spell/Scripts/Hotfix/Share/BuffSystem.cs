@@ -11,7 +11,7 @@
             {
                 return;
             }
-            TimerComponent timerComponent = root.GetComponent<TimerComponent>();
+            TimerComponent timerComponent = root.TimerComponent;
             timerComponent.Remove(ref self.TimeoutTimer);
         }
         

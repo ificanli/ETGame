@@ -44,7 +44,7 @@ namespace ET.Server
             EntityRef<Scene> sceneRef = scene;
             await response.OutputStream.WriteAsync(bytes, 0, bytes.Length);
             scene = sceneRef;
-            await scene.Root().GetComponent<TimerComponent>().WaitAsync(1000);
+            await scene.Root().TimerComponent.WaitAsync(1000);
         }
     }
 }

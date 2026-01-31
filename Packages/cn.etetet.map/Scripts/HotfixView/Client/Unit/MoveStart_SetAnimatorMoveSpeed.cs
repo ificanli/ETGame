@@ -9,7 +9,7 @@ namespace ET.Client
 		{
 			Unit unit = a.Unit;
 
-			float speed = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Speed);
+			float speed = unit.NumericComponent.GetAsFloat(NumericType.Speed);
 			
 			// 动作
 			AnimatorComponent animator = unit.GetComponent<AnimatorComponent>();

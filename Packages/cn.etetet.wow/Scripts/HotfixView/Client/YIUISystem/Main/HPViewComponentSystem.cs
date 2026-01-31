@@ -30,7 +30,7 @@ namespace ET.Client
                 Log.Error($" {self.OwnerUnit?.Config().Name} 没有找到 BindPointComponent");
             }
 
-            self.m_Numeric = self.OwnerUnit.GetComponent<NumericComponent>();
+            self.m_Numeric = self.OwnerUnit.NumericComponent;
         }
 
         [EntitySystem]

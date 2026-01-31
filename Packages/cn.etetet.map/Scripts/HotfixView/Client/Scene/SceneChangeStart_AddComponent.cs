@@ -13,7 +13,7 @@ namespace ET.Client
                 EntityRef<Scene> rootRef = root;
                 EntityRef<CurrentScenesComponent> currentScenesComponentRef = root.GetComponent<CurrentScenesComponent>();
                 CurrentScenesComponent currentScenesComponent = currentScenesComponentRef;
-                using var _ = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
+                using var _ = await root.CoroutineLockComponent.Wait(CoroutineLockType.SceneChange, 0);
 
                 root = rootRef;
                 currentScenesComponent = currentScenesComponentRef;

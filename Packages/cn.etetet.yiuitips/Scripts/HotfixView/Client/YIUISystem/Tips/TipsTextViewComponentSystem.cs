@@ -44,7 +44,7 @@ namespace ET.Client
         {
             EntityRef<TipsTextViewComponent> selfRef = self;
             self.u_ComAnimation.Play(self.u_ComAnimation.clip.name);
-            await self.Root().GetComponent<TimerComponent>().WaitAsync((long)(self.u_ComAnimation.clip.length * 1000));
+            await self.Root().TimerComponent.WaitAsync((long)(self.u_ComAnimation.clip.length * 1000));
             self = selfRef;
             await self.UIView.CloseAsync();
         }

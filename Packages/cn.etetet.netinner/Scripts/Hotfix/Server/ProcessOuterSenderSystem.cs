@@ -233,7 +233,7 @@ namespace ET.Server
 
             async ETTask Timeout()
             {
-                await fiber.Root.GetComponent<TimerComponent>().WaitAsync(ProcessOuterSender.TIMEOUT_TIME);
+                await fiber.Root.TimerComponent.WaitAsync(ProcessOuterSender.TIMEOUT_TIME);
                 self = selfRef;
                 if (!self.requestCallback.Remove(rpcId, out MessageSenderStruct action))
                 {

@@ -21,7 +21,7 @@ namespace ET.Server
             Unit unit = buff.GetOwner();
             unit.GetComponent<TargetComponent>().Unit = null;
 
-            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().TimerComponent;
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             while (true)

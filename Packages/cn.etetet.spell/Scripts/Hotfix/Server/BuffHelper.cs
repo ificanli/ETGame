@@ -109,7 +109,7 @@ namespace ET.Server
                 }
             }
             
-            TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = buff.Root().TimerComponent;
 
             RefreshTickComponent(buff);
             
@@ -180,7 +180,7 @@ namespace ET.Server
             
             
             long timeoutTimer = buff.TimeoutTimer;
-            TimerComponent timerComponent = buff.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = buff.Root().TimerComponent;
             timerComponent.Remove(ref timeoutTimer);
             
             if (buff.ExpireTime > 0)

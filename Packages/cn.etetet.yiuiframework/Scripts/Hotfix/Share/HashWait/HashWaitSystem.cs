@@ -71,7 +71,7 @@ namespace ET
 
         private static async ETTask Notify(Scene scene, ETTask<EHashWaitError> task, EHashWaitError error)
         {
-            await scene?.GetComponent<TimerComponent>().WaitFrameAsync();
+            await scene?.TimerComponent.WaitFrameAsync();
             task?.SetResult(error);
         }
     }

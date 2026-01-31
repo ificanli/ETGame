@@ -68,7 +68,7 @@ namespace ET.Client
             EntityRef<DamageTipsPanelComponent> selfRef = self;
             if (!self.m_Pool.ContainsKey(presetName))
             {
-                using var _ = await self.Root().GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.YIUIPackage, presetName.GetHashCode());
+                using var _ = await self.Root().CoroutineLockComponent.Wait(CoroutineLockType.YIUIPackage, presetName.GetHashCode());
                 self = selfRef;
                 if (!self.m_Pool.ContainsKey(presetName))
                 {

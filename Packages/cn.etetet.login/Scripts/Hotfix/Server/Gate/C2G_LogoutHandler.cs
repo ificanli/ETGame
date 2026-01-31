@@ -19,7 +19,7 @@ namespace ET.Server
         private static async ETTask WaitRemoveSession(Session session)
         {
             EntityRef<Session> sessionRef = session;
-            await session.Root().GetComponent<TimerComponent>().WaitAsync(500);
+            await session.Root().TimerComponent.WaitAsync(500);
             session = sessionRef;
             session.Dispose();
         }

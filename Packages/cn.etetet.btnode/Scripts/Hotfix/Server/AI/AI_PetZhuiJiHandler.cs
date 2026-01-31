@@ -30,9 +30,9 @@ namespace ET.Server
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             EntityRef<TargetComponent> targetComponentRef = targetComponent;
             
-            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().TimerComponent;
             
-            float unitRadius = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
+            float unitRadius = unit.NumericComponent.GetAsFloat(NumericType.Radius);
             
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
 
@@ -58,7 +58,7 @@ namespace ET.Server
                 SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellId);
                 unit = unitRef;
                 float distance = math.distance(unit.Position, target.Position);
-                float targetRadius = target.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
+                float targetRadius = target.NumericComponent.GetAsFloat(NumericType.Radius);
                 float d1 = distance - targetRadius - unitRadius;
                 
                 if (d1 > spellConfig.TargetSelector.MaxDistance / 1000f)

@@ -25,7 +25,7 @@ namespace ET.Server
                     continue;
                 }
                 
-                NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+                NumericComponent numericComponent = unit.NumericComponent;
                 if (math.distance(pos, unit.Position) > node.Radius / 1000f + numericComponent.GetAsFloat(NumericType.Radius))
                 {
                     continue;

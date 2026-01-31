@@ -8,6 +8,7 @@ namespace ET
         [EntitySystem]
         private static void Awake(this CoroutineLockComponent self)
         {
+            self.GetParent<Scene>().CoroutineLockComponent = self;
         }
         
         [EntitySystem]

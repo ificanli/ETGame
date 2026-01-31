@@ -7,7 +7,7 @@ namespace ET.Server
         protected override int Check(Buff buff, AI_MonsterReturn node, BTEnv env)
         {
             Unit unit = buff.GetOwner();
-            NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            NumericComponent numericComponent = unit.NumericComponent;
             float3 birthPos = new(
                 numericComponent.GetAsFloat(NumericType.X), 
                 numericComponent.GetAsFloat(NumericType.Y),
@@ -22,7 +22,7 @@ namespace ET.Server
         protected override async ETTask RunAsync(Buff buff, AI_MonsterReturn node, BTEnv env)
         {
             Unit unit = buff.GetOwner();
-            NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            NumericComponent numericComponent = unit.NumericComponent;
 
             float3 birthPos = new(
                 numericComponent.GetAsFloat(NumericType.X), 
@@ -33,7 +33,7 @@ namespace ET.Server
 
             threatComponent.ClearThreat();
 
-            TimerComponent timerComponent = unit.Root().GetComponent<TimerComponent>();
+            TimerComponent timerComponent = unit.Root().TimerComponent;
             
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             

@@ -27,7 +27,7 @@
             }
             root = rootRef;
             EventSystem.Instance.Publish(root, new SceneChangeFinish());
-            using var _ = await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.SceneChange, 0);
+            using var _ = await root.CoroutineLockComponent.Wait(CoroutineLockType.SceneChange, 0);
             // 通知等待场景切换的协程
             root = rootRef;
             root.GetComponent<ObjectWait>().Notify(new Wait_SceneChangeFinish());

@@ -24,7 +24,7 @@ namespace ET
         [EntitySystem]
         private static void Awake(this SessionIdleCheckerComponent self)
         {
-            self.RepeatedTimer = self.Root().GetComponent<TimerComponent>().NewRepeatedTimer(CheckInteral, TimerInvokeType.SessionIdleChecker, self);
+            self.RepeatedTimer = self.Root().TimerComponent.NewRepeatedTimer(CheckInteral, TimerInvokeType.SessionIdleChecker, self);
         }
         
         [EntitySystem]
@@ -33,7 +33,7 @@ namespace ET
             Scene root = self.Root();
             if (root != null)
             {
-                root.GetComponent<TimerComponent>()?.Remove(ref self.RepeatedTimer);
+                root.TimerComponent?.Remove(ref self.RepeatedTimer);
             }
         }
 

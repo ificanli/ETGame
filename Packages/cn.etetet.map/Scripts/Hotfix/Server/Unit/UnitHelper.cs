@@ -8,7 +8,7 @@ namespace ET.Server
         public static UnitInfo CreateUnitInfo(Unit unit)
         {
             UnitInfo unitInfo = UnitInfo.Create();
-            NumericComponent nc = unit.GetComponent<NumericComponent>();
+            NumericComponent nc = unit.NumericComponent;
             unitInfo.UnitId = unit.Id;
             unitInfo.ConfigId = unit.ConfigId;
             unitInfo.Type = (int)unit.UnitType;

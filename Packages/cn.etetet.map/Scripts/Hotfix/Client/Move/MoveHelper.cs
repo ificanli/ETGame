@@ -30,7 +30,7 @@ namespace ET.Client
         
         public static async ETTask MoveToAsync(this Unit unit, List<float3> path)
         {
-            float speed = unit.GetComponent<NumericComponent>().GetAsFloat(NumericType.Speed);
+            float speed = unit.NumericComponent.GetAsFloat(NumericType.Speed);
             MoveComponent moveComponent = unit.GetComponent<MoveComponent>();
             await moveComponent.MoveToAsync(path, speed);
         }

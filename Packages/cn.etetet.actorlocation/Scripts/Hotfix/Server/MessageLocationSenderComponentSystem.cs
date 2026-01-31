@@ -28,7 +28,7 @@ namespace ET.Server
         {
             // 每10s扫描一次过期的actorproxy进行回收,过期时间是2分钟
             // 可能由于bug或者进程挂掉，导致ActorLocationSender发送的消息没有确认，结果无法自动删除，每一分钟清理一次这种ActorLocationSender
-            self.CheckTimer = self.Root().GetComponent<TimerComponent>().NewRepeatedTimer(10 * 1000, TimerInvokeType.MessageLocationSenderChecker, self);
+            self.CheckTimer = self.Root().TimerComponent.NewRepeatedTimer(10 * 1000, TimerInvokeType.MessageLocationSenderChecker, self);
         }
         
         [EntitySystem]
@@ -37,7 +37,7 @@ namespace ET.Server
             Scene root = self.Root();
             if (root != null)
             {
-                root.GetComponent<TimerComponent>()?.Remove(ref self.CheckTimer);    
+                root.TimerComponent?.Remove(ref self.CheckTimer);    
             }
         }
 
@@ -105,7 +105,7 @@ namespace ET.Server
             Scene root = self.Root();
             EntityRef<Scene> rootRef = root;
             
-            using (await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
+            using (await root.CoroutineLockComponent.Wait(CoroutineLockType.MessageLocationSender, entityId))
             {
                 messageLocationSender = messageLocationSenderRef;
                 if (messageLocationSender == null)
@@ -144,7 +144,7 @@ namespace ET.Server
             EntityRef<MessageLocationSenderOneType> selfRef = self;
             EntityRef<Scene> rootRef = root;
             
-            using (await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
+            using (await root.CoroutineLockComponent.Wait(CoroutineLockType.MessageLocationSender, entityId))
             {
                 messageLocationSender = messageLocationSenderRef;
                 if (messageLocationSender == null)
@@ -185,7 +185,7 @@ namespace ET.Server
             EntityRef<MessageLocationSender> messageLocationSenderRef = messageLocationSender;
             Scene root = self.Root();
             Type iRequestType = iRequest.GetType();
-            using (await root.GetComponent<CoroutineLockComponent>().Wait(CoroutineLockType.MessageLocationSender, entityId))
+            using (await root.CoroutineLockComponent.Wait(CoroutineLockType.MessageLocationSender, entityId))
             {
                 messageLocationSender = messageLocationSenderRef;
                 if (messageLocationSender == null)
@@ -272,7 +272,7 @@ namespace ET.Server
 
                         // 等待0.5s再发送
                         root = rootRef;
-                        await root.GetComponent<TimerComponent>().WaitAsync(failTimes * failTimes * 10);
+                        await root.TimerComponent.WaitAsync(failTimes * failTimes * 10);
                         messageLocationSender = messageLocationSenderRef;
                         if (messageLocationSender == null)
                         {

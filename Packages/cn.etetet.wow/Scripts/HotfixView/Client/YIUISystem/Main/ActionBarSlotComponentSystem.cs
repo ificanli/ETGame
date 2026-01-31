@@ -91,7 +91,7 @@ namespace ET.Client
             }
 
             self.m_Player         = player;
-            self.m_Numeric        = player.GetComponent<NumericComponent>();
+            self.m_Numeric        = player.NumericComponent;
             self.m_SpellComponent = player.GetComponent<SpellComponent>();
 
             //设置技能图片

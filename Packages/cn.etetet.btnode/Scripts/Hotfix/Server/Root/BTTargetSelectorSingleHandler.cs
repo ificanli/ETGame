@@ -37,8 +37,8 @@ namespace ET.Server
                 }
             }
 
-            float unitRadius = caster.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
-            float targetRadius = target.GetComponent<NumericComponent>().GetAsFloat(NumericType.Radius);
+            float unitRadius = caster.NumericComponent.GetAsFloat(NumericType.Radius);
+            float targetRadius = target.NumericComponent.GetAsFloat(NumericType.Radius);
             float distance = math.distance(caster.Position, target.Position);
             if (distance > node.MaxDistance / 1000f + unitRadius + targetRadius)
             {

@@ -16,7 +16,7 @@
             {
                 return;
             }
-            NumericComponent numericComponent = unit.GetComponent<NumericComponent>();
+            NumericComponent numericComponent = unit.NumericComponent;
 
             for (int i = 0; i < self.Records.Count; i += 2)
             {
