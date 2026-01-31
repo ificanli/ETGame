@@ -299,6 +299,8 @@ namespace ET
         /// <returns>Sent bytes</returns>
         public int Send(byte[] buffer)
         {
+            if (buffer == null || buffer.Length == 0)
+                return 0;
             fixed (byte* src = &buffer[0])
                 return ikcp_send(_kcp, src, buffer.Length);
         }
@@ -311,6 +313,8 @@ namespace ET
         /// <returns>Sent bytes</returns>
         public int Send(byte[] buffer, int length)
         {
+            if (buffer == null || length == 0)
+                return 0;
             fixed (byte* src = &buffer[0])
                 return ikcp_send(_kcp, src, length);
         }
@@ -324,6 +328,8 @@ namespace ET
         /// <returns>Sent bytes</returns>
         public int Send(byte[] buffer, int offset, int length)
         {
+            if (buffer == null || length == 0)
+                return 0;
             fixed (byte* src = &buffer[offset])
                 return ikcp_send(_kcp, src, length);
         }
@@ -335,6 +341,8 @@ namespace ET
         /// <returns>Sent bytes</returns>
         public int Send(ReadOnlySpan<byte> buffer)
         {
+            if (buffer.Length == 0)
+                return 0;
             fixed (byte* src = &buffer[0])
                 return ikcp_send(_kcp, src, buffer.Length);
         }
@@ -346,6 +354,8 @@ namespace ET
         /// <returns>Sent bytes</returns>
         public int Send(ReadOnlyMemory<byte> buffer)
         {
+            if (buffer.Length == 0)
+                return 0;
             fixed (byte* src = &buffer.Span[0])
                 return ikcp_send(_kcp, src, buffer.Length);
         }
@@ -357,6 +367,8 @@ namespace ET
         /// <returns>Sent bytes</returns>
         public int Send(ArraySegment<byte> buffer)
         {
+            if (buffer.Array == null || buffer.Count == 0)
+                return 0;
             fixed (byte* src = &buffer.Array[buffer.Offset])
                 return ikcp_send(_kcp, src, buffer.Count);
         }
@@ -385,6 +397,8 @@ namespace ET
         /// <returns>Input bytes</returns>
         public int Input(byte[] buffer)
         {
+            if (buffer == null || buffer.Length == 0)
+                return 0;
             fixed (byte* src = &buffer[0])
                 return ikcp_input(_kcp, src, buffer.Length);
         }
@@ -397,6 +411,8 @@ namespace ET
         /// <returns>Input bytes</returns>
         public int Input(byte[] buffer, int length)
         {
+            if (buffer == null || length == 0)
+                return 0;
             fixed (byte* src = &buffer[0])
                 return ikcp_input(_kcp, src, length);
         }
@@ -410,6 +426,8 @@ namespace ET
         /// <returns>Input bytes</returns>
         public int Input(byte[] buffer, int offset, int length)
         {
+            if (buffer == null || length == 0)
+                return 0;
             fixed (byte* src = &buffer[offset])
                 return ikcp_input(_kcp, src, length);
         }
@@ -421,6 +439,8 @@ namespace ET
         /// <returns>Input bytes</returns>
         public int Input(ReadOnlySpan<byte> buffer)
         {
+            if (buffer.Length == 0)
+                return 0;
             fixed (byte* src = &buffer[0])
                 return ikcp_input(_kcp, src, buffer.Length);
         }
@@ -432,6 +452,8 @@ namespace ET
         /// <returns>Input bytes</returns>
         public int Input(ReadOnlyMemory<byte> buffer)
         {
+            if (buffer.Length == 0)
+                return 0;
             fixed (byte* src = &buffer.Span[0])
                 return ikcp_input(_kcp, src, buffer.Length);
         }
@@ -443,6 +465,8 @@ namespace ET
         /// <returns>Input bytes</returns>
         public int Input(ArraySegment<byte> buffer)
         {
+            if (buffer.Array == null || buffer.Count == 0)
+                return 0;
             fixed (byte* src = &buffer.Array[buffer.Offset])
                 return ikcp_input(_kcp, src, buffer.Count);
         }
@@ -477,6 +501,8 @@ namespace ET
         /// <returns>Received bytes</returns>
         public int Receive(byte[] buffer)
         {
+            if (buffer == null || buffer.Length == 0)
+                return -1;
             fixed (byte* dest = &buffer[0])
                 return ikcp_recv(_kcp, dest, buffer.Length);
         }
@@ -489,6 +515,8 @@ namespace ET
         /// <returns>Received bytes</returns>
         public int Receive(byte[] buffer, int length)
         {
+            if (buffer == null || length == 0)
+                return -1;
             fixed (byte* dest = &buffer[0])
                 return ikcp_recv(_kcp, dest, length);
         }
@@ -502,6 +530,8 @@ namespace ET
         /// <returns>Received bytes</returns>
         public int Receive(byte[] buffer, int offset, int length)
         {
+            if (buffer == null || length == 0)
+                return -1;
             fixed (byte* dest = &buffer[offset])
                 return ikcp_recv(_kcp, dest, length);
         }
@@ -513,6 +543,8 @@ namespace ET
         /// <returns>Received bytes</returns>
         public int Receive(Span<byte> buffer)
         {
+            if (buffer.Length == 0)
+                return -1;
             fixed (byte* dest = &buffer[0])
                 return ikcp_recv(_kcp, dest, buffer.Length);
         }
@@ -524,6 +556,8 @@ namespace ET
         /// <returns>Received bytes</returns>
         public int Receive(Memory<byte> buffer)
         {
+            if (buffer.Length == 0)
+                return -1;
             fixed (byte* dest = &buffer.Span[0])
                 return ikcp_recv(_kcp, dest, buffer.Length);
         }
@@ -535,6 +569,8 @@ namespace ET
         /// <returns>Received bytes</returns>
         public int Receive(ArraySegment<byte> buffer)
         {
+            if (buffer.Array == null || buffer.Count == 0)
+                return -1;
             fixed (byte* dest = &buffer.Array[buffer.Offset])
                 return ikcp_recv(_kcp, dest, buffer.Count);
         }
