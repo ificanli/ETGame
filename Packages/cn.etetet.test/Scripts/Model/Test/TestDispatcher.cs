@@ -57,7 +57,7 @@ namespace ET.Test
 
             if (result.Count == 0)
             {
-                throw new Exception($"not found test! name: {name}");
+                return result;
             }
             
             return result;

@@ -15,10 +15,21 @@ namespace ET.Test
             
             StartSceneConfig startConfig = StartSceneConfigCategory.Instance.GetBySceneName(nameof(SceneType.ServiceDiscovery));
             scope.serviceDiscoveryFiberId = await fiber.CreateFiberWithId(
-                ConstFiberId.ServiceDiscoveryFiberId, SchedulerType.Parent, startConfig.Id, startConfig.Zone, SceneType.ServiceDiscovery, startConfig.Name);
+                ServiceDiscovery.ServiceDiscoveryFiberId, SchedulerType.Parent, startConfig.Id, startConfig.Zone,
+                SceneType.ServiceDiscovery, startConfig.Name);
 
             scope.TestFiber = await fiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, SceneType.TestCase, testName);
             
+            return scope;
+        }
+
+        public static async ETTask<TestFiberScope> CreateOneFiber(Fiber fiber, int sceneType, string testName)
+        {
+            TestFiberScope scope = new(fiber)
+            {
+                TestFiber = await fiber.CreateFiber(IdGenerater.Instance.GenerateId(), 0, sceneType, testName)
+            };
+
             return scope;
         }
 
@@ -28,7 +39,10 @@ namespace ET.Test
             {
                 // 注意这里因为是在ValueTask里面，ValueTask不带上下文，所以必须设置上下文，否则会卡住await无法回调回来
                 await fiber.RemoveFiber(this.TestFiber.Id).NewContext(null);
-                await fiber.RemoveFiber(this.serviceDiscoveryFiberId).NewContext(null);
+                if (this.serviceDiscoveryFiberId != 0)
+                {
+                    await fiber.RemoveFiber(this.serviceDiscoveryFiberId).NewContext(null);
+                }
             }
             catch (Exception e)
             {

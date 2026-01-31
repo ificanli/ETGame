@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using CommandLine;
 using ET.Server;
@@ -27,9 +29,13 @@ namespace ET.Test
                 if (testHandlers.Count == 0)
                 {
                     Log.Console("not found test!");
-                    return;
+                    Environment.Exit(1);
                 }
                 
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                List<string> failedTests = new();
+                List<string> passedTests = new();
+                int exitCode = 0;
                 foreach (ITestHandler testHandler in testHandlers)
                 {
                     Type testType = testHandler.GetType();
@@ -41,23 +47,42 @@ namespace ET.Test
                         int ret = await testHandler.Handle(new TestContext() { Fiber = fiber, Args = options });
                         if (ret == 0)
                         {
+                            passedTests.Add(testName);
                             Log.Console($"\u001b[32m{testName} success\u001b[0m");
                         }
                         else
                         {
+                            exitCode = 1;
+                            failedTests.Add(testName);
                             Log.Console($"\u001b[31m{testName} fail! ret: {ret}\u001b[0m");
                         }
                     }
                     catch (Exception e)
                     {
+                        exitCode = 1;
+                        failedTests.Add(testName);
                         Log.Console($"\u001b[31m{testName} fail!\n{e}\u001b[0m");
                     }
                 }
-                Environment.Exit(0);
+                stopwatch.Stop();
+                
+                Log.Console($"--------------------------------------------------------------------");
+                Log.Console("Test Summary:");
+                Log.Console($"Total: {testHandlers.Count}, Passed: {passedTests.Count}, Failed: {failedTests.Count}, Time: {stopwatch.ElapsedMilliseconds}ms");
+                if (failedTests.Count > 0)
+                {
+                    Log.Console("Failed Tests:");
+                    foreach (string failedTest in failedTests)
+                    {
+                        Log.Console($"- {failedTest}");
+                    }
+                }
+                Environment.Exit(exitCode);
             }
             catch (Exception e)
             {
                 Log.Console(e.ToString());
+                Environment.Exit(1);
             }
             finally
             {

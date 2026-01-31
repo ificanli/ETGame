@@ -1,3 +1,5 @@
+using ET.Client;
+
 namespace ET.Test
 {
     public class Test_CreateRobot_Test: ATestHandler
@@ -6,7 +8,7 @@ namespace ET.Test
         {
             await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Test_CreateRobot_Test));
             Fiber testFiber = scope.TestFiber;
-
+            
             Fiber robot = await TestHelper.CreateRobot(testFiber, nameof(Test_CreateRobot_Test));
             
             Fiber map = TestHelper.GetMap(testFiber, robot);
