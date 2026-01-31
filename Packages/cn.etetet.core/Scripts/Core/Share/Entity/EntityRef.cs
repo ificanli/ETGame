@@ -1,4 +1,7 @@
 using System;
+#if UNITY_EDITOR
+using Sirenix.OdinInspector;
+#endif
 
 namespace ET
 {
@@ -92,6 +95,33 @@ namespace ET
         {
             return v.Entity;
         }
+
+        public override string ToString()
+        {
+            return this.instanceId.ToString();
+        }
+
+
+#if UNITY_EDITOR && ENABLE_VIEW
+        [HorizontalGroup("EntityRefDebug")]
+        [ShowInInspector, ReadOnly, LabelText("Target Entity")]
+        private T DebugEntity => this.Entity;
+
+        [HorizontalGroup("EntityRefDebug")]
+        [Button("Select Entity"), ShowIf("@DebugEntity != null")]
+        private void SelectEntityInHierarchy()
+        {
+            var target = DebugEntity;
+            if (target != null && target.ViewGO != null)
+            {
+                UnityEditor.Selection.activeGameObject = target.ViewGO;
+            }
+            else
+            {
+                Log.Warning("[EntityRef] 无法选中，ViewGO 为空");
+            }
+        }
+#endif
     }
     
     
@@ -200,5 +230,26 @@ namespace ET
         {
             return !left.Equals(right);
         }
+        
+#if UNITY_EDITOR && ENABLE_VIEW
+        [HorizontalGroup("EntityWeakRefDebug")]
+        [ShowInInspector, ReadOnly, LabelText("Target Entity")]
+        private T DebugEntity => this.Entity;
+
+        [HorizontalGroup("EntityWeakRefDebug")]
+        [Button("Select Entity"), ShowIf("@DebugEntity != null")]
+        private void SelectEntityInHierarchy()
+        {
+            var target = DebugEntity;
+            if (target != null && target.ViewGO != null)
+            {
+                UnityEditor.Selection.activeGameObject = target.ViewGO;
+            }
+            else
+            {
+                Log.Warning("[EntityWeakRef] 无法选中，ViewGO 为空");
+            }
+        }
+#endif
     }
 }

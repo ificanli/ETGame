@@ -46,7 +46,7 @@ namespace ET
         {
             get
             {
-                return $"{this.GetType().Name} ({this.SceneType})";
+                return $"{this.GetType().Name} ({this.Name})";
             }
         }
     }
