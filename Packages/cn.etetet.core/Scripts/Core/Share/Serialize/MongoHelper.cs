@@ -12,6 +12,15 @@ namespace ET
         [StaticField]
         private static readonly JsonWriterSettings defaultSettings = new() { OutputMode = JsonOutputMode.RelaxedExtendedJson };
         
+        [StaticField]
+        public static readonly JsonWriterSettings ConfigSettings = new() 
+        { 
+            Indent = true, 
+            IndentChars = "\t", 
+            NewLineChars = "\n", 
+            OutputMode = JsonOutputMode.Shell 
+        };
+        
         public static string ToJson(object obj)
         {
             try

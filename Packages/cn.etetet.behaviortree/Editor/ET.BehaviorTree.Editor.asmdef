@@ -10,7 +10,6 @@
         "ET.Model",
         "ET.ModelView",
         "ET.Core",
-        "ET.Core.Editor",
         "ET.HybridCLR",
         "ET.Init.Editor",
         "ET.Loader",

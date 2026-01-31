@@ -42,6 +42,13 @@ namespace ET
 
         private Edge edge;
 
+        private bool isResizing;
+        private Vector2 resizeStartMousePosition;
+        private float resizeStartWidth;
+        private float currentResizeWidth;
+        private float lastLayoutHeight;
+        private bool layoutQueued;
+
 	        private readonly List<NodeView> children = new();
 
         private readonly Button collapseButton;
@@ -154,6 +161,7 @@ namespace ET
                 }
 
                 RefreshExpandedState();
+                RequestLayout();
             }
         }
 
@@ -167,6 +175,7 @@ namespace ET
             {
                 this.Node.DescCollapsed = value;
                 UpdateTooltip();
+                RequestLayout();
             }
         }
 
@@ -201,13 +210,32 @@ namespace ET
                 this.Node.DescCollapsed = true;
             }
 
+            bool hasChildren = this.Node.Children is { Count: > 0 };
+
             Label idLabel = new(node.Id.ToString());
             idLabel.style.width = 32;
             idLabel.style.height = 20;
             idLabel.style.marginTop = 5;
+            idLabel.style.marginRight = new StyleLength(StyleKeyword.Auto);
             this.titleContainer.Add(idLabel);
 
+            EnsureEditorLayoutDefaults();
+
             style.backgroundColor = new Color(0f, 0f, 0f, 1f);
+            ApplyNodeWidth();
+            this.titleContainer.style.flexGrow = 1;
+            AddResizeHandle();
+            Label titleLabel = this.titleContainer.Q<Label>("title-label");
+            if (titleLabel != null)
+            {
+                titleLabel.style.minWidth = 0;
+                titleLabel.style.flexGrow = 1;
+                titleLabel.style.flexShrink = 1;
+                titleLabel.style.whiteSpace = WhiteSpace.NoWrap;
+                titleLabel.style.textOverflow = TextOverflow.Ellipsis;
+                titleLabel.style.overflow = Overflow.Hidden;
+                titleLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
+            }
 
             this.nodeIMGUI = ScriptableObject.CreateInstance<NodeIMGUI>();
             this.nodeIMGUI.Node = this.Node;
@@ -230,7 +258,18 @@ namespace ET
                     nodeBytes = this.treeView.BackupRoot();
                 }
 
-                this.editor.OnInspectorGUI();
+                float widthBefore = GetNodeWidth();
+                float spacingBefore = GetHorizontalSpacing();
+
+                BTNodeDrawer.IsDrawingInBehaviorTreeEditor = true;
+                try
+                {
+                    this.editor.OnInspectorGUI();
+                }
+                finally
+                {
+                    BTNodeDrawer.IsDrawingInBehaviorTreeEditor = false;
+                }
 
                 if (GUI.changed)
                 {
@@ -238,6 +277,19 @@ namespace ET
                     if (nodeBytes != null)
                     {
                         this.treeView.SaveToUndo(nodeBytes);
+                    }
+
+                    bool widthChanged = !Mathf.Approximately(widthBefore, GetNodeWidth());
+                    bool spacingChanged = !Mathf.Approximately(spacingBefore, GetHorizontalSpacing());
+
+                    if (widthChanged)
+                    {
+                        ApplyNodeWidth();
+                    }
+
+                    if (widthChanged || spacingChanged)
+                    {
+                        this.treeView.Layout();
                     }
                 }
             });
@@ -250,7 +302,7 @@ namespace ET
             outputContainer.Add(this.outPort);
             
             // 有孩子，显示折叠按钮
-            if (this.Node.Children is { Count: > 0 })
+            if (hasChildren)
             {
                 collapseButton = new Button();
                 collapseButton.text = "-";
@@ -270,6 +322,9 @@ namespace ET
             this.Position = this.Node.Position;
 
             RegisterCallback<MouseDownEvent>(OnMouseDown);
+            RegisterCallback<MouseMoveEvent>(OnMouseMove);
+            RegisterCallback<MouseUpEvent>(OnMouseUp);
+            RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
         private void TryApplyTitleColor(Type nodeType)
@@ -296,6 +351,9 @@ namespace ET
 
             // 注销事件回调，防止内存泄漏
             UnregisterCallback<MouseDownEvent>(OnMouseDown);
+            UnregisterCallback<MouseMoveEvent>(OnMouseMove);
+            UnregisterCallback<MouseUpEvent>(OnMouseUp);
+            UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
 
             // 清理IMGUIContainer
             if (this.imgui != null)
@@ -343,9 +401,135 @@ namespace ET
 
         private void OnMouseDown(MouseDownEvent evt)
         {
+            if (TryStartResize(evt))
+            {
+                return;
+            }
+
             this.treeView.MouseDownNode = this;
             this.treeView.MoveStartPos = this.Position;
             this.treeView.SetRed(this);
+        }
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            if (this.isDisposed || this.treeView.IsDisposed)
+            {
+                return;
+            }
+
+            float newHeight = evt.newRect.height;
+            if (newHeight <= 0f)
+            {
+                return;
+            }
+
+            if (Mathf.Approximately(this.lastLayoutHeight, newHeight))
+            {
+                return;
+            }
+
+            this.lastLayoutHeight = newHeight;
+            RequestLayout();
+        }
+
+        private void OnMouseMove(MouseMoveEvent evt)
+        {
+            if (!this.isResizing)
+            {
+                return;
+            }
+
+            Vector2 delta = evt.mousePosition - this.resizeStartMousePosition;
+            float newWidth = Mathf.Max(MinNodeWidth, this.resizeStartWidth + delta.x);
+            this.currentResizeWidth = newWidth;
+
+            style.width = newWidth;
+
+            if (this.Node != null && !Mathf.Approximately(this.Node.EditorNodeWidth, newWidth))
+            {
+                this.Node.EditorNodeWidth = newWidth;
+            }
+
+            evt.StopPropagation();
+        }
+
+        private void OnMouseUp(MouseUpEvent evt)
+        {
+            if (!this.isResizing)
+            {
+                return;
+            }
+
+            this.isResizing = false;
+            this.ReleaseMouse();
+
+            if (this.Node != null)
+            {
+                this.Node.EditorNodeWidth = Mathf.Max(MinNodeWidth, this.currentResizeWidth);
+            }
+
+            ApplyNodeWidth();
+
+            if (!this.treeView.IsDisposed)
+            {
+                this.treeView.Layout();
+            }
+
+            evt.StopPropagation();
+        }
+
+        private bool TryStartResize(MouseDownEvent evt)
+        {
+            if (evt.button != 0)
+            {
+                return false;
+            }
+
+            if (!IsInResizeZone(evt.localMousePosition, this.layout))
+            {
+                return false;
+            }
+
+            this.isResizing = true;
+            this.resizeStartMousePosition = evt.mousePosition;
+            this.resizeStartWidth = this.layout.width;
+            this.currentResizeWidth = this.resizeStartWidth;
+
+            if (!this.treeView.IsDisposed)
+            {
+                this.treeView.SaveToUndo();
+            }
+
+            this.CaptureMouse();
+            evt.StopPropagation();
+            return true;
+        }
+
+        private void RequestLayout()
+        {
+            if (this.layoutQueued || this.treeView.IsDisposed)
+            {
+                return;
+            }
+
+            this.layoutQueued = true;
+            EditorApplication.delayCall += () =>
+            {
+                this.layoutQueued = false;
+                if (this.isDisposed || this.treeView.IsDisposed)
+                {
+                    return;
+                }
+
+                this.treeView.Layout();
+            };
+        }
+
+        private static bool IsInResizeZone(Vector2 mousePosition, Rect elementLayout)
+        {
+            return mousePosition.x >= elementLayout.width - ResizableManipulator.DefaultResizeZone &&
+                   mousePosition.y >= elementLayout.height - ResizableManipulator.DefaultResizeZone;
         }
         
         public void SetBorderColor(Color color)
@@ -415,6 +599,11 @@ namespace ET
             {
                 foreach (BTNode child in nodeView.Node.Children)
                 {
+                    if (child == null)
+                    {
+                        continue;
+                    }
+
                     nodeView.AddChild(new NodeView(this.treeView, child));
                 }
             }
@@ -450,6 +639,10 @@ namespace ET
             // 添加折叠/展开节点说明菜单项
             string descToggleText = this.DescCollapsed ? "显示节点说明" : "隐藏节点说明";
             evt.menu.AppendAction(descToggleText, (o) => this.ChangeDescCollapse());
+
+            // 添加显示/隐藏编辑器布局菜单项
+            string layoutToggleText = this.Node.EditorLayoutVisible ? "隐藏编辑器布局" : "显示编辑器布局";
+            evt.menu.AppendAction(layoutToggleText, (o) => this.ChangeEditorLayoutVisible());
         }
 
         private async ETTask Change(DropdownMenuAction obj)
@@ -466,12 +659,6 @@ namespace ET
             
             Type type = searchTreeEntry.userData as Type;
             BTNode btNode = Activator.CreateInstance(type) as BTNode;
-
-            if (btNode is BTRoot)
-            {
-                this.treeView.BehaviorTreeEditor?.ShowText("can not change to root node!");
-                return;
-            }
 
             if (this.GetChildren().Count > 0)
             {
@@ -507,6 +694,18 @@ namespace ET
         private void ChangeDescCollapse()
         {
             this.DescCollapsed = !this.DescCollapsed;
+        }
+
+        private void ChangeEditorLayoutVisible()
+        {
+            if (this.Node == null)
+            {
+                return;
+            }
+
+            this.Node.EditorLayoutVisible = !this.Node.EditorLayoutVisible;
+            this.editor?.Repaint();
+            RequestLayout();
         }
 
         private void ChangeCollapse()
@@ -585,8 +784,80 @@ namespace ET
 
         #region Layout
 
-        private const float HorizontalSpacing = 300f; // 节点之间的水平间距
-        private const float VerticalSpacing = 100f; // 节点之间的垂直间距
+        private const float MinNodeWidth = BTNode.EditorNodeWidthMin; // 节点最小宽度
+        private const float DefaultNodeWidth = BTNode.EditorNodeWidthDefault; // 节点默认宽度
+        private const float DefaultHorizontalSpacing = BTNode.EditorHorizontalSpacingDefault; // 节点之间的水平间距
+        private const float VerticalSpacing = 50f; // 节点之间的垂直间距
+        private const float ResizeHandleSize = ResizableManipulator.DefaultResizeZone; // 拖拽把手尺寸
+
+        private void EnsureEditorLayoutDefaults()
+        {
+            if (this.Node == null)
+            {
+                return;
+            }
+
+            if (this.Node.EditorNodeWidth < MinNodeWidth)
+            {
+                this.Node.EditorNodeWidth = MinNodeWidth;
+            }
+
+            if (this.Node.EditorHorizontalSpacing <= 0f)
+            {
+                this.Node.EditorHorizontalSpacing = DefaultHorizontalSpacing;
+            }
+        }
+
+        private float GetNodeWidth()
+        {
+            EnsureEditorLayoutDefaults();
+            return this.Node != null ? this.Node.EditorNodeWidth : DefaultNodeWidth;
+        }
+
+        private float GetHorizontalSpacing()
+        {
+            EnsureEditorLayoutDefaults();
+            return this.Node != null ? this.Node.EditorHorizontalSpacing : DefaultHorizontalSpacing;
+        }
+
+        private float GetHorizontalStep()
+        {
+            float nodeWidth = GetNodeWidth();
+            return nodeWidth + GetHorizontalSpacing();
+        }
+
+        private void ApplyNodeWidth()
+        {
+            style.width = GetNodeWidth();
+        }
+
+        private float GetNodeHeight()
+        {
+            float height = this.layout.height;
+            if (height <= 0f)
+            {
+                height = this.GetPosition().height;
+            }
+
+            return height > 0f ? height : VerticalSpacing;
+        }
+
+        private void AddResizeHandle()
+        {
+            IMGUIContainer handle = new(() =>
+            {
+                EditorGUIUtility.AddCursorRect(new Rect(0f, 0f, ResizeHandleSize, ResizeHandleSize), MouseCursor.ResizeHorizontal);
+            });
+            handle.name = "resize-handle";
+            handle.AddToClassList("bt-node-resize-handle");
+            handle.style.width = ResizeHandleSize;
+            handle.style.height = ResizeHandleSize;
+            handle.style.position = UnityEngine.UIElements.Position.Absolute;
+            handle.style.right = 2;
+            handle.style.bottom = 2;
+            handle.pickingMode = PickingMode.Position;
+            this.hierarchy.Add(handle);
+        }
 
         void AjustPosition(Vector2 offset)
         {
@@ -613,6 +884,10 @@ namespace ET
         {
             float childY = startY; // 当前子节点的Y坐标
             float maxChildWidth = 0; // 子节点中最大的宽度
+            float horizontalStep = node.GetHorizontalStep();
+            float nodeHeight = node.GetNodeHeight();
+
+            node.ApplyNodeWidth();
 
             // 获取当前节点的子节点
             List<NodeView> children = node.GetNotCollapsedChildren();
@@ -621,16 +896,37 @@ namespace ET
             if (children.Count == 0)
             {
                 node.Position = new Vector2(currentX, startY); // 设置节点位置
-                totalHeight = VerticalSpacing; // 节点的高度
-                nextX = currentX + HorizontalSpacing; // 节点的宽度
+                totalHeight = nodeHeight; // 节点的高度
+                nextX = currentX + horizontalStep; // 节点的宽度
                 return new Vector2(currentX, startY);
+            }
+
+            if (children.Count == 1)
+            {
+                NodeView child = children[0];
+                LayoutNode(child, currentX + horizontalStep, startY, out float childHeight, out nextX);
+
+                maxChildWidth = Mathf.Max(maxChildWidth, nextX - currentX);
+                totalHeight = Mathf.Max(childHeight, nodeHeight);
+
+                float nodeYSingle = startY + (totalHeight - nodeHeight) / 2f;
+                node.Position = new Vector2(currentX, nodeYSingle);
+
+                float deltaY = nodeYSingle - child.Position.y;
+                if (!Mathf.Approximately(deltaY, 0f))
+                {
+                    child.AjustPosition(new Vector2(0f, -deltaY));
+                }
+
+                nextX = currentX + maxChildWidth;
+                return new Vector2(currentX, nodeYSingle);
             }
 
             // 遍历子节点，递归布局
             foreach (NodeView child in children)
             {
                 float childHeight;
-                LayoutNode(child, currentX + HorizontalSpacing, childY, out childHeight, out nextX);
+                LayoutNode(child, currentX + horizontalStep, childY, out childHeight, out nextX);
 
                 // 更新垂直方向位置
                 childY += childHeight + VerticalSpacing;
@@ -639,11 +935,12 @@ namespace ET
                 maxChildWidth = Mathf.Max(maxChildWidth, nextX - currentX);
             }
 
-            // 计算子节点总高度
+            // 计算子节点总高度，并保证不小于当前节点高度，避免兄弟节点重叠
             totalHeight = childY - startY - VerticalSpacing;
+            totalHeight = Mathf.Max(totalHeight, nodeHeight);
 
             // 将当前节点居中放置在子节点左侧
-            float nodeY = startY + (totalHeight - VerticalSpacing) / 2f;
+            float nodeY = startY + (totalHeight - nodeHeight) / 2f;
             node.Position = new Vector2(currentX, nodeY);
 
             nextX = currentX + maxChildWidth;

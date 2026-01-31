@@ -131,15 +131,8 @@ namespace ET.Client
                 Directory.CreateDirectory(ExportPath);
             }
 
-            JsonWriterSettings jsonWriterSettings = new JsonWriterSettings() 
-            { 
-                Indent = true, 
-                IndentChars = "\t", 
-                NewLineChars = "\n", 
-                OutputMode = JsonOutputMode.Shell 
-            };
-            File.WriteAllText(Path.Combine(ExportPath, "SpellConfigCategory.txt"), ((object)spellConfigCategory).ToJson(jsonWriterSettings));
-            File.WriteAllText(Path.Combine(ExportPath, "BuffConfigCategory.txt"), ((object)buffConfigCategory).ToJson(jsonWriterSettings));
+            File.WriteAllText(Path.Combine(ExportPath, "SpellConfigCategory.txt"), ((object)spellConfigCategory).ToJson(MongoHelper.ConfigSettings));
+            File.WriteAllText(Path.Combine(ExportPath, "BuffConfigCategory.txt"), ((object)buffConfigCategory).ToJson(MongoHelper.ConfigSettings));
             
             Debug.Log("Export ScriptableObject OK!");
         }
@@ -173,7 +166,8 @@ namespace ET.Client
             }
 
             // 遍历所有节点进行校验
-            BTNodeValidator.ValidateNodeRecursive(root, new Dictionary<string, Type>(), errors);
+            bool skipRootInput = BTNodeValidator.IsTargetSelectorRoot(root);
+            BTNodeValidator.ValidateNodeRecursive(root, new Dictionary<string, Type>(), errors, skipRootInput);
 
             return errors.Count == 0;
         }

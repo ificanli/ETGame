@@ -10,6 +10,8 @@ namespace ET
         public static BTRoot OpenNode;
 
         public static UnityEngine.Object ScriptableObject;
+
+        internal static bool IsDrawingInBehaviorTreeEditor;
         
 
         protected override void DrawPropertyLayout(GUIContent label)
@@ -19,8 +21,8 @@ namespace ET
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            // 绘制顶部按钮
-            if (GUILayout.Button($"Open BehaviorTreeEditor", GUILayout.Height(25)))
+            // 仅在Inspector中显示，行为树编辑器内隐藏
+            if (!IsDrawingInBehaviorTreeEditor && GUILayout.Button($"Open BehaviorTreeEditor", GUILayout.Height(25)))
             {
                 // 打开行为树编辑器
                 OpenNode = node;

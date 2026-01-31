@@ -14,7 +14,6 @@ namespace ET
     [UxmlElement]
     public partial class TreeView: GraphView
     {
-
         public static TreeView ActiveTreeView { get; private set; }
 
         public readonly RightClickMenu RightClickMenu = ScriptableObject.CreateInstance<RightClickMenu>();
@@ -131,6 +130,40 @@ namespace ET
         
         private GraphViewChange OnGraphViewChanged(GraphViewChange change)
         {
+            if (change.elementsToRemove != null && change.elementsToRemove.Count > 0)
+            {
+                bool needLayout = false;
+                bool savedUndo = false;
+                for (int i = change.elementsToRemove.Count - 1; i >= 0; --i)
+                {
+                    if (change.elementsToRemove[i] is not NodeView nodeView)
+                    {
+                        continue;
+                    }
+
+                    if (nodeView.Parent == null)
+                    {
+                        change.elementsToRemove.RemoveAt(i);
+                        continue;
+                    }
+
+                    if (!savedUndo)
+                    {
+                        this.SaveToUndo();
+                        savedUndo = true;
+                    }
+
+                    nodeView.Dispose();
+                    change.elementsToRemove.RemoveAt(i);
+                    needLayout = true;
+                }
+
+                if (needLayout)
+                {
+                    this.Layout();
+                }
+            }
+
             if (this.MouseDownNode == null)
             {
                 return change;
@@ -234,7 +267,7 @@ namespace ET
             else
             {
                 // 不同父节点下 / 或者按住Shift强制作为目标子节点
-                if (to.Node is not BTComposite && to.Node is not BTDecorate && to.Node is not BTRoot)
+                if (to.Node is not BTComposite && to.Node is not BTDecorate)
                 {
                     this.BehaviorTreeEditor?.ShowText("目标节点不支持添加子节点");
                     return;
@@ -286,10 +319,37 @@ namespace ET
             this.isForceAsChildPressed = evt.altKey || evt.shiftKey;
         }
         
+        /// <summary>
+        /// 递归移除节点树中的 null 或“缺失类型”子节点，避免类重命名后出现看不见的空节点。
+        /// </summary>
+        private static void PurgeNullOrInvalidChildren(BTNode node)
+        {
+            if (node?.Children == null)
+            {
+                return;
+            }
+            for (int i = node.Children.Count - 1; i >= 0; i--)
+            {
+                BTNode child = node.Children[i];
+                if (child == null)
+                {
+                    node.Children.RemoveAt(i);
+                    continue;
+                }
+                if (child.GetType().Name.Contains("Missing"))
+                {
+                    node.Children.RemoveAt(i);
+                    continue;
+                }
+                PurgeNullOrInvalidChildren(child);
+            }
+        }
+
         public void InitTree(BehaviorTreeEditor behaviorTreeEditor, UnityEngine.Object so, BTRoot node)
         {
             this.BehaviorTreeEditor = behaviorTreeEditor;
             this.scriptableObject = so;
+            ActiveTreeView = this;
 
             this.Nodes.Clear();
 
@@ -298,12 +358,24 @@ namespace ET
                 this.root.Dispose();
             }
 
+            // 类重命名后反序列化可能产生 null 或缺失类型子节点，先清理再构建视图
+            PurgeNullOrInvalidChildren(node);
+            if (this.scriptableObject != null)
+            {
+                EditorUtility.SetDirty(this.scriptableObject);
+            }
+
             this.maxId = 0;
             GetMaxId(node);
 
             this.root = new NodeView(this, node);
             foreach (BTNode child in node.Children)
             {
+                if (child == null)
+                {
+                    continue;
+                }
+
                 this.root.AddChild(new NodeView(this, child));
             }
 
@@ -316,6 +388,7 @@ namespace ET
         private void MoveChildrenToRoot(BTRoot node)
         {
             this.Nodes.Clear();
+            ActiveTreeView = this;
             
             BTRoot btRootNode = (BTRoot)this.root.Node;
             
@@ -327,12 +400,19 @@ namespace ET
             btRootNode.Children.AddRange(node.Children);
             node = btRootNode;
 
+            PurgeNullOrInvalidChildren(node);
+
             this.maxId = 0;
             GetMaxId(node);
             
             this.root = new NodeView(this, node);
             foreach (BTNode child in node.Children)
             {
+                if (child == null)
+                {
+                    continue;
+                }
+
                 this.root.AddChild(new NodeView(this, child));
             }
 
@@ -341,6 +421,11 @@ namespace ET
 
         private void GetMaxId(BTNode node)
         {
+            if (node == null)
+            {
+                return;
+            }
+
             node.Children ??= new List<BTNode>();
             
             if (node.Id > this.maxId)
@@ -352,6 +437,11 @@ namespace ET
             {
                 foreach (BTNode child in node.Children)
                 {
+                    if (child == null)
+                    {
+                        continue;
+                    }
+
                     GetMaxId(child);
                 }
             }
@@ -661,7 +751,8 @@ namespace ET
         private void ValidateNodeRecursive(NodeView node, Dictionary<string, Type> availableOutputs, List<string> errors)
         {
             // 直接使用公共的BTNodeValidator进行校验
-            BTNodeValidator.ValidateNodeRecursive(node.Node, availableOutputs, errors);
+            bool skipRootInput = ReferenceEquals(node, this.root) && BTNodeValidator.IsTargetSelectorRoot(node.Node);
+            BTNodeValidator.ValidateNodeRecursive(node.Node, availableOutputs, errors, skipRootInput);
         }
 
         /// <summary>
@@ -673,6 +764,11 @@ namespace ET
         private bool HasInvalidInput(NodeView node, out List<string> invalidFields)
         {
             invalidFields = new List<string>();
+
+            if (ReferenceEquals(node, this.root) && BTNodeValidator.IsTargetSelectorRoot(node.Node))
+            {
+                return false;
+            }
 
             // 收集从root到该节点路径上所有可用的BTOutput
             HashSet<string> availableOutputs = new HashSet<string>();

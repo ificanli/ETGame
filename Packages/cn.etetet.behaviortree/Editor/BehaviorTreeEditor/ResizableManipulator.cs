@@ -6,9 +6,21 @@ namespace ET
 {
     public class ResizableManipulator : MouseManipulator
     {
+        public const float DefaultResizeZone = 10f;
+
         private bool isResizing;
         private Vector2 startMousePosition;
         private Rect startRect;
+        private float currentWidth;
+
+        public float MinWidth { get; set; }
+        public float MinHeight { get; set; }
+        public float ResizeZone { get; set; } = DefaultResizeZone;
+        public bool ResizeHeight { get; set; }
+
+        public System.Action OnResizeStart { get; set; }
+        public System.Action<float> OnResizing { get; set; }
+        public System.Action<float> OnResizeEnd { get; set; }
 
         protected override void RegisterCallbacksOnTarget()
         {
@@ -33,6 +45,8 @@ namespace ET
                 isResizing = true;
                 startMousePosition = evt.mousePosition;
                 startRect = node.layout;
+                currentWidth = startRect.width;
+                OnResizeStart?.Invoke();
                 target.CaptureMouse();
                 evt.StopPropagation();
             }
@@ -43,11 +57,18 @@ namespace ET
             if (isResizing)
             {
                 var delta = evt.mousePosition - startMousePosition;
-                var newWidth = Mathf.Max(100, startRect.width + delta.x); // 最小宽度限制
-                var newHeight = Mathf.Max(50, startRect.height + delta.y); // 最小高度限制
+                float newWidth = Mathf.Max(MinWidth, startRect.width + delta.x);
+                currentWidth = newWidth;
 
                 target.style.width = newWidth;
-                target.style.height = newHeight;
+
+                if (ResizeHeight)
+                {
+                    float newHeight = Mathf.Max(MinHeight, startRect.height + delta.y);
+                    target.style.height = newHeight;
+                }
+
+                OnResizing?.Invoke(newWidth);
 
                 evt.StopPropagation();
             }
@@ -59,6 +80,7 @@ namespace ET
             {
                 isResizing = false;
                 target.ReleaseMouse();
+                OnResizeEnd?.Invoke(currentWidth);
                 evt.StopPropagation();
             }
         }
@@ -66,8 +88,7 @@ namespace ET
         // 判断鼠标是否在节点的右下角（用于触发调整大小）
         private bool IsInResizeZone(Vector2 mousePosition, Rect layout)
         {
-            const float resizeZone = 10f; // 调整大小的触发区域大小（边角10x10）
-            return mousePosition.x >= layout.width - resizeZone && mousePosition.y >= layout.height - resizeZone;
+            return mousePosition.x >= layout.width - ResizeZone && mousePosition.y >= layout.height - ResizeZone;
         }
     }
 }

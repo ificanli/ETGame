@@ -4,3 +4,12 @@ GridBackground {
     --thick-line-color: rgba(193, 196, 192, 0.1);
     --spacing: 15;
 }
+
+.bt-node-resize-handle {
+    background-color: rgba(200, 200, 200, 0.6);
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+    cursor: resize-horizontal;
+}

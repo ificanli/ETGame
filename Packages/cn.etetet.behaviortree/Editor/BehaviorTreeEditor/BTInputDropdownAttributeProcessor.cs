@@ -12,6 +12,12 @@ namespace ET
     {
         protected override void DrawPropertyLayout(GUIContent label)
         {
+            if (!BTInputDropdownHelper.ShouldUseInputDropdown(this.Property, this.Attribute))
+            {
+                this.CallNextDrawer(label);
+                return;
+            }
+
             BTInputDropdownHelper.OptionResult optionResult = BTInputDropdownHelper.GetOptionsForProperty(this.Property, this.Attribute);
             List<BTInputDropdownHelper.OptionItem> options = optionResult.Options;
 

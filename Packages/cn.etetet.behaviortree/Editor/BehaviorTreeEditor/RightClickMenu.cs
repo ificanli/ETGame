@@ -44,11 +44,6 @@ namespace ET
                     continue;
                 }
 
-                if (typeof(BTRoot).IsAssignableFrom(type))
-                {
-                    continue;
-                }
-
                 if (type.ContainsGenericParameters)
                 {
                     continue;

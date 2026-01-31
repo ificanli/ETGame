@@ -472,7 +472,16 @@ MonoBehaviour:
       Entry: 3
       Data: 2
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 20|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6
@@ -485,7 +494,7 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
-      Data: false
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -512,12 +521,21 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 20|ET.BTShowCastSlider, ET.Model
+      Data: 21|ET.BTShowCastSlider, ET.Model
     - Name: Id
       Entry: 3
       Data: 3
     - Name: Children
-      Entry: 6
+      Entry: 7
+      Data: 22|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: Desc
       Entry: 6
@@ -530,7 +548,7 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
-      Data: false
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -554,7 +572,7 @@ MonoBehaviour:
       Data: TameBeast
     - Name: Icon
       Entry: 7
-      Data: 21|ET.OdinUnityObject, ET.Model
+      Data: 23|ET.OdinUnityObject, ET.Model
     - Name: Name
       Entry: 1
       Data: Ability_Druid_Berserk
@@ -581,7 +599,7 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
-      Data: false
+      Data: true
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -611,25 +629,25 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 7
-      Data: 22|ET.EffectClientBuffRemove, ET.Model
+      Data: 24|ET.EffectClientBuffRemove, ET.Model
     - Name: Id
       Entry: 3
       Data: 1
     - Name: Children
       Entry: 7
-      Data: 23|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 25|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 1
     - Name: 
       Entry: 7
-      Data: 24|ET.BTAnimatorSetBool, ET.Model
+      Data: 26|ET.BTAnimatorSetBool, ET.Model
     - Name: Id
       Entry: 3
       Data: 2
     - Name: Children
       Entry: 7
-      Data: 25|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+      Data: 27|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
