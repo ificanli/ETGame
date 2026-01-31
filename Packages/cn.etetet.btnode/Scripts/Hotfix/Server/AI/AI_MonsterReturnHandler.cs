@@ -4,8 +4,9 @@ namespace ET.Server
 {
     public class AI_MonsterReturnHandler: ABTCoroutineHandler<AI_MonsterReturn>
     {
-        protected override int Check(Buff buff, AI_MonsterReturn node, BTEnv env)
+        protected override int Check(AI_MonsterReturn node, BTEnv env)
         {
+            Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.GetOwner();
             NumericComponent numericComponent = unit.NumericComponent;
             float3 birthPos = new(
@@ -19,8 +20,9 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask RunAsync(Buff buff, AI_MonsterReturn node, BTEnv env)
+        protected override async ETTask RunAsync(AI_MonsterReturn node, BTEnv env)
         {
+            Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.GetOwner();
             NumericComponent numericComponent = unit.NumericComponent;
 

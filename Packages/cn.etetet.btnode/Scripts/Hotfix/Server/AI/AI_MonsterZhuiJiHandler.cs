@@ -4,8 +4,9 @@ namespace ET.Server
 {
     public class AI_MonsterZhuiJiHandler: ABTCoroutineHandler<AI_MonsterZhuiJi>
     {
-        protected override int Check(Buff buff, AI_MonsterZhuiJi node, BTEnv env)
+        protected override int Check(AI_MonsterZhuiJi node, BTEnv env)
         {
+            Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.GetOwner();
             ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
             if (threatComponent == null)
@@ -20,8 +21,9 @@ namespace ET.Server
             return 0;
         }
 
-        protected override async ETTask RunAsync(Buff buff, AI_MonsterZhuiJi node, BTEnv env)
+        protected override async ETTask RunAsync(AI_MonsterZhuiJi node, BTEnv env)
         {
+            Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.GetOwner();
             EntityRef<Unit> unitRef = unit;
             ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();

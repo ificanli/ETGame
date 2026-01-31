@@ -17,11 +17,6 @@ namespace ET
         {
             Buff buff = self.GetParent<Buff>();
             EffectServerBuffTick effect = buff.GetConfig().GetEffect<EffectServerBuffTick>();
-            if (effect == null)
-            {
-                Log.Error($"buff set tick but not found EffectServerBuffTick: {buff.ConfigId}");
-                return;
-            }
             self.Override = effect.Override;
 
             if (self.Override)
@@ -48,6 +43,26 @@ namespace ET
             }
         }
 
+
+    }
+
+    public static class BuffTickComponentHelper
+    {
+        public static void Start(this BuffTickComponent self)
+        {
+            Buff buff = self.GetParent<Buff>();
+            int tickTime = buff.TickTime;
+            if (tickTime <= 0)
+            {
+                return;
+            }
+            
+            self.OnTick();
+            
+            TimerComponent timerComponent = buff.Root().TimerComponent;
+            self.TimerId = timerComponent.NewRepeatedTimer(tickTime, TimerInvokeType.BuffTickTimer, self);
+        }
+        
         public static void OnTick(this BuffTickComponent self)
         {
             Buff buff = self.GetParent<Buff>();
@@ -62,24 +77,8 @@ namespace ET
                 Unit unit = buff.Parent.GetParent<Unit>();
                 using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                 env.AddEntity(effect.Buff, buff);
-                env.AddEntity(effect.Unit, unit);
                 BTHelper.RunTree(effect, env);
             }
-        }
-    }
-
-    public static class BuffTickComponentHelper
-    {
-        public static void Start(this BuffTickComponent self)
-        {
-            Buff buff = self.GetParent<Buff>();
-            int tickTime = buff.TickTime;
-            if (tickTime <= 0)
-            {
-                return;
-            }
-            TimerComponent timerComponent = buff.Root().TimerComponent;
-            self.TimerId = timerComponent.NewRepeatedTimer(tickTime, TimerInvokeType.BuffTickTimer, self);
         }
 
         public static void Stop(this BuffTickComponent self)
