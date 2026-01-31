@@ -9,12 +9,23 @@
 - 调试测试失败
 - 验证修改是否正确
 
+## 命令参数
+
+- `--Name`：处理器类名正则，默认 `.*`，匹配所有测试用例
+- `--Console=1`：启用Console输出（可选）
+- 解析与分发：控制台命令由 `TestConsoleHandler` 解析，按正则从 `TestDispatcher` 获取匹配的处理器并逐一运行
+
 ## 快速执行测试
+
+### 编译测试场景,注意,必须用Debug模式
+```bash
+dotnet build ET.sln
+```
 
 ### 启动测试场景
 
 ```bash
-pwsh -Command "dotnet ./Bin/ET.App.dll --SceneName=Test"
+dotnet ./Bin/ET.App.dll --SceneName=Test
 ```
 
 进程会输出 `>` 等待输入
@@ -44,11 +55,33 @@ printf "Test --Name=CreateRobot\n" | pwsh -Command "dotnet ./Bin/ET.App.dll --Sc
 
 ## 重要提醒
 
-1. **测试进程永远不会退出**，不用一直等待进程退出
-2. **可以多次输入命令**，无需重启进程
-3. **测试前删除Logs目录**，方便查找问题
+1. **测试前删除Logs目录**，方便查找问题
 
-## 输出说明
+## 示例输出
+
+### 启动并执行
+
+```bash
+dotnet ./Bin/ET.App.dll --SceneName=Test
+> Test
+Test.Test_CreateRobot start
+Test.Test_CreateRobot success
+```
+
+### 执行指定测试
+
+```bash
+> Test --Name=CreateRobot
+Test.Test_CreateRobot start
+Test.Test_CreateRobot success
+```
+
+### 未找到测试
+
+```bash
+> Test --Name=CreateRobot2
+not found test! package: .* name: CreateRobot2
+```
 
 ### 成功输出
 
@@ -61,12 +94,6 @@ Test.Test_XXX_Test success
 ```
 Test.Test_XXX_Test fail
 [详细错误信息]
-```
-
-### 未找到测试
-
-```
-not found test! package: .* name: XXX
 ```
 
 ## 日志分析
