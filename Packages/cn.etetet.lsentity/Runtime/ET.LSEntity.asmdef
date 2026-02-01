@@ -1,0 +1,19 @@
+{
+    "name": "ET.LSEntity",
+    "rootNamespace": "",
+    "references": [
+        "ET.TrueSync",
+        "ET.Core",
+        "ET.SourceGeneratorAttribute",
+        "ET.MemoryPack"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -193,6 +193,12 @@
         "cn.etetet.loader": "4.0.0"
       }
     },
+    "cn.etetet.lsentity": {
+      "version": "file:cn.etetet.lsentity",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "cn.etetet.map": {
       "version": "file:cn.etetet.map",
       "depth": 0,
@@ -478,6 +484,12 @@
         "cn.etetet.actorlocation": "4.0.0",
         "cn.etetet.console": "4.0.0"
       }
+    },
+    "cn.etetet.truesync": {
+      "version": "file:cn.etetet.truesync",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
     },
     "cn.etetet.unit": {
       "version": "file:cn.etetet.unit",

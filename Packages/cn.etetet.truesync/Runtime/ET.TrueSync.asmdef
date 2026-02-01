@@ -1,0 +1,16 @@
+{
+    "name": "ET.TrueSync",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e77b8a893963d69498cdd32fb9376f23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

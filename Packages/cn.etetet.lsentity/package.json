@@ -1,0 +1,20 @@
+{
+  "name": "cn.etetet.lsentity",
+  "displayName": "ET.LSEntity",
+  "version": "3.0.0",
+  "unity": "2022.3",
+  "description": "",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  },
+  "_fingerprint": "0359dcabbe8f4473086e20568fe34ae367764d59"
+}
