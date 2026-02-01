@@ -27,7 +27,7 @@ namespace ET
             if (globalConfig.CodeMode != this.codeMode)
             {
                 this.codeMode = globalConfig.CodeMode;
-                Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode}", ".", true);
+                Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode} --SceneName={globalConfig.SceneName}", ".", true);
                 process.WaitForExit();
                 ReGenerateProjectFilesHelper.Run();
                 AssetDatabase.Refresh();

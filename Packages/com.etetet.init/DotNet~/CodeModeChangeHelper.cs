@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 
 namespace ET
 {
@@ -9,8 +10,8 @@ namespace ET
         private static readonly string[] moduleDirs = { "Packages", "Library/PackageCache" };
 
         private static readonly string[] scriptDirs = { "Scripts", "CodeMode" };
-        
-        private static readonly string[] modelDirs = {"Model", "Hotfix", "ModelView", "HotfixView", "Core", "Loader"};
+
+        private static readonly string[] modelDirs = { "Model", "Hotfix", "ModelView", "HotfixView", "Core", "Loader" };
 
         private static readonly string[] serverDirs = { "Server", "Client", "Share", "ClientServer" };
 
@@ -73,13 +74,25 @@ namespace ET
             "ClientServer/Scripts/Loader/Server",
             "ClientServer/CodeMode/Loader/ClientServer",
         };
-        
-        public static void ChangeToCodeMode(string codeMode)
+
+        public static void ChangeToCodeMode(string codeMode, string sceneName)
         {
+            HashSet<string> targetPackages = CollectAllDependencies(sceneName);
+
+            Console.WriteLine($"目标包列表: {string.Join(", ", targetPackages)}");
+
             foreach (string a in moduleDirs)
             {
+                if (!Directory.Exists(a))
+                {
+                    continue;
+                }
+
                 foreach (string moduleDir in Directory.GetDirectories(a, "cn.etetet.*"))
                 {
+                    string packageName = Path.GetFileName(moduleDir);
+                    bool isTargetPackage = targetPackages.Contains(packageName);
+
                     foreach (string scriptDir in scriptDirs)
                     {
                         string p = Path.Combine(moduleDir, scriptDir);
@@ -104,24 +117,90 @@ namespace ET
                                     continue;
                                 }
 
-                                HandleAssemblyReferenceFile(codeMode, moduleDir, scriptDir, modelDir, serverDir);
+                                // 对于目标包，根据 codeMode 处理；对于非目标包，删除所有 AssemblyReference
+                                HandleAssemblyReferenceFile(codeMode, moduleDir, scriptDir, modelDir, serverDir, isTargetPackage);
                             }
                         }
                     }
                 }
             }
-
-            
         }
 
-        private static void HandleAssemblyReferenceFile(string codeMode, string moduleDir, string scriptDir, string modelDir, string serverDir)
+        private static HashSet<string> CollectAllDependencies(string sceneName)
         {
-            string path = $"{codeMode}/{scriptDir}/{modelDir}/{serverDir}";
+            var result = new HashSet<string>();
+            var rootPackage = $"cn.etetet.{sceneName.ToLower()}";
+
+            CollectDependenciesRecursive(rootPackage, result);
+
+            return result;
+        }
+
+        private static void CollectDependenciesRecursive(string packageName, HashSet<string> collected)
+        {
+            if (collected.Contains(packageName))
+            {
+                return;
+            }
+
+            collected.Add(packageName);
+
+            var dependencies = GetPackageDependencies(packageName);
+            foreach (var dep in dependencies)
+            {
+                if (dep.StartsWith("cn.etetet."))
+                {
+                    CollectDependenciesRecursive(dep, collected);
+                }
+            }
+        }
+
+        private static List<string> GetPackageDependencies(string packageName)
+        {
+            var result = new List<string>();
+
+            foreach (string moduleDir in moduleDirs)
+            {
+                string packagePath = Path.Combine(moduleDir, packageName, "package.json");
+                if (File.Exists(packagePath))
+                {
+                    try
+                    {
+                        string json = File.ReadAllText(packagePath);
+                        using JsonDocument doc = JsonDocument.Parse(json);
+                        if (doc.RootElement.TryGetProperty("dependencies", out JsonElement deps))
+                        {
+                            foreach (JsonProperty prop in deps.EnumerateObject())
+                            {
+                                result.Add(prop.Name);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"读取 {packagePath} 失败: {ex.Message}");
+                    }
+
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        private static void HandleAssemblyReferenceFile(string codeMode, string moduleDir, string scriptDir, string modelDir, string serverDir, bool isTargetPackage)
+        {
             string filePath = Path.Combine(moduleDir, scriptDir, modelDir, serverDir, "AssemblyReference.asmref");
             DeleteAssemblyReference(filePath);
-            if (v.Contains(path))
+
+            // 只有目标包才根据 codeMode 创建 AssemblyReference
+            if (isTargetPackage)
             {
-                CreateAssemblyReference(filePath, modelDir);
+                string path = $"{codeMode}/{scriptDir}/{modelDir}/{serverDir}";
+                if (v.Contains(path))
+                {
+                    CreateAssemblyReference(filePath, modelDir);
+                }
             }
         }
 
@@ -132,7 +211,7 @@ namespace ET
                 File.Delete(path);
             }
         }
-        
+
         private static void CreateAssemblyReference(string path, string modelDir)
         {
             File.WriteAllText(path, $"{{ \"reference\": \"ET.{modelDir}\" }}");

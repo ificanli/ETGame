@@ -40,6 +40,17 @@
     "cn.etetet.yiuigm": "4.0.0",
     "cn.etetet.loader": "4.0.0",
     "cn.etetet.yiuiyooassets": "4.0.0",
-    "cn.etetet.scripts": "4.0.0"
+    "cn.etetet.scripts": "4.0.0",
+    "cn.etetet.yiuiluban": "4.0.0",
+    "cn.etetet.test": "4.0.0",
+    "cn.etetet.map": "4.0.0",
+    "cn.etetet.servicediscovery": "4.0.0",
+    "cn.etetet.yiuiloopscrollrectasync": "4.0.0",
+    "cn.etetet.login": "4.0.0",
+    "cn.etetet.btnode": "4.0.0",
+    "cn.etetet.quest": "4.0.0",
+    "cn.etetet.item": "4.0.0",
+    "cn.etetet.mapmanager": "4.0.0",
+    "cn.etetet.yiuireddot": "4.0.0"
   }
 }
