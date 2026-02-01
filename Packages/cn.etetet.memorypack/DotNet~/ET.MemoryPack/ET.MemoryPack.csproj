@@ -68,8 +68,8 @@
         </Compile>
     </ItemGroup>
 
-    <Target Name="CopyToPlugins" AfterTargets="Build" Condition="'$(TargetFramework)' == 'netstandard2.1'">
+<!--    <Target Name="CopyToPlugins" AfterTargets="Build" Condition="'$(TargetFramework)' == 'netstandard2.1'">
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)..\..\Plugins\" />
-    </Target>
+    </Target>-->
 
 </Project>

@@ -40,10 +40,10 @@
 										"_t" : "ET.BTSequence",
 										"_id" : 11,
 										"Children" : [{
-												"_t" : "ET.AI_MonsterZhuiJiCheck",
-												"_id" : 12,
+												"_t" : "ET.BTHasThreat",
+												"_id" : 17,
 												"Children" : [],
-												"Buff" : "Buff"
+												"Unit" : "Unit"
 											}, {
 												"_t" : "ET.AI_MonsterZhuiJi",
 												"_id" : 7,

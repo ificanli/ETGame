@@ -107,7 +107,7 @@ namespace ET
         private int count;
         private int version;
 
-        private Stack<Node> stack;
+        private Stack<Stack<Node>> stackPool; // Stack对象池，支持嵌套遍历
         private Stack<Node> nodePool; // Node对象池
 
         private SerializationInfo siInfo; // A temporary variable which we need during deserialization.
@@ -606,10 +606,43 @@ namespace ET
         private void DisposeNode(Node node)
         {
             if (node == null) return;
-            
+
             DisposeNode(node.Left);
             DisposeNode(node.Right);
             RecycleNode(node);
+        }
+
+        // 从池中获取 Stack
+        internal Stack<Node> RentStack()
+        {
+            lock (this)
+            {
+                if (stackPool != null && stackPool.Count > 0)
+                {
+                    return stackPool.Pop();
+                }
+            }
+            return new Stack<Node>(2 * (int)Log2(Count + 1));
+        }
+
+        // 归还 Stack 到池中
+        internal void ReturnStack(Stack<Node> stack)
+        {
+            if (stack == null) return;
+            stack.Clear();
+
+            lock (this)
+            {
+                if (stackPool == null)
+                {
+                    stackPool = new Stack<Stack<Node>>();
+                }
+
+                if (stackPool.Count < 4)  // 限制池大小，嵌套遍历一般不超过3-4层
+                {
+                    stackPool.Push(stack);
+                }
+            }
         }
 
         public virtual bool Contains(T item) => FindNode(item) != null;
@@ -1973,20 +2006,7 @@ namespace ET
                 set.VersionCheck();
                 _version = set.version;
 
-                // 2 log(n + 1) is the maximum height.
-                // 这里缓存了Stack，防止GC
-                lock (this._tree)
-                {
-                    if (set.stack != null)
-                    {
-                        _stack = set.stack;
-                        set.stack = null;
-                    }
-                    else
-                    {
-                        _stack = new Stack<Node>(2 * (int)Math.Log(set.Count + 1));
-                    }
-                }
+                _stack = set.RentStack();
 
                 _current = null;
                 _reverse = reverse;
@@ -2071,11 +2091,7 @@ namespace ET
 
             public void Dispose()
             {
-                this._stack.Clear();
-                lock (this._tree)
-                {
-                    this._tree.stack = this._stack;
-                }
+                _tree.ReturnStack(_stack);
             }
 
             public T Current
@@ -2176,12 +2192,14 @@ namespace ET
 
 
         /// <summary>Throws an <see cref="ArgumentNullException"/> if <paramref name="argument"/> is null.</summary>
-        /// <param name="argument">The reference type argument to validate as non-null.</param>
+        /// <param name="argument">The argument to validate as non-null.</param>
         /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
-        [Conditional("IGNORE")]
-        public static void ThrowIfNull(object argument, string paramName = null)
+        /// <remarks>For value types, this method does nothing since value types cannot be null.</remarks>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public static void ThrowIfNull<T>(T argument, string paramName = null)
         {
-            if (argument is null)
+            // 只有引用类型才需要检查 null，值类型永远不会是 null
+            if (default(T) == null && argument is null)
             {
                 Throw(paramName);
             }
