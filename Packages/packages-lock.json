@@ -417,39 +417,8 @@
         "cn.etetet.proto": "4.0.0"
       }
     },
-    "cn.etetet.test": {
-      "version": "file:cn.etetet.test",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "cn.etetet.core": "4.0.0",
-        "cn.etetet.excel": "4.0.0",
-        "cn.etetet.proto": "4.0.0",
-        "cn.etetet.unit": "4.0.0",
-        "cn.etetet.spell": "4.0.0",
-        "cn.etetet.behaviortree": "4.0.0",
-        "cn.etetet.http": "4.0.0",
-        "cn.etetet.startconfig": "4.0.0",
-        "cn.etetet.aoi": "4.0.0",
-        "cn.etetet.numeric": "4.0.0",
-        "cn.etetet.netinner": "4.0.0",
-        "cn.etetet.router": "4.0.0",
-        "cn.etetet.actorlocation": "4.0.0",
-        "cn.etetet.console": "4.0.0"
-      }
-    },
-    "cn.etetet.unit": {
-      "version": "file:cn.etetet.unit",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "cn.etetet.core": "4.0.0",
-        "cn.etetet.excel": "4.0.0",
-        "cn.etetet.proto": "4.0.0"
-      }
-    },
-    "cn.etetet.wow": {
-      "version": "file:cn.etetet.wow",
+    "cn.etetet.statesync": {
+      "version": "file:cn.etetet.statesync",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
@@ -487,6 +456,37 @@
         "cn.etetet.item": "4.0.0",
         "cn.etetet.mapmanager": "4.0.0",
         "cn.etetet.yiuireddot": "4.0.0"
+      }
+    },
+    "cn.etetet.test": {
+      "version": "file:cn.etetet.test",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.excel": "4.0.0",
+        "cn.etetet.proto": "4.0.0",
+        "cn.etetet.unit": "4.0.0",
+        "cn.etetet.spell": "4.0.0",
+        "cn.etetet.behaviortree": "4.0.0",
+        "cn.etetet.http": "4.0.0",
+        "cn.etetet.startconfig": "4.0.0",
+        "cn.etetet.aoi": "4.0.0",
+        "cn.etetet.numeric": "4.0.0",
+        "cn.etetet.netinner": "4.0.0",
+        "cn.etetet.router": "4.0.0",
+        "cn.etetet.actorlocation": "4.0.0",
+        "cn.etetet.console": "4.0.0"
+      }
+    },
+    "cn.etetet.unit": {
+      "version": "file:cn.etetet.unit",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.excel": "4.0.0",
+        "cn.etetet.proto": "4.0.0"
       }
     },
     "cn.etetet.yiui": {
