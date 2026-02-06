@@ -1,0 +1,53 @@
+{
+  "name": "cn.etetet.lockstep",
+  "displayName": "ET.LockStep",
+  "version": "3.0.2",
+  "unity": "2022.3",
+  "description": "预测回滚的帧同步demo",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "cn.etetet.packagemanager": "1.0.0",
+    "cn.etetet.actorlocation": "3.0.0",
+    "cn.etetet.core": "3.0.3",
+    "cn.etetet.loader": "3.0.1",
+    "cn.etetet.router": "3.0.0",
+    "cn.etetet.console": "3.0.0",
+    "cn.etetet.http": "3.0.0",
+    "cn.etetet.watcher": "3.0.0",
+    "cn.etetet.truesync": "3.0.0",
+    "cn.etetet.lsentity": "3.0.0",
+    "cn.etetet.login": "3.0.0",
+    "cn.etetet.netinner": "3.0.0",
+    "cn.etetet.hybridclr": "7.8.1",
+    "cn.etetet.excel": "3.0.0",
+    "cn.etetet.proto": "3.0.2",
+    "cn.etetet.sourcegenerator": "3.0.1",
+    "cn.etetet.yooassets": "2.3.6",
+    "cn.etetet.memorypack": "1.10.1",
+    "cn.etetet.startconfig": "3.0.0",
+    "cn.etetet.yiuiframework": "4.0.0",
+    "cn.etetet.yiuitips": "4.0.0",
+    "cn.etetet.yiuidamagetips": "4.0.0",
+    "cn.etetet.yiuigm": "4.0.0",
+    "cn.etetet.yiuiyooassets": "4.0.0",
+    "cn.etetet.scripts": "4.0.0",
+    "cn.etetet.yiuiluban": "4.0.0",
+    "cn.etetet.test": "4.0.0",
+    "cn.etetet.servicediscovery": "4.0.0",
+    "cn.etetet.yiuiloopscrollrectasync": "4.0.0",
+    "cn.etetet.mapmanager": "4.0.0",
+    "cn.etetet.yiuireddot": "4.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  },
+  "_fingerprint": "6629aaa436fb80168b0fe212eed214a8e5764ecb"
+}

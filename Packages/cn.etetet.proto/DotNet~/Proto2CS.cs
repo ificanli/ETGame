@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -14,9 +15,9 @@ namespace ET
 
     public static class Proto2CS
     {
-        public static void Export()
+        public static void Export(HashSet<string> packages)
         {
-            InnerProto2CS.Proto2CS();
+            InnerProto2CS.Proto2CS(packages);
         }
     }
 
@@ -28,46 +29,65 @@ namespace ET
         private static readonly char[] splitChars = [' ', '\t'];
         private static readonly List<OpcodeInfo> msgOpcode = [];
 
-        public static void Proto2CS()
+        public static void Proto2CS(HashSet<string> targetPackages)
         {
             // 强制调用一下mongo，避免mongo库被裁剪
             MongoHelper.ToJson(1);
-            
+
             msgOpcode.Clear();
 
             // 直接扫描 Packages 目录获取包信息
             string packagesDir = Path.Combine("./", "Packages");
             string protoPackageDir = Path.Combine(packagesDir, "cn.etetet.proto");
-            
+
             if (!Directory.Exists(protoPackageDir))
             {
                 throw new Exception($"Proto package not found: {protoPackageDir}");
             }
-            
+
             clientMessagePath = Path.Combine(protoPackageDir, "CodeMode/Model/Client");
             serverMessagePath = Path.Combine(protoPackageDir, "CodeMode/Model/Server");
             clientServerMessagePath = Path.Combine(protoPackageDir, "CodeMode/Model/ClientServer");
-            
+
+            Console.WriteLine($"Will export proto from {targetPackages.Count} packages:");
+            foreach (var pkg in targetPackages.OrderBy(x => x))
+            {
+                Console.WriteLine($"  - {pkg}");
+            }
+
+            // 清理旧文件
+            Console.WriteLine("Cleaning generated files...");
+            CleanGeneratedFiles(clientMessagePath);
+            CleanGeneratedFiles(serverMessagePath);
+            CleanGeneratedFiles(clientServerMessagePath);
+
             List<(string, string)> list = new ();
-            
+
             // 扫描所有 cn.etetet.* 包目录
             foreach (string packageDir in Directory.GetDirectories(packagesDir, "cn.etetet.*"))
             {
                 string packageName = Path.GetFileName(packageDir);
+
+                // 过滤包
+                if (!targetPackages.Contains(packageName))
+                {
+                    continue;
+                }
+
                 string moduleName = packageName.Replace("cn.etetet.", "");
                 string protoDir = Path.Combine(packageDir, "Proto");
-                
+
                 if (!Directory.Exists(protoDir))
                 {
                     continue;
                 }
-                
+
                 foreach (var f in FileHelper.GetAllFiles(protoDir, "*.proto"))
                 {
                     list.Add((f, moduleName));
                 }
             }
-            
+
             foreach ((string s, string module) in list)
             {
                 if (!s.EndsWith(".proto"))
@@ -81,6 +101,31 @@ namespace ET
                 string cs = ss2[1];
                 int startOpcode = int.Parse(ss2[2]);
                 ProtoFile2CS(s, module, protoName, cs, startOpcode);
+            }
+
+            Console.WriteLine($"Generated {list.Count} proto files.");
+        }
+
+        /// <summary>
+        /// 删除指定目录下的所有 .cs 文件
+        /// </summary>
+        private static void CleanGeneratedFiles(string directory)
+        {
+            if (!Directory.Exists(directory))
+            {
+                return;
+            }
+
+            foreach (string file in Directory.GetFiles(directory, "*.cs"))
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Warning: Failed to delete {file}: {e.Message}");
+                }
             }
         }
 

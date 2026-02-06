@@ -29,31 +29,51 @@
         <DebugSymbols>true</DebugSymbols>
         <Deterministic>false</Deterministic>
     </PropertyGroup>
-    <ItemGroup>
+    <!-- 动态读取 MainPackage.txt 并生成 Compile 项 -->
+    <Target Name="AddPackageCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile">
+        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+            <Output TaskParameter="Lines" ItemName="PackageNames" />
+        </ReadLinesFromFile>
+        <ItemGroup>
+            <PackageNames Remove="@(PackageNames)" Condition="'%(Identity)' == ''" />
+        </ItemGroup>
+        <!-- 生成通配符路径 -->
+        <ItemGroup>
+            <HotfixShareGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Hotfix/Share/**/*.cs')" />
+            <HotfixServerGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Hotfix/Server/**/*.cs')" />
+            <HotfixClientGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Hotfix/Client/**/*.cs')" />
+            <CodeModeHotfixGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/CodeMode/Hotfix/Server/**/*.cs')" />
+        </ItemGroup>
+        <!-- 使用 CreateItem 展开通配符 -->
+        <CreateItem Include="@(HotfixShareGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(HotfixServerGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(HotfixClientGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(CodeModeHotfixGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+    </Target>
 
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Hotfix\Share\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Hotfix\Server\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Hotfix\Client\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\CodeMode\Hotfix\Server\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-        
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Hotfix\Test\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-    </ItemGroup>
+    <!-- Debug 配置下添加 Test 目录 -->
+    <Target Name="AddTestCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile" Condition="'$(Configuration)'=='Debug'">
+        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+            <Output TaskParameter="Lines" ItemName="TestPackageNames" />
+        </ReadLinesFromFile>
+        <ItemGroup>
+            <TestPackageNames Remove="@(TestPackageNames)" Condition="'%(Identity)' == ''" />
+        </ItemGroup>
+        <ItemGroup>
+            <HotfixTestGlobs Include="@(TestPackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Hotfix/Test/**/*.cs')" />
+        </ItemGroup>
+        <CreateItem Include="@(HotfixTestGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+    </Target>
     
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

@@ -31,36 +31,57 @@
         <Deterministic>false</Deterministic>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Model\Share\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
+    <!-- 动态读取 MainPackage.txt 并生成 Compile 项 -->
+    <Target Name="AddPackageCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile">
+        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+            <Output TaskParameter="Lines" ItemName="PackageNames" />
+        </ReadLinesFromFile>
+        <ItemGroup>
+            <PackageNames Remove="@(PackageNames)" Condition="'%(Identity)' == ''" />
+        </ItemGroup>
+        <!-- 生成通配符路径 -->
+        <ItemGroup>
+            <ModelShareGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Model/Share/**/*.cs')" />
+            <ModelServerGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Model/Server/**/*.cs')" />
+            <ModelClientGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Model/Client/**/*.cs')" />
+            <CodeModeModelGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/CodeMode/Model/Server/**/*.cs')" />
+        </ItemGroup>
+        <!-- 使用 CreateItem 展开通配符 -->
+        <CreateItem Include="@(ModelShareGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(ModelServerGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(ModelClientGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(CodeModeModelGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+    </Target>
 
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Model\Server\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Model\Client\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\CodeMode\Model\Server\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Model\Test\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-    </ItemGroup>
+    <!-- Debug 配置下添加 Test 目录 -->
+    <Target Name="AddTestCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile" Condition="'$(Configuration)'=='Debug'">
+        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+            <Output TaskParameter="Lines" ItemName="TestPackageNames" />
+        </ReadLinesFromFile>
+        <ItemGroup>
+            <TestPackageNames Remove="@(TestPackageNames)" Condition="'%(Identity)' == ''" />
+        </ItemGroup>
+        <ItemGroup>
+            <ModelTestGlobs Include="@(TestPackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Model/Test/**/*.cs')" />
+        </ItemGroup>
+        <CreateItem Include="@(ModelTestGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+    </Target>
     
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\..\..\cn.etetet.loader\DotNet~\ET.Loader.csproj" />
         <ProjectReference Include="..\..\..\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj" />
-        <ProjectReference Include="..\..\..\cn.etetet.recast\DotNet~\ET.Recast.csproj" />
     </ItemGroup>
 
     <!-- sourcegenerator use -->

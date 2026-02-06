@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using CommandLine;
 
 namespace ET
@@ -14,9 +16,6 @@ namespace ET
     {
         [Option('c', "CodeMode", Required = false, Default = CodeMode.ClientServer)]
         public CodeMode CodeMode { get; set; }
-
-        [Option('s', "SceneName", Required = true, HelpText = "场景名称，如 WOW 对应 cn.etetet.wow")]
-        public string SceneName { get; set; }
     }
 
     internal static class Program
@@ -29,12 +28,32 @@ namespace ET
                     .WithNotParsed(error => throw new Exception($"命令行格式错误! {error}"))
                     .WithParsed((o) => options = o);
 
-            if (string.IsNullOrEmpty(options.SceneName))
+            string mainPackagePath = Path.Combine("./", "MainPackage.txt");
+
+            if (!File.Exists(mainPackagePath))
             {
-                throw new Exception("SceneName 不能为空，请在 GlobalConfig 中配置 SceneName");
+                Console.WriteLine("MainPackage.txt not found, skip change codemode.");
+                return 0;
             }
 
-            CodeModeChangeHelper.ChangeToCodeMode(options.CodeMode.ToString(), options.SceneName);
+            string[] lines = File.ReadAllLines(mainPackagePath);
+            HashSet<string> packages = new HashSet<string>();
+            foreach (string line in lines)
+            {
+                string pkg = line.Trim();
+                if (!string.IsNullOrWhiteSpace(pkg))
+                {
+                    packages.Add(pkg);
+                }
+            }
+
+            if (packages.Count == 0)
+            {
+                Console.WriteLine("MainPackage.txt is empty, skip change codemode.");
+                return 0;
+            }
+
+            CodeModeChangeHelper.ChangeToCodeMode(options.CodeMode.ToString(), packages);
 
             Console.WriteLine("change codemode ok!");
             return 0;

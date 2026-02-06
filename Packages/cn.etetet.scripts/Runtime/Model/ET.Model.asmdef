@@ -4,8 +4,9 @@
     "references": [
         "ET.Core",
         "ET.Loader",
-        "ET.MemoryPack",
+        "ET.LSEntity",
         "ET.Recast",
+        "ET.TrueSync",
         "ET.YooAssets",
         "Unity.Mathematics"
     ],

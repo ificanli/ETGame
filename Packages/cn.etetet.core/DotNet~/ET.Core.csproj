@@ -36,19 +36,31 @@
       <Deterministic>false</Deterministic>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Core\Share\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Core\Server\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\CodeMode\Core\Server\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-    </ItemGroup>
+    <!-- 动态读取 MainPackage.txt 并生成 Compile 项 -->
+    <Target Name="AddPackageCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile">
+        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+            <Output TaskParameter="Lines" ItemName="PackageNames" />
+        </ReadLinesFromFile>
+        <ItemGroup>
+            <PackageNames Remove="@(PackageNames)" Condition="'%(Identity)' == ''" />
+        </ItemGroup>
+        <!-- 生成通配符路径 -->
+        <ItemGroup>
+            <CoreShareGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Core/Share/**/*.cs')" />
+            <CoreServerGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Core/Server/**/*.cs')" />
+            <CodeModeCoreGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/CodeMode/Core/Server/**/*.cs')" />
+        </ItemGroup>
+        <!-- 使用 CreateItem 展开通配符 -->
+        <CreateItem Include="@(CoreShareGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(CoreServerGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(CodeModeCoreGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+    </Target>
     
     <ItemGroup>
         <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

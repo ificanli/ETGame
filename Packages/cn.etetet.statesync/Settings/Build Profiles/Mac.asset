@@ -19,10 +19,9 @@ MonoBehaviour:
   m_PlatformBuildProfile:
     rid: 6418588484003954688
   m_OverrideGlobalSceneList: 1
-  m_Scenes:
-  - m_enabled: 1
-    m_path: Packages/cn.etetet.wow/Scenes/Init.unity
-  m_ScriptingDefines: []
+  m_Scenes: []
+  m_ScriptingDefines:
+  - StateSync
   m_PlayerSettingsYaml:
     m_Settings:
     - line: '| PlayerSettings:'
@@ -929,7 +928,7 @@ MonoBehaviour:
     - line: '|     ReservedCFE: TextMeshPro'
     - line: '|     Server: UNITY;ENABLE_VIEW'
     - line: '|     Stadia: DOTWEEN;TextMeshPro'
-    - line: '|     Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED;ET10;WOW'
+    - line: '|     Standalone: UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED;ET10;StateSync'
     - line: '|     VisionOS: DOTWEEN;TextMeshPro'
     - line: '|     WebGL: UNITY;ENABLE_VIEW;DOTWEEN;TextMeshPro'
     - line: '|     Windows Store Apps: DOTWEEN'

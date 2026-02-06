@@ -30,19 +30,31 @@
         <Deterministic>false</Deterministic>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Loader\Share\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\Scripts\Loader\Server\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
-        <Compile Include="$(SolutionDir)Packages\cn.etetet.*\CodeMode\Loader\Server\**\*.cs">
-            <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-    </ItemGroup>
+    <!-- 动态读取 MainPackage.txt 并生成 Compile 项 -->
+    <Target Name="AddPackageCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile">
+        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+            <Output TaskParameter="Lines" ItemName="PackageNames" />
+        </ReadLinesFromFile>
+        <ItemGroup>
+            <PackageNames Remove="@(PackageNames)" Condition="'%(Identity)' == ''" />
+        </ItemGroup>
+        <!-- 生成通配符路径 -->
+        <ItemGroup>
+            <LoaderShareGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Loader/Share/**/*.cs')" />
+            <LoaderServerGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Loader/Server/**/*.cs')" />
+            <CodeModeLoaderGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/CodeMode/Loader/Server/**/*.cs')" />
+        </ItemGroup>
+        <!-- 使用 CreateItem 展开通配符 -->
+        <CreateItem Include="@(LoaderShareGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(LoaderServerGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+        <CreateItem Include="@(CodeModeLoaderGlobs)">
+            <Output TaskParameter="Include" ItemName="Compile" />
+        </CreateItem>
+    </Target>
     
     <ItemGroup>
       <PackageReference Include="CommandLineParser" Version="2.9.1" />

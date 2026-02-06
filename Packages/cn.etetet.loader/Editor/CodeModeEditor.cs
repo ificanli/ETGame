@@ -9,7 +9,7 @@ namespace ET
         public static void Init()
         {
             var globalConfig = UnityEngine.Resources.Load<GlobalConfig>("GlobalConfig");
-            Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode} --SceneName={globalConfig.SceneName}", ".", true);
+            Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode}", ".", true);
             process.WaitForExit();
             AssetDatabase.Refresh();
         }
