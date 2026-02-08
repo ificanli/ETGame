@@ -5,7 +5,7 @@ namespace ET
 {
     public static class CodeModeEditor
     {
-        [MenuItem("ET/Loader/RefreshAssemblyReference")]
+        [MenuItem("ET/Init/RefreshAssemblyReference")]
         public static void Init()
         {
             var globalConfig = UnityEngine.Resources.Load<GlobalConfig>("GlobalConfig");

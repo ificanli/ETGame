@@ -12,10 +12,9 @@
         "DamageNumbersPro",
         "ET.HybridCLR",
         "ET.Loader",
-        "ET.MemoryPack",
-        "ET.Recast",
         "ET.YIUIFramework",
-        "ET.YooAssets"
+        "ET.YooAssets",
+        "ET.Init"
     ],
     "includePlatforms": [
         "Editor"

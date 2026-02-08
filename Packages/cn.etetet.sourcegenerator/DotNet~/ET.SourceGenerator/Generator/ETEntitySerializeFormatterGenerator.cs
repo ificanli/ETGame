@@ -29,11 +29,10 @@ public class ETEntitySerializeFormatterGenerator : ISourceGenerator
         string serializeContent = GenerateSerializeContent(receiver);
         string deserializeContent = GenerateDeserializeContent(receiver);
         
-        string genericTypeParam = "";
+        string genericTypeParam = "<TBufferWriter>";
         string scopedCode = "";
         if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.DotNetAssembly", out string? _))
         {
-            genericTypeParam = "<TBufferWriter>";
             scopedCode = "scoped";
         }
         

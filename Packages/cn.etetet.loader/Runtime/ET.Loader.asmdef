@@ -5,7 +5,6 @@
         "ET.Core",
         "ET.YooAssets",
         "ET.HybridCLR",
-        "ET.MemoryPack",
         "ET.Init"
     ],
     "includePlatforms": [],

@@ -16,7 +16,10 @@ namespace ET
             GlobalConfig globalConfig = (GlobalConfig)this.target;
             this.codeMode = globalConfig.CodeMode;
             //globalConfig.BuildType = EditorUserBuildSettings.development ? BuildType.Debug : BuildType.Release;
-            EditorResHelper.SaveAssets(globalConfig);
+            
+            EditorUtility.SetDirty(globalConfig);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
         public override void OnInspectorGUI()
@@ -29,7 +32,6 @@ namespace ET
                 this.codeMode = globalConfig.CodeMode;
                 Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode} --SceneName={globalConfig.SceneName}", ".", true);
                 process.WaitForExit();
-                ReGenerateProjectFilesHelper.Run();
                 AssetDatabase.Refresh();
             }
             /*

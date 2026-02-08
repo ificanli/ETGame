@@ -2,7 +2,7 @@
 {
     public struct LSSceneChangeStart
     {
-        public Room Room;
+        public EntityRef<Room> Room;
     }
     
     public struct LSSceneInitFinish

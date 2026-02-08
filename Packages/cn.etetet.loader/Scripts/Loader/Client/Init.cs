@@ -2,7 +2,7 @@
 using CommandLine;
 using UnityEngine;
 
-namespace ET
+namespace ET.Client
 {
     public class Init: MonoBehaviour
     {
