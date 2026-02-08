@@ -208,19 +208,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-    - GroupName: DamageTips
-      GroupDesc: "\u4F24\u5BB3\u98D8\u5B57"
-      AssetTags: 
-      ActiveRuleName: EnableGroup
-      Collectors:
-      - CollectPath: Packages/cn.etetet.yiuidamagetips/Assets/GameRes
-        CollectorGUID: 3751fd97e08fb9f49a69caec69bc4d24
-        CollectorType: 0
-        AddressRuleName: AddressByFileName
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: 
-        UserData: 
     - GroupName: Effect
       GroupDesc: 
       AssetTags: 

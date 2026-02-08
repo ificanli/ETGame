@@ -9,15 +9,8 @@
 
             //临时处理全监听
             unit.DynamicEvent(args).Coroutine();
-            
-            var oldHP  = args.Old;
-            var newHP  = args.New;
-            var damage = oldHP - newHP;
-            if (damage > 0)
-            {
-                //临时处理 只要少血就飘字
-                DamageTipsHelper.Show3D(unit.Scene(), "Damage_3D_SawNeon", args.Unit, damage).Coroutine();
-            }
+
+            CombatTextHelper.ShowHpChange(unit.Scene(), unit, args.Old, args.New);
         }
     }
 

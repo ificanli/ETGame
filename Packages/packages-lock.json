@@ -161,7 +161,6 @@
         "cn.etetet.startconfig": "3.0.0",
         "cn.etetet.yiuiframework": "4.0.0",
         "cn.etetet.yiuitips": "4.0.0",
-        "cn.etetet.yiuidamagetips": "4.0.0",
         "cn.etetet.yiuigm": "4.0.0",
         "cn.etetet.yiuiyooassets": "4.0.0",
         "cn.etetet.scripts": "4.0.0",
@@ -365,7 +364,6 @@
         "cn.etetet.yiuiframework": "4.0.0",
         "cn.etetet.yooassets": "4.0.0",
         "cn.etetet.yiuitips": "4.0.0",
-        "cn.etetet.yiuidamagetips": "4.0.0",
         "cn.etetet.yiuigm": "4.0.0",
         "cn.etetet.loader": "4.0.0",
         "cn.etetet.yiuiyooassets": "4.0.0",
@@ -420,12 +418,6 @@
       "dependencies": {
         "cn.etetet.yiuiframework": "3.0.0"
       }
-    },
-    "cn.etetet.yiuidamagetips": {
-      "version": "file:cn.etetet.yiuidamagetips",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
     },
     "cn.etetet.yiuieffect": {
       "version": "file:cn.etetet.yiuieffect",

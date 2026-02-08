@@ -3,7 +3,7 @@
   "displayName": "ET.LockStep",
   "version": "3.0.2",
   "unity": "2022.3",
-  "description": "预测回滚的帧同步demo",
+  "description": "\u9884\u6d4b\u56de\u6eda\u7684\u5e27\u540c\u6b65demo",
   "author": {
     "name": "tanghai",
     "url": "https://github.com/egametang/ET"
@@ -34,7 +34,6 @@
     "cn.etetet.startconfig": "3.0.0",
     "cn.etetet.yiuiframework": "4.0.0",
     "cn.etetet.yiuitips": "4.0.0",
-    "cn.etetet.yiuidamagetips": "4.0.0",
     "cn.etetet.yiuigm": "4.0.0",
     "cn.etetet.yiuiyooassets": "4.0.0",
     "cn.etetet.scripts": "4.0.0",
