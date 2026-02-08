@@ -162,6 +162,18 @@ namespace YooAsset.Editor
         {
             get
             {
+                string preferredSettingPath = SettingLoader.GetPreferredSettingPath<AssetBundleCollectorSetting>();
+                if (_setting != null && !string.IsNullOrEmpty(preferredSettingPath))
+                {
+                    string currentSettingPath = AssetDatabase.GetAssetPath(_setting);
+                    if (!string.IsNullOrEmpty(currentSettingPath)
+                        && string.Equals(currentSettingPath, preferredSettingPath, StringComparison.OrdinalIgnoreCase) == false)
+                    {
+                        var preferredSetting = AssetDatabase.LoadAssetAtPath<AssetBundleCollectorSetting>(preferredSettingPath);
+                        _setting = preferredSetting;
+                    }
+                }
+
                 if (_setting == null)
                     _setting = SettingLoader.LoadSettingData<AssetBundleCollectorSetting>();
                 return _setting;

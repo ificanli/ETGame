@@ -12,6 +12,11 @@ namespace YooAsset.Editor
         private const string MainPackageFileName = "MainPackage.txt";
         private const string AssetBundleCollectorSettingTypeName = "AssetBundleCollectorSetting";
 
+        public static string GetPreferredSettingPath<TSetting>() where TSetting : ScriptableObject
+        {
+            return GetPreferredSettingPath(typeof(TSetting));
+        }
+
         /// <summary>
         /// 加载相关的配置文件
         /// </summary>
