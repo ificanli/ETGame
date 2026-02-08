@@ -1,6 +1,6 @@
-using System;
+using System.IO;
 using System.Diagnostics;
-using System.Linq;
+using Hibzz.DependencyResolver;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,9 +24,43 @@ namespace ET
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-            
+            this.serializedObject.Update();
+
             GlobalConfig globalConfig = (GlobalConfig)this.target;
+
+            SerializedProperty iterator = this.serializedObject.GetIterator();
+            bool enterChildren = true;
+            while (iterator.NextVisible(enterChildren))
+            {
+                enterChildren = false;
+
+                if (iterator.propertyPath == "m_Script")
+                {
+                    using (new EditorGUI.DisabledScope(true))
+                    {
+                        EditorGUILayout.PropertyField(iterator, true);
+                    }
+
+                    continue;
+                }
+
+                if (iterator.name == nameof(GlobalConfig.SceneName))
+                {
+                    EditorGUILayout.PropertyField(iterator, true);
+                    EditorGUILayout.BeginHorizontal();
+                    if (GUILayout.Button("Set Main Package"))
+                    {
+                        SetMainPackageBySceneName(globalConfig);
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    continue;
+                }
+
+                EditorGUILayout.PropertyField(iterator, true);
+            }
+
+            this.serializedObject.ApplyModifiedProperties();
+
             if (globalConfig.CodeMode != this.codeMode)
             {
                 this.codeMode = globalConfig.CodeMode;
@@ -34,31 +68,32 @@ namespace ET
                 process.WaitForExit();
                 AssetDatabase.Refresh();
             }
-            /*
-            string sceneName = EditorGUILayout.TextField($"SceneName", globalConfig.SceneName);
-            if (sceneName != globalConfig.SceneName)
+
+            EditorUtility.SetDirty(globalConfig);
+        }
+
+        private static void SetMainPackageBySceneName(GlobalConfig globalConfig)
+        {
+            string sceneName = globalConfig.SceneName?.Trim();
+            if (string.IsNullOrWhiteSpace(sceneName))
             {
-                globalConfig.SceneName = sceneName;
-                EditorResHelper.SaveAssets(globalConfig);
-                AssetDatabase.Refresh();
+                UnityEngine.Debug.LogError("[GlobalConfigEditor] SceneName 为空，无法设置主包");
+                return;
             }
-            
-            bool enbaleDll = EditorGUILayout.Toggle($"EnableDll", globalConfig.EnableDll);
-            if (enbaleDll != globalConfig.EnableDll)
+
+            string packageName = $"cn.etetet.{sceneName}";
+            string packageDirectory = Path.Combine("Packages", packageName);
+            if (!Directory.Exists(packageDirectory))
             {
-                globalConfig.EnableDll = enbaleDll;
-                EditorResHelper.SaveAssets(globalConfig);
-                AssetDatabase.Refresh();
+                UnityEngine.Debug.LogError($"[GlobalConfigEditor] 包不存在: {packageName}");
+                return;
             }
-            
-            string address = EditorGUILayout.TextField($"Address", globalConfig.Address);
-            if (address != globalConfig.Address)
+
+            bool result = MainPackageSelector.SetAsMainPackage(packageName);
+            if (!result)
             {
-                globalConfig.Address = address;
-                EditorResHelper.SaveAssets(globalConfig);
-                AssetDatabase.Refresh();
+                UnityEngine.Debug.LogError($"[GlobalConfigEditor] 设置主包失败: {packageName}");
             }
-            */
         }
     }
 }

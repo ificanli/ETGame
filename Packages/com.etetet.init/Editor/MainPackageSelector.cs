@@ -9,32 +9,34 @@ using UnityEngine;
 namespace Hibzz.DependencyResolver
 {
     /// <summary>
-    /// 主包选择器 - 右键菜单设置主包并收集依赖
+    /// 主包选择器 - 按包名设置主包并收集依赖
     /// </summary>
     public static class MainPackageSelector
     {
         private const string OutputFileName = "MainPackage.txt";
 
-        #region MenuItem
-
         /// <summary>
-        /// 右键菜单：设置为主包
+        /// 按包名设置主包并收集依赖
         /// </summary>
-        [MenuItem("Assets/ET/Set As Main Package", false, 100)]
-        private static void SetAsMainPackage()
+        public static bool SetAsMainPackage(string packageName)
         {
-            string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
-            if (string.IsNullOrEmpty(assetPath))
+            if (string.IsNullOrWhiteSpace(packageName))
             {
-                Debug.LogError("[MainPackageSelector] 未选中任何文件");
-                return;
+                Debug.LogError("[MainPackageSelector] 包名为空");
+                return false;
             }
 
-            string packageName = GetPackageNameFromPath(assetPath);
-            if (string.IsNullOrEmpty(packageName))
+            if (!packageName.StartsWith("cn.etetet."))
             {
-                Debug.LogError($"[MainPackageSelector] 无法从路径获取包名: {assetPath}");
-                return;
+                Debug.LogError($"[MainPackageSelector] 非法包名: {packageName}");
+                return false;
+            }
+
+            string packageJsonPath = Path.Combine("Packages", packageName, "package.json");
+            if (!File.Exists(packageJsonPath))
+            {
+                Debug.LogError($"[MainPackageSelector] 未找到包配置: {packageJsonPath}");
+                return false;
             }
 
             Debug.Log($"[MainPackageSelector] 设置主包: {packageName}");
@@ -52,78 +54,9 @@ namespace Hibzz.DependencyResolver
             WriteMainPackageFile(packageName, allDependencies);
 
             AssetDatabase.Refresh();
+
+            return true;
         }
-
-        /// <summary>
-        /// 验证菜单项是否可用
-        /// </summary>
-        [MenuItem("Assets/ET/Set As Main Package", true)]
-        private static bool ValidateSetAsMainPackage()
-        {
-            if (Selection.activeObject == null)
-                return false;
-
-            string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
-            return IsValidPackage(assetPath);
-        }
-
-        #endregion
-
-        #region 验证
-
-        /// <summary>
-        /// 验证选中的是否为 cn.etetet.* 包目录或其 package.json
-        /// </summary>
-        private static bool IsValidPackage(string assetPath)
-        {
-            if (string.IsNullOrEmpty(assetPath))
-                return false;
-
-            // 统一使用正斜杠处理
-            string normalizedPath = assetPath.Replace('\\', '/');
-
-            // 支持两种格式:
-            // 1. 包目录: Packages/cn.etetet.xxx
-            // 2. package.json: Packages/cn.etetet.xxx/package.json
-            if (Regex.IsMatch(normalizedPath, @"^Packages/cn\.etetet\.[^/]+$"))
-                return true;
-
-            if (Regex.IsMatch(normalizedPath, @"^Packages/cn\.etetet\.[^/]+/package\.json$"))
-                return true;
-
-            return false;
-        }
-
-        #endregion
-
-        #region 包名获取
-
-        /// <summary>
-        /// 从路径获取包名（支持包目录或 package.json）
-        /// </summary>
-        private static string GetPackageNameFromPath(string assetPath)
-        {
-            string normalizedPath = assetPath.Replace('\\', '/');
-
-            // 匹配包目录: Packages/cn.etetet.xxx
-            Match match = Regex.Match(normalizedPath, @"^Packages/(cn\.etetet\.[^/]+)(?:/package\.json)?$");
-            if (match.Success)
-            {
-                string packageDirName = match.Groups[1].Value;
-
-                // 处理可能带版本号的情况
-                int atIndex = packageDirName.IndexOf('@');
-                if (atIndex > 0)
-                {
-                    return packageDirName.Substring(0, atIndex);
-                }
-                return packageDirName;
-            }
-
-            return null;
-        }
-
-        #endregion
 
         #region 依赖收集
 
