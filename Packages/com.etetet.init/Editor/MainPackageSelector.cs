@@ -32,26 +32,31 @@ namespace Hibzz.DependencyResolver
                 return false;
             }
 
-            string packageJsonPath = Path.Combine("Packages", packageName, "package.json");
-            if (!File.Exists(packageJsonPath))
+            if (!TryResolvePackageName(packageName, out string resolvedPackageName, out string packageJsonPath))
             {
                 Debug.LogError($"[MainPackageSelector] 未找到包配置: {packageJsonPath}");
                 return false;
             }
 
-            Debug.Log($"[MainPackageSelector] 设置主包: {packageName}");
+            Debug.Log($"[MainPackageSelector] 设置主包: {resolvedPackageName}");
 
-            // 递归收集所有依赖
-            HashSet<string> allDependencies = new HashSet<string>();
-            CollectDependenciesRecursive(packageName, allDependencies);
+            // 收集主包直接依赖（不递归）
+            HashSet<string> allDependencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string dep in GetPackageDependencies(resolvedPackageName))
+            {
+                if (dep.StartsWith("cn.etetet."))
+                {
+                    allDependencies.Add(dep);
+                }
+            }
 
             // 从依赖列表中移除主包自身
-            allDependencies.Remove(packageName);
+            allDependencies.Remove(resolvedPackageName);
 
             Debug.Log($"[MainPackageSelector] 收集到 {allDependencies.Count} 个依赖包");
 
             // 写入文件
-            WriteMainPackageFile(packageName, allDependencies);
+            WriteMainPackageFile(resolvedPackageName, allDependencies);
 
             AssetDatabase.Refresh();
 
@@ -60,24 +65,59 @@ namespace Hibzz.DependencyResolver
 
         #region 依赖收集
 
-        /// <summary>
-        /// 递归收集所有依赖
-        /// </summary>
-        private static void CollectDependenciesRecursive(string packageName, HashSet<string> collected)
+        private static bool TryResolvePackageName(string packageName, out string resolvedPackageName, out string packageJsonPath)
         {
-            if (collected.Contains(packageName))
-                return;
+            resolvedPackageName = null;
+            packageJsonPath = Path.Combine("Packages", packageName, "package.json");
 
-            collected.Add(packageName);
-
-            List<string> dependencies = GetPackageDependencies(packageName);
-            foreach (string dep in dependencies)
+            if (File.Exists(packageJsonPath))
             {
-                if (dep.StartsWith("cn.etetet."))
+                resolvedPackageName = TryReadPackageNameFromPackageJson(packageJsonPath) ?? packageName;
+                return true;
+            }
+
+            if (!Directory.Exists("Packages"))
+            {
+                return false;
+            }
+
+            string matchedPackageDirectory = Directory
+                    .GetDirectories("Packages", "cn.etetet.*")
+                    .Select(Path.GetFileName)
+                    .FirstOrDefault(name => string.Equals(name, packageName, StringComparison.OrdinalIgnoreCase));
+
+            if (string.IsNullOrEmpty(matchedPackageDirectory))
+            {
+                return false;
+            }
+
+            packageJsonPath = Path.Combine("Packages", matchedPackageDirectory, "package.json");
+            if (!File.Exists(packageJsonPath))
+            {
+                return false;
+            }
+
+            resolvedPackageName = TryReadPackageNameFromPackageJson(packageJsonPath) ?? matchedPackageDirectory;
+            return true;
+        }
+
+        private static string TryReadPackageNameFromPackageJson(string packageJsonPath)
+        {
+            try
+            {
+                string json = File.ReadAllText(packageJsonPath);
+                Match nameMatch = Regex.Match(json, @"""name""\s*:\s*""([^""]+)""");
+                if (nameMatch.Success)
                 {
-                    CollectDependenciesRecursive(dep, collected);
+                    return nameMatch.Groups[1].Value;
                 }
             }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[MainPackageSelector] 读取包名失败 {packageJsonPath}: {ex.Message}");
+            }
+
+            return null;
         }
 
         /// <summary>

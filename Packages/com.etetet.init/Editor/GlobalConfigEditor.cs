@@ -64,8 +64,14 @@ namespace ET
             if (globalConfig.CodeMode != this.codeMode)
             {
                 this.codeMode = globalConfig.CodeMode;
-                Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode} --SceneName={globalConfig.SceneName}", ".", true);
+                Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode}", ".", true);
                 process.WaitForExit();
+
+                if (process.ExitCode != 0)
+                {
+                    UnityEngine.Debug.LogError($"[GlobalConfigEditor] 刷新 AssemblyReference 失败，退出码: {process.ExitCode}");
+                }
+
                 AssetDatabase.Refresh();
             }
 
@@ -81,7 +87,7 @@ namespace ET
                 return;
             }
 
-            string packageName = $"cn.etetet.{sceneName}";
+            string packageName = $"cn.etetet.{sceneName.ToLowerInvariant()}";
             string packageDirectory = Path.Combine("Packages", packageName);
             if (!Directory.Exists(packageDirectory))
             {

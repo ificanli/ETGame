@@ -37,7 +37,7 @@ namespace ET
             }
 
             string[] lines = File.ReadAllLines(mainPackagePath);
-            HashSet<string> packages = new HashSet<string>();
+            HashSet<string> packages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (string line in lines)
             {
                 string pkg = line.Trim();
