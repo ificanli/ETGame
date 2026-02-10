@@ -380,7 +380,9 @@
         "cn.etetet.mapmanager": "4.0.0",
         "cn.etetet.yiuireddot": "4.0.0",
         "cn.etetet.spell": "4.0.0",
-        "cn.etetet.robot": "4.0.0"
+        "cn.etetet.robot": "4.0.0",
+        "cn.etetet.sourcegenerator": "4.0.0",
+        "cn.etetet.yiuiinvoke": "4.0.0"
       }
     },
     "cn.etetet.test": {
