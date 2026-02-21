@@ -33,12 +33,13 @@ namespace ET.Server
             self.waitMatchPlayers.Clear();
 
             Scene root = self.Root();
+            EntityRef<Scene> rootRef = root;
             Map2Match_GetRoom map2MatchGetRoom = await root.GetComponent<MessageSender>().Call(
                 startSceneConfig.ActorId, match2MapGetRoom) as Map2Match_GetRoom;
 
             Match2G_NotifyMatchSuccess match2GNotifyMatchSuccess = Match2G_NotifyMatchSuccess.Create();
             match2GNotifyMatchSuccess.ActorId = map2MatchGetRoom.ActorId;
-            root = self.Root();
+            root = rootRef;
             MessageLocationSenderComponent messageLocationSenderComponent = root.GetComponent<MessageLocationSenderComponent>();
             
             foreach (long id in match2MapGetRoom.PlayerIds) // 这里发送消息线程不会修改PlayerInfo，所以可以直接使用
