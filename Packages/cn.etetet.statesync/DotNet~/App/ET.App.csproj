@@ -34,6 +34,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\..\..\cn.etetet.scripts\DotNet~\Model\ET.Model.csproj" />
+      <ProjectReference Include="..\Model\ET.Model.csproj" />
   </ItemGroup>
 </Project>
