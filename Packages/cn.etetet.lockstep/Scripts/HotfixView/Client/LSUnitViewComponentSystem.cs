@@ -20,12 +20,14 @@ namespace ET.Client
         public static async ETTask InitAsync(this LSUnitViewComponent self)
         {
             Room room = self.Room();
+            EntityRef<Room> roomRef = room;
             LSUnitComponent lsUnitComponent = room.LSWorld.GetComponent<LSUnitComponent>();
             Scene root = self.Root();
             foreach (long playerId in room.PlayerIds)
             {
                 LSUnit lsUnit = lsUnitComponent.GetChild<LSUnit>(playerId);
                 string assetsName = $"Packages/cn.etetet.demores/Bundles/Unit/Unit.prefab";
+                room = roomRef;
                 GameObject bundleGameObject = await room.GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(assetsName);
                 GameObject prefab = bundleGameObject.Get<GameObject>("Skeleton");
 

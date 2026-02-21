@@ -119,7 +119,7 @@ namespace ET.Client
                 RunLSRollbackSystem(room);
             }
             
-            room.FixedTimeCounter.Reset(TimeInfo.Instance.ServerFrameTime() - frame * LSConstValue.UpdateInterval, 0);
+            room.FixedTimeCounter.Reset(TimeInfo.Instance.ServerNow() - frame * LSConstValue.UpdateInterval, 0);
 
             Log.Debug($"jump replay finish {frame}");
         }

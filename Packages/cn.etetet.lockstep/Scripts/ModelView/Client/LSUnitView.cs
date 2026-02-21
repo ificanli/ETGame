@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ET
+namespace ET.Client
 {
     [ChildOf(typeof(LSUnitViewComponent))]
     public class LSUnitView: Entity, IAwake<GameObject>, IUpdate, ILSRollback

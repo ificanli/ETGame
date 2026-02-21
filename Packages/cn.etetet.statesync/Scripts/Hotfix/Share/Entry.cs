@@ -38,9 +38,6 @@ namespace ET
             LogMsg logMsg = World.Instance.AddSingleton<LogMsg>();
             logMsg.AddIgnore(typeof(C2G_Ping));
             logMsg.AddIgnore(typeof(G2C_Ping));
-            logMsg.AddIgnore(typeof(C2M_PathfindingResult));
-            logMsg.AddIgnore(typeof(M2C_PathfindingResult));
-            logMsg.AddIgnore(typeof(M2C_Stop));
             logMsg.AddIgnore(typeof(MessageResponse));
             
             

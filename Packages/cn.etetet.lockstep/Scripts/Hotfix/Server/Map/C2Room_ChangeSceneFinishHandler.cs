@@ -18,11 +18,15 @@ namespace ET.Server
             {
                 return;
             }
-            
-            await room.Fiber.Root.GetComponent<TimerComponent>().WaitAsync(1000);
+
+            EntityRef<Room> roomRef = room;
+            await room.Fiber.Root.TimerComponent.WaitAsync(1000);
 
             Room2C_Start room2CStart = Room2C_Start.Create();
-            room2CStart.StartTime = TimeInfo.Instance.ServerFrameTime();
+            room2CStart.StartTime = TimeInfo.Instance.ServerNow();
+
+            room = roomRef;
+            roomServerComponent = room.GetComponent<RoomServerComponent>();
             foreach (RoomPlayer rp in roomServerComponent.Children.Values)
             {
                 LockStepUnitInfo lockStepUnitInfo = LockStepUnitInfo.Create();
@@ -32,6 +36,7 @@ namespace ET.Server
                 room2CStart.UnitInfo.Add(lockStepUnitInfo);
             }
 
+            room = roomRef;
             room.Init(room2CStart.UnitInfo, room2CStart.StartTime);
 
             room.AddComponent<LSServerUpdater>();

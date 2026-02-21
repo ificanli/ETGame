@@ -8,7 +8,9 @@
         "ET.Recast",
         "ET.TrueSync",
         "ET.YooAssets",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "ET.HybridCLR",
+        "ET.Init"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

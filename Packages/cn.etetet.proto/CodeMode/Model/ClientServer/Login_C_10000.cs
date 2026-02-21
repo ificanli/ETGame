@@ -280,6 +280,61 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.C2G_Logout)]
+    [ResponseType(nameof(G2C_Logout))]
+    public partial class C2G_Logout : MessageObject, ISessionRequest
+    {
+        public static C2G_Logout Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2G_Logout>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.G2C_Logout)]
+    public partial class G2C_Logout : MessageObject, ISessionResponse
+    {
+        public static G2C_Logout Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<G2C_Logout>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort Main2NetClient_Login = 10001;
@@ -290,5 +345,7 @@ namespace ET
         public const ushort R2C_Login = 10006;
         public const ushort C2G_LoginGate = 10007;
         public const ushort G2C_LoginGate = 10008;
+        public const ushort C2G_Logout = 10009;
+        public const ushort G2C_Logout = 10010;
     }
 }

@@ -11,12 +11,16 @@ namespace ET.Server
 			//RoomManagerComponent roomManagerComponent = root.GetComponent<RoomManagerComponent>();
 			
 			Fiber fiber = root.Fiber();
-			int fiberId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, fiber.Zone, SceneType.RoomRoot, "RoomRoot");
+
+			EntityRef<Scene> rootRef = root;
+			
+			int fiberId = await fiber.CreateFiber(SchedulerType.ThreadPool, fiber.Zone, SceneType.RoomRoot, "RoomRoot");
 			ActorId roomRootActorId = new(fiber.Process, fiberId);
 
 			// 发送消息给房间纤程，初始化
 			RoomManager2Room_Init roomManager2RoomInit = RoomManager2Room_Init.Create();
 			roomManager2RoomInit.PlayerIds.AddRange(request.PlayerIds);
+			root = rootRef;
 			await root.GetComponent<MessageSender>().Call(roomRootActorId, roomManager2RoomInit);
 			
 			response.ActorId = roomRootActorId;

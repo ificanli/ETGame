@@ -15,7 +15,7 @@ namespace ET.Server
             if (message.Frame % (1000 / LSConstValue.UpdateInterval) == 0)
             {
                 long nowFrameTime = room.FixedTimeCounter.FrameTime(message.Frame);
-                int diffTime = (int)(nowFrameTime - TimeInfo.Instance.ServerFrameTime());
+                int diffTime = (int)(nowFrameTime - TimeInfo.Instance.ServerNow());
 
                 Room2C_AdjustUpdateTime room2CAdjustUpdateTime = Room2C_AdjustUpdateTime.Create();
                 room2CAdjustUpdateTime.DiffTime = diffTime;

@@ -57,17 +57,3 @@ message G2C_Benchmark // ISessionResponse
 	int32 Error = 2;
 	string Message = 3;
 }
-
-
-// ResponseType G2C_Logout
-message C2G_Logout // ISessionRequest
-{
-	int32 RpcId = 1;
-}
-
-message G2C_Logout // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}

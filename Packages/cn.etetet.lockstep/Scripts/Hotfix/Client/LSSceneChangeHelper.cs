@@ -6,24 +6,30 @@ namespace ET.Client
         // 场景切换协程
         public static async ETTask SceneChangeTo(Scene root, string sceneName, long sceneInstanceId)
         {
+            EntityRef<Scene> rootRef = root;
             root.RemoveComponent<Room>();
 
             Room room = root.AddComponentWithId<Room>(sceneInstanceId);
             room.Name = sceneName;
 
+            EntityRef<Room> roomRef = room;
+
             // 等待表现层订阅的事件完成
             await EventSystem.Instance.PublishAsync(root, new LSSceneChangeStart() {Room = room});
 
+            root = rootRef;
             root.GetComponent<ClientSenderComponent>().Send(C2Room_ChangeSceneFinish.Create());
             
             // 等待Room2C_EnterMap消息
             Wait_Room2C_Start waitRoom2CStart = await root.GetComponent<ObjectWait>().Wait<Wait_Room2C_Start>();
 
+            room = roomRef;
             room.LSWorld = new LSWorld(SceneType.LockStepClient);
             room.Init(waitRoom2CStart.Message.UnitInfo, waitRoom2CStart.Message.StartTime);
             
             room.AddComponent<LSClientUpdater>();
 
+            root = rootRef;
             // 这个事件中可以订阅取消loading
             EventSystem.Instance.Publish(root, new LSSceneInitFinish());
         }
@@ -38,14 +44,17 @@ namespace ET.Client
             room.IsReplay = true;
             room.Replay = replay;
             room.LSWorld = new LSWorld(SceneType.LockStepClient);
-            room.Init(replay.UnitInfos, TimeInfo.Instance.ServerFrameTime());
-            
+            room.Init(replay.UnitInfos, TimeInfo.Instance.ServerNow());
+
+            EntityRef<Scene> rootRef = root;
+            EntityRef<Room> roomRef = room;
             // 等待表现层订阅的事件完成
             await EventSystem.Instance.PublishAsync(root, new LSSceneChangeStart() {Room = room});
-            
 
+            room = roomRef;
             room.AddComponent<LSReplayUpdater>();
             // 这个事件中可以订阅取消loading
+            root = rootRef;
             EventSystem.Instance.Publish(root, new LSSceneInitFinish());
         }
         
@@ -59,13 +68,16 @@ namespace ET.Client
             
             room.LSWorld = new LSWorld(SceneType.LockStepClient);
             room.Init(message.UnitInfos, message.StartTime, message.Frame);
-            
+
+            EntityRef<Room> roomRef = room;
+            EntityRef<Scene> rootRef = root;
             // 等待表现层订阅的事件完成
             await EventSystem.Instance.PublishAsync(root, new LSSceneChangeStart() {Room = room});
 
-
+            room = roomRef;
             room.AddComponent<LSClientUpdater>();
             // 这个事件中可以订阅取消loading
+            root = rootRef;
             EventSystem.Instance.Publish(root, new LSSceneInitFinish());
         }
     }
