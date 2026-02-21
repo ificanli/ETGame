@@ -20,8 +20,7 @@ MonoBehaviour:
     rid: 6418588484003954688
   m_OverrideGlobalSceneList: 1
   m_Scenes: []
-  m_ScriptingDefines:
-  - StateSync
+  m_ScriptingDefines: []
   m_PlayerSettingsYaml:
     m_Settings:
     - line: '| PlayerSettings:'
