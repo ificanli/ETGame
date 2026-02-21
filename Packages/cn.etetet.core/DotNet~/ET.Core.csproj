@@ -14,11 +14,19 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <ETRootDir>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\' ))))</ETRootDir>
+        <MainPackageFile>$(ETRootDir)MainPackage.txt</MainPackageFile>
+        <MainPackageDesignTimeProps>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)ET.Core.MainPackage.g.props</MainPackageDesignTimeProps>
+    </PropertyGroup>
+    
+    <Import Project="$(MainPackageDesignTimeProps)" Condition="'$(DesignTimeBuild)' == 'true' and Exists('$(MainPackageDesignTimeProps)')" />
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       <DefineConstants>DOTNET;ET10</DefineConstants>
-      <OutputPath>$(SolutionDir)Bin</OutputPath>
+      <OutputPath>$(ETRootDir)Bin</OutputPath>
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
       <Optimize>false</Optimize>
       <NoWarn>CA2022</NoWarn>
@@ -27,7 +35,7 @@
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">  
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks> 
       <DefineConstants>DOTNET;ET10</DefineConstants>
-      <OutputPath>$(SolutionDir)Bin</OutputPath>
+      <OutputPath>$(ETRootDir)Bin</OutputPath>
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
       <NoWarn>CA2022</NoWarn>
       <Optimize>true</Optimize>
@@ -36,9 +44,14 @@
       <Deterministic>false</Deterministic>
     </PropertyGroup>
 
+    <!-- 生成 IDE 设计时引用文件，解决 ET.Core 无法显示 MainPackage 引用代码 -->
+    <Target Name="GenerateDesignTimePackageProps" BeforeTargets="BeforeBuild" Inputs="$(MainPackageFile)" Outputs="$(MainPackageDesignTimeProps)" Condition="Exists('$(MainPackageFile)')">
+        <Exec Command="pwsh -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Generate-ETCoreMainPackageProps.ps1&quot; -RootDir &quot;$(ETRootDir)&quot; -OutputPath &quot;$(MainPackageDesignTimeProps)&quot;" />
+    </Target>
+
     <!-- 动态读取 MainPackage.txt 并生成 Compile 项 -->
     <Target Name="AddPackageCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile">
-        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+        <ReadLinesFromFile File="$(MainPackageFile)">
             <Output TaskParameter="Lines" ItemName="PackageNames" />
         </ReadLinesFromFile>
         <ItemGroup>
@@ -46,9 +59,9 @@
         </ItemGroup>
         <!-- 生成通配符路径 -->
         <ItemGroup>
-            <CoreShareGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Core/Share/**/*.cs')" />
-            <CoreServerGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Core/Server/**/*.cs')" />
-            <CodeModeCoreGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/CodeMode/Core/Server/**/*.cs')" />
+            <CoreShareGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Core/Share/**/*.cs')" />
+            <CoreServerGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Core/Server/**/*.cs')" />
+            <CodeModeCoreGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/CodeMode/Core/Server/**/*.cs')" />
         </ItemGroup>
         <!-- 使用 CreateItem 展开通配符 -->
         <CreateItem Include="@(CoreShareGlobs)">
@@ -63,9 +76,9 @@
     </Target>
     
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-        <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-        <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\ET.MemoryPack.csproj" />
+        <ProjectReference Include="$(ETRootDir)Packages/cn.etetet.sourcegenerator/DotNet~/ET.SourceGenerator/ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="$(ETRootDir)Packages/cn.etetet.memorypack/DotNet~/ET.MemoryPack.Generator/ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="$(ETRootDir)Packages/cn.etetet.memorypack/DotNet~/ET.MemoryPack/ET.MemoryPack.csproj" />
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
         <PackageReference Include="MongoDB.Driver" Version="3.5.0" />
         <PackageReference Include="NLog" Version="6.0.6" />

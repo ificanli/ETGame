@@ -11,16 +11,24 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
+    <PropertyGroup>
+        <ETRootDir>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\..\' ))))</ETRootDir>
+        <MainPackageFile>$(ETRootDir)MainPackage.txt</MainPackageFile>
+        <MainPackageDesignTimeProps>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)ET.Hotfix.MainPackage.g.props</MainPackageDesignTimeProps>
+    </PropertyGroup>
+    
+    <Import Project="$(MainPackageDesignTimeProps)" Condition="'$(DesignTimeBuild)' == 'true' and Exists('$(MainPackageDesignTimeProps)')" />
+    
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>DOTNET;ET10</DefineConstants>
-        <OutputPath>$(SolutionDir)Bin</OutputPath> 
+        <OutputPath>$(ETRootDir)Bin</OutputPath> 
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn></NoWarn>
         <Optimize>false</Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DefineConstants>DOTNET;ET10</DefineConstants>
-        <OutputPath>$(SolutionDir)Bin</OutputPath>
+        <OutputPath>$(ETRootDir)Bin</OutputPath>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <NoWarn></NoWarn>
@@ -29,9 +37,15 @@
         <DebugSymbols>true</DebugSymbols>
         <Deterministic>false</Deterministic>
     </PropertyGroup>
+    
+    <!-- 生成 IDE 设计时引用文件，解决 ET.Hotfix 无法显示 MainPackage 引用代码 -->
+    <Target Name="GenerateDesignTimePackageProps" BeforeTargets="BeforeBuild" Inputs="$(MainPackageFile)" Outputs="$(MainPackageDesignTimeProps)" Condition="Exists('$(MainPackageFile)')">
+        <Exec Command="pwsh -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Generate-ETHotfixMainPackageProps.ps1&quot; -RootDir &quot;$(ETRootDir)&quot; -OutputPath &quot;$(MainPackageDesignTimeProps)&quot;" />
+    </Target>
+    
     <!-- 动态读取 MainPackage.txt 并生成 Compile 项 -->
     <Target Name="AddPackageCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile">
-        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+        <ReadLinesFromFile File="$(MainPackageFile)">
             <Output TaskParameter="Lines" ItemName="PackageNames" />
         </ReadLinesFromFile>
         <ItemGroup>
@@ -39,10 +53,10 @@
         </ItemGroup>
         <!-- 生成通配符路径 -->
         <ItemGroup>
-            <HotfixShareGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Hotfix/Share/**/*.cs')" />
-            <HotfixServerGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Hotfix/Server/**/*.cs')" />
-            <HotfixClientGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Hotfix/Client/**/*.cs')" />
-            <CodeModeHotfixGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/CodeMode/Hotfix/Server/**/*.cs')" />
+            <HotfixShareGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Hotfix/Share/**/*.cs')" />
+            <HotfixServerGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Hotfix/Server/**/*.cs')" />
+            <HotfixClientGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Hotfix/Client/**/*.cs')" />
+            <CodeModeHotfixGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/CodeMode/Hotfix/Server/**/*.cs')" />
         </ItemGroup>
         <!-- 使用 CreateItem 展开通配符 -->
         <CreateItem Include="@(HotfixShareGlobs)">
@@ -61,14 +75,14 @@
 
     <!-- Debug 配置下添加 Test 目录 -->
     <Target Name="AddTestCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile" Condition="'$(Configuration)'=='Debug'">
-        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+        <ReadLinesFromFile File="$(MainPackageFile)">
             <Output TaskParameter="Lines" ItemName="TestPackageNames" />
         </ReadLinesFromFile>
         <ItemGroup>
             <TestPackageNames Remove="@(TestPackageNames)" Condition="'%(Identity)' == ''" />
         </ItemGroup>
         <ItemGroup>
-            <HotfixTestGlobs Include="@(TestPackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Hotfix/Test/**/*.cs')" />
+            <HotfixTestGlobs Include="@(TestPackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Hotfix/Test/**/*.cs')" />
         </ItemGroup>
         <CreateItem Include="@(HotfixTestGlobs)">
             <Output TaskParameter="Include" ItemName="Compile" />
@@ -76,8 +90,8 @@
     </Target>
     
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-        <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="$(ETRootDir)Packages/cn.etetet.memorypack/DotNet~/ET.MemoryPack.Generator/ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="$(ETRootDir)Packages/cn.etetet.sourcegenerator/DotNet~/ET.SourceGenerator/ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\Model\ET.Model.csproj" />
     </ItemGroup>
     

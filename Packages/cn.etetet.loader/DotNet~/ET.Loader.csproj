@@ -11,9 +11,17 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
+    <PropertyGroup>
+        <ETRootDir>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\' ))))</ETRootDir>
+        <MainPackageFile>$(ETRootDir)MainPackage.txt</MainPackageFile>
+        <MainPackageDesignTimeProps>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)ET.Loader.MainPackage.g.props</MainPackageDesignTimeProps>
+    </PropertyGroup>
+    
+    <Import Project="$(MainPackageDesignTimeProps)" Condition="'$(DesignTimeBuild)' == 'true' and Exists('$(MainPackageDesignTimeProps)')" />
+    
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>DOTNET</DefineConstants>
-        <OutputPath>$(SolutionDir)Bin</OutputPath> 
+        <OutputPath>$(ETRootDir)Bin</OutputPath> 
         <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Optimize>false</Optimize>
@@ -21,7 +29,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"> 
         <DefineConstants>DOTNET</DefineConstants>
-        <OutputPath>$(SolutionDir)Bin</OutputPath>
+        <OutputPath>$(ETRootDir)Bin</OutputPath>
         <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Optimize>true</Optimize>
@@ -30,9 +38,14 @@
         <Deterministic>false</Deterministic>
     </PropertyGroup>
 
+    <!-- 生成 IDE 设计时引用文件，解决 ET.Loader 无法显示 MainPackage 引用代码 -->
+    <Target Name="GenerateDesignTimePackageProps" BeforeTargets="BeforeBuild" Inputs="$(MainPackageFile)" Outputs="$(MainPackageDesignTimeProps)" Condition="Exists('$(MainPackageFile)')">
+        <Exec Command="pwsh -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Generate-ETLoaderMainPackageProps.ps1&quot; -RootDir &quot;$(ETRootDir)&quot; -OutputPath &quot;$(MainPackageDesignTimeProps)&quot;" />
+    </Target>
+
     <!-- 动态读取 MainPackage.txt 并生成 Compile 项 -->
     <Target Name="AddPackageCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile">
-        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+        <ReadLinesFromFile File="$(MainPackageFile)">
             <Output TaskParameter="Lines" ItemName="PackageNames" />
         </ReadLinesFromFile>
         <ItemGroup>
@@ -40,9 +53,9 @@
         </ItemGroup>
         <!-- 生成通配符路径 -->
         <ItemGroup>
-            <LoaderShareGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Loader/Share/**/*.cs')" />
-            <LoaderServerGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Loader/Server/**/*.cs')" />
-            <CodeModeLoaderGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/CodeMode/Loader/Server/**/*.cs')" />
+            <LoaderShareGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Loader/Share/**/*.cs')" />
+            <LoaderServerGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Loader/Server/**/*.cs')" />
+            <CodeModeLoaderGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/CodeMode/Loader/Server/**/*.cs')" />
         </ItemGroup>
         <!-- 使用 CreateItem 展开通配符 -->
         <CreateItem Include="@(LoaderShareGlobs)">

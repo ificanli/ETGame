@@ -21,6 +21,12 @@ namespace ET.Server
 			QuestComponent questComponent = unit.GetComponent<QuestComponent>();
 			
 			HashSet<int> allIds = QuestConfigCategory.Instance.GetAllQuestsById(target.Id);
+
+			if (allIds == null)
+			{
+				return;
+			}
+			
 			HashSet<int> questIds = QuestConfigCategory.Instance.GetAcceptQuestsById(target.Id);
 			HashSet<int> submitQuestIds = QuestConfigCategory.Instance.GetSubmitQuestsById(target.Id);
 			

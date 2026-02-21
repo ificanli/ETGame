@@ -11,9 +11,17 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
+    <PropertyGroup>
+        <ETRootDir>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\..\' ))))</ETRootDir>
+        <MainPackageFile>$(ETRootDir)MainPackage.txt</MainPackageFile>
+        <MainPackageDesignTimeProps>$(MSBuildProjectDirectory)/$(BaseIntermediateOutputPath)ET.Model.MainPackage.g.props</MainPackageDesignTimeProps>
+    </PropertyGroup>
+    
+    <Import Project="$(MainPackageDesignTimeProps)" Condition="'$(DesignTimeBuild)' == 'true' and Exists('$(MainPackageDesignTimeProps)')" />
+    
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>DOTNET</DefineConstants>
-        <OutputPath>$(SolutionDir)Bin</OutputPath> 
+        <OutputPath>$(ETRootDir)Bin</OutputPath> 
         <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <Optimize>false</Optimize>
@@ -21,7 +29,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"> 
         <DefineConstants>DOTNET</DefineConstants>
-        <OutputPath>$(SolutionDir)Bin</OutputPath>
+        <OutputPath>$(ETRootDir)Bin</OutputPath>
         <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn></NoWarn>      
@@ -31,9 +39,14 @@
         <Deterministic>false</Deterministic>
     </PropertyGroup>
 
+    <!-- 生成 IDE 设计时引用文件，解决 ET.Model 无法显示 MainPackage 引用代码 -->
+    <Target Name="GenerateDesignTimePackageProps" BeforeTargets="BeforeBuild" Inputs="$(MainPackageFile)" Outputs="$(MainPackageDesignTimeProps)" Condition="Exists('$(MainPackageFile)')">
+        <Exec Command="pwsh -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Generate-ETModelMainPackageProps.ps1&quot; -RootDir &quot;$(ETRootDir)&quot; -OutputPath &quot;$(MainPackageDesignTimeProps)&quot;" />
+    </Target>
+
     <!-- 动态读取 MainPackage.txt 并生成 Compile 项 -->
     <Target Name="AddPackageCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile">
-        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+        <ReadLinesFromFile File="$(MainPackageFile)">
             <Output TaskParameter="Lines" ItemName="PackageNames" />
         </ReadLinesFromFile>
         <ItemGroup>
@@ -41,10 +54,10 @@
         </ItemGroup>
         <!-- 生成通配符路径 -->
         <ItemGroup>
-            <ModelShareGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Model/Share/**/*.cs')" />
-            <ModelServerGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Model/Server/**/*.cs')" />
-            <ModelClientGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Model/Client/**/*.cs')" />
-            <CodeModeModelGlobs Include="@(PackageNames->'$(SolutionDir)Packages/%(Identity)/CodeMode/Model/Server/**/*.cs')" />
+            <ModelShareGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Model/Share/**/*.cs')" />
+            <ModelServerGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Model/Server/**/*.cs')" />
+            <ModelClientGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Model/Client/**/*.cs')" />
+            <CodeModeModelGlobs Include="@(PackageNames->'$(ETRootDir)Packages/%(Identity)/CodeMode/Model/Server/**/*.cs')" />
         </ItemGroup>
         <!-- 使用 CreateItem 展开通配符 -->
         <CreateItem Include="@(ModelShareGlobs)">
@@ -63,14 +76,14 @@
 
     <!-- Debug 配置下添加 Test 目录 -->
     <Target Name="AddTestCompileItems" BeforeTargets="BeforeBuild;BeforeResolveReferences;CoreCompile" Condition="'$(Configuration)'=='Debug'">
-        <ReadLinesFromFile File="$(SolutionDir)MainPackage.txt">
+        <ReadLinesFromFile File="$(MainPackageFile)">
             <Output TaskParameter="Lines" ItemName="TestPackageNames" />
         </ReadLinesFromFile>
         <ItemGroup>
             <TestPackageNames Remove="@(TestPackageNames)" Condition="'%(Identity)' == ''" />
         </ItemGroup>
         <ItemGroup>
-            <ModelTestGlobs Include="@(TestPackageNames->'$(SolutionDir)Packages/%(Identity)/Scripts/Model/Test/**/*.cs')" />
+            <ModelTestGlobs Include="@(TestPackageNames->'$(ETRootDir)Packages/%(Identity)/Scripts/Model/Test/**/*.cs')" />
         </ItemGroup>
         <CreateItem Include="@(ModelTestGlobs)">
             <Output TaskParameter="Include" ItemName="Compile" />
@@ -78,8 +91,8 @@
     </Target>
     
     <ItemGroup>
-        <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-        <ProjectReference Include="$(SolutionDir)Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="$(ETRootDir)Packages/cn.etetet.memorypack/DotNet~/ET.MemoryPack.Generator/ET.MemoryPack.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="$(ETRootDir)Packages/cn.etetet.sourcegenerator/DotNet~/ET.SourceGenerator/ET.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\..\..\cn.etetet.loader\DotNet~\ET.Loader.csproj" />
         <ProjectReference Include="..\..\..\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj" />
     </ItemGroup>
