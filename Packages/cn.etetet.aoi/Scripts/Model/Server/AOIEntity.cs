@@ -16,7 +16,7 @@ namespace ET.Server
         {
             get
             {
-                return this.numericComponent;
+                return this.numericComponent; 
             }
             set
             {
