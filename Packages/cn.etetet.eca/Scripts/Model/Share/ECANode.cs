@@ -1,5 +1,7 @@
 using System;
+#if !DOTNET
 using UnityEngine;
+#endif
 
 namespace ET
 {

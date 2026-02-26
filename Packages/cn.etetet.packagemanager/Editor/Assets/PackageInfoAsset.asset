@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AllLastPackageInfo:
   - Name: com.unity.ide.visualstudio
-    Version: 2.0.25
-  - Name: com.unity.ide.rider
-    Version: 3.0.38
+    Version: 2.0.27
   - Name: com.unity.ide.cursor
     Version: 
   - Name: com.halodi.halodi-unity-package-registry-manager
@@ -24,93 +22,99 @@ MonoBehaviour:
   - Name: com.etetet.init
     Version: 
   - Name: cn.etetet.yooassets
-    Version: 2.3.6
+    Version: 
   - Name: cn.etetet.yiuiyooassets
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.yiuitips
-    Version: 3.0.2
+    Version: 
   - Name: cn.etetet.yiuireddot
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.yiuiluban
-    Version: 3.0.6
+    Version: 
   - Name: cn.etetet.yiuiloopscrollrectasync
-    Version: 3.0.1
+    Version: 
   - Name: cn.etetet.yiuiinvoke
-    Version: 4.0.3
+    Version: 
   - Name: cn.etetet.yiuigm
-    Version: 3.0.1
+    Version: 
   - Name: cn.etetet.yiuiframework
-    Version: 3.0.7
+    Version: 
   - Name: cn.etetet.yiuieffect
-    Version: 3.0.0
-  - Name: cn.etetet.yiuidamagetips
-    Version: 1.0.4
+    Version: 
   - Name: cn.etetet.yiui3ddisplay
-    Version: 3.0.1
+    Version: 
   - Name: cn.etetet.yiui
     Version: 
-  - Name: cn.etetet.wow
-    Version: 
   - Name: cn.etetet.unit
-    Version: 3.0.0
+    Version: 
+  - Name: cn.etetet.truesync
+    Version: 
   - Name: cn.etetet.test
     Version: 
+  - Name: cn.etetet.statesync
+    Version: 
   - Name: cn.etetet.startconfig
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.spell
     Version: 
   - Name: cn.etetet.sourcegenerator
-    Version: 3.0.1
+    Version: 
   - Name: cn.etetet.servicediscovery
     Version: 
-  - Name: cn.etetet.scripts
-    Version: 
   - Name: cn.etetet.router
-    Version: 3.0.1
+    Version: 
   - Name: cn.etetet.robot
     Version: 
   - Name: cn.etetet.recast
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.quest
     Version: 
   - Name: cn.etetet.proto
-    Version: 3.0.2
+    Version: 
   - Name: cn.etetet.packagemanager
-    Version: 1.0.7
+    Version: 
   - Name: cn.etetet.numeric
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.netinner
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.move
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.memorypack
-    Version: 1.10.1
+    Version: 
   - Name: cn.etetet.mathematics
-    Version: 0.0.2
+    Version: 
   - Name: cn.etetet.mapmanager
     Version: 
   - Name: cn.etetet.map
     Version: 
+  - Name: cn.etetet.lsentity
+    Version: 
   - Name: cn.etetet.login
-    Version: 3.0.0
+    Version: 
+  - Name: cn.etetet.lockstep
+    Version: 
   - Name: cn.etetet.loader
-    Version: 3.0.1
+    Version: 
   - Name: cn.etetet.item
     Version: 
   - Name: cn.etetet.hybridclr
-    Version: 7.8.1
+    Version: 
   - Name: cn.etetet.http
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.excel
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.equipment
     Version: 
+  - Name: cn.etetet.ecanode
+    Version: 
+  - Name: cn.etetet.eca
+    Version: 
   - Name: cn.etetet.db
-    Version: 1.0.0
+    Version: 
   - Name: cn.etetet.core
-    Version: 3.0.3
+    Version: 
   - Name: cn.etetet.console
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.btnode
     Version: 
   - Name: cn.etetet.behaviortree
@@ -118,11 +122,9 @@ MonoBehaviour:
   - Name: cn.etetet.aspire
     Version: 
   - Name: cn.etetet.aoi
-    Version: 3.0.0
-  - Name: cn.etetet.ai
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.actorlocation
-    Version: 3.0.0
+    Version: 
   - Name: cn.etetet.achievement
     Version: 
   - Name: com.unity.modules.wind
@@ -186,19 +188,21 @@ MonoBehaviour:
   - Name: com.unity.ugui
     Version: 2.0.0
   - Name: com.unity.timeline
-    Version: 1.8.9
+    Version: 1.8.11
   - Name: com.unity.render-pipelines.universal
     Version: 17.0.4
   - Name: com.unity.multiplayer.center
     Version: 1.0.0
   - Name: com.unity.inputsystem
-    Version: 1.17.0
+    Version: 1.19.0
+  - Name: com.unity.ide.rider
+    Version: 3.0.39
   - Name: com.unity.cinemachine
-    Version: 3.1.5
+    Version: 3.1.6
   - Name: com.unity.ai.navigation
-    Version: 2.0.9
+    Version: 2.0.11
   - Name: com.unity.2d.sprite
     Version: 1.0.0
   BanPackageInfo: []
-  LastUpdateTime: 1765432339
+  LastUpdateTime: 1772142511
   UpdateInterval: 3600

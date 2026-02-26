@@ -13,5 +13,10 @@ namespace ET.Server
         /// 所有 ECA 点的字典 (PointId -> EntityId)
         /// </summary>
         public Dictionary<string, long> ECAPoints { get; set; } = new();
+
+        /// <summary>
+        /// 范围检测定时器 ID
+        /// </summary>
+        public long CheckRangeTimerId;
     }
 }

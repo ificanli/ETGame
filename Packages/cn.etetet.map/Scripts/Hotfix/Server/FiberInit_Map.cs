@@ -35,6 +35,9 @@ namespace ET.Server
             root = rootRef;
             unitComponent = unitComponentRef;
 
+            // 加载 ECA 点配置
+            ECALoader.LoadFromFile(root, mapName);
+
             foreach (var kv in MapUnitConfigCategory.Instance.GetAll())
             {
                 if (mapName != kv.Value.MapName)

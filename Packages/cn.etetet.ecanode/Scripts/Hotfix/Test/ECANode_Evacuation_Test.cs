@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
+using ET.Server;
 
 namespace ET.Test
 {
-    public class ECANode_LoadECAPoints_Test : ATestHandler
+    public class Ecanode_LoadECAPoints_Test : ATestHandler
     {
         public override async ETTask<int> Handle(TestContext context)
         {
-            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(ECANode_LoadECAPoints_Test));
+            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Ecanode_LoadECAPoints_Test));
             Fiber testFiber = scope.TestFiber;
             Scene scene = testFiber.Root;
 
@@ -29,10 +30,10 @@ namespace ET.Test
             };
 
             // 加载 ECA 点
-            Server.ECALoader.LoadECAPoints(scene, configs);
+            ECALoader.LoadECAPoints(scene, configs);
 
             // 验证
-            Server.ECAManagerComponent ecaManager = scene.GetComponent<Server.ECAManagerComponent>();
+            ECAManagerComponent ecaManager = scene.GetComponent<ECAManagerComponent>();
             if (ecaManager == null)
             {
                 Log.Console("ECAManagerComponent not created");
@@ -50,11 +51,11 @@ namespace ET.Test
         }
     }
 
-    public class ECANode_PlayerEnterEvacuation_Test : ATestHandler
+    public class Ecanode_PlayerEnterEvacuation_Test : ATestHandler
     {
         public override async ETTask<int> Handle(TestContext context)
         {
-            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(ECANode_PlayerEnterEvacuation_Test));
+            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Ecanode_PlayerEnterEvacuation_Test));
             Fiber testFiber = scope.TestFiber;
             Scene scene = testFiber.Root;
 
@@ -75,19 +76,23 @@ namespace ET.Test
                 }
             };
 
-            Server.ECALoader.LoadECAPoints(scene, configs);
+            ECALoader.LoadECAPoints(scene, configs);
 
             // 创建测试玩家
             Unit player = unitComponent.AddChild<Unit, int>(0);
             player.Position = new float3(100f, 0f, 50f); // 在撤离点范围内
 
             // 触发范围检测
-            Server.ECAHelper.CheckPlayerInRange(player);
+            ECAHelper.CheckPlayerInRange(player);
 
+            EntityRef<Scene> sceneRef = scene;
+            EntityRef<Unit> playerRef = player;
             await scene.TimerComponent.WaitAsync(100); // 等待异步操作完成
+            scene = sceneRef;
+            player = playerRef;
 
             // 验证玩家是否开始撤离
-            Server.PlayerEvacuationComponent evacuation = player.GetComponent<Server.PlayerEvacuationComponent>();
+            PlayerEvacuationComponent evacuation = player.GetComponent<PlayerEvacuationComponent>();
             if (evacuation == null)
             {
                 Log.Console("PlayerEvacuationComponent not created");
@@ -111,11 +116,11 @@ namespace ET.Test
         }
     }
 
-    public class ECANode_PlayerLeaveEvacuation_Test : ATestHandler
+    public class Ecanode_PlayerLeaveEvacuation_Test : ATestHandler
     {
         public override async ETTask<int> Handle(TestContext context)
         {
-            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(ECANode_PlayerLeaveEvacuation_Test));
+            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Ecanode_PlayerLeaveEvacuation_Test));
             Fiber testFiber = scope.TestFiber;
             Scene scene = testFiber.Root;
 
@@ -136,18 +141,23 @@ namespace ET.Test
                 }
             };
 
-            Server.ECALoader.LoadECAPoints(scene, configs);
+            ECALoader.LoadECAPoints(scene, configs);
 
             // 创建测试玩家
             Unit player = unitComponent.AddChild<Unit, int>(0);
             player.Position = new float3(100f, 0f, 50f); // 在范围内
 
             // 触发进入
-            Server.ECAHelper.CheckPlayerInRange(player);
+            ECAHelper.CheckPlayerInRange(player);
+
+            EntityRef<Scene> sceneRef = scene;
+            EntityRef<Unit> playerRef = player;
             await scene.TimerComponent.WaitAsync(100);
+            scene = sceneRef;
+            player = playerRef;
 
             // 验证开始撤离
-            Server.PlayerEvacuationComponent evacuation = player.GetComponent<Server.PlayerEvacuationComponent>();
+            PlayerEvacuationComponent evacuation = player.GetComponent<PlayerEvacuationComponent>();
             if (evacuation == null)
             {
                 Log.Console("PlayerEvacuationComponent not created after entering");
@@ -158,11 +168,13 @@ namespace ET.Test
             player.Position = new float3(200f, 0f, 50f); // 远离撤离点
 
             // 触发离开
-            Server.ECAHelper.CheckPlayerInRange(player);
+            ECAHelper.CheckPlayerInRange(player);
             await scene.TimerComponent.WaitAsync(100);
+            scene = sceneRef;
+            player = playerRef;
 
             // 验证撤离被取消
-            evacuation = player.GetComponent<Server.PlayerEvacuationComponent>();
+            evacuation = player.GetComponent<PlayerEvacuationComponent>();
             if (evacuation != null)
             {
                 Log.Console("PlayerEvacuationComponent should be removed after leaving");
@@ -174,11 +186,11 @@ namespace ET.Test
         }
     }
 
-    public class ECANode_EvacuationComplete_Test : ATestHandler
+    public class Ecanode_EvacuationComplete_Test : ATestHandler
     {
         public override async ETTask<int> Handle(TestContext context)
         {
-            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(ECANode_EvacuationComplete_Test));
+            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Ecanode_EvacuationComplete_Test));
             Fiber testFiber = scope.TestFiber;
             Scene scene = testFiber.Root;
 
@@ -199,17 +211,22 @@ namespace ET.Test
                 }
             };
 
-            Server.ECALoader.LoadECAPoints(scene, configs);
+            ECALoader.LoadECAPoints(scene, configs);
 
             // 创建测试玩家
             Unit player = unitComponent.AddChild<Unit, int>(0);
             player.Position = new float3(100f, 0f, 50f);
 
             // 触发进入
-            Server.ECAHelper.CheckPlayerInRange(player);
-            await scene.TimerComponent.WaitAsync(100);
+            ECAHelper.CheckPlayerInRange(player);
 
-            Server.PlayerEvacuationComponent evacuation = player.GetComponent<Server.PlayerEvacuationComponent>();
+            EntityRef<Scene> sceneRef = scene;
+            EntityRef<Unit> playerRef = player;
+            await scene.TimerComponent.WaitAsync(100);
+            scene = sceneRef;
+            player = playerRef;
+
+            PlayerEvacuationComponent evacuation = player.GetComponent<PlayerEvacuationComponent>();
             if (evacuation == null)
             {
                 Log.Console("PlayerEvacuationComponent not created");
@@ -220,9 +237,11 @@ namespace ET.Test
 
             // 等待撤离完成（10秒 + 缓冲）
             await scene.TimerComponent.WaitAsync(11000);
+            scene = sceneRef;
+            player = playerRef;
 
             // 验证撤离完成后组件被移除
-            evacuation = player.GetComponent<Server.PlayerEvacuationComponent>();
+            evacuation = player.GetComponent<PlayerEvacuationComponent>();
             if (evacuation != null)
             {
                 Log.Console("PlayerEvacuationComponent should be removed after completion");

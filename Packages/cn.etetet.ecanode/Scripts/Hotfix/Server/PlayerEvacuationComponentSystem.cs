@@ -75,23 +75,13 @@ namespace ET.Server
 
         private static async ETTask CompleteEvacuation(this PlayerEvacuationComponent self)
         {
-            EntityRef<PlayerEvacuationComponent> selfRef = self;
-
             self.Status = 2;
 
             Unit player = self.GetParent<Unit>();
             Log.Info($"[PlayerEvacuation] Player {player.Id} evacuation completed, transferring to lobby");
 
-            // TODO: 实现跳转回 Lobby
-            Log.Warning($"[PlayerEvacuation] Transfer to lobby not implemented yet. Player {player.Id} should be transferred now.");
-
-            self = selfRef;
-            if (self != null && !self.IsDisposed)
-            {
-                self.Dispose();
-            }
-
-            await ETTask.CompletedTask;
+            // 撤离完成，传送到 Map1（大厅）
+            await TransferHelper.TransferAtFrameFinish(player, "Map1", 0);
         }
 
         private static void CancelEvacuation(this PlayerEvacuationComponent self)

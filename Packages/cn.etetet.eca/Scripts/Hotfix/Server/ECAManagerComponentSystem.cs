@@ -15,6 +15,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this ECAManagerComponent self)
         {
+            self.Root().TimerComponent.Remove(ref self.CheckRangeTimerId);
             self.ECAPoints.Clear();
         }
 
