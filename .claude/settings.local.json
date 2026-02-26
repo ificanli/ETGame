@@ -37,7 +37,9 @@
       "Bash(pwsh -Command \"New-Item -ItemType Directory -Path ''Packages/cn.etetet.achievement'' -Force\")",
       "Bash(git add:*)",
       "Bash(tree:*)",
-      "Bash(printf:*)"
+      "Bash(printf:*)",
+      "Bash(do sed:*)",
+      "Bash(\"D:\\\\05ET\\\\etowo\\\\MyBook\\\\ECA框架架构修复计划.md\":*)"
     ],
     "deny": []
   }

@@ -1,7 +1,9 @@
 {
     "name": "Ignore.ET.Spell",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "Unity.Mathematics"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

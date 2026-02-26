@@ -4,10 +4,18 @@ using ET.Server;
 
 namespace ET.Test
 {
-    public struct TestFiberScope(Fiber fiber) : IAsyncDisposable
+    public struct TestFiberScope : IAsyncDisposable
     {
+        private readonly Fiber fiber;
         public Fiber TestFiber { get; private set; }
         private int serviceDiscoveryFiberId;
+
+        public TestFiberScope(Fiber fiber)
+        {
+            this.fiber = fiber;
+            this.TestFiber = null;
+            this.serviceDiscoveryFiberId = 0;
+        }
 
         public static async ETTask<TestFiberScope> Create(Fiber fiber, string testName)
         {

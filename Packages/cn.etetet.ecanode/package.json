@@ -1,0 +1,27 @@
+{
+  "name": "cn.etetet.ecanode",
+  "displayName": "ET.ECANode",
+  "version": "4.0.0",
+  "unity": "2022.3",
+  "description": "ET Framework ECA Node Extensions Package",
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.eca": "4.0.0",
+    "cn.etetet.map": "4.0.0",
+    "cn.etetet.move": "4.0.0",
+    "cn.etetet.behaviortree": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.console": "4.0.0",
+    "cn.etetet.numeric": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.router": "4.0.0",
+    "cn.etetet.actorlocation": "4.0.0",
+    "cn.etetet.aoi": "4.0.0",
+    "cn.etetet.yooassets": "4.0.0",
+    "cn.etetet.yiuiframework": "4.0.0"
+  }
+}

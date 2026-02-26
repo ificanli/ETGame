@@ -27,6 +27,9 @@ MonoBehaviour:
     - Name: Id
       Entry: 3
       Data: 100000
+    - Name: BuffId
+      Entry: 3
+      Data: 200000
     - Name: Desc
       Entry: 1
       Data: "\u666E\u901A\u653B\u51FB"
@@ -42,9 +45,9 @@ MonoBehaviour:
     - Name: CD
       Entry: 3
       Data: 2000
-    - Name: BuffId
+    - Name: DamageMultiplier
       Entry: 3
-      Data: 1100000
+      Data: 0
     - Name: Cost
       Entry: 6
       Data: 
@@ -77,7 +80,16 @@ MonoBehaviour:
       Data: false
     - Name: DescCollapsed
       Entry: 5
+      Data: true
+    - Name: EditorLayoutVisible
+      Entry: 5
       Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 250
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
