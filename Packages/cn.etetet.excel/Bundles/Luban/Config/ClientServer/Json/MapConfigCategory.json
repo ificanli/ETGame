@@ -38,5 +38,15 @@
     "MaxPlayerNum": 1,
     "RecommendPlayerNum": 1,
     "MapResName": "Lordaeron"
+  },
+  {
+    "Id": 5,
+    "Name": "Home",
+    "Desc": "大厅",
+    "CopyType": 1,
+    "MaxLineNum": 1,
+    "MaxPlayerNum": 100,
+    "RecommendPlayerNum": 50,
+    "MapResName": "Home"
   }
 ]

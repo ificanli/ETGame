@@ -32,7 +32,11 @@ namespace ET.Server
 
             unit.AddComponent<TurnComponent>();
             unit.AddComponent<MoveComponent>();
-            unit.AddComponent<PathfindingComponent, string>(scene.Name.GetSceneConfigName());
+            string mapName = scene.Name.GetSceneConfigName();
+            if (mapName != "Home")
+            {
+                unit.AddComponent<PathfindingComponent, string>(mapName);
+            }
             unit.AddComponent<MailBoxComponent, int>(MailBoxType.OrderedMessage);
             unit.AddComponent<TargetComponent>();
 

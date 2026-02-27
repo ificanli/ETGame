@@ -22,8 +22,12 @@
             EventSystem.Instance.Publish(root, new SceneChangeStart() {ChangeScene = changeScene});          // 可以订阅这个事件中创建Loading界面
             if (changeScene)
             {
-                // 加载场景寻路数据
-                await NavmeshComponent.Instance.Load(sceneName.GetSceneConfigName());
+                // Home 场景不需要加载寻路数据
+                string configName = sceneName.GetSceneConfigName();
+                if (configName != "Home")
+                {
+                    await NavmeshComponent.Instance.Load(configName);
+                }
             }
             root = rootRef;
             EventSystem.Instance.Publish(root, new SceneChangeFinish());

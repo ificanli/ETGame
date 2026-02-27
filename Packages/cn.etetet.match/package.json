@@ -1,0 +1,19 @@
+{
+  "name": "cn.etetet.match",
+  "displayName": "ET.Match",
+  "version": "4.0.0",
+  "unity": "2022.3",
+  "description": "ET Framework Match System - 匹配队列、模式管理",
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.actorlocation": "4.0.0",
+    "cn.etetet.startconfig": "4.0.0",
+    "cn.etetet.console": "4.0.0",
+    "cn.etetet.http": "4.0.0",
+    "cn.etetet.router": "4.0.0"
+  }
+}

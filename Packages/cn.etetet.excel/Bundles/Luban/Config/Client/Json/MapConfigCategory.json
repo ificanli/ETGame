@@ -26,5 +26,12 @@
     "Desc": "Lordaeron",
     "CopyType": 3,
     "MapResName": "Lordaeron"
+  },
+  {
+    "Id": 5,
+    "Name": "Home",
+    "Desc": "大厅",
+    "CopyType": 1,
+    "MapResName": "Home"
   }
 ]

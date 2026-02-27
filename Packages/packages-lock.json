@@ -39,6 +39,24 @@
         "cn.etetet.startconfig": "4.0.0"
       }
     },
+    "cn.etetet.battle": {
+      "version": "file:cn.etetet.battle",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.excel": "4.0.0",
+        "cn.etetet.proto": "4.0.0",
+        "cn.etetet.unit": "4.0.0",
+        "cn.etetet.netinner": "4.0.0",
+        "cn.etetet.actorlocation": "4.0.0",
+        "cn.etetet.startconfig": "4.0.0",
+        "cn.etetet.console": "4.0.0",
+        "cn.etetet.http": "4.0.0",
+        "cn.etetet.router": "4.0.0",
+        "cn.etetet.match": "4.0.0"
+      }
+    },
     "cn.etetet.behaviortree": {
       "version": "file:cn.etetet.behaviortree",
       "depth": 0,
@@ -240,6 +258,23 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
+    },
+    "cn.etetet.match": {
+      "version": "file:cn.etetet.match",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "cn.etetet.core": "4.0.0",
+        "cn.etetet.excel": "4.0.0",
+        "cn.etetet.proto": "4.0.0",
+        "cn.etetet.unit": "4.0.0",
+        "cn.etetet.netinner": "4.0.0",
+        "cn.etetet.actorlocation": "4.0.0",
+        "cn.etetet.startconfig": "4.0.0",
+        "cn.etetet.console": "4.0.0",
+        "cn.etetet.http": "4.0.0",
+        "cn.etetet.router": "4.0.0"
+      }
     },
     "cn.etetet.mathematics": {
       "version": "file:cn.etetet.mathematics",

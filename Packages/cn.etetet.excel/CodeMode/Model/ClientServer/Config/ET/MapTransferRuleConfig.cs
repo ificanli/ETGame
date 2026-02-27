@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,16 +15,16 @@ namespace ET
     [EnableClass]
     public sealed partial class MapTransferRuleConfig : Luban.BeanBase
     {
-        public MapTransferRuleConfig(JSONNode _buf) 
+        public MapTransferRuleConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["ToMap"].IsString) { throw new SerializationException(); }  ToMap = _buf["ToMap"]; }
-            { var __json0 = _buf["Pos"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; Pos = new float[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { float __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  Pos[__index0++] = __v0; }   }
+            Id = _buf.ReadInt();
+            ToMap = _buf.ReadString();
+            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);Pos = new float[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { float __e0;__e0 = _buf.ReadFloat(); Pos[__index0] = __e0;}}
 
             EndInit();
         }
 
-        public static MapTransferRuleConfig DeserializeMapTransferRuleConfig(JSONNode _buf)
+        public static MapTransferRuleConfig DeserializeMapTransferRuleConfig(ByteBuf _buf)
         {
             return new ET.MapTransferRuleConfig(_buf);
         }
@@ -42,7 +41,7 @@ namespace ET
         /// 目标位置
         /// </summary>
         public readonly float[] Pos;
-
+    
         public const int __ID__ = 2092018182;
         public override int GetTypeId() => __ID__;
 

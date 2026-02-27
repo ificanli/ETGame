@@ -30,7 +30,10 @@ namespace ET.Client
         private static async ETTask OnEventEnterMapInvoke(this LobbyPanelComponent self)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
-            await EnterMapHelper.EnterMapAsync(self.Root());
+            // 玩家已在Home地图，使用C2M_TransferMap进行地图间传送
+            await self.Root().GetComponent<ClientSenderComponent>().Call(C2M_TransferMap.Create());
+            self = selfRef;
+            await self.Root().GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
             self = selfRef;
             await self.UIPanel.CloseAsync();
         }

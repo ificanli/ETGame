@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,17 +15,17 @@ namespace ET
     [EnableClass]
     public sealed partial class MapUnitConfig : Luban.BeanBase
     {
-        public MapUnitConfig(JSONNode _buf) 
+        public MapUnitConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["UnitConfigId"].IsNumber) { throw new SerializationException(); }  UnitConfigId = _buf["UnitConfigId"]; }
-            { if(!_buf["MapName"].IsString) { throw new SerializationException(); }  MapName = _buf["MapName"]; }
-            { var __json0 = _buf["KV"]; if(!__json0.IsArray) { throw new SerializationException(); } KV = new System.Collections.Generic.Dictionary<int, long>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { int _k0;  { if(!__e0[0].IsNumber) { throw new SerializationException(); }  _k0 = __e0[0]; } long _v0;  { if(!__e0[1].IsNumber) { throw new SerializationException(); }  _v0 = __e0[1]; }  KV.Add(_k0, _v0); }   }
+            Id = _buf.ReadInt();
+            UnitConfigId = _buf.ReadInt();
+            MapName = _buf.ReadString();
+            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);KV = new System.Collections.Generic.Dictionary<int, long>(n0 * 3 / 2);for(var i0 = 0 ; i0 < n0 ; i0++) { int _k0;  _k0 = _buf.ReadInt(); long _v0;  _v0 = _buf.ReadLong();     KV.Add(_k0, _v0);}}
 
             EndInit();
         }
 
-        public static MapUnitConfig DeserializeMapUnitConfig(JSONNode _buf)
+        public static MapUnitConfig DeserializeMapUnitConfig(ByteBuf _buf)
         {
             return new ET.MapUnitConfig(_buf);
         }
@@ -47,7 +46,7 @@ namespace ET
         /// 出生X坐标
         /// </summary>
         public readonly System.Collections.Generic.Dictionary<int, long> KV;
-
+    
         public const int __ID__ = -2012370621;
         public override int GetTypeId() => __ID__;
 

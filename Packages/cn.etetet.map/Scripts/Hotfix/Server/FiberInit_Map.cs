@@ -26,7 +26,7 @@ namespace ET.Server
 
             string mapName = root.Name.GetSceneConfigName();
 
-            if (mapName != "GateMap")
+            if (mapName != "GateMap" && mapName != "Home")
             {
                 // 加载场景寻路数据
                 await NavmeshComponent.Instance.Load(mapName);
