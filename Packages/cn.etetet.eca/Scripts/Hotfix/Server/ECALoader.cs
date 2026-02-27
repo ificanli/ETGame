@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Unity.Mathematics;
+using ET;
 
 namespace ET.Server
 {
@@ -52,11 +53,12 @@ namespace ET.Server
                 Unit ecaUnit = unitComponent.AddChild<Unit, int>(0);
                 ecaUnit.Position = new float3(config.PosX, config.PosY, config.PosZ);
 
-                ecaUnit.AddComponent<ECAPointComponent, string, int, float>(
+                ECAPointComponent ecaPoint = ecaUnit.AddComponent<ECAPointComponent, string, int, float>(
                     config.ConfigId,
                     config.PointType,
                     config.InteractRange
                 );
+                ecaPoint.FlowGraph = config.FlowGraph;
 
                 ecaManager.AddECAPoint(config.ConfigId, ecaUnit.Id);
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace ET
 {
@@ -13,5 +12,6 @@ namespace ET
         public float PosY;
         public float PosZ;
         public float InteractRange = 3f;
+        public FlowGraphData FlowGraph;
     }
 }

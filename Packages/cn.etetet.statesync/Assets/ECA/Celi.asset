@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee0d950c1f585843a3942a92f9e3b8d, type: 3}
+  m_Name: Celi
+  m_EditorClassIdentifier: 
+  Graph:
+    Version: 1
+    Nodes:
+    - Id: 1
+      NodeType: Event
+      NodeKey: OnPlayerEnterRange
+      Title: Event 1
+      PosX: 0
+      PosY: 145
+      Params:
+      - Key: 5
+        Value: 
+    - Id: 2
+      NodeType: Condition
+      NodeKey: PlayerInRange
+      Title: Condition 2
+      PosX: 366
+      PosY: 145
+      Params:
+      - Key: 4
+        Value: 
+    - Id: 6
+      NodeType: Action
+      NodeKey: SetPointState
+      Title: Action 6
+      PosX: 685
+      PosY: 145
+      Params:
+      - Key: state
+        Value: 1
+    Connections:
+    - FromNodeId: 1
+      ToNodeId: 2
+      Branch: Out
+    - FromNodeId: 2
+      ToNodeId: 6
+      Branch: True

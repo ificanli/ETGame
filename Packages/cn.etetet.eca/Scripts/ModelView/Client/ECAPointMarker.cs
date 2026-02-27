@@ -8,14 +8,17 @@ namespace ET.Client
     {
         [Header("基础配置")]
         public ECAConfigAsset Config;
-        
+
         [Range(1f, 20f)]
         public float InteractRange = 5f;
-        
+
+        [Header("流程图")]
+        public FlowGraphAsset FlowGraph;
+
         [Header("可视化")]
         public bool ShowRange = true;
         public Color RangeColor = Color.green;
-        
+
         private void OnValidate()
         {
             if (Config != null)
@@ -23,7 +26,7 @@ namespace ET.Client
                 Config.InteractRange = InteractRange;
             }
         }
-        
+
         private void OnDrawGizmos()
         {
             if (ShowRange)
@@ -32,7 +35,7 @@ namespace ET.Client
                 Gizmos.DrawWireSphere(transform.position, InteractRange);
             }
         }
-        
+
         public ECAConfig GetConfig()
         {
             if (Config == null)
@@ -40,8 +43,14 @@ namespace ET.Client
                 Debug.LogError($"ECAPointMarker at {transform.position} has no config!");
                 return null;
             }
-            
-            return Config.ToRuntimeConfig(transform.position);
+
+            ECAConfig config = Config.ToRuntimeConfig(transform.position);
+            if (FlowGraph != null)
+            {
+                config.FlowGraph = FlowGraph.Graph;
+            }
+
+            return config;
         }
     }
 }
