@@ -49,5 +49,20 @@ namespace ET
         /// 饰品2
         /// </summary>
         Accessory2 = 9,
+
+        /// <summary>
+        /// 护甲（搜打撤 M0 使用 Chest 槽，此处为护甲别名）
+        /// </summary>
+        Armor = 2,
+
+        /// <summary>
+        /// 消耗品1
+        /// </summary>
+        Consumable1 = 10,
+
+        /// <summary>
+        /// 消耗品2
+        /// </summary>
+        Consumable2 = 11,
     }
 }

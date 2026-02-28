@@ -1,0 +1,12 @@
+[
+  {
+    "Id": 1001,
+    "Name": "Assault",
+    "UnitConfigId": 1001
+  },
+  {
+    "Id": 1002,
+    "Name": "Sniper",
+    "UnitConfigId": 1001
+  }
+]

@@ -1,0 +1,57 @@
+syntax = "proto3";
+package ET;
+
+// 英雄信息（用于列表展示）
+message HeroInfoData
+{
+    int32 HeroConfigId = 1;
+    string Name = 2;
+    int32 UnitConfigId = 3;
+}
+
+// 请求可用英雄列表
+// ResponseType G2C_GetHeroList
+message C2G_GetHeroList // ISessionRequest
+{
+    int32 RpcId = 1;
+}
+
+message G2C_GetHeroList // ISessionResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+    repeated HeroInfoData Heroes = 4;
+}
+
+// 确认起装（英雄+4个装备槽位）
+// ResponseType G2C_ConfirmLoadout
+message C2G_ConfirmLoadout // ISessionRequest
+{
+    int32 RpcId = 1;
+    int32 HeroConfigId = 2;
+    int32 MainWeaponConfigId = 3;
+    int32 SubWeaponConfigId = 4;
+    int32 ArmorConfigId = 5;
+    repeated int32 ConsumableConfigIds = 6;
+}
+
+message G2C_ConfirmLoadout // ISessionResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+}
+
+// 撤离结算通知（服务端推送）
+message M2C_EvacuationSettlement // IMessage
+{
+    bool Success = 1;
+    repeated ItemData Items = 2;
+    int64 TotalWealth = 3;
+}
+
+// 死亡结算通知（服务端推送）
+message M2C_DeathSettlement // IMessage
+{
+}

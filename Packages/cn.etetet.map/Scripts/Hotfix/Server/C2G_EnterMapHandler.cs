@@ -16,11 +16,30 @@
 			Scene scene = gateMapComponent.Fiber.Root;
 			// 这里可以从DB中加载Unit
 			player = playerRef;
-			Unit unit = UnitFactory.Create(scene, player.Id, 1001);
+
+			// 读取起装配置，使用英雄对应的 UnitConfigId（没有起装则默认1001）
+			int unitConfigId = 1001;
+			LoadoutComponent loadout = player.GetComponent<LoadoutComponent>();
+			if (loadout != null && loadout.IsConfirmed && loadout.HeroConfigId > 0)
+			{
+				HeroConfig heroConfig = HeroConfigCategory.Instance.GetOrDefault(loadout.HeroConfigId);
+				if (heroConfig != null)
+				{
+					unitConfigId = heroConfig.UnitConfigId;
+				}
+			}
+
+			Unit unit = UnitFactory.Create(scene, player.Id, unitConfigId);
 			unit.AddComponent<UnitGateInfoComponent>().ActorId = player.GetComponent<PlayerSessionComponent>().GetActorId();
 
+			// 应用起装（将起装装备给 Unit）
+			if (loadout != null && loadout.IsConfirmed)
+			{
+				LoadoutHelper.ApplyLoadout(unit, loadout);
+			}
+
 			session = sessionRef;
-			
+
 			response.MyId = player.Id;
 			// 等到一帧的最后面再传送，先让G2C_EnterMap返回，否则传送消息可能比G2C_EnterMap还早
 			TransferAtFrameFinish(player, unit, "Home", 0).Coroutine();

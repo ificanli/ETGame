@@ -20,6 +20,23 @@ namespace ET.Server
             self.EquippedItems.Clear();
         }
 
+        /// <summary>
+        /// 传送反序列化：从子 Item 重建 EquippedItems 字典
+        /// 在 Gate->Map 传送完成后由框架自动调用
+        /// </summary>
+        [EntitySystem]
+        private static void Deserialize(this EquipmentComponent self)
+        {
+            self.EquippedItems.Clear();
+            foreach (var kv in self.Children)
+            {
+                if (kv.Value is Item item && item.SlotIndex > 0)
+                {
+                    self.EquippedItems[(EquipmentSlotType)item.SlotIndex] = item;
+                }
+            }
+        }
+
         #endregion
 
         #region 业务方法

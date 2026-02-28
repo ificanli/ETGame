@@ -50,6 +50,7 @@ namespace ET.Server
                 case UnitType.Player:
                 {
                     unit.AddComponent<ItemComponent>();
+                    unit.AddComponent<EquipmentComponent>();
                     unit.AddComponent<QuestComponent>();
                     break;
                 }

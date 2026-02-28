@@ -78,9 +78,14 @@ namespace ET.Server
             self.Status = 2;
 
             Unit player = self.GetParent<Unit>();
-            Log.Info($"[PlayerEvacuation] Player {player.Id} evacuation completed, transferring to lobby");
+            EntityRef<Unit> playerRef = player;
+            Log.Info($"[PlayerEvacuation] Player {player.Id} evacuation completed, settling items then transferring to lobby");
+
+            // 撤离结算：收集物品、计算财富、通知客户端（case 1 EvacuationPoint 结算逻辑）
+            await EvacuationSettlementHelper.Settle(player);
 
             // 撤离完成，传送到 Map1（大厅）
+            player = playerRef;
             await TransferHelper.TransferAtFrameFinish(player, "Map1", 0);
         }
 
