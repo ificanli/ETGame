@@ -1,3 +1,5 @@
+using ET;
+
 namespace ET.Server
 {
     [EntitySystemOf(typeof(ECAPointComponent))]
@@ -11,6 +13,7 @@ namespace ET.Server
             self.PointType = pointType;
             self.InteractRange = interactRange;
             self.CurrentState = 0;
+            self.IsActive = true;
         }
 
         /// <summary>
@@ -26,18 +29,25 @@ namespace ET.Server
 
             Log.Info($"[ECAPoint] Player {player.Id} entered ECA point: {self.PointId}");
 
-            // 根据点类型触发不同逻辑
-            switch (self.PointType)
+            if (!self.IsActive)
             {
-                case 1: // EvacuationPoint
-                    await self.HandleEvacuationPoint(player);
-                    break;
-                case 2: // SpawnPoint
-                    // TODO: 刷怪逻辑
-                    break;
-                case 3: // Container
-                    // TODO: 容器逻辑
-                    break;
+                return;
+            }
+
+            // FlowGraph 优先，便于撤离点逐步迁移为流程图
+            if (HasFlowGraph(self))
+            {
+                ECAFlowGraphHelper.TriggerEvent(self, player, ECAFlowEventType.OnPlayerEnterRange);
+            }
+            else
+            {
+                // 根据点类型触发不同逻辑（无流程图时走旧逻辑）
+                switch (self.PointType)
+                {
+                    case ECAPointType.EvacuationPoint:
+                        await self.HandleEvacuationPoint(player);
+                        break;
+                }
             }
 
             self = selfRef;
@@ -53,12 +63,41 @@ namespace ET.Server
 
             Log.Info($"[ECAPoint] Player {player.Id} left ECA point: {self.PointId}");
 
-            // 根据点类型处理离开逻辑
-            switch (self.PointType)
+            if (!self.IsActive)
             {
-                case 1: // EvacuationPoint
-                    self.CancelEvacuation(player);
-                    break;
+                return;
+            }
+
+            // FlowGraph 优先，便于撤离点逐步迁移为流程图
+            if (HasFlowGraph(self))
+            {
+                ECAFlowGraphHelper.TriggerEvent(self, player, ECAFlowEventType.OnPlayerLeaveRange);
+            }
+            else
+            {
+                // 根据点类型处理离开逻辑（无流程图时走旧逻辑）
+                switch (self.PointType)
+                {
+                    case ECAPointType.EvacuationPoint:
+                        self.CancelEvacuation(player);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 玩家交互
+        /// </summary>
+        public static void OnPlayerInteract(this ECAPointComponent self, Unit player)
+        {
+            if (!self.IsActive)
+            {
+                return;
+            }
+
+            if (HasFlowGraph(self))
+            {
+                ECAFlowGraphHelper.TriggerEvent(self, player, ECAFlowEventType.OnPlayerInteract);
             }
         }
 
@@ -93,6 +132,11 @@ namespace ET.Server
                 player.RemoveComponent<PlayerEvacuationComponent>();
                 Log.Info($"[ECAPoint] Player {player.Id} evacuation cancelled");
             }
+        }
+
+        private static bool HasFlowGraph(ECAPointComponent self)
+        {
+            return self.FlowGraph != null && self.FlowGraph.Nodes != null && self.FlowGraph.Nodes.Count > 0;
         }
     }
 }
