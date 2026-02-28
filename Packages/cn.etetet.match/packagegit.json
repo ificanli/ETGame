@@ -1,6 +1,12 @@
 {
   "Id": 54,
   "Name": "Match",
-  "AllowAccessField": true,
-  "Level": 2
+  "Level": 5,
+  "AllowSameLevelAccess": true,
+  "Dependencies": [
+    "cn.etetet.core",
+    "cn.etetet.proto",
+    "cn.etetet.startconfig",
+    "cn.etetet.netinner"
+  ]
 }

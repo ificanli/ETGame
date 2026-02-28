@@ -86,5 +86,13 @@
     "SceneType": "MapManager",
     "Name": "MapManager",
     "Port": 0
+  },
+  {
+    "Id": 12,
+    "Process": 1,
+    "Zone": 2,
+    "SceneType": "Match",
+    "Name": "Match",
+    "Port": 0
   }
 ]

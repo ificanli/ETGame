@@ -39,7 +39,8 @@
       "Bash(tree:*)",
       "Bash(printf:*)",
       "Bash(do sed:*)",
-      "Bash(\"D:\\\\05ET\\\\etowo\\\\MyBook\\\\ECA框架架构修复计划.md\":*)"
+      "Bash(\"D:\\\\05ET\\\\etowo\\\\MyBook\\\\ECA框架架构修复计划.md\":*)",
+      "Bash(cmd:*)"
     ],
     "deny": []
   }

@@ -1,0 +1,42 @@
+syntax = "proto3";
+package ET;
+
+message C2G_MatchRequest // ISessionRequest
+{
+	int32 RpcId = 1;
+	int32 GameMode = 2;
+}
+
+message G2C_MatchRequest // ISessionResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RequestId = 4;
+}
+
+message C2G_MatchCancel // ISessionRequest
+{
+	int32 RpcId = 1;
+	int64 RequestId = 2;
+}
+
+message G2C_MatchCancel // ISessionResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message G2C_MatchSuccess // IMessage
+{
+	int32 GameMode = 1;
+	string MapName = 2;
+	repeated int64 PlayerIds = 3;
+	int64 MapId = 4;
+}
+
+message G2C_MatchTimeout // IMessage
+{
+	int32 GameMode = 1;
+}

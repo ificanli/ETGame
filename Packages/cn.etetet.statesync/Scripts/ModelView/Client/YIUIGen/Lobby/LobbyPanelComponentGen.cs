@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using YIUIFramework;
 using System.Collections.Generic;
@@ -22,9 +22,38 @@ namespace ET.Client
         public YIUIWindowComponent UIWindow => u_UIWindow;
         public EntityRef<YIUIPanelComponent> u_UIPanel;
         public YIUIPanelComponent UIPanel => u_UIPanel;
+        public UnityEngine.RectTransform u_ComRolePanelRectTransform;
+        public UnityEngine.RectTransform u_ComEquipPanelRectTransform;
+        public UnityEngine.RectTransform u_ComMatchPanelRectTransform;
+        public UnityEngine.RectTransform u_ComBuildPanelRectTransform;
+        public UnityEngine.RectTransform u_ComExplorePanelRectTransform;
         public UITaskEventP0 u_EventEnterMap;
         public UITaskEventHandleP0 u_EventEnterMapHandle;
         public const string OnEventEnterMapInvoke = "LobbyPanelComponent.OnEventEnterMapInvoke";
+        public UITaskEventP0 u_EventRoleToggle;
+        public UITaskEventHandleP0 u_EventRoleToggleHandle;
+        public const string OnEventRoleToggleInvoke = "LobbyPanelComponent.OnEventRoleToggleInvoke";
+        public UITaskEventP0 u_EventEquipToggle;
+        public UITaskEventHandleP0 u_EventEquipToggleHandle;
+        public const string OnEventEquipToggleInvoke = "LobbyPanelComponent.OnEventEquipToggleInvoke";
+        public UITaskEventP0 u_EventMatchToggle;
+        public UITaskEventHandleP0 u_EventMatchToggleHandle;
+        public const string OnEventMatchToggleInvoke = "LobbyPanelComponent.OnEventMatchToggleInvoke";
+        public UITaskEventP0 u_EventBuildToggle;
+        public UITaskEventHandleP0 u_EventBuildToggleHandle;
+        public const string OnEventBuildToggleInvoke = "LobbyPanelComponent.OnEventBuildToggleInvoke";
+        public UITaskEventP0 u_EventExploreToggle;
+        public UITaskEventHandleP0 u_EventExploreToggleHandle;
+        public const string OnEventExploreToggleInvoke = "LobbyPanelComponent.OnEventExploreToggleInvoke";
+        public UITaskEventP0 u_EventThreeThreeMatchButton;
+        public UITaskEventHandleP0 u_EventThreeThreeMatchButtonHandle;
+        public const string OnEventThreeThreeMatchButtonInvoke = "LobbyPanelComponent.OnEventThreeThreeMatchButtonInvoke";
+        public UITaskEventP0 u_EventSouDaCeMatchButton;
+        public UITaskEventHandleP0 u_EventSouDaCeMatchButtonHandle;
+        public const string OnEventSouDaCeMatchButtonInvoke = "LobbyPanelComponent.OnEventSouDaCeMatchButtonInvoke";
+        public UITaskEventP0 u_EventOneOneMatchButton;
+        public UITaskEventHandleP0 u_EventOneOneMatchButtonHandle;
+        public const string OnEventOneOneMatchButtonInvoke = "LobbyPanelComponent.OnEventOneOneMatchButtonInvoke";
 
     }
 }

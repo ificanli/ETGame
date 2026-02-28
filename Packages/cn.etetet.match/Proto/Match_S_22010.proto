@@ -1,0 +1,52 @@
+syntax = "proto3";
+package ET;
+
+message G2Match_MatchRequest // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int32 GameMode = 3;
+	int64 GateActorId = 4;
+}
+
+message Match2G_MatchRequest // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RequestId = 4;
+}
+
+message G2Match_MatchCancel // IRequest
+{
+	int32 RpcId = 1;
+	int64 RequestId = 2;
+}
+
+message Match2G_MatchCancel // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message Match2G_MatchSuccess // IRequest
+{
+	int32 RpcId = 1;
+	int32 GameMode = 2;
+	string MapName = 3;
+	repeated int64 PlayerIds = 4;
+}
+
+message G2Match_MatchSuccess // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message Match2G_MatchTimeout // IMessage
+{
+	int64 PlayerId = 1;
+	int32 GameMode = 2;
+}

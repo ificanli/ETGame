@@ -40,8 +40,18 @@ namespace ET.Server
             
             // 订阅location
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange("Location", 
+            await serviceDiscoveryProxy.SubscribeServiceChange("Location",
                 new StringKV() { {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.Location)} });
+
+            // 订阅Match
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxy.SubscribeServiceChange("Match",
+                new StringKV() { {ServiceMetaKey.SceneType, "Match"} });
+
+            // 订阅MapManager，匹配成功后需要创建副本
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxy.SubscribeServiceChange("MapManager",
+                new StringKV() { {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.MapManager)} });
         }
     }
 }
