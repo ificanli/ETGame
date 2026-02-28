@@ -1,6 +1,7 @@
 syntax = "proto3";
 package ET;
 
+// ResponseType Match2G_MatchRequest
 message G2Match_MatchRequest // IRequest
 {
 	int32 RpcId = 1;
@@ -17,6 +18,7 @@ message Match2G_MatchRequest // IResponse
 	int64 RequestId = 4;
 }
 
+// ResponseType Match2G_MatchCancel
 message G2Match_MatchCancel // IRequest
 {
 	int32 RpcId = 1;
@@ -30,6 +32,7 @@ message Match2G_MatchCancel // IResponse
 	string Message = 3;
 }
 
+// ResponseType G2Match_MatchSuccess
 message Match2G_MatchSuccess // IRequest
 {
 	int32 RpcId = 1;

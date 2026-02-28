@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ET
 {
+    // 英雄信息（用于列表展示）
     [MemoryPackable]
     [Message(Opcode.HeroInfoData)]
     public partial class HeroInfoData : MessageObject
@@ -14,13 +15,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int HeroConfigId { get; set; }
-
         [MemoryPackOrder(1)]
         public string Name { get; set; }
-
         [MemoryPackOrder(2)]
         public int UnitConfigId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -36,6 +34,7 @@ namespace ET
         }
     }
 
+    // 请求可用英雄列表
     [MemoryPackable]
     [Message(Opcode.C2G_GetHeroList)]
     [ResponseType(nameof(G2C_GetHeroList))]
@@ -48,7 +47,6 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -73,13 +71,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         [MemoryPackOrder(3)]
         public List<HeroInfoData> Heroes { get; set; } = new();
 
@@ -93,12 +88,13 @@ namespace ET
             this.RpcId = default;
             this.Error = default;
             this.Message = default;
-            this.Heroes?.Clear();
+            this.Heroes.Clear();
 
             ObjectPool.Recycle(this);
         }
     }
 
+    // 确认起装（英雄+4个装备槽位）
     [MemoryPackable]
     [Message(Opcode.C2G_ConfirmLoadout)]
     [ResponseType(nameof(G2C_ConfirmLoadout))]
@@ -111,19 +107,14 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int HeroConfigId { get; set; }
-
         [MemoryPackOrder(2)]
         public int MainWeaponConfigId { get; set; }
-
         [MemoryPackOrder(3)]
         public int SubWeaponConfigId { get; set; }
-
         [MemoryPackOrder(4)]
         public int ArmorConfigId { get; set; }
-
         [MemoryPackOrder(5)]
         public List<int> ConsumableConfigIds { get; set; } = new();
 
@@ -139,7 +130,7 @@ namespace ET
             this.MainWeaponConfigId = default;
             this.SubWeaponConfigId = default;
             this.ArmorConfigId = default;
-            this.ConsumableConfigIds?.Clear();
+            this.ConsumableConfigIds.Clear();
 
             ObjectPool.Recycle(this);
         }
@@ -156,13 +147,10 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-
         [MemoryPackOrder(1)]
         public int Error { get; set; }
-
         [MemoryPackOrder(2)]
         public string Message { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -178,6 +166,7 @@ namespace ET
         }
     }
 
+    // 撤离结算通知（服务端推送）
     [MemoryPackable]
     [Message(Opcode.M2C_EvacuationSettlement)]
     public partial class M2C_EvacuationSettlement : MessageObject, IMessage
@@ -189,13 +178,11 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public bool Success { get; set; }
-
         [MemoryPackOrder(1)]
         public List<ItemData> Items { get; set; } = new();
 
         [MemoryPackOrder(2)]
         public long TotalWealth { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -204,13 +191,14 @@ namespace ET
             }
 
             this.Success = default;
-            this.Items?.Clear();
+            this.Items.Clear();
             this.TotalWealth = default;
 
             ObjectPool.Recycle(this);
         }
     }
 
+    // 死亡结算通知（服务端推送）
     [MemoryPackable]
     [Message(Opcode.M2C_DeathSettlement)]
     public partial class M2C_DeathSettlement : MessageObject, IMessage
@@ -227,25 +215,12 @@ namespace ET
                 return;
             }
 
+            
             ObjectPool.Recycle(this);
         }
     }
 
-    public static partial class Opcode
-    {
-        public const ushort HeroInfoData = 4801;
-        public const ushort C2G_GetHeroList = 4802;
-        public const ushort G2C_GetHeroList = 4803;
-        public const ushort C2G_ConfirmLoadout = 4804;
-        public const ushort G2C_ConfirmLoadout = 4805;
-        public const ushort M2C_EvacuationSettlement = 4806;
-        public const ushort M2C_DeathSettlement = 4807;
-        public const ushort Map2G_EvacuationSettlement = 4808;
-    }
-
-    /// <summary>
-    /// Map 侧向 Gate 侧 Player 发送的撤离结算通知（Actor 消息）
-    /// </summary>
+    // Map 侧向 Gate 侧 Player 发送的撤离结算通知
     [MemoryPackable]
     [Message(Opcode.Map2G_EvacuationSettlement)]
     public partial class Map2G_EvacuationSettlement : MessageObject, IMessage
@@ -257,13 +232,11 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public bool Success { get; set; }
-
         [MemoryPackOrder(1)]
         public List<ItemData> Items { get; set; } = new();
 
         [MemoryPackOrder(2)]
         public long TotalWealth { get; set; }
-
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -272,11 +245,22 @@ namespace ET
             }
 
             this.Success = default;
-            this.Items?.Clear();
+            this.Items.Clear();
             this.TotalWealth = default;
 
             ObjectPool.Recycle(this);
         }
     }
-}
 
+    public static partial class Opcode
+    {
+        public const ushort HeroInfoData = 11101;
+        public const ushort C2G_GetHeroList = 11102;
+        public const ushort G2C_GetHeroList = 11103;
+        public const ushort C2G_ConfirmLoadout = 11104;
+        public const ushort G2C_ConfirmLoadout = 11105;
+        public const ushort M2C_EvacuationSettlement = 11106;
+        public const ushort M2C_DeathSettlement = 11107;
+        public const ushort Map2G_EvacuationSettlement = 11108;
+    }
+}

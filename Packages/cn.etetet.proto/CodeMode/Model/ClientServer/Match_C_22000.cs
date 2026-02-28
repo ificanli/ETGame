@@ -5,6 +5,7 @@ namespace ET
 {
     [MemoryPackable]
     [Message(Opcode.C2G_MatchRequest)]
+    [ResponseType(nameof(G2C_MatchRequest))]
     public partial class C2G_MatchRequest : MessageObject, ISessionRequest
     {
         public static C2G_MatchRequest Create(bool isFromPool = false)
@@ -65,6 +66,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.C2G_MatchCancel)]
+    [ResponseType(nameof(G2C_MatchCancel))]
     public partial class C2G_MatchCancel : MessageObject, ISessionRequest
     {
         public static C2G_MatchCancel Create(bool isFromPool = false)

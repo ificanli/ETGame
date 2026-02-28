@@ -7,6 +7,7 @@ namespace ET.Client
 {
     public partial class LobbyPanelComponent : Entity
     {
-
+        public EntityRef<YIUILoopScrollChild> m_HeroLoop;
+        public YIUILoopScrollChild HeroLoop => m_HeroLoop;
     }
 }

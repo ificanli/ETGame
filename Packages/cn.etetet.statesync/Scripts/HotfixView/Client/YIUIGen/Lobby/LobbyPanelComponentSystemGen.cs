@@ -41,6 +41,7 @@ namespace ET.Client
             self.u_ComMatchPanelRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComMatchPanelRectTransform");
             self.u_ComBuildPanelRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComBuildPanelRectTransform");
             self.u_ComExplorePanelRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComExplorePanelRectTransform");
+            self.u_ComHeroList = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComHeroList");
             self.u_EventEnterMap = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventEnterMap");
             self.u_EventEnterMapHandle = self.u_EventEnterMap.Add(self,LobbyPanelComponent.OnEventEnterMapInvoke);
             self.u_EventRoleToggle = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventRoleToggle");

@@ -55,3 +55,11 @@ message M2C_EvacuationSettlement // IMessage
 message M2C_DeathSettlement // IMessage
 {
 }
+
+// Map 侧向 Gate 侧 Player 发送的撤离结算通知
+message Map2G_EvacuationSettlement // IMessage
+{
+    bool Success = 1;
+    repeated ItemData Items = 2;
+    int64 TotalWealth = 3;
+}

@@ -1,6 +1,7 @@
 syntax = "proto3";
 package ET;
 
+// ResponseType G2C_MatchRequest
 message C2G_MatchRequest // ISessionRequest
 {
 	int32 RpcId = 1;
@@ -15,6 +16,7 @@ message G2C_MatchRequest // ISessionResponse
 	int64 RequestId = 4;
 }
 
+// ResponseType G2C_MatchCancel
 message C2G_MatchCancel // ISessionRequest
 {
 	int32 RpcId = 1;

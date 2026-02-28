@@ -2109,7 +2109,7 @@ PrefabInstance:
     - target: {fileID: 389971059164066241, guid: 2c357fbd09d82ff4ebb7cb3815590b2b,
         type: 3}
       propertyPath: serializationData.PrefabModifications.Array.size
-      value: 0
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 389971059164066241, guid: 2c357fbd09d82ff4ebb7cb3815590b2b,
         type: 3}
@@ -2174,7 +2174,7 @@ PrefabInstance:
     - target: {fileID: 389971059164066241, guid: 2c357fbd09d82ff4ebb7cb3815590b2b,
         type: 3}
       propertyPath: serializationData.PrefabModificationsReferencedUnityObjects.Array.size
-      value: 0
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 389971059164066241, guid: 2c357fbd09d82ff4ebb7cb3815590b2b,
         type: 3}

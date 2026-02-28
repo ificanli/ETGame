@@ -10,6 +10,10 @@ namespace ET.Client
 
             if (mapName == "Home")
             {
+                if (scene.GetComponent<LoadoutComponent>() == null)
+                {
+                    scene.AddComponent<LoadoutComponent>();
+                }
                 await scene.YIUIRoot().OpenPanelAsync<LobbyPanelComponent>();
             }
             else

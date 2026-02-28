@@ -27,6 +27,7 @@ namespace ET.Client
         public UnityEngine.RectTransform u_ComMatchPanelRectTransform;
         public UnityEngine.RectTransform u_ComBuildPanelRectTransform;
         public UnityEngine.RectTransform u_ComExplorePanelRectTransform;
+        public UnityEngine.RectTransform u_ComHeroList;
         public UITaskEventP0 u_EventEnterMap;
         public UITaskEventHandleP0 u_EventEnterMapHandle;
         public const string OnEventEnterMapInvoke = "LobbyPanelComponent.OnEventEnterMapInvoke";

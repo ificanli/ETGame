@@ -5,6 +5,7 @@ namespace ET
 {
     [MemoryPackable]
     [Message(Opcode.G2Match_MatchRequest)]
+    [ResponseType(nameof(Match2G_MatchRequest))]
     public partial class G2Match_MatchRequest : MessageObject, IRequest
     {
         public static G2Match_MatchRequest Create(bool isFromPool = false)
@@ -71,6 +72,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.G2Match_MatchCancel)]
+    [ResponseType(nameof(Match2G_MatchCancel))]
     public partial class G2Match_MatchCancel : MessageObject, IRequest
     {
         public static G2Match_MatchCancel Create(bool isFromPool = false)
@@ -128,6 +130,7 @@ namespace ET
 
     [MemoryPackable]
     [Message(Opcode.Match2G_MatchSuccess)]
+    [ResponseType(nameof(G2Match_MatchSuccess))]
     public partial class Match2G_MatchSuccess : MessageObject, IRequest
     {
         public static Match2G_MatchSuccess Create(bool isFromPool = false)

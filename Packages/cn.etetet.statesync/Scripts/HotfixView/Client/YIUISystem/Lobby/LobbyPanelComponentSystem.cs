@@ -1,15 +1,23 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using YIUIFramework;
 using System.Collections.Generic;
 
 namespace ET.Client
 {
+    [FriendOf(typeof(HeroSelectItemComponent))]
     public static partial class LobbyPanelComponentSystem
     {
         [EntitySystem]
         private static void YIUIInitialize(this LobbyPanelComponent self)
         {
+            var loopScroll = self.u_ComHeroList.GetComponentInChildren<LoopScrollRect>();
+            self.m_HeroLoop = self.AddChild<YIUILoopScrollChild, LoopScrollRect, Type, string>(
+                loopScroll,
+                typeof(HeroSelectItemComponent),
+                "u_EventSelect"
+            );
         }
 
         [EntitySystem]
@@ -20,10 +28,8 @@ namespace ET.Client
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this LobbyPanelComponent self)
         {
-            // 默认显示匹配面板
             self.ShowPanel(self.u_ComRolePanelRectTransform);
-            
-            await ETTask.CompletedTask;
+            await self.RefreshHeroList();
             return true;
         }
 
@@ -111,6 +117,76 @@ namespace ET.Client
 
         #endregion
 
+        #region 英雄列表逻辑
+
+        private static async ETTask RefreshHeroList(this LobbyPanelComponent self)
+        {
+            EntityRef<LobbyPanelComponent> selfRef = self;
+
+            C2G_GetHeroList request = C2G_GetHeroList.Create();
+            G2C_GetHeroList response = (G2C_GetHeroList)await self.Root().GetComponent<ClientSenderComponent>().Call(request);
+            self = selfRef;
+
+            if (response.Error != ErrorCode.ERR_Success)
+            {
+                Log.Error($"获取英雄列表失败: {response.Error}");
+                return;
+            }
+
+            var loadout = self.Root().GetComponent<LoadoutComponent>();
+            loadout.Heroes.Clear();
+            foreach (var hero in response.Heroes)
+            {
+                loadout.Heroes.Add(new HeroInfo
+                {
+                    HeroConfigId = hero.HeroConfigId,
+                    Name = hero.Name,
+                    UnitConfigId = hero.UnitConfigId
+                });
+            }
+
+            self.HeroLoop.ClearSelect();
+            await self.HeroLoop.SetDataRefresh(loadout.Heroes, 0);
+            self = selfRef;
+
+            // 默认选中第一个英雄
+            var loadout2 = self.Root().GetComponent<LoadoutComponent>();
+            if (loadout2.Heroes.Count > 0)
+            {
+                loadout2.SelectedHeroConfigId = loadout2.Heroes[0].HeroConfigId;
+            }
+        }
+
+        [EntitySystem]
+        private static void YIUILoopRenderer(
+            this LobbyPanelComponent self,
+            HeroSelectItemComponent item,
+            HeroInfo data,
+            int index,
+            bool select)
+        {
+            item.u_DataHeroName.SetValue(data.Name);
+            item.u_DataSelect.SetValue(select);
+        }
+
+        [EntitySystem]
+        private static void YIUILoopOnClick(
+            this LobbyPanelComponent self,
+            HeroSelectItemComponent item,
+            HeroInfo data,
+            int index,
+            bool select)
+        {
+            item.u_DataSelect.SetValue(select);
+            if (select)
+            {
+                self.Root().GetComponent<LoadoutComponent>().SelectedHeroConfigId = data.HeroConfigId;
+                Log.Info($"选中英雄: {data.Name} (ConfigId: {data.HeroConfigId})");
+            }
+        }
+
+        #endregion
+
         #region 匹配逻辑
 
         /// <summary>
@@ -135,11 +211,15 @@ namespace ET.Client
 
             Log.Info($"匹配请求成功，RequestId: {response.RequestId}, GameMode: {gameMode}，等待匹配...");
 
+            // 打开匹配等待弹窗
+            await self.UIPanel.OpenViewAsync<MatchViewComponent>();
+            self = selfRef;
+
             // 服务端匹配成功后会自动传送玩家，客户端只需等待场景切换完成
             await self.Root().GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
             self = selfRef;
 
-            // 关闭 Lobby 面板
+            // 关闭 Lobby 面板（MatchView 会随面板一起关闭）
             await self.UIPanel.CloseAsync();
         }
 
