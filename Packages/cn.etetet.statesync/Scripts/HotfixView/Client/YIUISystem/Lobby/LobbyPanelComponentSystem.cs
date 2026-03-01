@@ -7,17 +7,32 @@ using System.Collections.Generic;
 namespace ET.Client
 {
     [FriendOf(typeof(HeroSelectItemComponent))]
+    [FriendOf(typeof(LobbyPanelComponent))]
+    [FriendOf(typeof(EquipSlotItemComponent))]
+    [FriendOf(typeof(LoadoutComponent))]
     public static partial class LobbyPanelComponentSystem
     {
         [EntitySystem]
         private static void YIUIInitialize(this LobbyPanelComponent self)
         {
-            var loopScroll = self.u_ComHeroList.GetComponentInChildren<LoopScrollRect>();
+            // 初始化英雄列表 LoopScroll
+            var heroLoopScroll = self.u_ComHeroList.GetComponentInChildren<LoopScrollRect>();
             self.m_HeroLoop = self.AddChild<YIUILoopScrollChild, LoopScrollRect, Type, string>(
-                loopScroll,
+                heroLoopScroll,
                 typeof(HeroSelectItemComponent),
                 "u_EventSelect"
             );
+
+            // 初始化装备背包 LoopScroll
+            var bagLoopScroll = self.u_ComEquipBagScroll.GetComponentInChildren<LoopScrollRect>();
+            self.m_EquipBagLoop = self.AddChild<YIUILoopScrollChild, LoopScrollRect, Type, string>(
+                bagLoopScroll,
+                typeof(EquipSelectItemComponent),
+                "u_EventSelect"
+            );
+
+            // 初始化装备槽位
+            self.InitEquipSlots();
         }
 
         [EntitySystem]
@@ -98,6 +113,13 @@ namespace ET.Client
         private static async ETTask OnEventThreeThreeMatchButtonInvoke(this LobbyPanelComponent self)
         {
             await self.SendMatchRequest(3); // ThreeVsThree
+        }
+        
+        [YIUIInvoke(LobbyPanelComponent.OnEventClickPutIntoBagInvoke)]
+        private static async ETTask OnEventClickPutIntoBagInvoke(this LobbyPanelComponent self)
+        {
+            // 打开装备选择界面，选择药品放入背包
+            await self.OpenEquipSelectView(EquipSlotType.Bag);
         }
         #endregion YIUIEvent结束
 
@@ -221,6 +243,258 @@ namespace ET.Client
 
             // 关闭 Lobby 面板（MatchView 会随面板一起关闭）
             await self.UIPanel.CloseAsync();
+        }
+
+        #endregion
+
+        #region 装备系统逻辑
+
+        /// <summary>
+        /// 初始化装备槽位
+        /// </summary>
+        private static void InitEquipSlots(this LobbyPanelComponent self)
+        {
+            EntityRef<LobbyPanelComponent> selfRef = self;
+
+            // 武器1
+            self.UIEquipSlotItemWeapon.u_DataSlotName.SetValue("武器1");
+            self.UIEquipSlotItemWeapon.u_DataIsEmpty.SetValue(true);
+            var weaponBtn = self.UIEquipSlotItemWeapon.UIBase.OwnerGameObject.GetComponent<Button>();
+            if (weaponBtn != null)
+            {
+                weaponBtn.onClick.AddListener(() =>
+                {
+                    var panel = selfRef.Entity;
+                    if (panel != null)
+                    {
+                        panel.OpenEquipSelectView(EquipSlotType.Weapon).Coroutine();
+                    }
+                });
+            }
+
+            // 武器2
+            self.UIEquipSlotItemWeapon2.u_DataSlotName.SetValue("武器2");
+            self.UIEquipSlotItemWeapon2.u_DataIsEmpty.SetValue(true);
+            var weapon2Btn = self.UIEquipSlotItemWeapon2.UIBase.OwnerGameObject.GetComponent<Button>();
+            if (weapon2Btn != null)
+            {
+                weapon2Btn.onClick.AddListener(() =>
+                {
+                    var panel = selfRef.Entity;
+                    if (panel != null)
+                    {
+                        panel.OpenEquipSelectView(EquipSlotType.Weapon2).Coroutine();
+                    }
+                });
+            }
+
+            // 防具
+            self.UIEquipSlotItemArmor.u_DataSlotName.SetValue("防具");
+            self.UIEquipSlotItemArmor.u_DataIsEmpty.SetValue(true);
+            var armorBtn = self.UIEquipSlotItemArmor.UIBase.OwnerGameObject.GetComponent<Button>();
+            if (armorBtn != null)
+            {
+                armorBtn.onClick.AddListener(() =>
+                {
+                    var panel = selfRef.Entity;
+                    if (panel != null)
+                    {
+                        panel.OpenEquipSelectView(EquipSlotType.Armor).Coroutine();
+                    }
+                });
+            }
+
+            // 背包
+            self.UIEquipSlotItemBag.u_DataSlotName.SetValue("背包");
+            self.UIEquipSlotItemBag.u_DataIsEmpty.SetValue(true);
+            var bagBtn = self.UIEquipSlotItemBag.UIBase.OwnerGameObject.GetComponent<Button>();
+            if (bagBtn != null)
+            {
+                bagBtn.onClick.AddListener(() =>
+                {
+                    var panel = selfRef.Entity;
+                    if (panel != null)
+                    {
+                        panel.OpenEquipSelectView(EquipSlotType.Bag).Coroutine();
+                    }
+                });
+            }
+        }
+
+        /// <summary>
+        /// 打开装备选择界面
+        /// </summary>
+        private static async ETTask OpenEquipSelectView(this LobbyPanelComponent self, EquipSlotType slotType)
+        {
+            EntityRef<LobbyPanelComponent> selfRef = self;
+
+            self.CurrentSelectingSlot = slotType;
+
+            // 打开装备选择界面
+            var equipSelectView = await self.UIPanel.OpenViewAsync<EquipSelectViewComponent>();
+            self = selfRef;
+
+            if (equipSelectView == null)
+            {
+                Log.Error("打开装备选择界面失败");
+                return;
+            }
+
+            // 设置引用和槽位类型
+            equipSelectView.m_LobbyPanel = self;
+            equipSelectView.CurrentSlotType = slotType;
+
+            // 刷新装备列表
+            await self.RefreshEquipSelectView(equipSelectView, slotType);
+        }
+
+        /// <summary>
+        /// 刷新装备选择界面
+        /// </summary>
+        private static async ETTask RefreshEquipSelectView(this LobbyPanelComponent self, EquipSelectViewComponent view, EquipSlotType slotType)
+        {
+            EntityRef<LobbyPanelComponent> selfRef = self;
+
+            // 根据槽位类型获取可选装备列表
+            List<ItemConfig> equipList = self.GetEquipListBySlotType(slotType);
+
+            // 刷新列表
+            await view.EquipLoop.SetDataRefresh(equipList, 0);
+            self = selfRef;
+        }
+
+        /// <summary>
+        /// 根据槽位类型获取装备列表
+        /// </summary>
+        private static List<ItemConfig> GetEquipListBySlotType(this LobbyPanelComponent self, EquipSlotType slotType)
+        {
+            ItemConfigCategory itemCategory = ItemConfigCategory.Instance;
+            List<ItemConfig> result = new();
+
+            foreach (var item in itemCategory.GetAll().Values)
+            {
+                switch (slotType)
+                {
+                    case EquipSlotType.Weapon:
+                    case EquipSlotType.Weapon2:
+                        // Type == 1 表示武器
+                        if (item.Type == 1)
+                        {
+                            result.Add(item);
+                        }
+                        break;
+                    case EquipSlotType.Armor:
+                        // Type == 2 表示防具
+                        if (item.Type == 2)
+                        {
+                            result.Add(item);
+                        }
+                        break;
+                    case EquipSlotType.Bag:
+                        // Type == 3 表示药品
+                        if (item.Type == 3)
+                        {
+                            result.Add(item);
+                        }
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 装备物品到槽位
+        /// </summary>
+        public static void EquipItem(this LobbyPanelComponent self, int itemConfigId, EquipSlotType slotType)
+        {
+            var loadout = self.Root().GetComponent<LoadoutComponent>();
+            ItemConfig itemConfig = ItemConfigCategory.Instance.Get(itemConfigId);
+
+            switch (slotType)
+            {
+                case EquipSlotType.Weapon:
+                    loadout.MainWeaponConfigId = itemConfigId;
+                    self.UIEquipSlotItemWeapon.u_DataEquipName.SetValue(itemConfig.Name);
+                    self.UIEquipSlotItemWeapon.u_DataIsEmpty.SetValue(false);
+                    Log.Info($"装备武器1: {itemConfig.Name}");
+                    break;
+                case EquipSlotType.Weapon2:
+                    loadout.SubWeaponConfigId = itemConfigId;
+                    self.UIEquipSlotItemWeapon2.u_DataEquipName.SetValue(itemConfig.Name);
+                    self.UIEquipSlotItemWeapon2.u_DataIsEmpty.SetValue(false);
+                    Log.Info($"装备武器2: {itemConfig.Name}");
+                    break;
+                case EquipSlotType.Armor:
+                    loadout.ArmorConfigId = itemConfigId;
+                    self.UIEquipSlotItemArmor.u_DataEquipName.SetValue(itemConfig.Name);
+                    self.UIEquipSlotItemArmor.u_DataIsEmpty.SetValue(false);
+                    Log.Info($"装备防具: {itemConfig.Name}");
+                    break;
+                case EquipSlotType.Bag:
+                    // 添加到背包列表
+                    self.BagEquipIds.Add(itemConfigId);
+                    self.RefreshBagScroll().Coroutine();
+                    Log.Info($"添加到背包: {itemConfig.Name}");
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 刷新背包 LoopScroll
+        /// </summary>
+        private static async ETTask RefreshBagScroll(this LobbyPanelComponent self)
+        {
+            EntityRef<LobbyPanelComponent> selfRef = self;
+
+            // 获取背包中的装备配置列表
+            List<ItemConfig> bagItems = new();
+            ItemConfigCategory itemCategory = ItemConfigCategory.Instance;
+            foreach (var itemId in self.BagEquipIds)
+            {
+                var itemConfig = itemCategory.Get(itemId);
+                if (itemConfig != null)
+                {
+                    bagItems.Add(itemConfig);
+                }
+            }
+
+            // 刷新背包 LoopScroll
+            await self.EquipBagLoop.SetDataRefresh(bagItems, 0);
+            self = selfRef;
+
+            // 更新背包槽位显示
+            self.UIEquipSlotItemBag.u_DataIsEmpty.SetValue(self.BagEquipIds.Count == 0);
+        }
+
+        /// <summary>
+        /// 背包物品绑定回调
+        /// </summary>
+        [EntitySystem]
+        private static void YIUILoopRenderer(
+            this LobbyPanelComponent self,
+            EquipSelectItemComponent item,
+            ItemConfig data,
+            int index,
+            bool select)
+        {
+            item.u_DataEquipName.SetValue(data.Name);
+            item.u_DataSelect.SetValue(false);
+        }
+
+        /// <summary>
+        /// 背包物品点击回调（可以实现移除功能）
+        /// </summary>
+        [EntitySystem]
+        private static void YIUILoopOnClick(
+            this LobbyPanelComponent self,
+            EquipSelectItemComponent item,
+            ItemConfig data,
+            int index,
+            bool select)
+        {
+            Log.Info($"点击背包物品: {data.Name}");
+            // TODO: 可以在这里实现移除背包物品的功能
         }
 
         #endregion

@@ -42,6 +42,7 @@ namespace ET.Client
             self.u_ComBuildPanelRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComBuildPanelRectTransform");
             self.u_ComExplorePanelRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComExplorePanelRectTransform");
             self.u_ComHeroList = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComHeroList");
+            self.u_ComEquipBagScroll = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEquipBagScroll");
             self.u_EventEnterMap = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventEnterMap");
             self.u_EventEnterMapHandle = self.u_EventEnterMap.Add(self,LobbyPanelComponent.OnEventEnterMapInvoke);
             self.u_EventRoleToggle = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventRoleToggle");
@@ -60,6 +61,12 @@ namespace ET.Client
             self.u_EventSouDaCeMatchButtonHandle = self.u_EventSouDaCeMatchButton.Add(self,LobbyPanelComponent.OnEventSouDaCeMatchButtonInvoke);
             self.u_EventOneOneMatchButton = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventOneOneMatchButton");
             self.u_EventOneOneMatchButtonHandle = self.u_EventOneOneMatchButton.Add(self,LobbyPanelComponent.OnEventOneOneMatchButtonInvoke);
+            self.u_EventClickPutIntoBag = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventClickPutIntoBag");
+            self.u_EventClickPutIntoBagHandle = self.u_EventClickPutIntoBag.Add(self,LobbyPanelComponent.OnEventClickPutIntoBagInvoke);
+            self.u_UIEquipSlotItemBag = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemBag");
+            self.u_UIEquipSlotItemArmor = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemArmor");
+            self.u_UIEquipSlotItemWeapon2 = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemWeapon2");
+            self.u_UIEquipSlotItemWeapon = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemWeapon");
 
         }
     }

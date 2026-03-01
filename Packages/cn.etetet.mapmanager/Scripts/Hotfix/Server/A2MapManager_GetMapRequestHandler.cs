@@ -8,6 +8,12 @@ namespace ET.Server
         {
             MapManagerComponent mapManagerComponent = root.GetComponent<MapManagerComponent>();
             MapCopy mapCopy = await mapManagerComponent.GetMapAsync(request.MapName, request.MapId);
+            if (mapCopy == null)
+            {
+                Log.Error($"get map failed: mapName={request.MapName} mapId={request.MapId} unitId={request.UnitId}");
+                response.Error = ErrorCode.ERR_WithoutException;
+                return;
+            }
             
             mapCopy.AddWaitPlayer(request.UnitId);  // 加入等待进入列表
             response.MapName = request.MapName;

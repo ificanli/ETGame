@@ -91,11 +91,18 @@ namespace ET.Test
                 Log.Console("ECAPointComponent not found");
                 return 2;
             }
+            EntityRef<ECAPointComponent> pointRef = point;
 
             Unit player = unitComponent.AddChild<Unit, int>(0);
             point.OnPlayerInteract(player);
 
             await timerComponent.WaitAsync(200);
+            point = pointRef;
+            if (point == null)
+            {
+                Log.Console("ECAPointComponent disposed after await");
+                return 6;
+            }
 
             if (point.CurrentState != 1)
             {
@@ -187,12 +194,19 @@ namespace ET.Test
                 Log.Console("ECAPointComponent not found");
                 return 2;
             }
+            EntityRef<ECAPointComponent> pointRef = point;
 
             Unit player = unitComponent.AddChild<Unit, int>(0);
             player.Position = new float3(10f, 0f, 5f);
 
             ECAHelper.CheckPlayerInRange(player);
             await timerComponent.WaitAsync(100);
+            point = pointRef;
+            if (point == null)
+            {
+                Log.Console("ECAPointComponent disposed after await");
+                return 6;
+            }
 
             Unit pointUnit = point.GetParent<Unit>();
             SpawnPointComponent spawnPoint = pointUnit?.GetComponent<SpawnPointComponent>();

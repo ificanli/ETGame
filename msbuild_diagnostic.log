@@ -1,0 +1,1194 @@
+生成启动时间为 2026/3/1 15:31:33。
+日志记录详细程度设置为: Detailed。     0>未使用终端记录器，因为正在将输出重定向到文件。
+       进程 = "C:\Program Files\dotnet\dotnet.exe"
+       MSBuild 可执行文件路径 = "C:\Program Files\dotnet\sdk\10.0.103\MSBuild.dll"
+       命令行参数 = "C:\Program Files\dotnet\sdk\10.0.103\MSBuild.dll -maxcpucount --verbosity:m -tlp:default=auto --target:Build --verbosity:diag ET.sln /fl /flp:logfile=msbuild_diagnostic.log -distributedlogger:Microsoft.DotNet.Cli.Commands.MSBuild.MSBuildLogger,C:\Program Files\dotnet\sdk\10.0.103\dotnet.dll*Microsoft.DotNet.Cli.Commands.MSBuild.MSBuildForwardingLogger,C:\Program Files\dotnet\sdk\10.0.103\dotnet.dll"
+       当前目录 = "D:\05ET\MatchTest\ETGame"
+       MSBuild 版本 = "18.0.11+c2435c3e0"
+       基于 Windows 注册表项 LongPathsEnabled，LongPaths 功能为 已禁用。
+       D:\05ET\MatchTest\ETGame\ET.sln.metaproj : message : 值为“C:\Program Files\dotnet\sdk\10.0.103\”的属性“MSBuildExtensionsPath”从环境中展开。
+       在 Evaluation 期间加载的程序集: System.Threading.Tasks.Parallel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a (位置: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.3\System.Threading.Tasks.Parallel.dll，MVID: 484bafc2-9f0e-4e62-8af6-e65d5cd71f84，AssemblyLoadContext: Default)
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets (123,5) 处重新分配属性: $(_GenerateRestoreGraphProjectEntryInputProperties)=“
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       ExcludeRestorePackageImports=true;
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       _RestoreSolutionFileUsed=true;
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       SolutionDir=D:\05ET\MatchTest\ETGame\;
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       SolutionName=ET;
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       SolutionFileName=ET.sln;
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       SolutionPath=D:\05ET\MatchTest\ETGame\ET.sln;
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       SolutionExt=.sln;
+       C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :     ”(先前值:“ExcludeRestorePackageImports=true”)
+       在 Evaluation 期间加载的程序集: System.Numerics.Vectors, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a (位置: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.3\System.Numerics.Vectors.dll，MVID: 3d158169-bc2f-4392-9d0b-516beb58158f，AssemblyLoadContext: Default)
+       项目中不存在 BeforeTargets 特性中的“C:\Program Files\dotnet\sdk\10.0.103\Current\SolutionFile\ImportAfter\Microsoft.NET.Sdk.Solution.targets (24,11)”位置列出的目标“_MTPBuild”，将忽略该目标。
+       项目中不存在 BeforeTargets 特性中的“C:\Program Files\dotnet\sdk\10.0.103\Current\SolutionFile\ImportAfter\Microsoft.NET.Sdk.Solution.targets (33,11)”位置列出的目标“Store”，将忽略该目标。
+       项目中不存在 BeforeTargets 特性中的“C:\Program Files\dotnet\sdk\10.0.103\Current\SolutionFile\ImportAfter\Microsoft.NET.Sdk.Solution.targets (33,11)”位置列出的目标“VSTest”，将忽略该目标。
+       项目中不存在 BeforeTargets 特性中的“C:\Program Files\dotnet\sdk\10.0.103\Current\SolutionFile\ImportAfter\Microsoft.NET.Sdk.Solution.targets (33,11)”位置列出的目标“_MTPBuild”，将忽略该目标。
+       项目中不存在 BeforeTargets 特性中的“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets (703,11)”位置列出的目标“_CheckForInvalidConfigurationAndPlatform”，将忽略该目标。
+     1>项目“D:\05ET\MatchTest\ETGame\ET.sln”在节点 1 上(Build 个目标)。
+     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateSolutionConfiguration”(入口点):
+     1>正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“Message”任务。
+       任务“Message”
+         任务参数:Text=正在生成解决方案配置“Debug|Any CPU”。
+         正在生成解决方案配置“Debug|Any CPU”。
+       已完成执行任务“Message”的操作。
+     1>已完成在项目“ET.sln”中生成目标“ValidateSolutionConfiguration”的操作。
+     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateToolsVersions”(入口点):
+     1>已完成在项目“ET.sln”中生成目标“ValidateToolsVersions”的操作。
+     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateProjects”(入口点):
+     1>已完成在项目“ET.sln”中生成目标“ValidateProjects”的操作。
+     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“Build”(入口点):
+       正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“MSBuild”任务。
+       任务“MSBuild”
+         任务参数:BuildInParallel=True
+         任务参数:
+             Properties=
+                 BuildingSolutionFile=true
+                 CurrentSolutionConfigurationContents=<SolutionConfiguration>
+           <ProjectConfiguration Project="{357275F9-23B5-ED06-A723-291680D452AA}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7BE873E5-6C09-7F6F-D436-69F223C79329}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7426908B-F33B-16FE-D8E3-0A19FFDA947F}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{A245516C-DF9D-4DF9-B6CB-B8E99D56D679}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{4755D7E6-9C18-87F7-9FB0-AA8AF1801E83}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HotfixView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{18FC8021-2861-97B8-C06F-E793AD2027C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.ModelView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{B8994466-96D7-4777-BE10-85EC5919EA98}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{31D1738C-1C25-46B9-ADF9-F36466EAE55A}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{BCC88832-608F-4D7E-AFF7-4EED50D5792C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.proto\DotNet~\ET.Proto2CS.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CB51C051-17D2-B67B-256D-C93AE9D79B60}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YIUIFramework.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{AA20D47C-A1E8-4D00-BAC6-A2D1254B6560}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\DotNet~\ET.CodeMode.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C70270D3-EAC0-458B-BF98-F44519C6CD6C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj" BuildProjectInSolution="True">Debug|AnyCPU<ProjectDependency Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" /><ProjectDependency Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" /><ProjectDependency Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" /></ProjectConfiguration>
+           <ProjectConfiguration Project="{9B45D79D-6141-4CB4-BB7C-F23373A06C60}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\ET.MemoryPack.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{ED7866FB-29BE-48BB-9AA9-1C160EA30111}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{6D1C3130-EC03-43D5-955E-36F0EBACAB70}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelExporter\ET.ExcelExporter.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{984D6790-93AB-43DD-8AFC-11495DA12716}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\ET.ExcelMcp.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{2ED035D5-8A86-4686-97A1-70EB5CD08FCF}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\App\ET.App.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{D2B34B22-D1CD-A9DC-2F5A-9A45F676172C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HybridCLR.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{67F431D2-91EC-7CDB-6684-4D210359554C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Init.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{424F683B-F5BD-45B2-A8C9-D0004AAA40B2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Model\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CDE48882-A737-431F-8759-D01C340649C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+         </SolutionConfiguration>
+                 SolutionDir=D:\05ET\MatchTest\ETGame\
+                 SolutionExt=.sln
+                 SolutionFileName=ET.sln
+                 SolutionName=ET
+                 SolutionPath=D:\05ET\MatchTest\ETGame\ET.sln
+         任务参数:
+             Projects=
+                 D:\05ET\MatchTest\ETGame\ET.Core.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.Loader.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.Model.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.Hotfix.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.HotfixView.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.ModelView.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.proto\DotNet~\ET.Proto2CS.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.YIUIFramework.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\DotNet~\ET.CodeMode.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj.metaproj
+                         AdditionalProperties=Configuration=Debug; Platform=Any CPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=Build
+                         ToolsVersion=Current
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\ET.MemoryPack.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelExporter\ET.ExcelExporter.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\ET.ExcelMcp.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\App\ET.App.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.HybridCLR.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\ET.Init.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Model\ET.Model.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+         全局属性:
+           BuildingSolutionFile=true
+           CurrentSolutionConfigurationContents=<SolutionConfiguration>
+           <ProjectConfiguration Project="{357275F9-23B5-ED06-A723-291680D452AA}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7BE873E5-6C09-7F6F-D436-69F223C79329}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7426908B-F33B-16FE-D8E3-0A19FFDA947F}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{A245516C-DF9D-4DF9-B6CB-B8E99D56D679}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{4755D7E6-9C18-87F7-9FB0-AA8AF1801E83}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HotfixView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{18FC8021-2861-97B8-C06F-E793AD2027C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.ModelView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{B8994466-96D7-4777-BE10-85EC5919EA98}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{31D1738C-1C25-46B9-ADF9-F36466EAE55A}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{BCC88832-608F-4D7E-AFF7-4EED50D5792C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.proto\DotNet~\ET.Proto2CS.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CB51C051-17D2-B67B-256D-C93AE9D79B60}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YIUIFramework.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{AA20D47C-A1E8-4D00-BAC6-A2D1254B6560}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\DotNet~\ET.CodeMode.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C70270D3-EAC0-458B-BF98-F44519C6CD6C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj" BuildProjectInSolution="True">Debug|AnyCPU<ProjectDependency Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" /><ProjectDependency Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" /><ProjectDependency Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" /></ProjectConfiguration>
+           <ProjectConfiguration Project="{9B45D79D-6141-4CB4-BB7C-F23373A06C60}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\ET.MemoryPack.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{ED7866FB-29BE-48BB-9AA9-1C160EA30111}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{6D1C3130-EC03-43D5-955E-36F0EBACAB70}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelExporter\ET.ExcelExporter.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{984D6790-93AB-43DD-8AFC-11495DA12716}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\ET.ExcelMcp.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{2ED035D5-8A86-4686-97A1-70EB5CD08FCF}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\App\ET.App.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{D2B34B22-D1CD-A9DC-2F5A-9A45F676172C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HybridCLR.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{67F431D2-91EC-7CDB-6684-4D210359554C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Init.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{424F683B-F5BD-45B2-A8C9-D0004AAA40B2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Model\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CDE48882-A737-431F-8759-D01C340649C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+         </SolutionConfiguration>
+           SolutionDir=D:\05ET\MatchTest\ETGame\
+           SolutionExt=.sln
+           SolutionFileName=ET.sln
+           SolutionName=ET
+           SolutionPath=D:\05ET\MatchTest\ETGame\ET.sln
+         项目“D:\05ET\MatchTest\ETGame\ET.Core.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.Loader.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.Hotfix.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.HotfixView.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.ModelView.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.proto\DotNet~\ET.Proto2CS.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.YIUIFramework.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\DotNet~\ET.CodeMode.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj.metaproj”的其他属性:
+           Configuration=Debug
+           Platform=Any CPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\ET.MemoryPack.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelExporter\ET.ExcelExporter.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\ET.ExcelMcp.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\App\ET.App.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.HybridCLR.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\ET.Init.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Model\ET.Model.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+     1>项目“D:\05ET\MatchTest\ETGame\ET.sln”(1)正在节点 1 上生成“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj.metaproj”(2) (默认目标)。
+     2>项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj.metaproj”中的目标“Build”(入口点):
+     2>任务“MSBuild”
+         任务参数:BuildInParallel=True
+         任务参数:
+             Properties=
+                 BuildingSolutionFile=true
+                 CurrentSolutionConfigurationContents=<SolutionConfiguration>
+           <ProjectConfiguration Project="{357275F9-23B5-ED06-A723-291680D452AA}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7BE873E5-6C09-7F6F-D436-69F223C79329}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7426908B-F33B-16FE-D8E3-0A19FFDA947F}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{A245516C-DF9D-4DF9-B6CB-B8E99D56D679}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{4755D7E6-9C18-87F7-9FB0-AA8AF1801E83}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HotfixView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{18FC8021-2861-97B8-C06F-E793AD2027C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.ModelView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{B8994466-96D7-4777-BE10-85EC5919EA98}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{31D1738C-1C25-46B9-ADF9-F36466EAE55A}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{BCC88832-608F-4D7E-AFF7-4EED50D5792C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.proto\DotNet~\ET.Proto2CS.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CB51C051-17D2-B67B-256D-C93AE9D79B60}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YIUIFramework.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{AA20D47C-A1E8-4D00-BAC6-A2D1254B6560}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\DotNet~\ET.CodeMode.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C70270D3-EAC0-458B-BF98-F44519C6CD6C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj" BuildProjectInSolution="True">Debug|AnyCPU<ProjectDependency Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" /><ProjectDependency Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" /><ProjectDependency Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" /></ProjectConfiguration>
+           <ProjectConfiguration Project="{9B45D79D-6141-4CB4-BB7C-F23373A06C60}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\ET.MemoryPack.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{ED7866FB-29BE-48BB-9AA9-1C160EA30111}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{6D1C3130-EC03-43D5-955E-36F0EBACAB70}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelExporter\ET.ExcelExporter.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{984D6790-93AB-43DD-8AFC-11495DA12716}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\ET.ExcelMcp.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{2ED035D5-8A86-4686-97A1-70EB5CD08FCF}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\App\ET.App.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{D2B34B22-D1CD-A9DC-2F5A-9A45F676172C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HybridCLR.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{67F431D2-91EC-7CDB-6684-4D210359554C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Init.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{424F683B-F5BD-45B2-A8C9-D0004AAA40B2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Model\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CDE48882-A737-431F-8759-D01C340649C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+         </SolutionConfiguration>
+                 SolutionDir=D:\05ET\MatchTest\ETGame\
+                 SolutionExt=.sln
+                 SolutionFileName=ET.sln
+                 SolutionName=ET
+                 SolutionPath=D:\05ET\MatchTest\ETGame\ET.sln
+         任务参数:
+             Projects=
+                 D:\05ET\MatchTest\ETGame\ET.Model.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+                 D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj
+                         AdditionalProperties=Configuration=Debug; Platform=AnyCPU
+                         Configuration=Debug
+                         Platform=AnyCPU
+                         SkipNonexistentProjects=False
+                         ToolsVersion=
+         全局属性:
+           BuildingSolutionFile=true
+           CurrentSolutionConfigurationContents=<SolutionConfiguration>
+           <ProjectConfiguration Project="{357275F9-23B5-ED06-A723-291680D452AA}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7BE873E5-6C09-7F6F-D436-69F223C79329}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7426908B-F33B-16FE-D8E3-0A19FFDA947F}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{A245516C-DF9D-4DF9-B6CB-B8E99D56D679}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{4755D7E6-9C18-87F7-9FB0-AA8AF1801E83}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HotfixView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{18FC8021-2861-97B8-C06F-E793AD2027C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.ModelView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{B8994466-96D7-4777-BE10-85EC5919EA98}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{31D1738C-1C25-46B9-ADF9-F36466EAE55A}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{BCC88832-608F-4D7E-AFF7-4EED50D5792C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.proto\DotNet~\ET.Proto2CS.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CB51C051-17D2-B67B-256D-C93AE9D79B60}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YIUIFramework.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{AA20D47C-A1E8-4D00-BAC6-A2D1254B6560}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\DotNet~\ET.CodeMode.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C70270D3-EAC0-458B-BF98-F44519C6CD6C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj" BuildProjectInSolution="True">Debug|AnyCPU<ProjectDependency Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" /><ProjectDependency Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" /><ProjectDependency Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" /></ProjectConfiguration>
+           <ProjectConfiguration Project="{9B45D79D-6141-4CB4-BB7C-F23373A06C60}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\ET.MemoryPack.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{ED7866FB-29BE-48BB-9AA9-1C160EA30111}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{6D1C3130-EC03-43D5-955E-36F0EBACAB70}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelExporter\ET.ExcelExporter.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{984D6790-93AB-43DD-8AFC-11495DA12716}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\ET.ExcelMcp.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{2ED035D5-8A86-4686-97A1-70EB5CD08FCF}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\App\ET.App.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{D2B34B22-D1CD-A9DC-2F5A-9A45F676172C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HybridCLR.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{67F431D2-91EC-7CDB-6684-4D210359554C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Init.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{424F683B-F5BD-45B2-A8C9-D0004AAA40B2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Model\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CDE48882-A737-431F-8759-D01C340649C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+         </SolutionConfiguration>
+           SolutionDir=D:\05ET\MatchTest\ETGame\
+           SolutionExt=.sln
+           SolutionFileName=ET.sln
+           SolutionName=ET
+           SolutionPath=D:\05ET\MatchTest\ETGame\ET.sln
+         项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj”的其他属性:
+           Configuration=Debug
+           Platform=AnyCPU
+     0>“Configuration”属性是全局属性，不能修改。
+       “Platform”属性是全局属性，不能修改。
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.CSharp.CurrentVersion.targets(26,115): message : 值为“C:\Users\luxinyu\AppData\Local\Microsoft\MSBuild”的属性“MSBuildUserExtensionsPath”从环境中展开。
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.CSharp.CurrentVersion.targets(27,111): message : 值为“C:\Program Files\dotnet\sdk\10.0.103\”的属性“MSBuildExtensionsPath”从环境中展开。
+       C:\Program Files\dotnet\sdk\10.0.103\Roslyn\Microsoft.CSharp.Core.targets(200,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Roslyn\Microsoft.CSharp.Core.targets (200,5) 处重新分配属性: $(CommandLineArgsForDesignTimeEvaluation)=“-langversion:9.0 -define:UNITY_6000_0_58;UNITY_6000_0;UNITY_6000;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_2020_1_OR_NEWER;UNITY_2020_2_OR_NEWER;UNITY_2020_3_OR_NEWER;UNITY_2021_1_OR_NEWER;UNITY_2021_2_OR_NEWER;UNITY_2021_3_OR_NEWER;UNITY_2022_1_OR_NEWER;UNITY_2022_2_OR_NEWER;UNITY_2022_3_OR_NEWER;UNITY_2023_1_OR_NEWER;UNITY_2023_2_OR_NEWER;UNITY_2023_3_OR_NEWER;UNITY_6000_0_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_VIRTUALTEXTURING;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_EDITOR_GAME_SERVICES;ENABLE_UNITY_GAME_SERVICES_ANALYTICS_SUPPORT;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_GENERATE_NATIVE_PLUGINS_FOR_ASSEMBLIES_API;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;ENABLE_MANAGED_UNITYTLS;INCLUDE_DYNAMIC_GI;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_MARSHALLING_TESTS;ENABLE_VIDEO;ENABLE_NAVIGATION_OFFMESHLINK_TO_NAVMESHLINK;ENABLE_ACCELERATOR_CLIENT_DEBUGGING;TEXTCORE_1_0_OR_NEWER;EDITOR_ONLY_NAVMESH_BUILDER_DEPRECATED;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_NVIDIA;ENABLE_AMD;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;PLATFORM_UPDATES_TIME_OUTSIDE_OF_PLAYER_LOOP;GFXDEVICE_WAITFOREVENT_MESSAGEPUMP;PLATFORM_USES_EXPLICIT_MEMORY_MANAGER_INITIALIZER;PLATFORM_SUPPORTS_WAIT_FOR_PRESENTATION;PLATFORM_SUPPORTS_SPLIT_GRAPHICS_JOBS;ENABLE_MONO;NET_4_6;NET_UNITY_4_8;ENABLE_PROFILER;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_INPUT_SYSTEM;ENABLE_LEGACY_INPUT_MANAGER;TEXTCORE_FONT_ENGINE_1_5_OR_NEWER;TEXTCORE_TEXT_ENGINE_1_5_OR_NEWER;UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED;YIUI;ET10;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER”(先前值:“-langversion:9.0”)
+       D:\05ET\MatchTest\ETGame\Directory.Build.props(4,5): message : 在 D:\05ET\MatchTest\ETGame\Directory.Build.props (4,5) 处重新分配属性: $(DebugType)=“Portable”(先前值:“full”)
+       D:\05ET\MatchTest\ETGame\Directory.Build.props(5,5): message : 在 D:\05ET\MatchTest\ETGame\Directory.Build.props (5,5) 处重新分配属性: $(TreatWarningsAsErrors)=“true”(先前值:“False”)
+       C:\Program Files\dotnet\sdk\10.0.103\Current\Microsoft.Common.props(60,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Current\Microsoft.Common.props (60,5) 处重新分配属性: $(MSBuildProjectExtensionsPath)=“D:\05ET\MatchTest\ETGame\obj\”(先前值:“obj\”)
+       “Configuration”属性是全局属性，不能修改。
+       “Platform”属性是全局属性，不能修改。
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.props(117,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.props (117,5) 处重新分配属性: $(AvailablePlatforms)=“Any CPU,x86,x64,ARM64”(先前值:“Any CPU,x86,x64”)
+       “Platform”属性是全局属性，不能修改。
+       “Configuration”属性是全局属性，不能修改。
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(175,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (175,5) 处重新分配属性: $(_DebugSymbolsProduced)=“true”(先前值:“false”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(185,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (185,5) 处重新分配属性: $(_DocumentationFileProduced)=“false”(先前值:“true”)
+       “SolutionName”属性是全局属性，不能修改。
+       “SolutionFileName”属性是全局属性，不能修改。
+       “SolutionPath”属性是全局属性，不能修改。
+       “SolutionDir”属性是全局属性，不能修改。
+       “SolutionExt”属性是全局属性，不能修改。
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(393,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (393,5) 处重新分配属性: $(MSBuildCopyMarkerName)=“ET.Model.csproj.Up2Date”(先前值:“ET.Model.csproj”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(541,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (541,5) 处重新分配属性: $(ProcessorArchitecture)=“msil”(先前值:“”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(580,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (580,5) 处重新分配属性: $(DelaySign)=“”(先前值:“false”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(649,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (649,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};”(先前值:“{CandidateAssemblyFiles}”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(650,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (650,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};;{HintPathFromItem}”(先前值:“{CandidateAssemblyFiles};”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(651,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (651,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory}”(先前值:“{CandidateAssemblyFiles};;{HintPathFromItem}”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(652,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (652,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};”(先前值:“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory}”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(653,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (653,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx}”(先前值:“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(654,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (654,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx};{AssemblyFolders}”(先前值:“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx}”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(655,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (655,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx};{AssemblyFolders};{GAC}”(先前值:“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx};{AssemblyFolders}”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(656,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (656,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx};{AssemblyFolders};{GAC};{RawFileName}”(先前值:“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx};{AssemblyFolders};{GAC}”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(657,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (657,5) 处重新分配属性: $(AssemblySearchPaths)=“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx};{AssemblyFolders};{GAC};{RawFileName};Temp\Bin\Debug\ET.Model\”(先前值:“{CandidateAssemblyFiles};;{HintPathFromItem};{TargetFrameworkDirectory};;{Registry:Software\Microsoft\.NETFramework,v4.7.1,AssemblyFoldersEx};{AssemblyFolders};{GAC};{RawFileName}”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(2606,5): message : 值为“C:\Users\luxinyu\AppData\Local”的属性“LOCALAPPDATA”从环境中展开。
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(3934,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (3934,5) 处重新分配属性: $(_SGenGenerateSerializationAssembliesConfig)=“Auto”(先前值:“”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(3935,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (3935,5) 处重新分配属性: $(_SGenGenerateSerializationAssembliesConfig)=“Off”(先前值:“Auto”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(5146,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (5146,5) 处重新分配属性: $(_TargetsThatPrepareProjectReferences)=“
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(5146,5): message :       AssignProjectConfiguration;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(5146,5): message :       _SplitProjectReferencesByFileExistence
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(5146,5): message :     ”(先前值:“_SplitProjectReferencesByFileExistence”)
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(6959,5): message : 值为“C:\Program Files\dotnet\sdk\10.0.103”的属性“MSBuildExtensionsPath32”从环境中展开。
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets (74,5) 处重新分配属性: $(ResolveReferencesDependsOn)=“
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       BeforeResolveReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       AssignProjectConfiguration;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ResolveProjectReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       FindInvalidProjectReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ResolveNativeReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ResolveAssemblyReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       GenerateBindingRedirects;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       GenerateBindingRedirectsUpdateAppConfig;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ResolveComReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       AfterResolveReferences
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :     ;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ImplicitlyExpandDesignTimeFacades
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :     ”(先前值:“
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       BeforeResolveReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       AssignProjectConfiguration;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ResolveProjectReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       FindInvalidProjectReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ResolveNativeReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ResolveAssemblyReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       GenerateBindingRedirects;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       GenerateBindingRedirectsUpdateAppConfig;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       ResolveComReferences;
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :       AfterResolveReferences
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets(74,5): message :     ”)
+       正在使用项目“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets”中的目标“GetFrameworkPaths”重写项目“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“GetFrameworkPaths”。
+       正在使用项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”中的目标“AfterBuild”重写项目“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“AfterBuild”。
+     2>项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj.metaproj”(2)正在节点 1 上生成“D:\05ET\MatchTest\ETGame\ET.Model.csproj”(3) (默认目标)。
+     3>项目文件包含 ToolsVersion="4.0"。此工具集未知或缺失(在此情况下，您可以通过安装合适的 MSBuild 版本来解决此问题)，或者生成可能已被强制到特定的 ToolsVersion (出于策略原因)。将项目视为具有 ToolsVersion="Current"。有关详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=293424。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“_CheckForInvalidConfigurationAndPlatform”(目标“BeforeBuild”依赖于它):
+       设置属性: _InvalidConfigurationMessageResourceName=CommonSdk.InvalidConfigurationTextWhenBuildingOutsideVisualStudio
+       正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“Message”任务。
+       任务“Message”
+         任务参数:Text=Configuration=Debug
+         任务参数:Importance=Low
+         Configuration=Debug
+       已完成执行任务“Message”的操作。
+       任务“Message”
+         任务参数:Text=Platform=AnyCPU
+         任务参数:Importance=Low
+         Platform=AnyCPU
+       已完成执行任务“Message”的操作。
+     3>已完成在项目“ET.Model.csproj”中生成目标“_CheckForInvalidConfigurationAndPlatform”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“BeforeBuild”(目标“Build”依赖于它):
+     3>已完成在项目“ET.Model.csproj”中生成目标“BeforeBuild”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“BuildOnlySettings”(目标“CoreBuild”依赖于它):
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1168,7): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (1168,7) 处重新分配属性: $(BuildingProject)=“true”(先前值:“false”) [D:\05ET\MatchTest\ETGame\ET.Model.csproj]
+       设置属性: BuildingProject=true
+     3>已完成在项目“ET.Model.csproj”中生成目标“BuildOnlySettings”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets”中的目标“GetFrameworkPaths”(目标“PrepareForBuild”依赖于它):
+       添加的项: _TargetFramework40DirectoryItem=v4.0.30319
+       添加的项: _TargetFramework35DirectoryItem=v3.5
+       添加的项: _TargetFramework30DirectoryItem=v3.0
+       添加的项: _TargetFramework20DirectoryItem=v2.0.50727
+       添加的项: _TargetedFrameworkDirectoryItem=v4.0.30319
+       添加的项: _CombinedTargetFrameworkDirectoriesItem=v4.0.30319
+       设置属性: TargetFrameworkDirectory=v4.0.30319
+       设置属性: TargetFrameworkSDKDirectory=
+     3>已完成在项目“ET.Model.csproj”中生成目标“GetFrameworkPaths”的操作。
+       已跳过目标“GetFrameworkPaths”。以前的生成已成功。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“GetReferenceAssemblyPaths”(目标“PrepareForBuild”依赖于它):
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1255,7): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (1255,7) 处重新分配属性: $(TargetFrameworkDirectory)=“”(先前值:“v4.0.30319”) [D:\05ET\MatchTest\ETGame\ET.Model.csproj]
+       设置属性: TargetFrameworkDirectory=
+       C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets(1272,7): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets (1272,7) 处重新分配属性: $(TargetFrameworkDirectory)=“non_empty_path_generated_by_unity.rider.package;;”(先前值:“v4.0.30319”) [D:\05ET\MatchTest\ETGame\ET.Model.csproj]
+       设置属性: TargetFrameworkDirectory=non_empty_path_generated_by_unity.rider.package;;
+       设置属性: RemoveAssemblyFoldersIfNoTargetFramework=true
+     3>已完成在项目“ET.Model.csproj”中生成目标“GetReferenceAssemblyPaths”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“PrepareForBuild”(目标“CoreBuild”依赖于它):
+       正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“FindAppConfigFile”任务。
+       任务“FindAppConfigFile”
+         任务参数:
+             PrimaryList=
+                 Packages\cn.etetet.spell\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.http\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.excel\CodeMode\Model\ClientServer\AssemblyReference.asmref
+                 Packages\cn.etetet.statesync\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.match\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.quest\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.test\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.map\CodeMode\Model\ClientServer\AssemblyReference.asmref
+                 Packages\cn.etetet.proto\CodeMode\Model\ClientServer\AssemblyReference.asmref
+                 Packages\cn.etetet.item\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.behaviortree\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.match\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.login\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.mapmanager\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.startconfig\CodeMode\Model\ClientServer\AssemblyReference.asmref
+                 Packages\cn.etetet.actorlocation\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.match\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.statesync\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.loader\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.btnode\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.item\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.eca\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.yiuiluban\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.equipment\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.aoi\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.ecanode\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.console\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.yooassets\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.actorlocation\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.recast\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.quest\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.eca\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.router\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.http\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.startconfig\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.spell\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.robot\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.map\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.netinner\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.proto\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.robot\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.equipment\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.spell\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.startconfig\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.numeric\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.unit\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.yiuiframework\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.excel\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.item\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.statesync\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.equipment\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.netinner\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.mapmanager\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.yiuireddot\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.map\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.quest\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.sourcegenerator\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.login\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.aoi\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.core\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.statesync\Runtime\Model\ET.Model.asmdef
+                 Packages\cn.etetet.mapmanager\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.console\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.router\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.login\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.test\Scripts\Model\Client\AssemblyReference.asmref
+                 Packages\cn.etetet.servicediscovery\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.loader\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.test\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.servicediscovery\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.map\Scripts\Model\Server\AssemblyReference.asmref
+                 Packages\cn.etetet.move\Scripts\Model\Share\AssemblyReference.asmref
+                 Packages\cn.etetet.ecanode\Scripts\Model\Share\AssemblyReference.asmref
+         任务参数:TargetPath=ET.Model.dll.config
+       已完成执行任务“FindAppConfigFile”的操作。
+       正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“MakeDir”任务。
+       任务“MakeDir”
+         任务参数:
+             Directories=
+                 Temp\Bin\Debug\ET.Model\
+                 obj\Debug\
+       已完成执行任务“MakeDir”的操作。
+     3>已完成在项目“ET.Model.csproj”中生成目标“PrepareForBuild”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“BeforeResolveReferences”(目标“ResolveReferences”依赖于它):
+     3>已完成在项目“ET.Model.csproj”中生成目标“BeforeResolveReferences”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“IgnoreJavaScriptOutputAssembly”(目标“AssignProjectConfiguration”依赖于它):
+     3>已完成在项目“ET.Model.csproj”中生成目标“IgnoreJavaScriptOutputAssembly”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“AssignProjectConfiguration”(目标“ResolveReferences”依赖于它):
+       设置属性: OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration=true
+       设置属性: ShouldUnsetParentConfigurationAndPlatform=true
+       设置属性: AddSyntheticProjectReferencesForSolutionDependencies=true
+       正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“AssignProjectConfiguration”任务。
+       任务“AssignProjectConfiguration”
+         任务参数:OutputType=Library
+         任务参数:CurrentProject=D:\05ET\MatchTest\ETGame\ET.Model.csproj
+         任务参数:ShouldUnsetParentConfigurationAndPlatform=True
+         任务参数:
+             ProjectReferences=
+                 ET.Core.csproj
+                         Name=ET.Core
+                         OutputItemType=
+                         Project={c90de0d8-e1f2-ea1a-f669-fa37599b1177}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 ET.Loader.csproj
+                         Name=ET.Loader
+                         OutputItemType=
+                         Project={ce4eb76f-1239-c06e-8a7d-a18a3c4cb4d8}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 ET.YooAssets.csproj
+                         Name=ET.YooAssets
+                         OutputItemType=
+                         Project={e45d46e2-6e86-5df3-c7a5-92bf2423cd7b}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 Unity.Mathematics.csproj
+                         Name=Unity.Mathematics
+                         OutputItemType=
+                         Project={2d0e5170-92bb-4de4-81c7-ca64b0688fd1}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 ET.HybridCLR.csproj
+                         Name=ET.HybridCLR
+                         OutputItemType=
+                         Project={8e24445a-695b-d326-cd9f-b2ee8700ead6}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 ET.Init.csproj
+                         Name=ET.Init
+                         OutputItemType=
+                         Project={42df9cfa-5f2b-839a-cede-b602b189830d}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 UnityEditor.UI.csproj
+                         Name=UnityEditor.UI
+                         OutputItemType=
+                         Project={95f78b4e-fcd6-e5e2-3398-240ce586217d}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 UnityEngine.UI.csproj
+                         Name=UnityEngine.UI
+                         OutputItemType=
+                         Project={01ec650e-d224-ad64-c37f-accb19cf932c}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+         任务参数:CurrentProjectPlatform=AnyCPU
+         任务参数:OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration=True
+         任务参数:ResolveConfigurationPlatformUsingMappings=False
+         任务参数:AddSyntheticProjectReferencesForSolutionDependencies=True
+         任务参数:CurrentProjectConfiguration=Debug
+         任务参数:SolutionConfigurationContents=<SolutionConfiguration>
+           <ProjectConfiguration Project="{357275F9-23B5-ED06-A723-291680D452AA}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7BE873E5-6C09-7F6F-D436-69F223C79329}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{7426908B-F33B-16FE-D8E3-0A19FFDA947F}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{A245516C-DF9D-4DF9-B6CB-B8E99D56D679}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{4755D7E6-9C18-87F7-9FB0-AA8AF1801E83}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HotfixView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{18FC8021-2861-97B8-C06F-E793AD2027C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.ModelView.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{B8994466-96D7-4777-BE10-85EC5919EA98}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\ET.SourceGenerator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{31D1738C-1C25-46B9-ADF9-F36466EAE55A}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.mathematics\DotNet~\ET.Mathematics.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{BCC88832-608F-4D7E-AFF7-4EED50D5792C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.proto\DotNet~\ET.Proto2CS.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.loader\DotNet~\ET.Loader.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.core\DotNet~\ET.Core.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CB51C051-17D2-B67B-256D-C93AE9D79B60}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.YIUIFramework.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{AA20D47C-A1E8-4D00-BAC6-A2D1254B6560}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\DotNet~\ET.CodeMode.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{C70270D3-EAC0-458B-BF98-F44519C6CD6C}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj" BuildProjectInSolution="True">Debug|AnyCPU<ProjectDependency Project="{C3758BE1-78D5-CA86-C48D-CB9EE0875B9C}" /><ProjectDependency Project="{04397D8D-77BB-47E8-9DEE-C886A1826EB4}" /><ProjectDependency Project="{8C08102D-FCCB-4153-AE81-7EFE85A97A62}" /></ProjectConfiguration>
+           <ProjectConfiguration Project="{9B45D79D-6141-4CB4-BB7C-F23373A06C60}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\ET.MemoryPack.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{ED7866FB-29BE-48BB-9AA9-1C160EA30111}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\ET.MemoryPack.Generator.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{6D1C3130-EC03-43D5-955E-36F0EBACAB70}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelExporter\ET.ExcelExporter.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{984D6790-93AB-43DD-8AFC-11495DA12716}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.excel\DotNet~\ET.ExcelMcp\ET.ExcelMcp.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{2ED035D5-8A86-4686-97A1-70EB5CD08FCF}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\App\ET.App.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{D2B34B22-D1CD-A9DC-2F5A-9A45F676172C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.HybridCLR.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{67F431D2-91EC-7CDB-6684-4D210359554C}" AbsolutePath="D:\05ET\MatchTest\ETGame\ET.Init.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{424F683B-F5BD-45B2-A8C9-D0004AAA40B2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Model\ET.Model.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+           <ProjectConfiguration Project="{CDE48882-A737-431F-8759-D01C340649C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
+         </SolutionConfiguration>
+         已为项目引用“ET.Core.csproj”指定了“Debug|AnyCPU”配置。
+         已为项目引用“ET.Loader.csproj”指定了“Debug|AnyCPU”配置。
+         已为项目引用“ET.YooAssets.csproj”指定了“Debug|AnyCPU”配置。
+         尚未解析项目引用“Unity.Mathematics.csproj”。
+         已为项目引用“ET.HybridCLR.csproj”指定了“Debug|AnyCPU”配置。
+         已为项目引用“ET.Init.csproj”指定了“Debug|AnyCPU”配置。
+         尚未解析项目引用“UnityEditor.UI.csproj”。
+         尚未解析项目引用“UnityEngine.UI.csproj”。
+         输出项: 
+             _ProjectReferenceWithConfiguration=
+                 ET.Core.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Core
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={c90de0d8-e1f2-ea1a-f669-fa37599b1177}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.Loader.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Loader
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={ce4eb76f-1239-c06e-8a7d-a18a3c4cb4d8}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.YooAssets.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.YooAssets
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={e45d46e2-6e86-5df3-c7a5-92bf2423cd7b}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.HybridCLR.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.HybridCLR
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={8e24445a-695b-d326-cd9f-b2ee8700ead6}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.Init.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Init
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={42df9cfa-5f2b-839a-cede-b602b189830d}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+         输出项: 
+             _ProjectReferenceWithConfiguration=
+                 Unity.Mathematics.csproj
+                         GlobalPropertiesToRemove=Configuration;Platform
+                         Name=Unity.Mathematics
+                         OutputItemType=
+                         Project={2d0e5170-92bb-4de4-81c7-ca64b0688fd1}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 UnityEditor.UI.csproj
+                         GlobalPropertiesToRemove=Configuration;Platform
+                         Name=UnityEditor.UI
+                         OutputItemType=
+                         Project={95f78b4e-fcd6-e5e2-3398-240ce586217d}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 UnityEngine.UI.csproj
+                         GlobalPropertiesToRemove=Configuration;Platform
+                         Name=UnityEngine.UI
+                         OutputItemType=
+                         Project={01ec650e-d224-ad64-c37f-accb19cf932c}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+         输出项: 
+             ProjectReferenceWithConfiguration=
+                 ET.Core.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Core
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={c90de0d8-e1f2-ea1a-f669-fa37599b1177}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.Loader.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Loader
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={ce4eb76f-1239-c06e-8a7d-a18a3c4cb4d8}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.YooAssets.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.YooAssets
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={e45d46e2-6e86-5df3-c7a5-92bf2423cd7b}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.HybridCLR.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.HybridCLR
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={8e24445a-695b-d326-cd9f-b2ee8700ead6}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.Init.csproj
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Init
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={42df9cfa-5f2b-839a-cede-b602b189830d}
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+         输出项: 
+             ProjectReferenceWithConfiguration=
+                 Unity.Mathematics.csproj
+                         GlobalPropertiesToRemove=Configuration;Platform
+                         Name=Unity.Mathematics
+                         OutputItemType=
+                         Project={2d0e5170-92bb-4de4-81c7-ca64b0688fd1}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 UnityEditor.UI.csproj
+                         GlobalPropertiesToRemove=Configuration;Platform
+                         Name=UnityEditor.UI
+                         OutputItemType=
+                         Project={95f78b4e-fcd6-e5e2-3398-240ce586217d}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+                 UnityEngine.UI.csproj
+                         GlobalPropertiesToRemove=Configuration;Platform
+                         Name=UnityEngine.UI
+                         OutputItemType=
+                         Project={01ec650e-d224-ad64-c37f-accb19cf932c}
+                         ReferenceSourceTarget=ProjectReference
+                         Targets=
+       已完成执行任务“AssignProjectConfiguration”的操作。
+     3>已完成在项目“ET.Model.csproj”中生成目标“AssignProjectConfiguration”的操作。
+       已跳过目标“AssignProjectConfiguration”。以前的生成已成功。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“_SplitProjectReferencesByFileExistence”(目标“PrepareProjectReferences”依赖于它):
+       添加的项: 
+           _MSBuildProjectReference=
+               ET.Core.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.Core
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={c90de0d8-e1f2-ea1a-f669-fa37599b1177}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+               ET.Loader.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.Loader
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={ce4eb76f-1239-c06e-8a7d-a18a3c4cb4d8}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+               ET.YooAssets.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.YooAssets
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={e45d46e2-6e86-5df3-c7a5-92bf2423cd7b}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+               ET.HybridCLR.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.HybridCLR
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={8e24445a-695b-d326-cd9f-b2ee8700ead6}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+               ET.Init.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.Init
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={42df9cfa-5f2b-839a-cede-b602b189830d}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+               Unity.Mathematics.csproj
+                       BuildReference=true
+                       GlobalPropertiesToRemove=Configuration;Platform
+                       Name=Unity.Mathematics
+                       OutputItemType=
+                       Project={2d0e5170-92bb-4de4-81c7-ca64b0688fd1}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       Targets=
+               UnityEditor.UI.csproj
+                       BuildReference=true
+                       GlobalPropertiesToRemove=Configuration;Platform
+                       Name=UnityEditor.UI
+                       OutputItemType=
+                       Project={95f78b4e-fcd6-e5e2-3398-240ce586217d}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       Targets=
+               UnityEngine.UI.csproj
+                       BuildReference=true
+                       GlobalPropertiesToRemove=Configuration;Platform
+                       Name=UnityEngine.UI
+                       OutputItemType=
+                       Project={01ec650e-d224-ad64-c37f-accb19cf932c}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       Targets=
+       添加的项: 
+           _MSBuildProjectReferenceExistent=
+               ET.Core.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.Core
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={c90de0d8-e1f2-ea1a-f669-fa37599b1177}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+       添加的项: 
+           _MSBuildProjectReferenceExistent=
+               ET.Loader.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.Loader
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={ce4eb76f-1239-c06e-8a7d-a18a3c4cb4d8}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+       添加的项: 
+           _MSBuildProjectReferenceExistent=
+               ET.YooAssets.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.YooAssets
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={e45d46e2-6e86-5df3-c7a5-92bf2423cd7b}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+       添加的项: 
+           _MSBuildProjectReferenceExistent=
+               ET.HybridCLR.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.HybridCLR
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={8e24445a-695b-d326-cd9f-b2ee8700ead6}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+       添加的项: 
+           _MSBuildProjectReferenceExistent=
+               ET.Init.csproj
+                       BuildReference=true
+                       Configuration=Debug
+                       FullConfiguration=Debug|AnyCPU
+                       Name=ET.Init
+                       OutputItemType=
+                       Platform=AnyCPU
+                       Project={42df9cfa-5f2b-839a-cede-b602b189830d}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       SetConfiguration=Configuration=Debug
+                       SetPlatform=Platform=AnyCPU
+                       Targets=
+       添加的项: 
+           _MSBuildProjectReferenceExistent=
+               Unity.Mathematics.csproj
+                       BuildReference=true
+                       GlobalPropertiesToRemove=Configuration;Platform
+                       Name=Unity.Mathematics
+                       OutputItemType=
+                       Project={2d0e5170-92bb-4de4-81c7-ca64b0688fd1}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       Targets=
+       添加的项: 
+           _MSBuildProjectReferenceExistent=
+               UnityEditor.UI.csproj
+                       BuildReference=true
+                       GlobalPropertiesToRemove=Configuration;Platform
+                       Name=UnityEditor.UI
+                       OutputItemType=
+                       Project={95f78b4e-fcd6-e5e2-3398-240ce586217d}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       Targets=
+       添加的项: 
+           _MSBuildProjectReferenceExistent=
+               UnityEngine.UI.csproj
+                       BuildReference=true
+                       GlobalPropertiesToRemove=Configuration;Platform
+                       Name=UnityEngine.UI
+                       OutputItemType=
+                       Project={01ec650e-d224-ad64-c37f-accb19cf932c}
+                       ReferenceOutputAssembly=true
+                       ReferenceSourceTarget=ProjectReference
+                       Targets=
+     3>已完成在项目“ET.Model.csproj”中生成目标“_SplitProjectReferencesByFileExistence”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“_AddOutputPathToGlobalPropertiesToRemove”(目标“_GetProjectReferenceTargetFrameworkProperties”依赖于它):
+     3>已完成在项目“ET.Model.csproj”中生成目标“_AddOutputPathToGlobalPropertiesToRemove”的操作。
+     3>来自项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“_GetProjectReferenceTargetFrameworkProperties”(目标“PrepareProjectReferences”依赖于它):
+       设置属性: ReferringTargetFrameworkForProjectReferences=.NETFramework,Version=v4.7.1
+       正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“MSBuild”任务。
+       任务“MSBuild”
+         任务参数:BuildInParallel=True
+         任务参数:
+             Properties=
+                 Configuration=Debug
+                 Platform=AnyCPU
+         任务参数:
+             Projects=
+                 ET.Core.csproj
+                         BuildReference=true
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Core
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={c90de0d8-e1f2-ea1a-f669-fa37599b1177}
+                         ReferenceOutputAssembly=true
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.Loader.csproj
+                         BuildReference=true
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Loader
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={ce4eb76f-1239-c06e-8a7d-a18a3c4cb4d8}
+                         ReferenceOutputAssembly=true
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.YooAssets.csproj
+                         BuildReference=true
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.YooAssets
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={e45d46e2-6e86-5df3-c7a5-92bf2423cd7b}
+                         ReferenceOutputAssembly=true
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.HybridCLR.csproj
+                         BuildReference=true
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.HybridCLR
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={8e24445a-695b-d326-cd9f-b2ee8700ead6}
+                         ReferenceOutputAssembly=true
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+                 ET.Init.csproj
+                         BuildReference=true
+                         Configuration=Debug
+                         FullConfiguration=Debug|AnyCPU
+                         Name=ET.Init
+                         OutputItemType=
+                         Platform=AnyCPU
+                         Project={42df9cfa-5f2b-839a-cede-b602b189830d}
+                         ReferenceOutputAssembly=true
+                         ReferenceSourceTarget=ProjectReference
+                         SetConfiguration=Configuration=Debug
+                         SetPlatform=Platform=AnyCPU
+                         Targets=
+         任务参数:RemoveProperties=;TargetFramework;RuntimeIdentifier;SelfContained;
+         任务参数:Targets=GetTargetFrameworks
+         任务参数:SkipNonexistentTargets=True
+         全局属性:
+           Configuration=Debug
+           Platform=AnyCPU
+         移除属性:
+           TargetFramework
+           RuntimeIdentifier
+           SelfContained
+     2>已完成执行任务“MSBuild”的操作 - 失败。
+     1>已完成执行任务“MSBuild”的操作 - 失败。
+     3>已完成执行任务“MSBuild”的操作 - 失败。
+     3>已完成在项目“ET.Model.csproj”中生成目标“_GetProjectReferenceTargetFrameworkProperties”的操作 - 失败。
+     1>已完成在项目“ET.sln”中生成目标“Build”的操作 - 失败。
+     2>已完成在项目“ET.Aspire.csproj.metaproj”中生成目标“Build”的操作 - 失败。
+     1>已完成生成项目“D:\05ET\MatchTest\ETGame\ET.sln”(Build 个目标)的操作 - 失败。
+     3>已完成生成项目“D:\05ET\MatchTest\ETGame\ET.Model.csproj”(默认目标)的操作 - 失败。
+     2>已完成生成项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.aspire\DotNet~\ET.Aspire.csproj.metaproj”(默认目标)的操作 - 失败。
+
+生成失败。
+    0 个警告
+    0 个错误
+
+已用时间 00:00:13.55

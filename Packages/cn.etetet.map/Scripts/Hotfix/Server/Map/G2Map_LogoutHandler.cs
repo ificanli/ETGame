@@ -17,7 +17,7 @@ namespace ET.Server
 			string mapManagerName = serviceInfos[0].SceneName;
 			
 			Map2MapManager_LogoutRequest managerLogoutRequest = Map2MapManager_LogoutRequest.Create();
-			managerLogoutRequest.MapName = unit.Scene().Name;
+			managerLogoutRequest.MapName = unit.Scene().Name.GetSceneConfigName();
 			managerLogoutRequest.UnitId = unit.Id;
 			managerLogoutRequest.MapId = unit.Scene().Id;
 			await serviceDiscoveryProxy.Call(mapManagerName, managerLogoutRequest);

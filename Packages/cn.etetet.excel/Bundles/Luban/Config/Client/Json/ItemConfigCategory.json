@@ -130,5 +130,93 @@
     "Quality": 1,
     "UseType": 2,
     "Level": 8
+  },
+  {
+    "Id": 50001,
+    "Name": "AK47突击步枪",
+    "Desc": "经典突击步枪",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_ak47",
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50002,
+    "Name": "M4A1卡宾枪",
+    "Desc": "精准卡宾枪",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_m4a1",
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50003,
+    "Name": "AWM狙击枪",
+    "Desc": "远程狙击枪",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_awm",
+    "Quality": 4,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50004,
+    "Name": "二级防弹衣",
+    "Desc": "提供中等防护",
+    "Type": 2,
+    "MaxStack": 1,
+    "Icon": "armor_vest2",
+    "Quality": 2,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50005,
+    "Name": "三级防弹衣",
+    "Desc": "提供高级防护",
+    "Type": 2,
+    "MaxStack": 1,
+    "Icon": "armor_vest3",
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50006,
+    "Name": "急救包",
+    "Desc": "恢复75点生命值",
+    "Type": 3,
+    "MaxStack": 5,
+    "Icon": "item_medkit",
+    "Quality": 2,
+    "UseType": 1,
+    "Level": 1
+  },
+  {
+    "Id": 50007,
+    "Name": "绷带",
+    "Desc": "恢复10点生命值",
+    "Type": 3,
+    "MaxStack": 10,
+    "Icon": "item_bandage",
+    "Quality": 1,
+    "UseType": 1,
+    "Level": 1
+  },
+  {
+    "Id": 50008,
+    "Name": "能量饮料",
+    "Desc": "恢复40点能量",
+    "Type": 3,
+    "MaxStack": 5,
+    "Icon": "item_drink",
+    "Quality": 2,
+    "UseType": 1,
+    "Level": 1
   }
 ]

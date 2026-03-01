@@ -42,10 +42,10 @@
 
 			response.MyId = player.Id;
 			// 等到一帧的最后面再传送，先让G2C_EnterMap返回，否则传送消息可能比G2C_EnterMap还早
-			TransferAtFrameFinish(player, unit, "Home", 0).Coroutine();
+			TransferAtFrameFinish(player, unit, "Home", player.Id).Coroutine();
 		}
 
-		private static async ETTask TransferAtFrameFinish(Player player, Unit unit, string mapName, int mapId)
+		private static async ETTask TransferAtFrameFinish(Player player, Unit unit, string mapName, long mapId)
 		{
 			EntityRef<Unit> unitRef = unit;
 			EntityRef<Player> playerRef = player;

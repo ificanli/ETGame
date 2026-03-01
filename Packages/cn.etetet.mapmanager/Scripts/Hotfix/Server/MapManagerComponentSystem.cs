@@ -83,7 +83,9 @@ namespace ET.Server
                     return mapCopy;
                 }
 
-                return null;
+                mapCopy = await self.AddChildWithIdAsync(id);
+                Log.Debug($"get map copy: {mapName}:{id}");
+                return mapCopy;
             }
             
             foreach (var kv in self.Children)
