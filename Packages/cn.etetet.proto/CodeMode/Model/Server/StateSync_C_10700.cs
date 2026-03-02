@@ -231,6 +231,68 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.C2M_JoystickInput)]
+    public partial class C2M_JoystickInput : MessageObject, ILocationMessage
+    {
+        public static C2M_JoystickInput Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_JoystickInput>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        /// <summary>摇杆X方向 (-1 to 1)</summary>
+        [MemoryPackOrder(1)]
+        public float DirX { get; set; }
+        /// <summary>摇杆Z方向 (-1 to 1)</summary>
+        [MemoryPackOrder(2)]
+        public float DirZ { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.DirX = default;
+            this.DirZ = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_JoystickMove)]
+    public partial class M2C_JoystickMove : MessageObject, IMessage
+    {
+        public static M2C_JoystickMove Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_JoystickMove>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+        [MemoryPackOrder(1)]
+        public Unity.Mathematics.float3 Position { get; set; }
+        [MemoryPackOrder(2)]
+        public Unity.Mathematics.float3 Velocity { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.Position = default;
+            this.Velocity = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort RouterSync = 10701;
@@ -241,5 +303,7 @@ namespace ET
         public const ushort G2C_TestHotfixMessage = 10706;
         public const ushort C2G_Benchmark = 10707;
         public const ushort G2C_Benchmark = 10708;
+        public const ushort C2M_JoystickInput = 10709;
+        public const ushort M2C_JoystickMove = 10710;
     }
 }

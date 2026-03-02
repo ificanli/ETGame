@@ -182,11 +182,11 @@ namespace ET
 
     public static partial class Opcode
     {
-        public const ushort C2G_MatchRequest = 22001;
-        public const ushort G2C_MatchRequest = 22002;
-        public const ushort C2G_MatchCancel = 22003;
-        public const ushort G2C_MatchCancel = 22004;
-        public const ushort G2C_MatchSuccess = 22005;
-        public const ushort G2C_MatchTimeout = 22006;
+        public const ushort C2G_MatchRequest = 10901;
+        public const ushort G2C_MatchRequest = 10902;
+        public const ushort C2G_MatchCancel = 10903;
+        public const ushort G2C_MatchCancel = 10904;
+        public const ushort G2C_MatchSuccess = 10905;
+        public const ushort G2C_MatchTimeout = 10906;
     }
 }

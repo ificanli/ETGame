@@ -18,6 +18,7 @@
         "Unity.InputSystem",
         "Unity.Mathematics",
         "Unity.TextMeshPro",
+        "UnityEngine.UI",
         "ET.HybridCLR"
     ],
     "includePlatforms": [],

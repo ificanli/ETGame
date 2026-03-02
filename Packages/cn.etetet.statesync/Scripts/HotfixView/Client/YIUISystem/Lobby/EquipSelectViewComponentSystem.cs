@@ -21,6 +21,11 @@ namespace ET.Client
         {
             // 初始化装备列表 LoopScroll
             var loopScroll = self.u_ComEquipSelectLoopScroll.GetComponentInChildren<LoopScrollRect>();
+            if (loopScroll == null)
+            {
+                Log.Error("EquipSelectView: 未找到LoopScrollRect组件，请检查预制体配置");
+                return;
+            }
             self.m_EquipLoop = self.AddChild<YIUILoopScrollChild, LoopScrollRect, Type, string>(
                 loopScroll,
                 typeof(EquipSelectItemComponent),

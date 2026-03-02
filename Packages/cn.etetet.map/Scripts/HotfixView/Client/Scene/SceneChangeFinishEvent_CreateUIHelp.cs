@@ -5,6 +5,11 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene scene, SceneChangeFinish args)
         {
+            EntityRef<Scene> sceneRef = scene;
+            await scene.Root().TimerComponent.WaitAsync(2000);
+            scene = sceneRef;
+            scene.YIUIMgr().ClosePanel<LoadingPanelComponent>();
+            
             var currentScene = scene.GetComponent<CurrentScenesComponent>().Scene;
             string mapName = currentScene.Name.GetSceneConfigName();
 
@@ -18,12 +23,14 @@ namespace ET.Client
             }
             else
             {
+                
                 var yiuiRoot = currentScene.GetComponent<YIUIRootComponent>();
                 EntityRef<YIUIRootComponent> yiuiRootRef = yiuiRoot;
                 await yiuiRoot.OpenPanelAsync<MainPanelComponent>();
                 yiuiRoot = yiuiRootRef;
                 await yiuiRoot.OpenPanelAsync<HUDPanelComponent>();
             }
+            
         }
     }
 }

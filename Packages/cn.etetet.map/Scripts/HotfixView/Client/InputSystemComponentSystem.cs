@@ -22,7 +22,7 @@ namespace ET.Client
             self.InputSystem = new InputSystem();
             self.InputSystem.Player.Enable();
 
-            self.InputSystem.Player.Look.performed += self.Look;
+            //self.InputSystem.Player.Look.performed += self.Look;
             self.InputSystem.Player.Jump.started += self.Jump;
             self.InputSystem.Player.SelectTarget.canceled += self.SelectTarget;
             self.InputSystem.Player.ChangeTarget.canceled += self.ChangeTarget;

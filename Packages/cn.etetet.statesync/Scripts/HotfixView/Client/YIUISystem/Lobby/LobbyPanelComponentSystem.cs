@@ -241,6 +241,9 @@ namespace ET.Client
             await self.Root().GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
             self = selfRef;
 
+            // 发布 EnterMapFinish 事件，关闭 Loading 面板
+            EventSystem.Instance.Publish(self.Root(), new EnterMapFinish());
+
             // 关闭 Lobby 面板（MatchView 会随面板一起关闭）
             await self.UIPanel.CloseAsync();
         }
@@ -357,6 +360,12 @@ namespace ET.Client
 
             // 根据槽位类型获取可选装备列表
             List<ItemConfig> equipList = self.GetEquipListBySlotType(slotType);
+
+            if (view.EquipLoop == null)
+            {
+                Log.Error("装备选择界面的LoopScroll未初始化");
+                return;
+            }
 
             // 刷新列表
             await view.EquipLoop.SetDataRefresh(equipList, 0);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using YIUIFramework;
 
 namespace ET.Client
@@ -186,17 +187,20 @@ namespace ET.Client
                 return;
             }
 
-            var uEventClickItem = eventTable.FindEvent<UIEventP0>(self.m_ItemClickEventName);
-            if (uEventClickItem == null)
+            var uiEvent = eventTable.FindEvent(self.m_ItemClickEventName);
+            if (uiEvent == null)
             {
                 Debug.LogError($"当前监听的事件未找到 请检查 {self.m_BindVo.ComponentType?.Name} 中是否有这个事件 {self.m_ItemClickEventName}");
                 self.m_OnClickInit = false;
+                return;
             }
-            else
+
+            EntityRef<YIUILoopScrollChild> selfRef = self;
+            EntityRef<Entity> itemRef = item;
+
+            if (uiEvent is UIEventP0 clickEventP0)
             {
-                EntityRef<YIUILoopScrollChild> selfRef = self;
-                EntityRef<Entity> itemRef = item;
-                uEventClickItem.Add(() =>
+                clickEventP0.Add(() =>
                 {
                     if (selfRef.Entity == null || itemRef.Entity == null)
                     {
@@ -206,7 +210,89 @@ namespace ET.Client
 
                     selfRef.Entity.OnClickItem(itemRef.Entity);
                 });
+                return;
             }
+
+            if (uiEvent is UIEventP1<object> clickEventP1Obj)
+            {
+                clickEventP1Obj.Add(_ =>
+                {
+                    if (selfRef.Entity == null || itemRef.Entity == null)
+                    {
+                        Log.Error($"OnClickItem 事件回调时，loopScrollChild 或 item 为空,{selfRef.Entity == null},{itemRef.Entity == null}");
+                        return;
+                    }
+
+                    selfRef.Entity.OnClickItem(itemRef.Entity);
+                });
+                return;
+            }
+
+            if (uiEvent is UIEventP1<PointerEventData> clickEventP1Pointer)
+            {
+                clickEventP1Pointer.Add(_ =>
+                {
+                    if (selfRef.Entity == null || itemRef.Entity == null)
+                    {
+                        Log.Error($"OnClickItem 事件回调时，loopScrollChild 或 item 为空,{selfRef.Entity == null},{itemRef.Entity == null}");
+                        return;
+                    }
+
+                    selfRef.Entity.OnClickItem(itemRef.Entity);
+                });
+                return;
+            }
+
+            if (uiEvent is UITaskEventP0 taskEventP0)
+            {
+                taskEventP0.Add(() =>
+                {
+                    if (selfRef.Entity == null || itemRef.Entity == null)
+                    {
+                        Log.Error($"OnClickItem 事件回调时，loopScrollChild 或 item 为空,{selfRef.Entity == null},{itemRef.Entity == null}");
+                        return ETTask.CompletedTask;
+                    }
+
+                    selfRef.Entity.OnClickItem(itemRef.Entity);
+                    return ETTask.CompletedTask;
+                });
+                return;
+            }
+
+            if (uiEvent is UITaskEventP1<object> taskEventP1Obj)
+            {
+                taskEventP1Obj.Add(_ =>
+                {
+                    if (selfRef.Entity == null || itemRef.Entity == null)
+                    {
+                        Log.Error($"OnClickItem 事件回调时，loopScrollChild 或 item 为空,{selfRef.Entity == null},{itemRef.Entity == null}");
+                        return ETTask.CompletedTask;
+                    }
+
+                    selfRef.Entity.OnClickItem(itemRef.Entity);
+                    return ETTask.CompletedTask;
+                });
+                return;
+            }
+
+            if (uiEvent is UITaskEventP1<PointerEventData> taskEventP1Pointer)
+            {
+                taskEventP1Pointer.Add(_ =>
+                {
+                    if (selfRef.Entity == null || itemRef.Entity == null)
+                    {
+                        Log.Error($"OnClickItem 事件回调时，loopScrollChild 或 item 为空,{selfRef.Entity == null},{itemRef.Entity == null}");
+                        return ETTask.CompletedTask;
+                    }
+
+                    selfRef.Entity.OnClickItem(itemRef.Entity);
+                    return ETTask.CompletedTask;
+                });
+                return;
+            }
+
+            Debug.LogError($"当前监听的事件类型不支持: {uiEvent.GetType().Name}，请改成 UIEventP0/UIEventP1<object>/UIEventP1<PointerEventData>/UITaskEventP0/UITaskEventP1<object>/UITaskEventP1<PointerEventData>");
+            self.m_OnClickInit = false;
         }
 
         private static void OnClickItemQueuePeek(this YIUILoopScrollChild self)

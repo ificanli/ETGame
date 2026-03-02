@@ -12,6 +12,7 @@
         "ET.UI",
         "ET.YIUIFramework",
         "ET.YooAssets",
+        "UnityEngine.UI",
         "Unity.InputSystem",
         "Unity.Mathematics",
         "Unity.TextMeshPro",

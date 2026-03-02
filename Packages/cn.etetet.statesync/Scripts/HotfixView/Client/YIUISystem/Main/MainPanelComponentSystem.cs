@@ -10,6 +10,12 @@ namespace ET.Client
         [EntitySystem]
         private static void YIUIInitialize(this MainPanelComponent self)
         {
+            // 找到摇杆并注入Entity引用
+            JoystickView joystickView = self.UIBase.OwnerGameObject.GetComponentInChildren<JoystickView>();
+            if (joystickView != null)
+            {
+                joystickView.SetEntity(self);
+            }
         }
 
         [EntitySystem]

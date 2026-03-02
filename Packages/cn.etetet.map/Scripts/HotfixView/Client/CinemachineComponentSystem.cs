@@ -27,6 +27,11 @@ namespace ET.Client
             
             cinemachineVirtualCamera.LookAt = followTransform;
             cinemachineVirtualCamera.Follow = followTransform;
+
+            cinemachineVirtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>().CameraDistance =15;
+            Vector3 eulerAngles = self.Follow.transform.eulerAngles;
+            eulerAngles.x += 40;
+            self.Follow.rotation = Quaternion.Euler(eulerAngles);
         }
 
         public static void RotationFollow(this CinemachineComponent self, Vector2 v)

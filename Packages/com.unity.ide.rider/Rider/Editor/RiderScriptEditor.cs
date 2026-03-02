@@ -325,16 +325,11 @@ namespace Packages.Rider.Editor
 
     private string GetSolutionFile(string path)
     {
-      //if (IsUnityScript(path))
-      //{
-      //  return Path.Combine(GetBaseUnityDeveloperFolder(), "Projects/CSharp/Unity.CSharpProjects.gen.sln");
-      //}
-//
-      //var solutionFile = m_ProjectGeneration.SolutionFile();
-      //if (File.Exists(solutionFile))
-      //{
-      //  return solutionFile;
-      //}
+      var solutionFile = m_ProjectGeneration.SolutionFile();
+      if (File.Exists(solutionFile))
+      {
+        return solutionFile;
+      }
 
       return System.IO.Path.GetFullPath("./ET.sln");
     }

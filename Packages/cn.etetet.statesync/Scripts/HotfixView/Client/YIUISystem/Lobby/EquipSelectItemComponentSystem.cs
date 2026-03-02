@@ -26,9 +26,9 @@ namespace ET.Client
         #region YIUIEvent开始
         
         [YIUIInvoke(EquipSelectItemComponent.OnEventSelectInvoke)]
-        private static void OnEventSelectInvoke(this EquipSelectItemComponent self)
+        private static ETTask OnEventSelectInvoke(this EquipSelectItemComponent self)
         {
-
+            return ETTask.CompletedTask;
         }
         #endregion YIUIEvent结束
     }
