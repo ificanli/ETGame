@@ -33,16 +33,28 @@ namespace ET.Server
         // 获取在自己视野中的对象
         public static Dictionary<long, EntityRef<AOIEntity>> GetSeeUnits(this AOIEntity self)
         {
+            if (self == null || self.IsDisposed)
+            {
+                return new Dictionary<long, EntityRef<AOIEntity>>();
+            }
             return self.SeeUnits;
         }
 
         public static Dictionary<long, EntityRef<AOIEntity>> GetBeSeePlayers(this AOIEntity self)
         {
+            if (self == null || self.IsDisposed)
+            {
+                return new Dictionary<long, EntityRef<AOIEntity>>();
+            }
             return self.BeSeePlayers;
         }
 
         public static Dictionary<long, EntityRef<AOIEntity>> GetSeePlayers(this AOIEntity self)
         {
+            if (self == null || self.IsDisposed)
+            {
+                return new Dictionary<long, EntityRef<AOIEntity>>();
+            }
             return self.SeePlayers;
         }
 
