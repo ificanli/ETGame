@@ -117,7 +117,53 @@ namespace ET.Server
             ECAConfig spawnPoint = spawnPoints[randomIndex];
             float3 oldPos = unit.Position;
             unit.Position = new float3(spawnPoint.PosX, spawnPoint.PosY, spawnPoint.PosZ);
-            Log.Info($"[SpawnAssign] apply spawn point, scene={scene.Name}, unitId={unit.Id}, teamId={teamId}, configId={spawnPoint.ConfigId}, oldPos={oldPos}, newPos={unit.Position}");
+            ApplyPlayerCampByTeam(spawnPointManager, unit, teamId);
+            CampComponent camp = unit.GetComponent<CampComponent>();
+            Log.Info($"[SpawnAssign] apply spawn point, scene={scene.Name}, unitId={unit.Id}, teamId={teamId}, campId={camp?.CampId ?? 0}, configId={spawnPoint.ConfigId}, oldPos={oldPos}, newPos={unit.Position}");
+        }
+
+        private static void ApplyPlayerCampByTeam(SpawnPointManagerComponent spawnPointManager, Unit unit, int teamId)
+        {
+            if (unit == null || unit.UnitType != UnitType.Player)
+            {
+                return;
+            }
+
+            int targetCampId = ResolveCampIdByTeamOrder(spawnPointManager, teamId);
+            CampComponent currentCamp = unit.GetComponent<CampComponent>();
+            if (currentCamp != null && currentCamp.CampId == targetCampId)
+            {
+                return;
+            }
+
+            if (currentCamp != null)
+            {
+                unit.RemoveComponent<CampComponent>();
+            }
+
+            unit.AddComponent<CampComponent, int>(targetCampId);
+            Log.Info($"[SpawnAssign] apply camp by team, unitId={unit.Id}, teamId={teamId}, campId={targetCampId}");
+        }
+
+        private static int ResolveCampIdByTeamOrder(SpawnPointManagerComponent spawnPointManager, int teamId)
+        {
+            if (spawnPointManager == null || spawnPointManager.TeamSpawnPoints.Count == 0)
+            {
+                return 1;
+            }
+
+            List<int> orderedTeamIds = new List<int>(spawnPointManager.TeamSpawnPoints.Keys);
+            orderedTeamIds.Sort();
+
+            int teamIndex = orderedTeamIds.IndexOf(teamId);
+            if (teamIndex < 0)
+            {
+                Log.Warning($"[SpawnAssign] resolve camp failed: team not found, teamId={teamId}, teams=[{string.Join(",", orderedTeamIds)}]");
+                return 1;
+            }
+
+            // 以队伍顺序映射到两大阵营，确保索敌能把对手视为敌军。
+            return (teamIndex % 2 == 0) ? 1 : 2;
         }
 
         private static int GetOrAssignTeamId(SpawnPointManagerComponent spawnPointManager, long playerId)

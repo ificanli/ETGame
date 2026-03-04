@@ -15,11 +15,21 @@ namespace ET.Client
         public static void SendJoystickInput(Scene root, float dirX, float dirZ)
         {
             ClientSenderComponent sender = root.GetComponent<ClientSenderComponent>();
-            if (sender == null) return;
+            if (sender == null)
+            {
+                Log.Warning($"[JoystickTrace][ClientSend] sender missing, scene={root?.Name}, dir=({dirX:F3},{dirZ:F3})");
+                return;
+            }
+
             C2M_JoystickInput msg = C2M_JoystickInput.Create();
             msg.DirX = dirX;
             msg.DirZ = dirZ;
             sender.Send(msg);
+
+            if (dirX == 0f && dirZ == 0f)
+            {
+                Log.Info($"[JoystickTrace][ClientSend] send C2M_JoystickInput scene={root?.Name}, dir=({dirX:F3},{dirZ:F3})");
+            }
         }
 
         /// <summary>
