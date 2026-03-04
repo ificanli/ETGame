@@ -124,12 +124,23 @@ namespace ET.Server
         {
             if (spawnPointManager.PlayerTeamAssignments.TryGetValue(playerId, out int assignedTeamId))
             {
+                Log.Info($"[SpawnAssign] reuse team assignment, unitId={playerId}, teamId={assignedTeamId}");
                 return assignedTeamId;
+            }
+
+            List<int> orderedTeamIds = new List<int>(spawnPointManager.TeamSpawnPoints.Keys);
+            orderedTeamIds.Sort();
+
+            if (orderedTeamIds.Count == 0)
+            {
+                Log.Warning($"[SpawnAssign] no team groups configured, unitId={playerId}");
+                spawnPointManager.PlayerTeamAssignments[playerId] = 0;
+                return 0;
             }
 
             int teamId = 0;
             bool found = false;
-            foreach (int candidateTeamId in spawnPointManager.TeamSpawnPoints.Keys)
+            foreach (int candidateTeamId in orderedTeamIds)
             {
                 if (spawnPointManager.OccupiedTeamIds.Contains(candidateTeamId))
                 {
@@ -144,12 +155,9 @@ namespace ET.Server
             if (!found)
             {
                 // 全被占用时兜底复用第一个出生点组，避免无法进入地图
-                foreach (int candidateTeamId in spawnPointManager.TeamSpawnPoints.Keys)
-                {
-                    teamId = candidateTeamId;
-                    found = true;
-                    break;
-                }
+                teamId = orderedTeamIds[0];
+                found = true;
+                Log.Warning($"[SpawnAssign] all teams occupied, fallback to first team, unitId={playerId}, fallbackTeamId={teamId}");
             }
 
             if (found)
@@ -158,6 +166,7 @@ namespace ET.Server
             }
 
             spawnPointManager.PlayerTeamAssignments[playerId] = teamId;
+            Log.Info($"[SpawnAssign] assign team, unitId={playerId}, teamId={teamId}, teams=[{string.Join(",", orderedTeamIds)}], occupied=[{string.Join(",", spawnPointManager.OccupiedTeamIds)}]");
             return teamId;
         }
 

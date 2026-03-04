@@ -102,17 +102,12 @@ namespace ET.Server
                 unit.Rotation = quaternion.LookRotation(self.Direction, math.up());
             }
 
-            // 广播位置给AOI范围内所有客户端
-            M2C_JoystickMove msg = M2C_JoystickMove.Create();
-            msg.UnitId = unit.Id;
-            msg.PosX = unit.Position.x;
-            msg.PosY = unit.Position.y;
-            msg.PosZ = unit.Position.z;
-            msg.RotX = unit.Rotation.value.x;
-            msg.RotY = unit.Rotation.value.y;
-            msg.RotZ = unit.Rotation.value.z;
-            msg.RotW = unit.Rotation.value.w;
-            MapMessageHelper.NoticeClient(unit, msg, NoticeType.Broadcast);
+            // 先发给自己，保证玩家在不被任何人看见时也能收到自身位移同步
+            M2C_JoystickMove selfMsg = CreateMoveMessage(unit);
+            MapMessageHelper.NoticeClient(unit, selfMsg, NoticeType.Self);
+
+            M2C_JoystickMove broadcastMsg = CreateMoveMessage(unit);
+            MapMessageHelper.NoticeClient(unit, broadcastMsg, NoticeType.BroadcastWithoutSelf);
         }
 
         private static void BroadcastStop(this JoystickMoveComponent self)
@@ -123,7 +118,16 @@ namespace ET.Server
                 return;
             }
 
-            // 广播静止位置
+            // 先发给自己，保证玩家松手时自身状态立即同步
+            M2C_JoystickMove selfMsg = CreateMoveMessage(unit);
+            MapMessageHelper.NoticeClient(unit, selfMsg, NoticeType.Self);
+
+            M2C_JoystickMove broadcastMsg = CreateMoveMessage(unit);
+            MapMessageHelper.NoticeClient(unit, broadcastMsg, NoticeType.BroadcastWithoutSelf);
+        }
+
+        private static M2C_JoystickMove CreateMoveMessage(Unit unit)
+        {
             M2C_JoystickMove msg = M2C_JoystickMove.Create();
             msg.UnitId = unit.Id;
             msg.PosX = unit.Position.x;
@@ -133,7 +137,7 @@ namespace ET.Server
             msg.RotY = unit.Rotation.value.y;
             msg.RotZ = unit.Rotation.value.z;
             msg.RotW = unit.Rotation.value.w;
-            MapMessageHelper.NoticeClient(unit, msg, NoticeType.Broadcast);
+            return msg;
         }
     }
 }
