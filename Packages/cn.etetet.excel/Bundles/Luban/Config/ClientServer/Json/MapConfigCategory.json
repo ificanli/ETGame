@@ -43,10 +43,50 @@
     "Id": 5,
     "Name": "Home",
     "Desc": "大厅",
-    "CopyType": 1,
+    "CopyType": 3,
     "MaxLineNum": 1,
-    "MaxPlayerNum": 100,
+    "MaxPlayerNum": 1,
     "RecommendPlayerNum": 50,
     "MapResName": "Home"
+  },
+  {
+    "Id": 6,
+    "Name": "PVEMap",
+    "Desc": "PVEMap",
+    "CopyType": 3,
+    "MaxLineNum": 1,
+    "MaxPlayerNum": 1,
+    "RecommendPlayerNum": 50,
+    "MapResName": "PVEMap"
+  },
+  {
+    "Id": 7,
+    "Name": "1V1Map",
+    "Desc": "1V1Map",
+    "CopyType": 3,
+    "MaxLineNum": 1,
+    "MaxPlayerNum": 2,
+    "RecommendPlayerNum": 50,
+    "MapResName": "1V1Map"
+  },
+  {
+    "Id": 8,
+    "Name": "3V3Map",
+    "Desc": "3V3Map",
+    "CopyType": 3,
+    "MaxLineNum": 1,
+    "MaxPlayerNum": 6,
+    "RecommendPlayerNum": 50,
+    "MapResName": "3V3Map"
+  },
+  {
+    "Id": 9,
+    "Name": "SDCMap",
+    "Desc": "SDCMap",
+    "CopyType": 3,
+    "MaxLineNum": 1,
+    "MaxPlayerNum": 6,
+    "RecommendPlayerNum": 50,
+    "MapResName": "SDCMap"
   }
 ]

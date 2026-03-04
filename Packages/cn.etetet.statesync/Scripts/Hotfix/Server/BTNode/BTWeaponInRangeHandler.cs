@@ -10,7 +10,12 @@ namespace ET.Server
             Unit target = env.GetEntity<Unit>(node.Target);
 
             float distance = math.distance(caster.Position, target.Position);
-            return distance <= node.Range ? 0 : 1;
+            bool inRange = distance <= node.Range;
+            if (!inRange)
+            {
+                Log.Debug($"BTWeaponInRange: unit {caster.Id} dist={distance:F1} > range={node.Range}");
+            }
+            return inRange ? 0 : 1;
         }
     }
 }

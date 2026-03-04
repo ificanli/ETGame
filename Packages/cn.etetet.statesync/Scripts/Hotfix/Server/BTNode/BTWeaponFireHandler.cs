@@ -1,3 +1,5 @@
+using Unity.Mathematics;
+
 namespace ET.Server
 {
     public class BTWeaponFireHandler : ABTHandler<BTWeaponFire>
@@ -6,6 +8,10 @@ namespace ET.Server
         {
             Unit caster = env.GetEntity<Unit>(node.Caster);
             Unit target = env.GetEntity<Unit>(node.Target);
+            if (caster == null || target == null)
+            {
+                return 1;
+            }
 
             WeaponComponent weaponComp = caster.GetComponent<WeaponComponent>();
             if (weaponComp == null)
@@ -13,21 +19,75 @@ namespace ET.Server
                 return 1;
             }
 
-            int weaponId = node.WeaponType == WeaponType.Rifle ? weaponComp.RifleId : weaponComp.SMGId;
+            // 根据槽位索引获取武器ID
+            int weaponId = node.SlotIndex == 1 ? weaponComp.Slot1WeaponId : weaponComp.Slot2WeaponId;
+            if (weaponId == 0)
+            {
+                return 1; // 该槽位没有武器
+            }
+
+            // 获取武器配置
+            WeaponConfig weaponConfig = WeaponConfigCategory.Instance.Get(weaponId);
+            if (weaponConfig == null)
+            {
+                return 1;
+            }
 
             // 最终检查是否可以射击
-            if (!weaponComp.CanFire(weaponId))
+            if (!weaponComp.CanFire(node.SlotIndex))
             {
                 return 1;
             }
 
             // 消耗弹药、记录射击时间
-            weaponComp.ConsumeAmmo(weaponId, 1);
-            weaponComp.RecordFireTime(weaponId);
+            weaponComp.ConsumeAmmo(node.SlotIndex, 1);
+            weaponComp.RecordFireTime(node.SlotIndex);
+            Log.Info($"BTWeaponFire: unit {caster.Id} fired slot={node.SlotIndex} weaponId={weaponId} at target={target.Id}");
 
-            // 创建子弹（使用固定伤害值，后续可从配置读取）
-            float damage = node.WeaponType == WeaponType.Rifle ? 30f : 15f;
-            BulletHelper.CreateBullet(caster.Scene(), caster, target, damage);
+            Scene scene = caster.Scene();
+            if (scene.GetComponent<BulletTickComponent>() == null)
+            {
+                scene.AddComponent<BulletTickComponent>();
+            }
+
+            M2C_WeaponFire fireMsg = M2C_WeaponFire.Create();
+            fireMsg.CasterUnitId = caster.Id;
+            fireMsg.TargetUnitId = target.Id;
+            fireMsg.WeaponId = weaponId;
+            fireMsg.SlotIndex = node.SlotIndex;
+            fireMsg.BulletCount = weaponConfig.BulletCount;
+            fireMsg.FireLockTypeId = weaponConfig.FireLockTypeId;
+            MapMessageHelper.NoticeClient(caster, fireMsg, NoticeType.Broadcast);
+
+            // 根据武器配置创建子弹
+            FireLockType lockType = (FireLockType)weaponConfig.FireLockTypeId;
+
+            // 如果是散射武器（BulletCount > 1），创建多个子弹
+            if (weaponConfig.BulletCount > 1)
+            {
+                BulletHelper.CreateScatterBullets(
+                    scene,
+                    caster,
+                    target,
+                    weaponConfig.Damage,
+                    lockType,
+                    weaponConfig.BulletCount,
+                    weaponConfig.SpreadAngle,
+                    weaponId
+                );
+            }
+            else
+            {
+                // 单发子弹
+                BulletHelper.CreateBullet(
+                    scene,
+                    caster,
+                    target,
+                    weaponConfig.Damage,
+                    lockType,
+                    weaponId
+                );
+            }
 
             return 0;
         }

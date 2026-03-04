@@ -103,10 +103,13 @@ namespace ET.Server
             AOIEntity ownerAoi = owner.GetComponent<AOIEntity>();
             if (ownerAoi == null)
             {
+                Log.Warning($"TargetSelector: unit {owner.Id} has no AOIEntity");
                 return result;
             }
 
             Dictionary<long, EntityRef<AOIEntity>> seeUnits = ownerAoi.GetSeeUnits();
+            CampComponent ownerCamp = owner.GetComponent<CampComponent>();
+            Log.Warning($"TargetSelector: unit {owner.Id} camp={ownerCamp?.CampId} sees {seeUnits.Count} AOI units, range={range}");
 
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
@@ -128,17 +131,21 @@ namespace ET.Server
 
                 if (!CampHelper.IsEnemy(owner, target))
                 {
+                    CampComponent targetCamp = target.GetComponent<CampComponent>();
+                    Log.Warning($"  skip unit {target.Id} type={target.UnitType} camp={targetCamp?.CampId}: not enemy");
                     continue;
                 }
 
                 float distance = math.distance(owner.Position, target.Position);
                 if (distance > range)
                 {
+                    Log.Warning($"  skip unit {target.Id}: dist={distance:F1} > range={range}");
                     continue;
                 }
 
                 if (!IsAlive(target))
                 {
+                    Log.Warning($"  skip unit {target.Id}: not alive");
                     continue;
                 }
 

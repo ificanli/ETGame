@@ -50,19 +50,23 @@ namespace ET.Server
             {
                 if (config == null) continue;
 
+                int pointType = config.GetPointType();
+                float interactRange = config.GetInteractRange();
+
                 Unit ecaUnit = unitComponent.AddChild<Unit, int>(0);
                 ecaUnit.Position = new float3(config.PosX, config.PosY, config.PosZ);
 
                 ECAPointComponent ecaPoint = ecaUnit.AddComponent<ECAPointComponent, string, int, float>(
                     config.ConfigId,
-                    config.PointType,
-                    config.InteractRange
+                    pointType,
+                    interactRange
                 );
                 ecaPoint.FlowGraph = config.FlowGraph;
+                ecaPoint.Params = CopyParams(config.Params);
 
                 ecaManager.AddECAPoint(config.ConfigId, ecaUnit.Id);
 
-                Log.Info($"[ECALoader] Loaded ECA point: {config.ConfigId}, Type: {config.PointType}, Pos: ({config.PosX}, {config.PosY}, {config.PosZ})");
+                Log.Info($"[ECALoader] Loaded ECA point: {config.ConfigId}, Type: {pointType}, Pos: ({config.PosX}, {config.PosY}, {config.PosZ})");
             }
 
             Log.Info($"[ECALoader] Total loaded {ecaManager.ECAPoints.Count} ECA points");
@@ -73,6 +77,31 @@ namespace ET.Server
             {
                 ecaManager.CheckRangeTimerId = timerComponent.NewRepeatedTimer(200, TimerInvokeType.ECACheckRange, ecaManager);
             }
+        }
+
+        private static List<FlowParam> CopyParams(List<FlowParam> source)
+        {
+            List<FlowParam> copy = new();
+            if (source == null || source.Count == 0)
+            {
+                return copy;
+            }
+
+            foreach (FlowParam param in source)
+            {
+                if (param == null || string.IsNullOrWhiteSpace(param.Key))
+                {
+                    continue;
+                }
+
+                copy.Add(new FlowParam
+                {
+                    Key = param.Key,
+                    Value = param.Value
+                });
+            }
+
+            return copy;
         }
     }
 }

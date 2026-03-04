@@ -198,25 +198,47 @@
     "Level": 1
   },
   {
-    "Id": 50007,
-    "Name": "绷带",
-    "Desc": "恢复10点生命值",
-    "Type": 3,
-    "MaxStack": 10,
-    "Icon": "item_bandage",
-    "Quality": 1,
-    "UseType": 1,
+    "Id": 50009,
+    "Name": "霰弹枪1号",
+    "Desc": "射程近，一次散射4发，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_shotgun",
+    "Quality": 3,
+    "UseType": 0,
     "Level": 1
   },
   {
-    "Id": 50008,
-    "Name": "能量饮料",
-    "Desc": "恢复40点能量",
-    "Type": 3,
-    "MaxStack": 5,
-    "Icon": "item_drink",
-    "Quality": 2,
-    "UseType": 1,
+    "Id": 50010,
+    "Name": "步枪1号",
+    "Desc": "强制追踪，射速快，伤害高，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_rifle1",
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50011,
+    "Name": "步枪2号",
+    "Desc": "方向锁定，射程远，攻速快，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_rifle2",
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50012,
+    "Name": "火箭炮1号",
+    "Desc": "位置锁定，射程远，爆炸伤害，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_rocket",
+    "Quality": 4,
+    "UseType": 0,
     "Level": 1
   }
 ]

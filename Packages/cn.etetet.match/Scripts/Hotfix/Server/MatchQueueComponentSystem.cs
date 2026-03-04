@@ -124,6 +124,90 @@ namespace ET.Server
         }
 
         /// <summary>
+        /// 超时补位匹配：30秒未凑齐真人时，补机器人占位完成开局
+        /// </summary>
+        public static MatchResult? TryMatchWithRobot(this MatchQueueComponent self, int gameMode)
+        {
+            if (!MatchHelper.CanUseRobotFill(self, gameMode))
+            {
+                return null;
+            }
+
+            int requiredCount = MatchHelper.GetRequiredPlayerCount(self, gameMode);
+            if (requiredCount <= 1)
+            {
+                return null;
+            }
+
+            long now = TimeInfo.Instance.ServerNow();
+            long matchTimeoutMs = self.MatchTimeoutMs;
+
+            List<MatchRequest> waitingRequests = self.Children.Values
+                .OfType<MatchRequest>()
+                .Where(r => r.GameMode == gameMode && r.State == MatchState.Waiting)
+                .OrderBy(r => r.EnqueueTime)
+                .ToList();
+
+            if (waitingRequests.Count == 0)
+            {
+                return null;
+            }
+
+            MatchRequest timeoutRequest =
+                waitingRequests.FirstOrDefault(r => now - r.EnqueueTime >= matchTimeoutMs);
+            if (timeoutRequest == null)
+            {
+                return null;
+            }
+
+            List<MatchRequest> matchedRequests = new List<MatchRequest>() { timeoutRequest };
+            foreach (MatchRequest request in waitingRequests)
+            {
+                if (request.Id == timeoutRequest.Id)
+                {
+                    continue;
+                }
+
+                if (matchedRequests.Count >= requiredCount)
+                {
+                    break;
+                }
+
+                matchedRequests.Add(request);
+            }
+
+            MatchResult result = new MatchResult
+            {
+                GameMode = gameMode,
+                MapName = GetDefaultMapName(gameMode),
+                PlayerIds = new List<long>()
+            };
+
+            foreach (MatchRequest request in matchedRequests)
+            {
+                result.PlayerIds.Add(request.PlayerId);
+                request.State = MatchState.Matched;
+                self.PlayerRequestDict.Remove(request.PlayerId);
+            }
+
+            int robotCount = requiredCount - matchedRequests.Count;
+            for (int i = 0; i < robotCount; ++i)
+            {
+                result.PlayerIds.Add(MatchHelper.GenerateRobotPlayerId());
+            }
+
+            Log.Info(
+                $"Match success with robot fill! GameMode: {gameMode}, HumanPlayers: {matchedRequests.Count}, Robots: {robotCount}, Players: {string.Join(",", result.PlayerIds)}");
+
+            foreach (MatchRequest request in matchedRequests)
+            {
+                request.Dispose();
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 清理超时请求
         /// </summary>
         public static void CleanTimeoutRequests(this MatchQueueComponent self)
@@ -164,10 +248,10 @@ namespace ET.Server
         {
             return gameMode switch
             {
-                GameModeType.PVE => "Map1",
-                GameModeType.OneVsOne => "Map1",
-                GameModeType.ThreeVsThree => "Map1",
-                GameModeType.Extraction => "Map1",
+                GameModeType.PVE => "1V1Map",
+                GameModeType.OneVsOne => "1V1Map",
+                GameModeType.ThreeVsThree => "3V3Map",
+                GameModeType.Extraction => "SDCMap",
                 _ => "Map1"
             };
         }
@@ -197,6 +281,11 @@ namespace ET.Server
             foreach (int gameMode in self.ModePlayerCountDict.Keys)
             {
                 MatchResult? result = self.TryMatch(gameMode);
+                if (result == null)
+                {
+                    result = self.TryMatchWithRobot(gameMode);
+                }
+
                 if (result != null)
                 {
                     NotifyGates(self, result.Value).Coroutine();

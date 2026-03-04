@@ -17,6 +17,7 @@
             root.AddComponent<ObjectWait>();
             root.AddComponent<QuestComponent>();
             root.AddComponent<ItemComponent>();
+            root.AddComponent<WeaponVisualConfigComponent>();
             
             root = rootRef;
             await EventSystem.Instance.PublishAsync(root, new AppStartInitFinish());

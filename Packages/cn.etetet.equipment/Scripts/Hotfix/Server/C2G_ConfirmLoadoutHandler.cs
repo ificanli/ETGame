@@ -19,6 +19,8 @@ namespace ET.Server
 
             Player player = sessionPlayer.Player;
 
+            Log.Info($"C2G_ConfirmLoadout: HeroConfigId={request.HeroConfigId}, MainWeapon={request.MainWeaponConfigId}, SubWeapon={request.SubWeaponConfigId}");
+
             // 验证英雄配置存在
             HeroConfig heroConfig = HeroConfigCategory.Instance.GetOrDefault(request.HeroConfigId);
             if (heroConfig == null)
@@ -28,38 +30,38 @@ namespace ET.Server
                 return;
             }
 
-            // 验证主武器配置且槽位匹配（EquipSlot 必须等于 MainHand=6）
+            // 验证主武器配置存在
             if (request.MainWeaponConfigId > 0)
             {
-                int err = ValidateEquipSlot(request.MainWeaponConfigId, (int)EquipmentSlotType.MainHand);
-                if (err != ErrorCode.ERR_Success)
+                EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(request.MainWeaponConfigId);
+                if (equipConfig == null)
                 {
-                    response.Error = err;
-                    response.Message = $"main weapon slot mismatch, configId={request.MainWeaponConfigId}";
+                    response.Error = ErrorCode.ERR_LoadoutItemNotFound;
+                    response.Message = $"main weapon config not found: {request.MainWeaponConfigId}";
                     return;
                 }
             }
 
-            // 验证副武器配置且槽位匹配（EquipSlot 必须等于 OffHand=7）
+            // 验证副武器配置存在
             if (request.SubWeaponConfigId > 0)
             {
-                int err = ValidateEquipSlot(request.SubWeaponConfigId, (int)EquipmentSlotType.OffHand);
-                if (err != ErrorCode.ERR_Success)
+                EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(request.SubWeaponConfigId);
+                if (equipConfig == null)
                 {
-                    response.Error = err;
-                    response.Message = $"sub weapon slot mismatch, configId={request.SubWeaponConfigId}";
+                    response.Error = ErrorCode.ERR_LoadoutItemNotFound;
+                    response.Message = $"sub weapon config not found: {request.SubWeaponConfigId}";
                     return;
                 }
             }
 
-            // 验证护甲配置且槽位匹配（EquipSlot 必须等于 Chest=2/Armor=2）
+            // 验证护甲配置存在
             if (request.ArmorConfigId > 0)
             {
-                int err = ValidateEquipSlot(request.ArmorConfigId, (int)EquipmentSlotType.Chest);
-                if (err != ErrorCode.ERR_Success)
+                EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(request.ArmorConfigId);
+                if (equipConfig == null)
                 {
-                    response.Error = err;
-                    response.Message = $"armor slot mismatch, configId={request.ArmorConfigId}";
+                    response.Error = ErrorCode.ERR_LoadoutItemNotFound;
+                    response.Message = $"armor config not found: {request.ArmorConfigId}";
                     return;
                 }
             }
@@ -77,7 +79,42 @@ namespace ET.Server
             }
             loadout.IsConfirmed = true;
 
+            // 立即通知 Unit 应用起装（Unit 在 Home 地图，通过 Location 消息发送）
+            MessageLocationSenderComponent locationSenderComp = player.Scene().GetComponent<MessageLocationSenderComponent>();
+            long playerId = player.Id;
+            if (locationSenderComp != null)
+            {
+                MessageLocationSenderOneType locationSender = locationSenderComp.Get(LocationType.Unit);
+                A2Map_ApplyLoadoutRequest applyReq = A2Map_ApplyLoadoutRequest.Create();
+                applyReq.HeroConfigId = request.HeroConfigId;
+                applyReq.MainWeaponConfigId = request.MainWeaponConfigId;
+                applyReq.SubWeaponConfigId = request.SubWeaponConfigId;
+                applyReq.ArmorConfigId = request.ArmorConfigId;
+                await locationSender.Call(playerId, applyReq);
+                Log.Info($"C2G_ConfirmLoadout: applied loadout to unit {playerId}");
+            }
+
             await ETTask.CompletedTask;
+        }
+
+        /// <summary>
+        /// 验证武器配置ID的槽位类型（射击游戏中武器都是 MainHand=6）
+        /// </summary>
+        private static int ValidateWeaponSlot(int configId)
+        {
+            EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
+            if (equipConfig == null)
+            {
+                return ErrorCode.ERR_LoadoutItemNotFound;
+            }
+
+            // 武器必须是 MainHand=6
+            if (equipConfig.EquipSlot != (int)EquipmentSlotType.MainHand)
+            {
+                return ErrorCode.ERR_LoadoutSlotMismatch;
+            }
+
+            return ErrorCode.ERR_Success;
         }
 
         /// <summary>

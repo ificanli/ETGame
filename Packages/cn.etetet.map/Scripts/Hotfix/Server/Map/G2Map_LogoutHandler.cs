@@ -22,8 +22,26 @@ namespace ET.Server
 			managerLogoutRequest.MapId = unit.Scene().Id;
 			await serviceDiscoveryProxy.Call(mapManagerName, managerLogoutRequest);
 			unit = unitRef;
+			ReleaseSpawnPointAssignment(unit);
 			UnitComponent unitComponent = unit.GetParent<UnitComponent>();
 			unitComponent.Remove(unit.Id);
+		}
+
+		private static void ReleaseSpawnPointAssignment(Unit unit)
+		{
+			SpawnPointManagerComponent spawnPointManager = unit.Scene().GetComponent<SpawnPointManagerComponent>();
+			if (spawnPointManager == null)
+			{
+				return;
+			}
+
+			if (!spawnPointManager.PlayerTeamAssignments.TryGetValue(unit.Id, out int teamId))
+			{
+				return;
+			}
+
+			spawnPointManager.PlayerTeamAssignments.Remove(unit.Id);
+			spawnPointManager.OccupiedTeamIds.Remove(teamId);
 		}
 	}
 }

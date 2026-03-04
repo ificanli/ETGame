@@ -9,12 +9,14 @@ namespace ET.Server
             TargetSelectorComponent selector = caster.GetComponent<TargetSelectorComponent>();
             if (selector == null)
             {
+                Log.Warning($"BTWeaponHasTarget: unit {caster.Id} has no TargetSelectorComponent");
                 return 1;
             }
 
             Unit target = selector.SelectTarget();
             if (target == null)
             {
+                Log.Warning($"BTWeaponHasTarget: unit {caster.Id} found no target (MaxRange={selector.MaxRange})");
                 return 1;
             }
 

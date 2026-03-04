@@ -1,4 +1,4 @@
-﻿namespace ET.Server
+namespace ET.Server
 {
 	[MessageSessionHandler(SceneType.Gate)]
 	public class C2G_EnterMapHandler : MessageSessionHandler<C2G_EnterMap, G2C_EnterMap>
@@ -32,7 +32,9 @@
 			Unit unit = UnitFactory.Create(scene, player.Id, unitConfigId);
 			unit.AddComponent<UnitGateInfoComponent>().ActorId = player.GetComponent<PlayerSessionComponent>().GetActorId();
 
-			// 应用起装（将起装装备给 Unit）
+			// 应用起装（将起装装备给 Unit）— 只装备到 EquipmentComponent，不在 GateMap 创建 Timer
+			// 武器组件和英雄技能在 M2M_UnitTransferRequestHandler（Map 场景）中初始化，避免 Timer 注册在 GateMap 上随其销毁
+			Log.Info($"C2G_EnterMap: loadout={loadout != null}, IsConfirmed={loadout?.IsConfirmed}, HeroConfigId={loadout?.HeroConfigId}");
 			if (loadout != null && loadout.IsConfirmed)
 			{
 				LoadoutHelper.ApplyLoadout(unit, loadout);
@@ -50,7 +52,7 @@
 			EntityRef<Unit> unitRef = unit;
 			EntityRef<Player> playerRef = player;
 			await unit.Fiber().WaitFrameFinish();
-			
+
 			unit = unitRef;
 			await TransferHelper.TransferLock(unit, mapName, mapId, true);
 			// 传送完成，移除GateMap Fiber

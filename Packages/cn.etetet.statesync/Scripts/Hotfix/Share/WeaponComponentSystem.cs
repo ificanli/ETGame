@@ -6,72 +6,87 @@ namespace ET
     public static partial class WeaponComponentSystem
     {
         [EntitySystem]
-        private static void Awake(this WeaponComponent self, int rifleId, int smgId)
+        private static void Awake(this WeaponComponent self, int slot1WeaponId, int slot2WeaponId)
         {
-            self.RifleId = rifleId;
-            self.SMGId = smgId;
-            self.CurrentWeapon = WeaponType.Rifle;
+            self.Slot1WeaponId = slot1WeaponId;
+            self.Slot2WeaponId = slot2WeaponId;
+            self.CurrentSlot = slot1WeaponId > 0 ? 1 : (slot2WeaponId > 0 ? 2 : 0);
 
-            // 初始化弹药（从配置读取，这里先硬编码）
-            self.RifleAmmo = 30;  // 步枪30发
-            self.SMGAmmo = 25;    // 冲锋枪25发
+            // 初始化弹药（从配置读取）
+            if (slot1WeaponId > 0)
+            {
+                WeaponConfig config1 = WeaponConfigCategory.Instance.Get(slot1WeaponId);
+                self.Slot1Ammo = config1?.MagazineSize ?? 0;
+            }
 
-            self.RifleReloading = false;
-            self.SMGReloading = false;
-            self.RifleLastFireTime = 0;
-            self.SMGLastFireTime = 0;
+            if (slot2WeaponId > 0)
+            {
+                WeaponConfig config2 = WeaponConfigCategory.Instance.Get(slot2WeaponId);
+                self.Slot2Ammo = config2?.MagazineSize ?? 0;
+            }
+
+            self.Slot1Reloading = false;
+            self.Slot2Reloading = false;
+            self.Slot1LastFireTime = 0;
+            self.Slot2LastFireTime = 0;
         }
 
         [EntitySystem]
         private static void Destroy(this WeaponComponent self)
         {
-            self.RifleId = 0;
-            self.SMGId = 0;
-            self.CurrentWeapon = WeaponType.None;
+            self.Slot1WeaponId = 0;
+            self.Slot2WeaponId = 0;
+            self.CurrentSlot = 0;
         }
 
         /// <summary>
         /// 消耗弹药
         /// </summary>
-        public static void ConsumeAmmo(this WeaponComponent self, int weaponId, int count)
+        public static void ConsumeAmmo(this WeaponComponent self, int slotIndex, int count)
         {
-            if (weaponId == self.RifleId)
+            if (slotIndex == 1)
             {
-                self.RifleAmmo = math.max(0, self.RifleAmmo - count);
+                self.Slot1Ammo = math.max(0, self.Slot1Ammo - count);
             }
-            else if (weaponId == self.SMGId)
+            else if (slotIndex == 2)
             {
-                self.SMGAmmo = math.max(0, self.SMGAmmo - count);
+                self.Slot2Ammo = math.max(0, self.Slot2Ammo - count);
             }
         }
 
         /// <summary>
         /// 补充弹药（换弹）
         /// </summary>
-        public static void RefillAmmo(this WeaponComponent self, int weaponId)
+        public static void RefillAmmo(this WeaponComponent self, int slotIndex)
         {
-            if (weaponId == self.RifleId)
+            int weaponId = slotIndex == 1 ? self.Slot1WeaponId : self.Slot2WeaponId;
+            if (weaponId == 0) return;
+
+            WeaponConfig config = WeaponConfigCategory.Instance.Get(weaponId);
+            if (config == null) return;
+
+            if (slotIndex == 1)
             {
-                self.RifleAmmo = 30;  // 恢复到弹匣容量
+                self.Slot1Ammo = config.MagazineSize;
             }
-            else if (weaponId == self.SMGId)
+            else if (slotIndex == 2)
             {
-                self.SMGAmmo = 25;
+                self.Slot2Ammo = config.MagazineSize;
             }
         }
 
         /// <summary>
         /// 获取当前弹药数
         /// </summary>
-        public static int GetAmmo(this WeaponComponent self, int weaponId)
+        public static int GetAmmo(this WeaponComponent self, int slotIndex)
         {
-            if (weaponId == self.RifleId)
+            if (slotIndex == 1)
             {
-                return self.RifleAmmo;
+                return self.Slot1Ammo;
             }
-            else if (weaponId == self.SMGId)
+            else if (slotIndex == 2)
             {
-                return self.SMGAmmo;
+                return self.Slot2Ammo;
             }
             return 0;
         }
@@ -79,26 +94,32 @@ namespace ET
         /// <summary>
         /// 检查是否可以射击
         /// </summary>
-        public static bool CanFire(this WeaponComponent self, int weaponId)
+        public static bool CanFire(this WeaponComponent self, int slotIndex)
         {
+            int weaponId = slotIndex == 1 ? self.Slot1WeaponId : self.Slot2WeaponId;
+            if (weaponId == 0) return false;
+
             // 检查弹药
-            if (self.GetAmmo(weaponId) <= 0)
+            if (self.GetAmmo(slotIndex) <= 0)
             {
                 return false;
             }
 
             // 检查是否正在换弹
-            if (self.IsReloading(weaponId))
+            if (self.IsReloading(slotIndex))
             {
                 return false;
             }
 
-            // 检查射击间隔（这里先硬编码，后续从配置读取）
-            long now = TimeInfo.Instance.ServerNow();
-            long lastFireTime = weaponId == self.RifleId ? self.RifleLastFireTime : self.SMGLastFireTime;
-            long interval = weaponId == self.RifleId ? 500 : 100; // 步枪0.5秒，冲锋枪0.1秒
+            // 从配置读取射击间隔
+            WeaponConfig config = WeaponConfigCategory.Instance.Get(weaponId);
+            if (config == null) return false;
 
-            if (now - lastFireTime < interval)
+            // 检查射击间隔
+            long now = TimeInfo.Instance.ServerNow();
+            long lastFireTime = slotIndex == 1 ? self.Slot1LastFireTime : self.Slot2LastFireTime;
+
+            if (now - lastFireTime < config.AttackIntervalMs)
             {
                 return false;
             }
@@ -109,56 +130,63 @@ namespace ET
         /// <summary>
         /// 记录射击时间
         /// </summary>
-        public static void RecordFireTime(this WeaponComponent self, int weaponId)
+        public static void RecordFireTime(this WeaponComponent self, int slotIndex)
         {
             long now = TimeInfo.Instance.ServerNow();
-            if (weaponId == self.RifleId)
+            if (slotIndex == 1)
             {
-                self.RifleLastFireTime = now;
+                self.Slot1LastFireTime = now;
             }
-            else if (weaponId == self.SMGId)
+            else if (slotIndex == 2)
             {
-                self.SMGLastFireTime = now;
+                self.Slot2LastFireTime = now;
             }
         }
 
         /// <summary>
         /// 设置换弹状态
         /// </summary>
-        public static void SetReloading(this WeaponComponent self, int weaponId, bool reloading)
+        public static void SetReloading(this WeaponComponent self, int slotIndex, bool reloading)
         {
-            if (weaponId == self.RifleId)
+            if (slotIndex == 1)
             {
-                self.RifleReloading = reloading;
+                self.Slot1Reloading = reloading;
             }
-            else if (weaponId == self.SMGId)
+            else if (slotIndex == 2)
             {
-                self.SMGReloading = reloading;
+                self.Slot2Reloading = reloading;
             }
         }
 
         /// <summary>
         /// 检查是否正在换弹
         /// </summary>
-        public static bool IsReloading(this WeaponComponent self, int weaponId)
+        public static bool IsReloading(this WeaponComponent self, int slotIndex)
         {
-            if (weaponId == self.RifleId)
+            if (slotIndex == 1)
             {
-                return self.RifleReloading;
+                return self.Slot1Reloading;
             }
-            else if (weaponId == self.SMGId)
+            else if (slotIndex == 2)
             {
-                return self.SMGReloading;
+                return self.Slot2Reloading;
             }
             return false;
         }
 
         /// <summary>
-        /// 切换武器
+        /// 切换武器槽位
         /// </summary>
-        public static void SwitchWeapon(this WeaponComponent self, WeaponType weaponType)
+        public static void SwitchWeapon(this WeaponComponent self, int slotIndex)
         {
-            self.CurrentWeapon = weaponType;
+            if (slotIndex == 1 && self.Slot1WeaponId > 0)
+            {
+                self.CurrentSlot = 1;
+            }
+            else if (slotIndex == 2 && self.Slot2WeaponId > 0)
+            {
+                self.CurrentSlot = 2;
+            }
         }
     }
 }

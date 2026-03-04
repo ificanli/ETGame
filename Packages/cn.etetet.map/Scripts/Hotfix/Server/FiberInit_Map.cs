@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net;
 
 namespace ET.Server
@@ -37,6 +38,19 @@ namespace ET.Server
 
             // 加载 ECA 点配置
             ECALoader.LoadFromFile(root, mapName);
+            if (mapName != "GateMap" && mapName != "Home")
+            {
+                string ecaPath = $"Packages/cn.etetet.map/Bundles/ECA/{mapName}.txt";
+                if (File.Exists(ecaPath))
+                {
+                    root.AddComponent<SpawnPointManagerComponent>();
+                    Log.Info($"[SpawnAssign] SpawnPointManager added, scene={root.Name}, map={mapName}, ecaPath={ecaPath}");
+                }
+                else
+                {
+                    Log.Warning($"[SpawnAssign] ECA file not found, scene={root.Name}, map={mapName}, ecaPath={ecaPath}");
+                }
+            }
 
             foreach (var kv in MapUnitConfigCategory.Instance.GetAll())
             {

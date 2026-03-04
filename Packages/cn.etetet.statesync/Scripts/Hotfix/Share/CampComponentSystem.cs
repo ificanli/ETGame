@@ -10,10 +10,22 @@ namespace ET
         private static void Awake(this CampComponent self, int campId)
         {
             self.CampId = campId;
-            // 默认为敌对阵营，可后续通过配置表扩展
-            // 阵营1 = 友方，其余默认为敌方
-            // 实际项目中应从配置表读取，此处暂用约定规则
-            self.CampType = CampType.Enemy;
+            // 根据 CampId 设置 CampType：
+            // CampId=1 → 玩家阵营（Friendly）
+            // CampId=2 → 怪物阵营（Enemy）
+            // 其他 → 中立（Neutral）
+            if (campId == 1)
+            {
+                self.CampType = CampType.Friendly;
+            }
+            else if (campId == 2)
+            {
+                self.CampType = CampType.Enemy;
+            }
+            else
+            {
+                self.CampType = CampType.Neutral;
+            }
         }
 
         [EntitySystem]

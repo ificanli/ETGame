@@ -18,15 +18,9 @@ namespace ET.Client
                 return;
             }
 
-            // 直接纠正位置（服务端权威）
-            unit.Position = message.Position;
-
-            // 朝向移动方向
-            float3 velocity = message.Velocity;
-            if (math.lengthsq(velocity) > 0.0001f)
-            {
-                unit.Rotation = quaternion.LookRotation(math.normalize(velocity), math.up());
-            }
+            // 直接纠正位置和旋转（服务端权威）
+            unit.Position = new float3(message.PosX, message.PosY, message.PosZ);
+            unit.Rotation = new quaternion(message.RotX, message.RotY, message.RotZ, message.RotW);
 
             await ETTask.CompletedTask;
         }

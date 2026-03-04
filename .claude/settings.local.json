@@ -40,7 +40,16 @@
       "Bash(printf:*)",
       "Bash(do sed:*)",
       "Bash(\"D:\\\\05ET\\\\etowo\\\\MyBook\\\\ECA框架架构修复计划.md\":*)",
-      "Bash(cmd:*)"
+      "Bash(cmd:*)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(powershell:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(where:*)",
+      "Bash(C:\\\\Users\\\\luxinyu\\\\AppData\\\\Local\\\\Microsoft\\\\WindowsApps\\\\python.exe:*)",
+      "Bash(/tmp/fix_buff200200_flags.ps1:*)",
+      "Bash(./Proto2CS.bat:*)",
+      "Bash(cmd.exe:*)"
     ],
     "deny": []
   }

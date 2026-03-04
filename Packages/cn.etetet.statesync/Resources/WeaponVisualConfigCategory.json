@@ -1,0 +1,54 @@
+{
+  "Items": [
+    {
+      "WeaponId": 50009,
+      "ProjectileEffect": "effect_Frost Bolt",
+      "HitEffect": "effect_Frost Nova",
+      "CasterBindPointId": 1,
+      "TargetBindPointId": 9,
+      "ProjectileSpeed": 26.0,
+      "ProjectileDurationMs": 1800,
+      "HitEffectDurationMs": 1200
+    },
+    {
+      "WeaponId": 50010,
+      "ProjectileEffect": "effect_Frost Bolt",
+      "HitEffect": "effect_Frost Nova State",
+      "CasterBindPointId": 1,
+      "TargetBindPointId": 9,
+      "ProjectileSpeed": 42.0,
+      "ProjectileDurationMs": 1800,
+      "HitEffectDurationMs": 1200
+    },
+    {
+      "WeaponId": 50011,
+      "ProjectileEffect": "effect_Frost Bolt",
+      "HitEffect": "effect_Frost Nova",
+      "CasterBindPointId": 1,
+      "TargetBindPointId": 9,
+      "ProjectileSpeed": 56.0,
+      "ProjectileDurationMs": 1800,
+      "HitEffectDurationMs": 1200
+    },
+    {
+      "WeaponId": 50012,
+      "ProjectileEffect": "effect_Frost Bolt",
+      "HitEffect": "effect_top_down_ice_circle",
+      "CasterBindPointId": 1,
+      "TargetBindPointId": 9,
+      "ProjectileSpeed": 24.0,
+      "ProjectileDurationMs": 2400,
+      "HitEffectDurationMs": 1500
+    },
+    {
+      "WeaponId": 50013,
+      "ProjectileEffect": "effect_Frost Bolt",
+      "HitEffect": "effect_Frost Nova",
+      "CasterBindPointId": 1,
+      "TargetBindPointId": 9,
+      "ProjectileSpeed": 62.0,
+      "ProjectileDurationMs": 1600,
+      "HitEffectDurationMs": 1000
+    }
+  ]
+}

@@ -31,7 +31,14 @@ namespace ET.Server
                 {
                     continue;
                 }
-                messageSender.Send(u.Unit.GetComponent<UnitGateInfoComponent>().ActorId, message);
+
+                UnitGateInfoComponent gateInfo = u.Unit.GetComponent<UnitGateInfoComponent>();
+                if (gateInfo == null)
+                {
+                    continue;
+                }
+
+                messageSender.Send(gateInfo.ActorId, message);
             }
         }
         
@@ -41,8 +48,15 @@ namespace ET.Server
             {
                 return;
             }
+
+            UnitGateInfoComponent gateInfo = unit.GetComponent<UnitGateInfoComponent>();
+            if (gateInfo == null)
+            {
+                return;
+            }
+
             MessageSender messageSender = unit.Root().GetComponent<MessageSender>();
-            messageSender.Send(unit.GetComponent<UnitGateInfoComponent>().ActorId, message);
+            messageSender.Send(gateInfo.ActorId, message);
         }
         
         public static void NoticeClient(Unit unit, IMessage message, NoticeType noticeType)

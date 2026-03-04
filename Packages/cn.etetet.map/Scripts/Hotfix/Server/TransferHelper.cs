@@ -108,6 +108,7 @@ namespace ET.Server
                 request.Unit = unit;
                 
                 // 这里需要移除Unit，但是不能Dispose，里面会把Unit部分数据Reset
+                ReleaseSpawnPointAssignment(unit);
                 unit.GetParent<UnitComponent>().Remove(unit.Id, false);
             }
             else // 不同进程
@@ -121,6 +122,7 @@ namespace ET.Server
                         request.EntityBytes.Add(entity.ToBson());
                     }
                 }
+                ReleaseSpawnPointAssignment(unit);
                 unit.GetParent<UnitComponent>().Remove(unit.Id);
             }
 
@@ -136,6 +138,29 @@ namespace ET.Server
             await root.GetComponent<LocationProxyComponent>().UnLock(LocationType.Unit, unitId, oldActorId, newActorId);
             
             Log.Debug("start transfer4 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
+        }
+
+        private static void ReleaseSpawnPointAssignment(Unit unit)
+        {
+            if (unit == null)
+            {
+                return;
+            }
+
+            Scene scene = unit.Scene();
+            SpawnPointManagerComponent spawnPointManager = scene?.GetComponent<SpawnPointManagerComponent>();
+            if (spawnPointManager == null)
+            {
+                return;
+            }
+
+            if (!spawnPointManager.PlayerTeamAssignments.TryGetValue(unit.Id, out int teamId))
+            {
+                return;
+            }
+
+            spawnPointManager.PlayerTeamAssignments.Remove(unit.Id);
+            spawnPointManager.OccupiedTeamIds.Remove(teamId);
         }
     }
 }

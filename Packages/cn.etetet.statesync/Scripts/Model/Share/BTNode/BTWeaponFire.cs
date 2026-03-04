@@ -13,7 +13,7 @@ namespace ET
         [BTInput(typeof(Unit))]
         public string Target;
 
-        /// <summary>武器类型</summary>
-        public WeaponType WeaponType = WeaponType.Rifle;
+        /// <summary>武器槽位索引（1=Slot1, 2=Slot2）</summary>
+        public int SlotIndex = 1;
     }
 }

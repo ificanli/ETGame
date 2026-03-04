@@ -1,0 +1,52 @@
+{
+	"_t" : "System.Collections.Generic.List`1[[ET.ECAConfig, ET.Model]]",
+	"_v" : [{
+			"ConfigId" : "1002",
+			"Type" : 1,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}],
+			"PosX" : 46.629997253417969,
+			"PosY" : 2.5199995040893555,
+			"PosZ" : 39.520000457763672,
+			"FlowGraph" : null,
+			"PointType" : 1,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "1001",
+			"Type" : 2,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "team_id",
+					"Value" : "0"
+				}],
+			"PosX" : 33.0,
+			"PosY" : 2.5199999809265137,
+			"PosZ" : 24.700000762939453,
+			"FlowGraph" : null,
+			"PointType" : 2,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "1003",
+			"Type" : 2,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "team_id",
+					"Value" : "1"
+				}],
+			"PosX" : 61.610000610351563,
+			"PosY" : 2.5199995040893555,
+			"PosZ" : 47.790000915527344,
+			"FlowGraph" : null,
+			"PointType" : 2,
+			"TeamId" : 1,
+			"InteractRange" : 3.0
+		}]
+}

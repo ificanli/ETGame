@@ -52,12 +52,14 @@ namespace ET.Server
                     unit.AddComponent<ItemComponent>();
                     unit.AddComponent<EquipmentComponent>();
                     unit.AddComponent<QuestComponent>();
+                    unit.AddComponent<CampComponent, int>(1); // 玩家阵营ID=1
                     break;
                 }
                 case UnitType.Monster:
                 {
                     unit.AddComponent<ThreatComponent>();
                     unit.AddComponent<PathfindingComponent, string>(scene.Name.GetSceneConfigName());
+                    unit.AddComponent<CampComponent, int>(2); // 怪物阵营ID=2
                     break;
                 }
                 case UnitType.NPC:

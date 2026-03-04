@@ -33,5 +33,26 @@
     "Name": "Mage",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 12
+  },
+  {
+    "Id": 1006,
+    "UnitType": 1,
+    "Name": "桃子",
+    "head_icon": "TaoZi",
+    "class_type": 5
+  },
+  {
+    "Id": 1007,
+    "UnitType": 1,
+    "Name": "葡萄",
+    "head_icon": "PuTao",
+    "class_type": 5
+  },
+  {
+    "Id": 1008,
+    "UnitType": 1,
+    "Name": "草莓",
+    "head_icon": "CaoMei",
+    "class_type": 5
   }
 ]

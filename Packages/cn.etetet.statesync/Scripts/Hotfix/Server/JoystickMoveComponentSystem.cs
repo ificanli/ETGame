@@ -105,8 +105,13 @@ namespace ET.Server
             // 广播位置给AOI范围内所有客户端
             M2C_JoystickMove msg = M2C_JoystickMove.Create();
             msg.UnitId = unit.Id;
-            msg.Position = unit.Position;
-            msg.Velocity = self.Direction * speed;
+            msg.PosX = unit.Position.x;
+            msg.PosY = unit.Position.y;
+            msg.PosZ = unit.Position.z;
+            msg.RotX = unit.Rotation.value.x;
+            msg.RotY = unit.Rotation.value.y;
+            msg.RotZ = unit.Rotation.value.z;
+            msg.RotW = unit.Rotation.value.w;
             MapMessageHelper.NoticeClient(unit, msg, NoticeType.Broadcast);
         }
 
@@ -118,11 +123,16 @@ namespace ET.Server
                 return;
             }
 
-            // 广播静止位置（速度为零）
+            // 广播静止位置
             M2C_JoystickMove msg = M2C_JoystickMove.Create();
             msg.UnitId = unit.Id;
-            msg.Position = unit.Position;
-            msg.Velocity = float3.zero;
+            msg.PosX = unit.Position.x;
+            msg.PosY = unit.Position.y;
+            msg.PosZ = unit.Position.z;
+            msg.RotX = unit.Rotation.value.x;
+            msg.RotY = unit.Rotation.value.y;
+            msg.RotZ = unit.Rotation.value.z;
+            msg.RotW = unit.Rotation.value.w;
             MapMessageHelper.NoticeClient(unit, msg, NoticeType.Broadcast);
         }
     }

@@ -20,16 +20,42 @@ namespace ET.Server
 
         public static void AddPlayer(this MapCopy self, long playerId)
         {
+            if (playerId == 0)
+            {
+                Log.Warning($"ignore invalid player id when add player: {playerId}, mapCopy: {self.Id}");
+                return;
+            }
+
+            if (playerId < 0)
+            {
+                // 负数Id用于匹配占位机器人，不纳入MapCopy玩家统计
+                return;
+            }
+
             if (!self.WaitEnterPlayer.Remove(playerId))
             {
-                throw new Exception($"player not in wait list: {playerId}");
+                Log.Warning($"player not in wait list: {playerId}, mapCopy: {self.Id}");
             }
+
             self.Players.Add(playerId);
         }
 
         public static void AddWaitPlayer(this MapCopy self, long playerId)
         {
-            self.WaitEnterPlayer.Add(playerId, TimeInfo.Instance.ServerNow());
+            if (playerId == 0)
+            {
+                Log.Warning($"ignore invalid player id when add wait player: {playerId}, mapCopy: {self.Id}");
+                return;
+            }
+
+            if (playerId < 0)
+            {
+                // 负数Id用于匹配占位机器人，不纳入MapCopy等待队列
+                return;
+            }
+
+            // 幂等写入，避免重复请求导致 Dictionary.Add 抛异常
+            self.WaitEnterPlayer[playerId] = TimeInfo.Instance.ServerNow();
         }
     }
 

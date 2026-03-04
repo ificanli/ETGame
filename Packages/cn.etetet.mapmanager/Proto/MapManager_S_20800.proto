@@ -45,6 +45,7 @@ message MapManager2Map_NotifyPlayerTransferRequest // ILocationRequest
 	int32 RpcId = 1;
 	string MapName = 2;
 	int64 MapId = 3;
+	int32 TeamId = 4;  // 小队ID，用于分配出生点
 }
 
 message MapManager2Map_NotifyPlayerTransferResponse // ILocationResponse

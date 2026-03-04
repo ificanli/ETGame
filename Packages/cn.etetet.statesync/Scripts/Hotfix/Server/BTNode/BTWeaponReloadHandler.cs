@@ -12,20 +12,31 @@ namespace ET.Server
                 return 1;
             }
 
-            int weaponId = node.WeaponType == WeaponType.Rifle ? weaponComp.RifleId : weaponComp.SMGId;
+            // 根据槽位索引获取武器ID
+            int weaponId = node.SlotIndex == 1 ? weaponComp.Slot1WeaponId : weaponComp.Slot2WeaponId;
+            if (weaponId == 0)
+            {
+                return 1; // 该槽位没有武器
+            }
+
+            // 获取武器配置
+            WeaponConfig weaponConfig = WeaponConfigCategory.Instance.Get(weaponId);
+            if (weaponConfig == null)
+            {
+                return 1;
+            }
 
             // 如果弹药满了，不需要换弹
-            int currentAmmo = weaponComp.GetAmmo(weaponId);
-            int maxAmmo = node.WeaponType == WeaponType.Rifle ? 30 : 25;
-            if (currentAmmo >= maxAmmo)
+            int currentAmmo = weaponComp.GetAmmo(node.SlotIndex);
+            if (currentAmmo >= weaponConfig.MagazineSize)
             {
                 return 1;
             }
 
             // 设置换弹状态，补充弹药
-            weaponComp.SetReloading(weaponId, true);
-            weaponComp.RefillAmmo(weaponId);
-            weaponComp.SetReloading(weaponId, false);
+            weaponComp.SetReloading(node.SlotIndex, true);
+            weaponComp.RefillAmmo(node.SlotIndex);
+            weaponComp.SetReloading(node.SlotIndex, false);
 
             return 0;
         }

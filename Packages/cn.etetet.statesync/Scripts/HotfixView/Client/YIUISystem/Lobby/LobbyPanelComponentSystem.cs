@@ -54,6 +54,23 @@ namespace ET.Client
         private static async ETTask OnEventEnterMapInvoke(this LobbyPanelComponent self)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
+
+            // 先确认起装
+            var loadout = self.Root().GetComponent<LoadoutComponent>();
+            C2G_ConfirmLoadout confirmReq = C2G_ConfirmLoadout.Create();
+            confirmReq.HeroConfigId = loadout.SelectedHeroConfigId > 0 ? loadout.SelectedHeroConfigId : 1001;
+            confirmReq.MainWeaponConfigId = loadout.MainWeaponConfigId;
+            confirmReq.SubWeaponConfigId = loadout.SubWeaponConfigId;
+            confirmReq.ArmorConfigId = loadout.ArmorConfigId;
+            Log.Info($"EnterMap 发送确认起装: HeroConfigId={confirmReq.HeroConfigId}, MainWeapon={confirmReq.MainWeaponConfigId}");
+            G2C_ConfirmLoadout confirmResp = (G2C_ConfirmLoadout)await self.Root().GetComponent<ClientSenderComponent>().Call(confirmReq);
+            self = selfRef;
+            if (confirmResp.Error != ErrorCode.ERR_Success)
+            {
+                Log.Error($"确认起装失败: {confirmResp.Error} {confirmResp.Message}");
+                return;
+            }
+
             // 玩家已在Home地图，使用C2M_TransferMap进行地图间传送
             await self.Root().GetComponent<ClientSenderComponent>().Call(C2M_TransferMap.Create());
             self = selfRef;
@@ -189,6 +206,9 @@ namespace ET.Client
         {
             item.u_DataHeroName.SetValue(data.Name);
             item.u_DataSelect.SetValue(select);
+
+            UnitConfig unitConfig = UnitConfigCategory.Instance.GetOrDefault(data.UnitConfigId);
+            item.SetHeroIcon(unitConfig?.HeadIcon);
         }
 
         [EntitySystem]
@@ -217,6 +237,23 @@ namespace ET.Client
         private static async ETTask SendMatchRequest(this LobbyPanelComponent self, int gameMode)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
+
+            // 先确认起装，把选好的英雄和装备提交给服务端
+            var loadout = self.Root().GetComponent<LoadoutComponent>();
+            C2G_ConfirmLoadout confirmReq = C2G_ConfirmLoadout.Create();
+            confirmReq.HeroConfigId = loadout.SelectedHeroConfigId > 0 ? loadout.SelectedHeroConfigId : 1001;
+            confirmReq.MainWeaponConfigId = loadout.MainWeaponConfigId;
+            confirmReq.SubWeaponConfigId = loadout.SubWeaponConfigId;
+            confirmReq.ArmorConfigId = loadout.ArmorConfigId;
+            Log.Info($"发送确认起装: HeroConfigId={confirmReq.HeroConfigId}, MainWeapon={confirmReq.MainWeaponConfigId}, SubWeapon={confirmReq.SubWeaponConfigId}");
+            G2C_ConfirmLoadout confirmResp = (G2C_ConfirmLoadout)await self.Root().GetComponent<ClientSenderComponent>().Call(confirmReq);
+            self = selfRef;
+            if (confirmResp.Error != ErrorCode.ERR_Success)
+            {
+                Log.Error($"确认起装失败: {confirmResp.Error} {confirmResp.Message}");
+                return;
+            }
+            Log.Info($"确认起装成功，英雄={confirmReq.HeroConfigId}, 武器1={confirmReq.MainWeaponConfigId}, 武器2={confirmReq.SubWeaponConfigId}");
 
             C2G_MatchRequest request = C2G_MatchRequest.Create();
             request.GameMode = gameMode;

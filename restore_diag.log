@@ -1,15 +1,15 @@
 C:\Program Files\dotnet\sdk\10.0.103\MSBuild.dll -nologo --property:NuGetInteractive=false --target:Restore --verbosity:m --verbosity:diag -distributedlogger:Microsoft.DotNet.Cli.Commands.MSBuild.MSBuildLogger,C:\Program Files\dotnet\sdk\10.0.103\dotnet.dll*Microsoft.DotNet.Cli.Commands.MSBuild.MSBuildForwardingLogger,C:\Program Files\dotnet\sdk\10.0.103\dotnet.dll -maxcpucount -tlp:default=auto ET.sln
-生成启动时间为 2026/3/1 16:09:36。
+生成启动时间为 2026/3/4 15:23:33。
 开始生成时的环境:
 MSBUILDFAILONDRIVEENUMERATINGWILDCARD = 1
 MSBuildExtensionsPath = C:\Program Files\dotnet\sdk\10.0.103\
 MSBuildLoadMicrosoftTargetsReadOnly = true
 MSBUILDUSESERVER = 0
-DOTNET_CLI_TELEMETRY_SESSIONID = 5c3f3300-1479-4400-8b21-88aa905fee1f
+DOTNET_CLI_TELEMETRY_SESSIONID = 54c6396d-d90e-4374-b57e-3f8bd8ee8a25
 DOTNET_HOST_PATH = C:\Program Files\dotnet\dotnet.exe
 MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
 
-16:09:36.575     0>未使用终端记录器，因为正在将输出重定向到文件。
+15:23:33.020     0>未使用终端记录器，因为正在将输出重定向到文件。
                    进程 = "C:\Program Files\dotnet\dotnet.exe"
                    MSBuild 可执行文件路径 = "C:\Program Files\dotnet\sdk\10.0.103\MSBuild.dll"
                    命令行参数 = "C:\Program Files\dotnet\sdk\10.0.103\MSBuild.dll -maxcpucount --verbosity:m -tlp:default=auto --property:NuGetInteractive=false --target:Restore --verbosity:diag ET.sln -distributedlogger:Microsoft.DotNet.Cli.Commands.MSBuild.MSBuildLogger,C:\Program Files\dotnet\sdk\10.0.103\dotnet.dll*Microsoft.DotNet.Cli.Commands.MSBuild.MSBuildForwardingLogger,C:\Program Files\dotnet\sdk\10.0.103\dotnet.dll -nologo"
@@ -35,7 +35,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    项目中不存在 BeforeTargets 特性中的“C:\Program Files\dotnet\sdk\10.0.103\Current\SolutionFile\ImportAfter\Microsoft.NET.Sdk.Solution.targets (33,11)”位置列出的目标“VSTest”，将忽略该目标。
                    项目中不存在 BeforeTargets 特性中的“C:\Program Files\dotnet\sdk\10.0.103\Current\SolutionFile\ImportAfter\Microsoft.NET.Sdk.Solution.targets (33,11)”位置列出的目标“_MTPBuild”，将忽略该目标。
                    项目中不存在 BeforeTargets 特性中的“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets (703,11)”位置列出的目标“_CheckForInvalidConfigurationAndPlatform”，将忽略该目标。
-16:09:36.649     0>初始属性:
+15:23:33.085     0>初始属性:
                    _DirectorySolutionPropsBasePath = 
                    _DirectorySolutionPropsFile = Directory.Solution.props
                    _DirectorySolutionTargetsBasePath = 
@@ -79,7 +79,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                      <ProjectConfiguration Project="{CDE48882-A737-431F-8759-D01C340649C2}" AbsolutePath="D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj" BuildProjectInSolution="True">Debug|AnyCPU</ProjectConfiguration>
                    </SolutionConfiguration>
                    DefaultImplicitPackages = Microsoft.NETCore.App;NETStandard.Library
-                   DOTNET_CLI_TELEMETRY_SESSIONID = 5c3f3300-1479-4400-8b21-88aa905fee1f
+                   DOTNET_CLI_TELEMETRY_SESSIONID = 54c6396d-d90e-4374-b57e-3f8bd8ee8a25
                    DOTNET_HOST_PATH = C:\Program Files\dotnet\dotnet.exe
                    DotnetCliToolTargetFramework = netcoreapp2.2
                    GetReferenceNearestTargetFrameworkTaskSupportsTargetPlatformParameter = true
@@ -109,7 +109,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    MSBuildProjectFile = ET.sln.metaproj
                    MSBuildProjectFullPath = D:\05ET\MatchTest\ETGame\ET.sln.metaproj
                    MSBuildProjectName = ET.sln
-                   MSBuildRestoreSessionId = dc967312-8704-4147-a2db-144c499c588e
+                   MSBuildRestoreSessionId = 294c95f0-80b7-412f-b44e-73c755083965
                    MSBuildRuntimeType = Core
                    MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    MSBuildSemanticVersion = 18.0.11+c2435c3e0
@@ -143,7 +143,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    ValidateRuntimeIdentifierCompatibility = false
                    VisualStudioVersion = 18.0
 
-16:09:36.649     0>初始项:
+15:23:33.085     0>初始项:
                    ProjectReference
                        D:\05ET\MatchTest\ETGame\ET.Core.csproj
                            AdditionalProperties = Configuration=Debug; Platform=AnyCPU
@@ -610,19 +610,19 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                            Platform = x86
                            Configuration = Release
 
-16:09:36.662     1>项目“D:\05ET\MatchTest\ETGame\ET.sln”在节点 1 上(Restore 个目标)。
-16:09:36.664     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateSolutionConfiguration: (目标 ID: 2)”(入口点):
-16:09:36.672     1>正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“Message”任务。
+15:23:33.099     1>项目“D:\05ET\MatchTest\ETGame\ET.sln”在节点 1 上(Restore 个目标)。
+15:23:33.101     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateSolutionConfiguration: (目标 ID: 2)”(入口点):
+15:23:33.109     1>正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“Message”任务。
                    任务“Message” (任务 ID: 2)
                      任务参数:Text=正在生成解决方案配置“Debug|Any CPU”。 (任务 ID: 2)
                      正在生成解决方案配置“Debug|Any CPU”。 (任务 ID: 2)
                    已完成执行任务“Message”的操作。 (任务 ID: 2)
-16:09:36.674     1>已完成在项目“ET.sln”中生成目标“ValidateSolutionConfiguration”的操作。: (目标 ID: 2)
-16:09:36.674     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateToolsVersions: (目标 ID: 3)”(入口点):
-16:09:36.674     1>已完成在项目“ET.sln”中生成目标“ValidateToolsVersions”的操作。: (目标 ID: 3)
-16:09:36.674     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateProjects: (目标 ID: 4)”(入口点):
-16:09:36.674     1>已完成在项目“ET.sln”中生成目标“ValidateProjects”的操作。: (目标 ID: 4)
-16:09:36.674     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets”中的目标“_LoadRestoreGraphEntryPoints: (目标 ID: 5)”(目标“_FilterRestoreGraphProjectInputItems”依赖于它):
+15:23:33.111     1>已完成在项目“ET.sln”中生成目标“ValidateSolutionConfiguration”的操作。: (目标 ID: 2)
+15:23:33.111     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateToolsVersions: (目标 ID: 3)”(入口点):
+15:23:33.111     1>已完成在项目“ET.sln”中生成目标“ValidateToolsVersions”的操作。: (目标 ID: 3)
+15:23:33.111     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“D:\05ET\MatchTest\ETGame\ET.sln.metaproj”中的目标“ValidateProjects: (目标 ID: 4)”(入口点):
+15:23:33.111     1>已完成在项目“ET.sln”中生成目标“ValidateProjects”的操作。: (目标 ID: 4)
+15:23:33.111     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets”中的目标“_LoadRestoreGraphEntryPoints: (目标 ID: 5)”(目标“_FilterRestoreGraphProjectInputItems”依赖于它):
                    在 TaskRun 期间加载的程序集: NuGet.Build.Tasks, Version=7.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 (位置: C:\Program Files\dotnet\sdk\10.0.103\NuGet.Build.Tasks.dll，MVID: c55bf910-9abe-4187-805d-dad3881bc30c，AssemblyLoadContext: MSBuild plugin C:\Program Files\dotnet\sdk\10.0.103\NuGet.Build.Tasks.dll)
                    在 TaskRun 期间加载的程序集: NuGet.Common, Version=7.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 (位置: C:\Program Files\dotnet\sdk\10.0.103\NuGet.Common.dll，MVID: 9a75e9a2-ebcf-4c20-863c-86b8d21a910c，AssemblyLoadContext: MSBuild plugin C:\Program Files\dotnet\sdk\10.0.103\NuGet.Build.Tasks.dll)
                    在 TaskRun 期间加载的程序集: NuGet.Commands, Version=7.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35 (位置: C:\Program Files\dotnet\sdk\10.0.103\NuGet.Commands.dll，MVID: 678affb3-c99b-4423-9cb9-5b8405af771f，AssemblyLoadContext: MSBuild plugin C:\Program Files\dotnet\sdk\10.0.103\NuGet.Build.Tasks.dll)
@@ -923,8 +923,8 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                                      SkipNonexistentProjects=False
                                      ToolsVersion= (任务 ID: 3)
                    已完成执行任务“GetRestoreSolutionProjectsTask”的操作。 (任务 ID: 3)
-16:09:36.684     1>已完成在项目“ET.sln”中生成目标“_LoadRestoreGraphEntryPoints”的操作。: (目标 ID: 5)
-16:09:36.685     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets”中的目标“_FilterRestoreGraphProjectInputItems: (目标 ID: 6)”(目标“_GenerateRestoreGraph”依赖于它):
+15:23:33.124     1>已完成在项目“ET.sln”中生成目标“_LoadRestoreGraphEntryPoints”的操作。: (目标 ID: 5)
+15:23:33.124     1>来自项目“D:\05ET\MatchTest\ETGame\ET.sln”的文件“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets”中的目标“_FilterRestoreGraphProjectInputItems: (目标 ID: 6)”(目标“_GenerateRestoreGraph”依赖于它):
                    设置属性: RestoreProjectFilterMode=exclusionlist
                    添加的项: 
                        _FilteredRestoreGraphProjectInputItemsTmp=
@@ -1369,16 +1369,6 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    已完成执行任务“RemoveDuplicates”的操作。 (任务 ID: 4)
                    正在使用程序集“Microsoft.Build.Tasks.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a”中的“MSBuild”任务。
                    任务“MSBuild” (任务 ID: 5)
-                     任务参数:BuildInParallel=True (任务 ID: 5)
-                     任务参数:
-                         Properties=
-                             ExcludeRestorePackageImports=true
-                             _RestoreSolutionFileUsed=true
-                             SolutionDir=D:\05ET\MatchTest\ETGame\
-                             SolutionName=ET
-                             SolutionFileName=ET.sln
-                             SolutionPath=D:\05ET\MatchTest\ETGame\ET.sln
-                             SolutionExt=.sln (任务 ID: 5)
                      任务参数:
                          Projects=
                              D:\05ET\MatchTest\ETGame\ET.Core.csproj
@@ -1525,8 +1515,18 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                                      Platform=AnyCPU
                                      SkipNonexistentProjects=False
                                      ToolsVersion= (任务 ID: 5)
-                     任务参数:SkipNonexistentTargets=True (任务 ID: 5)
+                     任务参数:BuildInParallel=True (任务 ID: 5)
+                     任务参数:
+                         Properties=
+                             ExcludeRestorePackageImports=true
+                             _RestoreSolutionFileUsed=true
+                             SolutionDir=D:\05ET\MatchTest\ETGame\
+                             SolutionName=ET
+                             SolutionFileName=ET.sln
+                             SolutionPath=D:\05ET\MatchTest\ETGame\ET.sln
+                             SolutionExt=.sln (任务 ID: 5)
                      任务参数:Targets=_IsProjectRestoreSupported (任务 ID: 5)
+                     任务参数:SkipNonexistentTargets=True (任务 ID: 5)
                      全局属性: (任务 ID: 5)
                        ExcludeRestorePackageImports=true (任务 ID: 5)
                        _RestoreSolutionFileUsed=true (任务 ID: 5)
@@ -1607,12 +1607,12 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                      项目“D:\05ET\MatchTest\ETGame\Packages\cn.etetet.statesync\DotNet~\Hotfix\ET.Hotfix.csproj”的其他属性: (任务 ID: 5)
                        Configuration=Debug (任务 ID: 5)
                        Platform=AnyCPU (任务 ID: 5)
-16:09:36.733     0>“Configuration”属性是全局属性，不能修改。
+15:23:33.170     0>“Configuration”属性是全局属性，不能修改。
                    “Platform”属性是全局属性，不能修改。
+                   在 Evaluation 期间加载的程序集: System.Collections.NonGeneric, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a (位置: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.3\System.Collections.NonGeneric.dll，MVID: 34793951-de27-497a-86fa-ff7f73c34148，AssemblyLoadContext: Default)
                    C:\Program Files\dotnet\sdk\10.0.103\Microsoft.CSharp.CurrentVersion.targets(26,115): message : 值为“C:\Users\luxinyu\AppData\Local\Microsoft\MSBuild”的属性“MSBuildUserExtensionsPath”从环境中展开。
                    C:\Program Files\dotnet\sdk\10.0.103\Microsoft.CSharp.CurrentVersion.targets(27,111): message : 值为“C:\Program Files\dotnet\sdk\10.0.103\”的属性“MSBuildExtensionsPath”从环境中展开。
                    C:\Program Files\dotnet\sdk\10.0.103\Roslyn\Microsoft.CSharp.Core.targets(200,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Roslyn\Microsoft.CSharp.Core.targets (200,5) 处重新分配属性: $(CommandLineArgsForDesignTimeEvaluation)=“-langversion:9.0 -define:UNITY_6000_0_58;UNITY_6000_0;UNITY_6000;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_2020_1_OR_NEWER;UNITY_2020_2_OR_NEWER;UNITY_2020_3_OR_NEWER;UNITY_2021_1_OR_NEWER;UNITY_2021_2_OR_NEWER;UNITY_2021_3_OR_NEWER;UNITY_2022_1_OR_NEWER;UNITY_2022_2_OR_NEWER;UNITY_2022_3_OR_NEWER;UNITY_2023_1_OR_NEWER;UNITY_2023_2_OR_NEWER;UNITY_2023_3_OR_NEWER;UNITY_6000_0_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_EVENT_QUEUE;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_VIRTUALTEXTURING;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_EDITOR_GAME_SERVICES;ENABLE_UNITY_GAME_SERVICES_ANALYTICS_SUPPORT;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_GENERATE_NATIVE_PLUGINS_FOR_ASSEMBLIES_API;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;ENABLE_MANAGED_UNITYTLS;INCLUDE_DYNAMIC_GI;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_MARSHALLING_TESTS;ENABLE_VIDEO;ENABLE_NAVIGATION_OFFMESHLINK_TO_NAVMESHLINK;ENABLE_ACCELERATOR_CLIENT_DEBUGGING;TEXTCORE_1_0_OR_NEWER;EDITOR_ONLY_NAVMESH_BUILDER_DEPRECATED;PLATFORM_STANDALONE_WIN;PLATFORM_STANDALONE;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_NVIDIA;ENABLE_AMD;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_OUT_OF_PROCESS_CRASH_HANDLER;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;PLATFORM_UPDATES_TIME_OUTSIDE_OF_PLAYER_LOOP;GFXDEVICE_WAITFOREVENT_MESSAGEPUMP;PLATFORM_USES_EXPLICIT_MEMORY_MANAGER_INITIALIZER;PLATFORM_SUPPORTS_WAIT_FOR_PRESENTATION;PLATFORM_SUPPORTS_SPLIT_GRAPHICS_JOBS;ENABLE_MONO;NET_4_6;NET_UNITY_4_8;ENABLE_PROFILER;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_INPUT_SYSTEM;ENABLE_LEGACY_INPUT_MANAGER;TEXTCORE_FONT_ENGINE_1_5_OR_NEWER;TEXTCORE_TEXT_ENGINE_1_5_OR_NEWER;UNITY;ENABLE_VIEW;ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;ODIN_INSPECTOR_3_2;ODIN_INSPECTOR_3_3;DOTWEEN;TextMeshPro;INITED;YIUI;ET10;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER”(先前值:“-langversion:9.0”)
-                   在 Evaluation 期间加载的程序集: System.Collections.NonGeneric, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a (位置: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.3\System.Collections.NonGeneric.dll，MVID: 34793951-de27-497a-86fa-ff7f73c34148，AssemblyLoadContext: Default)
                    D:\05ET\MatchTest\ETGame\Directory.Build.props(4,5): message : 在 D:\05ET\MatchTest\ETGame\Directory.Build.props (4,5) 处重新分配属性: $(DebugType)=“Portable”(先前值:“full”)
                    D:\05ET\MatchTest\ETGame\Directory.Build.props(5,5): message : 在 D:\05ET\MatchTest\ETGame\Directory.Build.props (5,5) 处重新分配属性: $(TreatWarningsAsErrors)=“true”(先前值:“False”)
                    C:\Program Files\dotnet\sdk\10.0.103\Current\Microsoft.Common.props(60,5): message : 在 C:\Program Files\dotnet\sdk\10.0.103\Current\Microsoft.Common.props (60,5) 处重新分配属性: $(MSBuildProjectExtensionsPath)=“D:\05ET\MatchTest\ETGame\obj\”(先前值:“obj\”)
@@ -1685,8 +1685,10 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       SolutionPath=D:\05ET\MatchTest\ETGame\ET.sln;
                    C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       SolutionExt=.sln;
                    C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :     ”(先前值:“ExcludeRestorePackageImports=true”)
+                   在 Evaluation 期间加载的程序集: System.Security.Principal.Windows, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a (位置: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.3\System.Security.Principal.Windows.dll，MVID: 94668085-5eab-454a-aadd-f7411e0617e0，AssemblyLoadContext: Default)
+                   在 Evaluation 期间加载的程序集: System.Security.Claims, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a (位置: C:\Program Files\dotnet\shared\Microsoft.NETCore.App\10.0.3\System.Security.Claims.dll，MVID: 20e6e427-b6b6-4325-b1e2-55052517fb2d，AssemblyLoadContext: Default)
                    正在使用项目“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets”中的目标“GetFrameworkPaths”重写项目“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“GetFrameworkPaths”。
-16:09:36.808     0>初始属性:
+15:23:33.245     0>初始属性:
                    _BuildTasksAssemblyName = Microsoft.Build.Tasks.CodeAnalysis
                    _BuildTasksDirectory = C:\Program Files\dotnet\sdk\10.0.103\Roslyn\
                    _DebugSymbolsProduced = true
@@ -1940,7 +1942,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                        
                        
                    DocumentationProjectOutputGroupDependsOn = 
-                   DOTNET_CLI_TELEMETRY_SESSIONID = 5c3f3300-1479-4400-8b21-88aa905fee1f
+                   DOTNET_CLI_TELEMETRY_SESSIONID = 54c6396d-d90e-4374-b57e-3f8bd8ee8a25
                    DOTNET_HOST_PATH = C:\Program Files\dotnet\dotnet.exe
                    EmbeddedWin32Manifest = 
                    EmitCompilerGeneratedFiles = false
@@ -2054,7 +2056,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    MSBuildProjectFile = ET.Core.csproj
                    MSBuildProjectFullPath = D:\05ET\MatchTest\ETGame\ET.Core.csproj
                    MSBuildProjectName = ET.Core
-                   MSBuildRestoreSessionId = dc967312-8704-4147-a2db-144c499c588e
+                   MSBuildRestoreSessionId = 294c95f0-80b7-412f-b44e-73c755083965
                    MSBuildRuntimeType = Core
                    MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    MSBuildSemanticVersion = 18.0.11+c2435c3e0
@@ -2307,7 +2309,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    WMSJSProjectDirectory = JavaScript
                    YieldDuringToolExecution = true
 
-16:09:36.808     0>初始项:
+15:23:33.245     0>初始项:
                    _AllDirectoriesAbove
                        D:\
                        D:\05ET
@@ -3797,13 +3799,13 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                        ZstdSharp
                            HintPath = D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\Plugins\MongoDB\ZstdSharp.dll
 
-16:09:36.662     1>项目“D:\05ET\MatchTest\ETGame\ET.sln”(1)正在节点 1 上生成“D:\05ET\MatchTest\ETGame\ET.Core.csproj”(2) (_IsProjectRestoreSupported 个目标)。
-16:09:36.809     2>项目文件包含 ToolsVersion="4.0"。此工具集未知或缺失(在此情况下，您可以通过安装合适的 MSBuild 版本来解决此问题)，或者生成可能已被强制到特定的 ToolsVersion (出于策略原因)。将项目视为具有 ToolsVersion="Current"。有关详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=293424。
-16:09:36.809     2>来自项目“D:\05ET\MatchTest\ETGame\ET.Core.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets”中的目标“_IsProjectRestoreSupported: (目标 ID: 7)”(入口点):
+15:23:33.099     1>项目“D:\05ET\MatchTest\ETGame\ET.sln”(1)正在节点 1 上生成“D:\05ET\MatchTest\ETGame\ET.Core.csproj”(2) (_IsProjectRestoreSupported 个目标)。
+15:23:33.247     2>项目文件包含 ToolsVersion="4.0"。此工具集未知或缺失(在此情况下，您可以通过安装合适的 MSBuild 版本来解决此问题)，或者生成可能已被强制到特定的 ToolsVersion (出于策略原因)。将项目视为具有 ToolsVersion="Current"。有关详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=293424。
+15:23:33.247     2>来自项目“D:\05ET\MatchTest\ETGame\ET.Core.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets”中的目标“_IsProjectRestoreSupported: (目标 ID: 7)”(入口点):
                    添加的项: _ValidProjectsForRestore=D:\05ET\MatchTest\ETGame\ET.Core.csproj
-16:09:36.810     2>已完成在项目“ET.Core.csproj”中生成目标“_IsProjectRestoreSupported”的操作。: (目标 ID: 7)
-16:09:36.811     2>已完成生成项目“D:\05ET\MatchTest\ETGame\ET.Core.csproj”(_IsProjectRestoreSupported 个目标)的操作。
-16:09:41.570     0>“Configuration”属性是全局属性，不能修改。
+15:23:33.247     2>已完成在项目“ET.Core.csproj”中生成目标“_IsProjectRestoreSupported”的操作。: (目标 ID: 7)
+15:23:33.248     2>已完成生成项目“D:\05ET\MatchTest\ETGame\ET.Core.csproj”(_IsProjectRestoreSupported 个目标)的操作。
+15:23:38.649     0>“Configuration”属性是全局属性，不能修改。
                    “Platform”属性是全局属性，不能修改。
                    C:\Program Files\dotnet\sdk\10.0.103\Microsoft.CSharp.CurrentVersion.targets(26,115): message : 值为“C:\Users\luxinyu\AppData\Local\Microsoft\MSBuild”的属性“MSBuildUserExtensionsPath”从环境中展开。
                    C:\Program Files\dotnet\sdk\10.0.103\Microsoft.CSharp.CurrentVersion.targets(27,111): message : 值为“C:\Program Files\dotnet\sdk\10.0.103\”的属性“MSBuildExtensionsPath”从环境中展开。
@@ -3882,7 +3884,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :       SolutionExt=.sln;
                    C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets(123,5): message :     ”(先前值:“ExcludeRestorePackageImports=true”)
                    正在使用项目“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.NETFramework.CurrentVersion.targets”中的目标“GetFrameworkPaths”重写项目“C:\Program Files\dotnet\sdk\10.0.103\Microsoft.Common.CurrentVersion.targets”中的目标“GetFrameworkPaths”。
-16:09:41.699     0>初始属性:
+15:23:38.723     0>初始属性:
                    _BuildTasksAssemblyName = Microsoft.Build.Tasks.CodeAnalysis
                    _BuildTasksDirectory = C:\Program Files\dotnet\sdk\10.0.103\Roslyn\
                    _DebugSymbolsProduced = true
@@ -4136,7 +4138,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                        
                        
                    DocumentationProjectOutputGroupDependsOn = 
-                   DOTNET_CLI_TELEMETRY_SESSIONID = 5c3f3300-1479-4400-8b21-88aa905fee1f
+                   DOTNET_CLI_TELEMETRY_SESSIONID = 54c6396d-d90e-4374-b57e-3f8bd8ee8a25
                    DOTNET_HOST_PATH = C:\Program Files\dotnet\dotnet.exe
                    EmbeddedWin32Manifest = 
                    EmitCompilerGeneratedFiles = false
@@ -4250,7 +4252,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    MSBuildProjectFile = ET.YooAssets.csproj
                    MSBuildProjectFullPath = D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj
                    MSBuildProjectName = ET.YooAssets
-                   MSBuildRestoreSessionId = dc967312-8704-4147-a2db-144c499c588e
+                   MSBuildRestoreSessionId = 294c95f0-80b7-412f-b44e-73c755083965
                    MSBuildRuntimeType = Core
                    MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    MSBuildSemanticVersion = 18.0.11+c2435c3e0
@@ -4503,7 +4505,7 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                    WMSJSProjectDirectory = JavaScript
                    YieldDuringToolExecution = true
 
-16:09:41.699     0>初始项:
+15:23:38.723     0>初始项:
                    _AllDirectoriesAbove
                        D:\
                        D:\05ET
@@ -5647,45 +5649,45 @@ MSBuildSDKsPath = C:\Program Files\dotnet\sdk\10.0.103\Sdks
                        ZstdSharp
                            HintPath = D:\05ET\MatchTest\ETGame\Packages\com.etetet.init\Plugins\MongoDB\ZstdSharp.dll
 
-16:09:36.662     1>项目“D:\05ET\MatchTest\ETGame\ET.sln”(1)正在节点 1 上生成“D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj”(3) (_IsProjectRestoreSupported 个目标)。
-16:09:41.700     3>项目文件包含 ToolsVersion="4.0"。此工具集未知或缺失(在此情况下，您可以通过安装合适的 MSBuild 版本来解决此问题)，或者生成可能已被强制到特定的 ToolsVersion (出于策略原因)。将项目视为具有 ToolsVersion="Current"。有关详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=293424。
-16:09:41.700     3>来自项目“D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets”中的目标“_IsProjectRestoreSupported: (目标 ID: 8)”(入口点):
+15:23:33.099     1>项目“D:\05ET\MatchTest\ETGame\ET.sln”(1)正在节点 1 上生成“D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj”(3) (_IsProjectRestoreSupported 个目标)。
+15:23:38.723     3>项目文件包含 ToolsVersion="4.0"。此工具集未知或缺失(在此情况下，您可以通过安装合适的 MSBuild 版本来解决此问题)，或者生成可能已被强制到特定的 ToolsVersion (出于策略原因)。将项目视为具有 ToolsVersion="Current"。有关详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkId=293424。
+15:23:38.723     3>来自项目“D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj”的文件“C:\Program Files\dotnet\sdk\10.0.103\NuGet.targets”中的目标“_IsProjectRestoreSupported: (目标 ID: 8)”(入口点):
                    添加的项: _ValidProjectsForRestore=D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj
-16:09:41.701     3>已完成在项目“ET.YooAssets.csproj”中生成目标“_IsProjectRestoreSupported”的操作。: (目标 ID: 8)
-16:09:41.701     3>已完成生成项目“D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj”(_IsProjectRestoreSupported 个目标)的操作。
-16:09:49.055     1>已完成执行任务“MSBuild”的操作 - 失败。 (任务 ID: 5)
-16:09:49.056     1>已完成在项目“ET.sln”中生成目标“_FilterRestoreGraphProjectInputItems”的操作 - 失败。: (目标 ID: 6)
-16:09:49.057     1>已完成生成项目“D:\05ET\MatchTest\ETGame\ET.sln”(Restore 个目标)的操作 - 失败。
+15:23:38.723     3>已完成在项目“ET.YooAssets.csproj”中生成目标“_IsProjectRestoreSupported”的操作。: (目标 ID: 8)
+15:23:38.724     3>已完成生成项目“D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj”(_IsProjectRestoreSupported 个目标)的操作。
+15:23:44.827     1>已完成执行任务“MSBuild”的操作 - 失败。 (任务 ID: 5)
+15:23:44.829     1>已完成在项目“ET.sln”中生成目标“_FilterRestoreGraphProjectInputItems”的操作 - 失败。: (目标 ID: 6)
+15:23:44.831     1>已完成生成项目“D:\05ET\MatchTest\ETGame\ET.sln”(Restore 个目标)的操作 - 失败。
 
 项目评估性能摘要:
-       45 毫秒 D:\05ET\MatchTest\ETGame\ET.sln.metaproj   1 次调用
+       38 毫秒 D:\05ET\MatchTest\ETGame\ET.sln.metaproj   1 次调用
+       74 毫秒 D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj   1 次调用
        75 毫秒 D:\05ET\MatchTest\ETGame\ET.Core.csproj    1 次调用
-      129 毫秒 D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj   1 次调用
 
 项目性能摘要:
         1 毫秒 D:\05ET\MatchTest\ETGame\ET.YooAssets.csproj   1 次调用
                   1 毫秒 _IsProjectRestoreSupported                 1 次调用
         3 毫秒 D:\05ET\MatchTest\ETGame\ET.Core.csproj    1 次调用
                   3 毫秒 _IsProjectRestoreSupported                 1 次调用
-    12395 毫秒 D:\05ET\MatchTest\ETGame\ET.sln            1 次调用
-              12395 毫秒 Restore                                    1 次调用
+    11731 毫秒 D:\05ET\MatchTest\ETGame\ET.sln            1 次调用
+              11731 毫秒 Restore                                    1 次调用
 
 目标性能摘要:
         0 毫秒 ValidateProjects                           1 次调用
         0 毫秒 ValidateToolsVersions                      1 次调用
-        1 毫秒 _IsProjectRestoreSupported                 2 次调用
-       10 毫秒 ValidateSolutionConfiguration              1 次调用
-       11 毫秒 _LoadRestoreGraphEntryPoints               1 次调用
-    12372 毫秒 _FilterRestoreGraphProjectInputItems       1 次调用
+        0 毫秒 _IsProjectRestoreSupported                 2 次调用
+        9 毫秒 ValidateSolutionConfiguration              1 次调用
+       13 毫秒 _LoadRestoreGraphEntryPoints               1 次调用
+    11706 毫秒 _FilterRestoreGraphProjectInputItems       1 次调用
 
 任务性能摘要:
         0 毫秒 RemoveDuplicates                           1 次调用
         2 毫秒 Message                                    1 次调用
-        5 毫秒 GetRestoreSolutionProjectsTask             1 次调用
-    12365 毫秒 MSBuild                                    1 次调用
+        8 毫秒 GetRestoreSolutionProjectsTask             1 次调用
+    11700 毫秒 MSBuild                                    1 次调用
 
 生成失败。
     0 个警告
     0 个错误
 
-已用时间 00:00:12.48
+已用时间 00:00:11.81

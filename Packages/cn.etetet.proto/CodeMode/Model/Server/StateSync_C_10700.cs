@@ -231,6 +231,7 @@ namespace ET
         }
     }
 
+    // 摇杆移动消息
     [MemoryPackable]
     [Message(Opcode.C2M_JoystickInput)]
     public partial class C2M_JoystickInput : MessageObject, ILocationMessage
@@ -242,10 +243,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
-        /// <summary>摇杆X方向 (-1 to 1)</summary>
         [MemoryPackOrder(1)]
         public float DirX { get; set; }
-        /// <summary>摇杆Z方向 (-1 to 1)</summary>
         [MemoryPackOrder(2)]
         public float DirZ { get; set; }
         public override void Dispose()
@@ -275,9 +274,19 @@ namespace ET
         [MemoryPackOrder(0)]
         public long UnitId { get; set; }
         [MemoryPackOrder(1)]
-        public Unity.Mathematics.float3 Position { get; set; }
+        public float PosX { get; set; }
         [MemoryPackOrder(2)]
-        public Unity.Mathematics.float3 Velocity { get; set; }
+        public float PosY { get; set; }
+        [MemoryPackOrder(3)]
+        public float PosZ { get; set; }
+        [MemoryPackOrder(4)]
+        public float RotX { get; set; }
+        [MemoryPackOrder(5)]
+        public float RotY { get; set; }
+        [MemoryPackOrder(6)]
+        public float RotZ { get; set; }
+        [MemoryPackOrder(7)]
+        public float RotW { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -286,8 +295,187 @@ namespace ET
             }
 
             this.UnitId = default;
-            this.Position = default;
-            this.Velocity = default;
+            this.PosX = default;
+            this.PosY = default;
+            this.PosZ = default;
+            this.RotX = default;
+            this.RotY = default;
+            this.RotZ = default;
+            this.RotW = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 武器切换消息
+    [MemoryPackable]
+    [Message(Opcode.C2M_SwitchWeapon)]
+    public partial class C2M_SwitchWeapon : MessageObject, ILocationMessage
+    {
+        public static C2M_SwitchWeapon Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_SwitchWeapon>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        /// <summary>
+        /// 切换到的槽位（1 或 2）
+        /// </summary>
+        [MemoryPackOrder(1)]
+        public int SlotIndex { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.SlotIndex = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_SwitchWeapon)]
+    public partial class M2C_SwitchWeapon : MessageObject, IMessage
+    {
+        public static M2C_SwitchWeapon Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_SwitchWeapon>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+        /// <summary>
+        /// 切换到的槽位
+        /// </summary>
+        [MemoryPackOrder(1)]
+        public int SlotIndex { get; set; }
+        /// <summary>
+        /// 武器配置ID
+        /// </summary>
+        [MemoryPackOrder(2)]
+        public int WeaponId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.SlotIndex = default;
+            this.WeaponId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_WeaponAmmoState)]
+    public partial class M2C_WeaponAmmoState : MessageObject, IMessage
+    {
+        public static M2C_WeaponAmmoState Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_WeaponAmmoState>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Slot1Ammo { get; set; }
+        [MemoryPackOrder(2)]
+        public int Slot2Ammo { get; set; }
+        [MemoryPackOrder(3)]
+        public bool Slot1Reloading { get; set; }
+        [MemoryPackOrder(4)]
+        public bool Slot2Reloading { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.Slot1Ammo = default;
+            this.Slot2Ammo = default;
+            this.Slot1Reloading = default;
+            this.Slot2Reloading = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 武器开火表现消息（服务端权威触发，客户端仅做表现）
+    [MemoryPackable]
+    [Message(Opcode.M2C_WeaponFire)]
+    public partial class M2C_WeaponFire : MessageObject, IMessage
+    {
+        public static M2C_WeaponFire Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_WeaponFire>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long CasterUnitId { get; set; }
+        [MemoryPackOrder(1)]
+        public long TargetUnitId { get; set; }
+        [MemoryPackOrder(2)]
+        public int WeaponId { get; set; }
+        [MemoryPackOrder(3)]
+        public int SlotIndex { get; set; }
+        [MemoryPackOrder(4)]
+        public int BulletCount { get; set; }
+        [MemoryPackOrder(5)]
+        public int FireLockTypeId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.CasterUnitId = default;
+            this.TargetUnitId = default;
+            this.WeaponId = default;
+            this.SlotIndex = default;
+            this.BulletCount = default;
+            this.FireLockTypeId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 武器命中特效消息（服务端权威命中后广播）
+    [MemoryPackable]
+    [Message(Opcode.M2C_WeaponHit)]
+    public partial class M2C_WeaponHit : MessageObject, IMessage
+    {
+        public static M2C_WeaponHit Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_WeaponHit>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long CasterUnitId { get; set; }
+        [MemoryPackOrder(1)]
+        public long TargetUnitId { get; set; }
+        [MemoryPackOrder(2)]
+        public int WeaponId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.CasterUnitId = default;
+            this.TargetUnitId = default;
+            this.WeaponId = default;
 
             ObjectPool.Recycle(this);
         }
@@ -305,5 +493,10 @@ namespace ET
         public const ushort G2C_Benchmark = 10708;
         public const ushort C2M_JoystickInput = 10709;
         public const ushort M2C_JoystickMove = 10710;
+        public const ushort C2M_SwitchWeapon = 10711;
+        public const ushort M2C_SwitchWeapon = 10712;
+        public const ushort M2C_WeaponAmmoState = 10713;
+        public const ushort M2C_WeaponFire = 10714;
+        public const ushort M2C_WeaponHit = 10715;
     }
 }

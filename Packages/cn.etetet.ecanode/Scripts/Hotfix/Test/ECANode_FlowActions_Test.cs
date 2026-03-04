@@ -68,11 +68,14 @@ namespace ET.Test
             ECAConfig config = new()
             {
                 ConfigId = "test_container_001",
-                PointType = ECAPointType.Container,
+                Type = ECAPointType.Container,
                 PosX = 0f,
                 PosY = 0f,
                 PosZ = 0f,
-                InteractRange = 3f,
+                Params = new List<FlowParam>
+                {
+                    new FlowParam { Key = ECAPointParamKey.InteractRange, Value = "3" }
+                },
                 FlowGraph = graph
             };
 
@@ -171,11 +174,14 @@ namespace ET.Test
             ECAConfig config = new()
             {
                 ConfigId = "test_spawn_001",
-                PointType = ECAPointType.SpawnPoint,
+                Type = ECAPointType.SpawnPoint,
                 PosX = 10f,
                 PosY = 0f,
                 PosZ = 5f,
-                InteractRange = 5f,
+                Params = new List<FlowParam>
+                {
+                    new FlowParam { Key = ECAPointParamKey.InteractRange, Value = "5" }
+                },
                 FlowGraph = graph
             };
 

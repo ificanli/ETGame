@@ -21,11 +21,14 @@ namespace ET.Test
                 new ECAConfig
                 {
                     ConfigId = "test_evac_001",
-                    PointType = 1, // EvacuationPoint
+                    Type = ECAPointType.EvacuationPoint,
                     PosX = 100f,
                     PosY = 0f,
                     PosZ = 50f,
-                    InteractRange = 5f
+                    Params = new List<FlowParam>
+                    {
+                        new FlowParam { Key = ECAPointParamKey.InteractRange, Value = "5" }
+                    }
                 }
             };
 
@@ -68,11 +71,14 @@ namespace ET.Test
                 new ECAConfig
                 {
                     ConfigId = "test_evac_002",
-                    PointType = 1,
+                    Type = ECAPointType.EvacuationPoint,
                     PosX = 100f,
                     PosY = 0f,
                     PosZ = 50f,
-                    InteractRange = 5f
+                    Params = new List<FlowParam>
+                    {
+                        new FlowParam { Key = ECAPointParamKey.InteractRange, Value = "5" }
+                    }
                 }
             };
 
@@ -133,11 +139,14 @@ namespace ET.Test
                 new ECAConfig
                 {
                     ConfigId = "test_evac_003",
-                    PointType = 1,
+                    Type = ECAPointType.EvacuationPoint,
                     PosX = 100f,
                     PosY = 0f,
                     PosZ = 50f,
-                    InteractRange = 5f
+                    Params = new List<FlowParam>
+                    {
+                        new FlowParam { Key = ECAPointParamKey.InteractRange, Value = "5" }
+                    }
                 }
             };
 
@@ -203,11 +212,14 @@ namespace ET.Test
                 new ECAConfig
                 {
                     ConfigId = "test_evac_004",
-                    PointType = 1,
+                    Type = ECAPointType.EvacuationPoint,
                     PosX = 100f,
                     PosY = 0f,
                     PosZ = 50f,
-                    InteractRange = 5f
+                    Params = new List<FlowParam>
+                    {
+                        new FlowParam { Key = ECAPointParamKey.InteractRange, Value = "5" }
+                    }
                 }
             };
 

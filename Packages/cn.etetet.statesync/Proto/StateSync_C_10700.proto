@@ -57,3 +57,65 @@ message G2C_Benchmark // ISessionResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+// 摇杆移动消息
+message C2M_JoystickInput // ILocationMessage
+{
+	int32 RpcId = 1;
+	float DirX = 2;
+	float DirZ = 3;
+}
+
+message M2C_JoystickMove // IMessage
+{
+	int64 UnitId = 1;
+	float PosX = 2;
+	float PosY = 3;
+	float PosZ = 4;
+	float RotX = 5;
+	float RotY = 6;
+	float RotZ = 7;
+	float RotW = 8;
+}
+
+// 武器切换消息
+message C2M_SwitchWeapon // ILocationMessage
+{
+	int32 RpcId = 1;
+	int32 SlotIndex = 2; // 切换到的槽位（1 或 2）
+}
+
+message M2C_SwitchWeapon // IMessage
+{
+	int64 UnitId = 1;
+	int32 SlotIndex = 2; // 切换到的槽位
+	int32 WeaponId = 3; // 武器配置ID
+}
+
+message M2C_WeaponAmmoState // IMessage
+{
+	int64 UnitId = 1;
+	int32 Slot1Ammo = 2;
+	int32 Slot2Ammo = 3;
+	bool Slot1Reloading = 4;
+	bool Slot2Reloading = 5;
+}
+
+// 武器开火表现消息（服务端权威触发，客户端仅做表现）
+message M2C_WeaponFire // IMessage
+{
+	int64 CasterUnitId = 1;
+	int64 TargetUnitId = 2;
+	int32 WeaponId = 3;
+	int32 SlotIndex = 4;
+	int32 BulletCount = 5;
+	int32 FireLockTypeId = 6;
+}
+
+// 武器命中特效消息（服务端权威命中后广播）
+message M2C_WeaponHit // IMessage
+{
+	int64 CasterUnitId = 1;
+	int64 TargetUnitId = 2;
+	int32 WeaponId = 3;
+}

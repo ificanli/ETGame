@@ -1267,5 +1267,55 @@
 						"Buff" : "Buff",
 						"Override" : true
 					}]
+			}], [200200, {
+				"_id" : 200200,
+				"Desc" : "武器自动攻击Tick Buff",
+				"Duration" : 1000000,
+				"TickTime" : 500,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [15, 5],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTWeaponHasTarget",
+								"_id" : 3,
+								"Children" : [],
+								"Caster" : "Unit",
+								"Target" : "Target"
+							}, {
+								"_t" : "ET.BTWeaponInRange",
+								"_id" : 4,
+								"Children" : [],
+								"Caster" : "Unit",
+								"Target" : "Target",
+								"Range" : 10.0
+							}, {
+								"_t" : "ET.BTWeaponCanFire",
+								"_id" : 5,
+								"Children" : [],
+								"Caster" : "Unit",
+								"SlotIndex" : 1
+							}, {
+								"_t" : "ET.BTWeaponFire",
+								"_id" : 6,
+								"Children" : [],
+								"Caster" : "Unit",
+								"Target" : "Target",
+								"SlotIndex" : 1
+							}],
+						"TreeId" : NumberLong("2979943332127943200"),
+						"Buff" : "Buff",
+						"Override" : false
+					}]
 			}]]
 }
