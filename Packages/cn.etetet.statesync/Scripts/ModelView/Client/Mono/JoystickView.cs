@@ -27,6 +27,7 @@ namespace ET.Client
         private bool m_IsDragging;
         private EntityRef<Entity> m_EntityRef;
         private float m_LastSendTime;
+        private float m_LastTraceLogTime;
 
         /// <summary>
         /// 由HotfixView层调用，注入Entity引用（任意Entity即可，用于获取Root Scene）
@@ -34,6 +35,7 @@ namespace ET.Client
         public void SetEntity(Entity entity)
         {
             m_EntityRef = entity;
+            Debug.Log($"[JoystickTrace][ClientUI] SetEntity entityId={entity?.Id ?? 0}");
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -83,9 +85,20 @@ namespace ET.Client
             }
 
             Entity entity = m_EntityRef;
-            if (entity == null || entity.IsDisposed) return;
+            if (entity == null || entity.IsDisposed)
+            {
+                Debug.LogWarning($"[JoystickTrace][ClientUI] PublishInput skipped: entity invalid, force={force}, dir=({dirX:F3},{dirZ:F3})");
+                return;
+            }
 
             Scene root = entity.Root();
+            float nowLog = Time.unscaledTime;
+            if (force || nowLog - m_LastTraceLogTime >= 0.5f)
+            {
+                m_LastTraceLogTime = nowLog;
+                Debug.Log($"[JoystickTrace][ClientUI] PublishInput scene={root?.Name}, force={force}, dir=({dirX:F3},{dirZ:F3})");
+            }
+
             EventSystem.Instance?.Publish(root, new EventMain_JoystickInput
             {
                 SceneInstanceId = root.InstanceId,

@@ -7,11 +7,11 @@ namespace ET.Server
     public static partial class ECAFlowTimerComponentSystem
     {
         [EntitySystem]
-        private static void Awake(this ECAFlowTimerComponent self, string timerId, long pointUnitId, long playerUnitId)
+        private static void Awake(this ECAFlowTimerComponent self, string timerId, string timerKey, long pointUnitId)
         {
             self.TimerId = timerId;
+            self.TimerKey = timerKey;
             self.PointUnitId = pointUnitId;
-            self.PlayerUnitId = playerUnitId;
         }
     }
 }

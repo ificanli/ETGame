@@ -302,6 +302,8 @@ namespace ET.Client
                 case ECAFlowActionKey.ShowEvacUI:
                 case ECAFlowActionKey.ShowTaskAcceptUI:
                     return "ui_id=";
+                case ECAFlowActionKey.GenerateContainerLoot:
+                    return "output_mode=\nloot_table=\ncount=\nradius=";
                 case ECAFlowActionKey.SpawnItemsToGround:
                     return "loot_table=\ncount=\nradius=";
                 case ECAFlowActionKey.PlayOpenAnim:

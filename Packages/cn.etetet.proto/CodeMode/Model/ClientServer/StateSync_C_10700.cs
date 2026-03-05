@@ -481,6 +481,229 @@ namespace ET
         }
     }
 
+    // ========================= Rogue =========================
+    [MemoryPackable]
+    [Message(Opcode.RogueNumericDelta)]
+    public partial class RogueNumericDelta : MessageObject
+    {
+        public static RogueNumericDelta Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<RogueNumericDelta>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int NumericType { get; set; }
+        [MemoryPackOrder(1)]
+        public long Value { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.NumericType = default;
+            this.Value = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.RogueOptionData)]
+    public partial class RogueOptionData : MessageObject
+    {
+        public static RogueOptionData Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<RogueOptionData>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int OptionId { get; set; }
+        [MemoryPackOrder(1)]
+        public int BuffConfigId { get; set; }
+        [MemoryPackOrder(2)]
+        public int NameTextId { get; set; }
+        [MemoryPackOrder(3)]
+        public int DescTextId { get; set; }
+        [MemoryPackOrder(4)]
+        public string Icon { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.OptionId = default;
+            this.BuffConfigId = default;
+            this.NameTextId = default;
+            this.DescTextId = default;
+            this.Icon = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_RogueExpSync)]
+    public partial class M2C_RogueExpSync : MessageObject, IMessage
+    {
+        public static M2C_RogueExpSync Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_RogueExpSync>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int Level { get; set; }
+        [MemoryPackOrder(1)]
+        public int CurrentExp { get; set; }
+        [MemoryPackOrder(2)]
+        public int NeedExp { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.Level = default;
+            this.CurrentExp = default;
+            this.NeedExp = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_RogueLevelUp)]
+    public partial class M2C_RogueLevelUp : MessageObject, IMessage
+    {
+        public static M2C_RogueLevelUp Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_RogueLevelUp>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int OldLevel { get; set; }
+        [MemoryPackOrder(1)]
+        public int NewLevel { get; set; }
+        [MemoryPackOrder(2)]
+        public List<RogueNumericDelta> GainedNumerics { get; set; } = new();
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.OldLevel = default;
+            this.NewLevel = default;
+            this.GainedNumerics.Clear();
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_RogueChoicePopup)]
+    public partial class M2C_RogueChoicePopup : MessageObject, IMessage
+    {
+        public static M2C_RogueChoicePopup Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_RogueChoicePopup>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long ChoiceSerial { get; set; }
+        [MemoryPackOrder(1)]
+        public List<RogueOptionData> Options { get; set; } = new();
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.ChoiceSerial = default;
+            this.Options.Clear();
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.C2M_RogueChooseOption)]
+    [ResponseType(nameof(M2C_RogueChoiceResult))]
+    public partial class C2M_RogueChooseOption : MessageObject, ILocationRequest
+    {
+        public static C2M_RogueChooseOption Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_RogueChooseOption>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public long ChoiceSerial { get; set; }
+        [MemoryPackOrder(2)]
+        public int OptionId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.ChoiceSerial = default;
+            this.OptionId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_RogueChoiceResult)]
+    public partial class M2C_RogueChoiceResult : MessageObject, ILocationResponse
+    {
+        public static M2C_RogueChoiceResult Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_RogueChoiceResult>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        [MemoryPackOrder(3)]
+        public long ChoiceSerial { get; set; }
+        [MemoryPackOrder(4)]
+        public int OptionId { get; set; }
+        [MemoryPackOrder(5)]
+        public int BuffConfigId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.ChoiceSerial = default;
+            this.OptionId = default;
+            this.BuffConfigId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort RouterSync = 10701;
@@ -498,5 +721,12 @@ namespace ET
         public const ushort M2C_WeaponAmmoState = 10713;
         public const ushort M2C_WeaponFire = 10714;
         public const ushort M2C_WeaponHit = 10715;
+        public const ushort RogueNumericDelta = 10716;
+        public const ushort RogueOptionData = 10717;
+        public const ushort M2C_RogueExpSync = 10718;
+        public const ushort M2C_RogueLevelUp = 10719;
+        public const ushort M2C_RogueChoicePopup = 10720;
+        public const ushort C2M_RogueChooseOption = 10721;
+        public const ushort M2C_RogueChoiceResult = 10722;
     }
 }

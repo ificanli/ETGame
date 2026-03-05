@@ -10,10 +10,19 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene root, M2C_JoystickMove message)
         {
-            UnitComponent unitComponent = root.CurrentScene().GetComponent<UnitComponent>();
+            Scene currentScene = root.CurrentScene();
+            if (currentScene == null)
+            {
+                Log.Warning($"[JoystickTrace][ClientRecv] current scene is null, unitId={message.UnitId}");
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            UnitComponent unitComponent = currentScene.GetComponent<UnitComponent>();
             Unit unit = unitComponent?.Get(message.UnitId);
             if (unit == null)
             {
+                Log.Warning($"[JoystickTrace][ClientRecv] unit not found, scene={currentScene.Name}, unitId={message.UnitId}, pos=({message.PosX:F2},{message.PosY:F2},{message.PosZ:F2})");
                 await ETTask.CompletedTask;
                 return;
             }

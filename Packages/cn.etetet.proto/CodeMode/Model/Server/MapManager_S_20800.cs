@@ -159,6 +159,11 @@ namespace ET
         public string MapName { get; set; }
         [MemoryPackOrder(2)]
         public long MapId { get; set; }
+        /// <summary>
+        /// 小队ID，用于分配出生点
+        /// </summary>
+        [MemoryPackOrder(3)]
+        public int TeamId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -169,6 +174,7 @@ namespace ET
             this.RpcId = default;
             this.MapName = default;
             this.MapId = default;
+            this.TeamId = default;
 
             ObjectPool.Recycle(this);
         }

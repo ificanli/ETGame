@@ -14,5 +14,11 @@ namespace ET.Server
 
         /// <summary>服务端重复定时器ID（33ms = 30Hz）</summary>
         public long MoveTimerId;
+
+        /// <summary>输入日志节流时间（毫秒）</summary>
+        public long LastInputTraceLogTime;
+
+        /// <summary>Tick日志节流时间（毫秒）</summary>
+        public long LastTickTraceLogTime;
     }
 }

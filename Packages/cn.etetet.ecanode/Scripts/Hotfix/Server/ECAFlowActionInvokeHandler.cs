@@ -12,6 +12,9 @@ namespace ET.Server
         private const string ParamLootTable = "loot_table";
         private const string ParamCount = "count";
         private const string ParamRadius = "radius";
+        private const string ParamOutputMode = "output_mode";
+        private const string ParamButtonTextId = "button_text_id";
+        private const string ParamButtonId = "button_id";
         private const string ParamGroupId = "group_id";
         private const string ParamMapName = "map_name";
 
@@ -54,6 +57,10 @@ namespace ET.Server
                     Log.Info($"[ECAFlow] Point {point.PointId} state set to {state}");
                     break;
                 case ECAFlowActionKey.StartSearchTimer:
+                    if (point == null || player == null)
+                    {
+                        return;
+                    }
                     if (!TryGetFloatParam(args.Node, ParamSeconds, out float searchSeconds))
                     {
                         return;
@@ -62,7 +69,76 @@ namespace ET.Server
                     {
                         return;
                     }
-                    ECAFlowTimerHelper.StartTimer(point, player, searchTimerId, (long)(searchSeconds * 1000));
+                    long durationMs = (long)(searchSeconds * 1000);
+                    if (!ECAFlowTimerHelper.StartTimer(point, player, searchTimerId, durationMs))
+                    {
+                        return;
+                    }
+
+                    ContainerRuntimeHelper.MarkSearchStarted(point, player, searchTimerId, durationMs);
+                    break;
+                case ECAFlowActionKey.ShowInteractButton:
+                    if (point == null || player == null)
+                    {
+                        return;
+                    }
+
+                    int buttonTextId = 0;
+                    if (!TryGetIntParam(args.Node, ParamButtonTextId, out buttonTextId))
+                    {
+                        TryGetIntParam(args.Node, ParamButtonId, out buttonTextId);
+                    }
+                    ContainerRuntimeHelper.SendInteractHint(point, player, true, buttonTextId);
+                    break;
+                case ECAFlowActionKey.HideInteractButton:
+                    if (point == null || player == null)
+                    {
+                        return;
+                    }
+
+                    ContainerRuntimeHelper.SendInteractHint(point, player, false);
+                    if (point.PointType == ECAPointType.Container)
+                    {
+                        ContainerRuntimeHelper.CancelSearch(point, player, notify: true);
+                    }
+                    break;
+                case ECAFlowActionKey.ShowSearchUI:
+                    if (point == null || player == null)
+                    {
+                        return;
+                    }
+
+                    ContainerRuntimeHelper.SendSearchState(point, player, ContainerSearchState.Searching, 0);
+                    break;
+                case ECAFlowActionKey.OpenContainerUI:
+                    if (point == null || player == null)
+                    {
+                        return;
+                    }
+
+                    ContainerRuntimeHelper.OpenContainerUI(point, player);
+                    break;
+                case ECAFlowActionKey.GenerateContainerLoot:
+                    if (point == null)
+                    {
+                        return;
+                    }
+                    if (!TryGetStringParam(args.Node, ParamLootTable, out string generateLootTable))
+                    {
+                        return;
+                    }
+                    if (!TryGetIntParam(args.Node, ParamCount, out int generateCount))
+                    {
+                        return;
+                    }
+                    if (!TryGetFloatParam(args.Node, ParamRadius, out float generateRadius))
+                    {
+                        return;
+                    }
+
+                    string outputMode = null;
+                    TryGetStringParam(args.Node, ParamOutputMode, out outputMode);
+                    ContainerRuntimeHelper.GenerateLoot(point, player, outputMode, generateLootTable, generateCount, generateRadius);
                     break;
                 case ECAFlowActionKey.SpawnItemsToGround:
                     if (!TryGetStringParam(args.Node, ParamLootTable, out string lootTable))
@@ -81,9 +157,9 @@ namespace ET.Server
                     {
                         return;
                     }
-                    ContainerComponent containerComponent = ContainerComponentSystem.GetOrAdd(point);
-                    containerComponent?.RecordSpawnItems(lootTable, dropCount, dropRadius, player?.Id ?? 0);
-                    Log.Info($"[ECAFlow] Point {point.PointId} spawn items request: {lootTable}, count={dropCount}, radius={dropRadius}");
+                    // 兼容旧动作：默认走地面掉落模式。
+                    ContainerRuntimeHelper.GenerateLoot(point, player, ContainerOutputMode.GroundDrop.ToString(), lootTable, dropCount, dropRadius);
+                    Log.Info($"[ECAFlow] Point {point.PointId} spawn items request (compat): {lootTable}, count={dropCount}, radius={dropRadius}");
                     break;
                 case ECAFlowActionKey.SpawnMonsters:
                     if (!TryGetStringParam(args.Node, ParamGroupId, out string groupId))
