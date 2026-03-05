@@ -9,6 +9,7 @@ namespace ET
         public const string StartSearchTimer = "StartSearchTimer";
         public const string ShowSearchUI = "ShowSearchUI";
         public const string OpenContainerUI = "OpenContainerUI";
+        public const string GenerateContainerLoot = "GenerateContainerLoot";
         public const string SpawnItemsToGround = "SpawnItemsToGround";
         public const string PlayOpenAnim = "PlayOpenAnim";
         public const string StartEvacCountdown = "StartEvacCountdown";

@@ -15,6 +15,19 @@ namespace ET.Server
 				return;
 			}
 
+			ECAPointComponent ecaPoint = target.GetComponent<ECAPointComponent>();
+			if (ecaPoint != null)
+			{
+				if (!ContainerRuntimeHelper.IsPlayerInRange(ecaPoint, unit))
+				{
+					response.Error = ErrorCode.ERR_ECAInteractOutOfRange;
+					return;
+				}
+
+				ecaPoint.OnPlayerInteract(unit);
+				return;
+			}
+
 			unit.GetComponent<TargetComponent>().Unit = target;
 			
 			// 有可接任务则发送任务信息

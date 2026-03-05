@@ -75,6 +75,8 @@ namespace ET.Server
                     // 组件从 GateMap 传送过来，Awake 不会再触发，需要手动重启 Timer
                     heroSkill.RestartSkillTimer();
                 }
+
+                RogueProgressHelper.EnsureProgress(unit, true);
             }
 
             if (request.ChangeScene)

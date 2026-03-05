@@ -58,9 +58,9 @@ namespace ET
         }
     }
 
+    // 匹配成功后通知 Unit 应用起装数据
     [MemoryPackable]
     [Message(Opcode.A2Map_ApplyLoadoutRequest)]
-    [ResponseType(nameof(A2Map_ApplyLoadoutResponse))]
     public partial class A2Map_ApplyLoadoutRequest : MessageObject, ILocationRequest
     {
         public static A2Map_ApplyLoadoutRequest Create(bool isFromPool = false)
