@@ -37,6 +37,14 @@ namespace ET.Client
             self.UIPanel.Priority = 0;
             self.UIPanel.CachePanelTime = 10;
 
+            self.u_ComJoyStickRangeRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComJoyStickRangeRectTransform");
+            self.u_ComJoyStickRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComJoyStickRectTransform");
+            self.u_DataSearchingButton = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueBool>("u_DataSearchingButton");
+            self.u_EventClickSearchingButton = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventClickSearchingButton");
+            self.u_EventClickSearchingButtonHandle = self.u_EventClickSearchingButton.Add(self,MainPanelComponent.OnEventClickSearchingButtonInvoke);
+            self.u_EventClickBagButton = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventClickBagButton");
+            self.u_EventClickBagButtonHandle = self.u_EventClickBagButton.Add(self,MainPanelComponent.OnEventClickBagButtonInvoke);
+            self.u_UIWeaponBar = self.UIBase.CDETable.FindUIOwner<ET.Client.WeaponBarComponent>("WeaponBar");
             self.u_UITargetTargetInfo = self.UIBase.CDETable.FindUIOwner<ET.Client.TargetTargetInfoComponent>("TargetTargetInfo");
             self.u_UITargetInfo = self.UIBase.CDETable.FindUIOwner<ET.Client.TargetInfoComponent>("TargetInfo");
             self.u_UIPlayerInfo = self.UIBase.CDETable.FindUIOwner<ET.Client.PlayerInfoComponent>("PlayerInfo");

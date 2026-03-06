@@ -18,6 +18,21 @@ namespace ET.Client
                 return;
             }
 
+            // 更新武器组件的当前槽位
+            WeaponComponent weaponComp = unit.GetComponent<WeaponComponent>();
+            if (weaponComp != null)
+            {
+                weaponComp.SwitchWeapon(message.SlotIndex);
+            }
+
+            // 发布武器切换事件，通知UI更新
+            EventSystem.Instance.Publish(root, new EventWeaponSwitched
+            {
+                Scene = root,
+                UnitId = message.UnitId,
+                SlotIndex = message.SlotIndex
+            });
+
             // TODO: 切换武器模型和动画
             // 这里需要根据 message.WeaponId 获取武器配置，然后切换模型
             // 例如：
@@ -25,7 +40,7 @@ namespace ET.Client
             // 切换角色手持的武器模型
             // 切换动画状态机
 
-            Log.Debug($"Unit {message.UnitId} switched to weapon slot {message.SlotIndex}, weaponId={message.WeaponId}");
+            Log.Info($"[M2C_SwitchWeapon] Unit {message.UnitId} switched to weapon slot {message.SlotIndex}, weaponId={message.WeaponId}");
 
             await ETTask.CompletedTask;
         }

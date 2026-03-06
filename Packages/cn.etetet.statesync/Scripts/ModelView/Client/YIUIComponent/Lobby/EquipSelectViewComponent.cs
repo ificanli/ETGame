@@ -22,5 +22,8 @@ namespace ET.Client
         // LobbyPanel 引用
         public EntityRef<LobbyPanelComponent> m_LobbyPanel;
         public LobbyPanelComponent LobbyPanel => m_LobbyPanel;
+
+        // 待确认的装备配置Id（点击Prepared后才真正装备）
+        public int PendingItemConfigId;
     }
 }

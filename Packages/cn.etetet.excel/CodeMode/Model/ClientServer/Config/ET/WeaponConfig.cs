@@ -28,6 +28,7 @@ namespace ET
             FireLockTypeId = _buf.ReadInt();
             BulletCount = _buf.ReadInt();
             SpreadAngle = _buf.ReadFloat();
+            Desc = _buf.ReadString();
 
             EndInit();
         }
@@ -81,6 +82,10 @@ namespace ET
         /// 散射角度(度)
         /// </summary>
         public readonly float SpreadAngle;
+        /// <summary>
+        /// 武器描述
+        /// </summary>
+        public readonly string Desc;
     
         public const int __ID__ = 940013437;
         public override int GetTypeId() => __ID__;
@@ -104,6 +109,7 @@ namespace ET
             + "FireLockTypeId:" + FireLockTypeId + ","
             + "BulletCount:" + BulletCount + ","
             + "SpreadAngle:" + SpreadAngle + ","
+            + "Desc:" + Desc + ","
             + "}";
         }
 

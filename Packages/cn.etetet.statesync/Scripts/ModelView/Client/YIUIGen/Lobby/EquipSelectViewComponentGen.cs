@@ -23,6 +23,10 @@ namespace ET.Client
         public EntityRef<YIUIViewComponent> u_UIView;
         public YIUIViewComponent UIView => u_UIView;
         public UnityEngine.RectTransform u_ComEquipSelectLoopScroll;
+        public YIUIFramework.UIDataValueString u_DataGunName;
+        public UITaskEventP0 u_EventClickPrepared;
+        public UITaskEventHandleP0 u_EventClickPreparedHandle;
+        public const string OnEventClickPreparedInvoke = "EquipSelectViewComponent.OnEventClickPreparedInvoke";
 
     }
 }

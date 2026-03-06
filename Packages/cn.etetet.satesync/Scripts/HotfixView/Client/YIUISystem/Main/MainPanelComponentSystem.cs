@@ -31,6 +31,20 @@ namespace ET.Client
         }
 
         #region YIUIEvent开始
+        
+        [YIUIInvoke(MainPanelComponent.OnEventClickSearchingButtonInvoke)]
+        private static async ETTask OnEventClickSearchingButtonInvoke(this MainPanelComponent self)
+        {
+            
+            await ETTask.CompletedTask;
+        }
+        
+        [YIUIInvoke(MainPanelComponent.OnEventClickBagButtonInvoke)]
+        private static async ETTask OnEventClickBagButtonInvoke(this MainPanelComponent self)
+        {
+            
+            await ETTask.CompletedTask;
+        }
         #endregion YIUIEvent结束
     }
 }

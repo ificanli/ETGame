@@ -120,7 +120,23 @@ namespace ET.Server
 
             float3 oldPos = unit.Position;
             float3 delta = self.Direction * speed * MoveTickDeltaTime;
-            unit.Position += delta;
+            float3 nextPos = oldPos + delta;
+
+            // 服务端权威贴地：按导航网格最近点修正位置，确保Y随地形变化
+            PathfindingComponent pathfinding = unit.GetComponent<PathfindingComponent>();
+            if (pathfinding != null)
+            {
+                try
+                {
+                    nextPos = pathfinding.RecastFindNearestPoint(nextPos);
+                }
+                catch (System.Exception e)
+                {
+                    Log.Warning($"[JoystickTrace][ServerMove] navmesh project failed unitId={unit.Id}, pos={nextPos}, error={e.Message}");
+                }
+            }
+
+            unit.Position = nextPos;
 
             // 旋转朝向移动方向
             if (math.lengthsq(self.Direction) > 0.0001f)

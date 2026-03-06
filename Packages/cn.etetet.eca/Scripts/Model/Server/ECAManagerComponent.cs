@@ -18,5 +18,10 @@ namespace ET.Server
         /// 范围检测定时器 ID
         /// </summary>
         public long CheckRangeTimerId;
+
+        /// <summary>
+        /// 范围检测调试日志时间戳（毫秒）
+        /// </summary>
+        public long RangeDebugLastLogTime;
     }
 }

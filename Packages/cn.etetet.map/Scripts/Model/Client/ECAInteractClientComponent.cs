@@ -6,6 +6,7 @@ namespace ET.Client
     public class ECAInteractClientComponent : Entity, IAwake
     {
         public HashSet<string> InRangePointIds { get; set; } = new();
+        public Dictionary<string, int> PointButtonTextIds { get; set; } = new();
         public string FocusPointId { get; set; }
 
         public string SearchingPointId { get; set; }
@@ -13,6 +14,7 @@ namespace ET.Client
         public long SearchRemainMs { get; set; }
 
         public string OpenContainerPointId { get; set; }
+        public string OpenContainerUiKey { get; set; }
         public int ContainerOutputMode { get; set; }
         public List<ContainerClientItemData> ContainerItems { get; set; } = new();
     }

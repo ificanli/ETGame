@@ -53,30 +53,8 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventEnterMapInvoke)]
         private static async ETTask OnEventEnterMapInvoke(this LobbyPanelComponent self)
         {
-            EntityRef<LobbyPanelComponent> selfRef = self;
-
-            // 先确认起装
-            var loadout = self.Root().GetComponent<LoadoutComponent>();
-            C2G_ConfirmLoadout confirmReq = C2G_ConfirmLoadout.Create();
-            confirmReq.HeroConfigId = loadout.SelectedHeroConfigId > 0 ? loadout.SelectedHeroConfigId : 1001;
-            confirmReq.MainWeaponConfigId = loadout.MainWeaponConfigId;
-            confirmReq.SubWeaponConfigId = loadout.SubWeaponConfigId;
-            confirmReq.ArmorConfigId = loadout.ArmorConfigId;
-            Log.Info($"EnterMap 发送确认起装: HeroConfigId={confirmReq.HeroConfigId}, MainWeapon={confirmReq.MainWeaponConfigId}");
-            G2C_ConfirmLoadout confirmResp = (G2C_ConfirmLoadout)await self.Root().GetComponent<ClientSenderComponent>().Call(confirmReq);
-            self = selfRef;
-            if (confirmResp.Error != ErrorCode.ERR_Success)
-            {
-                Log.Error($"确认起装失败: {confirmResp.Error} {confirmResp.Message}");
-                return;
-            }
-
-            // 玩家已在Home地图，使用C2M_TransferMap进行地图间传送
-            await self.Root().GetComponent<ClientSenderComponent>().Call(C2M_TransferMap.Create());
-            self = selfRef;
-            await self.Root().GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
-            self = selfRef;
-            await self.UIPanel.CloseAsync();
+            // 复用匹配链路：PVE 按钮走与 1v1 相同流程（匹配成功 -> 服务端传送）
+            await self.SendMatchRequest(1);
         }
 
         [YIUIInvoke(LobbyPanelComponent.OnEventRoleToggleInvoke)]
@@ -407,6 +385,15 @@ namespace ET.Client
             // 刷新列表
             await view.EquipLoop.SetDataRefresh(equipList, 0);
             self = selfRef;
+
+            if (equipList.Count > 0)
+            {
+                view.UpdatePreview(equipList[0], true);
+            }
+            else
+            {
+                view.UpdatePreview(null, true);
+            }
         }
 
         /// <summary>

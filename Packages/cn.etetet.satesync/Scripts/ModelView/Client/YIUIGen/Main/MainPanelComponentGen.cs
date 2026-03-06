@@ -22,6 +22,11 @@ namespace ET.Client
         public YIUIWindowComponent UIWindow => u_UIWindow;
         public EntityRef<YIUIPanelComponent> u_UIPanel;
         public YIUIPanelComponent UIPanel => u_UIPanel;
+        public UnityEngine.RectTransform u_ComJoyStickRangeRectTransform;
+        public UnityEngine.RectTransform u_ComJoyStickRectTransform;
+        public YIUIFramework.UIDataValueBool u_DataSearchingButton;
+        public EntityRef<ET.Client.WeaponBarComponent> u_UIWeaponBar;
+        public ET.Client.WeaponBarComponent UIWeaponBar => u_UIWeaponBar;
         public EntityRef<ET.Client.TargetTargetInfoComponent> u_UITargetTargetInfo;
         public ET.Client.TargetTargetInfoComponent UITargetTargetInfo => u_UITargetTargetInfo;
         public EntityRef<ET.Client.TargetInfoComponent> u_UITargetInfo;
@@ -32,6 +37,12 @@ namespace ET.Client
         public ET.Client.CastSliderComponent UICastFrame => u_UICastFrame;
         public EntityRef<ET.Client.ActionBarComponent> u_UIActionBar;
         public ET.Client.ActionBarComponent UIActionBar => u_UIActionBar;
+        public UITaskEventP0 u_EventClickSearchingButton;
+        public UITaskEventHandleP0 u_EventClickSearchingButtonHandle;
+        public const string OnEventClickSearchingButtonInvoke = "MainPanelComponent.OnEventClickSearchingButtonInvoke";
+        public UITaskEventP0 u_EventClickBagButton;
+        public UITaskEventHandleP0 u_EventClickBagButtonHandle;
+        public const string OnEventClickBagButtonInvoke = "MainPanelComponent.OnEventClickBagButtonInvoke";
 
     }
 }

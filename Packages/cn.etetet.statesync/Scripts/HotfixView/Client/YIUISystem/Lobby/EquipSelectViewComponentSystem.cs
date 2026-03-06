@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using YIUIFramework;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
 namespace ET.Client
 {
@@ -31,6 +30,9 @@ namespace ET.Client
                 typeof(EquipSelectItemComponent),
                 "u_EventSelect"
             );
+
+            self.PendingItemConfigId = 0;
+            self.u_DataGunName?.SetValue(string.Empty, true);
         }
 
         [EntitySystem]
@@ -41,6 +43,8 @@ namespace ET.Client
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this EquipSelectViewComponent self)
         {
+            self.PendingItemConfigId = 0;
+            self.u_DataGunName?.SetValue(string.Empty, true);
             await ETTask.CompletedTask;
             return true;
         }
@@ -71,20 +75,87 @@ namespace ET.Client
             int index,
             bool select)
         {
-            if (select)
+            if (!select)
             {
-                item.u_DataSelect.SetValue(true);
-
-                // 装备物品
-                if (self.LobbyPanel != null)
-                {
-                    self.LobbyPanel.EquipItem(data.Id, self.CurrentSlotType);
-                    self.UIView.Close();
-                }
+                return;
             }
+
+            item.u_DataSelect.SetValue(true);
+            self.UpdatePreview(data, true);
         }
 
         #region YIUIEvent开始
+        
+        [YIUIInvoke(EquipSelectViewComponent.OnEventClickPreparedInvoke)]
+        private static async ETTask OnEventClickPreparedInvoke(this EquipSelectViewComponent self)
+        {
+            if (self.PendingItemConfigId <= 0)
+            {
+                Log.Warning("[EquipSelectView] Prepared ignored: no pending selection");
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            LobbyPanelComponent lobbyPanel = self.LobbyPanel;
+            if (lobbyPanel == null || lobbyPanel.IsDisposed)
+            {
+                Log.Warning("[EquipSelectView] Prepared failed: LobbyPanel missing");
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            lobbyPanel.EquipItem(self.PendingItemConfigId, self.CurrentSlotType);
+            self.UIView.Close();
+            await ETTask.CompletedTask;
+        }
+
+        public static void UpdatePreview(this EquipSelectViewComponent self, ItemConfig itemConfig, bool updatePending)
+        {
+            if (itemConfig == null)
+            {
+                self.u_DataGunName?.SetValue(string.Empty);
+                if (updatePending)
+                {
+                    self.PendingItemConfigId = 0;
+                }
+                return;
+            }
+
+            if (updatePending)
+            {
+                self.PendingItemConfigId = itemConfig.Id;
+            }
+
+            string desc = BuildPreviewText(self, itemConfig);
+            self.u_DataGunName?.SetValue(desc);
+        }
+
+        private static string BuildPreviewText(EquipSelectViewComponent self, ItemConfig itemConfig)
+        {
+            if (itemConfig == null)
+            {
+                return string.Empty;
+            }
+
+            string desc = null;
+            if (self.CurrentSlotType == EquipSlotType.Weapon || self.CurrentSlotType == EquipSlotType.Weapon2)
+            {
+                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemConfig.Id);
+                desc = weaponConfig?.Desc;
+            }
+
+            if (string.IsNullOrWhiteSpace(desc))
+            {
+                desc = itemConfig.Desc;
+            }
+
+            if (string.IsNullOrWhiteSpace(desc))
+            {
+                desc = itemConfig.Name;
+            }
+
+            return desc;
+        }
         #endregion YIUIEvent结束
     }
 }

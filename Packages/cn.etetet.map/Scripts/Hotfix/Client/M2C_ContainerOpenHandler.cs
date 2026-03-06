@@ -12,7 +12,10 @@ namespace ET.Client
                 return;
             }
 
+            string oldPointId = runtime.OpenContainerPointId;
+            string oldUiKey = runtime.OpenContainerUiKey;
             runtime.OpenContainerPointId = message.PointId;
+            runtime.OpenContainerUiKey = message.UiKey;
             runtime.ContainerOutputMode = message.OutputMode;
             runtime.SearchState = ContainerSearchState.Completed;
             runtime.SearchRemainMs = 0;
@@ -32,7 +35,23 @@ namespace ET.Client
                 });
             }
 
-            Log.Info($"[ECAClient] container open point={message.PointId}, mode={message.OutputMode}, first={message.IsFirstOpen}, itemCount={runtime.ContainerItems.Count}");
+            if (!string.IsNullOrWhiteSpace(oldPointId) && oldPointId != message.PointId)
+            {
+                EventSystem.Instance.Publish(root, new ECAContainerCloseUIEvent
+                {
+                    PointId = oldPointId,
+                    UiKey = oldUiKey
+                });
+            }
+
+            EventSystem.Instance.Publish(root, new ECAContainerOpenUIEvent
+            {
+                PointId = message.PointId,
+                UiKey = runtime.OpenContainerUiKey
+            });
+
+            Log.Info(
+                $"[ECAClient] container open point={message.PointId}, mode={message.OutputMode}, first={message.IsFirstOpen}, uiKey={runtime.OpenContainerUiKey ?? "null"}, itemCount={runtime.ContainerItems.Count}");
             await ETTask.CompletedTask;
         }
     }

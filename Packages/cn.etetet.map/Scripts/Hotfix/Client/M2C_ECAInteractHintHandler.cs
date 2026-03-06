@@ -5,6 +5,7 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene root, M2C_ECAInteractHint message)
         {
+            Log.Warning($"[ECAProbe][Hint] point={message.PointId}, inRange={message.InRange}, btnText={message.ButtonTextId}");
             ECAInteractClientComponent runtime = ECAInteractHelper.GetOrAddRuntime(root);
             if (runtime == null)
             {
@@ -15,11 +16,13 @@ namespace ET.Client
             if (message.InRange)
             {
                 runtime.InRangePointIds.Add(message.PointId);
+                runtime.PointButtonTextIds[message.PointId] = message.ButtonTextId;
                 runtime.FocusPointId = message.PointId;
             }
             else
             {
                 runtime.InRangePointIds.Remove(message.PointId);
+                runtime.PointButtonTextIds.Remove(message.PointId);
                 if (runtime.FocusPointId == message.PointId)
                 {
                     runtime.FocusPointId = null;
@@ -39,12 +42,19 @@ namespace ET.Client
 
                 if (runtime.OpenContainerPointId == message.PointId)
                 {
+                    EventSystem.Instance.Publish(root, new ECAContainerCloseUIEvent
+                    {
+                        PointId = runtime.OpenContainerPointId,
+                        UiKey = runtime.OpenContainerUiKey
+                    });
                     runtime.OpenContainerPointId = null;
+                    runtime.OpenContainerUiKey = null;
                     runtime.ContainerItems.Clear();
                 }
             }
 
-            Log.Info($"[ECAClient] interact hint point={message.PointId}, inRange={message.InRange}, focus={runtime.FocusPointId}");
+            Log.Info(
+                $"[ECAClient] interact hint point={message.PointId}, inRange={message.InRange}, buttonTextId={message.ButtonTextId}, focus={runtime.FocusPointId}, open={runtime.OpenContainerPointId}, searching={runtime.SearchingPointId}");
             await ETTask.CompletedTask;
         }
     }

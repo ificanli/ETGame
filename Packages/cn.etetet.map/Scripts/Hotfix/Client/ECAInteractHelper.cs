@@ -21,24 +21,45 @@ namespace ET.Client
         public static async ETTask TryInteractFocus(Scene root)
         {
             ECAInteractClientComponent runtime = GetOrAddRuntime(root);
-            if (runtime == null || string.IsNullOrWhiteSpace(runtime.FocusPointId))
+            if (runtime == null)
             {
+                Log.Warning("[ECAClient] TryInteractFocus skipped: runtime missing");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(runtime.FocusPointId) && runtime.InRangePointIds.Count > 0)
+            {
+                foreach (string candidatePointId in runtime.InRangePointIds)
+                {
+                    runtime.FocusPointId = candidatePointId;
+                    break;
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(runtime.FocusPointId))
+            {
+                Log.Warning($"[ECAClient] TryInteractFocus skipped: focus missing, inRangeCount={runtime.InRangePointIds.Count}");
                 return;
             }
 
             string pointId = runtime.FocusPointId;
+            Log.Warning($"[ECAClient] TryInteractFocus send request: point={pointId}");
             C2M_ECAInteract request = C2M_ECAInteract.Create();
             request.PointId = pointId;
             M2C_ECAInteract response = await root.GetComponent<ClientSenderComponent>().Call(request) as M2C_ECAInteract;
             if (response == null)
             {
+                Log.Warning($"[ECAClient] TryInteractFocus no response: point={pointId}");
                 return;
             }
 
             if (response.Error != ErrorCode.ERR_Success)
             {
                 Log.Warning($"[ECAClient] interact failed: point={pointId}, error={response.Error}, msg={response.Message}");
+                return;
             }
+
+            Log.Warning($"[ECAClient] TryInteractFocus success: point={pointId}");
         }
 
         public static void CancelSearch(Scene root)
@@ -107,7 +128,13 @@ namespace ET.Client
             msg.PointId = runtime.OpenContainerPointId;
             root.GetComponent<ClientSenderComponent>().Send(msg);
 
+            EventSystem.Instance.Publish(root, new ECAContainerCloseUIEvent
+            {
+                PointId = runtime.OpenContainerPointId,
+                UiKey = runtime.OpenContainerUiKey
+            });
             runtime.OpenContainerPointId = null;
+            runtime.OpenContainerUiKey = null;
             runtime.ContainerItems.Clear();
         }
     }

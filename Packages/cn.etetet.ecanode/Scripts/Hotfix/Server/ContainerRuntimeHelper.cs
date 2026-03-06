@@ -49,6 +49,8 @@ namespace ET.Server
             hint.InRange = inRange;
             hint.ButtonTextId = buttonTextId;
             MapMessageHelper.NoticeClient(player, hint, NoticeType.Self);
+            Log.Info(
+                $"[ECADebug][SendInteractHint] player={player.Id}, point={point.PointId}, inRange={inRange}, buttonTextId={buttonTextId}");
         }
 
         public static void SendSearchState(ECAPointComponent point, Unit player, int state, long remainMs)
@@ -114,7 +116,7 @@ namespace ET.Server
             return canceled;
         }
 
-        public static void OpenContainerUI(ECAPointComponent point, Unit player)
+        public static void OpenContainerUI(ECAPointComponent point, Unit player, string uiKey = null)
         {
             if (point == null || player == null || player.IsDisposed)
             {
@@ -138,8 +140,10 @@ namespace ET.Server
             msg.PointId = point.PointId;
             msg.OutputMode = container.OutputMode;
             msg.IsFirstOpen = !container.HasOpenedOnce;
+            msg.UiKey = uiKey;
             container.FillItemMessage(msg.Items);
             MapMessageHelper.NoticeClient(player, msg, NoticeType.Self);
+            Log.Info($"[ECAContainer] open ui point={point.PointId}, player={player.Id}, uiKey={uiKey ?? "null"}");
 
             if (!container.HasOpenedOnce)
             {

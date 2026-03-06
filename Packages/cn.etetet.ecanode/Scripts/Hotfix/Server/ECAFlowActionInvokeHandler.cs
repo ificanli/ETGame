@@ -13,6 +13,7 @@ namespace ET.Server
         private const string ParamCount = "count";
         private const string ParamRadius = "radius";
         private const string ParamOutputMode = "output_mode";
+        private const string ParamUiKey = "ui_key";
         private const string ParamButtonTextId = "button_text_id";
         private const string ParamButtonId = "button_id";
         private const string ParamGroupId = "group_id";
@@ -116,7 +117,9 @@ namespace ET.Server
                         return;
                     }
 
-                    ContainerRuntimeHelper.OpenContainerUI(point, player);
+                    string uiKey = null;
+                    TryGetStringParam(args.Node, ParamUiKey, out uiKey);
+                    ContainerRuntimeHelper.OpenContainerUI(point, player, uiKey);
                     break;
                 case ECAFlowActionKey.GenerateContainerLoot:
                     if (point == null)
@@ -162,21 +165,39 @@ namespace ET.Server
                     Log.Info($"[ECAFlow] Point {point.PointId} spawn items request (compat): {lootTable}, count={dropCount}, radius={dropRadius}");
                     break;
                 case ECAFlowActionKey.SpawnMonsters:
+                    Log.Info($"[ECAFlow] SpawnMonsters action triggered: pointId={point?.PointId}");
+
                     if (!TryGetStringParam(args.Node, ParamGroupId, out string groupId))
                     {
+                        Log.Warning($"[ECAFlow] SpawnMonsters: missing group_id parameter");
                         return;
                     }
                     if (!TryGetIntParam(args.Node, ParamCount, out int spawnCount))
                     {
+                        Log.Warning($"[ECAFlow] SpawnMonsters: missing count parameter");
                         return;
                     }
                     if (point == null)
                     {
+                        Log.Warning($"[ECAFlow] SpawnMonsters: point is null");
                         return;
                     }
-                    SpawnPointComponent spawnPoint = SpawnPointComponentSystem.GetOrAdd(point);
-                    spawnPoint?.RecordSpawnRequest(groupId, spawnCount);
-                    Log.Info($"[ECAFlow] Point {point.PointId} spawn monsters request: {groupId}, count={spawnCount}");
+
+                    Log.Info($"[ECAFlow] SpawnMonsters params: pointId={point.PointId}, groupId={groupId}, count={spawnCount}");
+
+                    // 立即执行刷怪
+                    Unit pointUnit = point.GetParent<Unit>();
+                    if (pointUnit != null)
+                    {
+                        Scene mapScene = pointUnit.Scene();
+                        Log.Info($"[ECAFlow] Calling SpawnMonstersHelper: scene={mapScene?.Name}, pointUnit={pointUnit.Id}");
+                        int spawned = SpawnMonstersHelper.SpawnAtPoint(mapScene, pointUnit, groupId, spawnCount);
+                        Log.Info($"[ECAFlow] Point {point.PointId} spawned monsters: groupId={groupId}, spawned={spawned}/{spawnCount}");
+                    }
+                    else
+                    {
+                        Log.Warning($"[ECAFlow] SpawnMonsters: pointUnit is null for point {point.PointId}");
+                    }
                     break;
                 case ECAFlowActionKey.StartEvacCountdown:
                     if (!TryGetFloatParam(args.Node, ParamSeconds, out float evacSeconds))

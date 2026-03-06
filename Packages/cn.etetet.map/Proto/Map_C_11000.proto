@@ -188,6 +188,7 @@ message M2C_ContainerOpen // IMessage
 	int32 OutputMode = 2;
 	bool IsFirstOpen = 3;
 	repeated ContainerItemData Items = 4;
+	string UiKey = 5;
 }
 
 message M2C_ContainerUpdate // IMessage

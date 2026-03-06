@@ -7,6 +7,7 @@ namespace ET.Client
     /// 摇杆UI控件（纯MonoBehaviour）。
     /// 挂在摇杆小球GameObject上，Background/Knob通过Inspector赋值。
     /// 需要HotfixView层调用 SetEntity 注入Entity引用，才能发送ET事件。
+    /// 支持从JoystickRangeView触发点击。
     /// </summary>
     [EnableClass]
     public class JoystickView : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler

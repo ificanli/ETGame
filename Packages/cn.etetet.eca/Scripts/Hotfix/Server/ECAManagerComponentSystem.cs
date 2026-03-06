@@ -24,6 +24,10 @@ namespace ET.Server
         /// </summary>
         public static void AddECAPoint(this ECAManagerComponent self, string pointId, long entityId)
         {
+            if (self.ECAPoints.TryGetValue(pointId, out long oldEntityId))
+            {
+                Log.Warning($"[ECALoader] duplicate point id detected: pointId={pointId}, oldEntity={oldEntityId}, newEntity={entityId}. old point will be overridden.");
+            }
             self.ECAPoints[pointId] = entityId;
         }
 

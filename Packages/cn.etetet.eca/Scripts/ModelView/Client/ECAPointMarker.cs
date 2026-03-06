@@ -192,6 +192,7 @@ namespace ET.Client
                 new("EvacuationPoint(撤离点)", ECAPointType.EvacuationPoint),
                 new("SpawnPoint(出生点)", ECAPointType.SpawnPoint),
                 new("Container(容器)", ECAPointType.Container),
+                new("MonsterSpawnPoint(刷怪点)", ECAPointType.MonsterSpawnPoint),
             };
         }
 

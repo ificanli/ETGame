@@ -12,5 +12,6 @@ namespace ET
         public const string OnTargetKilled = "OnTargetKilled";
         public const string OnAreaHoldCompleted = "OnAreaHoldCompleted";
         public const string OnEscortArrived = "OnEscortArrived";
+        public const string OnMapLoaded = "OnMapLoaded";
     }
 }

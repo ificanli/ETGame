@@ -35,6 +35,9 @@ namespace ET.Client
             self.UIView.StackOption = EViewStackOption.VisibleTween;
 
             self.u_ComEquipSelectLoopScroll = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEquipSelectLoopScroll");
+            self.u_DataGunName = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataGunName");
+            self.u_EventClickPrepared = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventClickPrepared");
+            self.u_EventClickPreparedHandle = self.u_EventClickPrepared.Add(self,EquipSelectViewComponent.OnEventClickPreparedInvoke);
 
         }
     }

@@ -782,6 +782,8 @@ namespace ET
         public bool IsFirstOpen { get; set; }
         [MemoryPackOrder(3)]
         public List<ContainerItemData> Items { get; set; } = new();
+        [MemoryPackOrder(4)]
+        public string UiKey { get; set; }
 
         public override void Dispose()
         {
@@ -794,6 +796,7 @@ namespace ET
             this.OutputMode = default;
             this.IsFirstOpen = default;
             this.Items.Clear();
+            this.UiKey = default;
 
             ObjectPool.Recycle(this);
         }

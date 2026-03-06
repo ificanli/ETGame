@@ -74,11 +74,15 @@ namespace ET.Server
                 });
             
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange("MapManager", 
+            await serviceDiscoveryProxy.SubscribeServiceChange("MapManager",
                 new StringKV()
                 {
                     {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.MapManager)},
                 });
+
+            // 发布地图加载完成事件
+            root = rootRef;
+            EventSystem.Instance.Publish(root, new MapLoadFinishEvent { Scene = root });
         }
     }
 }

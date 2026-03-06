@@ -248,7 +248,7 @@ namespace ET.Server
         {
             return gameMode switch
             {
-                GameModeType.PVE => "1V1Map",
+                GameModeType.PVE => "PVEMap",
                 GameModeType.OneVsOne => "1V1Map",
                 GameModeType.ThreeVsThree => "3V3Map",
                 GameModeType.Extraction => "SDCMap",

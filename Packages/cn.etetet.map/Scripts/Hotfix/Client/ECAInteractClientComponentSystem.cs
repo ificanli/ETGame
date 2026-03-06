@@ -7,11 +7,13 @@ namespace ET.Client
         private static void Awake(this ECAInteractClientComponent self)
         {
             self.InRangePointIds.Clear();
+            self.PointButtonTextIds.Clear();
             self.FocusPointId = null;
             self.SearchingPointId = null;
             self.SearchState = ContainerSearchState.Idle;
             self.SearchRemainMs = 0;
             self.OpenContainerPointId = null;
+            self.OpenContainerUiKey = null;
             self.ContainerOutputMode = ContainerOutputMode.ContainerPanel;
             self.ContainerItems.Clear();
         }

@@ -293,12 +293,15 @@ namespace ET.Client
                 case ECAFlowActionKey.SetPointActive:
                     return "active=";
                 case ECAFlowActionKey.ShowInteractButton:
+                    return "button_text_id=";
                 case ECAFlowActionKey.HideInteractButton:
-                    return "button_id=";
+                    return string.Empty;
                 case ECAFlowActionKey.StartSearchTimer:
                     return "seconds=\ntimer_id=";
                 case ECAFlowActionKey.ShowSearchUI:
+                    return string.Empty;
                 case ECAFlowActionKey.OpenContainerUI:
+                    return "ui_key=";
                 case ECAFlowActionKey.ShowEvacUI:
                 case ECAFlowActionKey.ShowTaskAcceptUI:
                     return "ui_id=";
