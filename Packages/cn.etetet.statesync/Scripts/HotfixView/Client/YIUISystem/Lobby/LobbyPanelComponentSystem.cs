@@ -372,6 +372,7 @@ namespace ET.Client
         private static async ETTask RefreshEquipSelectView(this LobbyPanelComponent self, EquipSelectViewComponent view, EquipSlotType slotType)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
+            EntityRef<EquipSelectViewComponent> viewRef = view;
 
             // 根据槽位类型获取可选装备列表
             List<ItemConfig> equipList = self.GetEquipListBySlotType(slotType);
@@ -385,15 +386,51 @@ namespace ET.Client
             // 刷新列表
             await view.EquipLoop.SetDataRefresh(equipList, 0);
             self = selfRef;
+            view = viewRef;
+
+            if (self == null || view == null || self.IsDisposed || view.IsDisposed)
+            {
+                return;
+            }
 
             if (equipList.Count > 0)
             {
-                view.UpdatePreview(equipList[0], true);
+                ItemConfig firstItem = equipList[0];
+                view.PendingItemConfigId = firstItem.Id;
+                view.u_DataGunName?.SetValue(self.BuildEquipPreviewText(firstItem, slotType));
             }
             else
             {
-                view.UpdatePreview(null, true);
+                view.PendingItemConfigId = 0;
+                view.u_DataGunName?.SetValue(string.Empty);
             }
+        }
+
+        private static string BuildEquipPreviewText(this LobbyPanelComponent self, ItemConfig itemConfig, EquipSlotType slotType)
+        {
+            if (itemConfig == null)
+            {
+                return string.Empty;
+            }
+
+            string desc = null;
+            if (slotType == EquipSlotType.Weapon || slotType == EquipSlotType.Weapon2)
+            {
+                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemConfig.Id);
+                desc = weaponConfig?.Desc;
+            }
+
+            if (string.IsNullOrWhiteSpace(desc))
+            {
+                desc = itemConfig.Desc;
+            }
+
+            if (string.IsNullOrWhiteSpace(desc))
+            {
+                desc = itemConfig.Name;
+            }
+
+            return desc;
         }
 
         /// <summary>
