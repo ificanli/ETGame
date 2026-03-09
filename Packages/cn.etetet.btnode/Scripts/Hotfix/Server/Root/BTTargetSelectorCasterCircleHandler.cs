@@ -9,6 +9,7 @@ namespace ET.Server
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
             SpellTargetComponent spellTargetComponent = buff.GetBuffData().GetComponent<SpellTargetComponent>();
+            spellTargetComponent.Units.Clear();
 
             Unit caster = buff.GetCaster();
             spellTargetComponent.Position = caster.Position;
@@ -56,6 +57,8 @@ namespace ET.Server
 
                 spellTargetComponent.Units.Add(aoiEntity.Unit.Id);
             }
+
+            env.AddCollection(node.Units, spellTargetComponent.Units);
             return 0;
         }
     }

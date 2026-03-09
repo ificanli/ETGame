@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 
@@ -12,7 +12,7 @@ namespace ET.Server
             UnitComponent unitComponent = scene.GetComponent<UnitComponent>();
 
             Unit unit = request.Unit;
-            if (unit != null)  // 黑科技，直接传送Unit对象
+            if (unit != null)  // 姒涙垹顫栭幎鈧敍宀€娲块幒銉ょ炊闁箒nit鐎电钖?
             {
                 unitComponent.AddChild(unit);
                 unitComponent.Add(unit);
@@ -46,7 +46,7 @@ namespace ET.Server
                 ApplySpawnPointIfNeeded(scene, unit);
             }
 
-            // 通知客户端开始切场景
+            // 闁氨鐓＄€广垺鍩涚粩顖氱磻婵鍨忛崷鐑樻珯
             M2C_StartSceneChange m2CStartSceneChange = M2C_StartSceneChange.Create();
             m2CStartSceneChange.SceneId = scene.Id;
             m2CStartSceneChange.SceneName = scene.Name;
@@ -54,27 +54,21 @@ namespace ET.Server
 
             if (request.ChangeScene)
             {
-                // 通知客户端创建My Unit
+                // 闁氨鐓＄€广垺鍩涚粩顖氬灡瀵ょ瘲y Unit
                 M2C_CreateMyUnit m2CCreateUnits = M2C_CreateMyUnit.Create();
                 m2CCreateUnits.Unit = UnitHelper.CreateUnitInfo(unit);
                 MapMessageHelper.NoticeClient(unit, m2CCreateUnits, NoticeType.Self);
             }
 
-            // 加入aoi
+            // 閸旂姴鍙哸oi
             unit.AddComponent<AOIEntity>();
 
-            // Unit 已在 Map 场景中，此时初始化武器和英雄技能，确保 Timer 注册在 Map 的 TimerComponent 上
-            // （若在 GateMap 初始化，GateMap 销毁后 Timer 会失效，导致 BuffTick 只执行一次）
+            // Unit 瀹告彃婀?Map 閸︾儤娅欐稉顓ㄧ礉濮濄倖妞傞崚婵嗩潗閸栨牗顒熼崳銊ユ嫲閼婚亶娉熼幎鈧懗鏂ょ礉绾喕绻?Timer 濞夈劌鍞介崷?Map 閻?TimerComponent 娑?
+            // 閿涘牐瀚㈤崷?GateMap 閸掓繂顫愰崠鏍电礉GateMap 闁库偓濮ｄ礁鎮?Timer 娴兼艾銇戦弫鍫礉鐎佃壈鍤?BuffTick 閸欘亝澧界悰灞肩濞嗏槄绱?
             if (unit.UnitType == UnitType.Player)
             {
                 WeaponInitHelper.InitializeWeaponsFromUnit(unit);
-
-                HeroSkillComponent heroSkill = unit.GetComponent<HeroSkillComponent>();
-                if (heroSkill != null)
-                {
-                    // 组件从 GateMap 传送过来，Awake 不会再触发，需要手动重启 Timer
-                    heroSkill.RestartSkillTimer();
-                }
+                WeaponInitHelper.InitializeHeroPassiveBuffFromUnitConfig(unit, true);
 
                 RogueProgressHelper.EnsureProgress(unit, true);
             }
@@ -164,7 +158,7 @@ namespace ET.Server
                 return 1;
             }
 
-            // 以队伍顺序映射到两大阵营，确保索敌能把对手视为敌军。
+            // 娴犮儵妲︽导宥夈€庢惔蹇旀Ё鐏忓嫬鍩屾稉銈呫亣闂冧絻鎯€閿涘瞼鈥樻穱婵堝偍閺佸矁鍏橀幎濠傤嚠閹靛顫嬫稉鐑樻櫕閸愭稏鈧?
             return (teamIndex % 2 == 0) ? 1 : 2;
         }
 
@@ -202,7 +196,7 @@ namespace ET.Server
 
             if (!found)
             {
-                // 全被占用时兜底复用第一个出生点组，避免无法进入地图
+                // 閸忋劏顫﹂崡鐘垫暏閺冭泛鍘规惔鏇烆槻閻劎顑囨稉鈧稉顏勫毉閻㈢喓鍋ｇ紒鍕剁礉闁灝鍘ら弮鐘崇《鏉╂稑鍙嗛崷鏉挎禈
                 teamId = orderedTeamIds[0];
                 found = true;
                 Log.Warning($"[SpawnAssign] all teams occupied, fallback to first team, unitId={playerId}, fallbackTeamId={teamId}");
@@ -233,7 +227,7 @@ namespace ET.Server
                 return;
             }
 
-            // 机器人走敌对阵营，避免被判定为友军
+            // 閺堝搫娅掓禍楦胯泲閺佸苯顕梼浣冩儉閿涘矂浼╅崗宥堫潶閸掋倕鐣炬稉鍝勫几閸?
             CampComponent camp = unit.GetComponent<CampComponent>();
             if (camp == null || camp.CampId != robotCampId)
             {
@@ -244,13 +238,13 @@ namespace ET.Server
                 unit.AddComponent<CampComponent, int>(robotCampId);
             }
 
-            // 怪物AI依赖 ThreatComponent
+            // 閹亞澧緼I娓氭繆绂?ThreatComponent
             if (unit.GetComponent<ThreatComponent>() == null)
             {
                 unit.AddComponent<ThreatComponent>();
             }
 
-            // 将当前落点写回出生坐标，供AI回归逻辑使用
+            // 鐏忓棗缍嬮崜宥堟儰閻愮懓鍟撻崶鐐插毉閻㈢喎娼楅弽鍥风礉娓氭睔I閸ョ偛缍婇柅鏄忕帆娴ｈ法鏁?
             NumericComponent numeric = unit.NumericComponent;
             numeric.SetNoEvent(NumericType.X, (long)(unit.Position.x * 1000));
             numeric.SetNoEvent(NumericType.Y, (long)(unit.Position.y * 1000));
@@ -382,3 +376,4 @@ namespace ET.Server
         }
     }
 }
+

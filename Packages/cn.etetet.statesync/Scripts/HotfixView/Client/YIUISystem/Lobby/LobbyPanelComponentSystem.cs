@@ -219,7 +219,16 @@ namespace ET.Client
             // 先确认起装，把选好的英雄和装备提交给服务端
             var loadout = self.Root().GetComponent<LoadoutComponent>();
             C2G_ConfirmLoadout confirmReq = C2G_ConfirmLoadout.Create();
-            confirmReq.HeroConfigId = loadout.SelectedHeroConfigId > 0 ? loadout.SelectedHeroConfigId : 1001;
+            confirmReq.HeroConfigId = loadout.SelectedHeroConfigId;
+            if (confirmReq.HeroConfigId <= 0 && loadout.Heroes.Count > 0)
+            {
+                confirmReq.HeroConfigId = loadout.Heroes[0].HeroConfigId;
+            }
+
+            if (confirmReq.HeroConfigId <= 0)
+            {
+                confirmReq.HeroConfigId = HeroConfigHelper.GetDefaultHeroConfigId();
+            }
             confirmReq.MainWeaponConfigId = loadout.MainWeaponConfigId;
             confirmReq.SubWeaponConfigId = loadout.SubWeaponConfigId;
             confirmReq.ArmorConfigId = loadout.ArmorConfigId;

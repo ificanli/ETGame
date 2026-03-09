@@ -1,16 +1,9 @@
-namespace ET.Server
+﻿namespace ET.Server
 {
-    /// <summary>
-    /// 武器初始化辅助类：从 EquipmentComponent 读取武器并初始化 WeaponComponent
-    /// </summary>
     public static class WeaponInitHelper
     {
-        /// <summary>
-        /// Unit 传送到战斗地图后初始化武器（从 Unit 自身的 EquipmentComponent 读取）
-        /// </summary>
         public static void InitializeWeaponsFromUnit(Unit unit)
         {
-            // 避免重复初始化
             if (unit.GetComponent<WeaponComponent>() != null)
             {
                 Log.Info($"WeaponInitHelper: unit {unit.Id} already has WeaponComponent, skip");
@@ -20,9 +13,6 @@ namespace ET.Server
             InitializeWeapons(unit);
         }
 
-        /// <summary>
-        /// 从装备组件初始化武器组件
-        /// </summary>
         public static void InitializeWeapons(Unit unit)
         {
             EquipmentComponent equipComp = unit.GetComponent<EquipmentComponent>();
@@ -32,7 +22,6 @@ namespace ET.Server
                 return;
             }
 
-            // 读取主手和副手武器
             Item mainWeapon = equipComp.GetEquippedItem(EquipmentSlotType.MainHand);
             Item offWeapon = equipComp.GetEquippedItem(EquipmentSlotType.OffHand);
 
@@ -41,17 +30,14 @@ namespace ET.Server
 
             Log.Info($"WeaponInitHelper: unit {unit.Id} equipment check - MainHand={slot1WeaponId}, OffHand={slot2WeaponId}");
 
-            // 如果没有武器，不创建 WeaponComponent
             if (slot1WeaponId == 0 && slot2WeaponId == 0)
             {
                 Log.Warning($"WeaponInitHelper: unit {unit.Id} has no weapon equipped, skip weapon init");
                 return;
             }
 
-            // 创建 WeaponComponent
-            WeaponComponent weaponComp = unit.AddComponent<WeaponComponent, int, int>(slot1WeaponId, slot2WeaponId);
+            unit.AddComponent<WeaponComponent, int, int>(slot1WeaponId, slot2WeaponId);
 
-            // 添加索敌组件（BTWeaponHasTarget 需要）
             if (unit.GetComponent<TargetSelectorComponent>() == null)
             {
                 TargetSelectorComponent selector = unit.AddComponent<TargetSelectorComponent>();
@@ -64,25 +50,89 @@ namespace ET.Server
             }
 
             Log.Debug($"WeaponInitHelper: initialized weapons for unit {unit.Id}, Slot1={slot1WeaponId}, Slot2={slot2WeaponId}");
-
-            // 挂上武器BT Buff，让BT持续驱动射击逻辑
             BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), 200200, null);
         }
 
-        /// <summary>
-        /// 初始化英雄技能
-        /// </summary>
-        public static void InitializeHeroSkill(Unit unit, int heroConfigId)
+        public static void InitializeHeroPassiveBuff(Unit unit, int heroConfigId, bool forceRecreate = false)
         {
-            if (heroConfigId <= 0)
+            HeroConfig heroConfig = HeroConfigCategory.Instance.GetOrDefault(heroConfigId);
+            int passiveBuffId = heroConfig?.PassiveBuffId ?? 0;
+
+            RemoveOtherHeroPassiveBuffs(unit, passiveBuffId);
+
+            if (passiveBuffId <= 0)
             {
+                Log.Info($"[HeroPassive] init skipped: no passive buff, heroConfigId={heroConfigId}, unitId={unit.Id}");
                 return;
             }
 
-            // 创建英雄技能组件
-            unit.AddComponent<HeroSkillComponent, int>(heroConfigId);
+            if (!BuffConfigCategory.Instance.Contain(passiveBuffId))
+            {
+                Log.Warning($"[HeroPassive] init skipped: passive buff config not found, heroConfigId={heroConfigId}, passiveBuffId={passiveBuffId}");
+                return;
+            }
 
-            Log.Debug($"WeaponInitHelper: initialized hero skill for unit {unit.Id}, heroConfigId={heroConfigId}");
+            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
+            if (buffComponent == null)
+            {
+                Log.Warning($"[HeroPassive] init skipped: BuffComponent missing, unitId={unit.Id}, heroConfigId={heroConfigId}");
+                return;
+            }
+
+            if (forceRecreate && buffComponent.HasBuff(passiveBuffId))
+            {
+                BuffHelper.RemoveBuffByConfigId(unit, passiveBuffId, BuffFlags.SameConfigIdReplaceRemove);
+            }
+
+            if (buffComponent.HasBuff(passiveBuffId))
+            {
+                Log.Debug($"[HeroPassive] already active, unitId={unit.Id}, heroConfigId={heroConfigId}, passiveBuffId={passiveBuffId}");
+                return;
+            }
+
+            Buff buff = BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), passiveBuffId, null);
+            if (buff != null)
+            {
+                BuffData buffData = buff.GetBuffData();
+                if (buffData.GetComponent<SpellTargetComponent>() == null)
+                {
+                    buffData.AddComponent<SpellTargetComponent>();
+                }
+            }
+            Log.Debug($"[HeroPassive] initialized from config, unitId={unit.Id}, heroConfigId={heroConfigId}, passiveBuffId={passiveBuffId}");
+        }
+
+        public static void InitializeHeroPassiveBuffFromUnitConfig(Unit unit, bool forceRecreate = false)
+        {
+            int heroConfigId = GetHeroConfigIdByUnitConfigId(unit.ConfigId);
+            InitializeHeroPassiveBuff(unit, heroConfigId, forceRecreate);
+        }
+
+        private static void RemoveOtherHeroPassiveBuffs(Unit unit, int keepBuffId)
+        {
+            foreach (HeroConfig heroConfig in HeroConfigCategory.Instance.DataList)
+            {
+                int passiveBuffId = heroConfig.PassiveBuffId;
+                if (passiveBuffId <= 0 || passiveBuffId == keepBuffId)
+                {
+                    continue;
+                }
+
+                BuffHelper.RemoveBuffByConfigId(unit, passiveBuffId, BuffFlags.SameConfigIdReplaceRemove);
+            }
+        }
+
+        public static int GetHeroConfigIdByUnitConfigId(int unitConfigId)
+        {
+            foreach (HeroConfig heroConfig in HeroConfigCategory.Instance.DataList)
+            {
+                if (heroConfig.UnitConfigId == unitConfigId)
+                {
+                    return heroConfig.Id;
+                }
+            }
+
+            return 0;
         }
     }
 }

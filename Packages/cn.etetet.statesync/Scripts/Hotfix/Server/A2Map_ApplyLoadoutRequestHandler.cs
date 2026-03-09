@@ -1,7 +1,7 @@
-namespace ET.Server
+﻿namespace ET.Server
 {
     /// <summary>
-    /// 匹配成功后 Gate 通知 Unit 应用起装数据
+    /// 直接应用当前起装到 Unit（Home/Map 场景）
     /// </summary>
     [MessageHandler(SceneType.Map)]
     public class A2Map_ApplyLoadoutRequestHandler : MessageLocationHandler<Unit, A2Map_ApplyLoadoutRequest, A2Map_ApplyLoadoutResponse>
@@ -13,6 +13,7 @@ namespace ET.Server
             LoadoutHelper.ApplyLoadout(unit, request.MainWeaponConfigId, request.SubWeaponConfigId, request.ArmorConfigId);
 
             WeaponInitHelper.InitializeWeaponsFromUnit(unit);
+            WeaponInitHelper.InitializeHeroPassiveBuff(unit, request.HeroConfigId);
 
             await ETTask.CompletedTask;
         }
