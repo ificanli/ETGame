@@ -91,7 +91,7 @@ namespace ET.Server
                 progress.Level = nextLevel;
                 progress.NeedExp = RogueProgressComponentSystem.NormalizeNeedExp(nextLevelConfig.NeedExp);
 
-                List<RogueNumericDelta> gainedNumerics = ApplyLevelNumerics(unit, nextLevelConfig);
+                List<RogueNumericDelta> gainedNumerics = ApplyLevelNumerics(unit, progress, nextLevelConfig);
                 SendLevelUp(unit, oldLevel, nextLevel, gainedNumerics);
 
                 if (nextLevelConfig.TriggerChoice)
@@ -110,7 +110,7 @@ namespace ET.Server
             SendExpSync(unit, progress);
         }
 
-        public static async ETTask<int> ChooseOption(Unit unit, long choiceSerial, int optionId, Action<int> onBuffApplied)
+        public static async ETTask<int> ChooseOption(Unit unit, long choiceSerial, int optionId, Action<int, long> onBuffApplied)
         {
             if (unit == null || unit.IsDisposed || unit.UnitType != UnitType.Player)
             {
@@ -154,13 +154,19 @@ namespace ET.Server
                     return ErrorCode.ERR_RogueChoiceOptionInvalid;
                 }
 
-                if (optionConfig == null || optionConfig.BuffConfigId <= 0 || !BuffConfigCategory.Instance.Contain(optionConfig.BuffConfigId))
+                if (optionConfig == null || !optionConfig.TryGetEffectBuffConfigId(out int effectBuffConfigId) || !BuffConfigCategory.Instance.Contain(effectBuffConfigId))
                 {
                     return ErrorCode.ERR_RogueBuffConfigNotFound;
                 }
 
-                BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), optionConfig.BuffConfigId, null);
-                onBuffApplied?.Invoke(optionConfig.BuffConfigId);
+                Buff buff = BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), effectBuffConfigId, null);
+                if (buff != null)
+                {
+                    progress.AppliedBuffIds.Add(buff.Id);
+                }
+
+                progress.SelectedOptionIds.Add(optionId);
+                onBuffApplied?.Invoke(effectBuffConfigId, buff?.Id ?? 0L);
 
                 progress.ChoicePending = false;
                 progress.PendingOptionIds.Clear();
@@ -175,10 +181,10 @@ namespace ET.Server
             }
         }
 
-        private static List<RogueNumericDelta> ApplyLevelNumerics(Unit unit, RogueLevelConfig levelConfig)
+        private static List<RogueNumericDelta> ApplyLevelNumerics(Unit unit, RogueProgressComponent progress, RogueLevelConfig levelConfig)
         {
             List<RogueNumericDelta> gained = new List<RogueNumericDelta>();
-            if (unit == null || levelConfig == null || levelConfig.NumericDeltas == null || levelConfig.NumericDeltas.Count == 0)
+            if (unit == null || progress == null || levelConfig == null || levelConfig.NumericDeltas == null || levelConfig.NumericDeltas.Count == 0)
             {
                 return gained;
             }
@@ -200,6 +206,15 @@ namespace ET.Server
                 {
                     long oldValue = numeric.GetAsLong(numericConfig.NumericType);
                     numeric.Set(numericConfig.NumericType, oldValue + numericConfig.Value);
+
+                    if (progress.AppliedLevelNumericTotals.TryGetValue(numericConfig.NumericType, out long totalValue))
+                    {
+                        progress.AppliedLevelNumericTotals[numericConfig.NumericType] = totalValue + numericConfig.Value;
+                    }
+                    else
+                    {
+                        progress.AppliedLevelNumericTotals[numericConfig.NumericType] = numericConfig.Value;
+                    }
                 }
                 catch (Exception e)
                 {
@@ -287,10 +302,10 @@ namespace ET.Server
 
                 RogueOptionData optionData = RogueOptionData.Create();
                 optionData.OptionId = optionId;
-                optionData.BuffConfigId = optionConfig.BuffConfigId;
+                optionData.BuffConfigId = optionConfig.TryGetEffectBuffConfigId(out int effectBuffConfigId) ? effectBuffConfigId : optionConfig.BuffConfigId;
                 optionData.NameTextId = optionConfig.NameTextId;
                 optionData.DescTextId = optionConfig.DescTextId;
-                optionData.Icon = optionConfig.Icon ?? string.Empty;
+                optionData.Icon = optionConfig.GetImagePath();
                 popup.Options.Add(optionData);
             }
 
@@ -325,12 +340,12 @@ namespace ET.Server
             foreach (KeyValuePair<int, RogueOptionConfig> kv in options)
             {
                 RogueOptionConfig optionConfig = kv.Value;
-                if (optionConfig == null || optionConfig.BuffConfigId <= 0)
+                if (optionConfig == null || !optionConfig.TryGetEffectBuffConfigId(out int effectBuffConfigId))
                 {
                     continue;
                 }
 
-                if (!BuffConfigCategory.Instance.Contain(optionConfig.BuffConfigId))
+                if (!BuffConfigCategory.Instance.Contain(effectBuffConfigId))
                 {
                     continue;
                 }
@@ -400,6 +415,79 @@ namespace ET.Server
             }
 
             return candidates.Count - 1;
+        }
+
+        public static void ClearRogueRuntime(Unit unit, bool removeProgressComponent)
+        {
+            if (unit == null || unit.IsDisposed || unit.UnitType != UnitType.Player)
+            {
+                return;
+            }
+
+            RogueProgressComponent progress = unit.GetComponent<RogueProgressComponent>();
+            if (progress == null)
+            {
+                return;
+            }
+
+            RevertAppliedLevelNumerics(unit, progress);
+            RemoveAppliedRogueBuffs(unit, progress);
+
+            progress.CurrentExp = 0;
+            progress.ChoiceSerial = 0;
+            progress.ChoicePending = false;
+            progress.PendingOptionIds.Clear();
+            progress.PendingChoiceLevels.Clear();
+            progress.AppliedBuffIds.Clear();
+            progress.SelectedOptionIds.Clear();
+            progress.AppliedLevelNumericTotals.Clear();
+
+            if (removeProgressComponent)
+            {
+                unit.RemoveComponent<RogueProgressComponent>();
+            }
+        }
+
+        private static void RemoveAppliedRogueBuffs(Unit unit, RogueProgressComponent progress)
+        {
+            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
+            if (buffComponent == null || progress.AppliedBuffIds == null || progress.AppliedBuffIds.Count == 0)
+            {
+                return;
+            }
+
+            foreach (long buffId in progress.AppliedBuffIds.ToArray())
+            {
+                Buff buff = buffComponent.GetChild<Buff>(buffId);
+                if (buff == null)
+                {
+                    continue;
+                }
+
+                buffComponent.RemoveBuff(buff);
+            }
+        }
+
+        private static void RevertAppliedLevelNumerics(Unit unit, RogueProgressComponent progress)
+        {
+            NumericComponent numeric = unit.NumericComponent;
+            if (numeric == null || progress.AppliedLevelNumericTotals == null || progress.AppliedLevelNumericTotals.Count == 0)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<int, long> kv in progress.AppliedLevelNumericTotals)
+            {
+                try
+                {
+                    long oldValue = numeric.GetAsLong(kv.Key);
+                    numeric.Set(kv.Key, oldValue - kv.Value);
+                }
+                catch (Exception e)
+                {
+                    Log.Warning($"[Rogue] revert numeric failed, unit={unit.Id}, numericType={kv.Key}, value={kv.Value}, error={e.Message}");
+                }
+            }
         }
     }
 }

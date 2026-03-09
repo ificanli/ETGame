@@ -208,19 +208,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-    - GroupName: Effect
-      GroupDesc: 
-      AssetTags: 
-      ActiveRuleName: EnableGroup
-      Collectors:
-      - CollectPath: Packages/cn.etetet.statesync/Bundles/Effect
-        CollectorGUID: 4f353bebf5d24bc47bd006812e0e3870
-        CollectorType: 0
-        AddressRuleName: AddressByFileName
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectPrefab
-        AssetTags: 
-        UserData: 
     - GroupName: SpellIndicator
       GroupDesc: 
       AssetTags: 

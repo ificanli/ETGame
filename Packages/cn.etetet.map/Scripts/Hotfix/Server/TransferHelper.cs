@@ -36,10 +36,17 @@ namespace ET.Server
             EntityRef<Scene> rootRef = root;
             EntityRef<Unit> unitRef = unit;
             long unitId = unit.Id;
-            
+
             bool changeScene = TransferSceneHelper.IsChangeScene(unit.Scene().Name, mapName);
-            
-            
+
+            EventSystem.Instance.Publish(unit.Scene(), new UnitBeforeTransfer
+            {
+                Unit = unit,
+                TargetMapName = mapName,
+                ChangeScene = changeScene
+            });
+
+
             //1. 申请地图副本
             A2MapManager_GetMapRequest mapRequest = A2MapManager_GetMapRequest.Create();
             mapRequest.MapName = mapName;

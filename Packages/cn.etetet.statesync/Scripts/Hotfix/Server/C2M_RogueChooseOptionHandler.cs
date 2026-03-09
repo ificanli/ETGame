@@ -9,7 +9,7 @@ namespace ET.Server
             response.OptionId = request.OptionId;
 
             int appliedBuffConfigId = 0;
-            int error = await RogueProgressHelper.ChooseOption(unit, request.ChoiceSerial, request.OptionId, buffConfigId =>
+            int error = await RogueProgressHelper.ChooseOption(unit, request.ChoiceSerial, request.OptionId, (buffConfigId, _) =>
             {
                 appliedBuffConfigId = buffConfigId;
             });

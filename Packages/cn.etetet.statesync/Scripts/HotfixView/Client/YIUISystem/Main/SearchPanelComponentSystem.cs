@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using YIUIFramework;
 
@@ -19,6 +21,7 @@ namespace ET.Client
         {
             self.LastContainerSnapshot = null;
             InitLayout(self);
+            CacheGridRoots(self);
             SetTemplateActive(self.u_ComContainerItemTemplate, false);
             SetTemplateActive(self.u_ComBagItemTemplate, false);
         }
@@ -28,9 +31,15 @@ namespace ET.Client
         {
             ReleaseViews(self.ContainerItemViews);
             ReleaseViews(self.BagItemViews);
+            ReleaseViews(self.ContainerGridCellViews);
+            ReleaseViews(self.BagGridCellViews);
             self.ContainerSolver = null;
             self.BagSolver = null;
             self.LastContainerSnapshot = null;
+            self.ContainerGridRoot = null;
+            self.BagGridRoot = null;
+            self.IsDragging = false;
+            self.DraggingView = null;
         }
 
         [EntitySystem]
@@ -45,6 +54,11 @@ namespace ET.Client
         [EntitySystem]
         private static void LateUpdate(this SearchPanelComponent self)
         {
+            if (self.IsDragging)
+            {
+                return;
+            }
+
             TryRefreshView(self, false);
         }
 
@@ -105,6 +119,12 @@ namespace ET.Client
             EnsureBagSolver(self, self.BagRows);
         }
 
+        private static void CacheGridRoots(SearchPanelComponent self)
+        {
+            self.ContainerGridRoot = self.u_ComContainerBoardRoot?.Find("GridRoot") as RectTransform;
+            self.BagGridRoot = self.u_ComBagBoardRoot?.Find("GridRoot") as RectTransform;
+        }
+
         private static void RenderContainer(SearchPanelComponent self, ECAInteractClientComponent runtime)
         {
             int maxSlot = -1;
@@ -152,10 +172,12 @@ namespace ET.Client
 
                 ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
                 BindItemView(view, item.ConfigId, item.Count, slot);
+                BindDrag(self, view, viewId, false);
             }
 
             RemoveDeadViews(self.ContainerItemViews, alive);
             ResizeBoard(self.u_ComContainerBoardRoot, self.u_ComContainerItemsLayer, self.ContainerCols, self.ContainerRows, self.CellSize, self.CellSpacing, self.CellPadding);
+            RenderGrid(self.ContainerGridRoot, self.ContainerGridCellViews, self.ContainerCols, self.ContainerRows, self.CellSize, self.CellSpacing, self.CellPadding);
         }
 
         private static void RenderBag(SearchPanelComponent self, ItemComponent itemComponent)
@@ -199,11 +221,13 @@ namespace ET.Client
 
                     ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
                     BindItemView(view, item.ConfigId, item.Count, slot);
+                    BindDrag(self, view, item.Id, true);
                 }
             }
 
             RemoveDeadViews(self.BagItemViews, alive);
             ResizeBoard(self.u_ComBagBoardRoot, self.u_ComBagItemsLayer, self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding);
+            RenderGrid(self.BagGridRoot, self.BagGridCellViews, self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding);
         }
 
         private static RectTransform GetOrCreateView(
@@ -258,6 +282,264 @@ namespace ET.Client
             }
         }
 
+        private static void BindDrag(SearchPanelComponent self, RectTransform view, long itemId, bool isBag)
+        {
+            if (view == null)
+            {
+                return;
+            }
+
+            SearchItemDragProxy proxy = view.GetComponent<SearchItemDragProxy>();
+            if (proxy == null)
+            {
+                proxy = view.gameObject.AddComponent<SearchItemDragProxy>();
+            }
+            proxy.PanelRef = self;
+            proxy.ItemId = itemId;
+            proxy.IsBag = isBag;
+
+            EventTrigger trigger = view.GetComponent<EventTrigger>();
+            if (trigger == null)
+            {
+                trigger = view.gameObject.AddComponent<EventTrigger>();
+            }
+
+            trigger.triggers ??= new List<EventTrigger.Entry>();
+            trigger.triggers.Clear();
+
+            AddTrigger(trigger, EventTriggerType.BeginDrag, OnBeginDragEvent);
+            AddTrigger(trigger, EventTriggerType.Drag, OnDragEvent);
+            AddTrigger(trigger, EventTriggerType.EndDrag, OnEndDragEvent);
+        }
+
+        private static void AddTrigger(EventTrigger trigger, EventTriggerType eventType, UnityAction<BaseEventData> handler)
+        {
+            EventTrigger.Entry entry = new EventTrigger.Entry
+            {
+                eventID = eventType
+            };
+            entry.callback.AddListener(handler);
+            trigger.triggers.Add(entry);
+        }
+
+        private static void OnBeginDragEvent(BaseEventData data)
+        {
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out PointerEventData eventData))
+            {
+                return;
+            }
+
+            OnItemBeginDrag(self, view, itemId, isBag, eventData);
+        }
+
+        private static void OnDragEvent(BaseEventData data)
+        {
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out PointerEventData eventData))
+            {
+                return;
+            }
+
+            OnItemDrag(self, view, itemId, isBag, eventData);
+        }
+
+        private static void OnEndDragEvent(BaseEventData data)
+        {
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out PointerEventData eventData))
+            {
+                return;
+            }
+
+            OnItemEndDrag(self, view, itemId, isBag, eventData);
+        }
+
+        private static bool TryGetDragContext(
+            BaseEventData data,
+            out SearchPanelComponent self,
+            out RectTransform view,
+            out long itemId,
+            out bool isBag,
+            out PointerEventData eventData)
+        {
+            self = null;
+            view = null;
+            itemId = 0;
+            isBag = false;
+            eventData = data as PointerEventData;
+            if (eventData == null)
+            {
+                return false;
+            }
+
+            GameObject go = eventData.pointerDrag != null ? eventData.pointerDrag : eventData.pointerPress;
+            if (go == null)
+            {
+                return false;
+            }
+
+            SearchItemDragProxy proxy = go.GetComponent<SearchItemDragProxy>();
+            if (proxy == null)
+            {
+                return false;
+            }
+
+            self = proxy.Panel;
+            if (self == null || self.IsDisposed)
+            {
+                return false;
+            }
+
+            view = go.GetComponent<RectTransform>();
+            if (view == null)
+            {
+                return false;
+            }
+
+            itemId = proxy.ItemId;
+            isBag = proxy.IsBag;
+            return true;
+        }
+
+        private static void OnItemBeginDrag(
+            SearchPanelComponent self,
+            RectTransform view,
+            long itemId,
+            bool isBag,
+            PointerEventData eventData)
+        {
+            if (self == null || self.IsDisposed || view == null || eventData == null)
+            {
+                return;
+            }
+
+            GridPlacementSolver solver = isBag ? self.BagSolver : self.ContainerSolver;
+            RectTransform layer = isBag ? self.u_ComBagItemsLayer : self.u_ComContainerItemsLayer;
+            if (solver == null || layer == null || !solver.TryGetItem(itemId, out _))
+            {
+                return;
+            }
+
+            self.IsDragging = true;
+            self.DraggingIsBag = isBag;
+            self.DraggingItemId = itemId;
+            self.DraggingView = view;
+            view.SetAsLastSibling();
+
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(layer, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
+            {
+                self.DragWorldOffset = view.position - worldPoint;
+            }
+            else
+            {
+                self.DragWorldOffset = Vector3.zero;
+            }
+
+            CanvasGroup canvasGroup = view.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = view.gameObject.AddComponent<CanvasGroup>();
+            }
+            canvasGroup.blocksRaycasts = false;
+        }
+
+        private static void OnItemDrag(
+            SearchPanelComponent self,
+            RectTransform view,
+            long itemId,
+            bool isBag,
+            PointerEventData eventData)
+        {
+            if (self == null || self.IsDisposed || !self.IsDragging || self.DraggingView != view || self.DraggingItemId != itemId || self.DraggingIsBag != isBag || eventData == null)
+            {
+                return;
+            }
+
+            RectTransform layer = isBag ? self.u_ComBagItemsLayer : self.u_ComContainerItemsLayer;
+            if (layer == null)
+            {
+                return;
+            }
+
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(layer, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
+            {
+                view.position = worldPoint + self.DragWorldOffset;
+            }
+        }
+
+        private static void OnItemEndDrag(
+            SearchPanelComponent self,
+            RectTransform view,
+            long itemId,
+            bool isBag,
+            PointerEventData eventData)
+        {
+            if (self == null || self.IsDisposed || view == null)
+            {
+                return;
+            }
+
+            CanvasGroup canvasGroup = view.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                canvasGroup.blocksRaycasts = true;
+            }
+
+            if (!self.IsDragging || self.DraggingView != view || self.DraggingItemId != itemId || self.DraggingIsBag != isBag)
+            {
+                return;
+            }
+
+            self.IsDragging = false;
+            self.DraggingView = null;
+
+            GridPlacementSolver solver = isBag ? self.BagSolver : self.ContainerSolver;
+            if (solver == null || !solver.TryGetItem(itemId, out GridItemFootprint oldFootprint))
+            {
+                return;
+            }
+
+            float strideX = self.CellSize.x + self.CellSpacing.x;
+            float strideY = self.CellSize.y + self.CellSpacing.y;
+            int targetX = Mathf.RoundToInt((view.anchoredPosition.x - self.CellPadding.x) / Mathf.Max(1f, strideX));
+            int targetY = Mathf.RoundToInt(((-view.anchoredPosition.y) - self.CellPadding.y) / Mathf.Max(1f, strideY));
+            targetX = Mathf.Clamp(targetX, 0, Mathf.Max(0, solver.Cols - 1));
+            targetY = Mathf.Clamp(targetY, 0, Mathf.Max(0, solver.Rows - 1));
+
+            int maxRadius = Math.Max(solver.Cols, solver.Rows);
+            GridDropResult dropResult = solver.ResolveDropNearest(itemId, targetX, targetY, maxRadius, allowSwap: true);
+            bool applied = solver.ApplyDropResult(itemId, dropResult);
+            if (!applied)
+            {
+                ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
+                return;
+            }
+
+            ApplyFootprintFromSolver(self, isBag, itemId);
+            if (dropResult.ResultType == GridDropResultType.Swapped && dropResult.SwapItemId > 0)
+            {
+                ApplyFootprintFromSolver(self, isBag, dropResult.SwapItemId);
+            }
+
+            Log.Info(
+                $"[SearchDrag] drop {(isBag ? "bag" : "container")} item={itemId}, result={dropResult.ResultType}, target=({targetX},{targetY})");
+        }
+
+        private static void ApplyFootprintFromSolver(SearchPanelComponent self, bool isBag, long itemId)
+        {
+            GridPlacementSolver solver = isBag ? self.BagSolver : self.ContainerSolver;
+            Dictionary<long, RectTransform> map = isBag ? self.BagItemViews : self.ContainerItemViews;
+            if (solver == null || !solver.TryGetItem(itemId, out GridItemFootprint footprint))
+            {
+                return;
+            }
+
+            if (!map.TryGetValue(itemId, out RectTransform view) || view == null)
+            {
+                return;
+            }
+
+            ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
+        }
+
         private static void ApplyFootprint(
             RectTransform view,
             GridItemFootprint footprint,
@@ -298,6 +580,53 @@ namespace ET.Client
             }
         }
 
+        private static void RenderGrid(
+            RectTransform gridRoot,
+            Dictionary<int, RectTransform> cellMap,
+            int cols,
+            int rows,
+            Vector2 cellSize,
+            Vector2 spacing,
+            Vector2 padding)
+        {
+            if (gridRoot == null)
+            {
+                return;
+            }
+
+            HashSet<int> alive = new();
+            for (int y = 0; y < rows; ++y)
+            {
+                for (int x = 0; x < cols; ++x)
+                {
+                    int id = y * cols + x;
+                    alive.Add(id);
+                    if (!cellMap.TryGetValue(id, out RectTransform cell) || cell == null)
+                    {
+                        GameObject go = new GameObject($"Cell_{x}_{y}", typeof(RectTransform), typeof(Image));
+                        go.transform.SetParent(gridRoot, false);
+                        cell = go.GetComponent<RectTransform>();
+                        Image image = go.GetComponent<Image>();
+                        image.color = new Color(1f, 1f, 1f, 0.08f);
+                        image.raycastTarget = false;
+                        cellMap[id] = cell;
+                    }
+
+                    GridItemFootprint footprint = new GridItemFootprint
+                    {
+                        ItemId = 0,
+                        X = x,
+                        Y = y,
+                        Width = 1,
+                        Height = 1
+                    };
+                    ApplyFootprint(cell, footprint, cellSize, spacing, padding);
+                }
+            }
+
+            RemoveDeadViews(cellMap, alive);
+        }
+
         private static int CalcCols(RectTransform boardRoot, Vector2 cellSize, Vector2 spacing, int fallback)
         {
             if (boardRoot == null)
@@ -328,12 +657,24 @@ namespace ET.Client
 
         private static int GetItemWidth(int configId)
         {
-            return 1;
+            ItemConfig config = ItemConfigCategory.Instance.GetOrDefault(configId);
+            if (config == null || config.GridWidth <= 0)
+            {
+                return 1;
+            }
+
+            return config.GridWidth;
         }
 
         private static int GetItemHeight(int configId)
         {
-            return 1;
+            ItemConfig config = ItemConfigCategory.Instance.GetOrDefault(configId);
+            if (config == null || config.GridHeight <= 0)
+            {
+                return 1;
+            }
+
+            return config.GridHeight;
         }
 
         private static Vector2 GetRectSize(RectTransform rect, Vector2 fallback)
@@ -407,9 +748,52 @@ namespace ET.Client
             }
         }
 
+        private static void RemoveDeadViews(Dictionary<int, RectTransform> map, HashSet<int> alive)
+        {
+            List<int> removeIds = null;
+            foreach (KeyValuePair<int, RectTransform> pair in map)
+            {
+                if (alive.Contains(pair.Key))
+                {
+                    continue;
+                }
+
+                if (pair.Value != null)
+                {
+                    UnityEngine.Object.Destroy(pair.Value.gameObject);
+                }
+
+                removeIds ??= new List<int>();
+                removeIds.Add(pair.Key);
+            }
+
+            if (removeIds == null)
+            {
+                return;
+            }
+
+            foreach (int id in removeIds)
+            {
+                map.Remove(id);
+            }
+        }
+
         private static void ReleaseViews(Dictionary<long, RectTransform> map)
         {
             foreach (KeyValuePair<long, RectTransform> pair in map)
+            {
+                if (pair.Value != null)
+                {
+                    UnityEngine.Object.Destroy(pair.Value.gameObject);
+                }
+            }
+
+            map.Clear();
+        }
+
+        private static void ReleaseViews(Dictionary<int, RectTransform> map)
+        {
+            foreach (KeyValuePair<int, RectTransform> pair in map)
             {
                 if (pair.Value != null)
                 {

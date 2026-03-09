@@ -31,5 +31,16 @@ namespace ET.Client
 
         public readonly Dictionary<long, RectTransform> ContainerItemViews = new();
         public readonly Dictionary<long, RectTransform> BagItemViews = new();
+        public readonly Dictionary<int, RectTransform> ContainerGridCellViews = new();
+        public readonly Dictionary<int, RectTransform> BagGridCellViews = new();
+
+        public RectTransform ContainerGridRoot;
+        public RectTransform BagGridRoot;
+
+        public bool IsDragging;
+        public bool DraggingIsBag;
+        public long DraggingItemId;
+        public RectTransform DraggingView;
+        public Vector3 DragWorldOffset;
     }
 }

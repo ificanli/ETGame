@@ -1,0 +1,19 @@
+﻿{
+  "Items": [
+    {
+      "HeroConfigId": 1001,
+      "ModelResName": "TaoZi",
+      "CameraName": ""
+    },
+    {
+      "HeroConfigId": 1002,
+      "ModelResName": "PuTao",
+      "CameraName": ""
+    },
+    {
+      "HeroConfigId": 1003,
+      "ModelResName": "CaoMei",
+      "CameraName": ""
+    }
+  ]
+}

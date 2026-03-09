@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using YIUIFramework;
@@ -15,7 +15,7 @@ namespace ET.Client
         [EntitySystem]
         private static void YIUIInitialize(this LobbyPanelComponent self)
         {
-            // 初始化英雄列表 LoopScroll
+            // 鍒濆鍖栬嫳闆勫垪琛?LoopScroll
             var heroLoopScroll = self.u_ComHeroList.GetComponentInChildren<LoopScrollRect>();
             self.m_HeroLoop = self.AddChild<YIUILoopScrollChild, LoopScrollRect, Type, string>(
                 heroLoopScroll,
@@ -23,7 +23,7 @@ namespace ET.Client
                 "u_EventSelect"
             );
 
-            // 初始化装备背包 LoopScroll
+            // 鍒濆鍖栬澶囪儗鍖?LoopScroll
             var bagLoopScroll = self.u_ComEquipBagScroll.GetComponentInChildren<LoopScrollRect>();
             self.m_EquipBagLoop = self.AddChild<YIUILoopScrollChild, LoopScrollRect, Type, string>(
                 bagLoopScroll,
@@ -31,7 +31,9 @@ namespace ET.Client
                 "u_EventSelect"
             );
 
-            // 初始化装备槽位
+            // 鍒濆鍖栬澶囨Ы浣?
+
+            self.InitHeroDisplay();
             self.InitEquipSlots();
         }
 
@@ -48,12 +50,12 @@ namespace ET.Client
             return true;
         }
 
-        #region YIUIEvent开始
+        #region YIUIEvent寮€濮?
 
         [YIUIInvoke(LobbyPanelComponent.OnEventEnterMapInvoke)]
         private static async ETTask OnEventEnterMapInvoke(this LobbyPanelComponent self)
         {
-            // 复用匹配链路：PVE 按钮走与 1v1 相同流程（匹配成功 -> 服务端传送）
+            // 澶嶇敤鍖归厤閾捐矾锛歅VE 鎸夐挳璧颁笌 1v1 鐩稿悓娴佺▼锛堝尮閰嶆垚鍔?-> 鏈嶅姟绔紶閫侊級
             await self.SendMatchRequest(1);
         }
 
@@ -113,15 +115,15 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventClickPutIntoBagInvoke)]
         private static async ETTask OnEventClickPutIntoBagInvoke(this LobbyPanelComponent self)
         {
-            // 打开装备选择界面，选择药品放入背包
+            // 鎵撳紑瑁呭閫夋嫨鐣岄潰锛岄€夋嫨鑽搧鏀惧叆鑳屽寘
             await self.OpenEquipSelectView(EquipSlotType.Bag);
         }
-        #endregion YIUIEvent结束
+        #endregion YIUIEvent缁撴潫
 
-        #region 页签切换逻辑
+        #region 椤电鍒囨崲閫昏緫
 
         /// <summary>
-        /// 显示指定面板，隐藏其他面板
+        /// 鏄剧ず鎸囧畾闈㈡澘锛岄殣钘忓叾浠栭潰鏉?
         /// </summary>
         private static void ShowPanel(this LobbyPanelComponent self, RectTransform targetPanel)
         {
@@ -134,7 +136,7 @@ namespace ET.Client
 
         #endregion
 
-        #region 英雄列表逻辑
+        #region 鑻遍泟鍒楄〃閫昏緫
 
         private static async ETTask RefreshHeroList(this LobbyPanelComponent self)
         {
@@ -146,7 +148,7 @@ namespace ET.Client
 
             if (response.Error != ErrorCode.ERR_Success)
             {
-                Log.Error($"获取英雄列表失败: {response.Error}");
+                Log.Error($"鑾峰彇鑻遍泟鍒楄〃澶辫触: {response.Error}");
                 return;
             }
 
@@ -166,11 +168,13 @@ namespace ET.Client
             await self.HeroLoop.SetDataRefresh(loadout.Heroes, 0);
             self = selfRef;
 
-            // 默认选中第一个英雄
+            // 榛樿閫変腑绗竴涓嫳闆?
             var loadout2 = self.Root().GetComponent<LoadoutComponent>();
             if (loadout2.Heroes.Count > 0)
             {
                 loadout2.SelectedHeroConfigId = loadout2.Heroes[0].HeroConfigId;
+                await self.RefreshHeroDisplay(loadout2.Heroes[0].HeroConfigId);
+                self = selfRef;
             }
         }
 
@@ -201,37 +205,38 @@ namespace ET.Client
             if (select)
             {
                 self.Root().GetComponent<LoadoutComponent>().SelectedHeroConfigId = data.HeroConfigId;
-                Log.Info($"选中英雄: {data.Name} (ConfigId: {data.HeroConfigId})");
+                self.RefreshHeroDisplay(data.HeroConfigId).Coroutine();
+                Log.Info($"閫変腑鑻遍泟: {data.Name} (ConfigId: {data.HeroConfigId})");
             }
         }
 
         #endregion
 
-        #region 匹配逻辑
+        #region 鍖归厤閫昏緫
 
         /// <summary>
-        /// 发送匹配请求
+        /// 鍙戦€佸尮閰嶈姹?
         /// </summary>
         private static async ETTask SendMatchRequest(this LobbyPanelComponent self, int gameMode)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
 
-            // 先确认起装，把选好的英雄和装备提交给服务端
+            // 鍏堢‘璁よ捣瑁咃紝鎶婇€夊ソ鐨勮嫳闆勫拰瑁呭鎻愪氦缁欐湇鍔＄
             var loadout = self.Root().GetComponent<LoadoutComponent>();
             C2G_ConfirmLoadout confirmReq = C2G_ConfirmLoadout.Create();
             confirmReq.HeroConfigId = loadout.SelectedHeroConfigId > 0 ? loadout.SelectedHeroConfigId : 1001;
             confirmReq.MainWeaponConfigId = loadout.MainWeaponConfigId;
             confirmReq.SubWeaponConfigId = loadout.SubWeaponConfigId;
             confirmReq.ArmorConfigId = loadout.ArmorConfigId;
-            Log.Info($"发送确认起装: HeroConfigId={confirmReq.HeroConfigId}, MainWeapon={confirmReq.MainWeaponConfigId}, SubWeapon={confirmReq.SubWeaponConfigId}");
+            Log.Info($"鍙戦€佺‘璁よ捣瑁? HeroConfigId={confirmReq.HeroConfigId}, MainWeapon={confirmReq.MainWeaponConfigId}, SubWeapon={confirmReq.SubWeaponConfigId}");
             G2C_ConfirmLoadout confirmResp = (G2C_ConfirmLoadout)await self.Root().GetComponent<ClientSenderComponent>().Call(confirmReq);
             self = selfRef;
             if (confirmResp.Error != ErrorCode.ERR_Success)
             {
-                Log.Error($"确认起装失败: {confirmResp.Error} {confirmResp.Message}");
+                Log.Error($"纭璧疯澶辫触: {confirmResp.Error} {confirmResp.Message}");
                 return;
             }
-            Log.Info($"确认起装成功，英雄={confirmReq.HeroConfigId}, 武器1={confirmReq.MainWeaponConfigId}, 武器2={confirmReq.SubWeaponConfigId}");
+            Log.Info($"纭璧疯鎴愬姛锛岃嫳闆?{confirmReq.HeroConfigId}, 姝﹀櫒1={confirmReq.MainWeaponConfigId}, 姝﹀櫒2={confirmReq.SubWeaponConfigId}");
 
             C2G_MatchRequest request = C2G_MatchRequest.Create();
             request.GameMode = gameMode;
@@ -242,40 +247,40 @@ namespace ET.Client
 
             if (response.Error != ErrorCode.ERR_Success)
             {
-                Log.Error($"匹配请求失败: {response.Error}");
+                Log.Error($"鍖归厤璇锋眰澶辫触: {response.Error}");
                 return;
             }
 
-            Log.Info($"匹配请求成功，RequestId: {response.RequestId}, GameMode: {gameMode}，等待匹配...");
+            Log.Info($"鍖归厤璇锋眰鎴愬姛锛孯equestId: {response.RequestId}, GameMode: {gameMode}锛岀瓑寰呭尮閰?..");
 
-            // 打开匹配等待弹窗
+            // 鎵撳紑鍖归厤绛夊緟寮圭獥
             await self.UIPanel.OpenViewAsync<MatchViewComponent>();
             self = selfRef;
 
-            // 服务端匹配成功后会自动传送玩家，客户端只需等待场景切换完成
+            // 鏈嶅姟绔尮閰嶆垚鍔熷悗浼氳嚜鍔ㄤ紶閫佺帺瀹讹紝瀹㈡埛绔彧闇€绛夊緟鍦烘櫙鍒囨崲瀹屾垚
             await self.Root().GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
             self = selfRef;
 
-            // 发布 EnterMapFinish 事件，关闭 Loading 面板
+            // 鍙戝竷 EnterMapFinish 浜嬩欢锛屽叧闂?Loading 闈㈡澘
             EventSystem.Instance.Publish(self.Root(), new EnterMapFinish());
 
-            // 关闭 Lobby 面板（MatchView 会随面板一起关闭）
+            // 鍏抽棴 Lobby 闈㈡澘锛圡atchView 浼氶殢闈㈡澘涓€璧峰叧闂級
             await self.UIPanel.CloseAsync();
         }
 
         #endregion
 
-        #region 装备系统逻辑
+        #region 瑁呭绯荤粺閫昏緫
 
         /// <summary>
-        /// 初始化装备槽位
+        /// 鍒濆鍖栬澶囨Ы浣?
         /// </summary>
         private static void InitEquipSlots(this LobbyPanelComponent self)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
 
-            // 武器1
-            self.UIEquipSlotItemWeapon.u_DataSlotName.SetValue("武器1");
+            // 姝﹀櫒1
+            self.UIEquipSlotItemWeapon.u_DataSlotName.SetValue("姝﹀櫒1");
             self.UIEquipSlotItemWeapon.u_DataIsEmpty.SetValue(true);
             var weaponBtn = self.UIEquipSlotItemWeapon.UIBase.OwnerGameObject.GetComponent<Button>();
             if (weaponBtn != null)
@@ -290,8 +295,8 @@ namespace ET.Client
                 });
             }
 
-            // 武器2
-            self.UIEquipSlotItemWeapon2.u_DataSlotName.SetValue("武器2");
+            // 姝﹀櫒2
+            self.UIEquipSlotItemWeapon2.u_DataSlotName.SetValue("姝﹀櫒2");
             self.UIEquipSlotItemWeapon2.u_DataIsEmpty.SetValue(true);
             var weapon2Btn = self.UIEquipSlotItemWeapon2.UIBase.OwnerGameObject.GetComponent<Button>();
             if (weapon2Btn != null)
@@ -306,8 +311,8 @@ namespace ET.Client
                 });
             }
 
-            // 防具
-            self.UIEquipSlotItemArmor.u_DataSlotName.SetValue("防具");
+            // 闃插叿
+            self.UIEquipSlotItemArmor.u_DataSlotName.SetValue("闃插叿");
             self.UIEquipSlotItemArmor.u_DataIsEmpty.SetValue(true);
             var armorBtn = self.UIEquipSlotItemArmor.UIBase.OwnerGameObject.GetComponent<Button>();
             if (armorBtn != null)
@@ -322,8 +327,8 @@ namespace ET.Client
                 });
             }
 
-            // 背包
-            self.UIEquipSlotItemBag.u_DataSlotName.SetValue("背包");
+            // 鑳屽寘
+            self.UIEquipSlotItemBag.u_DataSlotName.SetValue("鑳屽寘");
             self.UIEquipSlotItemBag.u_DataIsEmpty.SetValue(true);
             var bagBtn = self.UIEquipSlotItemBag.UIBase.OwnerGameObject.GetComponent<Button>();
             if (bagBtn != null)
@@ -340,7 +345,7 @@ namespace ET.Client
         }
 
         /// <summary>
-        /// 打开装备选择界面
+        /// 鎵撳紑瑁呭閫夋嫨鐣岄潰
         /// </summary>
         private static async ETTask OpenEquipSelectView(this LobbyPanelComponent self, EquipSlotType slotType)
         {
@@ -348,42 +353,42 @@ namespace ET.Client
 
             self.CurrentSelectingSlot = slotType;
 
-            // 打开装备选择界面
+            // 鎵撳紑瑁呭閫夋嫨鐣岄潰
             var equipSelectView = await self.UIPanel.OpenViewAsync<EquipSelectViewComponent>();
             self = selfRef;
 
             if (equipSelectView == null)
             {
-                Log.Error("打开装备选择界面失败");
+                Log.Error("鎵撳紑瑁呭閫夋嫨鐣岄潰澶辫触");
                 return;
             }
 
-            // 设置引用和槽位类型
+            // 璁剧疆寮曠敤鍜屾Ы浣嶇被鍨?
             equipSelectView.m_LobbyPanel = self;
             equipSelectView.CurrentSlotType = slotType;
 
-            // 刷新装备列表
+            // 鍒锋柊瑁呭鍒楄〃
             await self.RefreshEquipSelectView(equipSelectView, slotType);
         }
 
         /// <summary>
-        /// 刷新装备选择界面
+        /// 鍒锋柊瑁呭閫夋嫨鐣岄潰
         /// </summary>
         private static async ETTask RefreshEquipSelectView(this LobbyPanelComponent self, EquipSelectViewComponent view, EquipSlotType slotType)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
             EntityRef<EquipSelectViewComponent> viewRef = view;
 
-            // 根据槽位类型获取可选装备列表
+            // 鏍规嵁妲戒綅绫诲瀷鑾峰彇鍙€夎澶囧垪琛?
             List<ItemConfig> equipList = self.GetEquipListBySlotType(slotType);
 
             if (view.EquipLoop == null)
             {
-                Log.Error("装备选择界面的LoopScroll未初始化");
+                Log.Error("瑁呭閫夋嫨鐣岄潰鐨凩oopScroll鏈垵濮嬪寲");
                 return;
             }
 
-            // 刷新列表
+            // 鍒锋柊鍒楄〃
             await view.EquipLoop.SetDataRefresh(equipList, 0);
             self = selfRef;
             view = viewRef;
@@ -434,7 +439,7 @@ namespace ET.Client
         }
 
         /// <summary>
-        /// 根据槽位类型获取装备列表
+        /// 鏍规嵁妲戒綅绫诲瀷鑾峰彇瑁呭鍒楄〃
         /// </summary>
         private static List<ItemConfig> GetEquipListBySlotType(this LobbyPanelComponent self, EquipSlotType slotType)
         {
@@ -447,21 +452,21 @@ namespace ET.Client
                 {
                     case EquipSlotType.Weapon:
                     case EquipSlotType.Weapon2:
-                        // Type == 1 表示武器
+                        // Type == 1 琛ㄧず姝﹀櫒
                         if (item.Type == 1)
                         {
                             result.Add(item);
                         }
                         break;
                     case EquipSlotType.Armor:
-                        // Type == 2 表示防具
+                        // Type == 2 琛ㄧず闃插叿
                         if (item.Type == 2)
                         {
                             result.Add(item);
                         }
                         break;
                     case EquipSlotType.Bag:
-                        // Type == 3 表示药品
+                        // Type == 3 琛ㄧず鑽搧
                         if (item.Type == 3)
                         {
                             result.Add(item);
@@ -474,7 +479,7 @@ namespace ET.Client
         }
 
         /// <summary>
-        /// 装备物品到槽位
+        /// 瑁呭鐗╁搧鍒版Ы浣?
         /// </summary>
         public static void EquipItem(this LobbyPanelComponent self, int itemConfigId, EquipSlotType slotType)
         {
@@ -487,37 +492,37 @@ namespace ET.Client
                     loadout.MainWeaponConfigId = itemConfigId;
                     self.UIEquipSlotItemWeapon.u_DataEquipName.SetValue(itemConfig.Name);
                     self.UIEquipSlotItemWeapon.u_DataIsEmpty.SetValue(false);
-                    Log.Info($"装备武器1: {itemConfig.Name}");
+                    Log.Info($"瑁呭姝﹀櫒1: {itemConfig.Name}");
                     break;
                 case EquipSlotType.Weapon2:
                     loadout.SubWeaponConfigId = itemConfigId;
                     self.UIEquipSlotItemWeapon2.u_DataEquipName.SetValue(itemConfig.Name);
                     self.UIEquipSlotItemWeapon2.u_DataIsEmpty.SetValue(false);
-                    Log.Info($"装备武器2: {itemConfig.Name}");
+                    Log.Info($"瑁呭姝﹀櫒2: {itemConfig.Name}");
                     break;
                 case EquipSlotType.Armor:
                     loadout.ArmorConfigId = itemConfigId;
                     self.UIEquipSlotItemArmor.u_DataEquipName.SetValue(itemConfig.Name);
                     self.UIEquipSlotItemArmor.u_DataIsEmpty.SetValue(false);
-                    Log.Info($"装备防具: {itemConfig.Name}");
+                    Log.Info($"瑁呭闃插叿: {itemConfig.Name}");
                     break;
                 case EquipSlotType.Bag:
-                    // 添加到背包列表
+                    // 娣诲姞鍒拌儗鍖呭垪琛?
                     self.BagEquipIds.Add(itemConfigId);
                     self.RefreshBagScroll().Coroutine();
-                    Log.Info($"添加到背包: {itemConfig.Name}");
+                    Log.Info($"娣诲姞鍒拌儗鍖? {itemConfig.Name}");
                     break;
             }
         }
 
         /// <summary>
-        /// 刷新背包 LoopScroll
+        /// 鍒锋柊鑳屽寘 LoopScroll
         /// </summary>
         private static async ETTask RefreshBagScroll(this LobbyPanelComponent self)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
 
-            // 获取背包中的装备配置列表
+            // 鑾峰彇鑳屽寘涓殑瑁呭閰嶇疆鍒楄〃
             List<ItemConfig> bagItems = new();
             ItemConfigCategory itemCategory = ItemConfigCategory.Instance;
             foreach (var itemId in self.BagEquipIds)
@@ -529,16 +534,16 @@ namespace ET.Client
                 }
             }
 
-            // 刷新背包 LoopScroll
+            // 鍒锋柊鑳屽寘 LoopScroll
             await self.EquipBagLoop.SetDataRefresh(bagItems, 0);
             self = selfRef;
 
-            // 更新背包槽位显示
+            // 鏇存柊鑳屽寘妲戒綅鏄剧ず
             self.UIEquipSlotItemBag.u_DataIsEmpty.SetValue(self.BagEquipIds.Count == 0);
         }
 
         /// <summary>
-        /// 背包物品绑定回调
+        /// 鑳屽寘鐗╁搧缁戝畾鍥炶皟
         /// </summary>
         [EntitySystem]
         private static void YIUILoopRenderer(
@@ -553,7 +558,7 @@ namespace ET.Client
         }
 
         /// <summary>
-        /// 背包物品点击回调（可以实现移除功能）
+        /// 鑳屽寘鐗╁搧鐐瑰嚮鍥炶皟锛堝彲浠ュ疄鐜扮Щ闄ゅ姛鑳斤級
         /// </summary>
         [EntitySystem]
         private static void YIUILoopOnClick(
@@ -563,8 +568,8 @@ namespace ET.Client
             int index,
             bool select)
         {
-            Log.Info($"点击背包物品: {data.Name}");
-            // TODO: 可以在这里实现移除背包物品的功能
+            Log.Info($"鐐瑰嚮鑳屽寘鐗╁搧: {data.Name}");
+            // TODO: 鍙互鍦ㄨ繖閲屽疄鐜扮Щ闄よ儗鍖呯墿鍝佺殑鍔熻兘
         }
 
         #endregion

@@ -102,18 +102,30 @@
 					}]
 			}]],
 	"options" : [[1, {
+				"Name" : "迅捷步伐",
+				"Desc" : "获得一层迅捷效果，提高作战机动性。",
+				"ImagePath" : "rogue_speed_1",
+				"BTConfig" : "200111",
 				"BuffConfigId" : 200111,
 				"NameTextId" : 0,
 				"DescTextId" : 0,
 				"Icon" : "rogue_speed_1",
 				"Weight" : 100
 			}], [2, {
+				"Name" : "猎手步频",
+				"Desc" : "获得一层迅捷效果，适合持续拉扯与追击。",
+				"ImagePath" : "rogue_speed_2",
+				"BTConfig" : "200111",
 				"BuffConfigId" : 200111,
 				"NameTextId" : 0,
 				"DescTextId" : 0,
 				"Icon" : "rogue_speed_2",
 				"Weight" : 100
 			}], [3, {
+				"Name" : "战术加速",
+				"Desc" : "获得一层迅捷效果，用于快速切入或脱离战场。",
+				"ImagePath" : "rogue_speed_3",
+				"BTConfig" : "200111",
 				"BuffConfigId" : 200111,
 				"NameTextId" : 0,
 				"DescTextId" : 0,

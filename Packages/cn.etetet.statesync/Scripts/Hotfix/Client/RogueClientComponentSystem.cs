@@ -6,6 +6,11 @@ namespace ET.Client
         [EntitySystem]
         private static void Awake(this RogueClientComponent self)
         {
+            self.ResetRuntime();
+        }
+
+        public static void ResetRuntime(this RogueClientComponent self)
+        {
             self.Level = 1;
             self.CurrentExp = 0;
             self.NeedExp = 0;

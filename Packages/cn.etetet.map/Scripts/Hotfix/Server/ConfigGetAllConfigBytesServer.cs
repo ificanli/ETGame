@@ -1,4 +1,4 @@
-#if DOTNET
+﻿#if DOTNET
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +20,7 @@ namespace ET.Server
                 switch(configProcessAttribute.ConfigType)
                 {
                     case ConfigType.Luban:
-                        configFilePath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/Server/Binary/{configType.Name}.bytes");
+                        configFilePath = GetLubanConfigPath("Server", "Binary", configType.Name, "bytes");
                         output[configType] = File.ReadAllBytes(configFilePath);
                         break;
                     case ConfigType.Json:
@@ -30,7 +30,7 @@ namespace ET.Server
                         }
                         else
                         {
-                            configFilePath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/Server/Json/{configType.Name}.json");
+                            configFilePath = GetLubanConfigPath("Server", "Json", configType.Name, "json");
                         }
                         output[configType] = File.ReadAllText(configFilePath);
                         break;
@@ -43,6 +43,18 @@ namespace ET.Server
 
             await ETTask.CompletedTask;
             return output;
+        }
+
+        private static string GetLubanConfigPath(string codeMode, string folder, string configName, string extension)
+        {
+            string normalPath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/{folder}/{configName}.{extension}");
+            if (File.Exists(normalPath))
+            {
+                return normalPath;
+            }
+
+            string etLowerPath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/{folder}/et_{configName.ToLowerInvariant()}.{extension}");
+            return etLowerPath;
         }
     }
 }

@@ -119,7 +119,7 @@ namespace ET.Test
             int appliedBuffConfigId = 0;
             EntityRef<Unit> unitRef = unit;
             EntityRef<RogueProgressComponent> progressRef = progress;
-            int chooseError = await RogueProgressHelper.ChooseOption(unit, choiceSerial, optionId, buffConfigId =>
+            int chooseError = await RogueProgressHelper.ChooseOption(unit, choiceSerial, optionId, (buffConfigId, _) =>
             {
                 appliedBuffConfigId = buffConfigId;
             });
@@ -138,9 +138,9 @@ namespace ET.Test
                 return 11;
             }
 
-            if (appliedBuffConfigId <= 0 || appliedBuffConfigId != optionConfig.BuffConfigId)
+            if (!optionConfig.TryGetEffectBuffConfigId(out int expectedBuffConfigId) || appliedBuffConfigId <= 0 || appliedBuffConfigId != expectedBuffConfigId)
             {
-                Log.Console($"applied buff mismatch, applied={appliedBuffConfigId}, expected={optionConfig.BuffConfigId}");
+                Log.Console($"applied buff mismatch, applied={appliedBuffConfigId}, expected={expectedBuffConfigId}");
                 return 12;
             }
 

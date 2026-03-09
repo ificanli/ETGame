@@ -26,12 +26,6 @@ namespace ET.Server
                 bool inRange = distance <= ecaPoint.InteractRange;
                 bool wasInRange = ecaPoint.PlayersInRange.Contains(player.Id);
 
-                if (ecaPoint.PointId == "100")
-                {
-                    Log.Info(
-                        $"[ECADebug][RangeProbe100] player={player.Id}, playerPos=({player.Position.x:F2},{player.Position.y:F2},{player.Position.z:F2}), pointPos=({ecaUnit.Position.x:F2},{ecaUnit.Position.y:F2},{ecaUnit.Position.z:F2}), distance={distance:F2}, range={ecaPoint.InteractRange:F2}, inRange={inRange}, wasInRange={wasInRange}");
-                }
-
                 if (inRange && !wasInRange)
                 {
                     Log.Info(

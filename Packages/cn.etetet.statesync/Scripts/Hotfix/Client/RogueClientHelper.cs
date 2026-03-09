@@ -52,5 +52,11 @@ namespace ET.Client
             runtime.ChoiceOptions.Clear();
             Log.Info($"[RogueClient] choose option success: option={response.OptionId}, buff={response.BuffConfigId}");
         }
+
+        public static void ResetRuntime(Scene root)
+        {
+            RogueClientComponent runtime = GetOrAddRuntime(root);
+            runtime?.ResetRuntime();
+        }
     }
 }

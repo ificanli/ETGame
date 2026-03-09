@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "cn.etetet.statesync",
   "displayName": "ET.StateSync",
   "version": "4.0.0",
@@ -39,6 +39,7 @@
     "cn.etetet.yiuigm": "4.0.0",
     "cn.etetet.loader": "4.0.0",
     "cn.etetet.yiuiyooassets": "4.0.0",
+    "cn.etetet.yiui3ddisplay": "4.0.0",
     "cn.etetet.yiuiluban": "4.0.0",
     "cn.etetet.test": "4.0.0",
     "cn.etetet.map": "4.0.0",

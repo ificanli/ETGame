@@ -17,6 +17,10 @@ namespace ET.Client
     {
         public int OptionId;
         public int BuffConfigId;
+        public string Name;
+        public string Desc;
+        public string ImagePath;
+        public string BTConfig;
         public int NameTextId;
         public int DescTextId;
         public string Icon;

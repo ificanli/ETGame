@@ -26,6 +26,8 @@ namespace ET
             Quality = _buf.ReadInt();
             UseType = _buf.ReadInt();
             Level = _buf.ReadInt();
+            GridWidth = _buf.ReadInt();
+            GridHeight = _buf.ReadInt();
 
             EndInit();
         }
@@ -71,6 +73,14 @@ namespace ET
         /// 等级
         /// </summary>
         public readonly int Level;
+        /// <summary>
+        /// 格子宽
+        /// </summary>
+        public readonly int GridWidth;
+        /// <summary>
+        /// 格子高
+        /// </summary>
+        public readonly int GridHeight;
     
         public const int __ID__ = 1663635188;
         public override int GetTypeId() => __ID__;
@@ -92,6 +102,8 @@ namespace ET
             + "Quality:" + Quality + ","
             + "UseType:" + UseType + ","
             + "Level:" + Level + ","
+            + "GridWidth:" + GridWidth + ","
+            + "GridHeight:" + GridHeight + ","
             + "}";
         }
 

@@ -8,7 +8,9 @@
     "Icon": "Items/Potion_HP",
     "Quality": 1,
     "UseType": 1,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10002,
@@ -19,7 +21,9 @@
     "Icon": "Items/Potion_MP",
     "Quality": 1,
     "UseType": 1,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10003,
@@ -30,7 +34,9 @@
     "Icon": "Items/Ore_Iron",
     "Quality": 0,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10004,
@@ -41,7 +47,9 @@
     "Icon": "Items/Equipment/Weapon_Sword_01",
     "Quality": 0,
     "UseType": 2,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10005,
@@ -52,7 +60,9 @@
     "Icon": "Items/Equipment/Helmet_Leather_01",
     "Quality": 0,
     "UseType": 2,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10006,
@@ -63,7 +73,9 @@
     "Icon": "Items/Equipment/Armor_Iron_01",
     "Quality": 1,
     "UseType": 2,
-    "Level": 5
+    "Level": 5,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10007,
@@ -74,7 +86,9 @@
     "Icon": "Items/Equipment/Robe_Cloth_01",
     "Quality": 0,
     "UseType": 2,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10008,
@@ -85,7 +99,9 @@
     "Icon": "Items/Equipment/Pants_Leather_01",
     "Quality": 0,
     "UseType": 2,
-    "Level": 3
+    "Level": 3,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10009,
@@ -96,7 +112,9 @@
     "Icon": "Items/Equipment/Boots_Iron_01",
     "Quality": 1,
     "UseType": 2,
-    "Level": 5
+    "Level": 5,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10010,
@@ -107,7 +125,9 @@
     "Icon": "Items/Equipment/Weapon_Bow_01",
     "Quality": 1,
     "UseType": 2,
-    "Level": 5
+    "Level": 5,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10011,
@@ -118,7 +138,9 @@
     "Icon": "Items/Equipment/Necklace_Magic_01",
     "Quality": 2,
     "UseType": 2,
-    "Level": 10
+    "Level": 10,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10012,
@@ -129,7 +151,9 @@
     "Icon": "Items/Equipment/Ring_Strength_01",
     "Quality": 1,
     "UseType": 2,
-    "Level": 8
+    "Level": 8,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50001,
@@ -140,7 +164,9 @@
     "Icon": "weapon_ak47",
     "Quality": 3,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50002,
@@ -151,7 +177,9 @@
     "Icon": "weapon_m4a1",
     "Quality": 3,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50003,
@@ -162,7 +190,9 @@
     "Icon": "weapon_awm",
     "Quality": 4,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50004,
@@ -173,7 +203,9 @@
     "Icon": "armor_vest2",
     "Quality": 2,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50005,
@@ -184,7 +216,9 @@
     "Icon": "armor_vest3",
     "Quality": 3,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50006,
@@ -195,7 +229,9 @@
     "Icon": "item_medkit",
     "Quality": 2,
     "UseType": 1,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50009,
@@ -206,7 +242,9 @@
     "Icon": "weapon_shotgun",
     "Quality": 3,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50010,
@@ -217,7 +255,9 @@
     "Icon": "weapon_rifle1",
     "Quality": 3,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50011,
@@ -228,7 +268,9 @@
     "Icon": "weapon_rifle2",
     "Quality": 3,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 50012,
@@ -239,6 +281,8 @@
     "Icon": "weapon_rocket",
     "Quality": 4,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   }
 ]

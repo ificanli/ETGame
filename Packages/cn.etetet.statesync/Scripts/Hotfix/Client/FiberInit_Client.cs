@@ -1,4 +1,4 @@
-﻿namespace ET.Client
+namespace ET.Client
 {
     [Invoke(SceneType.Client)]
     public class FiberInit_Client: AInvokeHandler<FiberInit, ETTask>

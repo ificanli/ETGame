@@ -14,5 +14,8 @@ namespace ET.Server
 
         public List<int> PendingOptionIds { get; set; } = new();
         public List<int> PendingChoiceLevels { get; set; } = new();
+        public List<long> AppliedBuffIds { get; set; } = new();
+        public List<int> SelectedOptionIds { get; set; } = new();
+        public Dictionary<int, long> AppliedLevelNumericTotals { get; set; } = new();
     }
 }
