@@ -1,17 +1,32 @@
-[
-  {
-    "Id": 1001,
-    "Name": "TaoZi",
-    "UnitConfigId": 1006
-  },
-  {
-    "Id": 1002,
-    "Name": "PuTao",
-    "UnitConfigId": 1007
-  },
-  {
-    "Id": 1003,
-    "Name": "CaoMei",
-    "UnitConfigId": 1008
-  }
+﻿[
+    {
+        "Id":  1001,
+        "Name":  "TaoZi",
+        "UnitConfigId":  1006,
+        "SkillConfigId":  100000,
+        "HealRange":  5,
+        "HealIntervalMs":  1000,
+        "HealAmount":  10,
+        "PassiveBuffId":  201001
+    },
+    {
+        "Id":  1002,
+        "Name":  "PuTao",
+        "UnitConfigId":  1007,
+        "SkillConfigId":  100010,
+        "HealRange":  0,
+        "HealIntervalMs":  0,
+        "HealAmount":  0,
+        "PassiveBuffId":  0
+    },
+    {
+        "Id":  1003,
+        "Name":  "CaoMei",
+        "UnitConfigId":  1008,
+        "SkillConfigId":  100020,
+        "HealRange":  0,
+        "HealIntervalMs":  0,
+        "HealAmount":  0,
+        "PassiveBuffId":  0
+    }
 ]

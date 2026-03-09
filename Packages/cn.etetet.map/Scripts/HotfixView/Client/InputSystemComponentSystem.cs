@@ -82,7 +82,6 @@ namespace ET.Client
             unit.MoveToAsync(targetPos).Coroutine();
         }
 
-        // 鼠标左键点击目标，设置主角的目标
         private static void SelectTarget(this InputSystemComponent self, InputAction.CallbackContext context)
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -133,9 +132,25 @@ namespace ET.Client
                 return;
             }
 
-            int spellConfigId = (keyControl.keyCode - Key.Digit1) * 10 + 100000;
+            if (keyControl.keyCode != Key.Digit1)
+            {
+                return;
+            }
 
-            EventSystem.Instance.Publish(self.Scene(), new OnSpellTrigger() { Unit = self.GetParent<Unit>(), SpellConfigId = spellConfigId });
+            MainPanelComponent mainPanel = self.Root().YIUIMgr().GetPanel<MainPanelComponent>();
+            ActionBarComponent actionBar = mainPanel?.UIActionBar;
+            int spellConfigId = actionBar?.UISlot12?.u_DataId?.GetValue() ?? 0;
+            if (spellConfigId <= 0)
+            {
+                Log.Warning("[Input] cast spell skipped: action bar skill not bound");
+                return;
+            }
+
+            EventSystem.Instance.Publish(self.Scene(), new OnSpellTrigger
+            {
+                Unit = self.GetParent<Unit>(),
+                SpellConfigId = spellConfigId,
+            });
         }
     }
 }

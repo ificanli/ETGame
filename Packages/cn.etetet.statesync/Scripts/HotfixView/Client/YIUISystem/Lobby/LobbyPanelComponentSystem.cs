@@ -224,7 +224,16 @@ namespace ET.Client
             // 鍏堢‘璁よ捣瑁咃紝鎶婇€夊ソ鐨勮嫳闆勫拰瑁呭鎻愪氦缁欐湇鍔＄
             var loadout = self.Root().GetComponent<LoadoutComponent>();
             C2G_ConfirmLoadout confirmReq = C2G_ConfirmLoadout.Create();
-            confirmReq.HeroConfigId = loadout.SelectedHeroConfigId > 0 ? loadout.SelectedHeroConfigId : 1001;
+            confirmReq.HeroConfigId = loadout.SelectedHeroConfigId;
+            if (confirmReq.HeroConfigId <= 0 && loadout.Heroes.Count > 0)
+            {
+                confirmReq.HeroConfigId = loadout.Heroes[0].HeroConfigId;
+            }
+
+            if (confirmReq.HeroConfigId <= 0)
+            {
+                confirmReq.HeroConfigId = HeroConfigHelper.GetDefaultHeroConfigId();
+            }
             confirmReq.MainWeaponConfigId = loadout.MainWeaponConfigId;
             confirmReq.SubWeaponConfigId = loadout.SubWeaponConfigId;
             confirmReq.ArmorConfigId = loadout.ArmorConfigId;
