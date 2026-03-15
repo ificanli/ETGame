@@ -71,6 +71,11 @@ namespace ET.Server
                 WeaponInitHelper.InitializeHeroPassiveBuffFromUnitConfig(unit, true);
 
                 RogueProgressHelper.EnsureProgress(unit, true);
+
+                if (mapName == "Home")
+                {
+                    HomeEnterHelper.OnEnterHome(unit);
+                }
             }
 
             if (request.ChangeScene)

@@ -52,7 +52,12 @@
       "Bash(cmd.exe:*)",
       "Read(//mnt/d/05ET/MatchTest/**)",
       "Bash(pwsh -Command \"[guid]::NewGuid\\(\\).ToString\\(''N''\\).Substring\\(0,32\\)\")",
-      "Bash(\"D:\\\\05ET\\\\MatchTest\\\\ETGame\\\\Packages\\\\cn.etetet.statesync\\\\Scripts\\\\ModelView\\\\Client\\\\Mono\\\\JoystickRangeView.cs.meta\":*)"
+      "Bash(\"D:\\\\05ET\\\\MatchTest\\\\ETGame\\\\Packages\\\\cn.etetet.statesync\\\\Scripts\\\\ModelView\\\\Client\\\\Mono\\\\JoystickRangeView.cs.meta\":*)",
+      "Bash(xargs:*)",
+      "Bash(test:*)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist:*)",
+      "Bash(wmic process:*)"
     ],
     "deny": []
   }
