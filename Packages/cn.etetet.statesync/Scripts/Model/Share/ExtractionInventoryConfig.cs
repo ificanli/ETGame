@@ -10,13 +10,15 @@ namespace ET
         public static int GetSafeSlotStart()
         {
             RogueGlobalConfigCategory category = RogueGlobalConfigCategory.Instance;
-            return Math.Max(0, category?.SafeSlotStart ?? 0);
+            RogueGlobalConfig data = category?.Data;
+            return Math.Max(0, data?.SafeSlotStart ?? 0);
         }
 
         public static int GetSafeSlotCount()
         {
             RogueGlobalConfigCategory category = RogueGlobalConfigCategory.Instance;
-            return Math.Max(0, category?.SafeSlotCount ?? 0);
+            RogueGlobalConfig data = category?.Data;
+            return Math.Max(0, data?.SafeSlotCount ?? 0);
         }
 
         public static bool IsSafeSlot(int slotIndex)
@@ -34,13 +36,15 @@ namespace ET
         public static float GetCorpseInteractRange()
         {
             RogueGlobalConfigCategory category = RogueGlobalConfigCategory.Instance;
-            return Math.Max(0f, category?.CorpseInteractRange ?? 0f);
+            RogueGlobalConfig data = category?.Data;
+            return Math.Max(0f, data?.CorpseInteractRange ?? 0f);
         }
 
         public static int GetCorpseButtonTextId()
         {
             RogueGlobalConfigCategory category = RogueGlobalConfigCategory.Instance;
-            return Math.Max(0, category?.CorpseButtonTextId ?? 0);
+            RogueGlobalConfig data = category?.Data;
+            return Math.Max(0, data?.CorpseButtonTextId ?? 0);
         }
     }
 }
