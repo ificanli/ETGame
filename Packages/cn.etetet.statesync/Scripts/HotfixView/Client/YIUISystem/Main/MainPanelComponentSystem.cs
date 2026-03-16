@@ -350,13 +350,20 @@ namespace ET.Client
             }
 
             itemComponent.Clear();
-            itemComponent.SetCapacity(response.Capacity);
+            if (response.Width > 0 && response.Height > 0)
+            {
+                itemComponent.SetSize(response.Width, response.Height);
+            }
+            else
+            {
+                itemComponent.SetCapacity(response.Capacity);
+            }
             foreach (ItemData itemData in response.Items)
             {
-                itemComponent.UpdateItem(itemData.ItemId, itemData.SlotIndex, itemData.ConfigId, itemData.Count);
+                itemComponent.UpdateItem(itemData.ItemId, itemData.SlotIndex, itemData.ConfigId, itemData.Count, itemData.GridWidth, itemData.GridHeight);
             }
 
-            Log.Info($"[ECAClient][Bag] sync bag success: capacity={response.Capacity}, itemCount={response.Items.Count}");
+            Log.Info($"[ECAClient][Bag] sync bag success: size={itemComponent.Width}x{itemComponent.Height}, itemCount={response.Items.Count}");
         }
 
         private static void BindRogueLevelBar(this MainPanelComponent self)

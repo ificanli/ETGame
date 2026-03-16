@@ -8,6 +8,13 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene scene, M2C_DeathSettlement message)
         {
+            LoadoutComponent loadout = scene.GetComponent<LoadoutComponent>();
+            if (loadout != null)
+            {
+                loadout.IsConfirmed = false;
+                loadout.ConfirmedAt = 0;
+            }
+
             SettlementClientComponent settlement = scene.GetComponent<SettlementClientComponent>();
             if (settlement == null)
             {

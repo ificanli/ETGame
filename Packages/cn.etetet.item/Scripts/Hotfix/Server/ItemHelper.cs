@@ -84,6 +84,8 @@ namespace ET.Server
                 Item newItem = self.AddChild<Item>();
                 newItem.ConfigId = configId;
                 newItem.Count = addCount;
+                newItem.GridWidth = ResolveGridWidth(itemConfig);
+                newItem.GridHeight = ResolveGridHeight(itemConfig);
 
                 self.SetSlotItem(slotIndex, newItem);
                 updatedItemIds.Add(newItem.Id);
@@ -255,6 +257,8 @@ namespace ET.Server
             message.SlotIndex = item.SlotIndex;
             message.ConfigId = item.ConfigId;
             message.Count = item.Count;
+            message.GridWidth = item.GridWidth > 0 ? item.GridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+            message.GridHeight = item.GridHeight > 0 ? item.GridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
 
             MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
         }
@@ -271,6 +275,8 @@ namespace ET.Server
             message.SlotIndex = item.SlotIndex;
             message.ConfigId = item.ConfigId;
             message.Count = 0; // Count=0表示移除
+            message.GridWidth = item.GridWidth > 0 ? item.GridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+            message.GridHeight = item.GridHeight > 0 ? item.GridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
 
             MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
         }
@@ -284,6 +290,8 @@ namespace ET.Server
 
             M2C_UpdateBagCapacity message = M2C_UpdateBagCapacity.Create();
             message.Capacity = self.Capacity;
+            message.Width = self.Width;
+            message.Height = self.Height;
 
             MapMessageHelper.NoticeClient(unit, message, NoticeType.Self);
         }
@@ -490,6 +498,8 @@ namespace ET.Server
                     Item newItem = self.AddChild<Item>();
                     newItem.ConfigId = configId;
                     newItem.Count = stackCount;
+                    newItem.GridWidth = ResolveGridWidth(itemConfig);
+                    newItem.GridHeight = ResolveGridHeight(itemConfig);
 
                     self.SetSlotItem(currentSlot, newItem);
 
@@ -509,6 +519,16 @@ namespace ET.Server
             }
 
             return ErrorCode.ERR_Success;
+        }
+
+        private static int ResolveGridWidth(ItemConfig itemConfig)
+        {
+            return itemConfig?.GridWidth > 0 ? itemConfig.GridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+        }
+
+        private static int ResolveGridHeight(ItemConfig itemConfig)
+        {
+            return itemConfig?.GridHeight > 0 ? itemConfig.GridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
         }
     }
 }

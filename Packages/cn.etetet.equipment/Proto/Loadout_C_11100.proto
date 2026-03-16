@@ -9,6 +9,15 @@ message HeroInfoData
     int32 UnitConfigId = 3;
 }
 
+message LoadoutGridItemData
+{
+    int32 ConfigId = 1;
+    int32 Count = 2;
+    int32 AnchorSlotIndex = 3;
+    int32 GridWidth = 4;
+    int32 GridHeight = 5;
+}
+
 // 请求可用英雄列表
 // ResponseType G2C_GetHeroList
 message C2G_GetHeroList // ISessionRequest
@@ -30,6 +39,15 @@ message G2C_GetHeroList // ISessionResponse
     int32 CurrentArmorConfigId = 10;
     repeated int32 CurrentConsumableConfigIds = 11;
     int32 CurrentHeroConfigId = 12;
+    int32 CurrentBackpackConfigId = 13;
+    int32 CurrentBagWidth = 14;
+    int32 CurrentBagHeight = 15;
+    int32 SecureWidth = 16;
+    int32 SecureHeight = 17;
+    repeated LoadoutGridItemData CurrentBagItems = 18;
+    repeated LoadoutGridItemData CurrentSecureItems = 19;
+    bool IsConfirmed = 20;
+    int64 ConfirmedAt = 21;
 }
 
 // 确认起装（英雄+4个装备槽位）
@@ -42,6 +60,13 @@ message C2G_ConfirmLoadout // ISessionRequest
     int32 SubWeaponConfigId = 4;
     int32 ArmorConfigId = 5;
     repeated int32 ConsumableConfigIds = 6;
+    int32 BackpackConfigId = 7;
+    int32 BagWidth = 8;
+    int32 BagHeight = 9;
+    int32 SecureWidth = 10;
+    int32 SecureHeight = 11;
+    repeated LoadoutGridItemData FinalBagItems = 12;
+    repeated LoadoutGridItemData FinalSecureItems = 13;
 }
 
 message G2C_ConfirmLoadout // ISessionResponse
@@ -49,6 +74,103 @@ message G2C_ConfirmLoadout // ISessionResponse
     int32 RpcId = 1;
     int32 Error = 2;
     string Message = 3;
+}
+
+// 从仓库取出到当前携带态
+// ResponseType G2C_LoadoutTakeFromWarehouse
+message C2G_LoadoutTakeFromWarehouse // ISessionRequest
+{
+    int32 RpcId = 1;
+    int32 ConfigId = 2;
+    int32 Count = 3;
+    int32 TargetAreaType = 4;
+    int32 TargetSlotType = 5;
+    int32 TargetAnchorSlotIndex = 6;
+    int32 TargetBagWidth = 7;
+    int32 TargetBagHeight = 8;
+}
+
+message G2C_LoadoutTakeFromWarehouse // ISessionResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+}
+
+// 从当前携带态放回仓库
+// ResponseType G2C_LoadoutPutToWarehouse
+message C2G_LoadoutPutToWarehouse // ISessionRequest
+{
+    int32 RpcId = 1;
+    int32 SourceAreaType = 2;
+    int32 SourceSlotType = 3;
+    int32 SourceAnchorSlotIndex = 4;
+    int32 Count = 5;
+}
+
+message G2C_LoadoutPutToWarehouse // ISessionResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+}
+
+// 当前携带态内部移动
+// ResponseType G2C_LoadoutMoveOwnedItem
+message C2G_LoadoutMoveOwnedItem // ISessionRequest
+{
+    int32 RpcId = 1;
+    int32 SourceAreaType = 2;
+    int32 SourceSlotType = 3;
+    int32 SourceAnchorSlotIndex = 4;
+    int32 TargetAreaType = 5;
+    int32 TargetSlotType = 6;
+    int32 TargetAnchorSlotIndex = 7;
+    int32 TargetBagWidth = 8;
+    int32 TargetBagHeight = 9;
+}
+
+message G2C_LoadoutMoveOwnedItem // ISessionResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+}
+
+// 一键卸下
+// ResponseType G2C_LoadoutOneKeyUnload
+message C2G_LoadoutOneKeyUnload // ISessionRequest
+{
+    int32 RpcId = 1;
+}
+
+message G2C_LoadoutOneKeyUnload // ISessionResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+}
+
+// 当前携带态与仓库快照变化推送
+message G2C_LoadoutStateChanged // IMessage
+{
+    repeated int32 StorageConfigIds = 1;
+    repeated int32 StorageCounts = 2;
+    int64 TotalWealth = 3;
+    int32 CurrentHeroConfigId = 4;
+    int32 CurrentMainWeaponConfigId = 5;
+    int32 CurrentSubWeaponConfigId = 6;
+    int32 CurrentArmorConfigId = 7;
+    repeated int32 CurrentConsumableConfigIds = 8;
+    int32 CurrentBackpackConfigId = 9;
+    int32 CurrentBagWidth = 10;
+    int32 CurrentBagHeight = 11;
+    int32 SecureWidth = 12;
+    int32 SecureHeight = 13;
+    repeated LoadoutGridItemData CurrentBagItems = 14;
+    repeated LoadoutGridItemData CurrentSecureItems = 15;
+    bool IsConfirmed = 16;
+    int64 ConfirmedAt = 17;
 }
 
 // 撤离结算通知（服务端推送）
@@ -70,4 +192,17 @@ message Map2G_EvacuationSettlement // IMessage
     bool Success = 1;
     repeated ItemData Items = 2;
     int64 TotalWealth = 3;
+}
+
+message Map2G_LoadoutCarryResult // IMessage
+{
+    int32 ResultType = 1;
+    int32 MainWeaponConfigId = 2;
+    int32 SubWeaponConfigId = 3;
+    int32 ArmorConfigId = 4;
+    int32 BackpackConfigId = 5;
+    int32 BagWidth = 6;
+    int32 BagHeight = 7;
+    repeated LoadoutGridItemData FinalBagItems = 8;
+    int64 TotalWealthDelta = 9;
 }

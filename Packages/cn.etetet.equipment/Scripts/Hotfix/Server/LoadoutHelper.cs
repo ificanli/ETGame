@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ET.Server
 {
     /// <summary>
@@ -50,6 +52,8 @@ namespace ET.Server
                 EquipmentSlotType slotType = i == 0 ? EquipmentSlotType.Consumable1 : EquipmentSlotType.Consumable2;
                 EquipItemFromConfig(equipComp, consumableConfigId, slotType);
             }
+
+            ApplyBagItems(unit, loadout);
         }
 
         /// <summary>
@@ -74,6 +78,60 @@ namespace ET.Server
                 EquipItemFromConfig(equipComp, armorConfigId, EquipmentSlotType.Chest);
         }
 
+        private static void ApplyBagItems(Unit unit, LoadoutComponent loadout)
+        {
+            ItemComponent itemComp = unit.GetComponent<ItemComponent>();
+            if (itemComp == null)
+            {
+                return;
+            }
+
+            itemComp.Clear();
+            itemComp.BagConfigId = loadout.BackpackConfigId;
+
+            if (loadout.BackpackConfigId <= 0 || loadout.BagWidth <= 0 || loadout.BagHeight <= 0)
+            {
+                itemComp.BagConfigId = 0;
+                itemComp.SetSize(0, 0);
+                return;
+            }
+
+            List<GridPlacementItemInfo> validationItems = new();
+            for (int i = 0; i < loadout.CarriedBagItems.Count; ++i)
+            {
+                LoadoutGridItemInfo bagItem = loadout.CarriedBagItems[i];
+                validationItems.Add(new GridPlacementItemInfo
+                {
+                    ConfigId = bagItem.ConfigId,
+                    Count = bagItem.Count,
+                    AnchorSlotIndex = bagItem.AnchorSlotIndex,
+                    GridWidth = bagItem.GridWidth,
+                    GridHeight = bagItem.GridHeight,
+                });
+            }
+
+            if (!LoadoutGridPlacementHelper.ArePlacementsValid(validationItems, loadout.BagWidth, loadout.BagHeight))
+            {
+                Log.Error($"LoadoutHelper.ApplyBagItems: invalid carried bag layout, player={unit.Id}");
+                itemComp.BagConfigId = 0;
+                itemComp.SetSize(0, 0);
+                return;
+            }
+
+            itemComp.SetSize(loadout.BagWidth, loadout.BagHeight);
+
+            for (int i = 0; i < loadout.CarriedBagItems.Count; ++i)
+            {
+                LoadoutGridItemInfo bagItem = loadout.CarriedBagItems[i];
+                Item item = itemComp.AddChild<Item>();
+                item.ConfigId = bagItem.ConfigId;
+                item.Count = bagItem.Count;
+                item.GridWidth = bagItem.GridWidth;
+                item.GridHeight = bagItem.GridHeight;
+                itemComp.SetSlotItem(bagItem.AnchorSlotIndex, item);
+            }
+        }
+
         private static void EquipItemFromConfig(EquipmentComponent equipComp, int configId, EquipmentSlotType slotType)
         {
             // Skip if slot already occupied (prevents duplicate items on double-apply)
@@ -90,6 +148,9 @@ namespace ET.Server
             item.Count = 1;
             item.AddComponent<EquipmentItemComponent>();
             item.SlotIndex = (int)slotType;
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            item.GridWidth = itemConfig?.GridWidth > 0 ? itemConfig.GridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+            item.GridHeight = itemConfig?.GridHeight > 0 ? itemConfig.GridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
             equipComp.EquippedItems[slotType] = item;
         }
     }

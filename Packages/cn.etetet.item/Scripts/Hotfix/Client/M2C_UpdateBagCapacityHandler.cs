@@ -12,7 +12,14 @@ namespace ET.Client
                 return;
             }
 
-            itemComponent.SetCapacity(message.Capacity);
+            if (message.Width > 0 && message.Height > 0)
+            {
+                itemComponent.SetSize(message.Width, message.Height);
+            }
+            else
+            {
+                itemComponent.SetCapacity(message.Capacity);
+            }
 
             await ETTask.CompletedTask;
         }

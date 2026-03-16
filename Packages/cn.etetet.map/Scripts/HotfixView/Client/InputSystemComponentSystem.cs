@@ -192,7 +192,12 @@ namespace ET.Client
             float3 direction = new float3(worldDirection.x, 0f, worldDirection.y);
             float3 predictedDelta = direction * speed * Time.deltaTime;
             unit.Position += predictedDelta;
-            unit.Rotation = quaternion.LookRotation(direction, math.up());
+
+            TurnComponent turnComponent = unit.GetComponent<TurnComponent>();
+            if (turnComponent == null || !turnComponent.IsTurning())
+            {
+                unit.Rotation = quaternion.LookRotation(direction, math.up());
+            }
         }
 
         private static void SelectTarget(this InputSystemComponent self, InputAction.CallbackContext context)

@@ -8,10 +8,18 @@ namespace ET.Server
         {
             Unit caster = env.GetEntity<Unit>(node.Caster);
             Unit target = env.GetEntity<Unit>(node.Target);
-            Buff buff = env.GetEntity<Buff>(node.Buff);
+            if (caster == null || target == null)
+            {
+                return 1;
+            }
 
             float3 v = target.Position - caster.Position;
             v.y = 0;
+            if (math.lengthsq(v) < 0.0001f)
+            {
+                return 0;
+            }
+
             quaternion to = quaternion.LookRotation(v, math.up());
             caster.Turn(to, 100);
             

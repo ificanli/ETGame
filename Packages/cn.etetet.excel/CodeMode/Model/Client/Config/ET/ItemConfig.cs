@@ -29,6 +29,16 @@ namespace ET
             { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
             { if(!_buf["GridWidth"].IsNumber) { throw new SerializationException(); }  GridWidth = _buf["GridWidth"]; }
             { if(!_buf["GridHeight"].IsNumber) { throw new SerializationException(); }  GridHeight = _buf["GridHeight"]; }
+            { if(!_buf["LoadoutShopVisible"].IsBoolean) { throw new SerializationException(); }  LoadoutShopVisible = _buf["LoadoutShopVisible"]; }
+            { if(!_buf["LoadoutShopCategory"].IsNumber) { throw new SerializationException(); }  LoadoutShopCategory = _buf["LoadoutShopCategory"]; }
+            { if(!_buf["LoadoutBuyPrice"].IsNumber) { throw new SerializationException(); }  LoadoutBuyPrice = _buf["LoadoutBuyPrice"]; }
+            { if(!_buf["CanEquipMainWeapon"].IsBoolean) { throw new SerializationException(); }  CanEquipMainWeapon = _buf["CanEquipMainWeapon"]; }
+            { if(!_buf["CanEquipSubWeapon"].IsBoolean) { throw new SerializationException(); }  CanEquipSubWeapon = _buf["CanEquipSubWeapon"]; }
+            { if(!_buf["CanEquipArmor"].IsBoolean) { throw new SerializationException(); }  CanEquipArmor = _buf["CanEquipArmor"]; }
+            { if(!_buf["CanEquipBackpack"].IsBoolean) { throw new SerializationException(); }  CanEquipBackpack = _buf["CanEquipBackpack"]; }
+            { if(!_buf["IsBackpack"].IsBoolean) { throw new SerializationException(); }  IsBackpack = _buf["IsBackpack"]; }
+            { if(!_buf["BackpackWidth"].IsNumber) { throw new SerializationException(); }  BackpackWidth = _buf["BackpackWidth"]; }
+            { if(!_buf["BackpackHeight"].IsNumber) { throw new SerializationException(); }  BackpackHeight = _buf["BackpackHeight"]; }
 
             EndInit();
         }
@@ -82,6 +92,46 @@ namespace ET
         /// 格子高
         /// </summary>
         public readonly int GridHeight;
+        /// <summary>
+        /// 起装商店可见
+        /// </summary>
+        public readonly bool LoadoutShopVisible;
+        /// <summary>
+        /// 起装商店分类
+        /// </summary>
+        public readonly int LoadoutShopCategory;
+        /// <summary>
+        /// 起装购买价
+        /// </summary>
+        public readonly int LoadoutBuyPrice;
+        /// <summary>
+        /// 可装备主武器槽
+        /// </summary>
+        public readonly bool CanEquipMainWeapon;
+        /// <summary>
+        /// 可装备副武器槽
+        /// </summary>
+        public readonly bool CanEquipSubWeapon;
+        /// <summary>
+        /// 可装备护甲槽
+        /// </summary>
+        public readonly bool CanEquipArmor;
+        /// <summary>
+        /// 可装备背包槽
+        /// </summary>
+        public readonly bool CanEquipBackpack;
+        /// <summary>
+        /// 是否背包
+        /// </summary>
+        public readonly bool IsBackpack;
+        /// <summary>
+        /// 背包宽
+        /// </summary>
+        public readonly int BackpackWidth;
+        /// <summary>
+        /// 背包高
+        /// </summary>
+        public readonly int BackpackHeight;
 
         public const int __ID__ = 1663635188;
         public override int GetTypeId() => __ID__;
@@ -105,6 +155,16 @@ namespace ET
             + "Level:" + Level + ","
             + "GridWidth:" + GridWidth + ","
             + "GridHeight:" + GridHeight + ","
+            + "LoadoutShopVisible:" + LoadoutShopVisible + ","
+            + "LoadoutShopCategory:" + LoadoutShopCategory + ","
+            + "LoadoutBuyPrice:" + LoadoutBuyPrice + ","
+            + "CanEquipMainWeapon:" + CanEquipMainWeapon + ","
+            + "CanEquipSubWeapon:" + CanEquipSubWeapon + ","
+            + "CanEquipArmor:" + CanEquipArmor + ","
+            + "CanEquipBackpack:" + CanEquipBackpack + ","
+            + "IsBackpack:" + IsBackpack + ","
+            + "BackpackWidth:" + BackpackWidth + ","
+            + "BackpackHeight:" + BackpackHeight + ","
             + "}";
         }
 

@@ -11,7 +11,7 @@ namespace ET.Client
             ItemComponent itemComponent = scene.GetComponent<ItemComponent>();
 
             // 更新物品数据
-            itemComponent.UpdateItem(message.ItemId, message.SlotIndex, message.ConfigId, message.Count);
+            itemComponent.UpdateItem(message.ItemId, message.SlotIndex, message.ConfigId, message.Count, message.GridWidth, message.GridHeight);
             
             scene.GetComponent<ObjectWait>().Notify(new Wait_M2C_UpdateItem()
             {

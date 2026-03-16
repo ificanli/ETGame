@@ -18,5 +18,21 @@
   {
     "id": 50013,
     "EquipSlot": 6
+  },
+  {
+    "id": 20001,
+    "EquipSlot": 2
+  },
+  {
+    "id": 20002,
+    "EquipSlot": 2
+  },
+  {
+    "id": 20003,
+    "EquipSlot": 2
+  },
+  {
+    "id": 20004,
+    "EquipSlot": 2
   }
 ]

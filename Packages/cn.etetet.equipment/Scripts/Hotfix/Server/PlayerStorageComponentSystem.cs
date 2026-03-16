@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace ET.Server
 {
     [EntitySystemOf(typeof(PlayerStorageComponent))]
@@ -50,6 +52,83 @@ namespace ET.Server
             }
 
             Log.Info($"[PlayerStorage] wrote evacuation result: {self.LastEvacuationItems.Count} item types, wealth={self.LastEvacuationWealth}");
+        }
+
+        /// <summary>
+        /// 仅记录撤离摘要与财富，不自动写入仓库。
+        /// </summary>
+        public static void RecordEvacuationSummary(this PlayerStorageComponent self, Dictionary<int, int> summaryItems, long totalWealthDelta)
+        {
+            self.LastEvacuationItems.Clear();
+            self.LastEvacuationWealth = totalWealthDelta;
+            self.TotalWealth += totalWealthDelta;
+
+            if (summaryItems == null)
+            {
+                return;
+            }
+
+            foreach (var kv in summaryItems)
+            {
+                if (kv.Key <= 0 || kv.Value <= 0)
+                {
+                    continue;
+                }
+
+                self.LastEvacuationItems[kv.Key] = kv.Value;
+            }
+        }
+
+        public static int GetWarehouseCount(this PlayerStorageComponent self, int configId)
+        {
+            if (configId <= 0)
+            {
+                return 0;
+            }
+
+            return self.WarehouseItems.TryGetValue(configId, out int count) ? count : 0;
+        }
+
+        public static bool TryConsumeWarehouseItem(this PlayerStorageComponent self, int configId, int count)
+        {
+            if (configId <= 0 || count <= 0)
+            {
+                return false;
+            }
+
+            if (!self.WarehouseItems.TryGetValue(configId, out int current) || current < count)
+            {
+                return false;
+            }
+
+            int remain = current - count;
+            if (remain > 0)
+            {
+                self.WarehouseItems[configId] = remain;
+            }
+            else
+            {
+                self.WarehouseItems.Remove(configId);
+            }
+
+            return true;
+        }
+
+        public static void AddWarehouseItem(this PlayerStorageComponent self, int configId, int count)
+        {
+            if (configId <= 0 || count <= 0)
+            {
+                return;
+            }
+
+            if (self.WarehouseItems.TryGetValue(configId, out int current))
+            {
+                self.WarehouseItems[configId] = current + count;
+            }
+            else
+            {
+                self.WarehouseItems[configId] = count;
+            }
         }
     }
 }

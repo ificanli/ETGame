@@ -43,5 +43,31 @@ namespace ET.Client
         public RectTransform DraggingView;
         public Vector3 DragWorldOffset;
         public int QuickChooseMinQuality;
+
+        // 搜索动效相关字段
+        /// <summary>
+        /// 每个槽位的搜索开始时间（毫秒时间戳），Key=SlotIndex
+        /// </summary>
+        public readonly Dictionary<int, long> SlotSearchStartTimes = new();
+
+        /// <summary>
+        /// 已完成搜索的槽位集合，Key=SlotIndex
+        /// </summary>
+        public readonly HashSet<int> SearchedSlots = new();
+
+        /// <summary>
+        /// 每个槽位的搜索动效GameObject引用，Key=SlotIndex
+        /// </summary>
+        public readonly Dictionary<int, GameObject> SlotSearchingEffects = new();
+
+        /// <summary>
+        /// 每个槽位的搜索持续时间（毫秒），Key=SlotIndex，根据物品品质决定
+        /// </summary>
+        public readonly Dictionary<int, long> SlotSearchDurations = new();
+
+        /// <summary>
+        /// 当前容器的PointId，用于判断是否切换了容器
+        /// </summary>
+        public string CurrentSearchingPointId;
     }
 }

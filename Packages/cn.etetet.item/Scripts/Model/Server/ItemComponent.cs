@@ -10,6 +10,21 @@ namespace ET.Server
     public class ItemComponent: Entity, IAwake, IDestroy, IDeserialize, ITransfer
     {
         /// <summary>
+        /// 当前背包本体配置ID
+        /// </summary>
+        public int BagConfigId;
+
+        /// <summary>
+        /// 背包格子宽
+        /// </summary>
+        public int Width;
+
+        /// <summary>
+        /// 背包格子高
+        /// </summary>
+        public int Height;
+
+        /// <summary>
         /// 背包容量
         /// </summary>
         public int Capacity;

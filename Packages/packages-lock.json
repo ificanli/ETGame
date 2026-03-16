@@ -156,6 +156,7 @@
       "dependencies": {
         "cn.etetet.core": "4.0.0",
         "cn.etetet.excel": "4.0.0",
+        "cn.etetet.item": "4.0.0",
         "cn.etetet.proto": "4.0.0",
         "cn.etetet.unit": "4.0.0"
       }

@@ -191,7 +191,8 @@ namespace ET.Server
             unit.Position = nextPos;
 
             // 旋转朝向移动方向
-            if (math.lengthsq(self.Direction) > 0.0001f)
+            TurnComponent turnComponent = unit.GetComponent<TurnComponent>();
+            if (math.lengthsq(self.Direction) > 0.0001f && (turnComponent == null || !turnComponent.IsTurning()))
             {
                 unit.Rotation = quaternion.LookRotation(self.Direction, math.up());
             }

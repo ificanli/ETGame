@@ -20,5 +20,15 @@ namespace ET.Client
         /// 槽位索引
         /// </summary>
         public int SlotIndex;
+
+        /// <summary>
+        /// 物品占据的格子宽
+        /// </summary>
+        public int GridWidth;
+
+        /// <summary>
+        /// 物品占据的格子高
+        /// </summary>
+        public int GridHeight;
     }
 }

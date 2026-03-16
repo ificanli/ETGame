@@ -101,6 +101,16 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(3)]
         public int Count { get; set; }
+        /// <summary>
+        /// 物品格子宽
+        /// </summary>
+        [MemoryPackOrder(4)]
+        public int GridWidth { get; set; }
+        /// <summary>
+        /// 物品格子高
+        /// </summary>
+        [MemoryPackOrder(5)]
+        public int GridHeight { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -112,6 +122,8 @@ namespace ET
             this.SlotIndex = default;
             this.ConfigId = default;
             this.Count = default;
+            this.GridWidth = default;
+            this.GridHeight = default;
 
             ObjectPool.Recycle(this);
         }
@@ -169,6 +181,16 @@ namespace ET
         [MemoryPackOrder(4)]
         public List<ItemData> Items { get; set; } = new();
 
+        /// <summary>
+        /// 背包格子宽
+        /// </summary>
+        [MemoryPackOrder(5)]
+        public int Width { get; set; }
+        /// <summary>
+        /// 背包格子高
+        /// </summary>
+        [MemoryPackOrder(6)]
+        public int Height { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -181,6 +203,8 @@ namespace ET
             this.Message = default;
             this.Capacity = default;
             this.Items.Clear();
+            this.Width = default;
+            this.Height = default;
 
             ObjectPool.Recycle(this);
         }
@@ -216,6 +240,16 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(3)]
         public int Count { get; set; }
+        /// <summary>
+        /// 物品格子宽
+        /// </summary>
+        [MemoryPackOrder(4)]
+        public int GridWidth { get; set; }
+        /// <summary>
+        /// 物品格子高
+        /// </summary>
+        [MemoryPackOrder(5)]
+        public int GridHeight { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -227,6 +261,8 @@ namespace ET
             this.SlotIndex = default;
             this.ConfigId = default;
             this.Count = default;
+            this.GridWidth = default;
+            this.GridHeight = default;
 
             ObjectPool.Recycle(this);
         }
@@ -247,6 +283,16 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(0)]
         public int Capacity { get; set; }
+        /// <summary>
+        /// 新的格子宽
+        /// </summary>
+        [MemoryPackOrder(1)]
+        public int Width { get; set; }
+        /// <summary>
+        /// 新的格子高
+        /// </summary>
+        [MemoryPackOrder(2)]
+        public int Height { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -255,6 +301,8 @@ namespace ET
             }
 
             this.Capacity = default;
+            this.Width = default;
+            this.Height = default;
 
             ObjectPool.Recycle(this);
         }

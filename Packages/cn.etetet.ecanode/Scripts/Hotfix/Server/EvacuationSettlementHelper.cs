@@ -67,10 +67,40 @@ namespace ET.Server
             UnitGateInfoComponent gateInfo = player.GetComponent<UnitGateInfoComponent>();
             if (gateInfo != null && gateInfo.ActorId != default)
             {
-                Map2G_EvacuationSettlement actorMsg = Map2G_EvacuationSettlement.Create();
-                actorMsg.Success = true;
-                actorMsg.Items.AddRange(itemDataList);
-                actorMsg.TotalWealth = totalWealth;
+                Map2G_LoadoutCarryResult actorMsg = Map2G_LoadoutCarryResult.Create();
+                actorMsg.ResultType = (int)LoadoutCarryResultType.Evacuated;
+                actorMsg.TotalWealthDelta = totalWealth;
+
+                EquipmentComponent equippedComp = player.GetComponent<EquipmentComponent>();
+                if (equippedComp != null)
+                {
+                    actorMsg.MainWeaponConfigId = equippedComp.GetEquippedItem(EquipmentSlotType.MainHand)?.ConfigId ?? 0;
+                    actorMsg.SubWeaponConfigId = equippedComp.GetEquippedItem(EquipmentSlotType.OffHand)?.ConfigId ?? 0;
+                    actorMsg.ArmorConfigId = equippedComp.GetEquippedItem(EquipmentSlotType.Chest)?.ConfigId ?? 0;
+                }
+
+                if (itemComp != null)
+                {
+                    actorMsg.BackpackConfigId = itemComp.BagConfigId;
+                    actorMsg.BagWidth = itemComp.Width;
+                    actorMsg.BagHeight = itemComp.Height;
+
+                    foreach (Item item in itemComp.SlotItems)
+                    {
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        LoadoutGridItemData bagItem = LoadoutGridItemData.Create();
+                        bagItem.ConfigId = item.ConfigId;
+                        bagItem.Count = item.Count;
+                        bagItem.AnchorSlotIndex = item.SlotIndex;
+                        bagItem.GridWidth = item.GridWidth;
+                        bagItem.GridHeight = item.GridHeight;
+                        actorMsg.FinalBagItems.Add(bagItem);
+                    }
+                }
 
                 player.Root().GetComponent<MessageSender>().Send(gateInfo.ActorId, actorMsg);
             }

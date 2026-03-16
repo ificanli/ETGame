@@ -13,6 +13,7 @@ namespace ET.Client
             if (loadout != null)
             {
                 loadout.IsConfirmed = false; // 撤离后重置起装状态
+                loadout.ConfirmedAt = 0;
             }
 
             SettlementClientComponent settlement = scene.GetComponent<SettlementClientComponent>();

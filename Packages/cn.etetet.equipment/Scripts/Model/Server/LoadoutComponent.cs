@@ -31,7 +31,44 @@ namespace ET.Server
         public int ArmorConfigId;
 
         /// <summary>
-        /// 消耗品配置ID列表
+        /// 背包装备配置ID
+        /// </summary>
+        public int BackpackConfigId;
+
+        /// <summary>
+        /// 当前携带背包格子宽
+        /// </summary>
+        public int BagWidth;
+
+        /// <summary>
+        /// 当前携带背包格子高
+        /// </summary>
+        public int BagHeight;
+
+        /// <summary>
+        /// 当前安全格宽
+        /// </summary>
+        public int SecureWidth;
+
+        /// <summary>
+        /// 当前安全格高
+        /// </summary>
+        public int SecureHeight;
+
+        /// <summary>
+        /// 当前携带背包中的二维布局物品
+        /// </summary>
+        [BsonIgnore]
+        public List<LoadoutGridItemInfo> CarriedBagItems = new();
+
+        /// <summary>
+        /// 当前安全格中的二维布局物品
+        /// </summary>
+        [BsonIgnore]
+        public List<LoadoutGridItemInfo> CarriedSecureItems = new();
+
+        /// <summary>
+        /// 旧版兼容：消耗品配置ID列表
         /// </summary>
         [BsonIgnore]
         public List<int> ConsumableConfigIds = new();
@@ -40,5 +77,10 @@ namespace ET.Server
         /// 是否已确认起装（只有 IsConfirmed=true 才允许进入地图）
         /// </summary>
         public bool IsConfirmed;
+
+        /// <summary>
+        /// 最近一次确认时间
+        /// </summary>
+        public long ConfirmedAt;
     }
 }

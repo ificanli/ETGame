@@ -17,4 +17,13 @@ namespace ET.Client
         public M2C_DeathSettlement M2C_DeathSettlement;
         public int Error { get; set; }
     }
+
+    /// <summary>
+    /// 等待当前携带态正式快照变化推送
+    /// </summary>
+    public struct Wait_G2C_LoadoutStateChanged : IWaitType
+    {
+        public G2C_LoadoutStateChanged G2C_LoadoutStateChanged;
+        public int Error { get; set; }
+    }
 }

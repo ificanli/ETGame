@@ -44,7 +44,42 @@ namespace ET.Client
         public int ArmorConfigId;
 
         /// <summary>
-        /// 消耗品配置ID列表
+        /// 背包装备配置ID
+        /// </summary>
+        public int BackpackConfigId;
+
+        /// <summary>
+        /// 背包格子宽
+        /// </summary>
+        public int BagWidth;
+
+        /// <summary>
+        /// 背包格子高
+        /// </summary>
+        public int BagHeight;
+
+        /// <summary>
+        /// 安全格宽
+        /// </summary>
+        public int SecureWidth;
+
+        /// <summary>
+        /// 安全格高
+        /// </summary>
+        public int SecureHeight;
+
+        /// <summary>
+        /// 当前携带背包中的二维布局物品
+        /// </summary>
+        public List<LoadoutGridItemInfo> CarriedBagItems = new();
+
+        /// <summary>
+        /// 当前安全格中的二维布局物品
+        /// </summary>
+        public List<LoadoutGridItemInfo> CarriedSecureItems = new();
+
+        /// <summary>
+        /// 旧版兼容：消耗品配置ID列表
         /// </summary>
         public List<int> ConsumableConfigIds = new();
 
@@ -67,5 +102,10 @@ namespace ET.Client
         /// 是否已确认起装
         /// </summary>
         public bool IsConfirmed;
+
+        /// <summary>
+        /// 最近一次确认时间
+        /// </summary>
+        public long ConfirmedAt;
     }
 }

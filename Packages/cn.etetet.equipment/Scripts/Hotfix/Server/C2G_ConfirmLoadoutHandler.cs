@@ -4,14 +4,13 @@ namespace ET.Server
 {
     /// <summary>
     /// 确认起装（Gate 服务器处理）
-    /// 验证英雄ID和装备配置，将起装数据存入 Player.LoadoutComponent
+    /// 当前阶段只负责写入正式当前携带态并标记可进局，不再在这里整套扣仓库或立即同步 Map 预览 Unit。
     /// </summary>
     [MessageSessionHandler(SceneType.Gate)]
     public class C2G_ConfirmLoadoutHandler : MessageSessionHandler<C2G_ConfirmLoadout, G2C_ConfirmLoadout>
     {
         protected override async ETTask Run(Session session, C2G_ConfirmLoadout request, G2C_ConfirmLoadout response)
         {
-            // 从 Session 找到对应的 Player
             SessionPlayerComponent sessionPlayer = session.GetComponent<SessionPlayerComponent>();
             if (sessionPlayer?.Player == null)
             {
@@ -20,59 +19,95 @@ namespace ET.Server
             }
 
             Player player = sessionPlayer.Player;
-            PlayerStorageComponent storage = player.GetComponent<PlayerStorageComponent>() ?? player.AddComponent<PlayerStorageComponent>();
-            LoadoutComponent loadout = player.GetComponent<LoadoutComponent>() ?? player.AddComponent<LoadoutComponent>();
+            EntityRef<Session> sessionRef = session;
+            EntityRef<Player> playerRef = player;
 
-            Log.Info($"C2G_ConfirmLoadout: HeroConfigId={request.HeroConfigId}, MainWeapon={request.MainWeaponConfigId}, SubWeapon={request.SubWeaponConfigId}");
+            using (await session.Root().CoroutineLockComponent.Wait(CoroutineLockType.Loadout, player.Id))
+            {
+                session = sessionRef;
+                player = playerRef;
+                if (session == null || player == null)
+                {
+                    response.Error = ErrorCode.ERR_ConnectGateKeyError;
+                    return;
+                }
 
-            // 验证英雄配置存在
+                LoadoutComponent loadout = player.GetComponent<LoadoutComponent>() ?? player.AddComponent<LoadoutComponent>();
+
+                if (!TryValidateRequest(request, response, out var finalBagItems, out var finalSecureItems))
+                {
+                    return;
+                }
+
+                LoadoutStateHelper.ApplyConfirmedSnapshot(loadout, request, finalBagItems, finalSecureItems);
+                PlayerStorageComponent storage = player.GetComponent<PlayerStorageComponent>() ?? player.AddComponent<PlayerStorageComponent>();
+                LoadoutOperationHelper.PushStateChanged(player, loadout, storage);
+                response.Message = "success";
+            }
+
+            await ETTask.CompletedTask;
+        }
+
+        private static bool TryValidateRequest(
+            C2G_ConfirmLoadout request,
+            G2C_ConfirmLoadout response,
+            out List<LoadoutGridItemInfo> finalBagItems,
+            out List<LoadoutGridItemInfo> finalSecureItems)
+        {
+            finalBagItems = null;
+            finalSecureItems = null;
+
+            TryApplyConfiguredBackpackSize(request);
+
             HeroConfig heroConfig = HeroConfigCategory.Instance.GetOrDefault(request.HeroConfigId);
             if (heroConfig == null)
             {
                 response.Error = ErrorCode.ERR_LoadoutHeroNotFound;
                 response.Message = $"hero config not found: {request.HeroConfigId}";
-                return;
+                return false;
             }
 
-            // 验证主武器配置与槽位匹配
             if (request.MainWeaponConfigId > 0)
             {
-                int validationError = ValidateWeaponSlot(request.MainWeaponConfigId);
+                int validationError = LoadoutStateHelper.ValidateWeaponSlot(request.MainWeaponConfigId);
                 if (validationError != ErrorCode.ERR_Success)
                 {
                     response.Error = validationError;
-                    response.Message = validationError == ErrorCode.ERR_LoadoutItemNotFound
-                            ? $"main weapon config not found: {request.MainWeaponConfigId}"
-                            : $"main weapon slot mismatch: {request.MainWeaponConfigId}";
-                    return;
+                    response.Message = $"main weapon invalid: {request.MainWeaponConfigId}";
+                    return false;
                 }
             }
 
-            // 验证副武器配置与槽位匹配
             if (request.SubWeaponConfigId > 0)
             {
-                int validationError = ValidateWeaponSlot(request.SubWeaponConfigId);
+                int validationError = LoadoutStateHelper.ValidateWeaponSlot(request.SubWeaponConfigId);
                 if (validationError != ErrorCode.ERR_Success)
                 {
                     response.Error = validationError;
-                    response.Message = validationError == ErrorCode.ERR_LoadoutItemNotFound
-                            ? $"sub weapon config not found: {request.SubWeaponConfigId}"
-                            : $"sub weapon slot mismatch: {request.SubWeaponConfigId}";
-                    return;
+                    response.Message = $"sub weapon invalid: {request.SubWeaponConfigId}";
+                    return false;
                 }
             }
 
-            // 验证护甲配置与槽位匹配（Chest）
             if (request.ArmorConfigId > 0)
             {
-                int validationError = ValidateEquipSlot(request.ArmorConfigId, (int)EquipmentSlotType.Chest);
+                int validationError = LoadoutStateHelper.ValidateEquipSlot(request.ArmorConfigId, (int)EquipmentSlotType.Chest);
                 if (validationError != ErrorCode.ERR_Success)
                 {
                     response.Error = validationError;
-                    response.Message = validationError == ErrorCode.ERR_LoadoutItemNotFound
-                            ? $"armor config not found: {request.ArmorConfigId}"
-                            : $"armor slot mismatch: {request.ArmorConfigId}";
-                    return;
+                    response.Message = $"armor invalid: {request.ArmorConfigId}";
+                    return false;
+                }
+            }
+
+            if (request.BackpackConfigId > 0)
+            {
+                int validationError = LoadoutStateHelper.ValidateBackpackSlot(request.BackpackConfigId);
+                if (validationError != ErrorCode.ERR_Success)
+                {
+                    response.Error = validationError;
+                    response.Message = $"backpack invalid: {request.BackpackConfigId}";
+                    return false;
                 }
             }
 
@@ -80,222 +115,72 @@ namespace ET.Server
             {
                 response.Error = ErrorCode.ERR_LoadoutSlotMismatch;
                 response.Message = $"consumable count overflow: {request.ConsumableConfigIds.Count}";
-                return;
+                return false;
             }
 
             foreach (int consumableConfigId in request.ConsumableConfigIds)
             {
-                if (consumableConfigId <= 0)
+                int validationError = LoadoutStateHelper.ValidateItemExists(consumableConfigId);
+                if (validationError != ErrorCode.ERR_Success)
                 {
-                    continue;
-                }
-
-                ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(consumableConfigId);
-                EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(consumableConfigId);
-                if (itemConfig == null && equipConfig == null)
-                {
-                    response.Error = ErrorCode.ERR_LoadoutItemNotFound;
-                    response.Message = $"consumable config not found: {consumableConfigId}";
-                    return;
-                }
-            }
-
-            if (!TryCommitWarehouseLoadout(storage, loadout, request, out int storageError, out string storageMessage))
-            {
-                response.Error = storageError;
-                response.Message = storageMessage;
-                return;
-            }
-
-            // 写入 LoadoutComponent
-            loadout.HeroConfigId = request.HeroConfigId;
-            loadout.MainWeaponConfigId = request.MainWeaponConfigId;
-            loadout.SubWeaponConfigId = request.SubWeaponConfigId;
-            loadout.ArmorConfigId = request.ArmorConfigId;
-            loadout.ConsumableConfigIds.Clear();
-            if (request.ConsumableConfigIds != null)
-            {
-                loadout.ConsumableConfigIds.AddRange(request.ConsumableConfigIds);
-            }
-            loadout.IsConfirmed = true;
-
-            // 立即通知 Unit 应用起装（Unit 在 Home 地图，通过 Location 消息发送）
-            MessageLocationSenderComponent locationSenderComp = player.Scene().GetComponent<MessageLocationSenderComponent>();
-            long playerId = player.Id;
-            if (locationSenderComp != null)
-            {
-                MessageLocationSenderOneType locationSender = locationSenderComp.Get(LocationType.Unit);
-                A2Map_ApplyLoadoutRequest applyReq = A2Map_ApplyLoadoutRequest.Create();
-                applyReq.HeroConfigId = request.HeroConfigId;
-                applyReq.MainWeaponConfigId = request.MainWeaponConfigId;
-                applyReq.SubWeaponConfigId = request.SubWeaponConfigId;
-                applyReq.ArmorConfigId = request.ArmorConfigId;
-                await locationSender.Call(playerId, applyReq);
-                Log.Info($"C2G_ConfirmLoadout: applied loadout to unit {playerId}");
-            }
-
-            await ETTask.CompletedTask;
-        }
-
-        private static bool TryCommitWarehouseLoadout(
-            PlayerStorageComponent storage,
-            LoadoutComponent currentLoadout,
-            C2G_ConfirmLoadout request,
-            out int error,
-            out string message)
-        {
-            error = ErrorCode.ERR_Success;
-            message = string.Empty;
-
-            bool allowInitialSelection = storage.WarehouseItems.Count == 0 && !HasAnyLoadoutItem(currentLoadout);
-            if (allowInitialSelection)
-            {
-                return true;
-            }
-
-            Dictionary<int, int> inventory = new(storage.WarehouseItems);
-            AddInventoryItem(inventory, currentLoadout.MainWeaponConfigId, 1);
-            AddInventoryItem(inventory, currentLoadout.SubWeaponConfigId, 1);
-            AddInventoryItem(inventory, currentLoadout.ArmorConfigId, 1);
-            foreach (int configId in currentLoadout.ConsumableConfigIds)
-            {
-                AddInventoryItem(inventory, configId, 1);
-            }
-
-            if (!TryConsumeInventoryItem(inventory, request.MainWeaponConfigId, 1) ||
-                !TryConsumeInventoryItem(inventory, request.SubWeaponConfigId, 1) ||
-                !TryConsumeInventoryItem(inventory, request.ArmorConfigId, 1))
-            {
-                error = ErrorCode.ERR_LoadoutItemNotFound;
-                message = "equip item not found in warehouse";
-                return false;
-            }
-
-            foreach (int configId in request.ConsumableConfigIds)
-            {
-                if (!TryConsumeInventoryItem(inventory, configId, 1))
-                {
-                    error = ErrorCode.ERR_LoadoutItemNotFound;
-                    message = $"consumable not found in warehouse: {configId}";
+                    response.Error = validationError;
+                    response.Message = $"consumable invalid: {consumableConfigId}";
                     return false;
                 }
             }
 
-            storage.WarehouseItems.Clear();
-            foreach (var kv in inventory)
+            if (!LoadoutStateHelper.TryBuildValidatedGridItems(request.FinalBagItems, request.BagWidth, request.BagHeight, out finalBagItems))
             {
-                if (kv.Value > 0)
-                {
-                    storage.WarehouseItems[kv.Key] = kv.Value;
-                }
+                response.Error = ErrorCode.ERR_LoadoutGridInvalid;
+                response.Message = "final bag layout invalid";
+                return false;
             }
 
+            if (!LoadoutStateHelper.TryBuildValidatedGridItems(request.FinalSecureItems, request.SecureWidth, request.SecureHeight, out finalSecureItems))
+            {
+                response.Error = ErrorCode.ERR_LoadoutGridInvalid;
+                response.Message = "final secure layout invalid";
+                return false;
+            }
+
+            if (request.BackpackConfigId <= 0 && (request.BagWidth > 0 || request.BagHeight > 0 || finalBagItems.Count > 0))
+            {
+                response.Error = ErrorCode.ERR_LoadoutStateConflict;
+                response.Message = "bag layout exists without backpack";
+                return false;
+            }
+
+            if (request.BackpackConfigId > 0 && (request.BagWidth <= 0 || request.BagHeight <= 0))
+            {
+                response.Error = ErrorCode.ERR_LoadoutGridInvalid;
+                response.Message = "backpack size invalid";
+                return false;
+            }
+
+            response.Error = ErrorCode.ERR_Success;
             return true;
         }
 
-        private static bool HasAnyLoadoutItem(LoadoutComponent loadout)
+        private static void TryApplyConfiguredBackpackSize(C2G_ConfirmLoadout request)
         {
-            return loadout.HeroConfigId > 0 ||
-                    loadout.MainWeaponConfigId > 0 ||
-                    loadout.SubWeaponConfigId > 0 ||
-                    loadout.ArmorConfigId > 0 ||
-                    loadout.ConsumableConfigIds.Count > 0;
-        }
-
-        private static void AddInventoryItem(Dictionary<int, int> inventory, int configId, int count)
-        {
-            if (configId <= 0 || count <= 0)
+            if (request.BackpackConfigId <= 0)
             {
                 return;
             }
 
-            if (inventory.TryGetValue(configId, out int current))
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(request.BackpackConfigId);
+            if (itemConfig == null)
             {
-                inventory[configId] = current + count;
-            }
-            else
-            {
-                inventory[configId] = count;
-            }
-        }
-
-        private static bool TryConsumeInventoryItem(Dictionary<int, int> inventory, int configId, int count)
-        {
-            if (configId <= 0 || count <= 0)
-            {
-                return true;
+                return;
             }
 
-            if (!inventory.TryGetValue(configId, out int current) || current < count)
+            if (itemConfig.BackpackWidth <= 0 || itemConfig.BackpackHeight <= 0)
             {
-                return false;
+                return;
             }
 
-            current -= count;
-            if (current > 0)
-            {
-                inventory[configId] = current;
-            }
-            else
-            {
-                inventory.Remove(configId);
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// 验证武器配置ID是否可用：
-        /// 优先兼容 ItemConfig（当前起装流程常用），
-        /// 若命中 EquipmentConfig 则按槽位做严格校验。
-        /// </summary>
-        private static int ValidateWeaponSlot(int configId)
-        {
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
-            if (itemConfig != null)
-            {
-                return ErrorCode.ERR_Success;
-            }
-
-            EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
-            if (equipConfig == null)
-            {
-                return ErrorCode.ERR_LoadoutItemNotFound;
-            }
-
-            if (equipConfig.EquipSlot != (int)EquipmentSlotType.MainHand)
-            {
-                return ErrorCode.ERR_LoadoutSlotMismatch;
-            }
-
-            return ErrorCode.ERR_Success;
-        }
-
-        /// <summary>
-        /// 验证配置ID是否可用：
-        /// 优先兼容 ItemConfig（当前起装流程常用），
-        /// 若命中 EquipmentConfig 则按 expectedSlot 做严格校验。
-        /// </summary>
-        private static int ValidateEquipSlot(int configId, int expectedSlot)
-        {
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
-            if (itemConfig != null)
-            {
-                return ErrorCode.ERR_Success;
-            }
-
-            EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
-            if (equipConfig == null)
-            {
-                return ErrorCode.ERR_LoadoutItemNotFound;
-            }
-
-            if (equipConfig.EquipSlot != expectedSlot)
-            {
-                return ErrorCode.ERR_LoadoutSlotMismatch;
-            }
-
-            return ErrorCode.ERR_Success;
+            request.BagWidth = itemConfig.BackpackWidth;
+            request.BagHeight = itemConfig.BackpackHeight;
         }
     }
 }

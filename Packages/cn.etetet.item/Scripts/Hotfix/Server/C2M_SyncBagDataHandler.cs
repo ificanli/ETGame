@@ -12,6 +12,8 @@ namespace ET.Server
 
             // 设置背包容量
             response.Capacity = itemComponent.Capacity;
+            response.Width = itemComponent.Width;
+            response.Height = itemComponent.Height;
 
             // 遍历所有物品
             for (int i = 0; i < itemComponent.SlotItems.Count; ++i)
@@ -27,6 +29,8 @@ namespace ET.Server
                 itemData.SlotIndex = item.SlotIndex;
                 itemData.ConfigId = item.ConfigId;
                 itemData.Count = item.Count;
+                itemData.GridWidth = item.GridWidth > 0 ? item.GridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+                itemData.GridHeight = item.GridHeight > 0 ? item.GridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
                 response.Items.Add(itemData);
             }
 

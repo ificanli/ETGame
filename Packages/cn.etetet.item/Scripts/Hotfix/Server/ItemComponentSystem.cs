@@ -13,6 +13,7 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this ItemComponent self)
         {
+            self.BagConfigId = 0;
             self.SlotItems.Clear();
             self.SetCapacity(100); // 默认背包容量100
         }
@@ -150,8 +151,23 @@ namespace ET.Server
                 throw new Exception($"invalid capacity: {capacity}");
             }
 
-            self.Capacity = capacity;
-            EnsureSlotContainerSize(self, capacity);
+            self.SetSize(capacity, 1);
+        }
+
+        /// <summary>
+        /// 设置背包二维尺寸
+        /// </summary>
+        public static void SetSize(this ItemComponent self, int width, int height)
+        {
+            if (width < 0 || height < 0)
+            {
+                throw new Exception($"invalid bag size: {width}x{height}");
+            }
+
+            self.Width = width;
+            self.Height = height;
+            self.Capacity = width * height;
+            EnsureSlotContainerSize(self, self.Capacity);
         }
 
         /// <summary>

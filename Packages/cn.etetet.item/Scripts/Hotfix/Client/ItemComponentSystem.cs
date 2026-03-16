@@ -13,6 +13,7 @@ namespace ET.Client
         [EntitySystem]
         private static void Awake(this ItemComponent self)
         {
+            self.BagConfigId = 0;
             self.SlotItems.Clear();
             self.SetCapacity(100); // 默认背包容量100
         }
@@ -30,7 +31,7 @@ namespace ET.Client
         /// <summary>
         /// 更新背包物品信息
         /// </summary>
-        public static void UpdateItem(this ItemComponent self, long itemId, int slotIndex, int configId, int count)
+        public static void UpdateItem(this ItemComponent self, long itemId, int slotIndex, int configId, int count, int gridWidth, int gridHeight)
         {
             EnsureSlotIndex(self, slotIndex);
 
@@ -39,7 +40,15 @@ namespace ET.Client
             if (count <= 0)
             {
                 // Count=0表示该槽位的物品被移除或清空
-                item?.Dispose();
+                if (item != null)
+                {
+                    self.ClearSlot(item.SlotIndex);
+                    item.Dispose();
+                }
+                else
+                {
+                    self.ClearSlot(slotIndex);
+                }
             }
             else
             {
@@ -50,12 +59,15 @@ namespace ET.Client
                     // 如果槽位改变，需要更新槽位映射
                     if (item.SlotIndex != slotIndex)
                     {
+                        self.ClearSlot(item.SlotIndex);
                         self.SetSlotItem(slotIndex, item);
                     }
                     
                     item.ConfigId = configId;
                     item.Count = count;
                     item.SlotIndex = slotIndex;
+                    item.GridWidth = gridWidth > 0 ? gridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+                    item.GridHeight = gridHeight > 0 ? gridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
                 }
                 else
                 {
@@ -63,6 +75,8 @@ namespace ET.Client
                     item = self.AddChildWithId<Item>(itemId);
                     item.ConfigId = configId;
                     item.Count = count;
+                    item.GridWidth = gridWidth > 0 ? gridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+                    item.GridHeight = gridHeight > 0 ? gridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
                     self.SetSlotItem(slotIndex, item);
                 }
             }
@@ -79,8 +93,24 @@ namespace ET.Client
                 return;
             }
 
-            self.Capacity = capacity;
-            EnsureSlotContainerSize(self, capacity);
+            self.SetSize(capacity, 1);
+        }
+
+        /// <summary>
+        /// 设置背包二维尺寸
+        /// </summary>
+        public static void SetSize(this ItemComponent self, int width, int height)
+        {
+            if (width < 0 || height < 0)
+            {
+                Log.Error($"invalid bag size: {width}x{height}");
+                return;
+            }
+
+            self.Width = width;
+            self.Height = height;
+            self.Capacity = width * height;
+            EnsureSlotContainerSize(self, self.Capacity);
         }
 
         /// <summary>
@@ -133,6 +163,7 @@ namespace ET.Client
             {
                 Item item = self.SlotItems[i];
                 item?.Dispose();
+                self.SlotItems[i] = default;
             }
         }
 

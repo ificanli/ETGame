@@ -25,6 +25,9 @@ namespace ET.Client
             self.QuickChooseMinQuality = ReadQuickChooseMinQuality(self);
             SetTemplateActive(self.u_ComContainerItemTemplate, false);
             SetTemplateActive(self.u_ComBagItemTemplate, false);
+            
+            // 初始化搜索动效配置
+            self.CurrentSearchingPointId = null;
         }
 
         [EntitySystem]
@@ -41,6 +44,13 @@ namespace ET.Client
             self.BagGridRoot = null;
             self.IsDragging = false;
             self.DraggingView = null;
+            
+            // 清理搜索动效相关数据
+            ClearSearchEffects(self);
+            self.SlotSearchStartTimes.Clear();
+            self.SlotSearchDurations.Clear();
+            self.SearchedSlots.Clear();
+            self.CurrentSearchingPointId = null;
         }
 
         [EntitySystem]
@@ -48,6 +58,21 @@ namespace ET.Client
         {
             self.LastContainerSnapshot = null;
             self.QuickChooseMinQuality = ReadQuickChooseMinQuality(self);
+            
+            // 检查是否切换了容器，如果是则重置搜索状态
+            Scene root = self.Root();
+            ECAInteractClientComponent runtime = root?.GetComponent<ECAInteractClientComponent>();
+            string currentPointId = runtime?.OpenContainerPointId;
+            if (!string.IsNullOrEmpty(currentPointId) && currentPointId != self.CurrentSearchingPointId)
+            {
+                // 切换了容器，重置搜索状态
+                ClearSearchEffects(self);
+                self.SlotSearchStartTimes.Clear();
+                self.SlotSearchDurations.Clear();
+                self.SearchedSlots.Clear();
+                self.CurrentSearchingPointId = currentPointId;
+            }
+            
             TryRefreshView(self, true);
             await ETTask.CompletedTask;
             return true;
@@ -62,6 +87,9 @@ namespace ET.Client
             }
 
             TryRefreshView(self, false);
+            
+            // 更新搜索动效状态
+            UpdateSearchEffects(self);
         }
 
         #region YIUIEvent开始
@@ -145,6 +173,8 @@ namespace ET.Client
             self.ContainerSolver.Clear();
 
             HashSet<long> alive = new();
+            long nowMs = TimeInfo.Instance.ClientNow();
+            
             for (int i = 0; i < count; ++i)
             {
                 ContainerClientItemData item = runtime.ContainerItems[i];
@@ -175,6 +205,31 @@ namespace ET.Client
                 ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
                 BindItemView(view, item.ConfigId, item.Count, slot);
                 BindDrag(self, view, viewId, false);
+                
+                // 处理搜索动效
+                bool isSearched = self.SearchedSlots.Contains(slot);
+                if (!isSearched)
+                {
+                    // 如果还没有开始搜索，记录搜索开始时间和持续时间
+                    if (!self.SlotSearchStartTimes.ContainsKey(slot))
+                    {
+                        self.SlotSearchStartTimes[slot] = nowMs;
+                        
+                        // 根据物品品质获取搜索持续时间
+                        ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(item.ConfigId);
+                        int quality = itemConfig?.Quality ?? 1;
+                        long durationMs = ExtractionInventoryConfig.GetItemSearchDurationMsByQuality(quality);
+                        self.SlotSearchDurations[slot] = durationMs;
+                    }
+                    
+                    // 创建或更新搜索动效
+                    EnsureSearchEffect(self, view, slot, true);
+                }
+                else
+                {
+                    // 已搜索完成，隐藏动效
+                    EnsureSearchEffect(self, view, slot, false);
+                }
             }
 
             RemoveDeadViews(self.ContainerItemViews, alive);
@@ -1193,5 +1248,164 @@ namespace ET.Client
             self.QuickChooseMinQuality = ResolveMinQualityFromDropdownValue(p1);
         }
         #endregion YIUIEvent结束
+
+        #region 搜索动效相关方法
+
+        /// <summary>
+        /// 更新搜索动效状态，在LateUpdate中调用
+        /// </summary>
+        private static void UpdateSearchEffects(SearchPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            long nowMs = TimeInfo.Instance.ClientNow();
+            
+            // 检查每个正在搜索的槽位
+            List<int> completedSlots = null;
+            foreach (KeyValuePair<int, long> pair in self.SlotSearchStartTimes)
+            {
+                int slot = pair.Key;
+                long startTime = pair.Value;
+                
+                // 如果已经搜索完成，跳过
+                if (self.SearchedSlots.Contains(slot))
+                {
+                    continue;
+                }
+                
+                // 获取该槽位的搜索持续时间
+                long durationMs = self.SlotSearchDurations.TryGetValue(slot, out long duration)
+                    ? duration
+                    : ExtractionInventoryConfig.GetDefaultItemSearchDurationMs();
+                
+                // 检查是否搜索完成
+                if (nowMs - startTime >= durationMs)
+                {
+                    completedSlots ??= new List<int>();
+                    completedSlots.Add(slot);
+                }
+            }
+            
+            // 处理搜索完成的槽位
+            if (completedSlots != null)
+            {
+                foreach (int slot in completedSlots)
+                {
+                    self.SearchedSlots.Add(slot);
+                    
+                    // 隐藏搜索动效
+                    if (self.SlotSearchingEffects.TryGetValue(slot, out GameObject effect) && effect != null)
+                    {
+                        effect.SetActive(false);
+                    }
+                    
+                    Log.Info($"[ECAClient][SearchPanel] slot {slot} search completed");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 确保搜索动效存在或隐藏
+        /// </summary>
+        private static void EnsureSearchEffect(SearchPanelComponent self, RectTransform itemView, int slot, bool show)
+        {
+            if (itemView == null)
+            {
+                return;
+            }
+
+            // 尝试获取已存在的动效
+            if (!self.SlotSearchingEffects.TryGetValue(slot, out GameObject effect) || effect == null)
+            {
+                if (!show)
+                {
+                    return;
+                }
+                
+                // 创建搜索动效
+                effect = CreateSearchEffect(itemView);
+                if (effect != null)
+                {
+                    self.SlotSearchingEffects[slot] = effect;
+                }
+            }
+
+            if (effect != null)
+            {
+                effect.SetActive(show);
+            }
+        }
+
+        /// <summary>
+        /// 创建搜索动效GameObject
+        /// </summary>
+        private static GameObject CreateSearchEffect(RectTransform parent)
+        {
+            if (parent == null)
+            {
+                return null;
+            }
+
+            // 创建一个简单的转圈圈动效
+            GameObject effectGo = new GameObject("SearchingEffect", typeof(RectTransform), typeof(Image));
+            effectGo.transform.SetParent(parent, false);
+            
+            RectTransform effectRect = effectGo.GetComponent<RectTransform>();
+            effectRect.anchorMin = Vector2.zero;
+            effectRect.anchorMax = Vector2.one;
+            effectRect.offsetMin = Vector2.zero;
+            effectRect.offsetMax = Vector2.zero;
+            
+            Image effectImage = effectGo.GetComponent<Image>();
+            effectImage.color = new Color(0f, 0f, 0f, 0.6f);
+            effectImage.raycastTarget = false;
+            
+            // 创建旋转的图标
+            GameObject spinnerGo = new GameObject("Spinner", typeof(RectTransform), typeof(Image));
+            spinnerGo.transform.SetParent(effectRect, false);
+            
+            RectTransform spinnerRect = spinnerGo.GetComponent<RectTransform>();
+            spinnerRect.anchorMin = new Vector2(0.5f, 0.5f);
+            spinnerRect.anchorMax = new Vector2(0.5f, 0.5f);
+            spinnerRect.pivot = new Vector2(0.5f, 0.5f);
+            spinnerRect.sizeDelta = new Vector2(32, 32);
+            spinnerRect.anchoredPosition = Vector2.zero;
+            
+            Image spinnerImage = spinnerGo.GetComponent<Image>();
+            spinnerImage.color = Color.white;
+            spinnerImage.raycastTarget = false;
+            
+            // 添加旋转动画组件
+            SearchEffectSpinner spinner = spinnerGo.AddComponent<SearchEffectSpinner>();
+            spinner.RotationSpeed = 360f; // 每秒旋转360度
+            
+            return effectGo;
+        }
+
+        /// <summary>
+        /// 清理所有搜索动效
+        /// </summary>
+        private static void ClearSearchEffects(SearchPanelComponent self)
+        {
+            if (self == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<int, GameObject> pair in self.SlotSearchingEffects)
+            {
+                if (pair.Value != null)
+                {
+                    UnityEngine.Object.Destroy(pair.Value);
+                }
+            }
+            
+            self.SlotSearchingEffects.Clear();
+        }
+
+        #endregion 搜索动效相关方法
     }
 }

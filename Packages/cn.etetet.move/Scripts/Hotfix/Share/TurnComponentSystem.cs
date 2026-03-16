@@ -43,18 +43,40 @@ namespace ET
         
         public static void Turn(this TurnComponent self, quaternion to, int turnTime)
         {
+            TimerComponent timerComponent = self.Root().TimerComponent;
+            timerComponent.Remove(ref self.timer);
+
+            if (turnTime <= 0)
+            {
+                self.StartTime = 0;
+                self.TurnTime = 0;
+                self.From = to;
+                self.To = to;
+                self.GetParent<Unit>().Rotation = to;
+                return;
+            }
+
             self.StartTime = TimeInfo.Instance.ServerNow();
             self.From = self.GetParent<Unit>().Rotation;
             self.To = to;
             self.TurnTime = turnTime;
-            TimerComponent timerComponent = self.Root().TimerComponent;
-            timerComponent.Remove(ref self.timer);
             self.timer = timerComponent.NewFrameTimer(TimerInvokeType.TurnTimer, self);
+        }
+
+        public static bool IsTurning(this TurnComponent self)
+        {
+            if (self == null || self.IsDisposed || self.timer == 0 || self.TurnTime <= 0)
+            {
+                return false;
+            }
+
+            return TimeInfo.Instance.ServerNow() - self.StartTime < self.TurnTime;
         }
 
         public static void Stop(this TurnComponent self)
         {
             self.Root().TimerComponent.Remove(ref self.timer);
+            self.TurnTime = 0;
         }
     }
 }

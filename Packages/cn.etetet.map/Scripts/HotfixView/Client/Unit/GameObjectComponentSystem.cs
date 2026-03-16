@@ -403,7 +403,12 @@ namespace ET.Client
 
             Vector3 predictionStep = self.PredictedDirection * (self.PredictedSpeed * Time.deltaTime);
             self.PredictedDelta += predictionStep;
-            unit.Rotation = quaternion.LookRotation((float3)self.PredictedDirection, math.up());
+
+            TurnComponent turnComponent = unit.GetComponent<TurnComponent>();
+            if (turnComponent == null || !turnComponent.IsTurning())
+            {
+                unit.Rotation = quaternion.LookRotation((float3)self.PredictedDirection, math.up());
+            }
         }
 
         private static void UpdatePredictionTarget(this UnitViewInterpolationComponent self)

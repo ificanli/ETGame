@@ -25,15 +25,22 @@ namespace ET.Client
             itemComponent.Clear();
 
             // 设置背包容量
-            itemComponent.SetCapacity(message.Capacity);
+            if (message.Width > 0 && message.Height > 0)
+            {
+                itemComponent.SetSize(message.Width, message.Height);
+            }
+            else
+            {
+                itemComponent.SetCapacity(message.Capacity);
+            }
 
             // 添加所有物品
             foreach (ItemData itemData in message.Items)
             {
-                itemComponent.UpdateItem(itemData.ItemId, itemData.SlotIndex, itemData.ConfigId, itemData.Count);
+                itemComponent.UpdateItem(itemData.ItemId, itemData.SlotIndex, itemData.ConfigId, itemData.Count, itemData.GridWidth, itemData.GridHeight);
             }
 
-            Log.Debug($"bag data synced, capacity: {message.Capacity}, item count: {message.Items.Count}");
+            Log.Debug($"bag data synced, size: {itemComponent.Width}x{itemComponent.Height}, item count: {message.Items.Count}");
             
             await ETTask.CompletedTask;
         }

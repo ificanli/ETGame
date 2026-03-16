@@ -18,5 +18,13 @@ namespace ET
         public const int ERR_LoadoutItemNotFound = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 21; // 200047021
         public const int ERR_LoadoutSlotMismatch = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 22; // 200047022
         public const int ERR_LoadoutNotConfirmed = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 23; // 200047023
+        public const int ERR_LoadoutGridInvalid = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 24; // 200047024
+        public const int ERR_LoadoutStateConflict = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 25; // 200047025
+        public const int ERR_LoadoutWarehouseNotEnough = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 26; // 200047026
+        public const int ERR_LoadoutAreaInvalid = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 27; // 200047027
+        public const int ERR_LoadoutSourceEmpty = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 28; // 200047028
+        public const int ERR_LoadoutTargetOccupied = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 29; // 200047029
+        public const int ERR_LoadoutBagNotEmpty = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 30; // 200047030
+        public const int ERR_LoadoutCountInvalid = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 31; // 200047031
     }
 }

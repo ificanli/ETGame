@@ -45,6 +45,15 @@ namespace ET.Server
             M2C_DeathSettlement deathMsg = M2C_DeathSettlement.Create();
             MapMessageHelper.NoticeClient(unit, deathMsg, NoticeType.Self);
 
+            UnitGateInfoComponent gateInfo = unit.GetComponent<UnitGateInfoComponent>();
+            if (gateInfo != null && gateInfo.ActorId != default)
+            {
+                Map2G_LoadoutCarryResult carryResult = Map2G_LoadoutCarryResult.Create();
+                carryResult.ResultType = (int)LoadoutCarryResultType.Dead;
+                carryResult.TotalWealthDelta = 0;
+                unit.Root().GetComponent<MessageSender>().Send(gateInfo.ActorId, carryResult);
+            }
+
             Log.Info($"[UnitDieEvent_ClearLoadout] player {unit.Id} died, all items cleared");
 
             await ETTask.CompletedTask;

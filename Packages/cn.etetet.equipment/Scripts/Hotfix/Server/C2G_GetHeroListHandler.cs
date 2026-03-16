@@ -39,11 +39,7 @@ namespace ET.Server
                 LoadoutComponent loadout = player.GetComponent<LoadoutComponent>();
                 if (loadout != null)
                 {
-                    response.CurrentHeroConfigId = loadout.HeroConfigId;
-                    response.CurrentMainWeaponConfigId = loadout.MainWeaponConfigId;
-                    response.CurrentSubWeaponConfigId = loadout.SubWeaponConfigId;
-                    response.CurrentArmorConfigId = loadout.ArmorConfigId;
-                    response.CurrentConsumableConfigIds.AddRange(loadout.ConsumableConfigIds);
+                    LoadoutStateHelper.FillGetHeroListResponse(loadout, response);
                 }
             }
 
