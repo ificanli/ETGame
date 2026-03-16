@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,17 +16,17 @@ namespace ET
     [EnableClass]
     public sealed partial class NumericTypeConfig : Luban.BeanBase
     {
-        public NumericTypeConfig(ByteBuf _buf) 
+        public NumericTypeConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Name = _buf.ReadString();
-            MaxNumericType = _buf.ReadInt();
-            {int n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);AffectNumeric = new System.Collections.Generic.Dictionary<int, long>(n0 * 3 / 2);for(var i0 = 0 ; i0 < n0 ; i0++) { int _k0;  _k0 = _buf.ReadInt(); long _v0;  _v0 = _buf.ReadLong();     AffectNumeric.Add(_k0, _v0);}}
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["MaxNumericType"].IsNumber) { throw new SerializationException(); }  MaxNumericType = _buf["MaxNumericType"]; }
+            { var __json0 = _buf["AffectNumeric"]; if(!__json0.IsArray) { throw new SerializationException(); } AffectNumeric = new System.Collections.Generic.Dictionary<int, long>(__json0.Count); foreach(JSONNode __e0 in __json0.Children) { int _k0;  { if(!__e0[0].IsNumber) { throw new SerializationException(); }  _k0 = __e0[0]; } long _v0;  { if(!__e0[1].IsNumber) { throw new SerializationException(); }  _v0 = __e0[1]; }  AffectNumeric.Add(_k0, _v0); }   }
 
             EndInit();
         }
 
-        public static NumericTypeConfig DeserializeNumericTypeConfig(ByteBuf _buf)
+        public static NumericTypeConfig DeserializeNumericTypeConfig(JSONNode _buf)
         {
             return new ET.NumericTypeConfig(_buf);
         }
@@ -46,7 +47,7 @@ namespace ET
         /// 影响的属性id
         /// </summary>
         public readonly System.Collections.Generic.Dictionary<int, long> AffectNumeric;
-    
+
         public const int __ID__ = 1076638314;
         public override int GetTypeId() => __ID__;
 

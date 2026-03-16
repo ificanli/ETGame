@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,43 +16,43 @@ namespace ET
     [EnableClass]
     public sealed partial class WeaponConfig : Luban.BeanBase
     {
-        public WeaponConfig(ByteBuf _buf) 
+        public WeaponConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            WeaponTypeId = _buf.ReadInt();
-            Damage = _buf.ReadFloat();
-            AttackRange = _buf.ReadFloat();
-            AttackIntervalMs = _buf.ReadInt();
-            MagazineSize = _buf.ReadInt();
-            ReloadTimeMs = _buf.ReadInt();
-            CanMoveWhileFire = _buf.ReadBool();
-            FireLockTypeId = _buf.ReadInt();
-            BulletCount = _buf.ReadInt();
-            SpreadAngle = _buf.ReadFloat();
-            Desc = _buf.ReadString();
-            ProjectileEffect = _buf.ReadString();
-            HitEffect = _buf.ReadString();
-            WeaponPrefab = _buf.ReadString();
-            CasterBindPointId = _buf.ReadInt();
-            TargetBindPointId = _buf.ReadInt();
-            WeaponBindPointId = _buf.ReadInt();
-            MuzzleBindPointId = _buf.ReadInt();
-            WeaponMuzzlePath = _buf.ReadString();
-            WeaponLocalPositionX = _buf.ReadFloat();
-            WeaponLocalPositionY = _buf.ReadFloat();
-            WeaponLocalPositionZ = _buf.ReadFloat();
-            WeaponLocalEulerX = _buf.ReadFloat();
-            WeaponLocalEulerY = _buf.ReadFloat();
-            WeaponLocalEulerZ = _buf.ReadFloat();
-            WeaponLocalScale = _buf.ReadFloat();
-            ProjectileSpeed = _buf.ReadFloat();
-            ProjectileDurationMs = _buf.ReadInt();
-            HitEffectDurationMs = _buf.ReadInt();
+            { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
+            { if(!_buf["WeaponTypeId"].IsNumber) { throw new SerializationException(); }  WeaponTypeId = _buf["WeaponTypeId"]; }
+            { if(!_buf["Damage"].IsNumber) { throw new SerializationException(); }  Damage = _buf["Damage"]; }
+            { if(!_buf["AttackRange"].IsNumber) { throw new SerializationException(); }  AttackRange = _buf["AttackRange"]; }
+            { if(!_buf["AttackIntervalMs"].IsNumber) { throw new SerializationException(); }  AttackIntervalMs = _buf["AttackIntervalMs"]; }
+            { if(!_buf["MagazineSize"].IsNumber) { throw new SerializationException(); }  MagazineSize = _buf["MagazineSize"]; }
+            { if(!_buf["ReloadTimeMs"].IsNumber) { throw new SerializationException(); }  ReloadTimeMs = _buf["ReloadTimeMs"]; }
+            { if(!_buf["CanMoveWhileFire"].IsBoolean) { throw new SerializationException(); }  CanMoveWhileFire = _buf["CanMoveWhileFire"]; }
+            { if(!_buf["FireLockTypeId"].IsNumber) { throw new SerializationException(); }  FireLockTypeId = _buf["FireLockTypeId"]; }
+            { if(!_buf["BulletCount"].IsNumber) { throw new SerializationException(); }  BulletCount = _buf["BulletCount"]; }
+            { if(!_buf["SpreadAngle"].IsNumber) { throw new SerializationException(); }  SpreadAngle = _buf["SpreadAngle"]; }
+            { if(!_buf["Desc"].IsString) { throw new SerializationException(); }  Desc = _buf["Desc"]; }
+            { if(!_buf["ProjectileEffect"].IsString) { throw new SerializationException(); }  ProjectileEffect = _buf["ProjectileEffect"]; }
+            { if(!_buf["HitEffect"].IsString) { throw new SerializationException(); }  HitEffect = _buf["HitEffect"]; }
+            { if(!_buf["WeaponPrefab"].IsString) { throw new SerializationException(); }  WeaponPrefab = _buf["WeaponPrefab"]; }
+            { if(!_buf["CasterBindPointId"].IsNumber) { throw new SerializationException(); }  CasterBindPointId = _buf["CasterBindPointId"]; }
+            { if(!_buf["TargetBindPointId"].IsNumber) { throw new SerializationException(); }  TargetBindPointId = _buf["TargetBindPointId"]; }
+            { if(!_buf["WeaponBindPointId"].IsNumber) { throw new SerializationException(); }  WeaponBindPointId = _buf["WeaponBindPointId"]; }
+            { if(!_buf["MuzzleBindPointId"].IsNumber) { throw new SerializationException(); }  MuzzleBindPointId = _buf["MuzzleBindPointId"]; }
+            { if(!_buf["WeaponMuzzlePath"].IsString) { throw new SerializationException(); }  WeaponMuzzlePath = _buf["WeaponMuzzlePath"]; }
+            { if(!_buf["WeaponLocalPositionX"].IsNumber) { throw new SerializationException(); }  WeaponLocalPositionX = _buf["WeaponLocalPositionX"]; }
+            { if(!_buf["WeaponLocalPositionY"].IsNumber) { throw new SerializationException(); }  WeaponLocalPositionY = _buf["WeaponLocalPositionY"]; }
+            { if(!_buf["WeaponLocalPositionZ"].IsNumber) { throw new SerializationException(); }  WeaponLocalPositionZ = _buf["WeaponLocalPositionZ"]; }
+            { if(!_buf["WeaponLocalEulerX"].IsNumber) { throw new SerializationException(); }  WeaponLocalEulerX = _buf["WeaponLocalEulerX"]; }
+            { if(!_buf["WeaponLocalEulerY"].IsNumber) { throw new SerializationException(); }  WeaponLocalEulerY = _buf["WeaponLocalEulerY"]; }
+            { if(!_buf["WeaponLocalEulerZ"].IsNumber) { throw new SerializationException(); }  WeaponLocalEulerZ = _buf["WeaponLocalEulerZ"]; }
+            { if(!_buf["WeaponLocalScale"].IsNumber) { throw new SerializationException(); }  WeaponLocalScale = _buf["WeaponLocalScale"]; }
+            { if(!_buf["ProjectileSpeed"].IsNumber) { throw new SerializationException(); }  ProjectileSpeed = _buf["ProjectileSpeed"]; }
+            { if(!_buf["ProjectileDurationMs"].IsNumber) { throw new SerializationException(); }  ProjectileDurationMs = _buf["ProjectileDurationMs"]; }
+            { if(!_buf["HitEffectDurationMs"].IsNumber) { throw new SerializationException(); }  HitEffectDurationMs = _buf["HitEffectDurationMs"]; }
 
             EndInit();
         }
 
-        public static WeaponConfig DeserializeWeaponConfig(ByteBuf _buf)
+        public static WeaponConfig DeserializeWeaponConfig(JSONNode _buf)
         {
             return new ET.WeaponConfig(_buf);
         }
@@ -176,7 +177,7 @@ namespace ET
         /// 命中特效持续时间(毫秒)
         /// </summary>
         public readonly int HitEffectDurationMs;
-    
+
         public const int __ID__ = 940013437;
         public override int GetTypeId() => __ID__;
 

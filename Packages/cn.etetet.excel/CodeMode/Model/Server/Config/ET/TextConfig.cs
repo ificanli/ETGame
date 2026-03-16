@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,17 +16,17 @@ namespace ET
     [EnableClass]
     public sealed partial class TextConfig : Luban.BeanBase
     {
-        public TextConfig(ByteBuf _buf) 
+        public TextConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Name = _buf.ReadString();
-            CN = _buf.ReadString();
-            EN = _buf.ReadString();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["CN"].IsString) { throw new SerializationException(); }  CN = _buf["CN"]; }
+            { if(!_buf["EN"].IsString) { throw new SerializationException(); }  EN = _buf["EN"]; }
 
             EndInit();
         }
 
-        public static TextConfig DeserializeTextConfig(ByteBuf _buf)
+        public static TextConfig DeserializeTextConfig(JSONNode _buf)
         {
             return new ET.TextConfig(_buf);
         }
@@ -46,7 +47,7 @@ namespace ET
         /// 英文
         /// </summary>
         public readonly string EN;
-    
+
         public const int __ID__ = 1515216270;
         public override int GetTypeId() => __ID__;
 

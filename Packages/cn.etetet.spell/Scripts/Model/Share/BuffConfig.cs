@@ -108,6 +108,7 @@ namespace ET
             this.effectDict.Clear();
             foreach (EffectNode effectNode in this.Effects)
             {
+                BTNodeIdHelper.EnsureIds(effectNode);
                 this.effectDict.Add(effectNode.GetType(), effectNode);
             }
         }

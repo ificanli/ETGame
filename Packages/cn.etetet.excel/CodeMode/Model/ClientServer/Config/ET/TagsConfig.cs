@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,20 +16,20 @@ namespace ET
     [EnableClass]
     public sealed partial class TagsConfig : Luban.BeanBase
     {
-        public TagsConfig(ByteBuf _buf) 
+        public TagsConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            TagDes = _buf.ReadString();
-            TagType = _buf.ReadInt();
-            ShowTagsName = _buf.ReadString();
-            ShowTagsDesc = _buf.ReadString();
-            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);ShowTagsBuffId = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); ShowTagsBuffId[__index0] = __e0;}}
-            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);MatchValues = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); MatchValues[__index0] = __e0;}}
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["TagDes"].IsString) { throw new SerializationException(); }  TagDes = _buf["TagDes"]; }
+            { if(!_buf["TagType"].IsNumber) { throw new SerializationException(); }  TagType = _buf["TagType"]; }
+            { if(!_buf["ShowTagsName"].IsString) { throw new SerializationException(); }  ShowTagsName = _buf["ShowTagsName"]; }
+            { if(!_buf["ShowTagsDesc"].IsString) { throw new SerializationException(); }  ShowTagsDesc = _buf["ShowTagsDesc"]; }
+            { var __json0 = _buf["ShowTagsBuffId"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; ShowTagsBuffId = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  ShowTagsBuffId[__index0++] = __v0; }   }
+            { var __json0 = _buf["MatchValues"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; MatchValues = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  MatchValues[__index0++] = __v0; }   }
 
             EndInit();
         }
 
-        public static TagsConfig DeserializeTagsConfig(ByteBuf _buf)
+        public static TagsConfig DeserializeTagsConfig(JSONNode _buf)
         {
             return new ET.TagsConfig(_buf);
         }
@@ -61,7 +62,7 @@ namespace ET
         /// 机读匹配值（英雄tag配HeroConfigId；枪械tag配WeaponTypeId）
         /// </summary>
         public readonly int[] MatchValues;
-    
+
         public const int __ID__ = -295408774;
         public override int GetTypeId() => __ID__;
 

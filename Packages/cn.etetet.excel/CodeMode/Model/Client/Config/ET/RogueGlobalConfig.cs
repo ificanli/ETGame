@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,23 +16,23 @@ namespace ET
     [EnableClass]
     public sealed partial class RogueGlobalConfig : Luban.BeanBase
     {
-        public RogueGlobalConfig(ByteBuf _buf) 
+        public RogueGlobalConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            DefaultKillExp = _buf.ReadInt();
-            ChoiceOptionCount = _buf.ReadInt();
-            QualityRandom1 = _buf.ReadInt();
-            QualityRandom2 = _buf.ReadInt();
-            QualityRandom3 = _buf.ReadInt();
-            SafeSlotStart = _buf.ReadInt();
-            SafeSlotCount = _buf.ReadInt();
-            CorpseInteractRange = _buf.ReadFloat();
-            CorpseButtonTextId = _buf.ReadInt();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["DefaultKillExp"].IsNumber) { throw new SerializationException(); }  DefaultKillExp = _buf["DefaultKillExp"]; }
+            { if(!_buf["ChoiceOptionCount"].IsNumber) { throw new SerializationException(); }  ChoiceOptionCount = _buf["ChoiceOptionCount"]; }
+            { if(!_buf["QualityRandom1"].IsNumber) { throw new SerializationException(); }  QualityRandom1 = _buf["QualityRandom1"]; }
+            { if(!_buf["QualityRandom2"].IsNumber) { throw new SerializationException(); }  QualityRandom2 = _buf["QualityRandom2"]; }
+            { if(!_buf["QualityRandom3"].IsNumber) { throw new SerializationException(); }  QualityRandom3 = _buf["QualityRandom3"]; }
+            { if(!_buf["SafeSlotStart"].IsNumber) { throw new SerializationException(); }  SafeSlotStart = _buf["SafeSlotStart"]; }
+            { if(!_buf["SafeSlotCount"].IsNumber) { throw new SerializationException(); }  SafeSlotCount = _buf["SafeSlotCount"]; }
+            { if(!_buf["CorpseInteractRange"].IsNumber) { throw new SerializationException(); }  CorpseInteractRange = _buf["CorpseInteractRange"]; }
+            { if(!_buf["CorpseButtonTextId"].IsNumber) { throw new SerializationException(); }  CorpseButtonTextId = _buf["CorpseButtonTextId"]; }
 
             EndInit();
         }
 
-        public static RogueGlobalConfig DeserializeRogueGlobalConfig(ByteBuf _buf)
+        public static RogueGlobalConfig DeserializeRogueGlobalConfig(JSONNode _buf)
         {
             return new ET.RogueGlobalConfig(_buf);
         }
@@ -76,7 +77,7 @@ namespace ET
         /// 尸体盒交互按钮文案ID
         /// </summary>
         public readonly int CorpseButtonTextId;
-    
+
         public const int __ID__ = 597591072;
         public override int GetTypeId() => __ID__;
 

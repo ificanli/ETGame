@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,18 +16,18 @@ namespace ET
     [EnableClass]
     public sealed partial class HeroConfig : Luban.BeanBase
     {
-        public HeroConfig(ByteBuf _buf) 
+        public HeroConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Name = _buf.ReadString();
-            UnitConfigId = _buf.ReadInt();
-            SkillConfigId = _buf.ReadInt();
-            PassiveBuffId = _buf.ReadInt();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["UnitConfigId"].IsNumber) { throw new SerializationException(); }  UnitConfigId = _buf["UnitConfigId"]; }
+            { if(!_buf["SkillConfigId"].IsNumber) { throw new SerializationException(); }  SkillConfigId = _buf["SkillConfigId"]; }
+            { if(!_buf["PassiveBuffId"].IsNumber) { throw new SerializationException(); }  PassiveBuffId = _buf["PassiveBuffId"]; }
 
             EndInit();
         }
 
-        public static HeroConfig DeserializeHeroConfig(ByteBuf _buf)
+        public static HeroConfig DeserializeHeroConfig(JSONNode _buf)
         {
             return new ET.HeroConfig(_buf);
         }
@@ -36,7 +37,7 @@ namespace ET
         public readonly int UnitConfigId;
         public readonly int SkillConfigId;
         public readonly int PassiveBuffId;
-    
+
         public const int __ID__ = 1863899803;
         public override int GetTypeId() => __ID__;
 

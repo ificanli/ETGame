@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,22 +16,22 @@ namespace ET
     [EnableClass]
     public sealed partial class NavmeshGuardConfig : Luban.BeanBase
     {
-        public NavmeshGuardConfig(ByteBuf _buf) 
+        public NavmeshGuardConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            MovementProjectHalfExtentXZ = _buf.ReadFloat();
-            MovementProjectHalfExtentY = _buf.ReadFloat();
-            MovementProjectHalfExtentByRadius = _buf.ReadFloat();
-            MovementRejectDistance = _buf.ReadFloat();
-            MovementRejectDistanceByRadius = _buf.ReadFloat();
-            FindNearestRejectDistance = _buf.ReadFloat();
-            FindNearestRejectDistanceByRadius = _buf.ReadFloat();
-            MinUnitRadius = _buf.ReadFloat();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["MovementProjectHalfExtentXZ"].IsNumber) { throw new SerializationException(); }  MovementProjectHalfExtentXZ = _buf["MovementProjectHalfExtentXZ"]; }
+            { if(!_buf["MovementProjectHalfExtentY"].IsNumber) { throw new SerializationException(); }  MovementProjectHalfExtentY = _buf["MovementProjectHalfExtentY"]; }
+            { if(!_buf["MovementProjectHalfExtentByRadius"].IsNumber) { throw new SerializationException(); }  MovementProjectHalfExtentByRadius = _buf["MovementProjectHalfExtentByRadius"]; }
+            { if(!_buf["MovementRejectDistance"].IsNumber) { throw new SerializationException(); }  MovementRejectDistance = _buf["MovementRejectDistance"]; }
+            { if(!_buf["MovementRejectDistanceByRadius"].IsNumber) { throw new SerializationException(); }  MovementRejectDistanceByRadius = _buf["MovementRejectDistanceByRadius"]; }
+            { if(!_buf["FindNearestRejectDistance"].IsNumber) { throw new SerializationException(); }  FindNearestRejectDistance = _buf["FindNearestRejectDistance"]; }
+            { if(!_buf["FindNearestRejectDistanceByRadius"].IsNumber) { throw new SerializationException(); }  FindNearestRejectDistanceByRadius = _buf["FindNearestRejectDistanceByRadius"]; }
+            { if(!_buf["MinUnitRadius"].IsNumber) { throw new SerializationException(); }  MinUnitRadius = _buf["MinUnitRadius"]; }
 
             EndInit();
         }
 
-        public static NavmeshGuardConfig DeserializeNavmeshGuardConfig(ByteBuf _buf)
+        public static NavmeshGuardConfig DeserializeNavmeshGuardConfig(JSONNode _buf)
         {
             return new ET.NavmeshGuardConfig(_buf);
         }
@@ -71,7 +72,7 @@ namespace ET
         /// 最小角色半径
         /// </summary>
         public readonly float MinUnitRadius;
-    
+
         public const int __ID__ = -256367018;
         public override int GetTypeId() => __ID__;
 

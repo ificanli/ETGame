@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,18 +16,18 @@ namespace ET
     [EnableClass]
     public sealed partial class UnitConfig : Luban.BeanBase
     {
-        public UnitConfig(ByteBuf _buf) 
+        public UnitConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            UnitType = (ET.UnitType)_buf.ReadInt();
-            Name = _buf.ReadString();
-            HeadIcon = _buf.ReadString();
-            ClassType = (ET.EClassType)_buf.ReadInt();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["UnitType"].IsNumber) { throw new SerializationException(); }  UnitType = (ET.UnitType)_buf["UnitType"].AsInt; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["head_icon"].IsString) { throw new SerializationException(); }  HeadIcon = _buf["head_icon"]; }
+            { if(!_buf["class_type"].IsNumber) { throw new SerializationException(); }  ClassType = (ET.EClassType)_buf["class_type"].AsInt; }
 
             EndInit();
         }
 
-        public static UnitConfig DeserializeUnitConfig(ByteBuf _buf)
+        public static UnitConfig DeserializeUnitConfig(JSONNode _buf)
         {
             return new ET.UnitConfig(_buf);
         }
@@ -51,7 +52,7 @@ namespace ET
         /// 职业
         /// </summary>
         public readonly ET.EClassType ClassType;
-    
+
         public const int __ID__ = 1859130533;
         public override int GetTypeId() => __ID__;
 

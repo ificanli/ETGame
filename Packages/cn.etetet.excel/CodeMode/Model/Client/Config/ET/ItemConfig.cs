@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,24 +16,24 @@ namespace ET
     [EnableClass]
     public sealed partial class ItemConfig : Luban.BeanBase
     {
-        public ItemConfig(ByteBuf _buf) 
+        public ItemConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Name = _buf.ReadString();
-            Desc = _buf.ReadString();
-            Type = _buf.ReadInt();
-            MaxStack = _buf.ReadInt();
-            Icon = _buf.ReadString();
-            Quality = _buf.ReadInt();
-            UseType = _buf.ReadInt();
-            Level = _buf.ReadInt();
-            GridWidth = _buf.ReadInt();
-            GridHeight = _buf.ReadInt();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["Desc"].IsString) { throw new SerializationException(); }  Desc = _buf["Desc"]; }
+            { if(!_buf["Type"].IsNumber) { throw new SerializationException(); }  Type = _buf["Type"]; }
+            { if(!_buf["MaxStack"].IsNumber) { throw new SerializationException(); }  MaxStack = _buf["MaxStack"]; }
+            { if(!_buf["Icon"].IsString) { throw new SerializationException(); }  Icon = _buf["Icon"]; }
+            { if(!_buf["Quality"].IsNumber) { throw new SerializationException(); }  Quality = _buf["Quality"]; }
+            { if(!_buf["UseType"].IsNumber) { throw new SerializationException(); }  UseType = _buf["UseType"]; }
+            { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
+            { if(!_buf["GridWidth"].IsNumber) { throw new SerializationException(); }  GridWidth = _buf["GridWidth"]; }
+            { if(!_buf["GridHeight"].IsNumber) { throw new SerializationException(); }  GridHeight = _buf["GridHeight"]; }
 
             EndInit();
         }
 
-        public static ItemConfig DeserializeItemConfig(ByteBuf _buf)
+        public static ItemConfig DeserializeItemConfig(JSONNode _buf)
         {
             return new ET.ItemConfig(_buf);
         }
@@ -81,7 +82,7 @@ namespace ET
         /// 格子高
         /// </summary>
         public readonly int GridHeight;
-    
+
         public const int __ID__ = 1663635188;
         public override int GetTypeId() => __ID__;
 

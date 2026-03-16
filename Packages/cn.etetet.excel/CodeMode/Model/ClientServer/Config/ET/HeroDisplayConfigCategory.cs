@@ -11,6 +11,7 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
+using SimpleJSON;
 
 namespace ET
 {
@@ -18,23 +19,23 @@ namespace ET
     /// <summary>
     /// 英雄大厅3D展示配置表
     /// </summary>
-    [ConfigProcess(ConfigType.Luban)]
+    [ConfigProcess(ConfigType.Json)]
     public partial class HeroDisplayConfigCategory : Singleton<HeroDisplayConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.HeroDisplayConfig> _dataMap;
         private readonly List<ET.HeroDisplayConfig> _dataList;
-        
-        public HeroDisplayConfigCategory(ByteBuf _buf)
+
+        public HeroDisplayConfigCategory(JSONNode _buf)
         {
             _dataMap = new Dictionary<int, ET.HeroDisplayConfig>();
             _dataList = new List<ET.HeroDisplayConfig>();
-            
-            for(int n = _buf.ReadSize() ; n > 0 ; --n)
+
+            foreach(JSONNode _ele in _buf.Children)
             {
                 ET.HeroDisplayConfig _v;
-                _v = global::ET.HeroDisplayConfig.DeserializeHeroDisplayConfig(_buf);
+                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.HeroDisplayConfig.DeserializeHeroDisplayConfig(_ele);  }
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }
