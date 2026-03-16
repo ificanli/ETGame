@@ -77,6 +77,8 @@ namespace ET
                 Unit unit = buff.Parent.GetParent<Unit>();
                 using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
                 env.AddEntity(effect.Buff, buff);
+                env.AddEntity(effect.Unit, unit);
+                env.AddEntity(effect.Caster, buff.GetCaster());
                 BTHelper.RunTree(effect, env);
             }
         }

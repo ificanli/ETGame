@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Runtime.InteropServices;
 
 namespace ET.Server
 {
@@ -18,7 +16,8 @@ namespace ET.Server
             
             int outerPort = AddressSingleton.Instance.GetSceneOuterPort(root.Name.GetSceneConfigName());
             
-            root.AddComponent<HttpComponent, string>($"http://*:{outerPort}/");
+            string httpHost = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "+" : "*";
+            root.AddComponent<HttpComponent, string>($"http://{httpHost}:{outerPort}/");
 
             // 注册服务发现
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();

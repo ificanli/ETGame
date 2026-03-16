@@ -13,6 +13,7 @@ namespace ET.Client
 	        unit.Position = unitInfo.Position;
 	        unit.Forward = unitInfo.Forward;
 	        unit.UnitType = (UnitType)unitInfo.Type;
+            unit.AddComponent<CampComponent, int>(unitInfo.CampId);
 	        NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
 
 			foreach (var kv in unitInfo.KV)

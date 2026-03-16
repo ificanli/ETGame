@@ -8,12 +8,8 @@ namespace ET.Server
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.GetOwner();
-            NumericComponent numericComponent = unit.NumericComponent;
-
-            float3 birthPos = new(
-                numericComponent.GetAsFloat(NumericType.X), 
-                numericComponent.GetAsFloat(NumericType.Y),
-                numericComponent.GetAsFloat(NumericType.Z));
+            UnitSpawnPointComponent spawnPointComponent = unit.GetComponent<UnitSpawnPointComponent>();
+            float3 birthPos = spawnPointComponent?.Position ?? unit.Position;
             
             ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
 

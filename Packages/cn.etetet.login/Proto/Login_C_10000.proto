@@ -73,3 +73,16 @@ message G2C_LoginGate // ISessionResponse
 	string Message = 3;
 	int64 PlayerId = 4;
 }
+
+// ResponseType G2C_Logout
+message C2G_Logout // ISessionRequest
+{
+	int32 RpcId = 1;
+}
+
+message G2C_Logout // ISessionResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}

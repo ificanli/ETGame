@@ -1,0 +1,21 @@
+{
+  "name": "cn.etetet.truesync",
+  "displayName": "ET.TrueSync",
+  "version": "3.0.0",
+  "unity": "2022.3",
+  "description": "帧同步用的定点数实现",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  },
+  "dependencies": {},
+  "_fingerprint": "7991c184d3d7ded92d921998ac1b4614c9603a10"
+}

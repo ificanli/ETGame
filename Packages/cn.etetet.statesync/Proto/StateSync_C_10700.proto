@@ -58,16 +58,127 @@ message G2C_Benchmark // ISessionResponse
 	string Message = 3;
 }
 
-
-// ResponseType G2C_Logout
-message C2G_Logout // ISessionRequest
+// 摇杆移动消息
+message C2M_JoystickInput // ILocationMessage
 {
 	int32 RpcId = 1;
+	float DirX = 2;
+	float DirZ = 3;
 }
 
-message G2C_Logout // ISessionResponse
+message M2C_JoystickMove // IMessage
+{
+	int64 UnitId = 1;
+	float PosX = 2;
+	float PosY = 3;
+	float PosZ = 4;
+	float RotX = 5;
+	float RotY = 6;
+	float RotZ = 7;
+	float RotW = 8;
+	float DirX = 9;
+	float DirZ = 10;
+	float Speed = 11;
+}
+
+// 武器切换消息
+message C2M_SwitchWeapon // ILocationMessage
+{
+	int32 RpcId = 1;
+	int32 SlotIndex = 2; // 切换到的槽位（1 或 2）
+}
+
+message M2C_SwitchWeapon // IMessage
+{
+	int64 UnitId = 1;
+	int32 SlotIndex = 2; // 切换到的槽位
+	int32 WeaponId = 3; // 武器配置ID
+}
+
+message M2C_WeaponAmmoState // IMessage
+{
+	int64 UnitId = 1;
+	int32 Slot1Ammo = 2;
+	int32 Slot2Ammo = 3;
+	bool Slot1Reloading = 4;
+	bool Slot2Reloading = 5;
+	int32 Slot1MagazineSize = 6;
+	int32 Slot2MagazineSize = 7;
+	float Slot1AttackRange = 8;
+	float Slot2AttackRange = 9;
+}
+
+// 武器开火表现消息（服务端权威触发，客户端仅做表现）
+message M2C_WeaponFire // IMessage
+{
+	int64 CasterUnitId = 1;
+	int64 TargetUnitId = 2;
+	int32 WeaponId = 3;
+	int32 SlotIndex = 4;
+	int32 BulletCount = 5;
+	int32 FireLockTypeId = 6;
+}
+
+// 武器命中特效消息（服务端权威命中后广播）
+message M2C_WeaponHit // IMessage
+{
+	int64 CasterUnitId = 1;
+	int64 TargetUnitId = 2;
+	int32 WeaponId = 3;
+}
+
+// ========================= Rogue =========================
+
+message RogueNumericDelta
+{
+	int32 NumericType = 1;
+	int64 Value = 2;
+}
+
+message RogueOptionData
+{
+	int32 OptionId = 1;
+	int32 BuffConfigId = 2;
+	int32 NameTextId = 3;
+	int32 DescTextId = 4;
+	string Icon = 5;
+}
+
+message M2C_RogueExpSync // IMessage
+{
+	int32 Level = 1;
+	int32 CurrentExp = 2;
+	int32 NeedExp = 3;
+	int32 CurrentGold = 4;
+}
+
+message M2C_RogueLevelUp // IMessage
+{
+	int32 OldLevel = 1;
+	int32 NewLevel = 2;
+	repeated RogueNumericDelta GainedNumerics = 3;
+}
+
+message M2C_RogueChoicePopup // IMessage
+{
+	int64 ChoiceSerial = 1;
+	repeated RogueOptionData Options = 2;
+}
+
+// ResponseType M2C_RogueChoiceResult
+message C2M_RogueChooseOption // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 ChoiceSerial = 2;
+	int32 OptionId = 3;
+}
+
+message M2C_RogueChoiceResult // ILocationResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;
 	string Message = 3;
+	int64 ChoiceSerial = 4;
+	int32 OptionId = 5;
+	int32 BuffConfigId = 6;
 }

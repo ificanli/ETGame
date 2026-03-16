@@ -6,7 +6,7 @@
         {
             Scene scene = env.Scene;
             Buff buff = env.GetEntity<Buff>(node.Buff);
-            SpellTargetComponent spellTargetComponent = buff.GetBuffData().GetComponent<SpellTargetComponent>();
+            SpellTargetComponent spellTargetComponent = buff.GetOrAddSpellTargetComponent();
             if (spellTargetComponent.Units.Count == 0)
             {
                 return TextConstDefine.SpellCast_NotSelectTarget;

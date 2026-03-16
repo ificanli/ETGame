@@ -1,6 +1,51 @@
 {
 	"_t" : "ET.BuffConfigCategory",
-	"dict" : [[300001, {
+	"dict" : [[201001, {
+				"_id" : 201001,
+				"Desc" : "Hero Passive Heal",
+				"Duration" : -1,
+				"TickTime" : 1000,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.TargetSelectorCasterCircle",
+								"_id" : 2,
+								"Children" : [],
+								"TreeId" : NumberLong(2010011),
+								"Buff" : "Buff",
+								"Caster" : "Caster",
+								"Owner" : "Owner",
+								"MaxDistance" : 0,
+								"MinDistance" : 0,
+								"Unit" : "Target",
+								"Units" : "Units",
+								"Radius" : 5,
+								"UnitType" : 1
+							}, {
+								"_t" : "ET.BTForeachUnit",
+								"_id" : 3,
+								"Children" : [{
+										"_t" : "ET.BTHeal",
+										"_id" : 4,
+										"Children" : [],
+										"Target" : "Target",
+										"Buff" : "Buff",
+										"Value" : 10
+									}],
+								"Units" : "Units",
+								"Unit" : "Target"
+							}],
+						"TreeId" : NumberLong("8941461366428657591"),
+						"Buff" : "Buff",
+						"Override" : false
+					}]
+			}], [300001, {
 				"_id" : 300001,
 				"Desc" : "怪物AI",
 				"Duration" : -1,
@@ -71,6 +116,95 @@
 									}]
 							}],
 						"TreeId" : NumberLong("9160521892227564777"),
+						"Buff" : "Buff",
+						"Override" : true
+					}]
+			}], [300010, {
+				"_id" : 300010,
+				"Desc" : "机器人AI",
+				"Duration" : -1,
+				"TickTime" : 500,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 16,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTSelector",
+								"_id" : 5,
+								"Children" : [{
+										"_t" : "ET.BTSequence",
+										"_id" : 9,
+										"Children" : [{
+												"_t" : "ET.AI_RobotReturnCheck",
+												"_id" : 10,
+												"Children" : [],
+												"Buff" : "Buff",
+												"MaxDistance" : 35.0
+											}, {
+												"_t" : "ET.AI_RobotReturn",
+												"_id" : 6,
+												"Children" : [],
+												"Buff" : "Buff",
+												"WaitIntervalMs" : 1000,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 11,
+										"Children" : [{
+												"_t" : "ET.AI_RobotCombatCheck",
+												"_id" : 17,
+												"Children" : [],
+												"Buff" : "Buff",
+												"MaxRange" : 18.0,
+												"SelectIntervalMs" : 300
+											}, {
+												"_t" : "ET.AI_RobotCombat",
+												"_id" : 7,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ThinkIntervalMs" : 200,
+												"PreCastSpellId" : 100110,
+												"MainSpellId" : 100100
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 13,
+										"Children" : [{
+												"_t" : "ET.BTNot",
+												"_id" : 15,
+												"Children" : [{
+														"_t" : "ET.AI_RobotCombatCheck",
+														"_id" : 14,
+														"Children" : [],
+														"Buff" : "Buff",
+														"MaxRange" : 18.0,
+														"SelectIntervalMs" : 300
+													}]
+											}, {
+												"_t" : "ET.AI_RobotPatrol",
+												"_id" : 8,
+												"Children" : [],
+												"Buff" : "Buff",
+												"MinRadius" : 2.0,
+												"MaxRadius" : 8.0,
+												"IdleMinMs" : 1000,
+												"IdleMaxMs" : 3000,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}]
+							}],
+						"TreeId" : NumberLong("5247162988964213440"),
 						"Buff" : "Buff",
 						"Override" : true
 					}]
@@ -1266,6 +1400,117 @@
 						"TreeId" : NumberLong("8260875540629730541"),
 						"Buff" : "Buff",
 						"Override" : true
+					}]
+			}], [200200, {
+				"_id" : 200200,
+				"Desc" : "武器自动攻击Tick Buff",
+				"Duration" : 1000000,
+				"TickTime" : 500,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [15],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTWeaponHasTarget",
+								"_id" : 3,
+								"Children" : [],
+								"Caster" : "Unit",
+								"Target" : "Target"
+							}, {
+								"_t" : "ET.BTWeaponInRange",
+								"_id" : 4,
+								"Children" : [],
+								"Caster" : "Unit",
+								"Target" : "Target",
+								"Range" : 10.0
+							}, {
+								"_t" : "ET.BTWeaponCanFire",
+								"_id" : 5,
+								"Children" : [],
+								"Caster" : "Unit",
+								"SlotIndex" : 1
+							}, {
+								"_t" : "ET.BTWeaponFire",
+								"_id" : 6,
+								"Children" : [],
+								"Caster" : "Unit",
+								"Target" : "Target",
+								"SlotIndex" : 1
+							}],
+						"TreeId" : NumberLong("2979943332127943200"),
+						"Buff" : "Buff",
+						"Override" : false
+					}]
+			}], [200300, {
+				"_id" : 200300,
+				"Desc" : "示例-战术眼",
+				"Duration" : 30000,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetSpellTargetPos",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Pos" : "TargetPos"
+							}, {
+								"_t" : "ET.BTCreateWard",
+								"_id" : 3,
+								"Children" : [],
+								"Caster" : "Caster",
+								"Buff" : "Buff",
+								"TargetPos" : "TargetPos",
+								"Unit" : "Ward",
+								"UnitConfigId" : 909,
+								"VisionRadius" : 1200.0
+							}],
+						"TreeId" : NumberLong(20030001),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [200310, {
+				"_id" : 200310,
+				"Desc" : "示例-战术侦查",
+				"Duration" : 15000,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTApplyDetector",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"RevealRadius" : 1500.0
+							}],
+						"TreeId" : NumberLong(20031001),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
 					}]
 			}]]
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 
 namespace ET
 {
@@ -75,10 +74,8 @@ namespace ET
             "ClientServer/CodeMode/Loader/ClientServer",
         };
 
-        public static void ChangeToCodeMode(string codeMode, string sceneName)
+        public static void ChangeToCodeMode(string codeMode, HashSet<string> targetPackages)
         {
-            HashSet<string> targetPackages = CollectAllDependencies(sceneName);
-
             Console.WriteLine($"目标包列表: {string.Join(", ", targetPackages)}");
 
             foreach (string a in moduleDirs)
@@ -124,68 +121,6 @@ namespace ET
                     }
                 }
             }
-        }
-
-        private static HashSet<string> CollectAllDependencies(string sceneName)
-        {
-            var result = new HashSet<string>();
-            var rootPackage = $"cn.etetet.{sceneName.ToLower()}";
-
-            CollectDependenciesRecursive(rootPackage, result);
-
-            return result;
-        }
-
-        private static void CollectDependenciesRecursive(string packageName, HashSet<string> collected)
-        {
-            if (collected.Contains(packageName))
-            {
-                return;
-            }
-
-            collected.Add(packageName);
-
-            var dependencies = GetPackageDependencies(packageName);
-            foreach (var dep in dependencies)
-            {
-                if (dep.StartsWith("cn.etetet."))
-                {
-                    CollectDependenciesRecursive(dep, collected);
-                }
-            }
-        }
-
-        private static List<string> GetPackageDependencies(string packageName)
-        {
-            var result = new List<string>();
-
-            foreach (string moduleDir in moduleDirs)
-            {
-                string packagePath = Path.Combine(moduleDir, packageName, "package.json");
-                if (File.Exists(packagePath))
-                {
-                    try
-                    {
-                        string json = File.ReadAllText(packagePath);
-                        using JsonDocument doc = JsonDocument.Parse(json);
-                        if (doc.RootElement.TryGetProperty("dependencies", out JsonElement deps))
-                        {
-                            foreach (JsonProperty prop in deps.EnumerateObject())
-                            {
-                                result.Add(prop.Name);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"读取 {packagePath} 失败: {ex.Message}");
-                    }
-
-                    break;
-                }
-            }
-
-            return result;
         }
 
         private static void HandleAssemblyReferenceFile(string codeMode, string moduleDir, string scriptDir, string modelDir, string serverDir, bool isTargetPackage)

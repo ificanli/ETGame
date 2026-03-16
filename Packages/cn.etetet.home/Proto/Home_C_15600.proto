@@ -1,0 +1,193 @@
+syntax = "proto3";
+package ET;
+
+// ==================== 数据结构 ====================
+
+message HomeBuildingInfo
+{
+	int64 BuildingId = 1;
+	int32 ConfigId = 2;
+	int32 Level = 3;
+	int32 State = 4;
+	int32 SlotId = 5;
+	int64 LastCollectTime = 6;
+	int64 LastProductionTime = 7;
+}
+
+message HomeProductionOrderInfo
+{
+	int64 OrderId = 1;
+	int64 BuildingEntityId = 2;
+	int32 RecipeId = 3;
+	int32 State = 4;
+	int64 StartTime = 5;
+	int64 FinishTime = 6;
+}
+
+message HomeContractInfo
+{
+	int64 ContractId = 1;
+	int32 ConfigId = 2;
+	int32 State = 3;
+	int64 AcceptTime = 4;
+	int64 ExpireTime = 5;
+	int32 Progress = 6;
+	int32 Target = 7;
+}
+
+// ==================== 进入Home快照 ====================
+
+message M2C_HomeSnapshot // IMessage
+{
+	int64 Id = 1;
+	int64 HomeVersion = 2;
+	int64 LastSettleTime = 3;
+	repeated int32 UnlockedBuildingConfigIds = 4;
+	repeated HomeBuildingInfo Buildings = 5;
+	repeated HomeProductionOrderInfo ProductionOrders = 6;
+	repeated HomeContractInfo AvailableContracts = 7;
+	repeated HomeContractInfo ActiveContracts = 8;
+}
+
+// ==================== 建造 ====================
+
+// ResponseType M2C_HomeBuildResponse
+message C2M_HomeBuildRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 SlotId = 2;
+	int32 ConfigId = 3;
+}
+
+message M2C_HomeBuildResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	HomeBuildingInfo Building = 4;
+}
+
+// ==================== 升级 ====================
+
+// ResponseType M2C_HomeUpgradeResponse
+message C2M_HomeUpgradeRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 BuildingId = 2;
+}
+
+message M2C_HomeUpgradeResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	HomeBuildingInfo Building = 4;
+}
+
+// ==================== 拆除 ====================
+
+// ResponseType M2C_HomeDemolishResponse
+message C2M_HomeDemolishRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 BuildingId = 2;
+}
+
+message M2C_HomeDemolishResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ==================== 收取 ====================
+
+// ResponseType M2C_HomeCollectResponse
+message C2M_HomeCollectRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 BuildingId = 2;
+}
+
+message M2C_HomeCollectResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated int32 ItemConfigIds = 4;
+	repeated int32 ItemCounts = 5;
+}
+
+// ==================== 生产 ====================
+
+// ResponseType M2C_HomeStartProductionResponse
+message C2M_HomeStartProductionRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 BuildingId = 2;
+	int32 RecipeId = 3;
+}
+
+message M2C_HomeStartProductionResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	HomeProductionOrderInfo Order = 4;
+}
+
+// ResponseType M2C_HomeCollectProductionResponse
+message C2M_HomeCollectProductionRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 OrderId = 2;
+}
+
+message M2C_HomeCollectProductionResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated int32 ItemConfigIds = 4;
+	repeated int32 ItemCounts = 5;
+}
+
+// ==================== 悬赏合同 ====================
+
+// ResponseType M2C_HomeAcceptContractResponse
+message C2M_HomeAcceptContractRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 ContractId = 2;
+}
+
+message M2C_HomeAcceptContractResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType M2C_HomeCollectContractRewardResponse
+message C2M_HomeCollectContractRewardRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 ContractId = 2;
+}
+
+message M2C_HomeCollectContractRewardResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated int32 ItemConfigIds = 4;
+	repeated int32 ItemCounts = 5;
+}
+
+// 合同列表变更推送
+message M2C_HomeContractsChanged // IMessage
+{
+	int64 Id = 1;
+	repeated HomeContractInfo AvailableContracts = 2;
+	repeated HomeContractInfo ActiveContracts = 3;
+}

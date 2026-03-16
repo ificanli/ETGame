@@ -33,22 +33,39 @@ namespace ET.Server
         // 获取在自己视野中的对象
         public static Dictionary<long, EntityRef<AOIEntity>> GetSeeUnits(this AOIEntity self)
         {
+            if (self == null || self.IsDisposed)
+            {
+                return new Dictionary<long, EntityRef<AOIEntity>>();
+            }
             return self.SeeUnits;
         }
 
         public static Dictionary<long, EntityRef<AOIEntity>> GetBeSeePlayers(this AOIEntity self)
         {
+            if (self == null || self.IsDisposed)
+            {
+                return new Dictionary<long, EntityRef<AOIEntity>>();
+            }
             return self.BeSeePlayers;
         }
 
         public static Dictionary<long, EntityRef<AOIEntity>> GetSeePlayers(this AOIEntity self)
         {
+            if (self == null || self.IsDisposed)
+            {
+                return new Dictionary<long, EntityRef<AOIEntity>>();
+            }
             return self.SeePlayers;
         }
 
         // cell中的unit进入self的视野
         public static void SubEnter(this AOIEntity self, Cell cell)
         {
+            if (self == null || self.IsDisposed || cell == null || cell.IsDisposed)
+            {
+                return;
+            }
+
             cell.SubsEnterEntities.Add(self.Id, self);
             foreach (KeyValuePair<long, EntityRef<AOIEntity>> kv in cell.AOIUnits)
             {
@@ -63,17 +80,32 @@ namespace ET.Server
 
         public static void UnSubEnter(this AOIEntity self, Cell cell)
         {
+            if (self == null || cell == null || cell.IsDisposed)
+            {
+                return;
+            }
+
             cell.SubsEnterEntities.Remove(self.Id);
         }
 
         public static void SubLeave(this AOIEntity self, Cell cell)
         {
+            if (self == null || self.IsDisposed || cell == null || cell.IsDisposed)
+            {
+                return;
+            }
+
             cell.SubsLeaveEntities.Add(self.Id, self);
         }
 
         // cell中的unit离开self的视野
         public static void UnSubLeave(this AOIEntity self, Cell cell)
         {
+            if (self == null || cell == null || cell.IsDisposed)
+            {
+                return;
+            }
+
             foreach (KeyValuePair<long, EntityRef<AOIEntity>> kv in cell.AOIUnits)
             {
                 if (kv.Key == self.Id)
@@ -81,7 +113,13 @@ namespace ET.Server
                     continue;
                 }
 
-                self.LeaveSight(kv.Value);
+                AOIEntity other = kv.Value;
+                if (other == null || other.IsDisposed)
+                {
+                    continue;
+                }
+
+                self.LeaveSight(other);
             }
 
             cell.SubsLeaveEntities.Remove(self.Id);
@@ -95,6 +133,18 @@ namespace ET.Server
         // enter进入self视野
         public static void EnterSight(this AOIEntity self, AOIEntity enter)
         {
+            if (self == null || enter == null || self.IsDisposed || enter.IsDisposed)
+            {
+                return;
+            }
+
+            Unit selfUnit = self.Unit;
+            Unit enterUnit = enter.Unit;
+            if (selfUnit == null || enterUnit == null || selfUnit.IsDisposed || enterUnit.IsDisposed)
+            {
+                return;
+            }
+
             if (!self.SamePhase(enter))
             {
                 return;
@@ -111,9 +161,9 @@ namespace ET.Server
                 return;
             }
 
-            if (self.Unit.UnitType == UnitType.Player)
+            if (selfUnit.UnitType == UnitType.Player)
             {
-                if (enter.Unit.UnitType == UnitType.Player)
+                if (enterUnit.UnitType == UnitType.Player)
                 {
                     self.SeeUnits.Add(enter.Id, enter);
                     enter.BeSeeUnits.Add(self.Id, self);
@@ -130,7 +180,7 @@ namespace ET.Server
             }
             else
             {
-                if (enter.Unit.UnitType == UnitType.Player)
+                if (enterUnit.UnitType == UnitType.Player)
                 {
                     self.SeeUnits.Add(enter.Id, enter);
                     enter.BeSeeUnits.Add(self.Id, self);
@@ -142,12 +192,24 @@ namespace ET.Server
                     enter.BeSeeUnits.Add(self.Id, self);
                 }
             }
-            EventSystem.Instance.Publish(self.Scene(), new UnitEnterSightRange() { A = self.Unit, B = enter.Unit });
+
+            Scene scene = self.Scene();
+            if (scene == null || scene.IsDisposed)
+            {
+                return;
+            }
+
+            EventSystem.Instance.Publish(scene, new UnitEnterSightRange() { A = selfUnit, B = enterUnit });
         }
 
         // leave离开self视野
         public static void LeaveSight(this AOIEntity self, AOIEntity leave)
         {
+            if (self == null || leave == null || self.IsDisposed || leave.IsDisposed)
+            {
+                return;
+            }
+
             if (self.Id == leave.Id)
             {
                 return;
@@ -158,18 +220,24 @@ namespace ET.Server
                 return;
             }
 
-            if (leave.Unit.UnitType == UnitType.Player)
-            {
-                self.SeePlayers.Remove(leave.Id);
-            }
-
+            self.SeePlayers.Remove(leave.Id);
             leave.BeSeeUnits.Remove(self.Id);
-            if (self.Unit.UnitType == UnitType.Player)
+            leave.BeSeePlayers.Remove(self.Id);
+
+            Unit selfUnit = self.Unit;
+            Unit leaveUnit = leave.Unit;
+            if (selfUnit == null || leaveUnit == null || selfUnit.IsDisposed || leaveUnit.IsDisposed)
             {
-                leave.BeSeePlayers.Remove(self.Id);
+                return;
             }
 
-            EventSystem.Instance.Publish(self.Scene(), new UnitLeaveSightRange { A = self.Unit, B = leave.Unit });
+            Scene scene = self.Scene();
+            if (scene == null || scene.IsDisposed)
+            {
+                return;
+            }
+
+            EventSystem.Instance.Publish(scene, new UnitLeaveSightRange { A = selfUnit, B = leaveUnit });
         }
 
         /// <summary>

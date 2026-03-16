@@ -33,7 +33,12 @@ namespace ET
             long key = self.key;
             int level = self.level;
             
-            TimerComponent timerComponent = self.Root().TimerComponent;
+            TimerComponent timerComponent = self.Root()?.TimerComponent;
+            if (timerComponent == null || timerComponent.IsDisposed)
+            {
+                return;
+            }
+
             await timerComponent.WaitAsync(timeout);
             
             // await后通过EntityRef重新获取Entity

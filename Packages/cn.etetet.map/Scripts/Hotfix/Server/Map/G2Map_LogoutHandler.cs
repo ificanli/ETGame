@@ -17,13 +17,31 @@ namespace ET.Server
 			string mapManagerName = serviceInfos[0].SceneName;
 			
 			Map2MapManager_LogoutRequest managerLogoutRequest = Map2MapManager_LogoutRequest.Create();
-			managerLogoutRequest.MapName = unit.Scene().Name;
+			managerLogoutRequest.MapName = unit.Scene().Name.GetSceneConfigName();
 			managerLogoutRequest.UnitId = unit.Id;
 			managerLogoutRequest.MapId = unit.Scene().Id;
 			await serviceDiscoveryProxy.Call(mapManagerName, managerLogoutRequest);
 			unit = unitRef;
+			ReleaseSpawnPointAssignment(unit);
 			UnitComponent unitComponent = unit.GetParent<UnitComponent>();
 			unitComponent.Remove(unit.Id);
+		}
+
+		private static void ReleaseSpawnPointAssignment(Unit unit)
+		{
+			SpawnPointManagerComponent spawnPointManager = unit.Scene().GetComponent<SpawnPointManagerComponent>();
+			if (spawnPointManager == null)
+			{
+				return;
+			}
+
+			if (!spawnPointManager.PlayerTeamAssignments.TryGetValue(unit.Id, out int teamId))
+			{
+				return;
+			}
+
+			spawnPointManager.PlayerTeamAssignments.Remove(unit.Id);
+			spawnPointManager.OccupiedTeamIds.Remove(teamId);
 		}
 	}
 }

@@ -7,6 +7,16 @@ namespace ET.Server
     {
         public static int Cast(Unit unit, int spellConfigId, Buff parent = null)
         {
+            int checkRet = EventSystem.Instance.TryInvoke<SpellCastCheck, int>(new SpellCastCheck
+            {
+                Unit = unit,
+                SpellConfigId = spellConfigId,
+            });
+            if (checkRet != 0)
+            {
+                return checkRet;
+            }
+
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
@@ -47,6 +57,16 @@ namespace ET.Server
         /// <returns></returns>
         public static int Cast(Unit unit, int spellConfigId, Unit target, Buff parent = null)
         {
+            int checkRet = EventSystem.Instance.TryInvoke<SpellCastCheck, int>(new SpellCastCheck
+            {
+                Unit = unit,
+                SpellConfigId = spellConfigId,
+            });
+            if (checkRet != 0)
+            {
+                return checkRet;
+            }
+
             SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
 
             SpellComponent spellComponent = unit.GetComponent<SpellComponent>();
@@ -159,7 +179,16 @@ namespace ET.Server
             {
                 BuffHelper.RemoveBuff(buff, BuffFlags.NoDurationRemove);
             }
-            
+
+            if (parent == null)
+            {
+                EventSystem.Instance.Publish(unit.Scene(), new UnitSpellCastSuccess
+                {
+                    Unit = unit,
+                    SpellConfigId = spellConfig.Id,
+                });
+            }
+             
             return 0;
         }
 

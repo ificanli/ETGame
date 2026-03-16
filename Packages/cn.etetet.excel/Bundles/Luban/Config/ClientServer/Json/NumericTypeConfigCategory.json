@@ -80,41 +80,9 @@
     "AffectNumeric": []
   },
   {
-    "Id": 1010,
-    "Name": "X",
-    "NeedSaveDB": 0,
-    "NoticeType": 0,
-    "MaxNumericType": 0,
-    "AffectNumeric": []
-  },
-  {
-    "Id": 1011,
-    "Name": "Y",
-    "NeedSaveDB": 0,
-    "NoticeType": 0,
-    "MaxNumericType": 0,
-    "AffectNumeric": []
-  },
-  {
-    "Id": 1012,
-    "Name": "Z",
-    "NeedSaveDB": 0,
-    "NoticeType": 0,
-    "MaxNumericType": 0,
-    "AffectNumeric": []
-  },
-  {
     "Id": 1013,
     "Name": "Stun",
     "NeedSaveDB": 1,
-    "NoticeType": 0,
-    "MaxNumericType": 0,
-    "AffectNumeric": []
-  },
-  {
-    "Id": 1014,
-    "Name": "Yaw",
-    "NeedSaveDB": 0,
     "NoticeType": 0,
     "MaxNumericType": 0,
     "AffectNumeric": []

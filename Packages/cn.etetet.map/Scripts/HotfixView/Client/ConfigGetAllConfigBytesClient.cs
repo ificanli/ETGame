@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace ET.Client
                 switch(configProcessAttribute.ConfigType)
                 {
                     case ConfigType.Luban:
-                        configFilePath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/Binary/{configType.Name}.bytes");
+                        configFilePath = GetLubanConfigPath(codeMode, "Binary", configType.Name, "bytes");
                         output[configType] = File.ReadAllBytes(configFilePath);
                         break;
                     case ConfigType.Json:
@@ -33,7 +33,7 @@ namespace ET.Client
                         }
                         else
                         {
-                            configFilePath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/Json/{configType.Name}.json");
+                            configFilePath = GetLubanConfigPath(codeMode, "Json", configType.Name, "json");
                         }
                         output[configType] = File.ReadAllText(configFilePath);
                         break;
@@ -49,7 +49,7 @@ namespace ET.Client
             foreach (Type configType in allTypes)
             {
                 ConfigProcessAttribute configProcessAttribute = configType.GetCustomAttributes(typeof(ConfigProcessAttribute), false)[0] as ConfigProcessAttribute;
-                TextAsset v = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>(configType.Name);
+                TextAsset v = await LoadConfigAsset(configType.Name);
                 switch (configProcessAttribute.ConfigType)
                 {
                     case ConfigType.Luban:
@@ -63,6 +63,30 @@ namespace ET.Client
             }
 #endif
             return output;
+        }
+
+        private static string GetLubanConfigPath(string codeMode, string folder, string configName, string extension)
+        {
+            string normalPath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/{folder}/{configName}.{extension}");
+            if (File.Exists(normalPath))
+            {
+                return normalPath;
+            }
+
+            string etLowerPath = Path.Combine($"Packages/cn.etetet.excel/Bundles/Luban/Config/{codeMode}/{folder}/et_{configName.ToLowerInvariant()}.{extension}");
+            return etLowerPath;
+        }
+
+        private static async ETTask<TextAsset> LoadConfigAsset(string configName)
+        {
+            try
+            {
+                return await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>(configName);
+            }
+            catch
+            {
+                return await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>($"et_{configName.ToLowerInvariant()}");
+            }
         }
     }
 }

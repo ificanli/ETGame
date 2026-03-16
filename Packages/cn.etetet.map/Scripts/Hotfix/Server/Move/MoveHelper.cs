@@ -16,7 +16,8 @@ namespace ET.Server
             }
 
             M2C_PathfindingResult m2CPathfindingResult = M2C_PathfindingResult.Create();
-            unit.GetComponent<PathfindingComponent>().Find(unit.Position, target, m2CPathfindingResult.Points);
+            float unitRadius = unit.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
+            unit.GetComponent<PathfindingComponent>().Find(unit.Position, target, m2CPathfindingResult.Points, unitRadius);
 
             if (m2CPathfindingResult.Points.Count < 2)
             {
@@ -62,11 +63,19 @@ namespace ET.Server
         {
             TurnComponent turnComponent = unit.GetComponent<TurnComponent>();
             turnComponent.Turn(to, turnTime);
-            M2C_Turn m2CTurn = M2C_Turn.Create();
-            m2CTurn.UnitId = unit.Id;
-            m2CTurn.Rotation = to;
-            m2CTurn.TurnTime = turnTime;
-            MapMessageHelper.NoticeClient(unit, m2CTurn, NoticeType.Broadcast);
+
+            // 先发给自己，保证本机在没有任何观察者时也能立即收到转向同步。
+            M2C_Turn selfMsg = M2C_Turn.Create();
+            selfMsg.UnitId = unit.Id;
+            selfMsg.Rotation = to;
+            selfMsg.TurnTime = turnTime;
+            MapMessageHelper.NoticeClient(unit, selfMsg, NoticeType.Self);
+
+            M2C_Turn broadcastMsg = M2C_Turn.Create();
+            broadcastMsg.UnitId = unit.Id;
+            broadcastMsg.Rotation = to;
+            broadcastMsg.TurnTime = turnTime;
+            MapMessageHelper.NoticeClient(unit, broadcastMsg, NoticeType.BroadcastWithoutSelf);
         }
     }
 }

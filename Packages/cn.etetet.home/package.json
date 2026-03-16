@@ -1,0 +1,25 @@
+{
+  "name": "cn.etetet.home",
+  "displayName": "ET.Home",
+  "version": "4.0.0",
+  "description": "ET框架基地建设系统模块，提供搜打撤外围基地建造、升级、生产、悬赏合同等功能",
+  "author": {
+    "name": "tanghai",
+    "url": "https://github.com/egametang/ET"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/egametang/ET"
+  },
+  "relatedPackages": {},
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@ET-Packages"
+  },
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.excel": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.unit": "4.0.0",
+    "cn.etetet.item": "4.0.0"
+  }
+}

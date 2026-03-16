@@ -1,0 +1,24 @@
+[
+  {
+    "id": 30001,
+    "ItemConfigId": 60001,
+    "TacticalType": 1,
+    "CastMode": 2,
+    "BuffConfigId": 200300,
+    "Radius": 1200,
+    "MaxDistance": 6000,
+    "CooldownMs": 30000,
+    "IndicatorPath": ""
+  },
+  {
+    "id": 30002,
+    "ItemConfigId": 60002,
+    "TacticalType": 2,
+    "CastMode": 0,
+    "BuffConfigId": 200310,
+    "Radius": 1500,
+    "MaxDistance": 0,
+    "CooldownMs": 20000,
+    "IndicatorPath": ""
+  }
+]

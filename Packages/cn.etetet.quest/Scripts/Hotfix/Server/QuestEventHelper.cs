@@ -12,7 +12,16 @@ namespace ET.Server
         /// </summary>
         public static void OnMonsterKilled(Unit player, long monsterId, int count)
         {
+            if (player == null || player.IsDisposed)
+            {
+                return;
+            }
+
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
+            if (questComponent == null || questComponent.IsDisposed)
+            {
+                return;
+            }
 
             // 触发击杀类型任务的进度检查
             var questObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.KillMonster);
@@ -51,7 +60,16 @@ namespace ET.Server
         /// </summary>
         public static void OnItemCollected(Unit player, long itemId, int count)
         {
+            if (player == null || player.IsDisposed)
+            {
+                return;
+            }
+
             QuestComponent questComponent = player.GetComponent<QuestComponent>();
+            if (questComponent == null || questComponent.IsDisposed)
+            {
+                return;
+            }
             
             var questObjectives = questComponent.GetQuestObjectiveByType(QuestObjectiveType.Collectltem);
             if (questObjectives == null)

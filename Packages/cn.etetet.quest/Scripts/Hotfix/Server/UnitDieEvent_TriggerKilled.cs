@@ -5,7 +5,7 @@ namespace ET.Server
     {
         protected override async ETTask Run(Scene scene, UnitDie a)
         {
-            QuestEventHelper.OnMonsterKilled(a.Unit, a.Target.Entity.Id, 1);
+            QuestEventHelper.OnMonsterKilled(a.Unit, a.TargetId, 1);
             await ETTask.CompletedTask;
         }
     }

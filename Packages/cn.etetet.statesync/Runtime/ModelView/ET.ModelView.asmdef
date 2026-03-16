@@ -1,0 +1,36 @@
+{
+    "name": "ET.ModelView",
+    "rootNamespace": "ET",
+    "references": [
+        "Cinemachine",
+        "DamageNumbersPro",
+        "ET.Core",
+        "ET.Init",
+        "ET.Loader",
+        "ET.LSEntity",
+        "ET.Model",
+        "ET.UI",
+        "ET.YIUIFramework",
+        "ET.YooAssets",
+        "UnityEngine.UI",
+        "Unity.InputSystem",
+        "Unity.Mathematics",
+        "Unity.TextMeshPro",
+        "ET.HybridCLR"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "INITED",
+        "IS_COMPILING || UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [],
+    "additionalReferences": [],
+    "compilerOptions": ""
+}

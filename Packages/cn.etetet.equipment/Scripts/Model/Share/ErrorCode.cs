@@ -12,5 +12,11 @@ namespace ET
         public const int ERR_EquipmentSlotEmpty = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 8; // 200047008
         public const int ERR_EquipmentInvalidSlotType = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 9; // 200047009
         public const int ERR_ItemComponentNotFound = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 10; // 200047010
+
+        // Loadout 错误码
+        public const int ERR_LoadoutHeroNotFound = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 20; // 200047020
+        public const int ERR_LoadoutItemNotFound = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 21; // 200047021
+        public const int ERR_LoadoutSlotMismatch = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 22; // 200047022
+        public const int ERR_LoadoutNotConfirmed = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 23; // 200047023
     }
 }

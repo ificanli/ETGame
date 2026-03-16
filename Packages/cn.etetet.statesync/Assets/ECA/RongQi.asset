@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee0d950c1f585843a3942a92f9e3b8d, type: 3}
+  m_Name: RongQi
+  m_EditorClassIdentifier: 
+  Graph:
+    Version: 1
+    Nodes:
+    - LegacyId: 0
+      NodeId: 1
+      NodeType: Event
+      NodeKey: OnPlayerEnterRange
+      Title: Event 1
+      PosX: 0
+      PosY: 0
+      Params: []
+    - LegacyId: 0
+      NodeId: 2
+      NodeType: Action
+      NodeKey: ShowInteractButton
+      Title: Action 2
+      PosX: 373
+      PosY: 0
+      Params:
+      - Key: button_text_id
+        Value: 0
+    - LegacyId: 0
+      NodeId: 3
+      NodeType: Event
+      NodeKey: OnPlayerLeaveRange
+      Title: Event 3
+      PosX: 0
+      PosY: 210
+      Params: []
+    - LegacyId: 0
+      NodeId: 4
+      NodeType: Action
+      NodeKey: HideInteractButton
+      Title: Action 4
+      PosX: 373
+      PosY: 210
+      Params: []
+    - LegacyId: 0
+      NodeId: 5
+      NodeType: Event
+      NodeKey: OnPlayerInteract
+      Title: Event 5
+      PosX: 0
+      PosY: 420
+      Params: []
+    - LegacyId: 0
+      NodeId: 6
+      NodeType: Action
+      NodeKey: OpenContainerUI
+      Title: Action 6
+      PosX: 373
+      PosY: 540
+      Params:
+      - Key: ui_key
+        Value: SearchPanelComponent
+    - LegacyId: 0
+      NodeId: 7
+      NodeType: Action
+      NodeKey: GenerateContainerLoot
+      Title: Action 7
+      PosX: 373
+      PosY: 420
+      Params:
+      - Key: output_mode
+        Value: ContainerPanel
+      - Key: loot_table
+        Value: 10001*1|10002*1|10003*1|10004*1|10005*1|10006*1|10007*1|10008*1|10009*1|10010*1|10011*1|10012*1|60001*1|60002*1
+      - Key: count
+        Value: 1-3
+      - Key: radius
+        Value: 0
+      - Key: allow_repeat
+        Value: 0
+    Connections:
+    - FromNodeId: 1
+      ToNodeId: 2
+      Branch: Out
+    - FromNodeId: 3
+      ToNodeId: 4
+      Branch: Out
+    - FromNodeId: 5
+      ToNodeId: 7
+      Branch: Out
+    - FromNodeId: 7
+      ToNodeId: 6
+      Branch: Out
+    RuntimeNodeCount: 0
+    RuntimeConnectionCount: 0

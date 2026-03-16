@@ -4,33 +4,39 @@
     "Name": "生命药水",
     "Desc": "恢复100点生命值",
     "Type": 2,
-    "MaxStack": 99,
+    "MaxStack": 1,
     "Icon": "Items/Potion_HP",
     "Quality": 1,
     "UseType": 1,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10002,
     "Name": "魔法药水",
     "Desc": "恢复100点魔法值",
     "Type": 2,
-    "MaxStack": 99,
+    "MaxStack": 1,
     "Icon": "Items/Potion_MP",
     "Quality": 1,
     "UseType": 1,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10003,
     "Name": "铁矿石",
     "Desc": "锻造材料",
     "Type": 3,
-    "MaxStack": 999,
+    "MaxStack": 1,
     "Icon": "Items/Ore_Iron",
     "Quality": 0,
     "UseType": 0,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10004,
@@ -41,7 +47,9 @@
     "Icon": "Items/Equipment/Weapon_Sword_01",
     "Quality": 0,
     "UseType": 2,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10005,
@@ -52,7 +60,9 @@
     "Icon": "Items/Equipment/Helmet_Leather_01",
     "Quality": 0,
     "UseType": 2,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10006,
@@ -63,7 +73,9 @@
     "Icon": "Items/Equipment/Armor_Iron_01",
     "Quality": 1,
     "UseType": 2,
-    "Level": 5
+    "Level": 5,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10007,
@@ -74,7 +86,9 @@
     "Icon": "Items/Equipment/Robe_Cloth_01",
     "Quality": 0,
     "UseType": 2,
-    "Level": 1
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10008,
@@ -85,7 +99,9 @@
     "Icon": "Items/Equipment/Pants_Leather_01",
     "Quality": 0,
     "UseType": 2,
-    "Level": 3
+    "Level": 3,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10009,
@@ -96,7 +112,9 @@
     "Icon": "Items/Equipment/Boots_Iron_01",
     "Quality": 1,
     "UseType": 2,
-    "Level": 5
+    "Level": 5,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10010,
@@ -107,7 +125,9 @@
     "Icon": "Items/Equipment/Weapon_Bow_01",
     "Quality": 1,
     "UseType": 2,
-    "Level": 5
+    "Level": 5,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10011,
@@ -118,7 +138,9 @@
     "Icon": "Items/Equipment/Necklace_Magic_01",
     "Quality": 2,
     "UseType": 2,
-    "Level": 10
+    "Level": 10,
+    "GridWidth": 1,
+    "GridHeight": 1
   },
   {
     "Id": 10012,
@@ -129,6 +151,99 @@
     "Icon": "Items/Equipment/Ring_Strength_01",
     "Quality": 1,
     "UseType": 2,
-    "Level": 8
+    "Level": 8,
+    "GridWidth": 1,
+    "GridHeight": 1
+  },
+  {
+    "Id": 50009,
+    "Name": "霰弹枪1号",
+    "Desc": "射程近，一次散射4发，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_shotgun",
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
+  },
+  {
+    "Id": 50010,
+    "Name": "步枪1号",
+    "Desc": "强制追踪，射速快，伤害高，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_rifle1",
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
+  },
+  {
+    "Id": 50011,
+    "Name": "步枪2号",
+    "Desc": "方向锁定，射程远，攻速快，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_rifle2",
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
+  },
+  {
+    "Id": 50012,
+    "Name": "火箭炮1号",
+    "Desc": "位置锁定，射程远，爆炸伤害，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_rocket",
+    "Quality": 4,
+    "UseType": 0,
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
+  },
+  {
+    "Id": 50013,
+    "Name": "冲锋枪",
+    "Desc": "位置锁定，射程远，爆炸伤害，静止攻击",
+    "Type": 1,
+    "MaxStack": 1,
+    "Icon": "weapon_smg",
+    "Quality": 4,
+    "UseType": 0,
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
+  },
+  {
+    "Id": 60001,
+    "Name": "战术眼-示例",
+    "Desc": "示例道具：向目标点投放一个临时视野单位",
+    "Type": 2,
+    "MaxStack": 1,
+    "Icon": "Items/Potion_HP",
+    "Quality": 2,
+    "UseType": 1,
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
+  },
+  {
+    "Id": 60002,
+    "Name": "战术侦查-示例",
+    "Desc": "示例道具：开启后揭示附近敌方眼位",
+    "Type": 2,
+    "MaxStack": 1,
+    "Icon": "Items/Potion_MP",
+    "Quality": 2,
+    "UseType": 1,
+    "Level": 1,
+    "GridWidth": 1,
+    "GridHeight": 1
   }
 ]

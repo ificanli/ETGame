@@ -7,11 +7,22 @@ namespace ET.Server
 	{
 		protected override async ETTask Run(Unit unit, C2M_ClickUnitRequest request, M2C_ClickUnitResponse response)
 		{
-			await ETTask.CompletedTask;
-			
 			Unit target = unit.GetParent<UnitComponent>().Get(request.UnitId);
 			if (target == null)
 			{
+				return;
+			}
+
+			ECAPointComponent ecaPoint = target.GetComponent<ECAPointComponent>();
+			if (ecaPoint != null)
+			{
+				if (!ContainerRuntimeHelper.IsPlayerInRange(ecaPoint, unit))
+				{
+					response.Error = ErrorCode.ERR_ECAInteractOutOfRange;
+					return;
+				}
+
+				await ecaPoint.OnPlayerInteractAsync(unit);
 				return;
 			}
 
@@ -21,6 +32,12 @@ namespace ET.Server
 			QuestComponent questComponent = unit.GetComponent<QuestComponent>();
 			
 			HashSet<int> allIds = QuestConfigCategory.Instance.GetAllQuestsById(target.Id);
+
+			if (allIds == null)
+			{
+				return;
+			}
+			
 			HashSet<int> questIds = QuestConfigCategory.Instance.GetAcceptQuestsById(target.Id);
 			HashSet<int> submitQuestIds = QuestConfigCategory.Instance.GetSubmitQuestsById(target.Id);
 			

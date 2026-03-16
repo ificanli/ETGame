@@ -3,7 +3,7 @@
     "Id": 10001,
     "Name": "生命药水",
     "Type": 2,
-    "MaxStack": 99,
+    "MaxStack": 1,
     "Quality": 1,
     "UseType": 1,
     "Level": 1
@@ -12,7 +12,7 @@
     "Id": 10002,
     "Name": "魔法药水",
     "Type": 2,
-    "MaxStack": 99,
+    "MaxStack": 1,
     "Quality": 1,
     "UseType": 1,
     "Level": 1
@@ -21,7 +21,7 @@
     "Id": 10003,
     "Name": "铁矿石",
     "Type": 3,
-    "MaxStack": 999,
+    "MaxStack": 1,
     "Quality": 0,
     "UseType": 0,
     "Level": 1
@@ -106,5 +106,68 @@
     "Quality": 1,
     "UseType": 2,
     "Level": 8
+  },
+  {
+    "Id": 50009,
+    "Name": "霰弹枪1号",
+    "Type": 1,
+    "MaxStack": 1,
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50010,
+    "Name": "步枪1号",
+    "Type": 1,
+    "MaxStack": 1,
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50011,
+    "Name": "步枪2号",
+    "Type": 1,
+    "MaxStack": 1,
+    "Quality": 3,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50012,
+    "Name": "火箭炮1号",
+    "Type": 1,
+    "MaxStack": 1,
+    "Quality": 4,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 50013,
+    "Name": "冲锋枪",
+    "Type": 1,
+    "MaxStack": 1,
+    "Quality": 4,
+    "UseType": 0,
+    "Level": 1
+  },
+  {
+    "Id": 60001,
+    "Name": "战术眼-示例",
+    "Type": 2,
+    "MaxStack": 1,
+    "Quality": 2,
+    "UseType": 1,
+    "Level": 1
+  },
+  {
+    "Id": 60002,
+    "Name": "战术侦查-示例",
+    "Type": 2,
+    "MaxStack": 1,
+    "Quality": 2,
+    "UseType": 1,
+    "Level": 1
   }
 ]

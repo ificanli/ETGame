@@ -33,5 +33,26 @@
     "Name": "Mage",
     "head_icon": "UI-ChatIcon-Battlenet",
     "class_type": 12
+  },
+  {
+    "Id": 1006,
+    "UnitType": 1,
+    "Name": "Agou",
+    "head_icon": "Agou_Icon",
+    "class_type": 5
+  },
+  {
+    "Id": 1007,
+    "UnitType": 1,
+    "Name": "Ayin",
+    "head_icon": "Ayin_Icon",
+    "class_type": 5
+  },
+  {
+    "Id": 1008,
+    "UnitType": 1,
+    "Name": "Aniao",
+    "head_icon": "Aniao_Icon",
+    "class_type": 5
   }
 ]

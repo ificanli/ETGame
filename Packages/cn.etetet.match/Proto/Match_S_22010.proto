@@ -1,0 +1,77 @@
+syntax = "proto3";
+package ET;
+
+// ResponseType Match2G_MatchRequest
+message G2Match_MatchRequest // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int32 GameMode = 3;
+	int64 GateActorId = 4;
+}
+
+message Match2G_MatchRequest // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RequestId = 4;
+}
+
+// ResponseType Match2G_MatchCancel
+message G2Match_MatchCancel // IRequest
+{
+	int32 RpcId = 1;
+	int64 RequestId = 2;
+}
+
+message Match2G_MatchCancel // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType G2Match_MatchSuccess
+message Match2G_MatchSuccess // IRequest
+{
+	int32 RpcId = 1;
+	int32 GameMode = 2;
+	string MapName = 3;
+	repeated int64 PlayerIds = 4;
+	int64 MapId = 5;
+	repeated int32 TeamIds = 6;
+}
+
+message G2Match_MatchSuccess // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType Map2Match_InitMatchCopyResponse
+message Match2Map_InitMatchCopyRequest // IRequest
+{
+	int32 RpcId = 1;
+	int32 GameMode = 2;
+	string MapName = 3;
+	int64 MapId = 4;
+	repeated int64 HumanPlayerIds = 5;
+	repeated int64 RobotPlayerIds = 6;
+	repeated int64 PlayerIds = 7;
+	repeated int32 TeamIds = 8;
+}
+
+message Map2Match_InitMatchCopyResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message Match2G_MatchTimeout // IMessage
+{
+	int64 PlayerId = 1;
+	int32 GameMode = 2;
+}

@@ -4,15 +4,21 @@ namespace ET.Client
 {
     public static class GameObjectPosHelper
     {
-        public static void OnTerrain(Transform transform)
+        public static Vector3 GetGroundedPosition(Vector3 position)
         {
-            // 贴地
-            Ray ray = new(new Vector3(transform.position.x, transform.position.y + 100, transform.position.z), Vector3.down);
+            Ray ray = new(new Vector3(position.x, position.y + 100f, position.z), Vector3.down);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 200, LayerMask.GetMask("Map")))
             {
-                transform.position = hit.point;
+                return hit.point;
             }
+
+            return position;
+        }
+
+        public static void OnTerrain(Transform transform)
+        {
+            transform.position = GetGroundedPosition(transform.position);
         }
     }
 }

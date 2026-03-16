@@ -1,0 +1,30 @@
+{
+    "name": "ET.Model",
+    "rootNamespace": "ET",
+    "references": [
+        "ET.Core",
+        "ET.Loader",
+        "ET.LSEntity",
+        "ET.Recast",
+        "ET.TrueSync",
+        "ET.YooAssets",
+        "Unity.Mathematics",
+        "ET.HybridCLR",
+        "ET.Init"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "INITED",
+        "IS_COMPILING || UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [],
+    "additionalReferences": [],
+    "compilerOptions": ""
+}

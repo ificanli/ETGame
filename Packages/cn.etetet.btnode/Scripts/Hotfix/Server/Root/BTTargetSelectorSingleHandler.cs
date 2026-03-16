@@ -8,13 +8,25 @@ namespace ET.Server
         protected override int Run(TargetSelectorSingle node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
+            if (buff == null || buff.IsDisposed)
+            {
+                return 1;
+            }
 
             Unit caster = env.GetEntity<Unit>(node.Caster);
+            if (caster == null || caster.IsDisposed)
+            {
+                return TextConstDefine.SpellCast_NotSelectTarget;
+            }
             
             TargetComponent targetComponent = caster.GetComponent<TargetComponent>();
+            if (targetComponent == null)
+            {
+                return TextConstDefine.SpellCast_NotSelectTarget;
+            }
             
             Unit target = targetComponent.Unit;
-            if (target == null)
+            if (target == null || target.IsDisposed)
             {
                 return TextConstDefine.SpellCast_NotSelectTarget;
             }
@@ -37,8 +49,15 @@ namespace ET.Server
                 }
             }
 
-            float unitRadius = caster.NumericComponent.GetAsFloat(NumericType.Radius);
-            float targetRadius = target.NumericComponent.GetAsFloat(NumericType.Radius);
+            NumericComponent casterNumeric = caster.NumericComponent;
+            NumericComponent targetNumeric = target.NumericComponent;
+            if (casterNumeric == null || targetNumeric == null)
+            {
+                return 1;
+            }
+
+            float unitRadius = casterNumeric.GetAsFloat(NumericType.Radius);
+            float targetRadius = targetNumeric.GetAsFloat(NumericType.Radius);
             float distance = math.distance(caster.Position, target.Position);
             if (distance > node.MaxDistance / 1000f + unitRadius + targetRadius)
             {
@@ -52,7 +71,7 @@ namespace ET.Server
                 return TextConstDefine.SpellCast_TargetNotInFrontOfCaster;
             }
             
-            buff.GetBuffData().GetComponent<SpellTargetComponent>().Units.Add(targetComponent.Unit.Id);
+            buff.GetOrAddSpellTargetComponent().Units.Add(targetComponent.Unit.Id);
             
             return 0;
         }

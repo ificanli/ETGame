@@ -1,0 +1,23 @@
+[
+  {
+    "Id": 1001,
+    "Name": "Agou_Icon",
+    "UnitConfigId": 1006,
+    "SkillConfigId": 100000,
+    "PassiveBuffId": 201001
+  },
+  {
+    "Id": 1002,
+    "Name": "Agou_Icon",
+    "UnitConfigId": 1007,
+    "SkillConfigId": 100010,
+    "PassiveBuffId": 0
+  },
+  {
+    "Id": 1003,
+    "Name": "Agou_Icon",
+    "UnitConfigId": 1008,
+    "SkillConfigId": 100020,
+    "PassiveBuffId": 0
+  }
+]

@@ -372,5 +372,28 @@
 					"Length" : 100.0,
 					"UnitType" : 1
 				}
+			}], [100200, {
+				"_id" : 100200,
+				"BuffId" : 200200,
+				"Desc" : "武器自动攻击",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 500,
+				"DamageMultiplier" : 0,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorSingle",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("1234567890123456789"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 10000,
+					"MinDistance" : 0,
+					"Unit" : "Unit",
+					"UnitType" : 7
+				}
 			}]]
 }

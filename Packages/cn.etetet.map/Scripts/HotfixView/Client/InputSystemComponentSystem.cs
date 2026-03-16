@@ -21,8 +21,11 @@ namespace ET.Client
 
             self.InputSystem = new InputSystem();
             self.InputSystem.Player.Enable();
+            self.KeyboardMoveInput = Vector2.zero;
+            self.JoystickMoveInput = Vector2.zero;
+            self.LastSentMoveInput = Vector2.zero;
 
-            self.InputSystem.Player.Look.performed += self.Look;
+            //self.InputSystem.Player.Look.performed += self.Look;
             self.InputSystem.Player.Jump.started += self.Jump;
             self.InputSystem.Player.SelectTarget.canceled += self.SelectTarget;
             self.InputSystem.Player.ChangeTarget.canceled += self.ChangeTarget;
@@ -33,15 +36,31 @@ namespace ET.Client
         [EntitySystem]
         private static void Update(this InputSystemComponent self)
         {
-            if (self.InputSystem.Player.Move.IsPressed())
+            Vector2 keyboardInput = self.InputSystem.Player.Move.ReadValue<Vector2>();
+            if (keyboardInput.sqrMagnitude < 0.000001f)
             {
-                if (TimeInfo.Instance.ClientNow() - self.PressTime > 100)
+                keyboardInput = Vector2.zero;
+            }
+
+            if ((keyboardInput - self.KeyboardMoveInput).sqrMagnitude > 0.000001f)
+            {
+                self.KeyboardMoveInput = keyboardInput;
+                self.PressTime = TimeInfo.Instance.ClientNow();
+                if (self.JoystickMoveInput.sqrMagnitude < 0.000001f)
                 {
-                    self.PressTime = TimeInfo.Instance.ClientNow();
-                    Vector2 v = self.InputSystem.Player.Move.ReadValue<Vector2>();
-                    self.Move(v);
+                    self.SyncDirectionalMove(true);
                 }
             }
+
+            if (self.JoystickMoveInput.sqrMagnitude < 0.000001f &&
+                keyboardInput != Vector2.zero &&
+                TimeInfo.Instance.ClientNow() - self.PressTime > 50)
+            {
+                self.PressTime = TimeInfo.Instance.ClientNow();
+                self.SyncDirectionalMove(false);
+            }
+
+            self.SyncLocalPredictionState();
         }
 
         private static void Look(this InputSystemComponent self, InputAction.CallbackContext context)
@@ -56,33 +75,126 @@ namespace ET.Client
             cinemachineComponent.RotationFollow(v);
         }
 
-        private static void Move(this InputSystemComponent self, Vector2 v)
+        public static void SetJoystickMoveInput(this InputSystemComponent self, Vector2 joystickInput, bool forceSync)
         {
+            if (joystickInput.sqrMagnitude < 0.000001f)
+            {
+                joystickInput = Vector2.zero;
+            }
+
+            self.JoystickMoveInput = joystickInput;
+            self.SyncDirectionalMove(forceSync);
+        }
+
+        private static void SyncDirectionalMove(this InputSystemComponent self, bool forceSync)
+        {
+            Vector2 worldDirection = self.GetSelectedWorldMoveDirection();
+            if (!forceSync && (worldDirection - self.LastSentMoveInput).sqrMagnitude < 0.000001f)
+            {
+                return;
+            }
+
+            self.LastSentMoveInput = worldDirection;
+            self.SendDirectionalMove(worldDirection);
+        }
+
+        private static Vector2 GetSelectedMoveInput(this InputSystemComponent self)
+        {
+            Vector2 selectedInput = self.JoystickMoveInput.sqrMagnitude > 0.000001f
+                ? self.JoystickMoveInput
+                : self.KeyboardMoveInput;
+
             if (self.IsJumping)
             {
-                return;
+                return Vector2.zero;
             }
 
-            if (v.magnitude < 0.001f)
+            return selectedInput;
+        }
+
+        private static Vector2 GetSelectedWorldMoveDirection(this InputSystemComponent self)
+        {
+            return self.ToWorldMoveDirection(self.GetSelectedMoveInput());
+        }
+
+        private static Vector2 ToWorldMoveDirection(this InputSystemComponent self, Vector2 input)
+        {
+            if (input.sqrMagnitude < 0.000001f)
             {
-                return;
+                return Vector2.zero;
             }
 
-            Unit unit = self.GetParent<Unit>();
-            v = v.normalized * 2;
-
+            input = input.normalized;
             CinemachineComponent cinemachineComponent = self.CinemachineComponent;
+            if (cinemachineComponent == null || cinemachineComponent.IsDisposed || cinemachineComponent.Follow == null)
+            {
+                return input;
+            }
+
             Vector3 eulerAngles = cinemachineComponent.Follow.rotation.eulerAngles;
             eulerAngles.x = 0;
             eulerAngles.z = 0;
 
-            Vector3 rotV = Quaternion.Euler(eulerAngles) * new float3(v.x, 0, v.y);
-            float3 targetPos = new float3(rotV) + unit.Position;
+            Vector3 rotV = Quaternion.Euler(eulerAngles) * new float3(input.x, 0, input.y);
+            Vector2 worldDirection = new Vector2(rotV.x, rotV.z);
+            if (worldDirection.sqrMagnitude < 0.000001f)
+            {
+                return Vector2.zero;
+            }
 
-            unit.MoveToAsync(targetPos).Coroutine();
+            return worldDirection.normalized;
         }
 
-        // 鼠标左键点击目标，设置主角的目标
+        private static void SendDirectionalMove(this InputSystemComponent self, Vector2 worldDirection)
+        {
+            ClientSenderComponent sender = self.Root().GetComponent<ClientSenderComponent>();
+            if (sender == null)
+            {
+                return;
+            }
+
+            C2M_JoystickInput msg = C2M_JoystickInput.Create();
+            msg.DirX = worldDirection.x;
+            msg.DirZ = worldDirection.y;
+            sender.Send(msg);
+        }
+
+        private static void SyncLocalPredictionState(this InputSystemComponent self)
+        {
+            Unit unit = self.GetParent<Unit>();
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
+            Vector2 worldDirection = self.GetSelectedWorldMoveDirection();
+            float speed = unit.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
+
+            UnitViewInterpolationComponent interpolationComponent = unit.GetComponent<UnitViewInterpolationComponent>();
+            if (interpolationComponent != null)
+            {
+                if (worldDirection.sqrMagnitude < 0.000001f || speed < 0.01f)
+                {
+                    interpolationComponent.SetPredictionMotion(float3.zero, 0f);
+                    return;
+                }
+
+                float3 predictedDirection = new float3(worldDirection.x, 0f, worldDirection.y);
+                interpolationComponent.SetPredictionMotion(predictedDirection, speed);
+                return;
+            }
+
+            if (worldDirection.sqrMagnitude < 0.000001f || speed < 0.01f || Time.deltaTime <= 0f)
+            {
+                return;
+            }
+
+            float3 direction = new float3(worldDirection.x, 0f, worldDirection.y);
+            float3 predictedDelta = direction * speed * Time.deltaTime;
+            unit.Position += predictedDelta;
+            unit.Rotation = quaternion.LookRotation(direction, math.up());
+        }
+
         private static void SelectTarget(this InputSystemComponent self, InputAction.CallbackContext context)
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
@@ -133,9 +245,25 @@ namespace ET.Client
                 return;
             }
 
-            int spellConfigId = (keyControl.keyCode - Key.Digit1) * 10 + 100000;
+            if (keyControl.keyCode != Key.Digit1)
+            {
+                return;
+            }
 
-            EventSystem.Instance.Publish(self.Scene(), new OnSpellTrigger() { Unit = self.GetParent<Unit>(), SpellConfigId = spellConfigId });
+            MainPanelComponent mainPanel = self.Root().YIUIMgr().GetPanel<MainPanelComponent>();
+            ActionBarComponent actionBar = mainPanel?.UIActionBar;
+            int spellConfigId = actionBar?.UISlot12?.u_DataId?.GetValue() ?? 0;
+            if (spellConfigId <= 0)
+            {
+                Log.Warning("[Input] cast spell skipped: action bar skill not bound");
+                return;
+            }
+
+            EventSystem.Instance.Publish(self.Scene(), new OnSpellTrigger
+            {
+                Unit = self.GetParent<Unit>(),
+                SpellConfigId = spellConfigId,
+            });
         }
     }
 }

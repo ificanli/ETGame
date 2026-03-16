@@ -27,7 +27,12 @@ namespace ET.Test
             
             foreach (StartSceneConfig startConfig in scenes)
             {
-                int sceneType = SceneTypeSingleton.Instance.GetSceneType(startConfig.SceneType);
+                int sceneType = SceneTypeSingleton.Instance.GetValueByName(startConfig.SceneType);
+                if (sceneType == 0)
+                {
+                    Log.Warning($"FiberInit_TestCase skip unknown scene type: {startConfig.SceneType}");
+                    continue;
+                }
                 if (sceneType == SceneType.ServiceDiscovery)
                 {
                     continue;

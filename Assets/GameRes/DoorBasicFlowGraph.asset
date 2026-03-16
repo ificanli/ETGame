@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee0d950c1f585843a3942a92f9e3b8d, type: 3}
+  m_Name: DoorBasicFlowGraph
+  m_EditorClassIdentifier: 
+  Graph:
+    Version: 1
+    Nodes:
+    - Id: 1
+      NodeType: Event
+      NodeKey: OnPlayerEnterRange
+      Title: 玩家进入范围
+      PosX: -600
+      PosY: -120
+      Params: []
+    - Id: 2
+      NodeType: Action
+      NodeKey: RefreshDoorInteractHint
+      Title: 刷新门交互提示
+      PosX: -240
+      PosY: -120
+      Params: []
+    - Id: 3
+      NodeType: Event
+      NodeKey: OnPlayerLeaveRange
+      Title: 玩家离开范围
+      PosX: -600
+      PosY: 80
+      Params: []
+    - Id: 4
+      NodeType: Action
+      NodeKey: HideInteractButton
+      Title: 隐藏交互按钮
+      PosX: -240
+      PosY: 80
+      Params: []
+    - Id: 5
+      NodeType: Event
+      NodeKey: OnPlayerInteract
+      Title: 玩家交互
+      PosX: -600
+      PosY: 280
+      Params: []
+    - Id: 6
+      NodeType: Action
+      NodeKey: ToggleDoor
+      Title: 切换门状态
+      PosX: -240
+      PosY: 280
+      Params: []
+    Connections:
+    - FromNodeId: 1
+      ToNodeId: 2
+      Branch: Out
+    - FromNodeId: 3
+      ToNodeId: 4
+      Branch: Out
+    - FromNodeId: 5
+      ToNodeId: 6
+      Branch: Out
+    RuntimeNodeMap: {}
+    RuntimeAdjacency: {}
+    RuntimeNodeCount: 0
+    RuntimeConnectionCount: 0

@@ -10,7 +10,7 @@ namespace ET
         public string Unit = "Unit";
         
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
-        [BTOutput(typeof(List<EntityRef<Unit>>))]
+        [BTOutput(typeof(List<long>))]
         public string Units = "Units";
        
         public int Radius;

@@ -1,0 +1,218 @@
+[
+  {
+    "Id": 1,
+    "TagDes": "英雄ayin",
+    "TagType": 2,
+    "ShowTagsName": "",
+    "ShowTagsDesc": "",
+    "ShowTagsBuffId": [],
+    "MatchValues": [
+      1002
+    ]
+  },
+  {
+    "Id": 2,
+    "TagDes": "英雄agou",
+    "TagType": 2,
+    "ShowTagsName": "",
+    "ShowTagsDesc": "",
+    "ShowTagsBuffId": [],
+    "MatchValues": [
+      1001
+    ]
+  },
+  {
+    "Id": 3,
+    "TagDes": "英雄aniao",
+    "TagType": 2,
+    "ShowTagsName": "",
+    "ShowTagsDesc": "",
+    "ShowTagsBuffId": [],
+    "MatchValues": [
+      1003
+    ]
+  },
+  {
+    "Id": 34,
+    "TagDes": "枪械-步枪",
+    "TagType": 3,
+    "ShowTagsName": "",
+    "ShowTagsDesc": "",
+    "ShowTagsBuffId": [],
+    "MatchValues": [
+      2,
+      3
+    ]
+  },
+  {
+    "Id": 35,
+    "TagDes": "枪械-霰弹",
+    "TagType": 3,
+    "ShowTagsName": "",
+    "ShowTagsDesc": "",
+    "ShowTagsBuffId": [],
+    "MatchValues": [
+      1
+    ]
+  },
+  {
+    "Id": 36,
+    "TagDes": "枪械-冲锋枪",
+    "TagType": 3,
+    "ShowTagsName": "",
+    "ShowTagsDesc": "",
+    "ShowTagsBuffId": [],
+    "MatchValues": [
+      5
+    ]
+  },
+  {
+    "Id": 50,
+    "TagDes": "通用隐藏类型",
+    "TagType": 4,
+    "ShowTagsName": "",
+    "ShowTagsDesc": "",
+    "ShowTagsBuffId": [],
+    "MatchValues": []
+  },
+  {
+    "Id": 51,
+    "TagDes": "通用显示类型1",
+    "TagType": 1,
+    "ShowTagsName": "1",
+    "ShowTagsDesc": "1",
+    "ShowTagsBuffId": [
+      111555888
+    ],
+    "MatchValues": []
+  },
+  {
+    "Id": 52,
+    "TagDes": "通用显示类型2",
+    "TagType": 1,
+    "ShowTagsName": "2",
+    "ShowTagsDesc": "2",
+    "ShowTagsBuffId": [
+      111555889
+    ],
+    "MatchValues": []
+  },
+  {
+    "Id": 53,
+    "TagDes": "通用显示类型3",
+    "TagType": 1,
+    "ShowTagsName": "3",
+    "ShowTagsDesc": "3",
+    "ShowTagsBuffId": [
+      111555890
+    ],
+    "MatchValues": []
+  },
+  {
+    "Id": 54,
+    "TagDes": "通用显示类型4",
+    "TagType": 1,
+    "ShowTagsName": "4",
+    "ShowTagsDesc": "4",
+    "ShowTagsBuffId": [
+      111555891
+    ],
+    "MatchValues": []
+  },
+  {
+    "Id": 55,
+    "TagDes": "通用显示类型5",
+    "TagType": 1,
+    "ShowTagsName": "5",
+    "ShowTagsDesc": "5",
+    "ShowTagsBuffId": [
+      111555892
+    ],
+    "MatchValues": []
+  },
+  {
+    "Id": 56,
+    "TagDes": "通用显示类型6",
+    "TagType": 1,
+    "ShowTagsName": "6",
+    "ShowTagsDesc": "6",
+    "ShowTagsBuffId": [
+      111555893
+    ],
+    "MatchValues": []
+  },
+  {
+    "Id": 57,
+    "TagDes": "通用显示类型7",
+    "TagType": 1,
+    "ShowTagsName": "7",
+    "ShowTagsDesc": "7",
+    "ShowTagsBuffId": [
+      111555894
+    ],
+    "MatchValues": []
+  },
+  {
+    "Id": 101,
+    "TagDes": "打金专家",
+    "TagType": 1,
+    "ShowTagsName": "打金专家",
+    "ShowTagsDesc": "2/3张牌效果：你本局通过肉鸽牌获得的金币数量增加15%/30%",
+    "ShowTagsBuffId": [],
+    "MatchValues": []
+  },
+  {
+    "Id": 102,
+    "TagDes": "全能搜查",
+    "TagType": 1,
+    "ShowTagsName": "全能搜查",
+    "ShowTagsDesc": "2/3张牌效果：搜索物资箱的速度提升30%/60%；且搜索完容器后有15%/30%的概率获得20%的移速增幅。",
+    "ShowTagsBuffId": [],
+    "MatchValues": []
+  },
+  {
+    "Id": 103,
+    "TagDes": "首领猎手",
+    "TagType": 1,
+    "ShowTagsName": "首领猎手",
+    "ShowTagsDesc": "2/3张牌效果：对怪物伤害增加15%/45%，子弹命中有30%概率对怪物造成冰冻效果。",
+    "ShowTagsBuffId": [],
+    "MatchValues": []
+  },
+  {
+    "Id": 104,
+    "TagDes": "火力进化",
+    "TagType": 1,
+    "ShowTagsName": "火力进化",
+    "ShowTagsDesc": "2/3张牌效果：子弹命中敌人有15%/40%概率触发一次弹射。",
+    "ShowTagsBuffId": [],
+    "MatchValues": []
+  },
+  {
+    "Id": 105,
+    "TagDes": "持久作战",
+    "TagType": 1,
+    "ShowTagsName": "持久作战",
+    "ShowTagsDesc": "2/3张牌效果：受到伤害时固定减免150/400点伤害，且体型越大减免越多。",
+    "ShowTagsBuffId": [],
+    "MatchValues": []
+  },
+  {
+    "Id": 106,
+    "TagDes": "猎杀者",
+    "TagType": 1,
+    "ShowTagsName": "猎杀者",
+    "ShowTagsDesc": "2/3张牌效果：地图上若有玩家与精英怪交战或任意玩家生命低于30%，会被标记并显示在地图上，25秒内对其伤害增加。",
+    "ShowTagsBuffId": [],
+    "MatchValues": []
+  },
+  {
+    "Id": 107,
+    "TagDes": "掷骰狂人",
+    "TagType": 1,
+    "ShowTagsName": "掷骰狂人",
+    "ShowTagsDesc": "2/3张牌效果：死亡后有15%/40%概率在复活点复活，装备和背包物品随机保留。",
+    "ShowTagsBuffId": [],
+    "MatchValues": []
+  }
+]

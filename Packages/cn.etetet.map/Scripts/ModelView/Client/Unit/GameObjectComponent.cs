@@ -21,5 +21,11 @@ namespace ET.Client
         }
 
         public Transform Transform { get; private set; }
+
+        public Renderer[] CachedRenderers;
+        public Material[][] OriginalMaterials;
+        public Material[][] TransparentMaterials;
+        public bool ConcealmentTransparencyApplied;
+        public float ConcealmentTransparencyAlpha = 1f;
     }
 }

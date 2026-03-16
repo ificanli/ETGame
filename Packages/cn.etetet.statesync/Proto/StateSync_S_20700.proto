@@ -14,3 +14,21 @@ message A2M_Reload // IResponse
 	int32 Error = 2;
 	string Message = 3;
 }
+
+// 匹配成功后通知 Unit 应用起装数据
+// ResponseType A2Map_ApplyLoadoutResponse
+message A2Map_ApplyLoadoutRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 HeroConfigId = 2;
+	int32 MainWeaponConfigId = 3;
+	int32 SubWeaponConfigId = 4;
+	int32 ArmorConfigId = 5;
+}
+
+message A2Map_ApplyLoadoutResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}

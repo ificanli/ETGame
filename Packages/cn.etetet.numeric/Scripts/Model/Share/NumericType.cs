@@ -50,16 +50,12 @@ namespace ET
 		public const int WeightFinalAdd = 10084;
 		public const int WeightFinalPct = 10085;
 		public const int AI = 1009;
-		public const int X = 1010;
-		public const int Y = 1011;
-		public const int Z = 1012;
 		public const int Stun = 1013;
 		public const int StunBase = 10131;
 		public const int StunAdd = 10132;
 		public const int StunPct = 10133;
 		public const int StunFinalAdd = 10134;
 		public const int StunFinalPct = 10135;
-		public const int Yaw = 1014;
 		public const int Phase = 1015;
 	}
 }

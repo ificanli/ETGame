@@ -1,0 +1,31 @@
+{
+    "name": "ET.Hotfix",
+    "rootNamespace": "ET",
+    "references": [
+        "ET.Core",
+        "ET.Loader",
+        "ET.LSEntity",
+        "ET.Model",
+        "ET.Recast",
+        "ET.TrueSync",
+        "Unity.Mathematics",
+        "ET.HybridCLR",
+        "ET.Init",
+        "ET.YooAssets"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "INITED",
+        "IS_COMPILING || UNITY_EDITOR"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": true,
+    "optionalUnityReferences": [],
+    "additionalReferences": [],
+    "compilerOptions": ""
+}

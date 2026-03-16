@@ -60,7 +60,7 @@
         <Reference Include="ET.Mathematics">
             <HintPath>$(ProjectDir)../../../Bin/ET.Mathematics.dll</HintPath>
         </Reference>
-        <Reference Include="ET.Recast">
+        <Reference Include="ET.Recast" Condition="Exists('$(ProjectDir)../../../Bin/ET.Recast.dll')">
             <HintPath>$(ProjectDir)../../../Bin/ET.Recast.dll</HintPath>
         </Reference>
         

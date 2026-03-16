@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,27 +15,27 @@ namespace ET
     [EnableClass]
     public sealed partial class QuestConfig : Luban.BeanBase
     {
-        public QuestConfig(JSONNode _buf) 
+        public QuestConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
-            { if(!_buf["Desc"].IsString) { throw new SerializationException(); }  Desc = _buf["Desc"]; }
-            { var __json0 = _buf["ObjectiveIds"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; ObjectiveIds = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  ObjectiveIds[__index0++] = __v0; }   }
-            { var __json0 = _buf["PreQuestIds"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; PreQuestIds = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  PreQuestIds[__index0++] = __v0; }   }
-            { var __json0 = _buf["NextQuestId"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; NextQuestId = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  NextQuestId[__index0++] = __v0; }   }
-            { if(!_buf["Title"].IsString) { throw new SerializationException(); }  Title = _buf["Title"]; }
-            { if(!_buf["Content"].IsString) { throw new SerializationException(); }  Content = _buf["Content"]; }
-            { if(!_buf["AcceptedContent"].IsString) { throw new SerializationException(); }  AcceptedContent = _buf["AcceptedContent"]; }
-            { if(!_buf["FinishContent"].IsString) { throw new SerializationException(); }  FinishContent = _buf["FinishContent"]; }
-            { if(!_buf["AcceptNPC"].IsNumber) { throw new SerializationException(); }  AcceptNPC = _buf["AcceptNPC"]; }
-            { if(!_buf["AcceptNPCMap"].IsString) { throw new SerializationException(); }  AcceptNPCMap = _buf["AcceptNPCMap"]; }
-            { if(!_buf["SubmitNPC"].IsNumber) { throw new SerializationException(); }  SubmitNPC = _buf["SubmitNPC"]; }
-            { if(!_buf["SubmitNPCMap"].IsString) { throw new SerializationException(); }  SubmitNPCMap = _buf["SubmitNPCMap"]; }
+            Id = _buf.ReadInt();
+            Name = _buf.ReadString();
+            Desc = _buf.ReadString();
+            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);ObjectiveIds = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); ObjectiveIds[__index0] = __e0;}}
+            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);PreQuestIds = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); PreQuestIds[__index0] = __e0;}}
+            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);NextQuestId = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); NextQuestId[__index0] = __e0;}}
+            Title = _buf.ReadString();
+            Content = _buf.ReadString();
+            AcceptedContent = _buf.ReadString();
+            FinishContent = _buf.ReadString();
+            AcceptNPC = _buf.ReadInt();
+            AcceptNPCMap = _buf.ReadString();
+            SubmitNPC = _buf.ReadInt();
+            SubmitNPCMap = _buf.ReadString();
 
             EndInit();
         }
 
-        public static QuestConfig DeserializeQuestConfig(JSONNode _buf)
+        public static QuestConfig DeserializeQuestConfig(ByteBuf _buf)
         {
             return new ET.QuestConfig(_buf);
         }
@@ -97,7 +96,7 @@ namespace ET
         /// 交任务NPC地图
         /// </summary>
         public readonly string SubmitNPCMap;
-
+    
         public const int __ID__ = -507727899;
         public override int GetTypeId() => __ID__;
 

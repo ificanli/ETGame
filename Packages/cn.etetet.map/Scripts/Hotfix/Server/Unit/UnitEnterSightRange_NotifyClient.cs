@@ -18,6 +18,13 @@
                 return;
             }
 
+            ExtraUnitVisibilityComponent extraVisibility = scene.GetComponent<ExtraUnitVisibilityComponent>();
+            if (extraVisibility != null && extraVisibility.ShouldConcealTargetFromViewer(a, b))
+            {
+                extraVisibility.MarkTargetConcealed(a, b);
+                return;
+            }
+
             MapMessageHelper.NoticeUnitAdd(a, b);
             
             await ETTask.CompletedTask;

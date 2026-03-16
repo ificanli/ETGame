@@ -39,17 +39,28 @@ namespace ET.Server
 
         public static void Remove(this AOIManagerComponent self, AOIEntity aoiEntity)
         {
-            if (aoiEntity.Cell == null)
+            if (aoiEntity == null)
+            {
+                return;
+            }
+
+            Cell currentCell = aoiEntity.Cell;
+            if (currentCell == null || currentCell.IsDisposed)
             {
                 return;
             }
 
             // 通知订阅该Cell Leave的Unit
-            aoiEntity.Cell.Remove(aoiEntity);
-            foreach (KeyValuePair<long, EntityRef<AOIEntity>> kv in aoiEntity.Cell.SubsLeaveEntities)
+            currentCell.Remove(aoiEntity);
+            foreach (KeyValuePair<long, EntityRef<AOIEntity>> kv in currentCell.SubsLeaveEntities)
             {
                 AOIEntity e = kv.Value;
-                e?.LeaveSight(aoiEntity);
+                if (e == null || e.IsDisposed)
+                {
+                    continue;
+                }
+
+                e.LeaveSight(aoiEntity);
             }
 
             // 通知自己订阅的Enter Cell，清理自己

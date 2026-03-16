@@ -5,10 +5,18 @@
         protected override int Run(TargetSelectorCaster node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
+            if (buff == null || buff.IsDisposed)
+            {
+                return 1;
+            }
 
             Unit unit = buff.GetCaster();
+            if (unit == null || unit.IsDisposed)
+            {
+                return 1;
+            }
             
-            buff.GetBuffData().GetComponent<SpellTargetComponent>().Units.Add(unit.Id);
+            buff.GetOrAddSpellTargetComponent().Units.Add(unit.Id);
             
             return 0;
         }

@@ -11,28 +11,27 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
 
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class MapTransferRuleConfigCategory : Singleton<MapTransferRuleConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.MapTransferRuleConfig> _dataMap;
         private readonly List<ET.MapTransferRuleConfig> _dataList;
-
-        public MapTransferRuleConfigCategory(JSONNode _buf)
+        
+        public MapTransferRuleConfigCategory(ByteBuf _buf)
         {
             _dataMap = new Dictionary<int, ET.MapTransferRuleConfig>();
             _dataList = new List<ET.MapTransferRuleConfig>();
-
-            foreach(JSONNode _ele in _buf.Children)
+            
+            for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 ET.MapTransferRuleConfig _v;
-                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.MapTransferRuleConfig.DeserializeMapTransferRuleConfig(_ele);  }
+                _v = global::ET.MapTransferRuleConfig.DeserializeMapTransferRuleConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

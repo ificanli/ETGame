@@ -8,18 +8,51 @@ namespace ET.Server
         protected override int Run(TargetSelectorCasterCircle node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
-            SpellTargetComponent spellTargetComponent = buff.GetBuffData().GetComponent<SpellTargetComponent>();
+            if (buff == null || buff.IsDisposed)
+            {
+                return 1;
+            }
+
+            SpellTargetComponent spellTargetComponent = buff.GetOrAddSpellTargetComponent();
+            spellTargetComponent.Units.Clear();
 
             Unit caster = buff.GetCaster();
+            if (caster == null || caster.IsDisposed)
+            {
+                env.AddCollection(node.Units, spellTargetComponent.Units);
+                return 0;
+            }
+
             spellTargetComponent.Position = caster.Position;
 
-            Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
+            AOIEntity casterAoi = caster.GetComponent<AOIEntity>();
+            if (casterAoi == null)
+            {
+                env.AddCollection(node.Units, spellTargetComponent.Units);
+                return 0;
+            }
+
+            Dictionary<long, EntityRef<AOIEntity>> seeUnits = casterAoi.GetSeeUnits();
+            if (seeUnits == null || seeUnits.Count == 0)
+            {
+                env.AddCollection(node.Units, spellTargetComponent.Units);
+                return 0;
+            }
 
             float3 pos = caster.Position;
 
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
+                if (aoiEntity == null)
+                {
+                    continue;
+                }
+
                 Unit unit = aoiEntity.Unit;
+                if (unit == null || unit.IsDisposed)
+                {
+                    continue;
+                }
                 
                 if (!unit.UnitType.IsSame(node.UnitType))
                 {
@@ -54,8 +87,10 @@ namespace ET.Server
                     }
                 }
 
-                spellTargetComponent.Units.Add(aoiEntity.Unit.Id);
+                spellTargetComponent.Units.Add(unit.Id);
             }
+
+            env.AddCollection(node.Units, spellTargetComponent.Units);
             return 0;
         }
     }

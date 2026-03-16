@@ -1,0 +1,13 @@
+[
+  {
+    "Id": 1,
+    "MovementProjectHalfExtentXZ": 0.55,
+    "MovementProjectHalfExtentY": 0.5,
+    "MovementProjectHalfExtentByRadius": 1.1,
+    "MovementRejectDistance": 0.35,
+    "MovementRejectDistanceByRadius": 0.8,
+    "FindNearestRejectDistance": 1,
+    "FindNearestRejectDistanceByRadius": 2,
+    "MinUnitRadius": 0.3
+  }
+]

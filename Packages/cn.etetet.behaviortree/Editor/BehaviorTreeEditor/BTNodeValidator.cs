@@ -10,6 +10,29 @@ namespace ET
     /// </summary>
     public static class BTNodeValidator
     {
+        private static string GetTypeDisplayName(Type type)
+        {
+            if (type == null)
+            {
+                return "null";
+            }
+
+            if (!type.IsGenericType)
+            {
+                return type.Name;
+            }
+
+            string genericTypeName = type.Name;
+            int tickIndex = genericTypeName.IndexOf('`');
+            if (tickIndex >= 0)
+            {
+                genericTypeName = genericTypeName.Substring(0, tickIndex);
+            }
+
+            string[] argumentNames = type.GetGenericArguments().Select(GetTypeDisplayName).ToArray();
+            return $"{genericTypeName}<{string.Join(", ", argumentNames)}>";
+        }
+
         /// <summary>
         /// 校验BTNode及其子节点的BTInput是否合法
         /// </summary>
@@ -74,7 +97,7 @@ namespace ET
 
                         if (expectedType != actualType)
                         {
-                            string errorMsg = $"Node[{node.Id}] {node.GetType().Name}: Field '{field.Name}' expects type '{expectedType.Name}' but '{inputValue}' provides type '{actualType.Name}'";
+                            string errorMsg = $"Node[{node.Id}] {node.GetType().Name}: Field '{field.Name}' expects type '{GetTypeDisplayName(expectedType)}' but '{inputValue}' provides type '{GetTypeDisplayName(actualType)}'";
                             errors.Add(errorMsg);
                         }
                     }

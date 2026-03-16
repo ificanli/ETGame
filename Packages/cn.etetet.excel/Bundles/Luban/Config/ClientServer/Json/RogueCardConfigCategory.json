@@ -1,0 +1,668 @@
+[
+  {
+    "id": 1,
+    "Name": "迅捷步伐",
+    "Desc": "获得一层迅捷效果，提高作战机动性。",
+    "ImagePath": "rogue_speed_1",
+    "BTConfig": "buff:200111",
+    "Weight": 100,
+    "Quality": 1,
+    "ShowTags": [
+      51,
+      52
+    ],
+    "HideTags": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": 2,
+    "Name": "猎手步频",
+    "Desc": "获得一层迅捷效果，适合持续拉扯与追击。",
+    "ImagePath": "rogue_speed_2",
+    "BTConfig": "buff:200111",
+    "Weight": 100,
+    "Quality": 2,
+    "ShowTags": [
+      53
+    ],
+    "HideTags": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": 3,
+    "Name": "战术加速",
+    "Desc": "获得一层迅捷效果，用于快速切入或脱离战场。",
+    "ImagePath": "rogue_speed_3",
+    "BTConfig": "buff:200111",
+    "Weight": 100,
+    "Quality": 3,
+    "ShowTags": [
+      54
+    ],
+    "HideTags": [
+      1,
+      2
+    ]
+  },
+  {
+    "id": 1001,
+    "Name": "金主驾到",
+    "Desc": "地图出现一个商人，靠近交互后获得30000金币。",
+    "ImagePath": "rogue_gold_1",
+    "BTConfig": "buff:1001",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      101
+    ],
+    "HideTags": [
+      101
+    ]
+  },
+  {
+    "id": 1002,
+    "Name": "意外之财",
+    "Desc": "直接给予5000金币。",
+    "ImagePath": "rogue_gold_2",
+    "BTConfig": "buff:1002",
+    "Weight": 100,
+    "Quality": 1,
+    "ShowTags": [
+      101
+    ],
+    "HideTags": [
+      101
+    ]
+  },
+  {
+    "id": 1003,
+    "Name": "赏金猎人",
+    "Desc": "每击杀一个怪物额外获得300金币。",
+    "ImagePath": "rogue_gold_3",
+    "BTConfig": "buff:1003",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      101
+    ],
+    "HideTags": [
+      101
+    ]
+  },
+  {
+    "id": 1004,
+    "Name": "金币护盾",
+    "Desc": "受到致命伤害时，消耗当前携带金币的50%来免疫本次伤害。",
+    "ImagePath": "rogue_gold_4",
+    "BTConfig": "buff:1004",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      101
+    ],
+    "HideTags": [
+      101
+    ]
+  },
+  {
+    "id": 1005,
+    "Name": "废品回收",
+    "Desc": "每次开启物资箱未获得高品质物品，额外获得300金币。",
+    "ImagePath": "rogue_gold_5",
+    "BTConfig": "buff:1005",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      101
+    ],
+    "HideTags": [
+      101
+    ]
+  },
+  {
+    "id": 1006,
+    "Name": "财富即力量",
+    "Desc": "身上每携带500金币，提升1%的全伤害。",
+    "ImagePath": "rogue_gold_6",
+    "BTConfig": "buff:1006",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      101
+    ],
+    "HideTags": [
+      101
+    ]
+  },
+  {
+    "id": 1007,
+    "Name": "探索者奖金",
+    "Desc": "每次进入一个从未到过的区域，立即获得800金币。",
+    "ImagePath": "rogue_gold_7",
+    "BTConfig": "buff:1007",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      101
+    ],
+    "HideTags": [
+      101
+    ]
+  },
+  {
+    "id": 1011,
+    "Name": "简易雷达",
+    "Desc": "每隔20秒扫描一次，在小地图上高亮显示半径30米内所有未搜索的箱子。",
+    "ImagePath": "rogue_search_1",
+    "BTConfig": "buff:1011",
+    "Weight": 100,
+    "Quality": 1,
+    "ShowTags": [
+      102
+    ],
+    "HideTags": [
+      102
+    ]
+  },
+  {
+    "id": 1012,
+    "Name": "幸运搜索",
+    "Desc": "搜索区域开出宝箱的概率大幅度增加。",
+    "ImagePath": "rogue_search_2",
+    "BTConfig": "buff:1012",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      102
+    ],
+    "HideTags": [
+      102
+    ]
+  },
+  {
+    "id": 1013,
+    "Name": "紫色钥匙",
+    "Desc": "获得一个临时的紫色钥匙。",
+    "ImagePath": "rogue_search_3",
+    "BTConfig": "buff:1013",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      102
+    ],
+    "HideTags": [
+      102
+    ]
+  },
+  {
+    "id": 1014,
+    "Name": "远程牵引",
+    "Desc": "允许你在3米外通过交互键直接搜索容器，无需贴脸。",
+    "ImagePath": "rogue_search_4",
+    "BTConfig": "buff:1014",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      102
+    ],
+    "HideTags": [
+      102
+    ]
+  },
+  {
+    "id": 1015,
+    "Name": "无声搜索",
+    "Desc": "搜索动作完全不发出声音。",
+    "ImagePath": "rogue_search_5",
+    "BTConfig": "buff:1015",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      102
+    ],
+    "HideTags": [
+      102
+    ]
+  },
+  {
+    "id": 1016,
+    "Name": "负重增幅",
+    "Desc": "背包空间越满，临时生命增幅越高。",
+    "ImagePath": "rogue_search_6",
+    "BTConfig": "buff:1016",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      102
+    ],
+    "HideTags": [
+      102
+    ]
+  },
+  {
+    "id": 1021,
+    "Name": "猎手试炼",
+    "Desc": "任务：击杀15个怪物后，对怪物的伤害增加50%。",
+    "ImagePath": "rogue_boss_1",
+    "BTConfig": "buff:1021",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      103
+    ],
+    "HideTags": [
+      103
+    ]
+  },
+  {
+    "id": 1022,
+    "Name": "Boss克星",
+    "Desc": "Boss对你的伤害降低30%，对Boss造成伤害获得30%吸血效果。",
+    "ImagePath": "rogue_boss_2",
+    "BTConfig": "buff:1022",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      103
+    ],
+    "HideTags": [
+      103
+    ]
+  },
+  {
+    "id": 1023,
+    "Name": "嗜血本能",
+    "Desc": "击杀怪物后回复2%的已损生命值。",
+    "ImagePath": "rogue_boss_3",
+    "BTConfig": "buff:1023",
+    "Weight": 100,
+    "Quality": 1,
+    "ShowTags": [
+      103
+    ],
+    "HideTags": [
+      103
+    ]
+  },
+  {
+    "id": 1024,
+    "Name": "怪物磁铁",
+    "Desc": "搜索区域开出怪物的概率大幅度增加。",
+    "ImagePath": "rogue_boss_4",
+    "BTConfig": "buff:1024",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      103
+    ],
+    "HideTags": [
+      103
+    ]
+  },
+  {
+    "id": 1025,
+    "Name": "战利品附魔",
+    "Desc": "击杀精英怪或Boss后，主武器获得永久穿透和伤害附魔。",
+    "ImagePath": "rogue_boss_5",
+    "BTConfig": "buff:1025",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      103,
+      104
+    ],
+    "HideTags": [
+      103
+    ]
+  },
+  {
+    "id": 1026,
+    "Name": "猎手直觉",
+    "Desc": "向30米内的怪物移动时，速度提高30%。",
+    "ImagePath": "rogue_boss_6",
+    "BTConfig": "buff:1026",
+    "Weight": 100,
+    "Quality": 1,
+    "ShowTags": [
+      103
+    ],
+    "HideTags": [
+      103
+    ]
+  },
+  {
+    "id": 1031,
+    "Name": "远程精通",
+    "Desc": "枪械的攻击距离提高20%。",
+    "ImagePath": "rogue_fire_1",
+    "BTConfig": "buff:1031",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      104
+    ],
+    "HideTags": [
+      104
+    ]
+  },
+  {
+    "id": 1032,
+    "Name": "纯粹射手",
+    "Desc": "你的技能无法使用，枪械的攻击速度提高50%。",
+    "ImagePath": "rogue_fire_2",
+    "BTConfig": "buff:1032",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      104
+    ],
+    "HideTags": [
+      104
+    ]
+  },
+  {
+    "id": 1033,
+    "Name": "精准打击",
+    "Desc": "枪械命中敌方英雄时，本局临时获得1%暴击率。",
+    "ImagePath": "rogue_fire_3",
+    "BTConfig": "buff:1033",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      104
+    ],
+    "HideTags": [
+      104
+    ]
+  },
+  {
+    "id": 1034,
+    "Name": "弹药专家",
+    "Desc": "枪械弹匣容量提升50%，换弹速度提高30%。",
+    "ImagePath": "rogue_fire_4",
+    "BTConfig": "buff:1034",
+    "Weight": 100,
+    "Quality": 1,
+    "ShowTags": [
+      104
+    ],
+    "HideTags": [
+      104
+    ]
+  },
+  {
+    "id": 1035,
+    "Name": "陷阱大师",
+    "Desc": "静止不动5秒以上，每射击15发子弹随机抛射一个陷阱。",
+    "ImagePath": "rogue_fire_5",
+    "BTConfig": "buff:1035",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      104
+    ],
+    "HideTags": [
+      104
+    ]
+  },
+  {
+    "id": 1036,
+    "Name": "首发强化",
+    "Desc": "每次换弹后，前3发子弹伤害提升200%并附带穿透效果。",
+    "ImagePath": "rogue_fire_6",
+    "BTConfig": "buff:1036",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      104
+    ],
+    "HideTags": [
+      104
+    ]
+  },
+  {
+    "id": 1041,
+    "Name": "巨人之力",
+    "Desc": "体型变大，生命值增加30%。",
+    "ImagePath": "rogue_endure_1",
+    "BTConfig": "buff:1041",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      105
+    ],
+    "HideTags": [
+      105
+    ]
+  },
+  {
+    "id": 1042,
+    "Name": "生命涌泉",
+    "Desc": "每秒恢复1%最大生命值。",
+    "ImagePath": "rogue_endure_2",
+    "BTConfig": "buff:1042",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      105
+    ],
+    "HideTags": [
+      105
+    ]
+  },
+  {
+    "id": 1043,
+    "Name": "不倒翁",
+    "Desc": "生命值低于20%时，获得一个相当于50%最大生命值的护盾。",
+    "ImagePath": "rogue_endure_3",
+    "BTConfig": "buff:1043",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      105
+    ],
+    "HideTags": [
+      105
+    ]
+  },
+  {
+    "id": 1044,
+    "Name": "时间延长",
+    "Desc": "游戏延长5分钟，每30秒生命上限增加3%。",
+    "ImagePath": "rogue_endure_4",
+    "BTConfig": "buff:1044",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      105
+    ],
+    "HideTags": [
+      105
+    ]
+  },
+  {
+    "id": 1045,
+    "Name": "绿树精灵",
+    "Desc": "每30秒召唤一个绿树精灵为你恢复生命。",
+    "ImagePath": "rogue_endure_5",
+    "BTConfig": "buff:1045",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      105
+    ],
+    "HideTags": [
+      105
+    ]
+  },
+  {
+    "id": 1051,
+    "Name": "致命弱点",
+    "Desc": "对生命值低于30%的目标额外造成30%伤害。",
+    "ImagePath": "rogue_hunter_1",
+    "BTConfig": "buff:1051",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      106
+    ],
+    "HideTags": [
+      106
+    ]
+  },
+  {
+    "id": 1052,
+    "Name": "杀戮叠加",
+    "Desc": "每次击杀叠加30%攻击力，最多3层。",
+    "ImagePath": "rogue_hunter_2",
+    "BTConfig": "buff:1052",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      106
+    ],
+    "HideTags": [
+      106
+    ]
+  },
+  {
+    "id": 1053,
+    "Name": "脱战隐身",
+    "Desc": "脱离战斗后进入隐身状态。",
+    "ImagePath": "rogue_hunter_3",
+    "BTConfig": "buff:1053",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      106
+    ],
+    "HideTags": [
+      106
+    ]
+  },
+  {
+    "id": 1054,
+    "Name": "灵巧身形",
+    "Desc": "体型变小，移动速度提高30%，体型差越大伤害越高。",
+    "ImagePath": "rogue_hunter_4",
+    "BTConfig": "buff:1054",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      106
+    ],
+    "HideTags": [
+      106
+    ]
+  },
+  {
+    "id": 1055,
+    "Name": "近身爆发",
+    "Desc": "攻击距离降低80%，但伤害提升400%。",
+    "ImagePath": "rogue_hunter_5",
+    "BTConfig": "buff:1055",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      106,
+      104
+    ],
+    "HideTags": [
+      106
+    ]
+  },
+  {
+    "id": 1056,
+    "Name": "技能疾跑",
+    "Desc": "释放技能后获得10%移动速度加成。",
+    "ImagePath": "rogue_hunter_6",
+    "BTConfig": "buff:1056",
+    "Weight": 100,
+    "Quality": 1,
+    "ShowTags": [
+      106
+    ],
+    "HideTags": [
+      106
+    ]
+  },
+  {
+    "id": 1061,
+    "Name": "幸运抽奖",
+    "Desc": "获得1个随机紫色卡牌。",
+    "ImagePath": "rogue_dice_1",
+    "BTConfig": "buff:1061",
+    "Weight": 100,
+    "Quality": 1,
+    "ShowTags": [
+      107
+    ],
+    "HideTags": [
+      107
+    ]
+  },
+  {
+    "id": 1062,
+    "Name": "豪华抽奖",
+    "Desc": "获得2个随机橙色卡牌。",
+    "ImagePath": "rogue_dice_2",
+    "BTConfig": "buff:1062",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      107
+    ],
+    "HideTags": [
+      107
+    ]
+  },
+  {
+    "id": 1063,
+    "Name": "一击必杀",
+    "Desc": "1%概率秒杀非Boss目标，爆出8888金币。",
+    "ImagePath": "rogue_dice_3",
+    "BTConfig": "buff:1063",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      107
+    ],
+    "HideTags": [
+      107
+    ]
+  },
+  {
+    "id": 1064,
+    "Name": "幸运女神",
+    "Desc": "所有概率触发效果的触发率提升50%。",
+    "ImagePath": "rogue_dice_4",
+    "BTConfig": "buff:1064",
+    "Weight": 80,
+    "Quality": 2,
+    "ShowTags": [
+      107
+    ],
+    "HideTags": [
+      107
+    ]
+  },
+  {
+    "id": 1065,
+    "Name": "命运重置",
+    "Desc": "移除所有已选卡牌，替换为2张随机紫色和1张随机橙色卡牌。",
+    "ImagePath": "rogue_dice_5",
+    "BTConfig": "buff:1065",
+    "Weight": 60,
+    "Quality": 3,
+    "ShowTags": [
+      107
+    ],
+    "HideTags": [
+      107
+    ]
+  }
+]

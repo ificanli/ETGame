@@ -1,0 +1,217 @@
+{
+	"_t" : "System.Collections.Generic.List`1[[ET.ECAConfig, ET.Model]]",
+	"_v" : [{
+			"ConfigId" : "100",
+			"Type" : 3,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "2"
+				}],
+			"PosX" : 6.0199999809265137,
+			"PosY" : 0.0,
+			"PosZ" : 3.9000000953674316,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 1,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerEnterRange",
+						"Title" : "Event 1",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 2,
+						"NodeType" : "Action",
+						"NodeKey" : "ShowInteractButton",
+						"Title" : "Action 2",
+						"PosX" : 373.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "button_text_id",
+								"Value" : "0"
+							}]
+					}, {
+						"_id" : 3,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerLeaveRange",
+						"Title" : "Event 3",
+						"PosX" : 0.0,
+						"PosY" : 210.0,
+						"Params" : []
+					}, {
+						"_id" : 4,
+						"NodeType" : "Action",
+						"NodeKey" : "HideInteractButton",
+						"Title" : "Action 4",
+						"PosX" : 373.0,
+						"PosY" : 210.0,
+						"Params" : []
+					}, {
+						"_id" : 5,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerInteract",
+						"Title" : "Event 5",
+						"PosX" : 0.0,
+						"PosY" : 420.0,
+						"Params" : []
+					}, {
+						"_id" : 6,
+						"NodeType" : "Action",
+						"NodeKey" : "OpenContainerUI",
+						"Title" : "Action 6",
+						"PosX" : 373.0,
+						"PosY" : 540.0,
+						"Params" : [{
+								"Key" : "ui_key",
+								"Value" : "SearchPanelComponent"
+							}]
+					}, {
+						"_id" : 7,
+						"NodeType" : "Action",
+						"NodeKey" : "GenerateContainerLoot",
+						"Title" : "Action 7",
+						"PosX" : 373.0,
+						"PosY" : 420.0,
+						"Params" : [{
+								"Key" : "output_mode",
+								"Value" : "ContainerPanel"
+							}, {
+								"Key" : "loot_table",
+								"Value" : "10001*2|10002*1|10003*3"
+							}, {
+								"Key" : "count",
+								"Value" : "3"
+							}, {
+								"Key" : "radius",
+								"Value" : "0"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 1,
+						"ToNodeId" : 2,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 3,
+						"ToNodeId" : 4,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 5,
+						"ToNodeId" : 7,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 3,
+			"TeamId" : 0,
+			"InteractRange" : 2.0
+		}, {
+			"ConfigId" : "301",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "2"
+				}],
+			"PosX" : 14.449999809265137,
+			"PosY" : 0.0,
+			"PosZ" : 20.739999771118164,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 7,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 6,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 2.0
+		}, {
+			"ConfigId" : "200",
+			"Type" : 2,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "2"
+				}, {
+					"Key" : "team_id",
+					"Value" : "1"
+				}],
+			"PosX" : 5.369999885559082,
+			"PosY" : 0.0,
+			"PosZ" : 11.689999580383301,
+			"FlowGraph" : null,
+			"PointType" : 2,
+			"TeamId" : 1,
+			"InteractRange" : 2.0
+		}, {
+			"ConfigId" : "300",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "2"
+				}],
+			"PosX" : 14.449999809265137,
+			"PosY" : 0.0,
+			"PosZ" : 11.119999885559082,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 7,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 6,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 2.0
+		}]
+}

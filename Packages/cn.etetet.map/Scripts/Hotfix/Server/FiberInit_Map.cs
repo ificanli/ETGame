@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net;
 
 namespace ET.Server
@@ -21,30 +22,44 @@ namespace ET.Server
             root.AddComponent<AOIManagerComponent>();
             root.AddComponent<LocationProxyComponent>();
             root.AddComponent<MessageLocationSenderComponent>();
+            root.AddComponent<ExtraUnitVisibilityComponent>();
             
             EntityRef<UnitComponent> unitComponentRef = unitComponent;
 
             string mapName = root.Name.GetSceneConfigName();
 
-            if (mapName != "GateMap")
+            if (mapName != "GateMap" && mapName != "Home")
             {
                 // 加载场景寻路数据
                 await NavmeshComponent.Instance.Load(mapName);
+                root = rootRef;
+                root.AddComponent<SceneNavmeshComponent, string, DotRecast.Detour.DtNavMesh>(mapName, NavmeshComponent.Instance.CreateInstance(mapName));
             }
 
             root = rootRef;
             unitComponent = unitComponentRef;
 
-            foreach (var kv in MapUnitConfigCategory.Instance.GetAll())
+            // 加载 ECA 点配置
+            ECALoader.LoadFromFile(root, mapName);
+            if (mapName != "GateMap" && mapName != "Home")
             {
-                if (mapName != kv.Value.MapName)
-                {
-                    continue;
-                }
-                Unit unit = UnitFactory.Create(root, kv.Key, kv.Value.UnitConfigId);
-                unitComponent.Add(unit);
+                ECAPointNavBlockHelper.Rebuild(root);
             }
-            
+
+            if (mapName != "GateMap" && mapName != "Home")
+            {
+                string ecaPath = $"Packages/cn.etetet.map/Bundles/ECA/{mapName}.txt";
+                if (File.Exists(ecaPath))
+                {
+                    root.AddComponent<SpawnPointManagerComponent>();
+                    Log.Info($"[SpawnAssign] SpawnPointManager added, scene={root.Name}, map={mapName}, ecaPath={ecaPath}");
+                }
+                else
+                {
+                    Log.Warning($"[SpawnAssign] ECA file not found, scene={root.Name}, map={mapName}, ecaPath={ecaPath}");
+                }
+            }
+
             ServiceDiscoveryProxy serviceDiscoveryProxy = root.AddComponent<ServiceDiscoveryProxy>();
             EntityRef<ServiceDiscoveryProxy> serviceDiscoveryProxyComponentRef = serviceDiscoveryProxy;
             await serviceDiscoveryProxy.RegisterToServiceDiscovery();
@@ -57,11 +72,15 @@ namespace ET.Server
                 });
             
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
-            await serviceDiscoveryProxy.SubscribeServiceChange("MapManager", 
+            await serviceDiscoveryProxy.SubscribeServiceChange("MapManager",
                 new StringKV()
                 {
                     {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.MapManager)},
                 });
+
+            // 发布地图加载完成事件
+            root = rootRef;
+            EventSystem.Instance.Publish(root, new MapLoadFinishEvent { Scene = root });
         }
     }
 }

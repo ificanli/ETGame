@@ -5,13 +5,20 @@
 	{
 		protected override async ETTask Run(Scene root, M2C_RemoveUnits message)
 		{	
-			UnitComponent unitComponent = root.CurrentScene()?.GetComponent<UnitComponent>();
+			Scene currentScene = root.CurrentScene();
+			UnitComponent unitComponent = currentScene?.GetComponent<UnitComponent>();
 			if (unitComponent == null)
 			{
 				return;
 			}
 			foreach (long unitId in message.Units)
 			{
+				Unit unit = unitComponent.Get(unitId);
+				if (unit != null)
+				{
+					EventSystem.Instance.Publish(currentScene, new BeforeUnitRemove() {Unit = unit});
+				}
+
 				unitComponent.Remove(unitId);
 			}
 

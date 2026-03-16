@@ -11,6 +11,14 @@ namespace ET
         //[ReadOnly]
         [BoxGroup("输出参数")]
         public string Buff = "Buff";
+
+        [BTOutput(typeof(Unit))]
+        [BoxGroup("输出参数")]
+        public string Unit = "Unit";
+
+        [BTOutput(typeof(Unit))]
+        [BoxGroup("输出参数")]
+        public string Caster = "Caster";
         
 #if UNITY_EDITOR
         [HideIf("@true")]

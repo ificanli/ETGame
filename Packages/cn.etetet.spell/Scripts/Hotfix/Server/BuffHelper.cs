@@ -258,6 +258,11 @@ namespace ET.Server
 
         public static void RemoveBuff(Buff buff, BuffFlags removeType)
         {
+            if (buff == null || buff.IsDisposed)
+            {
+                return;
+            }
+
             Unit unit = buff.Parent?.GetParent<Unit>();
             if (unit == null || unit.IsDisposed)
             {

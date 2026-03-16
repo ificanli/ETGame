@@ -37,6 +37,12 @@ namespace ET
                 buff.Caster = casterId;
                 buff.CreateTime = TimeInfo.Instance.ServerNow();
                 BuffConfig buffConfig = buff.GetConfig();
+                if (buffConfig == null)
+                {
+                    self.RemoveChild(buff.Id);
+                    throw new Exception($"buff config not found: {buffConfigId}");
+                }
+
                 buff.Stack = buffConfig.Stack;
                 foreach (BuffFlags buffFlag in buffConfig.Flags)
                 {

@@ -1,0 +1,110 @@
+[
+  {
+    "Id": 1,
+    "Key": "PVEMap.CompactRange",
+    "FloatValue": 40,
+    "StringValue": ""
+  },
+  {
+    "Id": 2,
+    "Key": "Minimap.MarkerSize",
+    "FloatValue": 10,
+    "StringValue": ""
+  },
+  {
+    "Id": 3,
+    "Key": "Minimap.MarkerColor.Self",
+    "FloatValue": 0,
+    "StringValue": "#54F1A8"
+  },
+  {
+    "Id": 4,
+    "Key": "Minimap.MarkerColor.Player",
+    "FloatValue": 0,
+    "StringValue": "#6CC6FF"
+  },
+  {
+    "Id": 5,
+    "Key": "Minimap.MarkerColor.Monster",
+    "FloatValue": 0,
+    "StringValue": "#FF6B6B"
+  },
+  {
+    "Id": 6,
+    "Key": "Minimap.MarkerColor.Other",
+    "FloatValue": 0,
+    "StringValue": "#FFD166"
+  },
+  {
+    "Id": 7,
+    "Key": "SDCMap.CompactRange",
+    "FloatValue": 40,
+    "StringValue": ""
+  },
+  {
+    "Id": 8,
+    "Key": "SDCMap.WorldMinX",
+    "FloatValue": 0,
+    "StringValue": ""
+  },
+  {
+    "Id": 9,
+    "Key": "SDCMap.WorldMaxX",
+    "FloatValue": 160,
+    "StringValue": ""
+  },
+  {
+    "Id": 10,
+    "Key": "SDCMap.WorldMinZ",
+    "FloatValue": 0,
+    "StringValue": ""
+  },
+  {
+    "Id": 11,
+    "Key": "SDCMap.WorldMaxZ",
+    "FloatValue": 120,
+    "StringValue": ""
+  },
+  {
+    "Id": 12,
+    "Key": "Minimap.MarkerColor.FriendlyPlayer",
+    "FloatValue": 0,
+    "StringValue": "#6CC6FF"
+  },
+  {
+    "Id": 13,
+    "Key": "Minimap.MarkerColor.EnemyPlayer",
+    "FloatValue": 0,
+    "StringValue": "#FF6B6B"
+  },
+  {
+    "Id": 14,
+    "Key": "Minimap.FogCellSize",
+    "FloatValue": 4,
+    "StringValue": ""
+  },
+  {
+    "Id": 15,
+    "Key": "SDCMap.FogCellSize",
+    "FloatValue": 4,
+    "StringValue": ""
+  },
+  {
+    "Id": 16,
+    "Key": "Minimap.FogColor.Visible",
+    "FloatValue": 0,
+    "StringValue": "#00000000"
+  },
+  {
+    "Id": 17,
+    "Key": "Minimap.FogColor.Explored",
+    "FloatValue": 0,
+    "StringValue": "#09131E88"
+  },
+  {
+    "Id": 18,
+    "Key": "Minimap.FogColor.Unexplored",
+    "FloatValue": 0,
+    "StringValue": "#09131EE8"
+  }
+]

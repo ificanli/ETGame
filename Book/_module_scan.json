@@ -1,0 +1,1905 @@
+[
+  {
+    "Package": "cn.etetet.achievement",
+    "PackageDisplayName": "ET.Achievement",
+    "Version": "4.0.0",
+    "Id": 41,
+    "Level": 5,
+    "Name": "Achievement",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "41",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 14,
+      "Hotfix": 11
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.actorlocation",
+    "PackageDisplayName": "ET.ActorLocation",
+    "Version": "2.0.1",
+    "Id": 3,
+    "Level": 4,
+    "Name": "ActorLocation",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "3",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.netinner",
+      "cn.etetet.proto",
+      "cn.etetet.startconfig"
+    ],
+    "DependencyCount": 5,
+    "ScriptAssemblies": [
+      "Core",
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 11,
+      "Hotfix": 12,
+      "Core": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.aoi",
+    "PackageDisplayName": "ET.AOI",
+    "Version": "4.0.0",
+    "Id": 19,
+    "Level": 4,
+    "Name": "Aoi",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "19",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.numeric",
+      "cn.etetet.proto",
+      "cn.etetet.unit"
+    ],
+    "DependencyCount": 5,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 6,
+      "Hotfix": 6
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.aspire",
+    "PackageDisplayName": "ET.Aspire",
+    "Version": "1.0.0",
+    "Id": 101,
+    "Level": 2,
+    "Name": "Aspire",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "101",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.startconfig"
+    ],
+    "DependencyCount": 2,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 1,
+      "Hotfix": 0
+    },
+    "ScriptsReferences": {
+      "Model": [
+        "ET.Core"
+      ],
+      "Hotfix": [
+        "ET.Core",
+        "ET.Model"
+      ]
+    }
+  },
+  {
+    "Package": "cn.etetet.battle",
+    "PackageDisplayName": "ET.Battle",
+    "Version": "4.0.0",
+    "Id": 55,
+    "Level": 3,
+    "Name": "Battle",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "55",
+    "HasAgents": true,
+    "Dependencies": [
+      "cn.etetet.actorlocation",
+      "cn.etetet.console",
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.http",
+      "cn.etetet.match",
+      "cn.etetet.netinner",
+      "cn.etetet.proto",
+      "cn.etetet.router",
+      "cn.etetet.startconfig",
+      "cn.etetet.unit"
+    ],
+    "DependencyCount": 11,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 1,
+      "Hotfix": 0
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.behaviortree",
+    "PackageDisplayName": "ET.BehaviorTree",
+    "Version": "4.0.0",
+    "Id": 44,
+    "Level": 2,
+    "Name": "BehaviorTree",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "44",
+    "HasAgents": true,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto"
+    ],
+    "DependencyCount": 3,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 14,
+      "Hotfix": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.btnode",
+    "PackageDisplayName": "ET.BTNode",
+    "Version": "1.0.0",
+    "Id": 40,
+    "Level": 5,
+    "Name": "BTNode",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "40",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "HotfixView",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 0,
+      "Hotfix": 57,
+      "Model": 67,
+      "HotfixView": 9
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.console",
+    "PackageDisplayName": "ET.Console",
+    "Version": "2.0.0",
+    "Id": 18,
+    "Level": 2,
+    "Name": "Console",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "18",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.loader",
+      "cn.etetet.proto"
+    ],
+    "DependencyCount": 4,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 6,
+      "Hotfix": 3
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.core",
+    "PackageDisplayName": "ET.Core",
+    "Version": "4.0.0",
+    "Id": 1,
+    "Level": 1,
+    "Name": "Core",
+    "AllowAnyPackageAccess": true,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "1",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.memorypack",
+      "cn.etetet.sourcegenerator"
+    ],
+    "DependencyCount": 2,
+    "ScriptAssemblies": [
+      "Core",
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 31,
+      "Hotfix": 46,
+      "Core": 145
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.db",
+    "PackageDisplayName": "ET.DB",
+    "Version": "4.0.0",
+    "Id": 51,
+    "Level": 1,
+    "Name": "DB",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "51",
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.core",
+    "DependencyCount": 1,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 5,
+      "Hotfix": 2
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.eca",
+    "PackageDisplayName": "ET.ECA",
+    "Version": "4.0.0",
+    "Id": 52,
+    "Level": 2,
+    "Name": "ECA",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "52",
+    "HasAgents": true,
+    "Dependencies": [
+      "cn.etetet.actorlocation",
+      "cn.etetet.aoi",
+      "cn.etetet.behaviortree",
+      "cn.etetet.console",
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.http",
+      "cn.etetet.netinner",
+      "cn.etetet.numeric",
+      "cn.etetet.proto",
+      "cn.etetet.router",
+      "cn.etetet.startconfig",
+      "cn.etetet.unit",
+      "cn.etetet.yiuiframework",
+      "cn.etetet.yooassets"
+    ],
+    "DependencyCount": 15,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 4,
+      "Hotfix": 9,
+      "Model": 19
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.ecanode",
+    "PackageDisplayName": "ET.ECANode",
+    "Version": "4.0.0",
+    "Id": 53,
+    "Level": 5,
+    "Name": "ECANode",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "53",
+    "HasAgents": true,
+    "Dependencies": [
+      "cn.etetet.actorlocation",
+      "cn.etetet.aoi",
+      "cn.etetet.behaviortree",
+      "cn.etetet.console",
+      "cn.etetet.core",
+      "cn.etetet.eca",
+      "cn.etetet.excel",
+      "cn.etetet.http",
+      "cn.etetet.map",
+      "cn.etetet.move",
+      "cn.etetet.netinner",
+      "cn.etetet.numeric",
+      "cn.etetet.proto",
+      "cn.etetet.router",
+      "cn.etetet.startconfig",
+      "cn.etetet.unit",
+      "cn.etetet.yiuiframework",
+      "cn.etetet.yooassets"
+    ],
+    "DependencyCount": 18,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 6,
+      "Hotfix": 11
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.equipment",
+    "PackageDisplayName": "ET.Equipment",
+    "Version": "4.0.0",
+    "Id": 47,
+    "Level": 5,
+    "Name": "Equipment",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "47",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto",
+      "cn.etetet.unit"
+    ],
+    "DependencyCount": 4,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 11,
+      "Hotfix": 21
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.excel",
+    "PackageDisplayName": "ET.Excel",
+    "Version": "2.0.0",
+    "Id": 13,
+    "Level": 1,
+    "Name": "Excel",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "13",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": "Model",
+    "AssemblyCsCount": {
+      "Model": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.http",
+    "PackageDisplayName": "ET.Http",
+    "Version": "2.0.0",
+    "Id": 16,
+    "Level": 2,
+    "Name": "Http",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "16",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto"
+    ],
+    "DependencyCount": 3,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 5,
+      "Hotfix": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.hybridclr",
+    "PackageDisplayName": "ET.HybridCLR",
+    "Version": "8.5.1",
+    "Id": 45,
+    "Level": null,
+    "Name": "HybridCLR",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "45",
+    "HasAgents": false,
+    "Dependencies": [],
+    "DependencyCount": 0,
+    "ScriptAssemblies": "Model",
+    "AssemblyCsCount": {
+      "Model": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.item",
+    "PackageDisplayName": "ET.Item",
+    "Version": "4.0.0",
+    "Id": 46,
+    "Level": 5,
+    "Name": "Item",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "46",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto",
+      "cn.etetet.unit"
+    ],
+    "DependencyCount": 4,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 8,
+      "Hotfix": 14
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.loader",
+    "PackageDisplayName": "ET.Loader",
+    "Version": "2.0.7",
+    "Id": 2,
+    "Level": 1,
+    "Name": "Loader",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "2",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.yooassets"
+    ],
+    "DependencyCount": 2,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "HotfixView",
+      "Loader",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "Loader": 7,
+      "ModelView": 1,
+      "Hotfix": 2,
+      "Model": 2,
+      "HotfixView": 1
+    },
+    "ScriptsReferences": {
+      "ModelView": [
+        "ET.Loader",
+        "ET.Init"
+      ],
+      "HotfixView": [
+        "ET.Core",
+        "Unity.Mathematics",
+        "ET.Loader",
+        "ET.Model",
+        "ET.Hotfix",
+        "ET.ModelView",
+        "ET.YooAssets",
+        "ET.Init"
+      ],
+      "Model": [
+        "ET.Core",
+        "Unity.Mathematics",
+        "ET.YooAssets"
+      ],
+      "Hotfix": [
+        "ET.Core",
+        "Unity.Mathematics",
+        "ET.Model"
+      ]
+    }
+  },
+  {
+    "Package": "cn.etetet.lockstep",
+    "PackageDisplayName": "ET.LockStep",
+    "Version": "3.0.2",
+    "Id": 11,
+    "Level": null,
+    "Name": "LockStep",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "11",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.actorlocation",
+      "cn.etetet.console",
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.http",
+      "cn.etetet.hybridclr",
+      "cn.etetet.loader",
+      "cn.etetet.login",
+      "cn.etetet.lsentity",
+      "cn.etetet.memorypack",
+      "cn.etetet.netinner",
+      "cn.etetet.packagemanager",
+      "cn.etetet.proto",
+      "cn.etetet.router",
+      "cn.etetet.servicediscovery",
+      "cn.etetet.sourcegenerator",
+      "cn.etetet.startconfig",
+      "cn.etetet.test",
+      "cn.etetet.truesync",
+      "cn.etetet.yiuiframework",
+      "cn.etetet.yiuigm",
+      "cn.etetet.yiuiloopscrollrectasync",
+      "cn.etetet.yiuiluban",
+      "cn.etetet.yiuireddot",
+      "cn.etetet.yiuitips",
+      "cn.etetet.yiuiyooassets",
+      "cn.etetet.yooassets"
+    ],
+    "DependencyCount": 27,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "HotfixView",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 5,
+      "Hotfix": 35,
+      "Model": 25,
+      "HotfixView": 11
+    },
+    "ScriptsReferences": {
+      "ModelView": [
+        "ET.UI",
+        "ET.LSEntity",
+        "ET.Model"
+      ],
+      "HotfixView": [
+        "ET.TrueSync",
+        "ET.Core",
+        "ET.Loader",
+        "ET.ReferenceCollector",
+        "ET.YooAssets",
+        "ET.LSEntity"
+      ],
+      "Model": [
+        "ET.TrueSync",
+        "ET.Core",
+        "ET.Loader",
+        "ET.LSEntity"
+      ],
+      "Hotfix": [
+        "ET.TrueSync",
+        "ET.Core",
+        "ET.Loader",
+        "ET.LSEntity"
+      ]
+    }
+  },
+  {
+    "Package": "cn.etetet.login",
+    "PackageDisplayName": "ET.Login",
+    "Version": "2.0.1",
+    "Id": 9,
+    "Level": 5,
+    "Name": "Login",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "9",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 23,
+      "Hotfix": 28
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.lsentity",
+    "PackageDisplayName": "ET.LSEntity",
+    "Version": "3.0.0",
+    "Id": 21,
+    "Level": null,
+    "Name": "LSEntity",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": [],
+    "DependencyCount": 0,
+    "ScriptAssemblies": "Core",
+    "AssemblyCsCount": {
+      "Core": 7
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.map",
+    "PackageDisplayName": "ET.Map",
+    "Version": "1.0.0",
+    "Id": 39,
+    "Level": 5,
+    "Name": "Map",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "39",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "HotfixView",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 7,
+      "Hotfix": 50,
+      "Model": 19,
+      "HotfixView": 19
+    },
+    "ScriptsReferences": {
+      "ModelView": [
+        "Cinemachine"
+      ]
+    }
+  },
+  {
+    "Package": "cn.etetet.mapmanager",
+    "PackageDisplayName": "ET.MapManager",
+    "Version": "1.0.0",
+    "Id": 43,
+    "Level": 5,
+    "Name": "MapManager",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "43",
+    "HasAgents": false,
+    "Dependencies": [],
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 4,
+      "Hotfix": 5
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.match",
+    "PackageDisplayName": "ET.Match",
+    "Version": "4.0.0",
+    "Id": 54,
+    "Level": 5,
+    "Name": "Match",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "54",
+    "HasAgents": true,
+    "Dependencies": [
+      "cn.etetet.actorlocation",
+      "cn.etetet.console",
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.http",
+      "cn.etetet.netinner",
+      "cn.etetet.proto",
+      "cn.etetet.router",
+      "cn.etetet.startconfig",
+      "cn.etetet.unit"
+    ],
+    "DependencyCount": 10,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 10,
+      "Hotfix": 13
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.mathematics",
+    "PackageDisplayName": "ET.Mathematics",
+    "Version": "0.0.2",
+    "Id": 24,
+    "Level": null,
+    "Name": "Mathematics",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "24",
+    "HasAgents": false,
+    "Dependencies": "com.unity.mathematics",
+    "DependencyCount": 1,
+    "ScriptAssemblies": "Model",
+    "AssemblyCsCount": {
+      "Model": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.memorypack",
+    "PackageDisplayName": "ET.MemoryPack",
+    "Version": "1.10.0",
+    "Id": 30,
+    "Level": null,
+    "Name": "ET.MemoryPack",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "30",
+    "HasAgents": false,
+    "Dependencies": [],
+    "DependencyCount": 0,
+    "ScriptAssemblies": "Model",
+    "AssemblyCsCount": {
+      "Model": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.move",
+    "PackageDisplayName": "ET.Move",
+    "Version": "2.0.0",
+    "Id": 4,
+    "Level": 3,
+    "Name": "Move",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "4",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto",
+      "cn.etetet.unit"
+    ],
+    "DependencyCount": 4,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 5,
+      "Hotfix": 2
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.netinner",
+    "PackageDisplayName": "ET.NetInner",
+    "Version": "2.0.1",
+    "Id": 28,
+    "Level": 3,
+    "Name": "NetInner",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "28",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto",
+      "cn.etetet.sourcegenerator",
+      "cn.etetet.startconfig"
+    ],
+    "DependencyCount": 5,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 7,
+      "Hotfix": 5
+    },
+    "ScriptsReferences": {
+      "ModelView": [
+        "ET.Core"
+      ],
+      "HotfixView": [
+        "ET.Core"
+      ],
+      "Model": [
+        "ET.Core"
+      ],
+      "Hotfix": [
+        "ET.Core"
+      ]
+    }
+  },
+  {
+    "Package": "cn.etetet.numeric",
+    "PackageDisplayName": "ET.Numeric",
+    "Version": "2.0.0",
+    "Id": 23,
+    "Level": 3,
+    "Name": "Numeric",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "23",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto",
+      "cn.etetet.unit"
+    ],
+    "DependencyCount": 4,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 6,
+      "Hotfix": 2
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.packagemanager",
+    "PackageDisplayName": "ET.PackageManager",
+    "Version": "1.0.2",
+    "Id": 1100,
+    "Level": null,
+    "Name": "PackageManager",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "1100",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": "Model",
+    "AssemblyCsCount": {
+      "Model": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.proto",
+    "PackageDisplayName": "ET.Proto",
+    "Version": "2.0.1",
+    "Id": 12,
+    "Level": 1,
+    "Name": "Proto",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": true,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "12",
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.core",
+    "DependencyCount": 1,
+    "ScriptAssemblies": "Model",
+    "AssemblyCsCount": {
+      "Model": 2
+    },
+    "ScriptsReferences": {
+      "Model": []
+    }
+  },
+  {
+    "Package": "cn.etetet.quest",
+    "PackageDisplayName": "ET.Quest",
+    "Version": "4.0.0",
+    "Id": 38,
+    "Level": 5,
+    "Name": "Quest",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "38",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 11,
+      "Hotfix": 18
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.recast",
+    "PackageDisplayName": "ET.Recast",
+    "Version": "2.0.0",
+    "Id": 14,
+    "Level": 3,
+    "Name": "Recast",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "14",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Core",
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 3,
+      "Hotfix": 1,
+      "Core": 242
+    },
+    "ScriptsReferences": {
+      "Model": [
+        "ET.Recast"
+      ],
+      "Hotfix": [
+        "ET.Recast"
+      ]
+    }
+  },
+  {
+    "Package": "cn.etetet.robot",
+    "PackageDisplayName": "ET.Robot",
+    "Version": "2.0.0",
+    "Id": 35,
+    "Level": 5,
+    "Name": "Robot",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "35",
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 6,
+      "Hotfix": 5
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.router",
+    "PackageDisplayName": "ET.Router",
+    "Version": "2.0.1",
+    "Id": 15,
+    "Level": 3,
+    "Name": "Router",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "15",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.http",
+      "cn.etetet.proto",
+      "cn.etetet.startconfig"
+    ],
+    "DependencyCount": 5,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 4,
+      "Hotfix": 5
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.satesync",
+    "PackageDisplayName": null,
+    "Version": null,
+    "Id": null,
+    "Level": null,
+    "Name": null,
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": false,
+    "HasPackageGitJson": false,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": [],
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "HotfixView": 2,
+      "ModelView": 2
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.servicediscovery",
+    "PackageDisplayName": "ET.ServiceDiscovery",
+    "Version": "4.0.0",
+    "Id": 50,
+    "Level": 2,
+    "Name": "ServiceDiscovery",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "50",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.proto"
+    ],
+    "DependencyCount": 2,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 11,
+      "Hotfix": 12
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.sourcegenerator",
+    "PackageDisplayName": "ET.SourceGenerator",
+    "Version": "0.0.7",
+    "Id": 20,
+    "Level": null,
+    "Name": "SourceGenerator",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "20",
+    "HasAgents": false,
+    "Dependencies": [],
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Core",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 1,
+      "Core": 15
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.spell",
+    "PackageDisplayName": "ET.Spell",
+    "Version": "4.0.0",
+    "Id": 37,
+    "Level": 5,
+    "Name": "Spell",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "37",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.actorlocation",
+      "cn.etetet.aoi",
+      "cn.etetet.behaviortree",
+      "cn.etetet.console",
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.http",
+      "cn.etetet.netinner",
+      "cn.etetet.numeric",
+      "cn.etetet.proto",
+      "cn.etetet.router",
+      "cn.etetet.startconfig",
+      "cn.etetet.unit",
+      "cn.etetet.yiuiframework",
+      "cn.etetet.yooassets"
+    ],
+    "DependencyCount": 15,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "HotfixView",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 5,
+      "Hotfix": 21,
+      "Model": 28,
+      "HotfixView": 5
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.startconfig",
+    "PackageDisplayName": "ET.StartConfig",
+    "Version": "2.0.1",
+    "Id": 29,
+    "Level": 2,
+    "Name": "StartConfig",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "29",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto"
+    ],
+    "DependencyCount": 3,
+    "ScriptAssemblies": "Model",
+    "AssemblyCsCount": {
+      "Model": 5
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.statesync",
+    "PackageDisplayName": "ET.StateSync",
+    "Version": "4.0.0",
+    "Id": 100,
+    "Level": 5,
+    "Name": "WOW",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": true,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "100",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.actorlocation",
+      "cn.etetet.aoi",
+      "cn.etetet.behaviortree",
+      "cn.etetet.btnode",
+      "cn.etetet.console",
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.http",
+      "cn.etetet.item",
+      "cn.etetet.loader",
+      "cn.etetet.login",
+      "cn.etetet.map",
+      "cn.etetet.mapmanager",
+      "cn.etetet.move",
+      "cn.etetet.netinner",
+      "cn.etetet.numeric",
+      "cn.etetet.proto",
+      "cn.etetet.quest",
+      "cn.etetet.recast",
+      "cn.etetet.robot",
+      "cn.etetet.router",
+      "cn.etetet.servicediscovery",
+      "cn.etetet.sourcegenerator",
+      "cn.etetet.spell",
+      "cn.etetet.startconfig",
+      "cn.etetet.test",
+      "cn.etetet.unit",
+      "cn.etetet.yiuiframework",
+      "cn.etetet.yiuigm",
+      "cn.etetet.yiuiinvoke",
+      "cn.etetet.yiuiloopscrollrectasync",
+      "cn.etetet.yiuiluban",
+      "cn.etetet.yiuireddot",
+      "cn.etetet.yiuitips",
+      "cn.etetet.yiuiyooassets",
+      "cn.etetet.yooassets"
+    ],
+    "DependencyCount": 36,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "HotfixView",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 42,
+      "Hotfix": 23,
+      "Model": 17,
+      "HotfixView": 50
+    },
+    "ScriptsReferences": {
+      "ModelView": [
+        "Cinemachine",
+        "ET.Core",
+        "Unity.Mathematics",
+        "ET.Loader",
+        "ET.Model",
+        "Unity.InputSystem"
+      ],
+      "HotfixView": [
+        "Cinemachine",
+        "ET.Core",
+        "Unity.Mathematics",
+        "ET.Loader",
+        "ET.Model",
+        "ET.Hotfix",
+        "ET.ModelView",
+        "ET.YooAssets",
+        "ET.ReferenceCollector",
+        "Unity.InputSystem"
+      ],
+      "Model": [
+        "ET.Loader",
+        "ET.Core",
+        "Unity.Mathematics",
+        "ET.Recast"
+      ],
+      "Hotfix": [
+        "ET.Core",
+        "Unity.Mathematics",
+        "ET.Loader",
+        "ET.Model",
+        "ET.Recast"
+      ]
+    }
+  },
+  {
+    "Package": "cn.etetet.test",
+    "PackageDisplayName": "ET.Test",
+    "Version": "2.0.0",
+    "Id": 36,
+    "Level": 5,
+    "Name": "Test",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "8",
+    "HasAgents": true,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Core",
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 9,
+      "Hotfix": 24,
+      "Core": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.truesync",
+    "PackageDisplayName": "ET.TrueSync",
+    "Version": "3.0.0",
+    "Id": 22,
+    "Level": null,
+    "Name": "TrueSync",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": "Core",
+    "AssemblyCsCount": {
+      "Core": 13
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.unit",
+    "PackageDisplayName": "ET.Unit",
+    "Version": "2.0.0",
+    "Id": 5,
+    "Level": 2,
+    "Name": "Unit",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "5",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.excel",
+      "cn.etetet.proto"
+    ],
+    "DependencyCount": 3,
+    "ScriptAssemblies": [
+      "Hotfix",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 5,
+      "Hotfix": 2
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.wow",
+    "PackageDisplayName": null,
+    "Version": null,
+    "Id": null,
+    "Level": null,
+    "Name": null,
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": false,
+    "HasPackageGitJson": false,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": [],
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "HotfixView": 4,
+      "ModelView": 4
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiui",
+    "PackageDisplayName": "ET.YIUI",
+    "Version": "0.0.0",
+    "Id": 1002,
+    "Level": 2,
+    "Name": "YIUI.YIUI",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "Model": 1,
+      "ModelView": 0
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiui3ddisplay",
+    "PackageDisplayName": "ET.YIUI.3DDisplay",
+    "Version": "3.1.0",
+    "Id": 1303,
+    "Level": 2,
+    "Name": "YIUI.3DDisplay",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "1303",
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.yiuiframework",
+    "DependencyCount": 1,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 9,
+      "HotfixView": 11,
+      "Model": 1
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiuieffect",
+    "PackageDisplayName": "ET.YIUI.Effect",
+    "Version": "3.0.0",
+    "Id": 1306,
+    "Level": 2,
+    "Name": "YIUI.Effect",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [],
+    "AssemblyCsCount": {},
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiuiframework",
+    "PackageDisplayName": "ET.YIUI.Framework",
+    "Version": "3.1.0",
+    "Id": 1001,
+    "Level": 2,
+    "Name": "YIUI.Framework",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "1001",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "cn.etetet.yiuiinvoke"
+    ],
+    "DependencyCount": 2,
+    "ScriptAssemblies": [
+      "Core",
+      "Hotfix",
+      "HotfixView",
+      "Loader",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "HotfixView": 79,
+      "Hotfix": 6,
+      "Model": 6,
+      "ModelView": 71,
+      "Core": 12,
+      "Loader": 1
+    },
+    "ScriptsReferences": {
+      "ModelView": [
+        "ET.YIUIFramework",
+        "Unity.TextMeshPro"
+      ],
+      "HotfixView": [
+        "ET.YIUIFramework",
+        "Unity.TextMeshPro"
+      ]
+    }
+  },
+  {
+    "Package": "cn.etetet.yiuigm",
+    "PackageDisplayName": "ET.YIUI.GM",
+    "Version": "3.0.1",
+    "Id": 1301,
+    "Level": 2,
+    "Name": "YIUI.GM",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.core",
+    "DependencyCount": 1,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "HotfixView": 13,
+      "ModelView": 18
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiuiinvoke",
+    "PackageDisplayName": "ET.YIUI.Invoke",
+    "Version": "4.0.3",
+    "Id": 1204,
+    "Level": 2,
+    "Name": "YIUI.Invoke",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.core",
+    "DependencyCount": 1,
+    "ScriptAssemblies": "Core",
+    "AssemblyCsCount": {
+      "Core": 23
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiuiloopscrollrectasync",
+    "PackageDisplayName": "ET.YIUI.LoopScrollRectAsync",
+    "Version": "3.0.1",
+    "Id": 1201,
+    "Level": 2,
+    "Name": "YIUI.LoopScrollRectAsync",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.core",
+    "DependencyCount": 1,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "HotfixView": 15,
+      "ModelView": 18
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiuiluban",
+    "PackageDisplayName": "ET.YIUI.Luban",
+    "Version": "2.0.1",
+    "Id": 1204,
+    "Level": 2,
+    "Name": "YIUI.Luban",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": null,
+    "DependencyCount": 0,
+    "ScriptAssemblies": [
+      "Core",
+      "Model"
+    ],
+    "AssemblyCsCount": {
+      "Model": 0,
+      "Core": 8
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiuireddot",
+    "PackageDisplayName": "ET.YIUI.RedDot",
+    "Version": "3.0.0",
+    "Id": 1304,
+    "Level": 2,
+    "Name": "YIUI.RedDot",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.core",
+    "DependencyCount": 1,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 7,
+      "HotfixView": 8,
+      "Model": 2
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiuitips",
+    "PackageDisplayName": "ET.YIUI.Tips",
+    "Version": "3.0.2",
+    "Id": 1302,
+    "Level": 2,
+    "Name": "YIUI.Tips",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.core",
+    "DependencyCount": 1,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "HotfixView": 13,
+      "ModelView": 8
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yiuiyooassets",
+    "PackageDisplayName": "ET.YIUI.YooAssets",
+    "Version": "3.1.0",
+    "Id": 1203,
+    "Level": 2,
+    "Name": "YIUI.YooAssets",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": true,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": false,
+    "PackageTypeConst": null,
+    "HasAgents": false,
+    "Dependencies": "cn.etetet.core",
+    "DependencyCount": 1,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "HotfixView": 8,
+      "ModelView": 3
+    },
+    "ScriptsReferences": {}
+  },
+  {
+    "Package": "cn.etetet.yooassets",
+    "PackageDisplayName": "ET.YooAssets",
+    "Version": "2.3.14",
+    "Id": 7,
+    "Level": 2,
+    "Name": "YooAssets",
+    "AllowAnyPackageAccess": null,
+    "AllowSameLevelAccess": null,
+    "OtherPackageAccessField": null,
+    "HasPackageJson": true,
+    "HasPackageGitJson": true,
+    "HasPackageType": true,
+    "PackageTypeConst": "7",
+    "HasAgents": false,
+    "Dependencies": [
+      "cn.etetet.core",
+      "com.unity.modules.assetbundle",
+      "com.unity.modules.unitywebrequest",
+      "com.unity.modules.unitywebrequestassetbundle",
+      "com.unity.scriptablebuildpipeline"
+    ],
+    "DependencyCount": 5,
+    "ScriptAssemblies": [
+      "HotfixView",
+      "Model",
+      "ModelView"
+    ],
+    "AssemblyCsCount": {
+      "ModelView": 1,
+      "HotfixView": 1,
+      "Model": 2
+    },
+    "ScriptsReferences": {
+      "ModelView": [
+        "ET.YooAssets"
+      ],
+      "HotfixView": [
+        "ET.YooAssets"
+      ]
+    }
+  }
+]

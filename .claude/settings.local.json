@@ -37,7 +37,27 @@
       "Bash(pwsh -Command \"New-Item -ItemType Directory -Path ''Packages/cn.etetet.achievement'' -Force\")",
       "Bash(git add:*)",
       "Bash(tree:*)",
-      "Bash(printf:*)"
+      "Bash(printf:*)",
+      "Bash(do sed:*)",
+      "Bash(\"D:\\\\05ET\\\\etowo\\\\MyBook\\\\ECA框架架构修复计划.md\":*)",
+      "Bash(cmd:*)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(powershell:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(where:*)",
+      "Bash(C:\\\\Users\\\\luxinyu\\\\AppData\\\\Local\\\\Microsoft\\\\WindowsApps\\\\python.exe:*)",
+      "Bash(/tmp/fix_buff200200_flags.ps1:*)",
+      "Bash(./Proto2CS.bat:*)",
+      "Bash(cmd.exe:*)",
+      "Read(//mnt/d/05ET/MatchTest/**)",
+      "Bash(pwsh -Command \"[guid]::NewGuid\\(\\).ToString\\(''N''\\).Substring\\(0,32\\)\")",
+      "Bash(\"D:\\\\05ET\\\\MatchTest\\\\ETGame\\\\Packages\\\\cn.etetet.statesync\\\\Scripts\\\\ModelView\\\\Client\\\\Mono\\\\JoystickRangeView.cs.meta\":*)",
+      "Bash(xargs:*)",
+      "Bash(test:*)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist:*)",
+      "Bash(wmic process:*)"
     ],
     "deny": []
   }

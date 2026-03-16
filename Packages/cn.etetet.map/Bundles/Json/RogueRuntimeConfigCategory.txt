@@ -1,0 +1,138 @@
+{
+	"_t" : "ET.RogueRuntimeConfigCategory",
+	"levels" : [[1, {
+				"NeedExp" : 100,
+				"TriggerChoice" : false,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 20
+					}, {
+						"NumericType" : 10001,
+						"Value" : 50
+					}]
+			}], [2, {
+				"NeedExp" : 130,
+				"TriggerChoice" : true,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 25
+					}, {
+						"NumericType" : 10001,
+						"Value" : 50
+					}]
+			}], [3, {
+				"NeedExp" : 160,
+				"TriggerChoice" : false,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 30
+					}, {
+						"NumericType" : 10001,
+						"Value" : 60
+					}]
+			}], [4, {
+				"NeedExp" : 200,
+				"TriggerChoice" : true,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 35
+					}, {
+						"NumericType" : 10001,
+						"Value" : 60
+					}]
+			}], [5, {
+				"NeedExp" : 240,
+				"TriggerChoice" : false,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 40
+					}, {
+						"NumericType" : 10001,
+						"Value" : 70
+					}]
+			}], [6, {
+				"NeedExp" : 280,
+				"TriggerChoice" : true,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 45
+					}, {
+						"NumericType" : 10001,
+						"Value" : 70
+					}]
+			}], [7, {
+				"NeedExp" : 330,
+				"TriggerChoice" : false,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 50
+					}, {
+						"NumericType" : 10001,
+						"Value" : 80
+					}]
+			}], [8, {
+				"NeedExp" : 380,
+				"TriggerChoice" : false,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 55
+					}, {
+						"NumericType" : 10001,
+						"Value" : 80
+					}]
+			}], [9, {
+				"NeedExp" : 430,
+				"TriggerChoice" : true,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 60
+					}, {
+						"NumericType" : 10001,
+						"Value" : 90
+					}]
+			}], [10, {
+				"NeedExp" : 500,
+				"TriggerChoice" : false,
+				"NumericDeltas" : [{
+						"NumericType" : 10021,
+						"Value" : 70
+					}, {
+						"NumericType" : 10001,
+						"Value" : 100
+					}]
+			}]],
+	"options" : [[1, {
+				"Name" : "迅捷步伐",
+				"Desc" : "获得一层迅捷效果，提高作战机动性。",
+				"ImagePath" : "rogue_speed_1",
+				"BTConfig" : "200111",
+				"BuffConfigId" : 200111,
+				"NameTextId" : 0,
+				"DescTextId" : 0,
+				"Icon" : "rogue_speed_1",
+				"Weight" : 100
+			}], [2, {
+				"Name" : "猎手步频",
+				"Desc" : "获得一层迅捷效果，适合持续拉扯与追击。",
+				"ImagePath" : "rogue_speed_2",
+				"BTConfig" : "200111",
+				"BuffConfigId" : 200111,
+				"NameTextId" : 0,
+				"DescTextId" : 0,
+				"Icon" : "rogue_speed_2",
+				"Weight" : 100
+			}], [3, {
+				"Name" : "战术加速",
+				"Desc" : "获得一层迅捷效果，用于快速切入或脱离战场。",
+				"ImagePath" : "rogue_speed_3",
+				"BTConfig" : "200111",
+				"BuffConfigId" : 200111,
+				"NameTextId" : 0,
+				"DescTextId" : 0,
+				"Icon" : "rogue_speed_3",
+				"Weight" : 100
+			}]],
+	"killExpByUnitType" : [[2, 60], [8, 20]],
+	"DefaultKillExp" : 20,
+	"ChoiceOptionCount" : 3
+}

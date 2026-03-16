@@ -11,35 +11,48 @@ namespace ET.Server
             EntityRef<Unit> unitRef = unit;
             await unit.Fiber().WaitFrameFinish();
             unit = unitRef;
-            await TransferHelper.TransferLock(unit, mapName, mapId, true);
+            await TransferHelper.TransferLock(unit, mapName, mapId, 0, true);
         }
 
         // needLock 是否需要加上Mailbox协程锁
         public static async ETTask TransferLock(Unit unit, string mapName, long mapId, bool needLock)
+        {
+            await TransferLock(unit, mapName, mapId, 0, needLock);
+        }
+
+        // needLock 是否需要加上Mailbox协程锁
+        public static async ETTask TransferLock(Unit unit, string mapName, long mapId, int teamId, bool needLock)
         {
             if (needLock)
             {
                 EntityRef<Unit> unitRef = unit;
                 using var _ = await unit.Root().CoroutineLockComponent.Wait(CoroutineLockType.Mailbox, unit.Id);
                 unit = unitRef;
-                await TransferHelper.Transfer(unit, mapName, mapId);
+                await TransferHelper.Transfer(unit, mapName, mapId, teamId);
             }
             else
             {
-                await TransferHelper.Transfer(unit, mapName, mapId);
+                await TransferHelper.Transfer(unit, mapName, mapId, teamId);
             }
         }
 
-        private static async ETTask Transfer(Unit unit, string mapName, long mapId)
+        private static async ETTask Transfer(Unit unit, string mapName, long mapId, int teamId)
         {
             Scene root = unit.Root();
             EntityRef<Scene> rootRef = root;
             EntityRef<Unit> unitRef = unit;
             long unitId = unit.Id;
-            
+
             bool changeScene = TransferSceneHelper.IsChangeScene(unit.Scene().Name, mapName);
-            
-            
+
+            EventSystem.Instance.Publish(unit.Scene(), new UnitBeforeTransfer
+            {
+                Unit = unit,
+                TargetMapName = mapName,
+                ChangeScene = changeScene
+            });
+
+
             //1. 申请地图副本
             A2MapManager_GetMapRequest mapRequest = A2MapManager_GetMapRequest.Create();
             mapRequest.MapName = mapName;
@@ -52,7 +65,7 @@ namespace ET.Server
             
             //2. 传送
             unit = unitRef;
-            await Transfer(unit, mapResponse.MapActorId, changeScene);
+            await Transfer(unit, mapResponse.MapActorId, changeScene, teamId);
 
 
             //3. 通知副本，玩家已经传送进入副本
@@ -65,7 +78,7 @@ namespace ET.Server
             await serviceDiscoveryProxy.Call(mapManagerName, a2MapManagerNotifyPlayerAlreadyEnterMapRequest);
         }
 
-        private static async ETTask Transfer(Unit unit, ActorId mapActorId, bool changeScene)
+        private static async ETTask Transfer(Unit unit, ActorId mapActorId, bool changeScene, int teamId)
         {
             EntityRef<Unit> unitRef = unit;
             long unitId = unit.Id;
@@ -86,6 +99,7 @@ namespace ET.Server
             M2M_UnitTransferRequest request = M2M_UnitTransferRequest.Create();
             request.OldActorId = oldActorId;
             request.ChangeScene = changeScene;
+            request.TeamId = teamId;
             
             // 同一个进程
             if (mapActorId.Address == AddressSingleton.Instance.InnerAddress)
@@ -108,6 +122,7 @@ namespace ET.Server
                 request.Unit = unit;
                 
                 // 这里需要移除Unit，但是不能Dispose，里面会把Unit部分数据Reset
+                ReleaseSpawnPointAssignment(unit);
                 unit.GetParent<UnitComponent>().Remove(unit.Id, false);
             }
             else // 不同进程
@@ -121,6 +136,7 @@ namespace ET.Server
                         request.EntityBytes.Add(entity.ToBson());
                     }
                 }
+                ReleaseSpawnPointAssignment(unit);
                 unit.GetParent<UnitComponent>().Remove(unit.Id);
             }
 
@@ -136,6 +152,29 @@ namespace ET.Server
             await root.GetComponent<LocationProxyComponent>().UnLock(LocationType.Unit, unitId, oldActorId, newActorId);
             
             Log.Debug("start transfer4 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
+        }
+
+        private static void ReleaseSpawnPointAssignment(Unit unit)
+        {
+            if (unit == null)
+            {
+                return;
+            }
+
+            Scene scene = unit.Scene();
+            SpawnPointManagerComponent spawnPointManager = scene?.GetComponent<SpawnPointManagerComponent>();
+            if (spawnPointManager == null)
+            {
+                return;
+            }
+
+            if (!spawnPointManager.PlayerTeamAssignments.TryGetValue(unit.Id, out int teamId))
+            {
+                return;
+            }
+
+            spawnPointManager.PlayerTeamAssignments.Remove(unit.Id);
+            spawnPointManager.OccupiedTeamIds.Remove(teamId);
         }
     }
 }

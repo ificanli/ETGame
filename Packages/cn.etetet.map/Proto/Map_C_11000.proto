@@ -39,6 +39,7 @@ message UnitInfo
 	map<int32, int64> KV = 6;
 	MoveInfo MoveInfo = 7;
 	PetInfo PetInfo = 8;
+	int32 CampId = 9;
 }
 
 message M2C_CreateUnits // IMessage
@@ -126,6 +127,21 @@ message M2C_ClickUnitResponse // ILocationResponse
 	repeated Show_QuestInfo questInfo = 5;
 }
 
+// ResponseType M2C_UseTacticalItem
+message C2M_UseTacticalItem // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 ItemId = 2;
+	Unity.Mathematics.float3 TargetPosition = 3;
+}
+
+message M2C_UseTacticalItem // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
 // ResponseType M2C_TransferMap
 message C2M_TransferMap // ILocationRequest
 {
@@ -133,6 +149,125 @@ message C2M_TransferMap // ILocationRequest
 }
 
 message M2C_TransferMap // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ========================= ECA / Container =========================
+
+// ResponseType M2C_ECAInteract
+message C2M_ECAInteract // ILocationRequest
+{
+	int32 RpcId = 1;
+	string PointId = 2;
+}
+
+message M2C_ECAInteract // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message C2M_ECASearchCancel // ILocationMessage
+{
+	int32 RpcId = 1;
+	string PointId = 2;
+}
+
+message M2C_ECAInteractHint // IMessage
+{
+	string PointId = 1;
+	bool InRange = 2;
+	int32 ButtonTextId = 3;
+	bool CanInteract = 4;
+}
+
+message M2C_ECAPointState // IMessage
+{
+	string PointId = 1;
+	int32 State = 2;
+}
+
+message M2C_ECASearchState // IMessage
+{
+	string PointId = 1;
+	int32 State = 2;
+	int64 RemainMs = 3;
+}
+
+message ContainerItemData
+{
+	int32 SlotIndex = 1;
+	int32 ConfigId = 2;
+	int32 Count = 3;
+}
+
+message M2C_ContainerOpen // IMessage
+{
+	string PointId = 1;
+	int32 OutputMode = 2;
+	bool IsFirstOpen = 3;
+	repeated ContainerItemData Items = 4;
+	string UiKey = 5;
+}
+
+message M2C_ContainerUpdate // IMessage
+{
+	string PointId = 1;
+	repeated ContainerItemData Items = 2;
+}
+
+// ResponseType M2C_ContainerTakeItem
+message C2M_ContainerTakeItem // ILocationRequest
+{
+	int32 RpcId = 1;
+	string PointId = 2;
+	int32 SlotIndex = 3;
+}
+
+message M2C_ContainerTakeItem // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType M2C_ContainerTakeAll
+message C2M_ContainerTakeAll // ILocationRequest
+{
+	int32 RpcId = 1;
+	string PointId = 2;
+}
+
+message M2C_ContainerTakeAll // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message C2M_ContainerClose // ILocationMessage
+{
+	int32 RpcId = 1;
+	string PointId = 2;
+}
+
+// ResponseType M2C_ContainerMoveItem
+message C2M_ContainerMoveItem // ILocationRequest
+{
+	int32 RpcId = 1;
+	string PointId = 2;
+	bool SourceIsBag = 3;
+	int32 SourceSlot = 4;
+	int64 SourceItemId = 5;
+	bool TargetIsBag = 6;
+	int32 TargetSlot = 7;
+}
+
+message M2C_ContainerMoveItem // ILocationResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;

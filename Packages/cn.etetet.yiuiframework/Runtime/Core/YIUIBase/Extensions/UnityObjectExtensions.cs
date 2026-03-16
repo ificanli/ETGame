@@ -9,10 +9,19 @@ namespace YIUIFramework
             if (obj == null) return;
 
             #if UNITY_EDITOR
-            if (!Application.isPlaying)
+            // 在编辑器中，如果对象是资源的一部分（不是场景实例），使用DestroyImmediate
+            if (UnityEditor.AssetDatabase.Contains(obj))
+            {
+                Object.DestroyImmediate(obj, true);
+            }
+            else if (!Application.isPlaying)
+            {
                 Object.DestroyImmediate(obj);
+            }
             else
+            {
                 Object.Destroy(obj);
+            }
             #else
             Object.Destroy(obj);
             #endif

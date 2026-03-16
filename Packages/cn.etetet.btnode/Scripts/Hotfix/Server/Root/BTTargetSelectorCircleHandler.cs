@@ -9,16 +9,44 @@ namespace ET.Server
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit caster = env.GetEntity<Unit>(node.Caster);
-            SpellTargetComponent spellTargetComponent = buff.GetBuffData().GetComponent<SpellTargetComponent>();
-        
-            Dictionary<long, EntityRef<AOIEntity>> seeUnits = caster.GetComponent<AOIEntity>().GetSeeUnits();
+            if (buff == null || buff.IsDisposed || caster == null || caster.IsDisposed)
+            {
+                return 1;
+            }
 
-            float3 pos = caster.GetComponent<TargetComponent>().Position;
+            SpellTargetComponent spellTargetComponent = buff.GetOrAddSpellTargetComponent();
+            spellTargetComponent.Units.Clear();
+
+            AOIEntity casterAoi = caster.GetComponent<AOIEntity>();
+            TargetComponent targetComponent = caster.GetComponent<TargetComponent>();
+            if (casterAoi == null || targetComponent == null)
+            {
+                env.AddCollection(node.Units, spellTargetComponent.Units);
+                return 0;
+            }
+
+            Dictionary<long, EntityRef<AOIEntity>> seeUnits = casterAoi.GetSeeUnits();
+            if (seeUnits == null || seeUnits.Count == 0)
+            {
+                env.AddCollection(node.Units, spellTargetComponent.Units);
+                return 0;
+            }
+
+            float3 pos = targetComponent.Position;
             spellTargetComponent.Position = pos;
             
             foreach ((long _, AOIEntity aoiEntity) in seeUnits)
             {
+                if (aoiEntity == null)
+                {
+                    continue;
+                }
+
                 Unit unit = aoiEntity.Unit;
+                if (unit == null || unit.IsDisposed)
+                {
+                    continue;
+                }
                 
                 if (!unit.UnitType.IsSame(node.UnitType))
                 {
@@ -26,12 +54,12 @@ namespace ET.Server
                 }
                 
                 NumericComponent numericComponent = unit.NumericComponent;
-                if (math.distance(pos, unit.Position) > node.Radius / 1000f + numericComponent.GetAsFloat(NumericType.Radius))
+                if (numericComponent == null)
                 {
                     continue;
                 }
 
-                if (!aoiEntity.Unit.UnitType.IsSame(node.UnitType))
+                if (math.distance(pos, unit.Position) > node.Radius / 1000f + numericComponent.GetAsFloat(NumericType.Radius))
                 {
                     continue;
                 }
@@ -59,7 +87,7 @@ namespace ET.Server
                     }
                 }
 
-                spellTargetComponent.Units.Add(aoiEntity.Unit.Id);
+                spellTargetComponent.Units.Add(unit.Id);
             }
             
             env.AddCollection(node.Units, spellTargetComponent.Units);

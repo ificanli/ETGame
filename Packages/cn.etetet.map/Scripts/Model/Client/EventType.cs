@@ -29,12 +29,23 @@
     {
     }
 
+    public struct ECAPointStateChanged
+    {
+        public string PointId;
+        public int State;
+    }
+
     public struct AfterUnitCreate
     {
         public EntityRef<Unit> Unit;
     }
     
     public struct AfterMyUnitCreate
+    {
+        public EntityRef<Unit> Unit;
+    }
+
+    public struct BeforeUnitRemove
     {
         public EntityRef<Unit> Unit;
     }

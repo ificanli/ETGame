@@ -193,6 +193,10 @@ namespace ET.Server
                     throw new RpcException(ErrorCode.ERR_NotFoundActor, $"{iRequest}");
                 }
 
+                // ILocationRequest 更强调路由正确性，转场后沿用旧 ActorId 容易把请求打到旧地图实例。
+                // 这里主动清空缓存，确保每次请求都从 Location 拿当前最新地址。
+                messageLocationSender.ActorId = default;
+
                 try
                 {
                     IResponse response = await self.CallInner(messageLocationSender, iRequest);

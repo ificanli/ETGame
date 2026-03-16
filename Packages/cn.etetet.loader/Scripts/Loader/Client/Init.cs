@@ -2,7 +2,7 @@
 using CommandLine;
 using UnityEngine;
 
-namespace ET
+namespace ET.Client
 {
     public class Init: MonoBehaviour
     {
@@ -47,12 +47,24 @@ namespace ET
 
         private void Update()
         {
-            FiberManager.Instance.Update();
+            FiberManager fiberManager = FiberManager.Instance;
+            if (fiberManager == null)
+            {
+                return;
+            }
+
+            fiberManager.Update();
         }
 
         private void LateUpdate()
         {
-            FiberManager.Instance.LateUpdate();
+            FiberManager fiberManager = FiberManager.Instance;
+            if (fiberManager == null)
+            {
+                return;
+            }
+
+            fiberManager.LateUpdate();
         }
 
         private void OnApplicationQuit()

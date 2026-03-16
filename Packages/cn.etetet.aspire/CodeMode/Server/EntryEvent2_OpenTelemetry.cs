@@ -1,6 +1,6 @@
 ﻿namespace ET.Server
 {
-    [Event(SceneType.WOW)]
+    [Event(SceneType.StateSync)]
     public class EntryEvent2_InitServer: AEvent<Scene, EntryEvent2>
     {
         protected override async ETTask Run(Scene root, EntryEvent2 args)

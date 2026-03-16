@@ -550,7 +550,6 @@ public static async ETTask ProcessUpdate(this UpdateCoordinatorComponent self, U
 ├── cn.etetet.excel         (excel)
 ├── cn.etetet.proto         (协议定义)
 ├── cn.etetet.loader        (加载器)
-├── cn.etetet.scripts       (scripts)
 ```
 
 ## 机器人测试系统

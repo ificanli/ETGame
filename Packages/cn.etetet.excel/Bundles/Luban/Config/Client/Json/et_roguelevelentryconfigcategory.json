@@ -1,0 +1,50 @@
+[
+  {
+    "Id": 1,
+    "Level": 1,
+    "NeedExp": 100,
+    "TriggerChoice": true
+  },
+  {
+    "Id": 2,
+    "Level": 2,
+    "NeedExp": 130,
+    "TriggerChoice": false
+  },
+  {
+    "Id": 3,
+    "Level": 3,
+    "NeedExp": 160,
+    "TriggerChoice": true
+  },
+  {
+    "Id": 4,
+    "Level": 4,
+    "NeedExp": 200,
+    "TriggerChoice": false
+  },
+  {
+    "Id": 5,
+    "Level": 5,
+    "NeedExp": 240,
+    "TriggerChoice": true
+  },
+  {
+    "Id": 6,
+    "Level": 6,
+    "NeedExp": 280,
+    "TriggerChoice": false
+  },
+  {
+    "Id": 7,
+    "Level": 7,
+    "NeedExp": 330,
+    "TriggerChoice": false
+  },
+  {
+    "Id": 8,
+    "Level": 8,
+    "NeedExp": 380,
+    "TriggerChoice": true
+  }
+]

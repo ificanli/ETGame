@@ -145,6 +145,8 @@ namespace ET
         public MoveInfo MoveInfo { get; set; }
         [MemoryPackOrder(7)]
         public PetInfo PetInfo { get; set; }
+        [MemoryPackOrder(8)]
+        public int CampId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -160,6 +162,7 @@ namespace ET
             this.KV.Clear();
             this.MoveInfo = default;
             this.PetInfo = default;
+            this.CampId = default;
 
             ObjectPool.Recycle(this);
         }
@@ -535,6 +538,67 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(Opcode.C2M_UseTacticalItem)]
+    [ResponseType(nameof(M2C_UseTacticalItem))]
+    public partial class C2M_UseTacticalItem : MessageObject, ILocationRequest
+    {
+        public static C2M_UseTacticalItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_UseTacticalItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public long ItemId { get; set; }
+        [MemoryPackOrder(2)]
+        public Unity.Mathematics.float3 TargetPosition { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.ItemId = default;
+            this.TargetPosition = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_UseTacticalItem)]
+    public partial class M2C_UseTacticalItem : MessageObject, ILocationResponse
+    {
+        public static M2C_UseTacticalItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_UseTacticalItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(Opcode.C2M_TransferMap)]
     [ResponseType(nameof(M2C_TransferMap))]
     public partial class C2M_TransferMap : MessageObject, ILocationRequest
@@ -589,6 +653,496 @@ namespace ET
         }
     }
 
+    // ========================= ECA / Container =========================
+    [MemoryPackable]
+    [Message(Opcode.C2M_ECAInteract)]
+    [ResponseType(nameof(M2C_ECAInteract))]
+    public partial class C2M_ECAInteract : MessageObject, ILocationRequest
+    {
+        public static C2M_ECAInteract Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_ECAInteract>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public string PointId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PointId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ECAInteract)]
+    public partial class M2C_ECAInteract : MessageObject, ILocationResponse
+    {
+        public static M2C_ECAInteract Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ECAInteract>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.C2M_ECASearchCancel)]
+    public partial class C2M_ECASearchCancel : MessageObject, ILocationMessage
+    {
+        public static C2M_ECASearchCancel Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_ECASearchCancel>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public string PointId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PointId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ECAInteractHint)]
+    public partial class M2C_ECAInteractHint : MessageObject, IMessage
+    {
+        public static M2C_ECAInteractHint Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ECAInteractHint>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public string PointId { get; set; }
+        [MemoryPackOrder(1)]
+        public bool InRange { get; set; }
+        [MemoryPackOrder(2)]
+        public int ButtonTextId { get; set; }
+        [MemoryPackOrder(3)]
+        public bool CanInteract { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.PointId = default;
+            this.InRange = default;
+            this.ButtonTextId = default;
+            this.CanInteract = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ECAPointState)]
+    public partial class M2C_ECAPointState : MessageObject, IMessage
+    {
+        public static M2C_ECAPointState Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ECAPointState>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public string PointId { get; set; }
+        [MemoryPackOrder(1)]
+        public int State { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.PointId = default;
+            this.State = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ECASearchState)]
+    public partial class M2C_ECASearchState : MessageObject, IMessage
+    {
+        public static M2C_ECASearchState Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ECASearchState>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public string PointId { get; set; }
+        [MemoryPackOrder(1)]
+        public int State { get; set; }
+        [MemoryPackOrder(2)]
+        public long RemainMs { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.PointId = default;
+            this.State = default;
+            this.RemainMs = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.ContainerItemData)]
+    public partial class ContainerItemData : MessageObject
+    {
+        public static ContainerItemData Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<ContainerItemData>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int SlotIndex { get; set; }
+        [MemoryPackOrder(1)]
+        public int ConfigId { get; set; }
+        [MemoryPackOrder(2)]
+        public int Count { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.SlotIndex = default;
+            this.ConfigId = default;
+            this.Count = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ContainerOpen)]
+    public partial class M2C_ContainerOpen : MessageObject, IMessage
+    {
+        public static M2C_ContainerOpen Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ContainerOpen>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public string PointId { get; set; }
+        [MemoryPackOrder(1)]
+        public int OutputMode { get; set; }
+        [MemoryPackOrder(2)]
+        public bool IsFirstOpen { get; set; }
+        [MemoryPackOrder(3)]
+        public List<ContainerItemData> Items { get; set; } = new();
+
+        [MemoryPackOrder(4)]
+        public string UiKey { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.PointId = default;
+            this.OutputMode = default;
+            this.IsFirstOpen = default;
+            this.Items.Clear();
+            this.UiKey = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ContainerUpdate)]
+    public partial class M2C_ContainerUpdate : MessageObject, IMessage
+    {
+        public static M2C_ContainerUpdate Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ContainerUpdate>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public string PointId { get; set; }
+        [MemoryPackOrder(1)]
+        public List<ContainerItemData> Items { get; set; } = new();
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.PointId = default;
+            this.Items.Clear();
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.C2M_ContainerTakeItem)]
+    [ResponseType(nameof(M2C_ContainerTakeItem))]
+    public partial class C2M_ContainerTakeItem : MessageObject, ILocationRequest
+    {
+        public static C2M_ContainerTakeItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_ContainerTakeItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public string PointId { get; set; }
+        [MemoryPackOrder(2)]
+        public int SlotIndex { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PointId = default;
+            this.SlotIndex = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ContainerTakeItem)]
+    public partial class M2C_ContainerTakeItem : MessageObject, ILocationResponse
+    {
+        public static M2C_ContainerTakeItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ContainerTakeItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.C2M_ContainerTakeAll)]
+    [ResponseType(nameof(M2C_ContainerTakeAll))]
+    public partial class C2M_ContainerTakeAll : MessageObject, ILocationRequest
+    {
+        public static C2M_ContainerTakeAll Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_ContainerTakeAll>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public string PointId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PointId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ContainerTakeAll)]
+    public partial class M2C_ContainerTakeAll : MessageObject, ILocationResponse
+    {
+        public static M2C_ContainerTakeAll Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ContainerTakeAll>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.C2M_ContainerClose)]
+    public partial class C2M_ContainerClose : MessageObject, ILocationMessage
+    {
+        public static C2M_ContainerClose Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_ContainerClose>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public string PointId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PointId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.C2M_ContainerMoveItem)]
+    [ResponseType(nameof(M2C_ContainerMoveItem))]
+    public partial class C2M_ContainerMoveItem : MessageObject, ILocationRequest
+    {
+        public static C2M_ContainerMoveItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_ContainerMoveItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public string PointId { get; set; }
+        [MemoryPackOrder(2)]
+        public bool SourceIsBag { get; set; }
+        [MemoryPackOrder(3)]
+        public int SourceSlot { get; set; }
+        [MemoryPackOrder(4)]
+        public long SourceItemId { get; set; }
+        [MemoryPackOrder(5)]
+        public bool TargetIsBag { get; set; }
+        [MemoryPackOrder(6)]
+        public int TargetSlot { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PointId = default;
+            this.SourceIsBag = default;
+            this.SourceSlot = default;
+            this.SourceItemId = default;
+            this.TargetIsBag = default;
+            this.TargetSlot = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_ContainerMoveItem)]
+    public partial class M2C_ContainerMoveItem : MessageObject, ILocationResponse
+    {
+        public static M2C_ContainerMoveItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ContainerMoveItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort C2G_EnterMap = 11001;
@@ -609,7 +1163,25 @@ namespace ET
         public const ushort M2C_Turn = 11016;
         public const ushort C2M_ClickUnitRequest = 11017;
         public const ushort M2C_ClickUnitResponse = 11018;
-        public const ushort C2M_TransferMap = 11019;
-        public const ushort M2C_TransferMap = 11020;
+        public const ushort C2M_UseTacticalItem = 11019;
+        public const ushort M2C_UseTacticalItem = 11020;
+        public const ushort C2M_TransferMap = 11021;
+        public const ushort M2C_TransferMap = 11022;
+        public const ushort C2M_ECAInteract = 11023;
+        public const ushort M2C_ECAInteract = 11024;
+        public const ushort C2M_ECASearchCancel = 11025;
+        public const ushort M2C_ECAInteractHint = 11026;
+        public const ushort M2C_ECAPointState = 11027;
+        public const ushort M2C_ECASearchState = 11028;
+        public const ushort ContainerItemData = 11029;
+        public const ushort M2C_ContainerOpen = 11030;
+        public const ushort M2C_ContainerUpdate = 11031;
+        public const ushort C2M_ContainerTakeItem = 11032;
+        public const ushort M2C_ContainerTakeItem = 11033;
+        public const ushort C2M_ContainerTakeAll = 11034;
+        public const ushort M2C_ContainerTakeAll = 11035;
+        public const ushort C2M_ContainerClose = 11036;
+        public const ushort C2M_ContainerMoveItem = 11037;
+        public const ushort M2C_ContainerMoveItem = 11038;
     }
 }

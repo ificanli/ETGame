@@ -17,20 +17,34 @@ namespace ET.Client
 		[EntitySystem]
 		private static void Awake(this AnimatorComponent self)
 		{
-			Animator animator = self.GetParent<Unit>().GetComponent<GameObjectComponent>().GameObject.GetComponent<Animator>();
+			Unit unit = self.GetParent<Unit>();
+			GameObject go = unit?.GetComponent<GameObjectComponent>()?.GameObject;
+			if (go == null)
+			{
+				return;
+			}
+
+			Animator animator = go.GetComponent<Animator>();
+			if (animator == null)
+			{
+				animator = go.GetComponentInChildren<Animator>(true);
+			}
 
 			if (animator == null)
 			{
+				Log.Warning($"[Animator] animator not found, unitId={unit?.Id ?? 0}, prefab={unit?.Config()?.Name}");
 				return;
 			}
 
 			if (animator.runtimeAnimatorController == null)
 			{
+				Log.Warning($"[Animator] runtimeAnimatorController missing, unitId={unit?.Id ?? 0}, prefab={unit?.Config()?.Name}, animatorGo={animator.gameObject.name}");
 				return;
 			}
 
 			if (animator.runtimeAnimatorController.animationClips == null)
 			{
+				Log.Warning($"[Animator] animation clips missing, unitId={unit?.Id ?? 0}, prefab={unit?.Config()?.Name}, animatorGo={animator.gameObject.name}");
 				return;
 			}
 			self.Animator = animator;
@@ -42,11 +56,20 @@ namespace ET.Client
 			{
 				self.Parameter.Add(animatorControllerParameter.name);
 			}
+
+			// 视图异步创建时，Speed 事件可能先于 Animator 准备完成，这里补一次当前速度。
+			float currentSpeed = unit?.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
+			self.SetFloat(nameof(MotionType.MoveSpeed), currentSpeed);
 		}
 		
 		[EntitySystem]
 		private static void Update(this AnimatorComponent self)
 		{
+			if (self.Animator == null)
+			{
+				return;
+			}
+
 			if (self.isStop)
 			{
 				return;
@@ -74,6 +97,11 @@ namespace ET.Client
 
 		public static bool HasParameter(this AnimatorComponent self, string parameter)
 		{
+			if (self == null || self.Animator == null || self.Parameter == null || string.IsNullOrEmpty(parameter))
+			{
+				return false;
+			}
+
 			return self.Parameter.Contains(parameter);
 		}
 
@@ -188,12 +216,22 @@ namespace ET.Client
 
 		public static void SetAnimatorSpeed(this AnimatorComponent self, float speed)
 		{
+			if (self?.Animator == null)
+			{
+				return;
+			}
+
 			self.stopSpeed = self.Animator.speed;
 			self.Animator.speed = speed;
 		}
 
 		public static void ResetAnimatorSpeed(this AnimatorComponent self)
 		{
+			if (self?.Animator == null)
+			{
+				return;
+			}
+
 			self.Animator.speed = self.stopSpeed;
 		}
 	}

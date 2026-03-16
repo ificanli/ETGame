@@ -8,6 +8,11 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene scene, AfterUnitCreate args)
         {
+            if (scene.Name.GetSceneConfigName() == "Home")
+            {
+                return;
+            }
+
             EntityRef<Scene> sceneRef = scene;
             Unit unit = args.Unit;
             EntityRef<Unit> unitRef = unit;
@@ -28,8 +33,12 @@ namespace ET.Client
                 GameObjectPosHelper.OnTerrain(go.transform);
             }
 
-            unit.AddComponent<GameObjectComponent>().GameObject = go;
+            GameObjectComponent gameObjectComponent = unit.AddComponent<GameObjectComponent>();
+            gameObjectComponent.GameObject = go;
+            gameObjectComponent.CacheRenderers();
+            unit.AddComponent<UnitViewInterpolationComponent>();
             unit.AddComponent<AnimatorComponent>();
+            gameObjectComponent.RefreshLocalConcealmentVisual(unit, go.transform.position);
             
             if (scene.Root().GetComponent<PlayerComponent>().MyId == unit.Id)
             {

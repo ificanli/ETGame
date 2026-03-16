@@ -18,6 +18,11 @@ namespace ET.Server
 
         public static HashSet<EntityRef<QuestObjective>> GetQuestObjectiveByType(this QuestComponent self, QuestObjectiveType questObjectiveType)
         {
+            if (self == null || self.IsDisposed || self.QuestObjectives == null)
+            {
+                return null;
+            }
+
             HashSet<EntityRef<QuestObjective>> questObjectives;
             self.QuestObjectives.TryGetValue(questObjectiveType, out questObjectives);
             return questObjectives;

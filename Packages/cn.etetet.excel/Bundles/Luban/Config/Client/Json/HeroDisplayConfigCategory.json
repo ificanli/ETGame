@@ -1,0 +1,23 @@
+[
+  {
+    "Id": 1001,
+    "ModelResName": "Agou_HeroDisplay",
+    "CameraName": "",
+    "PropertyDesc": "攻击力20 生命值1000",
+    "SkillDesc": "普通攻击"
+  },
+  {
+    "Id": 1002,
+    "ModelResName": "Ayin_HeroDisplay",
+    "CameraName": "",
+    "PropertyDesc": "攻击力20 生命值1000",
+    "SkillDesc": "暴风雪"
+  },
+  {
+    "Id": 1003,
+    "ModelResName": "Aniao_HeroDisplay",
+    "CameraName": "",
+    "PropertyDesc": "攻击力20 生命值1000",
+    "SkillDesc": "寒冰箭"
+  }
+]

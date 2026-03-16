@@ -8,8 +8,12 @@ namespace ET.Server
 		protected override async ETTask Run(Unit unit, C2M_TransferMap request, M2C_TransferMap response)
 		{
 			string currentMap = unit.Scene().Name.GetSceneConfigName();
-			string toMap = null;
-			if (currentMap == "Map1")
+			string toMap;
+			if (currentMap == "Home")
+			{
+				toMap = "Map2";
+			}
+			else if (currentMap == "Map1")
 			{
 				toMap = "Map2";
 			}
@@ -17,9 +21,9 @@ namespace ET.Server
 			{
 				toMap = "Map1";
 			}
-			
+
 			TransferHelper.TransferAtFrameFinish(unit, toMap, 0).Coroutine();
-			
+
 			await ETTask.CompletedTask;
 		}
 	}

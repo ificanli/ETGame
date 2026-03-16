@@ -208,29 +208,42 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
-    - GroupName: DamageTips
-      GroupDesc: "\u4F24\u5BB3\u98D8\u5B57"
+    - GroupName: HeroDisplay
+      GroupDesc: 
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
-      - CollectPath: Packages/cn.etetet.yiuidamagetips/Assets/GameRes
-        CollectorGUID: 3751fd97e08fb9f49a69caec69bc4d24
+      - CollectPath: Packages/cn.etetet.statesync/Bundles/HeroDisplay
+        CollectorGUID: 3b48c85e8ec616346806f5cb91c057bc
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
+        FilterRuleName: CollectPrefab
         AssetTags: 
         UserData: 
-    - GroupName: Effect
+    - GroupName: WeaponModels
+      GroupDesc: 
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Packages/cn.etetet.statesync/Assets/GameRes/Blink/Weapons
+        CollectorGUID: 31d9d4ebee5249448c62fdad6ce0b510
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectPrefab
+        AssetTags: 
+        UserData: 
+    - GroupName: Effects
       GroupDesc: 
       AssetTags: 
       ActiveRuleName: EnableGroup
       Collectors:
       - CollectPath: Packages/cn.etetet.statesync/Bundles/Effect
-        CollectorGUID: 4f353bebf5d24bc47bd006812e0e3870
+        CollectorGUID: 6b65137d3f2e4b549b7e43d948f0b7f1
         CollectorType: 0
         AddressRuleName: AddressByFileName
-        PackRuleName: PackSeparately
+        PackRuleName: PackDirectory
         FilterRuleName: CollectPrefab
         AssetTags: 
         UserData: 

@@ -37,6 +37,12 @@
             return buffData ?? buff.AddComponent<BuffData>();
         }
 
+        public static SpellTargetComponent GetOrAddSpellTargetComponent(this Buff buff)
+        {
+            BuffData buffData = buff.GetBuffData();
+            return buffData.GetComponent<SpellTargetComponent>() ?? buffData.AddComponent<SpellTargetComponent>();
+        }
+
         public static BuffConfig GetConfig(this Buff self)
         {
             
@@ -55,7 +61,24 @@
 
         public static Unit GetCaster(this Buff self)
         {
-            return self.Scene().GetComponent<UnitComponent>().Get(self.Caster);
+            if (self == null || self.IsDisposed || self.Caster == 0)
+            {
+                return null;
+            }
+
+            Scene scene = self.Scene();
+            if (scene == null)
+            {
+                return null;
+            }
+
+            UnitComponent unitComponent = scene.GetComponent<UnitComponent>();
+            if (unitComponent == null)
+            {
+                return null;
+            }
+
+            return unitComponent.Get(self.Caster);
         }
 
         public static Unit GetOwner(this Buff self)

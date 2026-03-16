@@ -17,5 +17,8 @@ namespace ET.Client
         public EntityRef<CinemachineComponent> CinemachineComponent;
 
         public bool IsJumping;
+        public Vector2 KeyboardMoveInput;
+        public Vector2 JoystickMoveInput;
+        public Vector2 LastSentMoveInput;
     }
 }

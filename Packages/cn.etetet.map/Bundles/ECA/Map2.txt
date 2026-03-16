@@ -1,0 +1,11 @@
+{
+	"_t" : "System.Collections.Generic.List`1[[ET.ECAConfig, ET.Model]]",
+	"_v" : [{
+			"ConfigId" : "01",
+			"PointType" : 1,
+			"PosX" : -22.879999160766602,
+			"PosY" : 25.299999237060547,
+			"PosZ" : -6.2600002288818359,
+			"InteractRange" : 5.3000001907348633
+		}]
+}

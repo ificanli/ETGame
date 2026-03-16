@@ -1,0 +1,66 @@
+namespace ET.Client
+{
+    public static class RogueClientHelper
+    {
+        public static RogueClientComponent GetOrAddRuntime(Scene root)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            RogueClientComponent runtime = root.GetComponent<RogueClientComponent>();
+            if (runtime == null)
+            {
+                runtime = root.AddComponent<RogueClientComponent>();
+            }
+
+            return runtime;
+        }
+
+        public static async ETTask ChooseOption(Scene root, int optionId)
+        {
+            RogueClientComponent runtime = GetOrAddRuntime(root);
+            if (runtime == null || runtime.ChoiceSerial == 0 || optionId <= 0)
+            {
+                Log.Warning(
+                    $"[RogueClient] choose option request blocked: runtime={(runtime != null)}, serial={runtime?.ChoiceSerial ?? 0}, option={optionId}");
+                return;
+            }
+
+            C2M_RogueChooseOption request = C2M_RogueChooseOption.Create();
+            request.ChoiceSerial = runtime.ChoiceSerial;
+            request.OptionId = optionId;
+            Log.Info($"[RogueClient] send choose option request: serial={request.ChoiceSerial}, option={request.OptionId}");
+            EntityRef<RogueClientComponent> runtimeRef = runtime;
+            M2C_RogueChoiceResult response = await root.GetComponent<ClientSenderComponent>().Call(request) as M2C_RogueChoiceResult;
+            runtime = runtimeRef;
+            if (runtime == null)
+            {
+                return;
+            }
+
+            if (response == null)
+            {
+                return;
+            }
+
+            if (response.Error != ErrorCode.ERR_Success)
+            {
+                Log.Warning($"[RogueClient] choose option failed: serial={request.ChoiceSerial}, option={optionId}, error={response.Error}, msg={response.Message}");
+                return;
+            }
+
+            runtime.ChoiceSerial = 0;
+            runtime.ChoicePopupPending = false;
+            runtime.ChoiceOptions.Clear();
+            Log.Info($"[RogueClient] choose option success: option={response.OptionId}, buff={response.BuffConfigId}");
+        }
+
+        public static void ResetRuntime(Scene root)
+        {
+            RogueClientComponent runtime = GetOrAddRuntime(root);
+            runtime?.ResetRuntime();
+        }
+    }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "Id": 1,
+    "DefaultKillExp": 20,
+    "ChoiceOptionCount": 3,
+    "QualityRandom1": 50,
+    "QualityRandom2": 40,
+    "QualityRandom3": 20,
+    "SafeSlotStart": 0,
+    "SafeSlotCount": 4,
+    "CorpseInteractRange": 3,
+    "CorpseButtonTextId": 0
+  }
+]

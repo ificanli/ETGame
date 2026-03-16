@@ -1,0 +1,17 @@
+using System.Diagnostics;
+using UnityEditor;
+
+namespace ET
+{
+    public static class CodeModeEditor
+    {
+        [MenuItem("ET/Init/RefreshAssemblyReference")]
+        public static void Init()
+        {
+            var globalConfig = UnityEngine.Resources.Load<GlobalConfig>("GlobalConfig");
+            Process process = ProcessHelper.DotNet($"Bin/ET.CodeMode.dll --CodeMode={globalConfig.CodeMode}", ".", true);
+            process.WaitForExit();
+            AssetDatabase.Refresh();
+        }
+    }
+}

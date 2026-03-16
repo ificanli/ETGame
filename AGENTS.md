@@ -159,7 +159,6 @@ WOW/
 ├── cn.etetet.excel         (excel)
 ├── cn.etetet.proto         (协议定义)
 ├── cn.etetet.loader        (加载器)
-├── cn.etetet.scripts       (scripts)
 ```
 
 ## 包结构规范

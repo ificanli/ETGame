@@ -16,7 +16,7 @@
         public string Buff;
         
         [Sirenix.OdinInspector.BoxGroup("输出参数")]
-        [BTInput(typeof(Buff))]
+        [BTOutput(typeof(Buff))]
         public string OutputBuff;
 
         public int ConfigId;
