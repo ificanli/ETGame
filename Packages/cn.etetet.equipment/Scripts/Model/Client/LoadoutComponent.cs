@@ -84,6 +84,11 @@ namespace ET.Client
         public List<int> ConsumableConfigIds = new();
 
         /// <summary>
+        /// 局外仓库离散物品列表。
+        /// </summary>
+        public List<LoadoutWarehouseItemInfo> WarehouseItems = new();
+
+        /// <summary>
         /// 局外仓库库存（ConfigId -> Count）
         /// </summary>
         public Dictionary<int, int> StorageItemCounts = new();

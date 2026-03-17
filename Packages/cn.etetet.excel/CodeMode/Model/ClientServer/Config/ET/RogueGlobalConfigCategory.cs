@@ -11,12 +11,11 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
 
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class RogueGlobalConfigCategory : Singleton<RogueGlobalConfigCategory>, IConfig
     {
 
@@ -24,11 +23,11 @@ namespace ET
 
         public ET.RogueGlobalConfig Data => _data;
 
-        public RogueGlobalConfigCategory(JSONNode _buf)
+        public RogueGlobalConfigCategory(ByteBuf _buf)
         {
-            int n = _buf.Count;
+            int n = _buf.ReadSize();
             if (n != 1) throw new SerializationException("table mode=one, but size != 1");
-            { if(!_buf[0].IsObject) { throw new SerializationException(); }  _data = global::ET.RogueGlobalConfig.DeserializeRogueGlobalConfig(_buf[0]);  }
+            _data = global::ET.RogueGlobalConfig.DeserializeRogueGlobalConfig(_buf);
 			EndInit();
         }
 
@@ -73,7 +72,7 @@ namespace ET
         /// 尸体盒交互按钮文案ID
         /// </summary>
         public int CorpseButtonTextId => _data.CorpseButtonTextId;
-
+        
         public void ResolveRef()
         {
             _data.ResolveRef();

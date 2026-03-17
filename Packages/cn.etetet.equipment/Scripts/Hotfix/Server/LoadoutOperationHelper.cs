@@ -33,6 +33,22 @@ namespace ET.Server
                 return ErrorCode.ERR_LoadoutWarehouseNotEnough;
             }
 
+            if ((LoadoutAreaType)request.TargetAreaType == LoadoutAreaType.FixedSlot)
+            {
+                if (request.Count != 1)
+                {
+                    message = "fixed slot only accepts count 1";
+                    return ErrorCode.ERR_LoadoutCountInvalid;
+                }
+
+                return TakeFromWarehouseToFixedSlot(
+                    loadout,
+                    storage,
+                    request.ConfigId,
+                    (LoadoutFixedSlotType)request.TargetSlotType,
+                    out message);
+            }
+
             int error = AddOwnedItem(
                 loadout,
                 request.TargetAreaType,
@@ -241,15 +257,7 @@ namespace ET.Server
                     return ErrorCode.ERR_LoadoutStateConflict;
                 }
 
-                int error = PlaceIntoFixedSlot(loadout, targetSlotType, configId, targetBagWidth, targetBagHeight, out message);
-                if (error != ErrorCode.ERR_Success)
-                {
-                    return error;
-                }
-
-                ClearFixedSlot(loadout, sourceSlotType);
-                InvalidateConfirmedState(loadout);
-                return ErrorCode.ERR_Success;
+                return MoveFixedSlotToFixedSlot(loadout, sourceSlotType, targetSlotType, out message);
             }
 
             if (!TryBuildGridItem(configId, 1, targetAnchorSlotIndex, out LoadoutGridItemInfo gridItem, out message))
@@ -257,30 +265,7 @@ namespace ET.Server
                 return ErrorCode.ERR_LoadoutGridInvalid;
             }
 
-            if (sourceSlotType == LoadoutFixedSlotType.Backpack)
-            {
-                if (targetArea == LoadoutAreaType.Bag)
-                {
-                    message = "cannot move equipped backpack into carried bag";
-                    return ErrorCode.ERR_LoadoutStateConflict;
-                }
-
-                if (loadout.CarriedBagItems.Count > 0)
-                {
-                    message = "cannot move backpack while bag contains items";
-                    return ErrorCode.ERR_LoadoutBagNotEmpty;
-                }
-            }
-
-            int placeError = PlaceIntoGridArea(loadout, targetArea, gridItem, out message);
-            if (placeError != ErrorCode.ERR_Success)
-            {
-                return placeError;
-            }
-
-            ClearFixedSlot(loadout, sourceSlotType);
-            InvalidateConfirmedState(loadout);
-            return ErrorCode.ERR_Success;
+            return MoveFixedSlotToGridArea(loadout, sourceSlotType, targetArea, gridItem, out message);
         }
 
         private static int MoveFromGridArea(
@@ -305,15 +290,13 @@ namespace ET.Server
                     return ErrorCode.ERR_LoadoutCountInvalid;
                 }
 
-                int error = PlaceIntoFixedSlot(loadout, targetSlotType, sourceItem.ConfigId, targetBagWidth, targetBagHeight, out message);
-                if (error != ErrorCode.ERR_Success)
-                {
-                    return error;
-                }
-
-                GetGridContainer(loadout, sourceArea).RemoveAt(sourceIndex);
-                InvalidateConfirmedState(loadout);
-                return ErrorCode.ERR_Success;
+                return MoveGridAreaToFixedSlot(
+                    loadout,
+                    sourceArea,
+                    sourceIndex,
+                    sourceItem,
+                    targetSlotType,
+                    out message);
             }
 
             if (sourceArea == targetArea && sourceItem.AnchorSlotIndex == targetAnchorSlotIndex)
@@ -390,6 +373,240 @@ namespace ET.Server
             }
 
             return PlaceIntoGridArea(loadout, (LoadoutAreaType)targetAreaType, gridItem, out message);
+        }
+
+        private static int TakeFromWarehouseToFixedSlot(
+            LoadoutComponent loadout,
+            PlayerStorageComponent storage,
+            int configId,
+            LoadoutFixedSlotType targetSlotType,
+            out string message)
+        {
+            message = string.Empty;
+            object[] snapshot = CaptureSnapshot(loadout);
+            int replacedConfigId = GetFixedSlotConfigId(loadout, targetSlotType);
+
+            int applyError = ApplyFixedSlotConfig(loadout, targetSlotType, configId, clearBagItemsWhenRemovingBackpack: false, out message);
+            if (applyError != ErrorCode.ERR_Success)
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return applyError;
+            }
+
+            if (!ValidateCurrentState(loadout, out message))
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            if (!storage.TryConsumeWarehouseItem(configId, 1))
+            {
+                RestoreSnapshot(loadout, snapshot);
+                message = "warehouse item not enough";
+                return ErrorCode.ERR_LoadoutWarehouseNotEnough;
+            }
+
+            if (replacedConfigId > 0)
+            {
+                storage.AddWarehouseItem(replacedConfigId, 1);
+            }
+
+            InvalidateConfirmedState(loadout);
+            return ErrorCode.ERR_Success;
+        }
+
+        private static int MoveFixedSlotToFixedSlot(
+            LoadoutComponent loadout,
+            LoadoutFixedSlotType sourceSlotType,
+            LoadoutFixedSlotType targetSlotType,
+            out string message)
+        {
+            message = string.Empty;
+            object[] snapshot = CaptureSnapshot(loadout);
+            int sourceConfigId = GetFixedSlotConfigId(loadout, sourceSlotType);
+            int targetConfigId = GetFixedSlotConfigId(loadout, targetSlotType);
+
+            int applyTargetError = ApplyFixedSlotConfig(loadout, targetSlotType, sourceConfigId, clearBagItemsWhenRemovingBackpack: false, out message);
+            if (applyTargetError != ErrorCode.ERR_Success)
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return applyTargetError;
+            }
+
+            int applySourceError = targetConfigId > 0
+                ? ApplyFixedSlotConfig(loadout, sourceSlotType, targetConfigId, clearBagItemsWhenRemovingBackpack: false, out message)
+                : ApplyFixedSlotConfig(loadout, sourceSlotType, 0, clearBagItemsWhenRemovingBackpack: true, out message);
+            if (applySourceError != ErrorCode.ERR_Success)
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return applySourceError;
+            }
+
+            if (!ValidateCurrentState(loadout, out message))
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            InvalidateConfirmedState(loadout);
+            return ErrorCode.ERR_Success;
+        }
+
+        private static int MoveFixedSlotToGridArea(
+            LoadoutComponent loadout,
+            LoadoutFixedSlotType sourceSlotType,
+            LoadoutAreaType targetArea,
+            LoadoutGridItemInfo gridItem,
+            out string message)
+        {
+            message = string.Empty;
+            List<LoadoutGridItemInfo> targetContainer = GetGridContainer(loadout, targetArea);
+            if (targetContainer == null)
+            {
+                message = "target area invalid";
+                return ErrorCode.ERR_LoadoutAreaInvalid;
+            }
+
+            object[] snapshot = CaptureSnapshot(loadout);
+            List<int> blockers = GetBlockingGridIndices(loadout, targetArea, targetContainer, gridItem, -1);
+            if (blockers == null)
+            {
+                RestoreSnapshot(loadout, snapshot);
+                message = "target placement invalid";
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            if (blockers.Count == 0)
+            {
+                if (sourceSlotType == LoadoutFixedSlotType.Backpack)
+                {
+                    if (targetArea == LoadoutAreaType.Bag)
+                    {
+                        message = "cannot move equipped backpack into carried bag";
+                        return ErrorCode.ERR_LoadoutStateConflict;
+                    }
+
+                    if (loadout.CarriedBagItems.Count > 0)
+                    {
+                        message = "cannot move backpack while bag contains items";
+                        return ErrorCode.ERR_LoadoutBagNotEmpty;
+                    }
+                }
+
+                int clearError = ApplyFixedSlotConfig(loadout, sourceSlotType, 0, clearBagItemsWhenRemovingBackpack: true, out message);
+                if (clearError != ErrorCode.ERR_Success)
+                {
+                    RestoreSnapshot(loadout, snapshot);
+                    return clearError;
+                }
+
+                targetContainer.Add(gridItem);
+            }
+            else if (blockers.Count == 1)
+            {
+                int blockerIndex = blockers[0];
+                LoadoutGridItemInfo blocker = targetContainer[blockerIndex];
+                if (blocker.Count != 1)
+                {
+                    RestoreSnapshot(loadout, snapshot);
+                    message = "stack item cannot move into fixed slot";
+                    return ErrorCode.ERR_LoadoutCountInvalid;
+                }
+
+                int applyError = ApplyFixedSlotConfig(loadout, sourceSlotType, blocker.ConfigId, clearBagItemsWhenRemovingBackpack: false, out message);
+                if (applyError != ErrorCode.ERR_Success)
+                {
+                    RestoreSnapshot(loadout, snapshot);
+                    return applyError;
+                }
+
+                int containerWidth = GetGridContainerWidth(loadout, targetArea);
+                int containerHeight = GetGridContainerHeight(loadout, targetArea);
+                if (!CanPlaceGridItem(targetContainer, containerWidth, containerHeight, gridItem, blockerIndex))
+                {
+                    RestoreSnapshot(loadout, snapshot);
+                    message = "target placement invalid";
+                    return ErrorCode.ERR_LoadoutGridInvalid;
+                }
+
+                targetContainer.RemoveAt(blockerIndex);
+                targetContainer.Add(gridItem);
+            }
+            else
+            {
+                RestoreSnapshot(loadout, snapshot);
+                message = "target placement invalid";
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            if (!ValidateCurrentState(loadout, out message))
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            InvalidateConfirmedState(loadout);
+            return ErrorCode.ERR_Success;
+        }
+
+        private static int MoveGridAreaToFixedSlot(
+            LoadoutComponent loadout,
+            LoadoutAreaType sourceArea,
+            int sourceIndex,
+            LoadoutGridItemInfo sourceItem,
+            LoadoutFixedSlotType targetSlotType,
+            out string message)
+        {
+            message = string.Empty;
+            List<LoadoutGridItemInfo> sourceContainer = GetGridContainer(loadout, sourceArea);
+            if (sourceContainer == null)
+            {
+                message = "source area invalid";
+                return ErrorCode.ERR_LoadoutAreaInvalid;
+            }
+
+            object[] snapshot = CaptureSnapshot(loadout);
+            int targetConfigId = GetFixedSlotConfigId(loadout, targetSlotType);
+
+            int applyError = ApplyFixedSlotConfig(loadout, targetSlotType, sourceItem.ConfigId, clearBagItemsWhenRemovingBackpack: false, out message);
+            if (applyError != ErrorCode.ERR_Success)
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return applyError;
+            }
+
+            if (targetConfigId > 0)
+            {
+                if (!TryBuildGridItem(targetConfigId, 1, sourceItem.AnchorSlotIndex, out LoadoutGridItemInfo swappedItem, out message))
+                {
+                    RestoreSnapshot(loadout, snapshot);
+                    return ErrorCode.ERR_LoadoutGridInvalid;
+                }
+
+                int sourceWidth = GetGridContainerWidth(loadout, sourceArea);
+                int sourceHeight = GetGridContainerHeight(loadout, sourceArea);
+                if (!CanPlaceGridItem(sourceContainer, sourceWidth, sourceHeight, swappedItem, sourceIndex))
+                {
+                    RestoreSnapshot(loadout, snapshot);
+                    message = "target placement invalid";
+                    return ErrorCode.ERR_LoadoutGridInvalid;
+                }
+
+                sourceContainer[sourceIndex] = swappedItem;
+            }
+            else
+            {
+                sourceContainer.RemoveAt(sourceIndex);
+            }
+
+            if (!ValidateCurrentState(loadout, out message))
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            InvalidateConfirmedState(loadout);
+            return ErrorCode.ERR_Success;
         }
 
         private static int PlaceIntoFixedSlot(
@@ -624,6 +841,280 @@ namespace ET.Server
             });
 
             return LoadoutGridPlacementHelper.ArePlacementsValid(validationItems, containerWidth, containerHeight);
+        }
+
+        private static int ApplyFixedSlotConfig(
+            LoadoutComponent loadout,
+            LoadoutFixedSlotType slotType,
+            int configId,
+            bool clearBagItemsWhenRemovingBackpack,
+            out string message)
+        {
+            message = string.Empty;
+            if (slotType == LoadoutFixedSlotType.None)
+            {
+                message = "slot type invalid";
+                return ErrorCode.ERR_LoadoutAreaInvalid;
+            }
+
+            if (configId <= 0)
+            {
+                if (slotType == LoadoutFixedSlotType.Backpack)
+                {
+                    loadout.BackpackConfigId = 0;
+                    loadout.BagWidth = 0;
+                    loadout.BagHeight = 0;
+                    if (clearBagItemsWhenRemovingBackpack)
+                    {
+                        loadout.CarriedBagItems.Clear();
+                    }
+
+                    return ErrorCode.ERR_Success;
+                }
+
+                SetFixedSlotConfigId(loadout, slotType, 0);
+                return ErrorCode.ERR_Success;
+            }
+
+            int validationError = LoadoutStateHelper.ValidateFixedSlotItem(configId, slotType);
+            if (validationError != ErrorCode.ERR_Success)
+            {
+                message = $"config {configId} cannot place into fixed slot {slotType}";
+                return validationError;
+            }
+
+            if (slotType == LoadoutFixedSlotType.Backpack)
+            {
+                if (!TryResolveBackpackSize(configId, out int bagWidth, out int bagHeight))
+                {
+                    message = "backpack size missing";
+                    return ErrorCode.ERR_LoadoutGridInvalid;
+                }
+
+                loadout.BackpackConfigId = configId;
+                loadout.BagWidth = bagWidth;
+                loadout.BagHeight = bagHeight;
+                return ErrorCode.ERR_Success;
+            }
+
+            SetFixedSlotConfigId(loadout, slotType, configId);
+            return ErrorCode.ERR_Success;
+        }
+
+        private static bool ValidateCurrentState(LoadoutComponent loadout, out string message)
+        {
+            message = string.Empty;
+            if (loadout == null)
+            {
+                message = "loadout null";
+                return false;
+            }
+
+            if (loadout.MainWeaponConfigId > 0 &&
+                LoadoutStateHelper.ValidateFixedSlotItem(loadout.MainWeaponConfigId, LoadoutFixedSlotType.MainWeapon) != ErrorCode.ERR_Success)
+            {
+                message = "main weapon invalid";
+                return false;
+            }
+
+            if (loadout.SubWeaponConfigId > 0 &&
+                LoadoutStateHelper.ValidateFixedSlotItem(loadout.SubWeaponConfigId, LoadoutFixedSlotType.SubWeapon) != ErrorCode.ERR_Success)
+            {
+                message = "sub weapon invalid";
+                return false;
+            }
+
+            if (loadout.ArmorConfigId > 0 &&
+                LoadoutStateHelper.ValidateFixedSlotItem(loadout.ArmorConfigId, LoadoutFixedSlotType.Armor) != ErrorCode.ERR_Success)
+            {
+                message = "armor invalid";
+                return false;
+            }
+
+            if (loadout.BackpackConfigId > 0)
+            {
+                if (LoadoutStateHelper.ValidateFixedSlotItem(loadout.BackpackConfigId, LoadoutFixedSlotType.Backpack) != ErrorCode.ERR_Success)
+                {
+                    message = "backpack invalid";
+                    return false;
+                }
+
+                if (!TryResolveBackpackSize(loadout.BackpackConfigId, out int bagWidth, out int bagHeight))
+                {
+                    message = "backpack size missing";
+                    return false;
+                }
+
+                loadout.BagWidth = bagWidth;
+                loadout.BagHeight = bagHeight;
+                if (!ValidateGridContainer(loadout.CarriedBagItems, bagWidth, bagHeight))
+                {
+                    message = "bag placement invalid";
+                    return false;
+                }
+            }
+            else
+            {
+                if (loadout.CarriedBagItems.Count > 0)
+                {
+                    message = "bag items exist without backpack";
+                    return false;
+                }
+
+                loadout.BagWidth = 0;
+                loadout.BagHeight = 0;
+            }
+
+            if (!ValidateGridContainer(loadout.CarriedSecureItems, loadout.SecureWidth, loadout.SecureHeight))
+            {
+                message = "secure placement invalid";
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool ValidateGridContainer(List<LoadoutGridItemInfo> container, int containerWidth, int containerHeight)
+        {
+            if (container == null || container.Count == 0)
+            {
+                return containerWidth >= 0 && containerHeight >= 0;
+            }
+
+            if (containerWidth <= 0 || containerHeight <= 0)
+            {
+                return false;
+            }
+
+            List<GridPlacementItemInfo> validationItems = BuildValidationItems(container, -1);
+            return LoadoutGridPlacementHelper.ArePlacementsValid(validationItems, containerWidth, containerHeight);
+        }
+
+        private static List<int> GetBlockingGridIndices(
+            LoadoutComponent loadout,
+            LoadoutAreaType areaType,
+            List<LoadoutGridItemInfo> container,
+            LoadoutGridItemInfo targetItem,
+            int ignoreIndex)
+        {
+            int containerWidth = GetGridContainerWidth(loadout, areaType);
+            int containerHeight = GetGridContainerHeight(loadout, areaType);
+            if (!IsGridItemInBounds(targetItem, containerWidth, containerHeight))
+            {
+                return null;
+            }
+
+            List<int> blockers = new();
+            for (int i = 0; i < container.Count; ++i)
+            {
+                if (i == ignoreIndex)
+                {
+                    continue;
+                }
+
+                if (IsGridItemOverlapping(targetItem, container[i], containerWidth))
+                {
+                    blockers.Add(i);
+                }
+            }
+
+            return blockers;
+        }
+
+        private static bool IsGridItemInBounds(LoadoutGridItemInfo item, int containerWidth, int containerHeight)
+        {
+            if (containerWidth <= 0 || containerHeight <= 0 || item.AnchorSlotIndex < 0)
+            {
+                return false;
+            }
+
+            int x = item.AnchorSlotIndex % containerWidth;
+            int y = item.AnchorSlotIndex / containerWidth;
+            return x >= 0 &&
+                   y >= 0 &&
+                   item.GridWidth > 0 &&
+                   item.GridHeight > 0 &&
+                   x + item.GridWidth <= containerWidth &&
+                   y + item.GridHeight <= containerHeight;
+        }
+
+        private static bool IsGridItemOverlapping(LoadoutGridItemInfo a, LoadoutGridItemInfo b, int containerWidth)
+        {
+            int ax = a.AnchorSlotIndex % containerWidth;
+            int ay = a.AnchorSlotIndex / containerWidth;
+            int bx = b.AnchorSlotIndex % containerWidth;
+            int by = b.AnchorSlotIndex / containerWidth;
+            return ax < bx + b.GridWidth &&
+                   ax + a.GridWidth > bx &&
+                   ay < by + b.GridHeight &&
+                   ay + a.GridHeight > by;
+        }
+
+        private static List<GridPlacementItemInfo> BuildValidationItems(List<LoadoutGridItemInfo> container, int ignoreIndex)
+        {
+            List<GridPlacementItemInfo> validationItems = new(container.Count > 0 ? container.Count : 1);
+            for (int i = 0; i < container.Count; ++i)
+            {
+                if (i == ignoreIndex)
+                {
+                    continue;
+                }
+
+                LoadoutGridItemInfo item = container[i];
+                validationItems.Add(new GridPlacementItemInfo
+                {
+                    ConfigId = item.ConfigId,
+                    Count = item.Count,
+                    AnchorSlotIndex = item.AnchorSlotIndex,
+                    GridWidth = item.GridWidth,
+                    GridHeight = item.GridHeight,
+                });
+            }
+
+            return validationItems;
+        }
+
+        private static object[] CaptureSnapshot(LoadoutComponent loadout)
+        {
+            return new object[]
+            {
+                loadout.HeroConfigId,
+                loadout.MainWeaponConfigId,
+                loadout.SubWeaponConfigId,
+                loadout.ArmorConfigId,
+                loadout.BackpackConfigId,
+                loadout.BagWidth,
+                loadout.BagHeight,
+                loadout.SecureWidth,
+                loadout.SecureHeight,
+                new List<LoadoutGridItemInfo>(loadout.CarriedBagItems),
+                new List<LoadoutGridItemInfo>(loadout.CarriedSecureItems),
+                new List<int>(loadout.ConsumableConfigIds),
+                loadout.IsConfirmed,
+                loadout.ConfirmedAt,
+            };
+        }
+
+        private static void RestoreSnapshot(LoadoutComponent loadout, object[] snapshot)
+        {
+            loadout.HeroConfigId = (int)snapshot[0];
+            loadout.MainWeaponConfigId = (int)snapshot[1];
+            loadout.SubWeaponConfigId = (int)snapshot[2];
+            loadout.ArmorConfigId = (int)snapshot[3];
+            loadout.BackpackConfigId = (int)snapshot[4];
+            loadout.BagWidth = (int)snapshot[5];
+            loadout.BagHeight = (int)snapshot[6];
+            loadout.SecureWidth = (int)snapshot[7];
+            loadout.SecureHeight = (int)snapshot[8];
+            loadout.IsConfirmed = (bool)snapshot[12];
+            loadout.ConfirmedAt = (long)snapshot[13];
+
+            loadout.CarriedBagItems.Clear();
+            loadout.CarriedBagItems.AddRange((List<LoadoutGridItemInfo>)snapshot[9]);
+            loadout.CarriedSecureItems.Clear();
+            loadout.CarriedSecureItems.AddRange((List<LoadoutGridItemInfo>)snapshot[10]);
+            loadout.ConsumableConfigIds.Clear();
+            loadout.ConsumableConfigIds.AddRange((List<int>)snapshot[11]);
         }
 
         private static List<LoadoutGridItemInfo> GetGridContainer(LoadoutComponent loadout, LoadoutAreaType areaType)

@@ -18,6 +18,15 @@ message LoadoutGridItemData
     int32 GridHeight = 5;
 }
 
+message LoadoutWarehouseItemData
+{
+    int64 ItemUid = 1;
+    int32 ConfigId = 2;
+    int32 Count = 3;
+    int32 GridWidth = 4;
+    int32 GridHeight = 5;
+}
+
 // 请求可用英雄列表
 // ResponseType G2C_GetHeroList
 message C2G_GetHeroList // ISessionRequest
@@ -48,6 +57,7 @@ message G2C_GetHeroList // ISessionResponse
     repeated LoadoutGridItemData CurrentSecureItems = 19;
     bool IsConfirmed = 20;
     int64 ConfirmedAt = 21;
+    repeated LoadoutWarehouseItemData CurrentWarehouseItems = 22;
 }
 
 // 确认起装（英雄+4个装备槽位）
@@ -171,6 +181,7 @@ message G2C_LoadoutStateChanged // IMessage
     repeated LoadoutGridItemData CurrentSecureItems = 15;
     bool IsConfirmed = 16;
     int64 ConfirmedAt = 17;
+    repeated LoadoutWarehouseItemData CurrentWarehouseItems = 18;
 }
 
 // 撤离结算通知（服务端推送）

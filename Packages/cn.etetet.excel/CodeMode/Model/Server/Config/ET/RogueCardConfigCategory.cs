@@ -11,7 +11,6 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
@@ -19,23 +18,23 @@ namespace ET
     /// <summary>
     /// 肉鸽牌配置表
     /// </summary>
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class RogueCardConfigCategory : Singleton<RogueCardConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.RogueCardConfig> _dataMap;
         private readonly List<ET.RogueCardConfig> _dataList;
-
-        public RogueCardConfigCategory(JSONNode _buf)
+        
+        public RogueCardConfigCategory(ByteBuf _buf)
         {
             _dataMap = new Dictionary<int, ET.RogueCardConfig>();
             _dataList = new List<ET.RogueCardConfig>();
-
-            foreach(JSONNode _ele in _buf.Children)
+            
+            for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 ET.RogueCardConfig _v;
-                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.RogueCardConfig.DeserializeRogueCardConfig(_ele);  }
+                _v = global::ET.RogueCardConfig.DeserializeRogueCardConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

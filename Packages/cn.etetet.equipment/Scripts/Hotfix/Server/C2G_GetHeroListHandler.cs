@@ -24,17 +24,8 @@ namespace ET.Server
 
             if (player != null)
             {
-                PlayerStorageComponent storage = player.GetComponent<PlayerStorageComponent>();
-                if (storage != null)
-                {
-                    foreach (var kv in storage.WarehouseItems)
-                    {
-                        response.StorageConfigIds.Add(kv.Key);
-                        response.StorageCounts.Add(kv.Value);
-                    }
-
-                    response.TotalWealth = storage.TotalWealth;
-                }
+                PlayerStorageComponent storage = player.GetComponent<PlayerStorageComponent>() ?? player.AddComponent<PlayerStorageComponent>();
+                LoadoutStateHelper.FillGetHeroListStorageResponse(storage, response);
 
                 LoadoutComponent loadout = player.GetComponent<LoadoutComponent>();
                 if (loadout != null)

@@ -57,11 +57,11 @@ namespace ET.Client
         private static void YIUILoopRenderer(
             this EquipSelectViewComponent self,
             EquipSelectItemComponent item,
-            ItemConfig data,
+            LoadoutWarehouseItemViewData data,
             int index,
             bool select)
         {
-            item.u_DataEquipName.SetValue(data.Name);
+            item.u_DataEquipName.SetValue($"{data.Name} x{data.Count}");
             item.SetSelected(select);
             item.SetItemIcon(data.Icon);
         }
@@ -73,7 +73,7 @@ namespace ET.Client
         private static void YIUILoopOnClick(
             this EquipSelectViewComponent self,
             EquipSelectItemComponent item,
-            ItemConfig data,
+            LoadoutWarehouseItemViewData data,
             int index,
             bool select)
         {
@@ -106,14 +106,23 @@ namespace ET.Client
                 return;
             }
 
-            lobbyPanel.EquipItem(self.PendingItemConfigId, self.CurrentSlotType);
-            self.UIView.Close();
-            await ETTask.CompletedTask;
+            EntityRef<EquipSelectViewComponent> selfRef = self;
+            bool success = await lobbyPanel.EquipItemAsync(self.PendingItemConfigId, self.CurrentSlotType);
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            if (success)
+            {
+                await self.UIView.CloseAsync();
+            }
         }
 
-        public static void UpdatePreview(this EquipSelectViewComponent self, ItemConfig itemConfig, bool updatePending)
+        public static void UpdatePreview(this EquipSelectViewComponent self, LoadoutWarehouseItemViewData itemData, bool updatePending)
         {
-            if (itemConfig == null)
+            if (itemData.ConfigId <= 0)
             {
                 self.u_DataGunName?.SetValue(string.Empty);
                 if (updatePending)
@@ -125,35 +134,36 @@ namespace ET.Client
 
             if (updatePending)
             {
-                self.PendingItemConfigId = itemConfig.Id;
+                self.PendingItemConfigId = itemData.ConfigId;
             }
 
-            string desc = BuildPreviewText(self, itemConfig);
+            string desc = BuildPreviewText(self, itemData);
             self.u_DataGunName?.SetValue(desc);
         }
 
-        private static string BuildPreviewText(EquipSelectViewComponent self, ItemConfig itemConfig)
+        private static string BuildPreviewText(EquipSelectViewComponent self, LoadoutWarehouseItemViewData itemData)
         {
-            if (itemConfig == null)
+            if (itemData.ConfigId <= 0)
             {
                 return string.Empty;
             }
 
             string desc = null;
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(itemData.ConfigId);
             if (self.CurrentSlotType == EquipSlotType.Weapon || self.CurrentSlotType == EquipSlotType.Weapon2)
             {
-                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemConfig.Id);
+                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemData.ConfigId);
                 desc = weaponConfig?.Desc;
             }
 
-            if (string.IsNullOrWhiteSpace(desc))
+            if (string.IsNullOrWhiteSpace(desc) && itemConfig != null)
             {
                 desc = itemConfig.Desc;
             }
 
             if (string.IsNullOrWhiteSpace(desc))
             {
-                desc = itemConfig.Name;
+                desc = itemData.Name;
             }
 
             return desc;

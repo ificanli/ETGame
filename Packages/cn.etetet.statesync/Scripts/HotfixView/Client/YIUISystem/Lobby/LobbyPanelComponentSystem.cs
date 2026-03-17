@@ -23,22 +23,33 @@ namespace ET.Client
                 "u_EventSelect"
             );
 
-            // 初始化装备背包 LoopScroll
-            var bagLoopScroll = self.u_ComEquipBagScroll.GetComponentInChildren<LoopScrollRect>();
-            self.m_EquipBagLoop = self.AddChild<YIUILoopScrollChild, LoopScrollRect, Type, string>(
-                bagLoopScroll,
-                typeof(EquipSelectItemComponent),
-                "u_EventSelect"
-            );
+            if (self.u_ComCurrentBagItemTemplate != null)
+            {
+                self.u_ComCurrentBagItemTemplate.gameObject.SetActive(false);
+            }
+
+            if (self.u_ComSecureItemTemplate != null)
+            {
+                self.u_ComSecureItemTemplate.gameObject.SetActive(false);
+            }
 
             // 初始化装备槽位
             self.InitHeroDisplay();
             self.InitEquipSlots();
+            self.InitWarehouseArea();
+            self.BindOwnedAreaBoard(self.u_ComCurrentBagBoardRoot, LoadoutAreaType.Bag);
+            self.BindOwnedAreaBoard(self.u_ComSecureBoardRoot, LoadoutAreaType.Secure);
         }
 
         [EntitySystem]
         private static void Destroy(this LobbyPanelComponent self)
         {
+            ReleaseViews(self.CurrentBagItemViews);
+            ReleaseViews(self.SecureItemViews);
+            ReleaseViews(self.WarehouseItemViews);
+            ReleaseViews(self.CurrentBagGridCellViews);
+            ReleaseViews(self.SecureGridCellViews);
+            ReleaseViews(self.WarehouseGridCellViews);
         }
 
         [EntitySystem]
@@ -53,7 +64,7 @@ namespace ET.Client
                 return false;
             }
 
-            self.RefreshLoadoutView();
+            self.TryRefreshLoadoutUi(true);
             return true;
         }
 
@@ -77,6 +88,7 @@ namespace ET.Client
         private static async ETTask OnEventEquipToggleInvoke(this LobbyPanelComponent self)
         {
             self.ShowPanel(self.u_ComEquipPanelRectTransform);
+            self.TryRefreshLoadoutUi(true);
             await ETTask.CompletedTask;
         }
 
@@ -122,8 +134,19 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventClickPutIntoBagInvoke)]
         private static async ETTask OnEventClickPutIntoBagInvoke(this LobbyPanelComponent self)
         {
-            // 打开装备选择界面，选择药品放入背包
-            await self.OpenEquipSelectView(EquipSlotType.Bag);
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            if (await self.TryTakeSelectedWarehouseToAreaAsync(LoadoutAreaType.Bag))
+            {
+                return;
+            }
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            await self.OpenEquipSelectView(EquipSlotType.BagContent);
         }
 
         
@@ -131,6 +154,17 @@ namespace ET.Client
         private static async ETTask OnEventClickBagInvoke(this LobbyPanelComponent self)
         {
             await self.ConfirmLoadoutAsync();
+        }
+        
+        [YIUIInvoke(LobbyPanelComponent.OnEventOneKeyUnloadButtonInvoke)]
+        private static async ETTask OnEventOneKeyUnloadButtonInvoke(this LobbyPanelComponent self)
+        {
+            G2C_LoadoutOneKeyUnload response =
+                    await self.Root().GetComponent<ClientSenderComponent>().Call(C2G_LoadoutOneKeyUnload.Create()) as G2C_LoadoutOneKeyUnload;
+            if (response == null || response.Error != ErrorCode.ERR_Success)
+            {
+                Log.Warning($"[LoadoutUI] OneKeyUnload failed: error={response?.Error}, message={response?.Message}");
+            }
         }
         #endregion YIUIEvent结束
 
@@ -166,7 +200,7 @@ namespace ET.Client
                 return;
             }
 
-            var loadout = self.Root().GetComponent<LoadoutComponent>();
+            LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>() ?? self.Root().AddComponent<LoadoutComponent>();
             loadout.Heroes.Clear();
             foreach (var hero in response.Heroes)
             {
@@ -178,35 +212,15 @@ namespace ET.Client
                 });
             }
 
-            loadout.StorageItemCounts.Clear();
-            int storagePairCount = Math.Min(response.StorageConfigIds.Count, response.StorageCounts.Count);
-            for (int i = 0; i < storagePairCount; ++i)
+            LoadoutClientStateHelper.ApplyGetHeroList(loadout, response);
+            loadout.AllowFreeSelection = false;
+            if (loadout.SelectedHeroConfigId <= 0 && loadout.Heroes.Count > 0)
             {
-                int count = response.StorageCounts[i];
-                if (count > 0)
-                {
-                    loadout.StorageItemCounts[response.StorageConfigIds[i]] = count;
-                }
+                loadout.SelectedHeroConfigId = loadout.Heroes[0].HeroConfigId;
             }
 
-            loadout.TotalWealth = response.TotalWealth;
-            loadout.SelectedHeroConfigId = response.CurrentHeroConfigId > 0 ? response.CurrentHeroConfigId : loadout.SelectedHeroConfigId;
-            loadout.MainWeaponConfigId = response.CurrentMainWeaponConfigId;
-            loadout.SubWeaponConfigId = response.CurrentSubWeaponConfigId;
-            loadout.ArmorConfigId = response.CurrentArmorConfigId;
-            loadout.ConsumableConfigIds.Clear();
-            if (response.CurrentConsumableConfigIds != null)
-            {
-                loadout.ConsumableConfigIds.AddRange(response.CurrentConsumableConfigIds);
-            }
-            loadout.AllowFreeSelection = loadout.StorageItemCounts.Count == 0 &&
-                    loadout.MainWeaponConfigId == 0 &&
-                    loadout.SubWeaponConfigId == 0 &&
-                    loadout.ArmorConfigId == 0 &&
-                    loadout.ConsumableConfigIds.Count == 0;
-            self.BagEquipIds.Clear();
-            self.BagEquipIds.AddRange(loadout.ConsumableConfigIds);
             self.HasLoadoutSnapshot = true;
+            self.LastLoadoutSnapshot = string.Empty;
 
             self.HeroLoop.ClearSelect();
             await self.HeroLoop.SetDataRefresh(loadout.Heroes, 0);
@@ -225,7 +239,7 @@ namespace ET.Client
                 self = selfRef;
             }
 
-            self?.RefreshLoadoutView();
+            self?.TryRefreshLoadoutUi(true);
         }
 
         [EntitySystem]
@@ -313,7 +327,7 @@ namespace ET.Client
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
 
-            LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>();
+            LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>() ?? self.Root().AddComponent<LoadoutComponent>();
             C2G_ConfirmLoadout confirmReq = C2G_ConfirmLoadout.Create();
             confirmReq.HeroConfigId = loadout.SelectedHeroConfigId;
             if (confirmReq.HeroConfigId <= 0 && loadout.Heroes.Count > 0)
@@ -329,7 +343,13 @@ namespace ET.Client
             confirmReq.MainWeaponConfigId = loadout.MainWeaponConfigId;
             confirmReq.SubWeaponConfigId = loadout.SubWeaponConfigId;
             confirmReq.ArmorConfigId = loadout.ArmorConfigId;
-            confirmReq.ConsumableConfigIds.AddRange(loadout.ConsumableConfigIds);
+            confirmReq.BackpackConfigId = loadout.BackpackConfigId;
+            confirmReq.BagWidth = loadout.BagWidth;
+            confirmReq.BagHeight = loadout.BagHeight;
+            confirmReq.SecureWidth = loadout.SecureWidth;
+            confirmReq.SecureHeight = loadout.SecureHeight;
+            FillGridItemMessage(loadout.CarriedBagItems, confirmReq.FinalBagItems);
+            FillGridItemMessage(loadout.CarriedSecureItems, confirmReq.FinalSecureItems);
             Log.Info($"[LoadoutConfirm] request hero={confirmReq.HeroConfigId}, main={confirmReq.MainWeaponConfigId}, sub={confirmReq.SubWeaponConfigId}, armor={confirmReq.ArmorConfigId}");
 
             G2C_ConfirmLoadout confirmResp = (G2C_ConfirmLoadout)await self.Root().GetComponent<ClientSenderComponent>().Call(confirmReq);
@@ -357,14 +377,17 @@ namespace ET.Client
                 loadout.MainWeaponConfigId = confirmReq.MainWeaponConfigId;
                 loadout.SubWeaponConfigId = confirmReq.SubWeaponConfigId;
                 loadout.ArmorConfigId = confirmReq.ArmorConfigId;
+                loadout.BackpackConfigId = confirmReq.BackpackConfigId;
+                loadout.BagWidth = confirmReq.BagWidth;
+                loadout.BagHeight = confirmReq.BagHeight;
+                loadout.SecureWidth = confirmReq.SecureWidth;
+                loadout.SecureHeight = confirmReq.SecureHeight;
                 loadout.ConsumableConfigIds.Clear();
-                loadout.ConsumableConfigIds.AddRange(confirmReq.ConsumableConfigIds);
-                self.BagEquipIds.Clear();
-                self.BagEquipIds.AddRange(confirmReq.ConsumableConfigIds);
                 loadout.AllowFreeSelection = false;
                 loadout.IsConfirmed = true;
             }
 
+            self.TryRefreshLoadoutUi(true);
             Log.Info($"[LoadoutConfirm] success: hero={confirmReq.HeroConfigId}, main={confirmReq.MainWeaponConfigId}, sub={confirmReq.SubWeaponConfigId}, armor={confirmReq.ArmorConfigId}");
             return true;
         }
@@ -380,82 +403,78 @@ namespace ET.Client
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
 
-            // 武器1
             self.UIEquipSlotItemWeapon.u_DataSlotName.SetValue("武器1");
             self.UIEquipSlotItemWeapon.u_DataIsEmpty.SetValue(true);
             self.UIEquipSlotItemWeapon.SetItemIcon(string.Empty);
-            var weaponBtn = self.UIEquipSlotItemWeapon.UIBase.OwnerGameObject.GetComponent<Button>();
-            if (weaponBtn != null)
-            {
-                weaponBtn.onClick.AddListener(() =>
-                {
-                    var panel = selfRef.Entity;
-                    if (panel != null)
-                    {
-                        if (!panel.TryUnloadSlot(EquipSlotType.Weapon))
-                        {
-                            panel.OpenEquipSelectView(EquipSlotType.Weapon).Coroutine();
-                        }
-                    }
-                });
-            }
+            BindFixedSlotButton(self.UIEquipSlotItemWeapon, selfRef, EquipSlotType.Weapon);
+            self.BindFixedSlotDragInteract(self.UIEquipSlotItemWeapon, EquipSlotType.Weapon);
 
-            // 武器2
             self.UIEquipSlotItemWeapon2.u_DataSlotName.SetValue("武器2");
             self.UIEquipSlotItemWeapon2.u_DataIsEmpty.SetValue(true);
             self.UIEquipSlotItemWeapon2.SetItemIcon(string.Empty);
-            var weapon2Btn = self.UIEquipSlotItemWeapon2.UIBase.OwnerGameObject.GetComponent<Button>();
-            if (weapon2Btn != null)
-            {
-                weapon2Btn.onClick.AddListener(() =>
-                {
-                    var panel = selfRef.Entity;
-                    if (panel != null)
-                    {
-                        if (!panel.TryUnloadSlot(EquipSlotType.Weapon2))
-                        {
-                            panel.OpenEquipSelectView(EquipSlotType.Weapon2).Coroutine();
-                        }
-                    }
-                });
-            }
+            BindFixedSlotButton(self.UIEquipSlotItemWeapon2, selfRef, EquipSlotType.Weapon2);
+            self.BindFixedSlotDragInteract(self.UIEquipSlotItemWeapon2, EquipSlotType.Weapon2);
 
-            // 防具
             self.UIEquipSlotItemArmor.u_DataSlotName.SetValue("防具");
             self.UIEquipSlotItemArmor.u_DataIsEmpty.SetValue(true);
             self.UIEquipSlotItemArmor.SetItemIcon(string.Empty);
-            var armorBtn = self.UIEquipSlotItemArmor.UIBase.OwnerGameObject.GetComponent<Button>();
-            if (armorBtn != null)
-            {
-                armorBtn.onClick.AddListener(() =>
-                {
-                    var panel = selfRef.Entity;
-                    if (panel != null)
-                    {
-                        if (!panel.TryUnloadSlot(EquipSlotType.Armor))
-                        {
-                            panel.OpenEquipSelectView(EquipSlotType.Armor).Coroutine();
-                        }
-                    }
-                });
-            }
+            BindFixedSlotButton(self.UIEquipSlotItemArmor, selfRef, EquipSlotType.Armor);
+            self.BindFixedSlotDragInteract(self.UIEquipSlotItemArmor, EquipSlotType.Armor);
 
-            // 背包
             self.UIEquipSlotItemBag.u_DataSlotName.SetValue("背包");
             self.UIEquipSlotItemBag.u_DataIsEmpty.SetValue(true);
             self.UIEquipSlotItemBag.SetItemIcon(string.Empty);
-            var bagBtn = self.UIEquipSlotItemBag.UIBase.OwnerGameObject.GetComponent<Button>();
-            if (bagBtn != null)
+            BindFixedSlotButton(self.UIEquipSlotItemBag, selfRef, EquipSlotType.Bag);
+            self.BindFixedSlotDragInteract(self.UIEquipSlotItemBag, EquipSlotType.Bag);
+        }
+
+        private static void BindFixedSlotButton(EquipSlotItemComponent slotItem, EntityRef<LobbyPanelComponent> panelRef, EquipSlotType slotType)
+        {
+            Button button = slotItem?.UIBase?.OwnerGameObject?.GetComponent<Button>();
+            if (button == null)
             {
-                bagBtn.onClick.AddListener(() =>
-                {
-                    var panel = selfRef.Entity;
-                    if (panel != null)
-                    {
-                        panel.OpenEquipSelectView(EquipSlotType.Bag).Coroutine();
-                    }
-                });
+                return;
             }
+
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() =>
+            {
+                LobbyPanelComponent panel = panelRef;
+                if (panel == null || panel.IsDisposed)
+                {
+                    return;
+                }
+
+                panel.HandleFixedSlotClickAsync(slotType).Coroutine();
+            });
+        }
+
+        private static async ETTask HandleFixedSlotClickAsync(this LobbyPanelComponent self, EquipSlotType slotType)
+        {
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            if (await self.TryUnloadSlotAsync(slotType))
+            {
+                return;
+            }
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            if (await self.TryEquipSelectedWarehouseIntoFixedSlotAsync(slotType))
+            {
+                return;
+            }
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            await self.OpenEquipSelectView(slotType);
         }
 
         /// <summary>
@@ -467,21 +486,17 @@ namespace ET.Client
 
             self.CurrentSelectingSlot = slotType;
 
-            // 打开装备选择界面
-            var equipSelectView = await self.UIPanel.OpenViewAsync<EquipSelectViewComponent>();
+            EquipSelectViewComponent equipSelectView = await self.UIPanel.OpenViewAsync<EquipSelectViewComponent>();
             self = selfRef;
 
-            if (equipSelectView == null)
+            if (self == null || self.IsDisposed || equipSelectView == null)
             {
                 Log.Error("打开装备选择界面失败");
                 return;
             }
 
-            // 设置引用和槽位类型
             equipSelectView.m_LobbyPanel = self;
             equipSelectView.CurrentSlotType = slotType;
-
-            // 刷新装备列表
             await self.RefreshEquipSelectView(equipSelectView, slotType);
         }
 
@@ -493,8 +508,7 @@ namespace ET.Client
             EntityRef<LobbyPanelComponent> selfRef = self;
             EntityRef<EquipSelectViewComponent> viewRef = view;
 
-            // 根据槽位类型获取可选装备列表
-            List<ItemConfig> equipList = self.GetEquipListBySlotType(slotType);
+            List<LoadoutWarehouseItemViewData> equipList = self.GetEquipListBySlotType(slotType);
 
             if (view.EquipLoop == null)
             {
@@ -502,7 +516,6 @@ namespace ET.Client
                 return;
             }
 
-            // 刷新列表
             await view.EquipLoop.SetDataRefresh(equipList, 0);
             self = selfRef;
             view = viewRef;
@@ -514,9 +527,8 @@ namespace ET.Client
 
             if (equipList.Count > 0)
             {
-                ItemConfig firstItem = equipList[0];
-                view.PendingItemConfigId = firstItem.Id;
-                view.u_DataGunName?.SetValue(self.BuildEquipPreviewText(firstItem, slotType));
+                view.PendingItemConfigId = equipList[0].ConfigId;
+                view.u_DataGunName?.SetValue(self.BuildEquipPreviewText(equipList[0].ConfigId, slotType));
             }
             else
             {
@@ -525,9 +537,9 @@ namespace ET.Client
             }
         }
 
-        private static string BuildEquipPreviewText(this LobbyPanelComponent self, ItemConfig itemConfig, EquipSlotType slotType)
+        private static string BuildEquipPreviewText(this LobbyPanelComponent self, int configId, EquipSlotType slotType)
         {
-            if (itemConfig == null)
+            if (configId <= 0)
             {
                 return string.Empty;
             }
@@ -535,196 +547,163 @@ namespace ET.Client
             string desc = null;
             if (slotType == EquipSlotType.Weapon || slotType == EquipSlotType.Weapon2)
             {
-                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemConfig.Id);
+                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(configId);
                 desc = weaponConfig?.Desc;
             }
 
-            if (string.IsNullOrWhiteSpace(desc))
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            if (string.IsNullOrWhiteSpace(desc) && itemConfig != null)
             {
                 desc = itemConfig.Desc;
             }
 
             if (string.IsNullOrWhiteSpace(desc))
             {
-                desc = itemConfig.Name;
+                ResolveDisplayInfo(configId, out desc, out _, out _);
             }
 
             return desc;
         }
 
-        /// <summary>
-        /// 根据槽位类型获取装备列表
-        /// </summary>
-        private static List<ItemConfig> GetEquipListBySlotType(this LobbyPanelComponent self, EquipSlotType slotType)
+        private static List<LoadoutWarehouseItemViewData> GetEquipListBySlotType(this LobbyPanelComponent self, EquipSlotType slotType)
         {
-            ItemConfigCategory itemCategory = ItemConfigCategory.Instance;
-            List<ItemConfig> result = new();
-
-            foreach (var item in itemCategory.GetAll().Values)
+            LoadoutComponent loadout = self.Root()?.GetComponent<LoadoutComponent>();
+            List<LoadoutWarehouseItemViewData> result = BuildWarehouseItemList(loadout);
+            if (slotType == EquipSlotType.BagContent)
             {
-                switch (slotType)
-                {
-                    case EquipSlotType.Weapon:
-                    case EquipSlotType.Weapon2:
-                        // Type == 1 表示武器
-                        if (item.Type == 1)
-                        {
-                            result.Add(item);
-                        }
-
-                        break;
-                    case EquipSlotType.Armor:
-                        // Type == 2 表示防具
-                        if (item.Type == 2)
-                        {
-                            result.Add(item);
-                        }
-
-                        break;
-                    case EquipSlotType.Bag:
-                        // Type == 3 表示药品
-                        if (item.Type == 3)
-                        {
-                            result.Add(item);
-                        }
-
-                        break;
-                }
+                return result;
             }
 
+            result.RemoveAll(data => !CanConfigFitSlot(data.ConfigId, slotType));
             return result;
         }
 
         /// <summary>
         /// 装备物品到槽位
         /// </summary>
-        public static void EquipItem(this LobbyPanelComponent self, int itemConfigId, EquipSlotType slotType)
+        public static async ETTask<bool> EquipItemAsync(this LobbyPanelComponent self, int itemConfigId, EquipSlotType slotType)
         {
-            var loadout = self.Root().GetComponent<LoadoutComponent>();
-            ItemConfig itemConfig = ItemConfigCategory.Instance.Get(itemConfigId);
-
             switch (slotType)
             {
                 case EquipSlotType.Weapon:
-                    if (!self.TryAcquireStorageItem(itemConfigId))
-                    {
-                        return;
-                    }
-                    self.ReturnStorageItem(loadout.MainWeaponConfigId);
-                    loadout.MainWeaponConfigId = itemConfigId;
-                    loadout.IsConfirmed = false;
-                    self.RefreshSlotView(self.UIEquipSlotItemWeapon, loadout.MainWeaponConfigId, "武器1", true);
-                    self.RefreshCurrentHeroDescription();
-                    Log.Info($"装备武器1: {itemConfig.Name}");
-                    break;
                 case EquipSlotType.Weapon2:
-                    if (!self.TryAcquireStorageItem(itemConfigId))
-                    {
-                        return;
-                    }
-                    self.ReturnStorageItem(loadout.SubWeaponConfigId);
-                    loadout.SubWeaponConfigId = itemConfigId;
-                    loadout.IsConfirmed = false;
-                    self.RefreshSlotView(self.UIEquipSlotItemWeapon2, loadout.SubWeaponConfigId, "武器2", true);
-                    self.RefreshCurrentHeroDescription();
-                    Log.Info($"装备武器2: {itemConfig.Name}");
-                    break;
                 case EquipSlotType.Armor:
-                    if (!self.TryAcquireStorageItem(itemConfigId))
-                    {
-                        return;
-                    }
-                    self.ReturnStorageItem(loadout.ArmorConfigId);
-                    loadout.ArmorConfigId = itemConfigId;
-                    loadout.IsConfirmed = false;
-                    self.RefreshSlotView(self.UIEquipSlotItemArmor, loadout.ArmorConfigId, "防具");
-                    self.RefreshCurrentHeroDescription();
-                    Log.Info($"装备防具: {itemConfig.Name}");
-                    break;
                 case EquipSlotType.Bag:
-                    if (!self.TryAcquireStorageItem(itemConfigId))
+                    return await self.TakeWarehouseItemAsync(
+                        itemConfigId,
+                        LoadoutAreaType.FixedSlot,
+                        ToFixedSlotType(slotType),
+                        0);
+                case EquipSlotType.BagContent:
+                    if (!self.TryFindFirstFitAnchorSlot(LoadoutAreaType.Bag, itemConfigId, out int bagAnchorSlotIndex))
                     {
-                        return;
+                        Log.Warning($"[LoadoutUI] Bag has no space for config={itemConfigId}");
+                        return false;
                     }
-                    // 添加到背包列表
-                    self.BagEquipIds.Add(itemConfigId);
-                    loadout.ConsumableConfigIds.Clear();
-                    loadout.ConsumableConfigIds.AddRange(self.BagEquipIds);
-                    loadout.IsConfirmed = false;
-                    self.RefreshBagScroll().Coroutine();
-                    Log.Info($"添加到背包: {itemConfig.Name}");
-                    break;
+
+                    return await self.TakeWarehouseItemAsync(
+                        itemConfigId,
+                        LoadoutAreaType.Bag,
+                        LoadoutFixedSlotType.None,
+                        bagAnchorSlotIndex);
+                default:
+                    return false;
             }
         }
 
-        /// <summary>
-        /// 刷新背包 LoopScroll
-        /// </summary>
-        private static async ETTask RefreshBagScroll(this LobbyPanelComponent self)
+        private static async ETTask<bool> TryUnloadSlotAsync(this LobbyPanelComponent self, EquipSlotType slotType)
         {
-            EntityRef<LobbyPanelComponent> selfRef = self;
-
-            // 获取背包中的装备配置列表
-            List<ItemConfig> bagItems = new();
-            ItemConfigCategory itemCategory = ItemConfigCategory.Instance;
-            foreach (var itemId in self.BagEquipIds)
+            if (GetCurrentFixedSlotConfigId(self.Root().GetComponent<LoadoutComponent>(), slotType) <= 0)
             {
-                var itemConfig = itemCategory.Get(itemId);
-                if (itemConfig != null)
-                {
-                    bagItems.Add(itemConfig);
-                }
+                return false;
             }
 
-            // 刷新背包 LoopScroll
-            await self.EquipBagLoop.SetDataRefresh(bagItems, 0);
-            self = selfRef;
-
-            // 更新背包槽位显示
-            self.UIEquipSlotItemBag.u_DataIsEmpty.SetValue(self.BagEquipIds.Count == 0);
-            self.UIEquipSlotItemBag.SetItemIcon(bagItems.Count > 0 ? bagItems[0].Icon : string.Empty);
+            await self.PutFixedSlotToWarehouseAsync(slotType);
+            return true;
         }
 
-        /// <summary>
-        /// 背包物品绑定回调
-        /// </summary>
-        [EntitySystem]
-        private static void YIUILoopRenderer(
-            this LobbyPanelComponent self,
-            EquipSelectItemComponent item,
-            ItemConfig data,
-            int index,
-            bool select)
+        private static async ETTask<bool> TryEquipSelectedWarehouseIntoFixedSlotAsync(this LobbyPanelComponent self, EquipSlotType slotType)
         {
-            item.u_DataEquipName.SetValue(data.Name);
-            item.SetSelected(false);
-            item.SetItemIcon(data.Icon);
-        }
-
-        /// <summary>
-        /// 背包物品点击回调（可以实现移除功能）
-        /// </summary>
-        [EntitySystem]
-        private static void YIUILoopOnClick(
-            this LobbyPanelComponent self,
-            EquipSelectItemComponent item,
-            ItemConfig data,
-            int index,
-            bool select)
-        {
-            if (index < 0 || index >= self.BagEquipIds.Count)
+            int selectedConfigId = self.SelectedWarehouseConfigId;
+            if (selectedConfigId <= 0 || !CanConfigFitSlot(selectedConfigId, slotType))
             {
-                return;
+                return false;
             }
 
-            self.ReturnStorageItem(self.BagEquipIds[index]);
-            self.BagEquipIds.RemoveAt(index);
-            LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>();
-            loadout.ConsumableConfigIds.Clear();
-            loadout.ConsumableConfigIds.AddRange(self.BagEquipIds);
-            loadout.IsConfirmed = false;
-            self.RefreshBagScroll().Coroutine();
-            Log.Info($"卸下背包物品: {data.Name}");
+            await self.TakeWarehouseItemAsync(
+                selectedConfigId,
+                LoadoutAreaType.FixedSlot,
+                ToFixedSlotType(slotType),
+                0);
+            return true;
+        }
+
+        private static async ETTask<bool> TryTakeSelectedWarehouseToAreaAsync(this LobbyPanelComponent self, LoadoutAreaType areaType)
+        {
+            int selectedConfigId = self.SelectedWarehouseConfigId;
+            if (selectedConfigId <= 0)
+            {
+                return false;
+            }
+
+            if (!self.TryFindFirstFitAnchorSlot(areaType, selectedConfigId, out int anchorSlotIndex))
+            {
+                Log.Warning($"[LoadoutUI] {areaType} has no space for config={selectedConfigId}");
+                return true;
+            }
+
+            await self.TakeWarehouseItemAsync(selectedConfigId, areaType, LoadoutFixedSlotType.None, anchorSlotIndex);
+            return true;
+        }
+
+        private static async ETTask<bool> TakeWarehouseItemAsync(
+            this LobbyPanelComponent self,
+            int configId,
+            LoadoutAreaType targetAreaType,
+            LoadoutFixedSlotType targetSlotType,
+            int targetAnchorSlotIndex)
+        {
+            C2G_LoadoutTakeFromWarehouse request = C2G_LoadoutTakeFromWarehouse.Create();
+            request.ConfigId = configId;
+            request.Count = 1;
+            request.TargetAreaType = (int)targetAreaType;
+            request.TargetSlotType = (int)targetSlotType;
+            request.TargetAnchorSlotIndex = targetAnchorSlotIndex;
+
+            if (targetAreaType == LoadoutAreaType.FixedSlot && targetSlotType == LoadoutFixedSlotType.Backpack && TryResolveBackpackSize(configId, out int bagWidth, out int bagHeight))
+            {
+                request.TargetBagWidth = bagWidth;
+                request.TargetBagHeight = bagHeight;
+            }
+
+            G2C_LoadoutTakeFromWarehouse response =
+                    await self.Root().GetComponent<ClientSenderComponent>().Call(request) as G2C_LoadoutTakeFromWarehouse;
+            if (response == null || response.Error != ErrorCode.ERR_Success)
+            {
+                Log.Warning($"[LoadoutUI] TakeFromWarehouse failed: config={configId}, area={targetAreaType}, slot={targetSlotType}, anchor={targetAnchorSlotIndex}, error={response?.Error}, message={response?.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static async ETTask<bool> PutFixedSlotToWarehouseAsync(this LobbyPanelComponent self, EquipSlotType slotType)
+        {
+            C2G_LoadoutPutToWarehouse request = C2G_LoadoutPutToWarehouse.Create();
+            request.SourceAreaType = (int)LoadoutAreaType.FixedSlot;
+            request.SourceSlotType = (int)ToFixedSlotType(slotType);
+            request.SourceAnchorSlotIndex = 0;
+            request.Count = 1;
+
+            G2C_LoadoutPutToWarehouse response =
+                    await self.Root().GetComponent<ClientSenderComponent>().Call(request) as G2C_LoadoutPutToWarehouse;
+            if (response == null || response.Error != ErrorCode.ERR_Success)
+            {
+                Log.Warning($"[LoadoutUI] PutToWarehouse failed: slot={slotType}, error={response?.Error}, message={response?.Message}");
+                return false;
+            }
+
+            return true;
         }
 
         private static void RefreshLoadoutView(this LobbyPanelComponent self)
@@ -732,20 +711,29 @@ namespace ET.Client
             LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>();
             if (loadout == null)
             {
+                self.RefreshSlotView(self.UIEquipSlotItemWeapon, EquipSlotType.Weapon, 0, "武器1", true);
+                self.RefreshSlotView(self.UIEquipSlotItemWeapon2, EquipSlotType.Weapon2, 0, "武器2", true);
+                self.RefreshSlotView(self.UIEquipSlotItemArmor, EquipSlotType.Armor, 0, "防具");
+                self.RefreshSlotView(self.UIEquipSlotItemBag, EquipSlotType.Bag, 0, "背包");
+                self.RefreshLoadoutExtraUi(null);
                 return;
             }
 
-            self.RefreshSlotView(self.UIEquipSlotItemWeapon, loadout.MainWeaponConfigId, "武器1", true);
-            self.RefreshSlotView(self.UIEquipSlotItemWeapon2, loadout.SubWeaponConfigId, "武器2", true);
-            self.RefreshSlotView(self.UIEquipSlotItemArmor, loadout.ArmorConfigId, "防具");
-
-            self.BagEquipIds.Clear();
-            self.BagEquipIds.AddRange(loadout.ConsumableConfigIds);
-            self.RefreshBagScroll().Coroutine();
+            self.RefreshSlotView(self.UIEquipSlotItemWeapon, EquipSlotType.Weapon, loadout.MainWeaponConfigId, "武器1", true);
+            self.RefreshSlotView(self.UIEquipSlotItemWeapon2, EquipSlotType.Weapon2, loadout.SubWeaponConfigId, "武器2", true);
+            self.RefreshSlotView(self.UIEquipSlotItemArmor, EquipSlotType.Armor, loadout.ArmorConfigId, "防具");
+            self.RefreshSlotView(self.UIEquipSlotItemBag, EquipSlotType.Bag, loadout.BackpackConfigId, "背包");
+            self.RefreshLoadoutExtraUi(loadout);
             self.RefreshCurrentHeroDescription();
         }
 
-        private static void RefreshSlotView(this LobbyPanelComponent self, EquipSlotItemComponent slotItem, int configId, string slotName, bool hideTextWhenEquipped = false)
+        private static void RefreshSlotView(
+            this LobbyPanelComponent self,
+            EquipSlotItemComponent slotItem,
+            EquipSlotType slotType,
+            int configId,
+            string slotName,
+            bool hideTextWhenEquipped = false)
         {
             if (slotItem == null)
             {
@@ -758,107 +746,224 @@ namespace ET.Client
                 slotItem.u_DataEquipName.SetValue(string.Empty);
                 slotItem.u_DataIsEmpty.SetValue(true);
                 slotItem.SetItemIcon(string.Empty);
+                self.RefreshFixedSlotDragProxy(slotItem, slotType, 0);
                 return;
             }
 
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            ResolveDisplayInfo(configId, out string name, out string icon, out _);
             slotItem.u_DataSlotName.SetValue(hideTextWhenEquipped ? string.Empty : slotName);
-            slotItem.u_DataEquipName.SetValue(hideTextWhenEquipped ? string.Empty : itemConfig?.Name ?? string.Empty);
-            slotItem.u_DataIsEmpty.SetValue(itemConfig == null);
-            slotItem.SetItemIcon(itemConfig?.Icon ?? string.Empty);
+            slotItem.u_DataEquipName.SetValue(hideTextWhenEquipped ? string.Empty : name);
+            slotItem.u_DataIsEmpty.SetValue(false);
+            slotItem.SetItemIcon(icon);
+            self.RefreshFixedSlotDragProxy(slotItem, slotType, configId);
         }
 
-        private static bool TryUnloadSlot(this LobbyPanelComponent self, EquipSlotType slotType)
+        private static bool TryFindFirstFitAnchorSlot(this LobbyPanelComponent self, LoadoutAreaType areaType, int configId, out int anchorSlotIndex)
         {
+            anchorSlotIndex = -1;
+
             LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>();
-            if (loadout == null)
+            List<LoadoutGridItemInfo> container = GetGridContainer(loadout, areaType);
+            int width = GetGridContainerWidth(loadout, areaType);
+            int height = GetGridContainerHeight(loadout, areaType);
+            if (container == null || width <= 0 || height <= 0)
             {
                 return false;
             }
 
-            int configId = slotType switch
+            if (!TryResolveGridMetrics(configId, out int gridWidth, out int gridHeight))
+            {
+                return false;
+            }
+
+            List<GridPlacementItemInfo> placements = BuildPlacementItems(container);
+            for (int i = 0; i < width * height; ++i)
+            {
+                placements.Add(new GridPlacementItemInfo
+                {
+                    ConfigId = configId,
+                    Count = 1,
+                    AnchorSlotIndex = i,
+                    GridWidth = gridWidth,
+                    GridHeight = gridHeight,
+                });
+
+                if (LoadoutGridPlacementHelper.ArePlacementsValid(placements, width, height))
+                {
+                    anchorSlotIndex = i;
+                    return true;
+                }
+
+                placements.RemoveAt(placements.Count - 1);
+            }
+
+            return false;
+        }
+
+        private static bool TryResolveGridMetrics(int configId, out int gridWidth, out int gridHeight)
+        {
+            gridWidth = LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+            gridHeight = LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
+
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            if (itemConfig != null)
+            {
+                gridWidth = itemConfig.GridWidth > 0 ? itemConfig.GridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+                gridHeight = itemConfig.GridHeight > 0 ? itemConfig.GridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
+                return true;
+            }
+
+            EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
+            return equipConfig != null;
+        }
+
+        private static bool TryResolveBackpackSize(int configId, out int bagWidth, out int bagHeight)
+        {
+            bagWidth = 0;
+            bagHeight = 0;
+
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            if (itemConfig == null)
+            {
+                return false;
+            }
+
+            if (itemConfig.BackpackWidth <= 0 || itemConfig.BackpackHeight <= 0)
+            {
+                return false;
+            }
+
+            bagWidth = itemConfig.BackpackWidth;
+            bagHeight = itemConfig.BackpackHeight;
+            return true;
+        }
+
+        private static List<GridPlacementItemInfo> BuildPlacementItems(List<LoadoutGridItemInfo> container)
+        {
+            List<GridPlacementItemInfo> result = new();
+            if (container == null)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < container.Count; ++i)
+            {
+                LoadoutGridItemInfo item = container[i];
+                result.Add(new GridPlacementItemInfo
+                {
+                    ConfigId = item.ConfigId,
+                    Count = item.Count,
+                    AnchorSlotIndex = item.AnchorSlotIndex,
+                    GridWidth = item.GridWidth,
+                    GridHeight = item.GridHeight,
+                });
+            }
+
+            return result;
+        }
+
+        private static void FillGridItemMessage(IList<LoadoutGridItemInfo> source, IList<LoadoutGridItemData> target)
+        {
+            target.Clear();
+            if (source == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < source.Count; ++i)
+            {
+                LoadoutGridItemInfo item = source[i];
+                LoadoutGridItemData data = LoadoutGridItemData.Create();
+                data.ConfigId = item.ConfigId;
+                data.Count = item.Count;
+                data.AnchorSlotIndex = item.AnchorSlotIndex;
+                data.GridWidth = item.GridWidth;
+                data.GridHeight = item.GridHeight;
+                target.Add(data);
+            }
+        }
+
+        private static List<LoadoutGridItemInfo> GetGridContainer(LoadoutComponent loadout, LoadoutAreaType areaType)
+        {
+            if (loadout == null)
+            {
+                return null;
+            }
+
+            return areaType switch
+            {
+                LoadoutAreaType.Bag when loadout.BackpackConfigId > 0 && loadout.BagWidth > 0 && loadout.BagHeight > 0 => loadout.CarriedBagItems,
+                LoadoutAreaType.Secure when loadout.SecureWidth > 0 && loadout.SecureHeight > 0 => loadout.CarriedSecureItems,
+                _ => null,
+            };
+        }
+
+        private static int GetGridContainerWidth(LoadoutComponent loadout, LoadoutAreaType areaType)
+        {
+            return areaType switch
+            {
+                LoadoutAreaType.Bag => loadout?.BagWidth ?? 0,
+                LoadoutAreaType.Secure => loadout?.SecureWidth ?? 0,
+                _ => 0,
+            };
+        }
+
+        private static int GetGridContainerHeight(LoadoutComponent loadout, LoadoutAreaType areaType)
+        {
+            return areaType switch
+            {
+                LoadoutAreaType.Bag => loadout?.BagHeight ?? 0,
+                LoadoutAreaType.Secure => loadout?.SecureHeight ?? 0,
+                _ => 0,
+            };
+        }
+
+        private static int GetCurrentFixedSlotConfigId(LoadoutComponent loadout, EquipSlotType slotType)
+        {
+            if (loadout == null)
+            {
+                return 0;
+            }
+
+            return slotType switch
             {
                 EquipSlotType.Weapon => loadout.MainWeaponConfigId,
                 EquipSlotType.Weapon2 => loadout.SubWeaponConfigId,
                 EquipSlotType.Armor => loadout.ArmorConfigId,
+                EquipSlotType.Bag => loadout.BackpackConfigId,
                 _ => 0,
             };
-
-            if (configId <= 0)
-            {
-                return false;
-            }
-
-            self.ReturnStorageItem(configId);
-            switch (slotType)
-            {
-                case EquipSlotType.Weapon:
-                    loadout.MainWeaponConfigId = 0;
-                    break;
-                case EquipSlotType.Weapon2:
-                    loadout.SubWeaponConfigId = 0;
-                    break;
-                case EquipSlotType.Armor:
-                    loadout.ArmorConfigId = 0;
-                    break;
-            }
-
-            loadout.IsConfirmed = false;
-            self.RefreshLoadoutView();
-            return true;
         }
 
-        private static bool TryAcquireStorageItem(this LobbyPanelComponent self, int configId)
+        private static LoadoutFixedSlotType ToFixedSlotType(EquipSlotType slotType)
         {
-            if (configId <= 0)
+            return slotType switch
             {
-                return false;
-            }
+                EquipSlotType.Weapon => LoadoutFixedSlotType.MainWeapon,
+                EquipSlotType.Weapon2 => LoadoutFixedSlotType.SubWeapon,
+                EquipSlotType.Armor => LoadoutFixedSlotType.Armor,
+                EquipSlotType.Bag => LoadoutFixedSlotType.Backpack,
+                _ => LoadoutFixedSlotType.None,
+            };
+        }
 
-            LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>();
-            if (loadout == null)
+        private static bool CanConfigFitSlot(int configId, EquipSlotType slotType)
+        {
+            if (slotType == EquipSlotType.BagContent)
             {
-                return false;
-            }
-
-            if (loadout.StorageItemCounts.TryGetValue(configId, out int count) && count > 0)
-            {
-                if (count == 1)
-                {
-                    loadout.StorageItemCounts.Remove(configId);
-                }
-                else
-                {
-                    loadout.StorageItemCounts[configId] = count - 1;
-                }
-
                 return true;
             }
 
-            return loadout.AllowFreeSelection;
-        }
-
-        private static void ReturnStorageItem(this LobbyPanelComponent self, int configId)
-        {
-            if (configId <= 0)
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            EquipmentConfig equipmentConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
+            return slotType switch
             {
-                return;
-            }
-
-            LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>();
-            if (loadout == null)
-            {
-                return;
-            }
-
-            if (loadout.StorageItemCounts.TryGetValue(configId, out int count))
-            {
-                loadout.StorageItemCounts[configId] = count + 1;
-            }
-            else
-            {
-                loadout.StorageItemCounts[configId] = 1;
-            }
+                EquipSlotType.Weapon => (itemConfig != null && (itemConfig.CanEquipMainWeapon || itemConfig.CanEquipSubWeapon)) || equipmentConfig?.EquipSlot == (int)EquipmentSlotType.MainHand,
+                EquipSlotType.Weapon2 => (itemConfig != null && (itemConfig.CanEquipMainWeapon || itemConfig.CanEquipSubWeapon)) || equipmentConfig?.EquipSlot == (int)EquipmentSlotType.MainHand,
+                EquipSlotType.Armor => (itemConfig != null && itemConfig.CanEquipArmor) || equipmentConfig?.EquipSlot == (int)EquipmentSlotType.Chest,
+                EquipSlotType.Bag => itemConfig != null && (itemConfig.CanEquipBackpack || itemConfig.IsBackpack || (itemConfig.BackpackWidth > 0 && itemConfig.BackpackHeight > 0)),
+                _ => false,
+            };
         }
 
         #endregion

@@ -239,6 +239,18 @@ namespace ET.Server
             CopyGridItemsToMessage(loadout.CarriedSecureItems, response.CurrentSecureItems);
         }
 
+        public static void FillGetHeroListStorageResponse(PlayerStorageComponent storage, G2C_GetHeroList response)
+        {
+            if (storage == null || response == null)
+            {
+                return;
+            }
+
+            FillWarehouseSummary(storage.WarehouseItems, response.StorageConfigIds, response.StorageCounts);
+            CopyWarehouseItemsToMessage(storage.WarehouseItems, response.CurrentWarehouseItems);
+            response.TotalWealth = storage.TotalWealth;
+        }
+
         public static void FillLoadoutStateChangedResponse(
             LoadoutComponent loadout,
             PlayerStorageComponent storage,
@@ -246,12 +258,8 @@ namespace ET.Server
         {
             if (storage != null)
             {
-                foreach (var kv in storage.WarehouseItems)
-                {
-                    response.StorageConfigIds.Add(kv.Key);
-                    response.StorageCounts.Add(kv.Value);
-                }
-
+                FillWarehouseSummary(storage.WarehouseItems, response.StorageConfigIds, response.StorageCounts);
+                CopyWarehouseItemsToMessage(storage.WarehouseItems, response.CurrentWarehouseItems);
                 response.TotalWealth = storage.TotalWealth;
             }
 
@@ -360,6 +368,70 @@ namespace ET.Server
             else
             {
                 summary[configId] = count;
+            }
+        }
+
+        private static void CopyWarehouseItemsToMessage(IList<LoadoutWarehouseItemInfo> source, IList<LoadoutWarehouseItemData> target)
+        {
+            target.Clear();
+            if (source == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < source.Count; ++i)
+            {
+                LoadoutWarehouseItemInfo item = source[i];
+                if (item.ConfigId <= 0 || item.Count <= 0)
+                {
+                    continue;
+                }
+
+                LoadoutWarehouseItemData data = LoadoutWarehouseItemData.Create();
+                data.ItemUid = item.ItemUid;
+                data.ConfigId = item.ConfigId;
+                data.Count = item.Count;
+                data.GridWidth = item.GridWidth;
+                data.GridHeight = item.GridHeight;
+                target.Add(data);
+            }
+        }
+
+        private static void FillWarehouseSummary(IList<LoadoutWarehouseItemInfo> source, IList<int> configIds, IList<int> counts)
+        {
+            configIds.Clear();
+            counts.Clear();
+            if (source == null)
+            {
+                return;
+            }
+
+            Dictionary<int, int> summary = new();
+            for (int i = 0; i < source.Count; ++i)
+            {
+                LoadoutWarehouseItemInfo item = source[i];
+                if (item.ConfigId <= 0 || item.Count <= 0)
+                {
+                    continue;
+                }
+
+                if (summary.TryGetValue(item.ConfigId, out int existed))
+                {
+                    summary[item.ConfigId] = existed + item.Count;
+                }
+                else
+                {
+                    summary[item.ConfigId] = item.Count;
+                }
+            }
+
+            List<int> ids = new(summary.Keys);
+            ids.Sort(static (a, b) => a.CompareTo(b));
+            for (int i = 0; i < ids.Count; ++i)
+            {
+                int configId = ids[i];
+                configIds.Add(configId);
+                counts.Add(summary[configId]);
             }
         }
     }

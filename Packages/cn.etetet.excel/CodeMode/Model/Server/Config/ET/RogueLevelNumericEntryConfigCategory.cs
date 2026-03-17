@@ -11,28 +11,27 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
 
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class RogueLevelNumericEntryConfigCategory : Singleton<RogueLevelNumericEntryConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.RogueLevelNumericEntryConfig> _dataMap;
         private readonly List<ET.RogueLevelNumericEntryConfig> _dataList;
-
-        public RogueLevelNumericEntryConfigCategory(JSONNode _buf)
+        
+        public RogueLevelNumericEntryConfigCategory(ByteBuf _buf)
         {
             _dataMap = new Dictionary<int, ET.RogueLevelNumericEntryConfig>();
             _dataList = new List<ET.RogueLevelNumericEntryConfig>();
-
-            foreach(JSONNode _ele in _buf.Children)
+            
+            for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 ET.RogueLevelNumericEntryConfig _v;
-                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.RogueLevelNumericEntryConfig.DeserializeRogueLevelNumericEntryConfig(_ele);  }
+                _v = global::ET.RogueLevelNumericEntryConfig.DeserializeRogueLevelNumericEntryConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

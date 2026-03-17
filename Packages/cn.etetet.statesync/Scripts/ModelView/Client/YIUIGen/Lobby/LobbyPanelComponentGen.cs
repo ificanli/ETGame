@@ -37,9 +37,23 @@ namespace ET.Client
         public UnityEngine.RectTransform u_ComExplorePanelRectTransform;
         public UnityEngine.RectTransform u_ComHeroList;
         public UnityEngine.RectTransform u_ComEquipBagScroll;
+        public UnityEngine.RectTransform u_ComCurrentBagGridRoot;
+        public UnityEngine.RectTransform u_ComCurrentBagItemsLayer;
+        public UnityEngine.RectTransform u_ComCurrentBagItemTemplate;
+        public UnityEngine.RectTransform u_ComSecureGridRoot;
+        public UnityEngine.RectTransform u_ComSecureItemsLayer;
+        public UnityEngine.RectTransform u_ComSecureItemTemplate;
+        public UnityEngine.RectTransform u_ComWarehouseLoopScroll;
+        public UnityEngine.RectTransform u_ComCurrentBagRoot;
+        public UnityEngine.RectTransform u_ComCurrentBagBoardRoot;
+        public UnityEngine.RectTransform u_ComSecureBagRoot;
+        public UnityEngine.RectTransform u_ComSecureBoardRoot;
+        public UnityEngine.RectTransform u_ComWarehouseRoot;
         public YIUIFramework.UIDataValueString u_DataRoleSkillDes;
         public YIUIFramework.UIDataValueString u_DataRoleSurviveAbility;
         public YIUIFramework.UIDataValueString u_DataRoleAttackAbility;
+        public YIUIFramework.UIDataValueString u_DataWarehouseEmptyText;
+        public YIUIFramework.UIDataValueString u_DataTotalWealthText;
         public EntityRef<ET.Client.EquipSlotItemComponent> u_UIEquipSlotItemBag;
         public ET.Client.EquipSlotItemComponent UIEquipSlotItemBag => u_UIEquipSlotItemBag;
         public EntityRef<ET.Client.EquipSlotItemComponent> u_UIEquipSlotItemArmor;
@@ -81,6 +95,9 @@ namespace ET.Client
         public UITaskEventP0 u_EventClickBag;
         public UITaskEventHandleP0 u_EventClickBagHandle;
         public const string OnEventClickBagInvoke = "LobbyPanelComponent.OnEventClickBagInvoke";
+        public UITaskEventP0 u_EventOneKeyUnloadButton;
+        public UITaskEventHandleP0 u_EventOneKeyUnloadButtonHandle;
+        public const string OnEventOneKeyUnloadButtonInvoke = "LobbyPanelComponent.OnEventOneKeyUnloadButtonInvoke";
 
     }
 }

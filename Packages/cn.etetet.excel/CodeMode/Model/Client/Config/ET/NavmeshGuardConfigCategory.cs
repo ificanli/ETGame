@@ -11,7 +11,6 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
@@ -19,7 +18,7 @@ namespace ET
     /// <summary>
     /// 导航防穿墙参数配置
     /// </summary>
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class NavmeshGuardConfigCategory : Singleton<NavmeshGuardConfigCategory>, IConfig
     {
 
@@ -27,11 +26,11 @@ namespace ET
 
         public ET.NavmeshGuardConfig Data => _data;
 
-        public NavmeshGuardConfigCategory(JSONNode _buf)
+        public NavmeshGuardConfigCategory(ByteBuf _buf)
         {
-            int n = _buf.Count;
+            int n = _buf.ReadSize();
             if (n != 1) throw new SerializationException("table mode=one, but size != 1");
-            { if(!_buf[0].IsObject) { throw new SerializationException(); }  _data = global::ET.NavmeshGuardConfig.DeserializeNavmeshGuardConfig(_buf[0]);  }
+            _data = global::ET.NavmeshGuardConfig.DeserializeNavmeshGuardConfig(_buf);
 			EndInit();
         }
 
@@ -72,7 +71,7 @@ namespace ET
         /// 最小角色半径
         /// </summary>
         public float MinUnitRadius => _data.MinUnitRadius;
-
+        
         public void ResolveRef()
         {
             _data.ResolveRef();

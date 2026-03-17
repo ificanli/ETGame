@@ -12,6 +12,8 @@ namespace ET.Server
             self.LastEvacuationItems.Clear();
             self.LastEvacuationWealth = 0;
             self.TotalWealth = 0;
+            self.InitialItemsGranted = false;
+            self.GrantInitialWarehouseItems();
         }
 
         [EntitySystem]
@@ -41,14 +43,7 @@ namespace ET.Server
                     self.LastEvacuationItems[item.ConfigId] = item.Count;
                 }
 
-                if (self.WarehouseItems.TryGetValue(item.ConfigId, out int warehouseCount))
-                {
-                    self.WarehouseItems[item.ConfigId] = warehouseCount + item.Count;
-                }
-                else
-                {
-                    self.WarehouseItems[item.ConfigId] = item.Count;
-                }
+                self.AddWarehouseItem(item.ConfigId, item.Count);
             }
 
             Log.Info($"[PlayerStorage] wrote evacuation result: {self.LastEvacuationItems.Count} item types, wealth={self.LastEvacuationWealth}");
@@ -86,7 +81,19 @@ namespace ET.Server
                 return 0;
             }
 
-            return self.WarehouseItems.TryGetValue(configId, out int count) ? count : 0;
+            int totalCount = 0;
+            for (int i = 0; i < self.WarehouseItems.Count; ++i)
+            {
+                LoadoutWarehouseItemInfo item = self.WarehouseItems[i];
+                if (item.ConfigId != configId || item.Count <= 0)
+                {
+                    continue;
+                }
+
+                totalCount += item.Count;
+            }
+
+            return totalCount;
         }
 
         public static bool TryConsumeWarehouseItem(this PlayerStorageComponent self, int configId, int count)
@@ -96,22 +103,35 @@ namespace ET.Server
                 return false;
             }
 
-            if (!self.WarehouseItems.TryGetValue(configId, out int current) || current < count)
+            if (self.GetWarehouseCount(configId) < count)
             {
                 return false;
             }
 
-            int remain = current - count;
-            if (remain > 0)
+            int remain = count;
+            for (int i = 0; i < self.WarehouseItems.Count && remain > 0;)
             {
-                self.WarehouseItems[configId] = remain;
-            }
-            else
-            {
-                self.WarehouseItems.Remove(configId);
+                LoadoutWarehouseItemInfo item = self.WarehouseItems[i];
+                if (item.ConfigId != configId || item.Count <= 0)
+                {
+                    ++i;
+                    continue;
+                }
+
+                if (item.Count <= remain)
+                {
+                    remain -= item.Count;
+                    self.WarehouseItems.RemoveAt(i);
+                    continue;
+                }
+
+                item.Count -= remain;
+                self.WarehouseItems[i] = item;
+                remain = 0;
+                break;
             }
 
-            return true;
+            return remain == 0;
         }
 
         public static void AddWarehouseItem(this PlayerStorageComponent self, int configId, int count)
@@ -121,14 +141,120 @@ namespace ET.Server
                 return;
             }
 
-            if (self.WarehouseItems.TryGetValue(configId, out int current))
+            if (!TryResolveWarehouseItemMetrics(configId, out int maxStack, out int gridWidth, out int gridHeight))
             {
-                self.WarehouseItems[configId] = current + count;
+                return;
             }
-            else
+
+            int remain = count;
+            if (maxStack > 1)
             {
-                self.WarehouseItems[configId] = count;
+                for (int i = 0; i < self.WarehouseItems.Count && remain > 0; ++i)
+                {
+                    LoadoutWarehouseItemInfo item = self.WarehouseItems[i];
+                    if (item.ConfigId != configId || item.Count <= 0 || item.Count >= maxStack)
+                    {
+                        continue;
+                    }
+
+                    int canAdd = maxStack - item.Count;
+                    int addCount = remain < canAdd ? remain : canAdd;
+                    item.Count += addCount;
+                    self.WarehouseItems[i] = item;
+                    remain -= addCount;
+                }
             }
+
+            while (remain > 0)
+            {
+                int stackCount = maxStack > 0 && remain > maxStack ? maxStack : remain;
+                self.WarehouseItems.Add(new LoadoutWarehouseItemInfo
+                {
+                    ItemUid = IdGenerater.Instance.GenerateId(),
+                    ConfigId = configId,
+                    Count = stackCount,
+                    GridWidth = gridWidth,
+                    GridHeight = gridHeight,
+                });
+                remain -= stackCount;
+            }
+        }
+
+        public static void GrantInitialWarehouseItems(this PlayerStorageComponent self)
+        {
+            if (self.InitialItemsGranted)
+            {
+                return;
+            }
+
+            HashSet<int> grantedConfigIds = new();
+
+            AddFirstItemByPredicate(grantedConfigIds, static item => item.CanEquipMainWeapon || item.CanEquipSubWeapon);
+            AddFirstItemByPredicate(grantedConfigIds, static item => item.CanEquipArmor);
+            AddFirstItemByPredicate(grantedConfigIds, static item => item.CanEquipBackpack || item.IsBackpack);
+            AddFirstItemByPredicate(grantedConfigIds, static item => item.LoadoutShopCategory == 4);
+            AddFirstItemByPredicate(grantedConfigIds, static item => item.Type == 3 || item.LoadoutShopCategory == 5);
+
+            HashSet<int> seenTypes = new();
+            foreach (ItemConfig itemConfig in ItemConfigCategory.Instance.DataList)
+            {
+                if (itemConfig == null || itemConfig.Id <= 0)
+                {
+                    continue;
+                }
+
+                if (!seenTypes.Add(itemConfig.Type))
+                {
+                    continue;
+                }
+
+                grantedConfigIds.Add(itemConfig.Id);
+            }
+
+            foreach (int configId in grantedConfigIds)
+            {
+                self.AddWarehouseItem(configId, 1);
+            }
+
+            self.InitialItemsGranted = true;
+        }
+
+        private static void AddFirstItemByPredicate(HashSet<int> grantedConfigIds, System.Func<ItemConfig, bool> predicate)
+        {
+            foreach (ItemConfig itemConfig in ItemConfigCategory.Instance.DataList)
+            {
+                if (itemConfig == null || itemConfig.Id <= 0)
+                {
+                    continue;
+                }
+
+                if (!predicate(itemConfig))
+                {
+                    continue;
+                }
+
+                grantedConfigIds.Add(itemConfig.Id);
+                return;
+            }
+        }
+
+        private static bool TryResolveWarehouseItemMetrics(int configId, out int maxStack, out int gridWidth, out int gridHeight)
+        {
+            maxStack = 1;
+            gridWidth = LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+            gridHeight = LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
+
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            if (itemConfig != null)
+            {
+                maxStack = itemConfig.MaxStack > 0 ? itemConfig.MaxStack : 1;
+                gridWidth = itemConfig.GridWidth > 0 ? itemConfig.GridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+                gridHeight = itemConfig.GridHeight > 0 ? itemConfig.GridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
+                return true;
+            }
+
+            EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
+            return equipConfig != null;
         }
     }
 }

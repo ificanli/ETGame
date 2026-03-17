@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,22 +15,22 @@ namespace ET
     [EnableClass]
     public sealed partial class RogueCardConfig : Luban.BeanBase
     {
-        public RogueCardConfig(JSONNode _buf) 
+        public RogueCardConfig(ByteBuf _buf) 
         {
-            { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
-            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
-            { if(!_buf["Desc"].IsString) { throw new SerializationException(); }  Desc = _buf["Desc"]; }
-            { if(!_buf["ImagePath"].IsString) { throw new SerializationException(); }  ImagePath = _buf["ImagePath"]; }
-            { if(!_buf["BTConfig"].IsString) { throw new SerializationException(); }  BTConfig = _buf["BTConfig"]; }
-            { if(!_buf["Weight"].IsNumber) { throw new SerializationException(); }  Weight = _buf["Weight"]; }
-            { if(!_buf["Quality"].IsNumber) { throw new SerializationException(); }  Quality = _buf["Quality"]; }
-            { var __json0 = _buf["ShowTags"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; ShowTags = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  ShowTags[__index0++] = __v0; }   }
-            { var __json0 = _buf["HideTags"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; HideTags = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  HideTags[__index0++] = __v0; }   }
+            Id = _buf.ReadInt();
+            Name = _buf.ReadString();
+            Desc = _buf.ReadString();
+            ImagePath = _buf.ReadString();
+            BTConfig = _buf.ReadString();
+            Weight = _buf.ReadInt();
+            Quality = _buf.ReadInt();
+            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);ShowTags = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); ShowTags[__index0] = __e0;}}
+            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);HideTags = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); HideTags[__index0] = __e0;}}
 
             EndInit();
         }
 
-        public static RogueCardConfig DeserializeRogueCardConfig(JSONNode _buf)
+        public static RogueCardConfig DeserializeRogueCardConfig(ByteBuf _buf)
         {
             return new ET.RogueCardConfig(_buf);
         }
@@ -72,7 +71,7 @@ namespace ET
         /// 隐藏tags
         /// </summary>
         public readonly int[] HideTags;
-
+    
         public const int __ID__ = 1843007629;
         public override int GetTypeId() => __ID__;
 

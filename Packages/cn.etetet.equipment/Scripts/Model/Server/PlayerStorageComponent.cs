@@ -10,9 +10,9 @@ namespace ET.Server
     public class PlayerStorageComponent : Entity, IAwake, IDestroy
     {
         /// <summary>
-        /// 局外仓库库存（ConfigId -> Count）
+        /// 局外仓库离散物品列表。
         /// </summary>
-        public Dictionary<int, int> WarehouseItems = new();
+        public List<LoadoutWarehouseItemInfo> WarehouseItems = new();
 
         /// <summary>
         /// 上一局撤离带出的物品列表（ConfigId -> Count）
@@ -28,5 +28,10 @@ namespace ET.Server
         /// 累计总财富（跨局累加）
         /// </summary>
         public long TotalWealth;
+
+        /// <summary>
+        /// 是否已经发放过默认仓库物资。
+        /// </summary>
+        public bool InitialItemsGranted;
     }
 }

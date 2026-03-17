@@ -11,7 +11,6 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
@@ -19,23 +18,23 @@ namespace ET
     /// <summary>
     /// 武器战斗配置表
     /// </summary>
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class WeaponConfigCategory : Singleton<WeaponConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.WeaponConfig> _dataMap;
         private readonly List<ET.WeaponConfig> _dataList;
-
-        public WeaponConfigCategory(JSONNode _buf)
+        
+        public WeaponConfigCategory(ByteBuf _buf)
         {
             _dataMap = new Dictionary<int, ET.WeaponConfig>();
             _dataList = new List<ET.WeaponConfig>();
-
-            foreach(JSONNode _ele in _buf.Children)
+            
+            for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 ET.WeaponConfig _v;
-                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.WeaponConfig.DeserializeWeaponConfig(_ele);  }
+                _v = global::ET.WeaponConfig.DeserializeWeaponConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }
