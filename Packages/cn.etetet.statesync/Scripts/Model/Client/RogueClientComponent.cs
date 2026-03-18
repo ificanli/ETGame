@@ -27,6 +27,7 @@ namespace ET.Client
         public int NameTextId;
         public int DescTextId;
         public string Icon;
+        public int RerollCount;
         public int Quality;
         public int[] ShowTags;
         public int[] HideTags;

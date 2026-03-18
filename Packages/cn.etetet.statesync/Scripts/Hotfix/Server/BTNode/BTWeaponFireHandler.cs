@@ -71,8 +71,21 @@ namespace ET.Server
             // 根据武器配置创建子弹
             FireLockType lockType = (FireLockType)weaponConfig.FireLockTypeId;
 
-            // 如果是散射武器（BulletCount > 1），创建多个子弹
             float damage = weaponComp.GetEffectiveDamage(node.SlotIndex);
+            int reloadDamageBonusPermille = 0;
+            int reloadPenetrationCount = 0;
+            RogueReloadFirstShotsStateComponent reloadFirstShotsState = caster.GetComponent<RogueReloadFirstShotsStateComponent>();
+            if (reloadFirstShotsState != null)
+            {
+                reloadFirstShotsState.ConsumeShot(out reloadDamageBonusPermille, out reloadPenetrationCount);
+            }
+
+            if (reloadDamageBonusPermille != 0)
+            {
+                damage = math.max(0f, damage * (1000 + reloadDamageBonusPermille) / 1000f);
+            }
+
+            // 如果是散射武器（BulletCount > 1），创建多个子弹
             if (weaponConfig.BulletCount > 1)
             {
                 BulletHelper.CreateScatterBullets(
@@ -83,7 +96,8 @@ namespace ET.Server
                     lockType,
                     weaponConfig.BulletCount,
                     weaponConfig.SpreadAngle,
-                    weaponId
+                    weaponId,
+                    reloadPenetrationCount
                 );
             }
             else
@@ -95,7 +109,8 @@ namespace ET.Server
                     target,
                     damage,
                     lockType,
-                    weaponId
+                    weaponId,
+                    reloadPenetrationCount
                 );
             }
 

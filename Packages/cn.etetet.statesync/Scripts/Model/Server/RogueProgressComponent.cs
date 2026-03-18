@@ -14,6 +14,7 @@ namespace ET.Server
         public bool ChoicePending { get; set; }
 
         public List<int> PendingOptionIds { get; set; } = new();
+        public List<int> PendingOptionRerollCounts { get; set; } = new();
         public List<int> PendingChoiceLevels { get; set; } = new();
         public List<long> AppliedBuffIds { get; set; } = new();
         public List<int> SelectedOptionIds { get; set; } = new();

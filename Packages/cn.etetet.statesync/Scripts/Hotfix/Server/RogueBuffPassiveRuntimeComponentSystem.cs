@@ -18,10 +18,15 @@ namespace ET.Server
         private static void Reset(this RogueBuffPassiveRuntimeComponent self)
         {
             self.KillGoldBonusBySource.Clear();
+            self.ContainerLowQualityGoldBySource.Clear();
             self.GoldDamagePerOnePercentBySource.Clear();
+            self.MonsterDamageBonusPermilleBySource.Clear();
             self.AreaDiscoveryGoldBySource.Clear();
             self.ProbabilityMultiplierBySource.Clear();
+            self.ContainerResultProbabilityMultiplierBySource.Clear();
+            self.SearchMonsterProbabilityMultiplierBySource.Clear();
             self.LifeStealPermilleBySource.Clear();
+            self.SizeDifferenceDamageBonusBySource.Clear();
             self.OnKillHealPermilleBySource.Clear();
 
             self.LowHpDamageBySource.Clear();
@@ -65,6 +70,20 @@ namespace ET.Server
                 self.KillGoldBonusBySource.Remove(sourceId);
             }
 
+            EffectRogueContainerLowQualityGold containerLowQualityGold = config.GetEffect<EffectRogueContainerLowQualityGold>();
+            if (containerLowQualityGold != null && containerLowQualityGold.Gold > 0)
+            {
+                self.ContainerLowQualityGoldBySource[sourceId] = new RogueContainerLowQualityGoldSourceData
+                {
+                    Gold = containerLowQualityGold.Gold,
+                    HighQualityThreshold = containerLowQualityGold.HighQualityThreshold > 0 ? containerLowQualityGold.HighQualityThreshold : 4,
+                };
+            }
+            else
+            {
+                self.ContainerLowQualityGoldBySource.Remove(sourceId);
+            }
+
             if (config.GetEffect<EffectRogueFatalImmunity>() != null)
             {
                 self.FatalImmunitySources[sourceId] = 1;
@@ -82,6 +101,16 @@ namespace ET.Server
             else
             {
                 self.GoldDamagePerOnePercentBySource.Remove(sourceId);
+            }
+
+            EffectRogueMonsterDamageBonus monsterDamageBonus = config.GetEffect<EffectRogueMonsterDamageBonus>();
+            if (monsterDamageBonus != null && monsterDamageBonus.DamageBonusPermille > 0)
+            {
+                self.MonsterDamageBonusPermilleBySource[sourceId] = monsterDamageBonus.DamageBonusPermille;
+            }
+            else
+            {
+                self.MonsterDamageBonusPermilleBySource.Remove(sourceId);
             }
 
             EffectRogueAreaDiscoveryGold areaDiscoveryGold = config.GetEffect<EffectRogueAreaDiscoveryGold>();
@@ -102,6 +131,26 @@ namespace ET.Server
             else
             {
                 self.ProbabilityMultiplierBySource.Remove(sourceId);
+            }
+
+            EffectRogueContainerResultProbabilityMultiplier containerResultProbability = config.GetEffect<EffectRogueContainerResultProbabilityMultiplier>();
+            if (containerResultProbability != null && containerResultProbability.Permille > 0)
+            {
+                self.ContainerResultProbabilityMultiplierBySource[sourceId] = containerResultProbability.Permille;
+            }
+            else
+            {
+                self.ContainerResultProbabilityMultiplierBySource.Remove(sourceId);
+            }
+
+            EffectRogueSearchMonsterProbabilityMultiplier searchMonsterProbability = config.GetEffect<EffectRogueSearchMonsterProbabilityMultiplier>();
+            if (searchMonsterProbability != null && searchMonsterProbability.Permille > 0)
+            {
+                self.SearchMonsterProbabilityMultiplierBySource[sourceId] = searchMonsterProbability.Permille;
+            }
+            else
+            {
+                self.SearchMonsterProbabilityMultiplierBySource.Remove(sourceId);
             }
 
             EffectRogueLowHpDamageBonus lowHpDamage = config.GetEffect<EffectRogueLowHpDamageBonus>();
@@ -140,6 +189,16 @@ namespace ET.Server
             else
             {
                 self.LifeStealPermilleBySource.Remove(sourceId);
+            }
+
+            EffectRogueSizeDifferenceDamageBonus sizeDifferenceDamageBonus = config.GetEffect<EffectRogueSizeDifferenceDamageBonus>();
+            if (sizeDifferenceDamageBonus != null && sizeDifferenceDamageBonus.MaxDamageBonusPermille > 0)
+            {
+                self.SizeDifferenceDamageBonusBySource[sourceId] = sizeDifferenceDamageBonus.MaxDamageBonusPermille;
+            }
+            else
+            {
+                self.SizeDifferenceDamageBonusBySource.Remove(sourceId);
             }
 
             EffectRogueInstantKillChance instantKill = config.GetEffect<EffectRogueInstantKillChance>();
@@ -257,10 +316,15 @@ namespace ET.Server
             }
 
             self.KillGoldBonusBySource.Remove(sourceId);
+            self.ContainerLowQualityGoldBySource.Remove(sourceId);
             self.GoldDamagePerOnePercentBySource.Remove(sourceId);
+            self.MonsterDamageBonusPermilleBySource.Remove(sourceId);
             self.AreaDiscoveryGoldBySource.Remove(sourceId);
             self.ProbabilityMultiplierBySource.Remove(sourceId);
+            self.ContainerResultProbabilityMultiplierBySource.Remove(sourceId);
+            self.SearchMonsterProbabilityMultiplierBySource.Remove(sourceId);
             self.LifeStealPermilleBySource.Remove(sourceId);
+            self.SizeDifferenceDamageBonusBySource.Remove(sourceId);
             self.OnKillHealPermilleBySource.Remove(sourceId);
             self.LowHpDamageBySource.Remove(sourceId);
             self.DamageReductionBySource.Remove(sourceId);
@@ -291,6 +355,29 @@ namespace ET.Server
             }
 
             return total;
+        }
+
+        public static void GetContainerLowQualityGold(this RogueBuffPassiveRuntimeComponent self, out int totalGold, out int highQualityThreshold)
+        {
+            totalGold = 0;
+            highQualityThreshold = 4;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            foreach (RogueContainerLowQualityGoldSourceData value in self.ContainerLowQualityGoldBySource.Values)
+            {
+                if (value.Gold > 0)
+                {
+                    totalGold += value.Gold;
+                }
+
+                if (value.HighQualityThreshold > highQualityThreshold)
+                {
+                    highQualityThreshold = value.HighQualityThreshold;
+                }
+            }
         }
 
         public static int GetAreaDiscoveryGold(this RogueBuffPassiveRuntimeComponent self)
@@ -331,6 +418,44 @@ namespace ET.Server
             return total > 0 ? total : 1000;
         }
 
+        public static int GetContainerResultProbabilityMultiplierPermille(this RogueBuffPassiveRuntimeComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return 1000;
+            }
+
+            int total = 0;
+            foreach (int value in self.ContainerResultProbabilityMultiplierBySource.Values)
+            {
+                if (value > 0)
+                {
+                    total += value;
+                }
+            }
+
+            return total > 0 ? total : 1000;
+        }
+
+        public static int GetSearchMonsterProbabilityMultiplierPermille(this RogueBuffPassiveRuntimeComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return 1000;
+            }
+
+            int total = 0;
+            foreach (int value in self.SearchMonsterProbabilityMultiplierBySource.Values)
+            {
+                if (value > 0)
+                {
+                    total += value;
+                }
+            }
+
+            return total > 0 ? total : 1000;
+        }
+
         public static bool HasFatalImmunity(this RogueBuffPassiveRuntimeComponent self)
         {
             return self != null && !self.IsDisposed && self.FatalImmunitySources.Count > 0;
@@ -355,6 +480,25 @@ namespace ET.Server
 
             long total = 0;
             foreach (long value in self.ExtendGameTimeBySourceMs.Values)
+            {
+                if (value > 0)
+                {
+                    total += value;
+                }
+            }
+
+            return total;
+        }
+
+        public static int GetMonsterDamageBonusPermille(this RogueBuffPassiveRuntimeComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return 0;
+            }
+
+            int total = 0;
+            foreach (int value in self.MonsterDamageBonusPermilleBySource.Values)
             {
                 if (value > 0)
                 {
@@ -403,6 +547,25 @@ namespace ET.Server
             return total;
         }
 
+        public static int GetSizeDifferenceDamageBonusPermille(this RogueBuffPassiveRuntimeComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return 0;
+            }
+
+            int total = 0;
+            foreach (int value in self.SizeDifferenceDamageBonusBySource.Values)
+            {
+                if (value > 0)
+                {
+                    total += value;
+                }
+            }
+
+            return total;
+        }
+
         public static void GetAfterSkillSpeedBoostData(this RogueBuffPassiveRuntimeComponent self, out int totalSpeedPct, out int maxDurationMs)
         {
             totalSpeedPct = 0;
@@ -435,10 +598,15 @@ namespace ET.Server
             }
 
             return self.KillGoldBonusBySource.Count == 0 &&
+                    self.ContainerLowQualityGoldBySource.Count == 0 &&
                     self.GoldDamagePerOnePercentBySource.Count == 0 &&
+                    self.MonsterDamageBonusPermilleBySource.Count == 0 &&
                     self.AreaDiscoveryGoldBySource.Count == 0 &&
                     self.ProbabilityMultiplierBySource.Count == 0 &&
+                    self.ContainerResultProbabilityMultiplierBySource.Count == 0 &&
+                    self.SearchMonsterProbabilityMultiplierBySource.Count == 0 &&
                     self.LifeStealPermilleBySource.Count == 0 &&
+                    self.SizeDifferenceDamageBonusBySource.Count == 0 &&
                     self.OnKillHealPermilleBySource.Count == 0 &&
                     self.LowHpDamageBySource.Count == 0 &&
                     self.DamageReductionBySource.Count == 0 &&

@@ -47,7 +47,7 @@ namespace ET.Server
             Register(category, Buff(
                 1005,
                 "Rogue 1005",
-                new EffectRogueKillGoldBonus { Gold = 300 },
+                new EffectRogueContainerLowQualityGold { Gold = 300, HighQualityThreshold = 4 },
                 add: Add(new BTRogueApplyPassiveEffects()),
                 remove: Remove(new BTRogueRemovePassiveEffects())));
             Register(category, Buff(
@@ -80,14 +80,15 @@ namespace ET.Server
             Register(category, Buff(
                 1012,
                 "Rogue 1012",
-                new EffectRogueProbabilityMultiplier { Permille = 2000 },
+                new EffectRogueContainerResultProbabilityMultiplier { Permille = 2000 },
                 add: Add(new BTRogueApplyPassiveEffects()),
                 remove: Remove(new BTRogueRemovePassiveEffects())));
             Register(category, Buff(
                 1013,
                 "Rogue 1013",
                 new EffectRogueTemporaryKey { ItemConfigId = 10001, Count = 1 },
-                add: Add(new BTRogueGrantItem { ItemConfigId = 10001, Count = 1 })));
+                add: Add(new BTRogueGrantItem { ItemConfigId = 10001, Count = 1 }),
+                remove: Remove(new BTRogueCleanupTemporaryItems())));
             Register(category, Buff(
                 1014,
                 "Rogue 1014",
@@ -114,8 +115,15 @@ namespace ET.Server
             Register(category, Buff(
                 1021,
                 "Rogue 1021",
+                new EffectRogueObjectiveRewardBuff { BuffConfigId = 102101 },
                 add: Add(new BTRogueRegisterObjective { ObjectiveId = 0, GoalValue = 15 }),
                 remove: Remove(new BTRogueUnregisterObjective())));
+            Register(category, Buff(
+                102101,
+                "Rogue 1021 Reward",
+                new EffectRogueMonsterDamageBonus { DamageBonusPermille = 500 },
+                add: Add(new BTRogueApplyPassiveEffects()),
+                remove: Remove(new BTRogueRemovePassiveEffects())));
             Register(category, Buff(
                 1022,
                 "Rogue 1022",
@@ -132,7 +140,7 @@ namespace ET.Server
             Register(category, Buff(
                 1024,
                 "Rogue 1024",
-                new EffectRogueProbabilityMultiplier { Permille = 2000 },
+                new EffectRogueSearchMonsterProbabilityMultiplier { Permille = 2000 },
                 add: Add(new BTRogueApplyPassiveEffects()),
                 remove: Remove(new BTRogueRemovePassiveEffects())));
             Register(category, Buff(
@@ -187,15 +195,9 @@ namespace ET.Server
             Register(category, Buff(
                 1033,
                 "Rogue 1033",
-                new EffectRogueWeaponModifiers
-                {
-                    Entries = new List<RogueWeaponModifierEntry>
-                    {
-                        WeaponModifier(WeaponModType.CritRate, 10),
-                    },
-                },
-                add: Add(new BTRogueAddWeaponModifiers()),
-                remove: Remove(new BTRogueRemoveWeaponModifiers())));
+                new EffectRogueHitHeroCritGrowth { CritPermillePerHit = 10 },
+                add: Add(new BTRogueApplyHitHeroCritGrowth()),
+                remove: Remove(new BTRogueRemoveHitHeroCritGrowth())));
             Register(category, Buff(
                 1034,
                 "Rogue 1034",
@@ -218,16 +220,9 @@ namespace ET.Server
             Register(category, Buff(
                 1036,
                 "Rogue 1036",
-                new EffectRogueWeaponModifiers
-                {
-                    Entries = new List<RogueWeaponModifierEntry>
-                    {
-                        WeaponModifier(WeaponModType.BulletDamage, 2000),
-                        WeaponModifier(WeaponModType.Penetration, 100),
-                    },
-                },
-                add: Add(new BTRogueAddWeaponModifiers()),
-                remove: Remove(new BTRogueRemoveWeaponModifiers())));
+                new EffectRogueReloadFirstShotsBoost { DamageBonusPermille = 2000, ShotCount = 3, PenetrationCount = 1 },
+                add: Add(new BTRogueApplyReloadFirstShotsBoost()),
+                remove: Remove(new BTRogueRemoveReloadFirstShotsBoost())));
         }
 
         private static void RegisterEndurance(BuffConfigCategory category)
@@ -262,7 +257,9 @@ namespace ET.Server
                 "Rogue 1045",
                 new EffectRogueHealSpirit { HealPermille = 50, IntervalMs = 30000 },
                 tickTime: 30000,
-                tick: Tick(new BTRogueHealMaxHpPermille { HealPermille = 50 })));
+                add: Add(new BTRogueSummonHealSpirit()),
+                tick: Tick(new BTRogueSummonHealSpirit()),
+                remove: Remove(new BTRogueRemoveSummonedSpirit())));
         }
 
         private static void RegisterHunter(BuffConfigCategory category)
@@ -289,8 +286,9 @@ namespace ET.Server
                 1054,
                 "Rogue 1054",
                 new EffectRogueScaleModifier { ScalePermille = -200, MaxHpPermille = -200 },
-                add: Add(new BTRogueApplyScaleModifier { MaxHpPermille = -200 }),
-                remove: Remove(new BTRogueRevertScaleModifier())));
+                new EffectRogueSizeDifferenceDamageBonus { MaxDifferencePermille = 500, MaxDamageBonusPermille = 500 },
+                add: Add(new BTRogueApplyScaleModifier { MaxHpPermille = -200 }, new BTRogueApplyPassiveEffects(), new BTRogueApplySpeedFinalPct { Value = 30 }),
+                remove: Remove(new BTRogueRevertScaleModifier(), new BTRogueRemovePassiveEffects(), new BTRogueRemoveSpeedFinalPct())));
             Register(category, Buff(
                 1055,
                 "Rogue 1055",

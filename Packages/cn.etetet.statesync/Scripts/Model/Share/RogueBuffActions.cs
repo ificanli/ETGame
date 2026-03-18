@@ -19,8 +19,23 @@ namespace ET
         [BoxGroup("输入参数")]
         public string Unit = "Unit";
 
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+
         public int ItemConfigId;
         public int Count = 1;
+    }
+
+    public class BTRogueCleanupTemporaryItems : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
     }
 
     public class BTRogueRadarScan : BTAction
@@ -234,6 +249,50 @@ namespace ET
         public string Buff = "Buff";
     }
 
+    public class BTRogueApplyHitHeroCritGrowth : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+    }
+
+    public class BTRogueRemoveHitHeroCritGrowth : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+    }
+
+    public class BTRogueApplyReloadFirstShotsBoost : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+    }
+
+    public class BTRogueRemoveReloadFirstShotsBoost : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+    }
+
     public class BTRogueApplyScaleModifier : BTAction
     {
         [BTInput(typeof(Unit))]
@@ -248,6 +307,30 @@ namespace ET
     }
 
     public class BTRogueRevertScaleModifier : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+    }
+
+    public class BTRogueApplySpeedFinalPct : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+
+        public int Value;
+    }
+
+    public class BTRogueRemoveSpeedFinalPct : BTAction
     {
         [BTInput(typeof(Unit))]
         [BoxGroup("输入参数")]
@@ -289,5 +372,27 @@ namespace ET
         public string Unit = "Unit";
 
         public int HealPermille;
+    }
+
+    public class BTRogueSummonHealSpirit : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+    }
+
+    public class BTRogueRemoveSummonedSpirit : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
     }
 }

@@ -142,6 +142,7 @@ message RogueOptionData
 	int32 NameTextId = 3;
 	int32 DescTextId = 4;
 	string Icon = 5;
+	int32 RerollCount = 6;
 }
 
 message M2C_RogueExpSync // IMessage
@@ -181,4 +182,24 @@ message M2C_RogueChoiceResult // ILocationResponse
 	int64 ChoiceSerial = 4;
 	int32 OptionId = 5;
 	int32 BuffConfigId = 6;
+}
+
+// ResponseType M2C_RogueRerollOptionResult
+message C2M_RogueRerollOption // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 ChoiceSerial = 2;
+	int32 OptionIndex = 3;
+	int32 CurrentOptionId = 4;
+}
+
+message M2C_RogueRerollOptionResult // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 ChoiceSerial = 4;
+	int32 OptionIndex = 5;
+	int32 OldOptionId = 6;
+	RogueOptionData Option = 7;
 }

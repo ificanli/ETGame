@@ -13,8 +13,8 @@ namespace ET.Server
             self.BackpackConfigId = 0;
             self.BagWidth = 0;
             self.BagHeight = 0;
-            self.SecureWidth = 0;
-            self.SecureHeight = 0;
+            self.SecureWidth = LoadoutStateHelper.DEFAULT_SECURE_WIDTH;
+            self.SecureHeight = LoadoutStateHelper.DEFAULT_SECURE_HEIGHT;
             self.CarriedBagItems.Clear();
             self.CarriedSecureItems.Clear();
             self.ConsumableConfigIds.Clear();

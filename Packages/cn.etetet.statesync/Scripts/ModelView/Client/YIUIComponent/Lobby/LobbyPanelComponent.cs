@@ -41,6 +41,7 @@ namespace ET.Client
         public string CurrentHeroDisplayCameraName = string.Empty;
 
         public string LastLoadoutSnapshot = string.Empty;
+        public int SelectedMatchGameMode = GameModeType.OneVsOne;
         public int SelectedWarehouseConfigId;
         public long SelectedWarehouseItemUid;
         public bool IsDragging;

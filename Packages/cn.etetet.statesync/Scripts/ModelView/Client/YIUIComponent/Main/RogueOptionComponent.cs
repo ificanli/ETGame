@@ -18,8 +18,11 @@ namespace ET.Client
         public EntityRef<RoguePanelComponent> Panel;
         public int OptionIndex = -1;
         public bool IsChoosing;
+        public bool IsRerolling;
         public Image IconImage;
         public Image OptionBgImage;
+        public Button RerollButton;
+        public Image RerollButtonImage;
         public Image TagBgImage1;
         public Image TagBgImage2;
         public Sprite LoadedSprite;
@@ -31,6 +34,8 @@ namespace ET.Client
         public Sprite DefaultBgSprite;
         public Color DefaultBgColor = Color.white;
         public bool DefaultBgImageEnabled = true;
+        public Color DefaultRerollButtonColor = Color.white;
+        public bool DefaultRerollButtonImageEnabled = true;
         public Sprite DefaultTagBgSprite1;
         public Sprite DefaultTagBgSprite2;
         public Color DefaultTagBgColor1 = Color.white;

@@ -10,19 +10,20 @@ namespace ET.Server
         {
         }
 
-        public static RogueObjective AddObjective(this RogueObjectiveComponent self, int optionId, int effectGroupId, int objectiveId, int goalValue)
+        public static RogueObjective AddObjective(this RogueObjectiveComponent self, int optionId, int effectGroupId, int objectiveId, int goalValue, int rewardBuffConfigId = 0)
         {
             RogueObjective objective = self.AddChild<RogueObjective>();
             objective.OptionId = optionId;
             objective.EffectGroupId = effectGroupId;
             objective.ObjectiveId = objectiveId;
             objective.GoalValue = goalValue;
+            objective.RewardBuffConfigId = rewardBuffConfigId;
             return objective;
         }
 
         public static RogueObjective AddObjective(this RogueObjectiveComponent self, int optionId, int effectGroupId, int objectiveId)
         {
-            return self.AddObjective(optionId, effectGroupId, objectiveId, 0);
+            return self.AddObjective(optionId, effectGroupId, objectiveId, 0, 0);
         }
 
         public static int RemoveOneObjectiveByOptionId(this RogueObjectiveComponent self, int optionId)
@@ -30,8 +31,8 @@ namespace ET.Server
             long targetObjectiveId = 0;
             foreach (long childId in self.Children.Keys)
             {
-                RogueObjective objective = self.GetChild<RogueObjective>(childId);
-                if (objective == null || objective.OptionId != optionId)
+                RogueObjective currentObjective = self.GetChild<RogueObjective>(childId);
+                if (currentObjective == null || currentObjective.OptionId != optionId)
                 {
                     continue;
                 }
@@ -47,6 +48,8 @@ namespace ET.Server
                 return 0;
             }
 
+            RogueObjective targetObjective = self.GetChild<RogueObjective>(targetObjectiveId);
+            CleanupObjectiveReward(self, targetObjective);
             self.RemoveChild(targetObjectiveId);
             return 1;
         }
@@ -55,6 +58,8 @@ namespace ET.Server
         {
             foreach (long childId in self.Children.Keys.ToArray())
             {
+                RogueObjective objective = self.GetChild<RogueObjective>(childId);
+                CleanupObjectiveReward(self, objective);
                 self.RemoveChild(childId);
             }
         }
@@ -75,11 +80,32 @@ namespace ET.Server
                     continue;
                 }
 
+                CleanupObjectiveReward(self, objective);
                 self.RemoveChild(childId);
                 ++removedCount;
             }
 
             return removedCount;
+        }
+
+        private static void CleanupObjectiveReward(RogueObjectiveComponent self, RogueObjective objective)
+        {
+            if (self == null || self.IsDisposed || objective == null || objective.RewardBuffId <= 0)
+            {
+                return;
+            }
+
+            Unit unit = self.GetParent<Unit>();
+            BuffComponent buffComponent = unit?.GetComponent<BuffComponent>();
+            Buff rewardBuff = buffComponent?.GetChild<Buff>(objective.RewardBuffId);
+            if (rewardBuff != null)
+            {
+                BuffHelper.RemoveBuff(rewardBuff, BuffFlags.NoDurationRemove);
+            }
+
+            RogueProgressComponent progress = unit?.GetComponent<RogueProgressComponent>();
+            progress?.AppliedBuffIds.Remove(objective.RewardBuffId);
+            objective.RewardBuffId = 0;
         }
     }
 }

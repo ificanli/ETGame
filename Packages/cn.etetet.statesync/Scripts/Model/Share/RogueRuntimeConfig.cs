@@ -30,6 +30,9 @@ namespace ET
         [BsonElement]
         public int ChoiceOptionCount = 3;
 
+        [BsonElement]
+        public int ChoiceOptionRerollCount = 1;
+
         [BsonIgnore]
         private readonly Dictionary<int, RogueOptionConfig> cardOptions = new();
 
@@ -125,6 +128,11 @@ namespace ET
             RogueGlobalConfigCategory globalCategory = RogueGlobalConfigCategory.Instance;
             int count = globalCategory != null ? globalCategory.ChoiceOptionCount : this.ChoiceOptionCount;
             return count <= 0 ? 1 : count;
+        }
+
+        public int GetChoiceOptionRerollCount()
+        {
+            return this.ChoiceOptionRerollCount <= 0 ? 1 : this.ChoiceOptionRerollCount;
         }
 
         public Dictionary<int, RogueOptionConfig> GetOptions()

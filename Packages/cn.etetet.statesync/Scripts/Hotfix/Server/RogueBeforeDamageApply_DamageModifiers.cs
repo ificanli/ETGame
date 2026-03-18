@@ -8,6 +8,7 @@ namespace ET.Server
     public class RogueBeforeDamageApply_DamageModifiers : AEvent<Scene, RogueBeforeDamageApply>
     {
         private const int DamageReductionSourceMonster = 1;
+        private const int CriticalDamageBonusPermille = 1000;
 
         protected override async ETTask Run(Scene scene, RogueBeforeDamageApply a)
         {
@@ -43,7 +44,7 @@ namespace ET.Server
             await ETTask.CompletedTask;
         }
 
-        private static void ApplyAttackerModifiers(Unit attacker, Unit target, DamageContext ctx)
+        public static void ApplyAttackerModifiers(Unit attacker, Unit target, DamageContext ctx)
         {
             RogueBuffPassiveRuntimeComponent passiveRuntime = attacker.GetComponent<RogueBuffPassiveRuntimeComponent>();
             if (passiveRuntime == null)
@@ -91,6 +92,53 @@ namespace ET.Server
                             bonusDamage += ctx.FinalDamage * source.DamageBonusPermille / 1000;
                         }
                     }
+                }
+            }
+
+            if (target != null && !target.IsDisposed && target.UnitType == UnitType.Monster)
+            {
+                int monsterDamageBonusPermille = RogueEffectQueryHelper.GetMonsterDamageBonusPermille(attacker);
+                if (monsterDamageBonusPermille > 0)
+                {
+                    bonusDamage += ctx.FinalDamage * monsterDamageBonusPermille / 1000;
+                }
+            }
+
+            if (target != null && !target.IsDisposed)
+            {
+                int maxSizeDifferenceBonusPermille = RogueEffectQueryHelper.GetSizeDifferenceDamageBonusPermille(attacker);
+                if (maxSizeDifferenceBonusPermille > 0)
+                {
+                    int attackerScalePermille = RogueEffectQueryHelper.GetScaleModifierPermille(attacker);
+                    int targetScalePermille = RogueEffectQueryHelper.GetScaleModifierPermille(target);
+                    int sizeDifferencePermille = attackerScalePermille - targetScalePermille;
+                    if (sizeDifferencePermille < 0)
+                    {
+                        sizeDifferencePermille = -sizeDifferencePermille;
+                    }
+
+                    int appliedBonusPermille = sizeDifferencePermille > maxSizeDifferenceBonusPermille
+                        ? maxSizeDifferenceBonusPermille
+                        : sizeDifferencePermille;
+                    if (appliedBonusPermille > 0)
+                    {
+                        bonusDamage += ctx.FinalDamage * appliedBonusPermille / 1000;
+                    }
+                }
+            }
+
+            if (ctx.IsBullet)
+            {
+                int critChancePermille = RogueEffectQueryHelper.GetHitHeroCritPermille(attacker);
+                if (critChancePermille > 1000)
+                {
+                    critChancePermille = 1000;
+                }
+
+                if (critChancePermille > 0 && RandomGenerator.RandomNumber(0, 1000) < critChancePermille)
+                {
+                    ctx.IsCritical = true;
+                    bonusDamage += ctx.FinalDamage * CriticalDamageBonusPermille / 1000;
                 }
             }
 
@@ -163,7 +211,7 @@ namespace ET.Server
             }
         }
 
-        private static void ApplyTargetModifiers(Unit target, Unit attacker, DamageContext ctx)
+        public static void ApplyTargetModifiers(Unit target, Unit attacker, DamageContext ctx)
         {
             RogueBuffPassiveRuntimeComponent passiveRuntime = target.GetComponent<RogueBuffPassiveRuntimeComponent>();
             if (passiveRuntime == null)

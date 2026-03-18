@@ -10,6 +10,8 @@ namespace ET.Server
         public int Progress { get; set; }
         public bool Completed { get; set; }
         public bool RewardClaimed { get; set; }
+        public int RewardBuffConfigId { get; set; }
+        public long RewardBuffId { get; set; }
     }
 
     [ComponentOf(typeof(Unit))]

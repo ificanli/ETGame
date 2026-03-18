@@ -706,8 +706,10 @@ namespace ET.Client
                     Image image = cell.GetComponent<Image>();
                     if (image != null)
                     {
-                        image.color = isSecure ? new Color(0.25f, 0.65f, 0.95f, 0.18f) : new Color(1f, 1f, 1f, 0.08f);
-                        image.raycastTarget = false;
+                        ApplyGridCellVisual(
+                            image,
+                            gridRoot,
+                            isSecure ? new Color(0.25f, 0.65f, 0.95f, 0.18f) : new Color(1f, 1f, 1f, 0.08f));
                     }
 
                     ApplyFootprint(
@@ -727,6 +729,87 @@ namespace ET.Client
             }
 
             RemoveDeadViews(cellMap, alive);
+        }
+
+        private static void ApplyGridCellVisual(Image targetImage, RectTransform gridRoot, Color fallbackColor)
+        {
+            if (targetImage == null)
+            {
+                return;
+            }
+
+            Image styleSource = ResolveGridCellStyleSource(gridRoot);
+            if (styleSource != null)
+            {
+                CopyGridCellImageStyle(styleSource, targetImage);
+                styleSource.enabled = false;
+                styleSource.raycastTarget = false;
+            }
+            else
+            {
+                targetImage.overrideSprite = null;
+                targetImage.material = null;
+                targetImage.type = Image.Type.Simple;
+                targetImage.preserveAspect = false;
+                targetImage.fillCenter = true;
+                targetImage.fillMethod = Image.FillMethod.Radial360;
+                targetImage.fillOrigin = 0;
+                targetImage.fillClockwise = true;
+                targetImage.fillAmount = 1f;
+                targetImage.useSpriteMesh = false;
+                targetImage.pixelsPerUnitMultiplier = 1f;
+                targetImage.maskable = true;
+                targetImage.color = fallbackColor;
+                targetImage.enabled = true;
+            }
+
+            targetImage.raycastTarget = false;
+        }
+
+        private static Image ResolveGridCellStyleSource(RectTransform gridRoot)
+        {
+            if (gridRoot == null)
+            {
+                return null;
+            }
+
+            RectTransform styleRect = FindDirectChildRectTransform(
+                gridRoot,
+                "CellTemplate",
+                "GridCellTemplate",
+                "CellStyleSource",
+                "GridCellStyleSource");
+            Image styleImage = styleRect?.GetComponent<Image>();
+            if (styleImage != null)
+            {
+                return styleImage;
+            }
+
+            return gridRoot.GetComponent<Image>();
+        }
+
+        private static void CopyGridCellImageStyle(Image sourceImage, Image targetImage)
+        {
+            if (sourceImage == null || targetImage == null)
+            {
+                return;
+            }
+
+            targetImage.sprite = sourceImage.sprite;
+            targetImage.overrideSprite = sourceImage.overrideSprite;
+            targetImage.material = sourceImage.material;
+            targetImage.color = sourceImage.color;
+            targetImage.type = sourceImage.type;
+            targetImage.preserveAspect = sourceImage.preserveAspect;
+            targetImage.fillCenter = sourceImage.fillCenter;
+            targetImage.fillMethod = sourceImage.fillMethod;
+            targetImage.fillOrigin = sourceImage.fillOrigin;
+            targetImage.fillClockwise = sourceImage.fillClockwise;
+            targetImage.fillAmount = sourceImage.fillAmount;
+            targetImage.useSpriteMesh = sourceImage.useSpriteMesh;
+            targetImage.pixelsPerUnitMultiplier = sourceImage.pixelsPerUnitMultiplier;
+            targetImage.maskable = sourceImage.maskable;
+            targetImage.enabled = true;
         }
 
         private static Vector2 CalcGridCellSize(RectTransform boardRoot, int cols, int rows, Vector2 spacing, Vector2 padding)

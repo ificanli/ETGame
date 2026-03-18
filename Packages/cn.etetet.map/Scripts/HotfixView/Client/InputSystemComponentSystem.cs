@@ -54,7 +54,7 @@ namespace ET.Client
 
             if (self.JoystickMoveInput.sqrMagnitude < 0.000001f &&
                 keyboardInput != Vector2.zero &&
-                TimeInfo.Instance.ClientNow() - self.PressTime > 50)
+                TimeInfo.Instance.ClientNow() - self.PressTime > 16)
             {
                 self.PressTime = TimeInfo.Instance.ClientNow();
                 self.SyncDirectionalMove(false);

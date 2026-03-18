@@ -18,44 +18,16 @@ namespace ET.Client
             runtime.ChoiceSerial = message.ChoiceSerial;
             runtime.ChoiceOptions.Clear();
             List<int> optionIds = new();
-            RogueRuntimeConfigCategory configCategory = RogueRuntimeConfigCategory.Instance;
             foreach (RogueOptionData option in message.Options)
             {
                 optionIds.Add(option.OptionId);
-                string name = string.Empty;
-                string desc = string.Empty;
-                string imagePath = option.Icon;
-                string btConfig = string.Empty;
-                int quality = 0;
-                int[] showTags = System.Array.Empty<int>();
-                int[] hideTags = System.Array.Empty<int>();
-
-                if (configCategory != null && configCategory.TryGetOption(option.OptionId, out RogueOptionConfig optionConfig) && optionConfig != null)
+                if (!RogueClientHelper.TryBuildChoiceOptionData(option, out RogueClientOptionData optionData))
                 {
-                    name = optionConfig.GetDisplayName();
-                    desc = optionConfig.GetDisplayDesc();
-                    imagePath = optionConfig.GetImagePath();
-                    btConfig = optionConfig.BTConfig ?? string.Empty;
-                    quality = optionConfig.Quality;
-                    showTags = optionConfig.ShowTags ?? System.Array.Empty<int>();
-                    hideTags = optionConfig.HideTags ?? System.Array.Empty<int>();
+                    Log.Warning($"[RogueClient] popup option ignored: optionId={option?.OptionId ?? 0}, serial={message.ChoiceSerial}");
+                    continue;
                 }
 
-                runtime.ChoiceOptions.Add(new RogueClientOptionData
-                {
-                    OptionId = option.OptionId,
-                    BuffConfigId = option.BuffConfigId,
-                    Name = name,
-                    Desc = desc,
-                    ImagePath = imagePath,
-                    BTConfig = btConfig,
-                    NameTextId = option.NameTextId,
-                    DescTextId = option.DescTextId,
-                    Icon = option.Icon,
-                    Quality = quality,
-                    ShowTags = showTags,
-                    HideTags = hideTags,
-                });
+                runtime.ChoiceOptions.Add(optionData);
             }
 
             runtime.ChoicePopupPending = runtime.ChoiceSerial > 0 && runtime.ChoiceOptions.Count > 0;

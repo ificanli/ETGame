@@ -72,6 +72,17 @@ namespace ET.Server
             weaponComponent.SetReloadFinishTime(slotIndex, 0);
             SyncAmmoState(unit);
 
+            Scene scene = unit.Scene();
+            if (scene != null && !scene.IsDisposed)
+            {
+                EventSystem.Instance.Publish(scene, new UnitWeaponReloadCompleted
+                {
+                    Unit = unit,
+                    SlotIndex = slotIndex,
+                    WeaponId = weaponId,
+                });
+            }
+
             Log.Info($"[WeaponReload] finish reload, unit={unit.Id}, slot={slotIndex}, weaponId={weaponId}, ammo={weaponComponent.GetAmmo(slotIndex)}");
             return true;
         }

@@ -72,6 +72,15 @@ namespace ET.Server
             {
                 Log.Info($"[RogueInit] skip initial choice by map unit={unit.Id}, map={mapName ?? "null"}");
             }
+
+            if (scene != null && !scene.IsDisposed)
+            {
+                EventSystem.Instance.Publish(scene, new PlayerEnterMap
+                {
+                    Unit = unit,
+                    MapName = mapName ?? string.Empty,
+                });
+            }
         }
 
         public static void ApplyAssignedTeamIfNeeded(Scene scene, Unit unit, int teamOrder)

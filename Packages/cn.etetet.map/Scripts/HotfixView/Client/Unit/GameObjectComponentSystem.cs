@@ -255,8 +255,7 @@ namespace ET.Client
         private const float VisualMoveDistanceSqr = 0.000001f;
         private const float MinSnapDistance = 2f;
         private const float SnapDistanceBySpeedSeconds = 0.35f;
-        private const float MinPredictionCorrectionMoveSpeed = 3f;
-        private const float PredictionCorrectionSpeedRatio = 0.5f;
+        private const float PredictionCorrectionSpeedRatio = 0.3f;
         private const float MaxPredictionCorrectionDistance = 5f;
 
         [EntitySystem]
@@ -413,7 +412,7 @@ namespace ET.Client
 
         private static void UpdatePredictionTarget(this UnitViewInterpolationComponent self)
         {
-            float correctionSpeed = Mathf.Max(self.PredictedSpeed * PredictionCorrectionSpeedRatio, MinPredictionCorrectionMoveSpeed);
+            float correctionSpeed = self.PredictedSpeed * PredictionCorrectionSpeedRatio;
             self.VisualCorrection = Vector3.MoveTowards(self.VisualCorrection, Vector3.zero, correctionSpeed * Time.deltaTime);
             self.TargetPosition = self.BuildPredictionTarget();
         }

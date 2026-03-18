@@ -78,6 +78,7 @@ namespace ET.Server
         protected override int Run(BTRogueGrantItem node, BTEnv env)
         {
             Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
             if (unit == null || unit.IsDisposed || node.ItemConfigId <= 0 || node.Count <= 0)
             {
                 return 0;
@@ -96,6 +97,36 @@ namespace ET.Server
             catch
             {
                 return 0;
+            }
+
+            EffectRogueTemporaryKey temporaryKey = buff?.GetConfig().GetEffect<EffectRogueTemporaryKey>();
+            if (temporaryKey != null && temporaryKey.ItemConfigId == node.ItemConfigId && temporaryKey.Count > 0)
+            {
+                RogueTemporaryItemStateComponent temporaryItemState = unit.GetComponent<RogueTemporaryItemStateComponent>() ??
+                        unit.AddComponent<RogueTemporaryItemStateComponent>();
+                temporaryItemState.RegisterSource(buff.Id, node.ItemConfigId, node.Count);
+            }
+
+            return 0;
+        }
+    }
+
+    public class BTRogueCleanupTemporaryItemsHandler : ABTHandler<BTRogueCleanupTemporaryItems>
+    {
+        protected override int Run(BTRogueCleanupTemporaryItems node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            RogueTemporaryItemStateComponent temporaryItemState = unit?.GetComponent<RogueTemporaryItemStateComponent>();
+            if (unit == null || unit.IsDisposed || buff == null || temporaryItemState == null)
+            {
+                return 0;
+            }
+
+            temporaryItemState.CleanupSource(unit, buff.Id);
+            if (temporaryItemState.IsEmpty())
+            {
+                unit.RemoveComponent<RogueTemporaryItemStateComponent>();
             }
 
             return 0;
@@ -186,7 +217,8 @@ namespace ET.Server
                 objectiveComponent = unit.AddComponent<RogueObjectiveComponent>();
             }
 
-            objectiveComponent.AddObjective(buff.ConfigId, buff.ConfigId, node.ObjectiveId, node.GoalValue);
+            int rewardBuffConfigId = buff.GetConfig().GetEffect<EffectRogueObjectiveRewardBuff>()?.BuffConfigId ?? 0;
+            objectiveComponent.AddObjective(buff.ConfigId, buff.ConfigId, node.ObjectiveId, node.GoalValue, rewardBuffConfigId);
             return 0;
         }
     }
@@ -661,6 +693,98 @@ namespace ET.Server
         }
     }
 
+    public class BTRogueApplyHitHeroCritGrowthHandler : ABTHandler<BTRogueApplyHitHeroCritGrowth>
+    {
+        protected override int Run(BTRogueApplyHitHeroCritGrowth node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            if (unit == null || unit.IsDisposed || buff == null || buff.IsDisposed)
+            {
+                return 0;
+            }
+
+            EffectRogueHitHeroCritGrowth effect = buff.GetConfig().GetEffect<EffectRogueHitHeroCritGrowth>();
+            if (effect == null || effect.CritPermillePerHit <= 0)
+            {
+                return 0;
+            }
+
+            RogueHitHeroCritStateComponent stateComponent = unit.GetComponent<RogueHitHeroCritStateComponent>() ??
+                    unit.AddComponent<RogueHitHeroCritStateComponent>();
+            stateComponent.AddSource(buff.Id, effect.CritPermillePerHit);
+            return 0;
+        }
+    }
+
+    public class BTRogueRemoveHitHeroCritGrowthHandler : ABTHandler<BTRogueRemoveHitHeroCritGrowth>
+    {
+        protected override int Run(BTRogueRemoveHitHeroCritGrowth node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            RogueHitHeroCritStateComponent stateComponent = unit?.GetComponent<RogueHitHeroCritStateComponent>();
+            if (unit == null || unit.IsDisposed || buff == null || stateComponent == null)
+            {
+                return 0;
+            }
+
+            stateComponent.RemoveSource(buff.Id);
+            if (stateComponent.IsEmpty())
+            {
+                unit.RemoveComponent<RogueHitHeroCritStateComponent>();
+            }
+
+            return 0;
+        }
+    }
+
+    public class BTRogueApplyReloadFirstShotsBoostHandler : ABTHandler<BTRogueApplyReloadFirstShotsBoost>
+    {
+        protected override int Run(BTRogueApplyReloadFirstShotsBoost node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            if (unit == null || unit.IsDisposed || buff == null || buff.IsDisposed)
+            {
+                return 0;
+            }
+
+            EffectRogueReloadFirstShotsBoost effect = buff.GetConfig().GetEffect<EffectRogueReloadFirstShotsBoost>();
+            if (effect == null || effect.DamageBonusPermille <= 0 || effect.ShotCount <= 0)
+            {
+                return 0;
+            }
+
+            RogueReloadFirstShotsStateComponent stateComponent = unit.GetComponent<RogueReloadFirstShotsStateComponent>() ??
+                    unit.AddComponent<RogueReloadFirstShotsStateComponent>();
+            stateComponent.AddSource(buff.Id, effect.DamageBonusPermille, effect.ShotCount, effect.PenetrationCount);
+            return 0;
+        }
+    }
+
+    public class BTRogueRemoveReloadFirstShotsBoostHandler : ABTHandler<BTRogueRemoveReloadFirstShotsBoost>
+    {
+        protected override int Run(BTRogueRemoveReloadFirstShotsBoost node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            RogueReloadFirstShotsStateComponent stateComponent = unit?.GetComponent<RogueReloadFirstShotsStateComponent>();
+            if (unit == null || unit.IsDisposed || buff == null || stateComponent == null)
+            {
+                return 0;
+            }
+
+            stateComponent.RemoveSource(buff.Id);
+            if (stateComponent.IsEmpty())
+            {
+                unit.RemoveComponent<RogueReloadFirstShotsStateComponent>();
+            }
+
+            return 0;
+        }
+    }
+
     public class BTRogueRemovePassiveEffectsHandler : ABTHandler<BTRogueRemovePassiveEffects>
     {
         protected override int Run(BTRogueRemovePassiveEffects node, BTEnv env)
@@ -699,6 +823,52 @@ namespace ET.Server
                 unit.RemoveComponent<RogueBuffPassiveRuntimeComponent>();
             }
 
+            return 0;
+        }
+    }
+
+    public class BTRogueApplySpeedFinalPctHandler : ABTHandler<BTRogueApplySpeedFinalPct>
+    {
+        protected override int Run(BTRogueApplySpeedFinalPct node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            NumericComponent numeric = unit?.NumericComponent;
+            if (unit == null || unit.IsDisposed || buff == null || buff.IsDisposed || numeric == null || node.Value == 0)
+            {
+                return 0;
+            }
+
+            RogueSpeedFinalPctBuffStateComponent state = buff.GetBuffData().GetComponent<RogueSpeedFinalPctBuffStateComponent>() ??
+                    buff.GetBuffData().AddComponent<RogueSpeedFinalPctBuffStateComponent>();
+            if (state.AppliedSpeedPct != 0)
+            {
+                return 0;
+            }
+
+            int finalPct = numeric.GetAsInt(NumericType.SpeedFinalPct);
+            numeric.Set(NumericType.SpeedFinalPct, finalPct + node.Value);
+            state.AppliedSpeedPct = node.Value;
+            return 0;
+        }
+    }
+
+    public class BTRogueRemoveSpeedFinalPctHandler : ABTHandler<BTRogueRemoveSpeedFinalPct>
+    {
+        protected override int Run(BTRogueRemoveSpeedFinalPct node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            NumericComponent numeric = unit?.NumericComponent;
+            RogueSpeedFinalPctBuffStateComponent state = buff?.GetBuffData().GetComponent<RogueSpeedFinalPctBuffStateComponent>();
+            if (numeric == null || state == null || state.AppliedSpeedPct == 0)
+            {
+                return 0;
+            }
+
+            int finalPct = numeric.GetAsInt(NumericType.SpeedFinalPct);
+            numeric.Set(NumericType.SpeedFinalPct, finalPct - state.AppliedSpeedPct);
+            state.AppliedSpeedPct = 0;
             return 0;
         }
     }
@@ -840,20 +1010,89 @@ namespace ET.Server
         protected override int Run(BTRogueHealMaxHpPermille node, BTEnv env)
         {
             Unit unit = env.GetEntity<Unit>(node.Unit);
-            NumericComponent numeric = unit?.NumericComponent;
-            if (numeric == null || node.HealPermille <= 0)
+            RogueBuffActionInternalHelper.HealByMaxHpPermille(unit, node.HealPermille);
+            return 0;
+        }
+    }
+
+    public class BTRogueSummonHealSpiritHandler : ABTHandler<BTRogueSummonHealSpirit>
+    {
+        protected override int Run(BTRogueSummonHealSpirit node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            if (unit == null || unit.IsDisposed || buff == null || buff.IsDisposed)
             {
                 return 0;
+            }
+
+            EffectRogueHealSpirit effect = buff.GetConfig().GetEffect<EffectRogueHealSpirit>();
+            if (effect == null || effect.HealPermille <= 0)
+            {
+                return 0;
+            }
+
+            int spiritConfigId = RogueBuffActionInternalHelper.ResolveHealSpiritConfigId(unit);
+            if (spiritConfigId <= 0)
+            {
+                Log.Warning($"[RogueHealSpirit] spirit config missing, owner={unit.Id}, source={buff.Id}");
+            }
+            else
+            {
+                Unit spirit = RogueBuffActionInternalHelper.CreateHealSpiritUnit(unit, spiritConfigId);
+                if (spirit != null && !spirit.IsDisposed)
+                {
+                    RogueSummonedSpiritStateComponent spiritState = unit.GetComponent<RogueSummonedSpiritStateComponent>() ??
+                            unit.AddComponent<RogueSummonedSpiritStateComponent>();
+                    spiritState.ReplaceSpirit(unit, buff.Id, spirit.Id);
+                }
+            }
+
+            RogueBuffActionInternalHelper.HealByMaxHpPermille(unit, effect.HealPermille);
+            return 0;
+        }
+    }
+
+    public class BTRogueRemoveSummonedSpiritHandler : ABTHandler<BTRogueRemoveSummonedSpirit>
+    {
+        protected override int Run(BTRogueRemoveSummonedSpirit node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            RogueSummonedSpiritStateComponent spiritState = unit?.GetComponent<RogueSummonedSpiritStateComponent>();
+            if (unit == null || unit.IsDisposed || buff == null || spiritState == null)
+            {
+                return 0;
+            }
+
+            spiritState.ClearSource(unit, buff.Id);
+            if (spiritState.IsEmpty())
+            {
+                unit.RemoveComponent<RogueSummonedSpiritStateComponent>();
+            }
+
+            return 0;
+        }
+    }
+
+    internal static class RogueBuffActionInternalHelper
+    {
+        public static void HealByMaxHpPermille(Unit unit, int healPermille)
+        {
+            NumericComponent numeric = unit?.NumericComponent;
+            if (numeric == null || healPermille <= 0)
+            {
+                return;
             }
 
             long currentHp = numeric.GetAsLong(NumericType.HP);
             long maxHp = numeric.GetAsLong(NumericType.MaxHP);
             if (currentHp <= 0 || maxHp <= 0 || currentHp >= maxHp)
             {
-                return 0;
+                return;
             }
 
-            long healAmount = maxHp * node.HealPermille / 1000;
+            long healAmount = maxHp * healPermille / 1000;
             if (healAmount <= 0)
             {
                 healAmount = 1;
@@ -866,7 +1105,78 @@ namespace ET.Server
             }
 
             numeric.Set(NumericType.HP, newHp);
-            return 0;
+        }
+
+        public static int ResolveHealSpiritConfigId(Unit owner)
+        {
+            UnitConfigCategory configCategory = UnitConfigCategory.Instance;
+            if (configCategory?.DataList == null)
+            {
+                return 0;
+            }
+
+            foreach (UnitConfig config in configCategory.DataList)
+            {
+                if (config != null && config.UnitType == UnitType.Pet)
+                {
+                    return config.Id;
+                }
+            }
+
+            foreach (UnitConfig config in configCategory.DataList)
+            {
+                if (config != null && config.UnitType == UnitType.NPC)
+                {
+                    return config.Id;
+                }
+            }
+
+            return owner?.ConfigId ?? 0;
+        }
+
+        public static Unit CreateHealSpiritUnit(Unit owner, int configId)
+        {
+            Scene scene = owner?.Scene();
+            if (scene == null || scene.IsDisposed || configId <= 0)
+            {
+                return null;
+            }
+
+            Unit spirit = UnitFactory.Create(scene, IdGenerater.Instance.GenerateId(), configId);
+            if (spirit == null || spirit.IsDisposed)
+            {
+                return null;
+            }
+
+            spirit.UnitType = UnitType.Pet;
+            spirit.Position = owner.Position + new float3(0.75f, 0f, 0.75f);
+            spirit.Rotation = owner.Rotation;
+
+            PetComponent petComponent = spirit.GetComponent<PetComponent>() ?? spirit.AddComponent<PetComponent>();
+            petComponent.OwnerId = owner.Id;
+
+            CampComponent ownerCamp = owner.GetComponent<CampComponent>();
+            if (ownerCamp != null)
+            {
+                CampComponent spiritCamp = spirit.GetComponent<CampComponent>();
+                if (spiritCamp == null)
+                {
+                    spiritCamp = spirit.AddComponent<CampComponent, int>(ownerCamp.CampId);
+                }
+                else
+                {
+                    spiritCamp.CampId = ownerCamp.CampId;
+                    spiritCamp.CampType = ownerCamp.CampType;
+                }
+            }
+
+            NumericComponent numeric = spirit.NumericComponent;
+            if (numeric != null)
+            {
+                numeric.Set(NumericType.AI, 0);
+            }
+
+            return spirit;
         }
     }
 }

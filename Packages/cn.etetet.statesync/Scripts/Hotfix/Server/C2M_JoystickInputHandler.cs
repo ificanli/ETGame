@@ -8,7 +8,7 @@ namespace ET.Server
     [MessageHandler(SceneType.Map)]
     public class C2M_JoystickInputHandler : MessageLocationHandler<Unit, C2M_JoystickInput>
     {
-        private const int InputProcessThrottleMs = 50;
+        private const int InputProcessThrottleMs = 16;
 
         protected override async ETTask Run(Unit unit, C2M_JoystickInput message)
         {
@@ -17,7 +17,6 @@ namespace ET.Server
             if (joystickMove == null)
             {
                 joystickMove = unit.AddComponent<JoystickMoveComponent>();
-                Log.Info($"[JoystickTrace][ServerRecv] add JoystickMoveComponent unitId={unit.Id}");
             }
 
             long now = TimeInfo.Instance.ServerNow();
@@ -35,12 +34,6 @@ namespace ET.Server
             }
 
             joystickMove.LastInputProcessTime = now;
-            if (isStop || now - joystickMove.LastInputTraceLogTime >= 200)
-            {
-                joystickMove.LastInputTraceLogTime = now;
-                Log.Info($"[JoystickTrace][ServerRecv] recv C2M_JoystickInput unitId={unit.Id}, dir=({message.DirX:F3},{message.DirZ:F3}), pos={unit.Position}");
-            }
-
             joystickMove.SetDirection(message.DirX, message.DirZ);
 
             await ETTask.CompletedTask;

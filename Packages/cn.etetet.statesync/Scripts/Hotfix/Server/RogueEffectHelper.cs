@@ -531,8 +531,7 @@ namespace ET.Server
                     return true;
                 }
 
-                if (effect is EffectRogueReplaceAllCards ||
-                    effect is EffectRogueTemporaryKey)
+                if (effect is EffectRogueReplaceAllCards)
                 {
                     continue;
                 }

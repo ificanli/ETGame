@@ -14,6 +14,24 @@ namespace ET.Server
             return passiveRuntime.GetProbabilityMultiplierPermille();
         }
 
+        public static int GetContainerResultProbabilityMultiplierPermille(Unit unit)
+        {
+            RogueBuffPassiveRuntimeComponent passiveRuntime = unit?.GetComponent<RogueBuffPassiveRuntimeComponent>();
+            return passiveRuntime.GetContainerResultProbabilityMultiplierPermille();
+        }
+
+        public static int GetSearchMonsterProbabilityMultiplierPermille(Unit unit)
+        {
+            RogueBuffPassiveRuntimeComponent passiveRuntime = unit?.GetComponent<RogueBuffPassiveRuntimeComponent>();
+            return passiveRuntime.GetSearchMonsterProbabilityMultiplierPermille();
+        }
+
+        public static void GetContainerLowQualityGold(Unit unit, out int totalGold, out int highQualityThreshold)
+        {
+            RogueBuffPassiveRuntimeComponent passiveRuntime = unit?.GetComponent<RogueBuffPassiveRuntimeComponent>();
+            passiveRuntime.GetContainerLowQualityGold(out totalGold, out highQualityThreshold);
+        }
+
         /// <summary>
         /// 是否禁用技能。用于"火力进化2：技能无法使用"。
         /// </summary>
@@ -66,6 +84,12 @@ namespace ET.Server
             return passiveRuntime.HasFatalImmunity();
         }
 
+        public static int GetMonsterDamageBonusPermille(Unit unit)
+        {
+            RogueBuffPassiveRuntimeComponent passiveRuntime = unit?.GetComponent<RogueBuffPassiveRuntimeComponent>();
+            return passiveRuntime.GetMonsterDamageBonusPermille();
+        }
+
         public static int GetKillGoldBonus(Unit unit, int targetUnitType)
         {
             RogueBuffPassiveRuntimeComponent passiveRuntime = unit?.GetComponent<RogueBuffPassiveRuntimeComponent>();
@@ -103,6 +127,18 @@ namespace ET.Server
 
             RogueBuffPassiveRuntimeComponent passiveRuntime = unit?.GetComponent<RogueBuffPassiveRuntimeComponent>();
             passiveRuntime.GetAfterSkillSpeedBoostData(out totalSpeedPct, out maxDurationMs);
+        }
+
+        public static int GetSizeDifferenceDamageBonusPermille(Unit unit)
+        {
+            RogueBuffPassiveRuntimeComponent passiveRuntime = unit?.GetComponent<RogueBuffPassiveRuntimeComponent>();
+            return passiveRuntime.GetSizeDifferenceDamageBonusPermille();
+        }
+
+        public static int GetHitHeroCritPermille(Unit unit)
+        {
+            RogueHitHeroCritStateComponent stateComponent = unit?.GetComponent<RogueHitHeroCritStateComponent>();
+            return stateComponent.GetTotalCritPermille();
         }
     }
 }

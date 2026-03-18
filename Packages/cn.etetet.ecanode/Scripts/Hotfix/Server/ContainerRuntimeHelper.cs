@@ -208,8 +208,20 @@ namespace ET.Server
             MapMessageHelper.NoticeClient(player, msg, NoticeType.Self);
             Log.Info($"[ECAContainer] open ui point={point.PointId}, player={player.Id}, uiKey={uiKey ?? "null"}");
 
-            if (!container.HasOpenedOnce)
+            bool isFirstOpen = !container.HasOpenedOnce;
+            if (isFirstOpen)
             {
+                Scene scene = point.Scene();
+                if (scene != null && !scene.IsDisposed)
+                {
+                    EventSystem.Instance.Publish(scene, new ContainerOpenedEvent
+                    {
+                        Point = point,
+                        Player = player,
+                        IsFirstOpen = true,
+                    });
+                }
+
                 container.HasOpenedOnce = true;
             }
         }
@@ -237,7 +249,27 @@ namespace ET.Server
             }
 
             container.ClearItems();
-            Dictionary<int, int> aggregated = BuildAggregatedLoot(lootTable, count, allowRepeat);
+            int resultRollMultiplierPermille = 1000;
+            Scene scene = point.Scene();
+            if (scene != null && !scene.IsDisposed)
+            {
+                ContainerLootBuildContext context = new ContainerLootBuildContext
+                {
+                    Point = point,
+                    Player = player,
+                    LootTable = lootTable,
+                    Count = count,
+                    AllowRepeat = allowRepeat,
+                    ResultRollMultiplierPermille = 1000,
+                };
+                EventSystem.Instance.Publish(scene, new ContainerLootBuildEvent { Context = context });
+                if (context.ResultRollMultiplierPermille > 0)
+                {
+                    resultRollMultiplierPermille = context.ResultRollMultiplierPermille;
+                }
+            }
+
+            Dictionary<int, int> aggregated = BuildAggregatedLoot(lootTable, count, allowRepeat, resultRollMultiplierPermille);
             int slotIndex = 0;
             foreach (KeyValuePair<int, int> kv in aggregated)
             {
@@ -722,7 +754,34 @@ namespace ET.Server
             return ContainerOutputMode.ContainerPanel;
         }
 
-        private static Dictionary<int, int> BuildAggregatedLoot(string lootTable, int count, bool allowRepeat)
+        private static Dictionary<int, int> BuildAggregatedLoot(string lootTable, int count, bool allowRepeat, int resultRollMultiplierPermille)
+        {
+            Dictionary<int, int> best = BuildAggregatedLootOnce(lootTable, count, allowRepeat);
+            if (resultRollMultiplierPermille <= 1000)
+            {
+                return best;
+            }
+
+            int extraRollCount = resultRollMultiplierPermille / 1000 - 1;
+            int fractionalPermille = resultRollMultiplierPermille % 1000;
+            if (fractionalPermille > 0 && RandomGenerator.RandomNumber(0, 1000) < fractionalPermille)
+            {
+                extraRollCount += 1;
+            }
+
+            for (int i = 0; i < extraRollCount; ++i)
+            {
+                Dictionary<int, int> candidate = BuildAggregatedLootOnce(lootTable, count, allowRepeat);
+                if (IsLootCandidateBetter(candidate, best))
+                {
+                    best = candidate;
+                }
+            }
+
+            return best;
+        }
+
+        private static Dictionary<int, int> BuildAggregatedLootOnce(string lootTable, int count, bool allowRepeat)
         {
             Dictionary<int, int> aggregated = new Dictionary<int, int>();
             List<ContainerItemEntry> pool = ParseLootPool(lootTable);
@@ -760,6 +819,37 @@ namespace ET.Server
             }
 
             return aggregated;
+        }
+
+        private static bool IsLootCandidateBetter(Dictionary<int, int> candidate, Dictionary<int, int> currentBest)
+        {
+            return EvaluateLootScore(candidate) > EvaluateLootScore(currentBest);
+        }
+
+        private static long EvaluateLootScore(Dictionary<int, int> aggregated)
+        {
+            if (aggregated == null || aggregated.Count == 0)
+            {
+                return 0;
+            }
+
+            int maxQuality = 0;
+            long totalQuality = 0;
+            long totalCount = 0;
+            foreach (KeyValuePair<int, int> kv in aggregated)
+            {
+                ItemConfig itemConfig = ItemConfigCategory.Instance.Get(kv.Key);
+                int quality = itemConfig?.Quality ?? 0;
+                if (quality > maxQuality)
+                {
+                    maxQuality = quality;
+                }
+
+                totalQuality += (long)quality * kv.Value;
+                totalCount += kv.Value;
+            }
+
+            return ((long)maxQuality << 40) + (totalQuality << 20) + totalCount;
         }
 
         private static List<ContainerItemEntry> ParseLootPool(string lootTable)

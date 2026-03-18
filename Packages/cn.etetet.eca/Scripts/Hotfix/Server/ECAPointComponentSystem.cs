@@ -263,6 +263,21 @@ namespace ET.Server
                 return;
             }
 
+            Scene scene = self.Scene();
+            if (scene != null && !scene.IsDisposed)
+            {
+                EvacuationDurationAdjustContext context = new EvacuationDurationAdjustContext
+                {
+                    Player = player,
+                    DurationMs = evacuationDurationMs,
+                };
+                EventSystem.Instance.Publish(scene, new EvacuationDurationAdjustEvent { Context = context });
+                if (context.DurationMs > 0)
+                {
+                    evacuationDurationMs = context.DurationMs;
+                }
+            }
+
             player.AddComponent<PlayerEvacuationComponent, long, long, string>(ecaUnit.Id, evacuationDurationMs, lobbyMapName);
         }
 

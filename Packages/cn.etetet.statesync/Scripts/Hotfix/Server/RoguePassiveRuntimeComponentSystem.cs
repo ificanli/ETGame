@@ -61,6 +61,72 @@ namespace ET.Server
         }
     }
 
+    [EntitySystemOf(typeof(RogueHitHeroCritStateComponent))]
+    public static partial class RogueHitHeroCritStateComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this RogueHitHeroCritStateComponent self)
+        {
+            self.Sources.Clear();
+        }
+
+        [EntitySystem]
+        private static void Destroy(this RogueHitHeroCritStateComponent self)
+        {
+            self.Sources.Clear();
+        }
+    }
+
+    [EntitySystemOf(typeof(RogueReloadFirstShotsStateComponent))]
+    public static partial class RogueReloadFirstShotsStateComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this RogueReloadFirstShotsStateComponent self)
+        {
+            self.Sources.Clear();
+        }
+
+        [EntitySystem]
+        private static void Destroy(this RogueReloadFirstShotsStateComponent self)
+        {
+            self.Sources.Clear();
+        }
+    }
+
+    [EntitySystemOf(typeof(RogueTemporaryItemStateComponent))]
+    public static partial class RogueTemporaryItemStateComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this RogueTemporaryItemStateComponent self)
+        {
+            self.Sources.Clear();
+        }
+
+        [EntitySystem]
+        private static void Destroy(this RogueTemporaryItemStateComponent self)
+        {
+            self.Sources.Clear();
+        }
+    }
+
+    [EntitySystemOf(typeof(RogueSummonedSpiritStateComponent))]
+    public static partial class RogueSummonedSpiritStateComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this RogueSummonedSpiritStateComponent self)
+        {
+            self.Sources.Clear();
+        }
+
+        [EntitySystem]
+        private static void Destroy(this RogueSummonedSpiritStateComponent self)
+        {
+            Unit owner = self.GetParent<Unit>();
+            self.ClearAll(owner);
+            self.Sources.Clear();
+        }
+    }
+
     [Invoke(TimerInvokeType.RogueAfterSkillSpeedBoostExpire)]
     public class RogueAfterSkillSpeedBoostExpireTimer : ATimer<RogueAfterSkillSpeedBoostComponent>
     {
@@ -79,6 +145,376 @@ namespace ET.Server
 
     public static class RoguePassiveRuntimeHelper
     {
+        public static void AddSource(this RogueHitHeroCritStateComponent self, long sourceId, int critPermillePerHit)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0 || critPermillePerHit <= 0)
+            {
+                return;
+            }
+
+            if (!self.Sources.TryGetValue(sourceId, out RogueHitHeroCritSourceData sourceData))
+            {
+                sourceData = new RogueHitHeroCritSourceData();
+            }
+
+            sourceData.CritPermillePerHit = critPermillePerHit;
+            self.Sources[sourceId] = sourceData;
+        }
+
+        public static void RemoveSource(this RogueHitHeroCritStateComponent self, long sourceId)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0)
+            {
+                return;
+            }
+
+            self.Sources.Remove(sourceId);
+        }
+
+        public static void OnHitHero(this RogueHitHeroCritStateComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            using ListComponent<long> sourceIds = ListComponent<long>.Create();
+            foreach (long sourceId in self.Sources.Keys)
+            {
+                sourceIds.Add(sourceId);
+            }
+
+            foreach (long sourceId in sourceIds)
+            {
+                if (!self.Sources.TryGetValue(sourceId, out RogueHitHeroCritSourceData sourceData) || sourceData.CritPermillePerHit <= 0)
+                {
+                    continue;
+                }
+
+                sourceData.AccumulatedCritPermille += sourceData.CritPermillePerHit;
+                self.Sources[sourceId] = sourceData;
+            }
+        }
+
+        public static int GetTotalCritPermille(this RogueHitHeroCritStateComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return 0;
+            }
+
+            int total = 0;
+            foreach (RogueHitHeroCritSourceData sourceData in self.Sources.Values)
+            {
+                if (sourceData.AccumulatedCritPermille > 0)
+                {
+                    total += sourceData.AccumulatedCritPermille;
+                }
+            }
+
+            return total;
+        }
+
+        public static bool IsEmpty(this RogueHitHeroCritStateComponent self)
+        {
+            return self == null || self.IsDisposed || self.Sources.Count == 0;
+        }
+
+        public static void AddSource(
+            this RogueReloadFirstShotsStateComponent self,
+            long sourceId,
+            int damageBonusPermille,
+            int shotCount,
+            int penetrationCount)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0 || damageBonusPermille <= 0 || shotCount <= 0)
+            {
+                return;
+            }
+
+            self.Sources[sourceId] = new RogueReloadFirstShotsSourceData
+            {
+                DamageBonusPermille = damageBonusPermille,
+                ShotCount = shotCount,
+                RemainingShots = 0,
+                PenetrationCount = penetrationCount > 0 ? penetrationCount : 0,
+            };
+        }
+
+        public static void RemoveSource(this RogueReloadFirstShotsStateComponent self, long sourceId)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0)
+            {
+                return;
+            }
+
+            self.Sources.Remove(sourceId);
+        }
+
+        public static void ActivateOnReload(this RogueReloadFirstShotsStateComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            using ListComponent<long> sourceIds = ListComponent<long>.Create();
+            foreach (long sourceId in self.Sources.Keys)
+            {
+                sourceIds.Add(sourceId);
+            }
+
+            foreach (long sourceId in sourceIds)
+            {
+                if (!self.Sources.TryGetValue(sourceId, out RogueReloadFirstShotsSourceData sourceData) || sourceData.ShotCount <= 0)
+                {
+                    continue;
+                }
+
+                sourceData.RemainingShots = sourceData.ShotCount;
+                self.Sources[sourceId] = sourceData;
+            }
+        }
+
+        public static void ConsumeShot(this RogueReloadFirstShotsStateComponent self, out int totalDamageBonusPermille, out int maxPenetrationCount)
+        {
+            totalDamageBonusPermille = 0;
+            maxPenetrationCount = 0;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            using ListComponent<long> sourceIds = ListComponent<long>.Create();
+            foreach (long sourceId in self.Sources.Keys)
+            {
+                sourceIds.Add(sourceId);
+            }
+
+            foreach (long sourceId in sourceIds)
+            {
+                if (!self.Sources.TryGetValue(sourceId, out RogueReloadFirstShotsSourceData sourceData) || sourceData.RemainingShots <= 0)
+                {
+                    continue;
+                }
+
+                totalDamageBonusPermille += sourceData.DamageBonusPermille;
+                if (sourceData.PenetrationCount > maxPenetrationCount)
+                {
+                    maxPenetrationCount = sourceData.PenetrationCount;
+                }
+
+                sourceData.RemainingShots -= 1;
+                self.Sources[sourceId] = sourceData;
+            }
+        }
+
+        public static bool IsEmpty(this RogueReloadFirstShotsStateComponent self)
+        {
+            return self == null || self.IsDisposed || self.Sources.Count == 0;
+        }
+
+        public static void RegisterSource(this RogueTemporaryItemStateComponent self, long sourceId, int itemConfigId, int count)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0 || itemConfigId <= 0 || count <= 0)
+            {
+                return;
+            }
+
+            self.Sources[sourceId] = new RogueTemporaryItemSourceData
+            {
+                ItemConfigId = itemConfigId,
+                RemainingCount = count,
+            };
+        }
+
+        public static int ConsumeItem(this RogueTemporaryItemStateComponent self, int itemConfigId, int count)
+        {
+            if (self == null || self.IsDisposed || itemConfigId <= 0 || count <= 0)
+            {
+                return 0;
+            }
+
+            int remaining = count;
+            using ListComponent<long> sourceIds = ListComponent<long>.Create();
+            foreach (long sourceId in self.Sources.Keys)
+            {
+                sourceIds.Add(sourceId);
+            }
+
+            foreach (long sourceId in sourceIds)
+            {
+                if (remaining <= 0)
+                {
+                    break;
+                }
+
+                if (!self.Sources.TryGetValue(sourceId, out RogueTemporaryItemSourceData sourceData) ||
+                    sourceData.ItemConfigId != itemConfigId ||
+                    sourceData.RemainingCount <= 0)
+                {
+                    continue;
+                }
+
+                int consume = sourceData.RemainingCount >= remaining ? remaining : sourceData.RemainingCount;
+                sourceData.RemainingCount -= consume;
+                remaining -= consume;
+
+                if (sourceData.RemainingCount > 0)
+                {
+                    self.Sources[sourceId] = sourceData;
+                }
+                else
+                {
+                    self.Sources.Remove(sourceId);
+                }
+            }
+
+            return count - remaining;
+        }
+
+        public static void CleanupSource(this RogueTemporaryItemStateComponent self, Unit unit, long sourceId)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0)
+            {
+                return;
+            }
+
+            if (!self.Sources.TryGetValue(sourceId, out RogueTemporaryItemSourceData sourceData))
+            {
+                return;
+            }
+
+            self.Sources.Remove(sourceId);
+            if (unit == null || unit.IsDisposed || sourceData.ItemConfigId <= 0 || sourceData.RemainingCount <= 0)
+            {
+                return;
+            }
+
+            ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
+            if (itemComponent == null)
+            {
+                return;
+            }
+
+            int currentCount = itemComponent.GetItemCount(sourceData.ItemConfigId);
+            int removeCount = currentCount >= sourceData.RemainingCount ? sourceData.RemainingCount : currentCount;
+            if (removeCount > 0)
+            {
+                ItemHelper.RemoveItem(itemComponent, sourceData.ItemConfigId, removeCount, ItemChangeReason.UseItem);
+            }
+        }
+
+        public static void ClearAll(this RogueTemporaryItemStateComponent self, Unit unit)
+        {
+            if (self == null || self.IsDisposed || self.Sources.Count == 0)
+            {
+                return;
+            }
+
+            using ListComponent<long> sourceIds = ListComponent<long>.Create();
+            foreach (long sourceId in self.Sources.Keys)
+            {
+                sourceIds.Add(sourceId);
+            }
+
+            foreach (long sourceId in sourceIds)
+            {
+                self.CleanupSource(unit, sourceId);
+            }
+        }
+
+        public static bool IsEmpty(this RogueTemporaryItemStateComponent self)
+        {
+            return self == null || self.IsDisposed || self.Sources.Count == 0;
+        }
+
+        public static void SetSource(this RogueSummonedSpiritStateComponent self, long sourceId, long spiritUnitId)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0)
+            {
+                return;
+            }
+
+            if (!self.Sources.TryGetValue(sourceId, out RogueSummonedSpiritSourceData sourceData))
+            {
+                sourceData = new RogueSummonedSpiritSourceData();
+            }
+
+            sourceData.SpiritUnitId = spiritUnitId;
+            self.Sources[sourceId] = sourceData;
+        }
+
+        public static void ClearSource(this RogueSummonedSpiritStateComponent self, Unit owner, long sourceId)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0)
+            {
+                return;
+            }
+
+            if (!self.Sources.TryGetValue(sourceId, out RogueSummonedSpiritSourceData sourceData))
+            {
+                return;
+            }
+
+            self.Sources.Remove(sourceId);
+            DisposeSpirit(owner, sourceData.SpiritUnitId);
+        }
+
+        public static void ReplaceSpirit(this RogueSummonedSpiritStateComponent self, Unit owner, long sourceId, long newSpiritUnitId)
+        {
+            if (self == null || self.IsDisposed || sourceId == 0)
+            {
+                return;
+            }
+
+            if (self.Sources.TryGetValue(sourceId, out RogueSummonedSpiritSourceData sourceData))
+            {
+                DisposeSpirit(owner, sourceData.SpiritUnitId);
+            }
+
+            self.SetSource(sourceId, newSpiritUnitId);
+        }
+
+        public static void ClearAll(this RogueSummonedSpiritStateComponent self, Unit owner)
+        {
+            if (self == null || self.IsDisposed || self.Sources.Count == 0)
+            {
+                return;
+            }
+
+            using ListComponent<long> sourceIds = ListComponent<long>.Create();
+            foreach (long sourceId in self.Sources.Keys)
+            {
+                sourceIds.Add(sourceId);
+            }
+
+            foreach (long sourceId in sourceIds)
+            {
+                self.ClearSource(owner, sourceId);
+            }
+        }
+
+        public static bool IsEmpty(this RogueSummonedSpiritStateComponent self)
+        {
+            return self == null || self.IsDisposed || self.Sources.Count == 0;
+        }
+
+        private static void DisposeSpirit(Unit owner, long spiritUnitId)
+        {
+            if (owner == null || owner.IsDisposed || spiritUnitId == 0)
+            {
+                return;
+            }
+
+            UnitComponent unitComponent = owner.Scene()?.GetComponent<UnitComponent>();
+            Unit spirit = unitComponent?.Get(spiritUnitId);
+            if (spirit != null && !spirit.IsDisposed)
+            {
+                spirit.Dispose();
+            }
+        }
+
         public static void ApplyConcealment(this RogueOutOfCombatStealthStateComponent self)
         {
             if (self == null || self.IsDisposed || self.Concealed)

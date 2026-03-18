@@ -14,6 +14,18 @@ namespace ET.Server
         public int SourceFilter;
     }
 
+    public struct RogueContainerLowQualityGoldSourceData
+    {
+        public int Gold;
+        public int HighQualityThreshold;
+    }
+
+    public struct RogueHitHeroCritSourceData
+    {
+        public int CritPermillePerHit;
+        public int AccumulatedCritPermille;
+    }
+
     public struct RogueInstantKillSourceData
     {
         public int ChancePermille;
@@ -39,6 +51,28 @@ namespace ET.Server
     {
         public int SpeedPct;
         public int DurationMs;
+    }
+
+    public struct RogueReloadFirstShotsSourceData
+    {
+        public int DamageBonusPermille;
+        public int ShotCount;
+        public int RemainingShots;
+        public int PenetrationCount;
+    }
+
+    public struct RogueTemporaryItemSourceData
+    {
+        public int ItemConfigId;
+        public int RemainingCount;
+    }
+
+    public struct RogueSummonedSpiritSourceData
+    {
+        public long SpiritUnitId;
+        public long DisposeTimerId;
+        public int HealPermille;
+        public int LifetimeMs;
     }
 
     public struct RogueTrapMasterSourceData
@@ -73,13 +107,42 @@ namespace ET.Server
     }
 
     [ComponentOf(typeof(Unit))]
+    public class RogueHitHeroCritStateComponent : Entity, IAwake, IDestroy
+    {
+        public Dictionary<long, RogueHitHeroCritSourceData> Sources { get; set; } = new();
+    }
+
+    [ComponentOf(typeof(Unit))]
+    public class RogueReloadFirstShotsStateComponent : Entity, IAwake, IDestroy
+    {
+        public Dictionary<long, RogueReloadFirstShotsSourceData> Sources { get; set; } = new();
+    }
+
+    [ComponentOf(typeof(Unit))]
+    public class RogueTemporaryItemStateComponent : Entity, IAwake, IDestroy
+    {
+        public Dictionary<long, RogueTemporaryItemSourceData> Sources { get; set; } = new();
+    }
+
+    [ComponentOf(typeof(Unit))]
+    public class RogueSummonedSpiritStateComponent : Entity, IAwake, IDestroy
+    {
+        public Dictionary<long, RogueSummonedSpiritSourceData> Sources { get; set; } = new();
+    }
+
+    [ComponentOf(typeof(Unit))]
     public class RogueBuffPassiveRuntimeComponent : Entity, IAwake, IDestroy
     {
         public Dictionary<long, int> KillGoldBonusBySource { get; set; } = new();
+        public Dictionary<long, RogueContainerLowQualityGoldSourceData> ContainerLowQualityGoldBySource { get; set; } = new();
         public Dictionary<long, int> GoldDamagePerOnePercentBySource { get; set; } = new();
+        public Dictionary<long, int> MonsterDamageBonusPermilleBySource { get; set; } = new();
         public Dictionary<long, int> AreaDiscoveryGoldBySource { get; set; } = new();
         public Dictionary<long, int> ProbabilityMultiplierBySource { get; set; } = new();
+        public Dictionary<long, int> ContainerResultProbabilityMultiplierBySource { get; set; } = new();
+        public Dictionary<long, int> SearchMonsterProbabilityMultiplierBySource { get; set; } = new();
         public Dictionary<long, int> LifeStealPermilleBySource { get; set; } = new();
+        public Dictionary<long, int> SizeDifferenceDamageBonusBySource { get; set; } = new();
         public Dictionary<long, int> OnKillHealPermilleBySource { get; set; } = new();
 
         public Dictionary<long, RogueLowHpDamageSourceData> LowHpDamageBySource { get; set; } = new();

@@ -19,6 +19,7 @@ namespace ET.Client
                 return;
             }
 
+            self.BindWarehouseBoardInteract(boardRoot);
             self.ConfigureWarehouseContentRoot(contentRoot);
             self.ResolveWarehousePrefabNodes(contentRoot);
         }
@@ -588,8 +589,7 @@ namespace ET.Client
                     Image image = cell.GetComponent<Image>();
                     if (image != null)
                     {
-                        image.color = new Color(1f, 1f, 1f, 0.08f);
-                        image.raycastTarget = false;
+                        ApplyGridCellVisual(image, gridRoot, new Color(1f, 1f, 1f, 0.08f));
                     }
 
                     ApplyFootprint(

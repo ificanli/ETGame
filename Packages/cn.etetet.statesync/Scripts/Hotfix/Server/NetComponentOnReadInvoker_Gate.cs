@@ -18,7 +18,7 @@ namespace ET.Server
             Scene root = session.Root();
 
             MessageStatisticsComponent messageStatisticsComponent = session.GetComponent<MessageStatisticsComponent>();
-            if (!messageStatisticsComponent.Check(message.GetType(), 50))
+            if (!messageStatisticsComponent.Check(message.GetType(), 200))
             {
                 session.Error = ErrorCode.ERR_MessageCountTooMany;
                 session.Dispose();

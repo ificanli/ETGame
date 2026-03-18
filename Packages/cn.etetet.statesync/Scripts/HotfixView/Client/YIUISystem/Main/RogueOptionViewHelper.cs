@@ -17,9 +17,9 @@ namespace ET.Client
         public const string RogueOptionTagBgQuality1 = "rogue.option.tag.bg.quality.1";
         public const string RogueOptionTagBgQuality2 = "rogue.option.tag.bg.quality.2";
         public const string RogueOptionTagBgQuality3 = "rogue.option.tag.bg.quality.3";
-        public const string RogueOptionBgQuality1Value = "export(6)_0";
-        public const string RogueOptionBgQuality2Value = "export(6)_1";
-        public const string RogueOptionBgQuality3Value = "export(6)_2";
+        public const string RogueOptionBgQuality1Value = "export (6)_0";
+        public const string RogueOptionBgQuality2Value = "export (6)_1";
+        public const string RogueOptionBgQuality3Value = "export (6)_2";
         public const string RogueOptionTagBgQuality1Value = "";
         public const string RogueOptionTagBgQuality2Value = "";
         public const string RogueOptionTagBgQuality3Value = "";
@@ -56,9 +56,11 @@ namespace ET.Client
             self.Panel = panelRef;
             self.OptionIndex = optionIndex;
             self.IsChoosing = false;
+            self.IsRerolling = false;
             self.u_DataTextTitle?.SetValue(optionData.Name ?? string.Empty);
             self.u_DataTextDes?.SetValue(optionData.Desc ?? string.Empty);
             ConfigureClickRaycastTargets(self);
+            RefreshRerollState(self, optionData.RerollCount);
             SetTags(self, CollectDisplayTags(optionData));
             ApplyQualityBackground(self, optionData.Quality);
             ApplyTagQualityBackground(self, optionData.Quality);
@@ -75,9 +77,11 @@ namespace ET.Client
             self.Panel = null;
             self.OptionIndex = -1;
             self.IsChoosing = false;
+            self.IsRerolling = false;
             self.u_DataTextTitle?.SetValue(string.Empty);
             self.u_DataTextDes?.SetValue(string.Empty);
             ConfigureClickRaycastTargets(self);
+            RefreshRerollState(self, 0);
             SetTags(self, System.Array.Empty<int>());
             ReleaseSprite(self);
             ChangeOptionBackgroundImage(self, string.Empty).Coroutine();
@@ -119,6 +123,30 @@ namespace ET.Client
 
             RestoreInteractiveGraphic(self.u_ComTagRectTransform);
             RestoreInteractiveGraphic(self.u_ComTag2RectTransform);
+        }
+
+        public static void RefreshRerollState(RogueOptionComponent self, int rerollCount)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            Button rerollButton = CacheRerollButton(self);
+            Image rerollButtonImage = CacheRerollButtonImage(self);
+            bool canReroll = rerollCount > 0;
+            if (rerollButton != null)
+            {
+                rerollButton.interactable = canReroll;
+            }
+
+            if (rerollButtonImage != null)
+            {
+                rerollButtonImage.enabled = self.DefaultRerollButtonImageEnabled;
+                rerollButtonImage.color = canReroll
+                    ? self.DefaultRerollButtonColor
+                    : ResolveRerollDisabledColor(rerollButton);
+            }
         }
 
         public static void SetTags(RogueOptionComponent self, int[] tagIds)
@@ -597,6 +625,38 @@ namespace ET.Client
             }
         }
 
+        private static Button CacheRerollButton(RogueOptionComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return null;
+            }
+
+            self.RerollButton ??= ResolveRerollButtonTransform(self)?.GetComponent<Button>();
+            return self.RerollButton;
+        }
+
+        private static Image CacheRerollButtonImage(RogueOptionComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return null;
+            }
+
+            self.RerollButtonImage ??= ResolveRerollButtonTransform(self)?.GetComponent<Image>();
+            return self.RerollButtonImage;
+        }
+
+        private static Color ResolveRerollDisabledColor(Button rerollButton)
+        {
+            if (rerollButton != null)
+            {
+                return rerollButton.colors.disabledColor;
+            }
+
+            return new Color(0.5f, 0.5f, 0.5f, 1f);
+        }
+
         private static void RestoreDefaultBackground(RogueOptionComponent self)
         {
             if (self == null || self.IsDisposed)
@@ -702,6 +762,11 @@ namespace ET.Client
             }
 
             return self.u_ComRogueOptionRectTransform;
+        }
+
+        private static Transform ResolveRerollButtonTransform(RogueOptionComponent self)
+        {
+            return self.UIBase?.OwnerGameObject?.transform?.Find("btnReroll");
         }
     }
 }

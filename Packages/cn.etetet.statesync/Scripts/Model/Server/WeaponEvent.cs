@@ -8,4 +8,11 @@ namespace ET.Server
         public int WeaponId;
         public float Damage;
     }
+
+    public struct UnitWeaponReloadCompleted
+    {
+        public EntityRef<Unit> Unit;
+        public int SlotIndex;
+        public int WeaponId;
+    }
 }

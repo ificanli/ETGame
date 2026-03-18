@@ -12,11 +12,8 @@ namespace ET.Server
         /// <summary>摇杆输入方向（归一化后的XZ分量）</summary>
         public float3 Direction;
 
-        /// <summary>服务端重复定时器ID（33ms = 30Hz）</summary>
+        /// <summary>服务端重复定时器ID（16ms = 60Hz）</summary>
         public long MoveTimerId;
-
-        /// <summary>输入日志节流时间（毫秒）</summary>
-        public long LastInputTraceLogTime;
 
         /// <summary>Tick日志节流时间（毫秒）</summary>
         public long LastTickTraceLogTime;

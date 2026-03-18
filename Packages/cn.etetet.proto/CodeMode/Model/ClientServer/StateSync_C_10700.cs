@@ -549,6 +549,8 @@ namespace ET
         public int DescTextId { get; set; }
         [MemoryPackOrder(4)]
         public string Icon { get; set; }
+        [MemoryPackOrder(5)]
+        public int RerollCount { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -561,6 +563,7 @@ namespace ET
             this.NameTextId = default;
             this.DescTextId = default;
             this.Icon = default;
+            this.RerollCount = default;
 
             ObjectPool.Recycle(this);
         }
@@ -728,6 +731,82 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.C2M_RogueRerollOption)]
+    [ResponseType(nameof(M2C_RogueRerollOptionResult))]
+    public partial class C2M_RogueRerollOption : MessageObject, ILocationRequest
+    {
+        public static C2M_RogueRerollOption Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_RogueRerollOption>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public long ChoiceSerial { get; set; }
+        [MemoryPackOrder(2)]
+        public int OptionIndex { get; set; }
+        [MemoryPackOrder(3)]
+        public int CurrentOptionId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.ChoiceSerial = default;
+            this.OptionIndex = default;
+            this.CurrentOptionId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_RogueRerollOptionResult)]
+    public partial class M2C_RogueRerollOptionResult : MessageObject, ILocationResponse
+    {
+        public static M2C_RogueRerollOptionResult Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_RogueRerollOptionResult>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        [MemoryPackOrder(3)]
+        public long ChoiceSerial { get; set; }
+        [MemoryPackOrder(4)]
+        public int OptionIndex { get; set; }
+        [MemoryPackOrder(5)]
+        public int OldOptionId { get; set; }
+        [MemoryPackOrder(6)]
+        public RogueOptionData Option { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.ChoiceSerial = default;
+            this.OptionIndex = default;
+            this.OldOptionId = default;
+            this.Option = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort RouterSync = 10701;
@@ -752,5 +831,7 @@ namespace ET
         public const ushort M2C_RogueChoicePopup = 10720;
         public const ushort C2M_RogueChooseOption = 10721;
         public const ushort M2C_RogueChoiceResult = 10722;
+        public const ushort C2M_RogueRerollOption = 10723;
+        public const ushort M2C_RogueRerollOptionResult = 10724;
     }
 }

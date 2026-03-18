@@ -54,6 +54,13 @@ namespace ET.Server
                 unit.Root().GetComponent<MessageSender>().Send(gateInfo.ActorId, carryResult);
             }
 
+            string mapName = unit.Scene()?.Name.GetSceneConfigName();
+            if (!string.IsNullOrWhiteSpace(mapName) && mapName != "Home")
+            {
+                TransferHelper.TransferAtFrameFinish(unit, "Home", 0).Coroutine();
+                Log.Info($"[UnitDieEvent_ClearLoadout] player {unit.Id} scheduled transfer to Home after death, fromMap={mapName}");
+            }
+
             Log.Info($"[UnitDieEvent_ClearLoadout] player {unit.Id} died, all items cleared");
 
             await ETTask.CompletedTask;

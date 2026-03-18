@@ -52,49 +52,62 @@ namespace ET.Test
                 return 2;
             }
 
+            EffectServerBuffAdd addEffect = buffConfig.GetEffect<EffectServerBuffAdd>();
             EffectServerBuffTick tickEffect = buffConfig.GetEffect<EffectServerBuffTick>();
-            if (tickEffect == null)
+            if (addEffect == null || tickEffect == null)
             {
-                Log.Console("rogue buff 1045 tick effect is null");
+                Log.Console("rogue buff 1045 add/tick effect is null");
                 return 3;
+            }
+
+            if (addEffect.Unit != "Unit")
+            {
+                Log.Console($"rogue buff 1045 add root unit key invalid: {addEffect.Unit}");
+                return 4;
             }
 
             if (tickEffect.Unit != "Unit")
             {
                 Log.Console($"rogue buff 1045 tick root unit key invalid: {tickEffect.Unit}");
-                return 4;
-            }
-
-            if (tickEffect.Children == null || tickEffect.Children.Count != 1 || tickEffect.Children[0] is not BTRogueHealMaxHpPermille tickNode)
-            {
-                Log.Console($"rogue buff 1045 tick children invalid, count={tickEffect.Children?.Count ?? 0}");
                 return 5;
             }
 
-            if (tickNode.Unit != "Unit")
+            if (addEffect.Children == null || addEffect.Children.Count != 1 || addEffect.Children[0] is not BTRogueSummonHealSpirit addNode)
             {
-                Log.Console($"rogue buff 1045 tick child unit key invalid: {tickNode.Unit}");
+                Log.Console($"rogue buff 1045 add children invalid, count={addEffect.Children?.Count ?? 0}");
                 return 6;
+            }
+
+            if (tickEffect.Children == null || tickEffect.Children.Count != 1 || tickEffect.Children[0] is not BTRogueSummonHealSpirit tickNode)
+            {
+                Log.Console($"rogue buff 1045 tick children invalid, count={tickEffect.Children?.Count ?? 0}");
+                return 7;
             }
 
             RogueRuntimeConfigCategory configCategory = RogueRuntimeConfigCategory.Instance;
             if (configCategory == null || !configCategory.TryGetOption(1045, out RogueOptionConfig optionConfig) || optionConfig == null)
             {
                 Log.Console("rogue option config 1045 is null");
-                return 7;
+                return 8;
             }
 
             if (!RogueOptionConfigHelper.TryGetBuffConfigId(optionConfig, out int resolvedBuffConfigId) || resolvedBuffConfigId != 1045)
             {
                 Log.Console($"rogue option 1045 resolved buff invalid: {resolvedBuffConfigId}");
-                return 8;
+                return 9;
+            }
+
+            if (addNode.Unit != "Unit" || tickNode.Unit != "Unit")
+            {
+                Log.Console($"rogue buff 1045 summon node unit key invalid: add={addNode.Unit}, tick={tickNode.Unit}");
+                return 10;
             }
 
             long maxHp = numeric.GetAsLong(NumericType.MaxHP);
             if (maxHp <= 0)
             {
                 Log.Console($"max hp invalid: {maxHp}");
-                return 9;
+                return 11;
             }
 
             long startHp = maxHp / 2;
@@ -105,7 +118,14 @@ namespace ET.Test
 
             numeric.Set(NumericType.HP, startHp);
 
-            long expectedHeal = maxHp * tickNode.HealPermille / 1000;
+            EffectRogueHealSpirit healSpiritEffect = buffConfig.GetEffect<EffectRogueHealSpirit>();
+            if (healSpiritEffect == null || healSpiritEffect.HealPermille <= 0)
+            {
+                Log.Console("rogue buff 1045 heal spirit effect invalid");
+                return 12;
+            }
+
+            long expectedHeal = maxHp * healSpiritEffect.HealPermille / 1000;
             if (expectedHeal <= 0)
             {
                 expectedHeal = 1;
@@ -121,36 +141,69 @@ namespace ET.Test
             if (progress == null)
             {
                 Log.Console("rogue progress is null");
-                return 10;
+                return 13;
             }
 
-            progress.ChoicePending = true;
-            progress.ChoiceSerial = 1;
-            progress.PendingOptionIds.Clear();
-            progress.PendingOptionIds.Add(1045);
-
-            EntityRef<Unit> unitRef = unit;
-            EntityRef<RogueProgressComponent> progressRef = progress;
-            int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1045, null);
-            unit = unitRef;
-            progress = progressRef;
-            if (unit == null || progress == null)
+            int applyError = RogueEffectHelper.ApplySelectedOption(unit, progress, optionConfig, 1045, null);
+            if (applyError != ErrorCode.ERR_Success)
             {
-                Log.Console("unit or progress disposed after choose");
-                return 11;
-            }
-
-            if (chooseError != ErrorCode.ERR_Success)
-            {
-                Log.Console($"choose option 1045 failed, error={chooseError}");
-                return 12;
+                Log.Console($"apply option 1045 failed, error={applyError}");
+                return 14;
             }
 
             long actualHp = unit.NumericComponent?.GetAsLong(NumericType.HP) ?? 0;
             if (actualHp != expectedHp)
             {
                 Log.Console($"rogue option 1045 immediate heal mismatch, hp={actualHp}, expected={expectedHp}, startHp={startHp}, maxHp={maxHp}");
-                return 13;
+                return 15;
+            }
+
+            RogueSummonedSpiritStateComponent spiritState = unit.GetComponent<RogueSummonedSpiritStateComponent>();
+            if (spiritState == null || spiritState.Sources.Count != 1)
+            {
+                Log.Console($"rogue option 1045 spirit state mismatch, count={spiritState?.Sources.Count ?? 0}");
+                return 16;
+            }
+
+            long spiritUnitId = 0;
+            foreach (RogueSummonedSpiritSourceData sourceData in spiritState.Sources.Values)
+            {
+                spiritUnitId = sourceData.SpiritUnitId;
+                break;
+            }
+
+            if (spiritUnitId == 0)
+            {
+                Log.Console("rogue option 1045 spirit unit id invalid");
+                return 17;
+            }
+
+            Unit spirit = scene.GetComponent<UnitComponent>()?.Get(spiritUnitId);
+            if (spirit == null || spirit.IsDisposed || spirit.UnitType != UnitType.Pet)
+            {
+                Log.Console($"rogue option 1045 spirit unit invalid, id={spiritUnitId}, type={spirit?.UnitType}");
+                return 18;
+            }
+
+            PetComponent petComponent = spirit.GetComponent<PetComponent>();
+            if (petComponent == null || petComponent.OwnerId != unit.Id)
+            {
+                Log.Console($"rogue option 1045 pet owner mismatch, ownerId={petComponent?.OwnerId ?? 0}, expected={unit.Id}");
+                return 19;
+            }
+
+            RogueEffectHelper.RemoveSelectedOption(unit, progress, 1045);
+            if (unit.GetComponent<RogueSummonedSpiritStateComponent>() != null)
+            {
+                Log.Console("rogue option 1045 spirit state should be removed after option remove");
+                return 20;
+            }
+
+            spirit = scene.GetComponent<UnitComponent>()?.Get(spiritUnitId);
+            if (spirit != null && !spirit.IsDisposed)
+            {
+                Log.Console("rogue option 1045 spirit should be disposed after option remove");
+                return 21;
             }
 
             return ErrorCode.ERR_Success;

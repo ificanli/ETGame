@@ -21,6 +21,7 @@ namespace ET.Server
         private const string ParamButtonId = "button_id";
         private const string ParamCanInteract = "can_interact";
         private const string ParamGroupId = "group_id";
+        private const string ParamChancePermille = "chance_permille";
         private const string ParamMapName = "map_name";
 
         public override ETTask Handle(ECAFlowActionInvoke args)
@@ -392,6 +393,37 @@ namespace ET.Server
             }
 
             Scene mapScene = pointUnit.Scene();
+            int chancePermille = 1000;
+            if (FlowParamHelper.TryGetIntParam(args.Node, ParamChancePermille, out int configuredChancePermille))
+            {
+                chancePermille = configuredChancePermille;
+            }
+
+            SearchMonsterSpawnContext context = new SearchMonsterSpawnContext
+            {
+                Point = point,
+                Player = player,
+                GroupId = groupId,
+                SpawnCount = spawnCount,
+                ChancePermille = chancePermille,
+            };
+            EventSystem.Instance.Publish(mapScene, new SearchMonsterSpawnEvent { Context = context });
+            chancePermille = context.ChancePermille;
+            if (chancePermille < 0)
+            {
+                chancePermille = 0;
+            }
+            else if (chancePermille > 1000)
+            {
+                chancePermille = 1000;
+            }
+
+            if (chancePermille <= 0 || (chancePermille < 1000 && RandomGenerator.RandomNumber(0, 1000) >= chancePermille))
+            {
+                Log.Info($"[ECAFlow] SpawnMonsters skipped by probability: player={player?.Id ?? 0}, point={point.PointId}, group={groupId}, chancePermille={chancePermille}");
+                return ETTask.CompletedTask;
+            }
+
             int spawned = SpawnMonstersHelper.SpawnAtPoint(mapScene, pointUnit, groupId, spawnCount);
             Log.Info($"[ECAFlow] Point {point.PointId} spawned monsters: groupId={groupId}, spawned={spawned}/{spawnCount}");
             return ETTask.CompletedTask;
@@ -587,7 +619,24 @@ namespace ET.Server
                 return false;
             }
 
-            return ItemHelper.RemoveItem(itemComponent, itemConfigId, needCount, ItemChangeReason.UseItem);
+            bool removed = ItemHelper.RemoveItem(itemComponent, itemConfigId, needCount, ItemChangeReason.UseItem);
+            if (!removed)
+            {
+                return false;
+            }
+
+            Scene scene = player.Scene();
+            if (scene != null && !scene.IsDisposed)
+            {
+                EventSystem.Instance.Publish(scene, new DoorKeyConsumedEvent
+                {
+                    Player = player,
+                    ItemConfigId = itemConfigId,
+                    Count = needCount,
+                });
+            }
+
+            return true;
         }
 
         private static bool TryGetDoorKeyRequirement(ECAPointComponent point, out int itemConfigId, out int needCount)

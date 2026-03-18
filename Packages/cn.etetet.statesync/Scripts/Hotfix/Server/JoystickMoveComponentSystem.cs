@@ -5,7 +5,7 @@ namespace ET.Server
     [EntitySystemOf(typeof(JoystickMoveComponent))]
     public static partial class JoystickMoveComponentSystem
     {
-        private const int MoveTickIntervalMs = 50;
+        private const int MoveTickIntervalMs = 16;
         private const float MaxTickDeltaTime = 0.1f;
         private const float MinTickDeltaTime = 0.001f;
         private const float MaxTrustedGroundDeltaY = 1.5f;
@@ -24,7 +24,6 @@ namespace ET.Server
         {
             self.Direction = float3.zero;
             self.MoveTimerId = 0;
-            self.LastInputTraceLogTime = 0;
             self.LastTickTraceLogTime = 0;
             self.LastInputProcessTime = 0;
             self.LastTickTime = 0;
@@ -58,15 +57,10 @@ namespace ET.Server
                 // 方向接近零，停止移动
                 self.StopTimer();
                 self.BroadcastStop();
-                Log.Info($"[JoystickTrace][ServerMove] stop by zero dir unitId={unit?.Id ?? 0}, dir=({dirX:F3},{dirZ:F3})");
             }
             else
             {
                 self.StartTimer();
-                if (unit != null && !unit.IsDisposed)
-                {
-                    Log.Info($"[JoystickTrace][ServerMove] set dir unitId={unit.Id}, dir=({self.Direction.x:F3},{self.Direction.z:F3}), timer={self.MoveTimerId}");
-                }
             }
         }
 
@@ -79,11 +73,6 @@ namespace ET.Server
 
             self.LastTickTime = TimeInfo.Instance.ServerNow();
             self.MoveTimerId = self.Root().TimerComponent.NewRepeatedTimer(MoveTickIntervalMs, TimerInvokeType.JoystickMoveTimer, self);
-            Unit unit = self.GetParent<Unit>();
-            if (unit != null && !unit.IsDisposed)
-            {
-                Log.Info($"[JoystickTrace][ServerMove] timer started unitId={unit.Id}, timerId={self.MoveTimerId}");
-            }
         }
 
         private static void StopTimer(this JoystickMoveComponent self)
@@ -93,14 +82,8 @@ namespace ET.Server
                 return;
             }
 
-            Unit unit = self.GetParent<Unit>();
-            long timerId = self.MoveTimerId;
             self.Root()?.TimerComponent?.Remove(ref self.MoveTimerId);
             self.MoveTimerId = 0;
-            if (unit != null && !unit.IsDisposed)
-            {
-                Log.Info($"[JoystickTrace][ServerMove] timer stopped unitId={unit.Id}, oldTimerId={timerId}");
-            }
         }
 
         private static void Tick(this JoystickMoveComponent self)
@@ -204,11 +187,6 @@ namespace ET.Server
             M2C_JoystickMove broadcastMsg = CreateMoveMessage(unit, self.Direction, speed);
             MapMessageHelper.NoticeClient(unit, broadcastMsg, NoticeType.BroadcastWithoutSelf);
 
-            if (now - self.LastTickTraceLogTime >= 500)
-            {
-                self.LastTickTraceLogTime = now;
-                Log.Info($"[JoystickTrace][ServerMove] tick unitId={unit.Id}, speed={speed:F3}, dir=({self.Direction.x:F3},{self.Direction.z:F3}), oldPos={oldPos}, newPos={unit.Position}");
-            }
         }
 
         private static void BroadcastStop(this JoystickMoveComponent self)

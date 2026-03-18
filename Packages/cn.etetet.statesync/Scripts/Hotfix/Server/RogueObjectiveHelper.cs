@@ -83,10 +83,27 @@ namespace ET.Server
             }
 
             objective.RewardClaimed = true;
-            Log.Info($"[RogueObjective] objective completed, unitId={unit.Id}, objectiveId={objective.ObjectiveId}, progress={objective.Progress}");
 
-            // 完成奖励通过 EffectGroup 的后续 Entry 处理（如 AddBuff）
-            // 这里可以扩展为发布事件让其他系统响应
+            if (objective.RewardBuffConfigId > 0 && objective.RewardBuffId == 0)
+            {
+                BuffConfig rewardBuffConfig = BuffConfigCategory.Instance.Get(objective.RewardBuffConfigId);
+                if (rewardBuffConfig != null)
+                {
+                    Buff rewardBuff = BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), objective.RewardBuffConfigId, null);
+                    if (rewardBuff != null)
+                    {
+                        objective.RewardBuffId = rewardBuff.Id;
+                        RogueProgressComponent progress = unit.GetComponent<RogueProgressComponent>();
+                        progress?.AppliedBuffIds.Add(rewardBuff.Id);
+                    }
+                }
+                else
+                {
+                    Log.Warning($"[RogueObjective] reward buff config missing, unitId={unit.Id}, objectiveId={objective.ObjectiveId}, rewardBuffConfigId={objective.RewardBuffConfigId}");
+                }
+            }
+
+            Log.Info($"[RogueObjective] objective completed, unitId={unit.Id}, objectiveId={objective.ObjectiveId}, progress={objective.Progress}");
         }
     }
 }

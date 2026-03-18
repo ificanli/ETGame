@@ -345,6 +345,7 @@ namespace ET.Server
 
                 progress.ChoicePending = false;
                 progress.PendingOptionIds.Clear();
+                progress.PendingOptionRerollCounts.Clear();
 
                 if (progress.PendingChoiceLevels.Count > 0)
                 {
@@ -354,6 +355,99 @@ namespace ET.Server
 
                 SyncProgress(unit, progress);
 
+                return ErrorCode.ERR_Success;
+            }
+        }
+
+        public static async ETTask<int> RerollOption(
+            Unit unit,
+            long choiceSerial,
+            int optionIndex,
+            int currentOptionId,
+            Action<int, RogueOptionData> onOptionRerolled)
+        {
+            if (unit == null || unit.IsDisposed || unit.UnitType != UnitType.Player)
+            {
+                return ErrorCode.ERR_Cancel;
+            }
+
+            EntityRef<Unit> unitRef = unit;
+            using (await unit.Root().CoroutineLockComponent.Wait(CoroutineLockType.RogueChoice, unit.Id))
+            {
+                unit = unitRef;
+                if (unit == null || unit.IsDisposed)
+                {
+                    return ErrorCode.ERR_Cancel;
+                }
+
+                RogueProgressComponent progress = unit.GetComponent<RogueProgressComponent>();
+                if (progress == null || !progress.ChoicePending)
+                {
+                    return ErrorCode.ERR_RogueChoiceNotPending;
+                }
+
+                if (progress.ChoiceSerial != choiceSerial)
+                {
+                    return ErrorCode.ERR_RogueChoiceSerialMismatch;
+                }
+
+                EnsurePendingOptionRerollCounts(progress);
+                if (optionIndex < 0 || optionIndex >= progress.PendingOptionIds.Count || currentOptionId <= 0)
+                {
+                    return ErrorCode.ERR_RogueChoiceOptionInvalid;
+                }
+
+                int oldOptionId = progress.PendingOptionIds[optionIndex];
+                if (oldOptionId != currentOptionId)
+                {
+                    return ErrorCode.ERR_RogueChoiceOptionInvalid;
+                }
+
+                int remainingRerollCount = progress.PendingOptionRerollCounts[optionIndex];
+                if (remainingRerollCount <= 0)
+                {
+                    Log.Info(
+                        $"[Rogue] reroll option blocked: no reroll count, unit={unit.Id}, serial={choiceSerial}, index={optionIndex}, option={oldOptionId}");
+                    return ErrorCode.ERR_RogueChoiceRerollExhausted;
+                }
+
+                RogueRuntimeConfigCategory configCategory = RogueRuntimeConfigCategory.Instance;
+                if (configCategory == null)
+                {
+                    return ErrorCode.ERR_RogueConfigMissing;
+                }
+
+                if (!configCategory.TryGetOption(oldOptionId, out RogueOptionConfig oldOptionConfig) || oldOptionConfig == null)
+                {
+                    return ErrorCode.ERR_RogueChoiceOptionInvalid;
+                }
+
+                HashSet<int> excludedOptionIds = new(progress.PendingOptionIds);
+                int rerolledOptionId = 0;
+                bool rerolled = RogueOptionRollHelper.TryRollOneOption(unit, configCategory, oldOptionConfig.Quality, excludedOptionIds, false, out rerolledOptionId);
+                if (!rerolled)
+                {
+                    rerolled = RogueOptionRollHelper.TryRollOneOption(unit, configCategory, oldOptionConfig.Quality, excludedOptionIds, true, out rerolledOptionId);
+                }
+
+                if (!rerolled || rerolledOptionId <= 0)
+                {
+                    Log.Warning(
+                        $"[Rogue] reroll option failed: unit={unit.Id}, serial={choiceSerial}, index={optionIndex}, oldOption={oldOptionId}, quality={oldOptionConfig.Quality}");
+                    return ErrorCode.ERR_RogueChoiceRerollFailed;
+                }
+
+                remainingRerollCount -= 1;
+                if (!TryBuildChoiceOptionData(configCategory, rerolledOptionId, remainingRerollCount, out RogueOptionData optionData))
+                {
+                    return ErrorCode.ERR_RogueChoiceRerollFailed;
+                }
+
+                progress.PendingOptionIds[optionIndex] = rerolledOptionId;
+                progress.PendingOptionRerollCounts[optionIndex] = remainingRerollCount;
+                onOptionRerolled?.Invoke(oldOptionId, optionData);
+                Log.Info(
+                    $"[Rogue] reroll option success: unit={unit.Id}, serial={choiceSerial}, index={optionIndex}, oldOption={oldOptionId}, newOption={rerolledOptionId}, quality={oldOptionConfig.Quality}, rerollCount={remainingRerollCount}");
                 return ErrorCode.ERR_Success;
             }
         }
@@ -600,6 +694,12 @@ namespace ET.Server
             progress.ChoicePending = true;
             progress.PendingOptionIds.Clear();
             progress.PendingOptionIds.AddRange(optionIds);
+            progress.PendingOptionRerollCounts.Clear();
+            int defaultRerollCount = configCategory.GetChoiceOptionRerollCount();
+            for (int i = 0; i < progress.PendingOptionIds.Count; ++i)
+            {
+                progress.PendingOptionRerollCounts.Add(defaultRerollCount);
+            }
 
             bool popupSent = TrySendChoicePopup(unit, progress, configCategory, true);
             if (popupSent)
@@ -678,11 +778,26 @@ namespace ET.Server
             RogueEffectHelper.ClearAppliedEffects(unit, progress);
             RogueTagEffectHelper.ClearAppliedTagBuffs(unit, progress);
 
+            RogueTemporaryItemStateComponent temporaryItemState = unit.GetComponent<RogueTemporaryItemStateComponent>();
+            if (temporaryItemState != null)
+            {
+                temporaryItemState.ClearAll(unit);
+                unit.RemoveComponent<RogueTemporaryItemStateComponent>();
+            }
+
+            RogueSummonedSpiritStateComponent summonedSpiritState = unit.GetComponent<RogueSummonedSpiritStateComponent>();
+            if (summonedSpiritState != null)
+            {
+                summonedSpiritState.ClearAll(unit);
+                unit.RemoveComponent<RogueSummonedSpiritStateComponent>();
+            }
+
             progress.CurrentExp = 0;
             progress.CurrentGold = 0;
             progress.ChoiceSerial = 0;
             progress.ChoicePending = false;
             progress.PendingOptionIds.Clear();
+            progress.PendingOptionRerollCounts.Clear();
             progress.PendingChoiceLevels.Clear();
             progress.AppliedBuffIds.Clear();
             progress.SelectedOptionIds.Clear();
@@ -728,23 +843,18 @@ namespace ET.Server
                 return false;
             }
 
+            EnsurePendingOptionRerollCounts(progress);
             M2C_RogueChoicePopup popup = M2C_RogueChoicePopup.Create();
             popup.ChoiceSerial = progress.ChoiceSerial;
-            foreach (int optionId in progress.PendingOptionIds)
+            for (int i = 0; i < progress.PendingOptionIds.Count; ++i)
             {
-                if (!configCategory.TryGetOption(optionId, out RogueOptionConfig optionConfig) || optionConfig == null)
+                int optionId = progress.PendingOptionIds[i];
+                int rerollCount = progress.PendingOptionRerollCounts[i];
+                if (!TryBuildChoiceOptionData(configCategory, optionId, rerollCount, out RogueOptionData optionData))
                 {
                     continue;
                 }
 
-                RogueOptionData optionData = RogueOptionData.Create();
-                optionData.OptionId = optionId;
-                optionData.BuffConfigId = RogueOptionConfigHelper.TryGetPreviewBuffConfigId(configCategory, optionConfig, out int effectBuffConfigId)
-                    ? effectBuffConfigId
-                    : optionConfig.BuffConfigId;
-                optionData.NameTextId = optionConfig.NameTextId;
-                optionData.DescTextId = optionConfig.DescTextId;
-                optionData.Icon = optionConfig.GetImagePath();
                 popup.Options.Add(optionData);
             }
 
@@ -754,6 +864,7 @@ namespace ET.Server
                 {
                     progress.ChoicePending = false;
                     progress.PendingOptionIds.Clear();
+                    progress.PendingOptionRerollCounts.Clear();
                 }
 
                 Log.Warning($"[Rogue] send choice popup failed: popup options empty, unit={unit.Id}, serial={progress.ChoiceSerial}, clearPending={clearPendingWhenEmpty}");
@@ -764,6 +875,65 @@ namespace ET.Server
                 $"[RogueInit] send choice popup to client unit={unit.Id}, serial={popup.ChoiceSerial}, optionIds=[{string.Join(",", progress.PendingOptionIds)}], clearPendingWhenEmpty={clearPendingWhenEmpty}");
             MapMessageHelper.NoticeClient(unit, popup, NoticeType.Self);
             return true;
+        }
+
+        private static bool TryBuildChoiceOptionData(
+            RogueRuntimeConfigCategory configCategory,
+            int optionId,
+            int rerollCount,
+            out RogueOptionData optionData)
+        {
+            optionData = null;
+            if (configCategory == null ||
+                optionId <= 0 ||
+                !configCategory.TryGetOption(optionId, out RogueOptionConfig optionConfig) ||
+                optionConfig == null)
+            {
+                return false;
+            }
+
+            optionData = RogueOptionData.Create();
+            optionData.OptionId = optionId;
+            optionData.BuffConfigId = RogueOptionConfigHelper.TryGetPreviewBuffConfigId(configCategory, optionConfig, out int effectBuffConfigId)
+                ? effectBuffConfigId
+                : optionConfig.BuffConfigId;
+            optionData.NameTextId = optionConfig.NameTextId;
+            optionData.DescTextId = optionConfig.DescTextId;
+            optionData.Icon = optionConfig.GetImagePath();
+            optionData.RerollCount = rerollCount;
+            return true;
+        }
+
+        private static void EnsurePendingOptionRerollCounts(RogueProgressComponent progress)
+        {
+            if (progress == null)
+            {
+                return;
+            }
+
+            int defaultRerollCount = GetDefaultOptionRerollCount();
+            progress.PendingOptionRerollCounts ??= new List<int>();
+            int optionCount = progress.PendingOptionIds.Count;
+            if (progress.PendingOptionRerollCounts.Count > optionCount)
+            {
+                progress.PendingOptionRerollCounts.RemoveRange(optionCount, progress.PendingOptionRerollCounts.Count - optionCount);
+            }
+
+            while (progress.PendingOptionRerollCounts.Count < optionCount)
+            {
+                progress.PendingOptionRerollCounts.Add(defaultRerollCount);
+            }
+        }
+
+        private static int GetDefaultOptionRerollCount()
+        {
+            RogueRuntimeConfigCategory configCategory = RogueRuntimeConfigCategory.Instance;
+            if (configCategory == null)
+            {
+                return 1;
+            }
+
+            return configCategory.GetChoiceOptionRerollCount();
         }
 
     }

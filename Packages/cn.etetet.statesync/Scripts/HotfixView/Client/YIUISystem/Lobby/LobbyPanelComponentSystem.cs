@@ -36,6 +36,8 @@ namespace ET.Client
             // 初始化装备槽位
             self.InitHeroDisplay();
             self.InitEquipSlots();
+            self.BindMatchModeButtons();
+            self.RefreshMatchModeSelection();
             self.InitWarehouseArea();
             self.BindOwnedAreaBoard(self.u_ComCurrentBagBoardRoot, LoadoutAreaType.Bag);
             self.BindOwnedAreaBoard(self.u_ComSecureBoardRoot, LoadoutAreaType.Secure);
@@ -73,8 +75,7 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventEnterMapInvoke)]
         private static async ETTask OnEventEnterMapInvoke(this LobbyPanelComponent self)
         {
-            // 复用匹配链路，PVE 按钮与 1v1 相同流程（匹配成功 -> 服务端传送）
-            await self.SendMatchRequest(1);
+            await self.SendMatchRequest(self.GetSelectedMatchGameMode());
         }
 
         [YIUIInvoke(LobbyPanelComponent.OnEventRoleToggleInvoke)]
@@ -96,6 +97,8 @@ namespace ET.Client
         private static async ETTask OnEventMatchToggleInvoke(this LobbyPanelComponent self)
         {
             self.ShowPanel(self.u_ComMatchPanelRectTransform);
+            self.BindMatchModeButtons();
+            self.RefreshMatchModeSelection();
             await ETTask.CompletedTask;
         }
 
@@ -116,19 +119,22 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventOneOneMatchButtonInvoke)]
         private static async ETTask OnEventOneOneMatchButtonInvoke(this LobbyPanelComponent self)
         {
-            await self.SendMatchRequest(2); // OneVsOne
+            self.SelectMatchGameMode(GameModeType.OneVsOne);
+            await ETTask.CompletedTask;
         }
 
         [YIUIInvoke(LobbyPanelComponent.OnEventSouDaCeMatchButtonInvoke)]
         private static async ETTask OnEventSouDaCeMatchButtonInvoke(this LobbyPanelComponent self)
         {
-            await self.SendMatchRequest(4); // Extraction
+            self.SelectMatchGameMode(GameModeType.Extraction);
+            await ETTask.CompletedTask;
         }
 
         [YIUIInvoke(LobbyPanelComponent.OnEventThreeThreeMatchButtonInvoke)]
         private static async ETTask OnEventThreeThreeMatchButtonInvoke(this LobbyPanelComponent self)
         {
-            await self.SendMatchRequest(3); // ThreeVsThree
+            self.SelectMatchGameMode(GameModeType.ThreeVsThree);
+            await ETTask.CompletedTask;
         }
 
         [YIUIInvoke(LobbyPanelComponent.OnEventClickPutIntoBagInvoke)]
@@ -288,6 +294,388 @@ namespace ET.Client
         #endregion
 
         #region 匹配逻辑
+
+        private static void SelectMatchGameMode(this LobbyPanelComponent self, int gameMode)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            self.SelectedMatchGameMode = NormalizeMatchGameMode(gameMode);
+            self.RefreshMatchModeSelection();
+        }
+
+        private static int GetSelectedMatchGameMode(this LobbyPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return GameModeType.OneVsOne;
+            }
+
+            self.SelectedMatchGameMode = NormalizeMatchGameMode(self.SelectedMatchGameMode);
+            return self.SelectedMatchGameMode;
+        }
+
+        private static int NormalizeMatchGameMode(int gameMode)
+        {
+            return gameMode switch
+            {
+                GameModeType.PVE => GameModeType.PVE,
+                GameModeType.OneVsOne => GameModeType.OneVsOne,
+                GameModeType.ThreeVsThree => GameModeType.ThreeVsThree,
+                GameModeType.Extraction => GameModeType.Extraction,
+                _ => GameModeType.OneVsOne,
+            };
+        }
+
+        private static void BindMatchModeButtons(this LobbyPanelComponent self)
+        {
+            if (self == null || self.IsDisposed || self.u_ComMatchPanelRectTransform == null)
+            {
+                return;
+            }
+
+            List<RectTransform> buttonRects = self.GetMatchModeButtonRects();
+            if (buttonRects.Count == 0)
+            {
+                return;
+            }
+
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            for (int i = 0; i < buttonRects.Count; ++i)
+            {
+                RectTransform buttonRect = buttonRects[i];
+                if (!TryResolveMatchGameMode(buttonRect, out int gameMode))
+                {
+                    continue;
+                }
+
+                DisableLegacyMatchModeClick(buttonRect);
+
+                Button button = GetMatchModeButton(buttonRect);
+                if (button == null)
+                {
+                    Log.Warning($"[MatchPanel] 地图项缺少 Button 组件: {buttonRect.name}");
+                    continue;
+                }
+
+                int captureGameMode = gameMode;
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() =>
+                {
+                    LobbyPanelComponent panel = selfRef;
+                    if (panel == null || panel.IsDisposed)
+                    {
+                        return;
+                    }
+
+                    panel.SelectMatchGameMode(captureGameMode);
+                });
+            }
+        }
+
+        private static List<RectTransform> GetMatchModeButtonRects(this LobbyPanelComponent self)
+        {
+            List<RectTransform> result = new();
+            if (self == null || self.IsDisposed || self.u_ComMatchPanelRectTransform == null)
+            {
+                return result;
+            }
+
+            HashSet<int> addedIds = new();
+            RectTransform matchPanel = self.u_ComMatchPanelRectTransform;
+            RectTransform content = FindDescendantRectTransform(matchPanel, "Content");
+            if (content != null)
+            {
+                for (int i = 0; i < content.childCount; ++i)
+                {
+                    RectTransform child = content.GetChild(i) as RectTransform;
+                    if (!TryResolveMatchGameMode(child, out _))
+                    {
+                        continue;
+                    }
+
+                    AddMatchModeButtonRect(result, addedIds, child);
+                }
+            }
+
+            for (int i = 0; i < matchPanel.childCount; ++i)
+            {
+                RectTransform child = matchPanel.GetChild(i) as RectTransform;
+                if (!TryResolveMatchGameMode(child, out _))
+                {
+                    continue;
+                }
+
+                AddMatchModeButtonRect(result, addedIds, child);
+            }
+
+            return result;
+        }
+
+        private static void AddMatchModeButtonRect(List<RectTransform> result, HashSet<int> addedIds, RectTransform buttonRect)
+        {
+            if (buttonRect == null)
+            {
+                return;
+            }
+
+            int instanceId = buttonRect.GetInstanceID();
+            if (!addedIds.Add(instanceId))
+            {
+                return;
+            }
+
+            result.Add(buttonRect);
+        }
+
+        private static bool TryResolveMatchGameMode(RectTransform buttonRect, out int gameMode)
+        {
+            gameMode = 0;
+            if (buttonRect == null)
+            {
+                return false;
+            }
+
+            string normalizedName = NormalizeMatchModeName(buttonRect.name);
+            if (string.IsNullOrEmpty(normalizedName) ||
+                normalizedName == "startbutton" ||
+                normalizedName == "loopscrollverticalgroup" ||
+                normalizedName == "content" ||
+                normalizedName == "cache" ||
+                normalizedName == "viewport")
+            {
+                return false;
+            }
+
+            if (normalizedName.Contains("singleplayer") || normalizedName.Contains("single") || normalizedName.Contains("pve"))
+            {
+                gameMode = GameModeType.PVE;
+                return true;
+            }
+
+            if (normalizedName.Contains("oneone") || normalizedName.Contains("onevsone") || normalizedName.Contains("1v1"))
+            {
+                gameMode = GameModeType.OneVsOne;
+                return true;
+            }
+
+            if (normalizedName.Contains("threethree") || normalizedName.Contains("threevsthree") || normalizedName.Contains("3v3"))
+            {
+                gameMode = GameModeType.ThreeVsThree;
+                return true;
+            }
+
+            if (normalizedName.Contains("soudace") || normalizedName.Contains("extraction") || normalizedName.Contains("sdc"))
+            {
+                gameMode = GameModeType.Extraction;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static string NormalizeMatchModeName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return string.Empty;
+            }
+
+            return name
+                    .Replace(" ", string.Empty)
+                    .Replace("-", string.Empty)
+                    .Replace("_", string.Empty)
+                    .Replace("(", string.Empty)
+                    .Replace(")", string.Empty)
+                    .ToLowerInvariant();
+        }
+
+        private static void DisableLegacyMatchModeClick(RectTransform buttonRect)
+        {
+            if (buttonRect == null)
+            {
+                return;
+            }
+
+            UIEventBind[] eventBinds = buttonRect.GetComponentsInChildren<UIEventBind>(true);
+            for (int i = 0; i < eventBinds.Length; ++i)
+            {
+                UIEventBind eventBind = eventBinds[i];
+                if (eventBind == null || !eventBind.enabled)
+                {
+                    continue;
+                }
+
+                eventBind.enabled = false;
+            }
+        }
+
+        private static Button GetMatchModeButton(RectTransform buttonRect)
+        {
+            if (buttonRect == null)
+            {
+                return null;
+            }
+
+            Button button = buttonRect.GetComponent<Button>();
+            return button != null ? button : buttonRect.GetComponentInChildren<Button>(true);
+        }
+
+        private static void RefreshMatchModeSelection(this LobbyPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            List<RectTransform> buttonRects = self.GetMatchModeButtonRects();
+            if (buttonRects.Count == 0)
+            {
+                return;
+            }
+
+            int selectedGameMode = self.GetSelectedMatchGameMode();
+            int firstAvailableGameMode = 0;
+            bool hasSelectedGameMode = false;
+            for (int i = 0; i < buttonRects.Count; ++i)
+            {
+                if (!TryResolveMatchGameMode(buttonRects[i], out int gameMode))
+                {
+                    continue;
+                }
+
+                if (firstAvailableGameMode == 0)
+                {
+                    firstAvailableGameMode = gameMode;
+                }
+
+                if (gameMode == selectedGameMode)
+                {
+                    hasSelectedGameMode = true;
+                }
+            }
+
+            if (!hasSelectedGameMode && firstAvailableGameMode > 0)
+            {
+                selectedGameMode = firstAvailableGameMode;
+                self.SelectedMatchGameMode = firstAvailableGameMode;
+            }
+
+            for (int i = 0; i < buttonRects.Count; ++i)
+            {
+                RectTransform buttonRect = buttonRects[i];
+                if (!TryResolveMatchGameMode(buttonRect, out int gameMode))
+                {
+                    continue;
+                }
+
+                ApplyMatchModeButtonSelection(buttonRect, selectedGameMode == gameMode);
+            }
+        }
+
+        private static void ApplyMatchModeButtonSelection(RectTransform buttonRect, bool selected)
+        {
+            if (buttonRect == null)
+            {
+                return;
+            }
+
+            const string selectionMarkerName = "SelectedHighlight";
+            if (!selected)
+            {
+                Transform existingMarker = buttonRect.Find(selectionMarkerName);
+                if (existingMarker != null)
+                {
+                    existingMarker.gameObject.SetActive(false);
+                }
+
+                return;
+            }
+
+            RectTransform marker = EnsureMatchModeSelectionMarker(buttonRect, selectionMarkerName);
+            if (marker != null)
+            {
+                marker.gameObject.SetActive(true);
+            }
+        }
+
+        private static RectTransform EnsureMatchModeSelectionMarker(RectTransform buttonRect, string markerName)
+        {
+            Transform existingMarker = buttonRect.Find(markerName);
+            if (existingMarker is RectTransform existingRect)
+            {
+                return existingRect;
+            }
+
+            Sprite borderSprite = GetMatchModeSelectionBorderSprite(buttonRect);
+            if (borderSprite == null)
+            {
+                Log.Warning($"[MatchPanel] 无法创建选中高亮，缺少可用 Sprite: {buttonRect.name}");
+                return null;
+            }
+
+            GameObject markerObject = new GameObject(markerName, typeof(RectTransform));
+            RectTransform markerRect = markerObject.GetComponent<RectTransform>();
+            markerRect.SetParent(buttonRect, false);
+            markerRect.anchorMin = Vector2.zero;
+            markerRect.anchorMax = Vector2.one;
+            markerRect.offsetMin = Vector2.zero;
+            markerRect.offsetMax = Vector2.zero;
+            markerRect.SetAsLastSibling();
+
+            CreateMatchModeSelectionEdge(markerRect, "Top", borderSprite, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, 10f), new Vector2(0f, -5f));
+            CreateMatchModeSelectionEdge(markerRect, "Bottom", borderSprite, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, 10f), new Vector2(0f, 5f));
+            CreateMatchModeSelectionEdge(markerRect, "Left", borderSprite, new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(10f, 0f), new Vector2(5f, 0f));
+            CreateMatchModeSelectionEdge(markerRect, "Right", borderSprite, new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(10f, 0f), new Vector2(-5f, 0f));
+
+            markerObject.SetActive(false);
+            return markerRect;
+        }
+
+        private static void CreateMatchModeSelectionEdge(
+            RectTransform parent,
+            string edgeName,
+            Sprite sprite,
+            Vector2 anchorMin,
+            Vector2 anchorMax,
+            Vector2 sizeDelta,
+            Vector2 anchoredPosition)
+        {
+            GameObject edgeObject = new GameObject(edgeName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            RectTransform edgeRect = edgeObject.GetComponent<RectTransform>();
+            edgeRect.SetParent(parent, false);
+            edgeRect.anchorMin = anchorMin;
+            edgeRect.anchorMax = anchorMax;
+            edgeRect.sizeDelta = sizeDelta;
+            edgeRect.anchoredPosition = anchoredPosition;
+
+            Image edgeImage = edgeObject.GetComponent<Image>();
+            edgeImage.sprite = sprite;
+            edgeImage.type = Image.Type.Sliced;
+            edgeImage.raycastTarget = false;
+            edgeImage.color = new Color(1f, 0.72f, 0.15f, 1f);
+        }
+
+        private static Sprite GetMatchModeSelectionBorderSprite(RectTransform buttonRect)
+        {
+            Sprite sprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/UISprite.psd");
+            if (sprite != null)
+            {
+                return sprite;
+            }
+
+            Image buttonImage = buttonRect.GetComponent<Image>();
+            if (buttonImage != null && buttonImage.sprite != null)
+            {
+                return buttonImage.sprite;
+            }
+
+            Button button = GetMatchModeButton(buttonRect);
+            Image targetImage = button?.targetGraphic as Image;
+            return targetImage?.sprite;
+        }
 
         /// <summary>
         /// 发送匹配请求

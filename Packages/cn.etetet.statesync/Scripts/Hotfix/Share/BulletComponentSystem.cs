@@ -18,6 +18,8 @@ namespace ET
             self.TraveledDistance = 0f;
             self.FlyDirection = float3.zero;
             self.TargetPosition = float3.zero;
+            self.RemainingPenetrationCount = 0;
+            self.HitTargetIds.Clear();
         }
 
         [EntitySystem]
@@ -27,6 +29,8 @@ namespace ET
             self.TargetId = 0;
             self.Damage = 0;
             self.WeaponId = 0;
+            self.RemainingPenetrationCount = 0;
+            self.HitTargetIds.Clear();
         }
 
         /// <summary>
@@ -109,6 +113,7 @@ namespace ET
             {
                 if (unit.Id == self.OwnerId) continue; // 跳过发射者
                 if (unit.Id == bullet.Id) continue; // 跳过子弹自己
+                if (self.HitTargetIds.Contains(unit.Id)) continue; // 穿透后避免同一目标重复命中
 
                 float distance = math.distance(bullet.Position, unit.Position);
                 if (distance < 0.5f) // 命中判定距离
@@ -117,8 +122,12 @@ namespace ET
                     Unit owner = unitComponent.Get(self.OwnerId);
                     if (owner != null && CampHelper.IsEnemy(owner, unit))
                     {
-                        self.OnHit(unit);
-                        bullet.Dispose();
+                        bool shouldDispose = self.OnHit(unit);
+                        if (shouldDispose)
+                        {
+                            bullet.Dispose();
+                        }
+
                         return;
                     }
                 }
@@ -130,11 +139,11 @@ namespace ET
         /// 服务端通过 BulletDamageRequest 事件走 DamageContextHelper 统一管线；
         /// 客户端保持本地预测扣血。
         /// </summary>
-        private static void OnHit(this BulletComponent self, Unit target)
+        private static bool OnHit(this BulletComponent self, Unit target)
         {
             if (target == null || target.IsDisposed)
             {
-                return;
+                return true;
             }
 
             NumericComponent targetNumeric = target.NumericComponent;
@@ -146,10 +155,11 @@ namespace ET
             int targetUnitType = (int)target.UnitType;
             if (targetNumeric == null || scene == null || scene.IsDisposed)
             {
-                return;
+                return true;
             }
 
             long baseDamage = (long)self.Damage;
+            self.HitTargetIds.Add(targetUnitId);
 
             // 发布命中事件（服务端和客户端都能订阅）
             if (!scene.IsDisposed)
@@ -176,6 +186,14 @@ namespace ET
             }
 
             Log.Debug($"子弹命中: 目标={targetUnitId}, 伤害={self.Damage}");
+
+            if (self.RemainingPenetrationCount > 0)
+            {
+                self.RemainingPenetrationCount -= 1;
+                return false;
+            }
+
+            return true;
         }
     }
 }

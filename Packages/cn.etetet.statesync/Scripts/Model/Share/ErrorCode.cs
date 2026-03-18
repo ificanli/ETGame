@@ -11,5 +11,7 @@ namespace ET
         public const int ERR_TacticalBuffConfigMissing = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 7;
         public const int ERR_TacticalCastOutOfRange = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 8;
         public const int ERR_TacticalTargetComponentMissing = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 9;
+        public const int ERR_RogueChoiceRerollFailed = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 10;
+        public const int ERR_RogueChoiceRerollExhausted = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 11;
     }
 }

@@ -7,6 +7,27 @@ namespace ET.Server
     /// </summary>
     public static class LoadoutStateHelper
     {
+        public const int DEFAULT_SECURE_WIDTH = 2;
+        public const int DEFAULT_SECURE_HEIGHT = 2;
+
+        public static void EnsureDefaultSecureSize(LoadoutComponent loadout)
+        {
+            if (loadout == null)
+            {
+                return;
+            }
+
+            if (loadout.SecureWidth <= 0)
+            {
+                loadout.SecureWidth = DEFAULT_SECURE_WIDTH;
+            }
+
+            if (loadout.SecureHeight <= 0)
+            {
+                loadout.SecureHeight = DEFAULT_SECURE_HEIGHT;
+            }
+        }
+
         public static int ValidateWeaponSlot(int configId)
         {
             ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
@@ -179,6 +200,8 @@ namespace ET.Server
             List<LoadoutGridItemInfo> finalBagItems,
             List<LoadoutGridItemInfo> finalSecureItems)
         {
+            EnsureDefaultSecureSize(loadout);
+
             loadout.HeroConfigId = request.HeroConfigId;
             loadout.MainWeaponConfigId = request.MainWeaponConfigId;
             loadout.SubWeaponConfigId = request.SubWeaponConfigId;
@@ -222,6 +245,8 @@ namespace ET.Server
 
         public static void FillGetHeroListResponse(LoadoutComponent loadout, G2C_GetHeroList response)
         {
+            EnsureDefaultSecureSize(loadout);
+
             response.CurrentHeroConfigId = loadout.HeroConfigId;
             response.CurrentMainWeaponConfigId = loadout.MainWeaponConfigId;
             response.CurrentSubWeaponConfigId = loadout.SubWeaponConfigId;
@@ -257,6 +282,8 @@ namespace ET.Server
             PlayerStorageComponent storage,
             G2C_LoadoutStateChanged response)
         {
+            EnsureDefaultSecureSize(loadout);
+
             if (storage != null)
             {
                 FillWarehouseSummary(storage.WarehouseItems, response.StorageConfigIds, response.StorageCounts);

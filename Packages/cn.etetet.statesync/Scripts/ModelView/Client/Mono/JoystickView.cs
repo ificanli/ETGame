@@ -23,7 +23,7 @@ namespace ET.Client
         public float MaxRadius = 80f;
 
         [Tooltip("发送间隔（秒），防止消息过于频繁被服务端踢掉")]
-        public float SendInterval = 0.05f;
+        public float SendInterval = 0.016f;
 
         private bool m_IsDragging;
         private EntityRef<Entity> m_EntityRef;
@@ -35,9 +35,9 @@ namespace ET.Client
         public void SetEntity(Entity entity)
         {
             m_EntityRef = entity;
-            if (SendInterval > 0.05f)
+            if (SendInterval > 0.016f)
             {
-                SendInterval = 0.05f;
+                SendInterval = 0.016f;
             }
         }
 

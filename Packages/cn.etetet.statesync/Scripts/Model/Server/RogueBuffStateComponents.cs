@@ -42,4 +42,10 @@ namespace ET.Server
     {
         public int AppliedSpeedPct;
     }
+
+    [ComponentOf(typeof(BuffData))]
+    public class RogueSpeedFinalPctBuffStateComponent : Entity, IAwake
+    {
+        public int AppliedSpeedPct;
+    }
 }

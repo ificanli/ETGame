@@ -25,33 +25,12 @@ namespace ET.Server
                 return;
             }
 
-            // 主武器
-            if (loadout.MainWeaponConfigId > 0)
-            {
-                EquipItemFromConfig(equipComp, loadout.MainWeaponConfigId, EquipmentSlotType.MainHand);
-            }
-
-            // 副武器
-            if (loadout.SubWeaponConfigId > 0)
-            {
-                EquipItemFromConfig(equipComp, loadout.SubWeaponConfigId, EquipmentSlotType.OffHand);
-            }
-
-            // 护甲
-            if (loadout.ArmorConfigId > 0)
-            {
-                EquipItemFromConfig(equipComp, loadout.ArmorConfigId, EquipmentSlotType.Chest);
-            }
-
-            // 消耗品
-            for (int i = 0; i < loadout.ConsumableConfigIds.Count; i++)
-            {
-                int consumableConfigId = loadout.ConsumableConfigIds[i];
-                if (consumableConfigId <= 0) continue;
-
-                EquipmentSlotType slotType = i == 0 ? EquipmentSlotType.Consumable1 : EquipmentSlotType.Consumable2;
-                EquipItemFromConfig(equipComp, consumableConfigId, slotType);
-            }
+            ApplyFixedLoadout(
+                equipComp,
+                loadout.MainWeaponConfigId,
+                loadout.SubWeaponConfigId,
+                loadout.ArmorConfigId,
+                loadout.ConsumableConfigIds);
 
             ApplyBagItems(unit, loadout);
         }
@@ -68,14 +47,69 @@ namespace ET.Server
                 return;
             }
 
+            ApplyFixedLoadout(equipComp, mainWeaponConfigId, subWeaponConfigId, armorConfigId, null);
+        }
+
+        private static void ApplyFixedLoadout(
+            EquipmentComponent equipComp,
+            int mainWeaponConfigId,
+            int subWeaponConfigId,
+            int armorConfigId,
+            IList<int> consumableConfigIds)
+        {
+            ClearRuntimeEquipment(equipComp);
+
             if (mainWeaponConfigId > 0)
+            {
                 EquipItemFromConfig(equipComp, mainWeaponConfigId, EquipmentSlotType.MainHand);
+            }
 
             if (subWeaponConfigId > 0)
+            {
                 EquipItemFromConfig(equipComp, subWeaponConfigId, EquipmentSlotType.OffHand);
+            }
 
             if (armorConfigId > 0)
+            {
                 EquipItemFromConfig(equipComp, armorConfigId, EquipmentSlotType.Chest);
+            }
+
+            if (consumableConfigIds == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < consumableConfigIds.Count; ++i)
+            {
+                int consumableConfigId = consumableConfigIds[i];
+                if (consumableConfigId <= 0)
+                {
+                    continue;
+                }
+
+                EquipmentSlotType slotType = i == 0 ? EquipmentSlotType.Consumable1 : EquipmentSlotType.Consumable2;
+                EquipItemFromConfig(equipComp, consumableConfigId, slotType);
+            }
+        }
+
+        private static void ClearRuntimeEquipment(EquipmentComponent equipComp)
+        {
+            if (equipComp == null || equipComp.EquippedItems.Count == 0)
+            {
+                return;
+            }
+
+            List<EquipmentSlotType> occupiedSlots = new(equipComp.EquippedItems.Keys);
+            for (int i = 0; i < occupiedSlots.Count; ++i)
+            {
+                EquipmentSlotType slotType = occupiedSlots[i];
+                if (!equipComp.HasEquippedItem(slotType))
+                {
+                    continue;
+                }
+
+                equipComp.UnEquipItem(slotType);
+            }
         }
 
         private static void ApplyBagItems(Unit unit, LoadoutComponent loadout)
@@ -134,11 +168,9 @@ namespace ET.Server
 
         private static void EquipItemFromConfig(EquipmentComponent equipComp, int configId, EquipmentSlotType slotType)
         {
-            // Skip if slot already occupied (prevents duplicate items on double-apply)
             if (equipComp.HasEquippedItem(slotType))
             {
-                Log.Warning($"LoadoutHelper: slot {slotType} already occupied, skip configId={configId}");
-                return;
+                equipComp.UnEquipItem(slotType);
             }
 
             // AddChild sets the parent; EquipItem also calls AddChild → would throw "重复设置了Parent".

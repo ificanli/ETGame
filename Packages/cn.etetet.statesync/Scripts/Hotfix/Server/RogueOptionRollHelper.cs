@@ -59,13 +59,24 @@ namespace ET.Server
 
         public static bool TryRollOneOption(Unit unit, RogueRuntimeConfigCategory configCategory, int requiredQuality, out int optionId)
         {
-            return TryRollOneOption(unit, configCategory, requiredQuality, null, out optionId);
+            return TryRollOneOption(unit, configCategory, requiredQuality, null, false, out optionId);
         }
 
         public static bool TryRollOneOption(Unit unit, RogueRuntimeConfigCategory configCategory, int requiredQuality, HashSet<int> excludedOptionIds, out int optionId)
         {
+            return TryRollOneOption(unit, configCategory, requiredQuality, excludedOptionIds, false, out optionId);
+        }
+
+        public static bool TryRollOneOption(
+            Unit unit,
+            RogueRuntimeConfigCategory configCategory,
+            int requiredQuality,
+            HashSet<int> excludedOptionIds,
+            bool ignoreTagFilter,
+            out int optionId)
+        {
             optionId = 0;
-            List<int> candidates = CollectCandidates(unit, configCategory, requiredQuality, excludedOptionIds, false);
+            List<int> candidates = CollectCandidates(unit, configCategory, requiredQuality, excludedOptionIds, ignoreTagFilter);
             if (candidates.Count == 0)
             {
                 return false;

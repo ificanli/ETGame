@@ -22,4 +22,26 @@ namespace ET.Server
         /// <summary>脱战检测定时器 ID</summary>
         public long CheckTimerId { get; set; }
     }
+
+    /// <summary>
+    /// 玩家跑局时限组件。到达截止时间后触发死亡结算。
+    /// </summary>
+    [ComponentOf(typeof(Unit))]
+    public class RunTimeLimitComponent : Entity, IAwake<long, string>, IDestroy
+    {
+        /// <summary>计时开始时间（毫秒）</summary>
+        public long StartTime { get; set; }
+
+        /// <summary>计时持续时长（毫秒）</summary>
+        public long DurationMs { get; set; }
+
+        /// <summary>死亡触发时间（毫秒时间戳）</summary>
+        public long DeadlineTime { get; set; }
+
+        /// <summary>当前地图名，仅用于日志</summary>
+        public string MapName { get; set; }
+
+        /// <summary>超时一次性定时器 ID</summary>
+        public long TimerId { get; set; }
+    }
 }

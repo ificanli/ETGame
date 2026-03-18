@@ -1,15 +1,11 @@
-﻿namespace ET.Server
+namespace ET.Server
 {
     public static class WeaponInitHelper
     {
+        private const int AutoFireBuffConfigId = 200200;
+
         public static void InitializeWeaponsFromUnit(Unit unit)
         {
-            if (unit.GetComponent<WeaponComponent>() != null)
-            {
-                Log.Info($"WeaponInitHelper: unit {unit.Id} already has WeaponComponent, skip");
-                return;
-            }
-
             InitializeWeapons(unit);
         }
 
@@ -30,10 +26,17 @@
 
             Log.Info($"[WeaponFireTrace][Init] unit {unit.Id} equipment check - MainHand={slot1WeaponId}, OffHand={slot2WeaponId}");
 
+            ResetWeaponRuntime(unit);
+
             if (slot1WeaponId == 0 && slot2WeaponId == 0)
             {
                 Log.Warning($"[WeaponFireTrace][Init] unit {unit.Id} has no weapon equipped, skip weapon init");
                 return;
+            }
+
+            if (unit.GetComponent<BuffComponent>() == null)
+            {
+                unit.AddComponent<BuffComponent>();
             }
 
             unit.AddComponent<WeaponComponent, int, int>(slot1WeaponId, slot2WeaponId);
@@ -48,9 +51,13 @@
             Log.Info($"[WeaponFireTrace][Init] unit {unit.Id} selector range set to {unit.GetComponent<TargetSelectorComponent>()?.MaxRange ?? 0f} by current slot {weaponComponent?.CurrentSlot ?? 0}");
 
             Log.Info($"[WeaponFireTrace][Init] initialized weapons for unit {unit.Id}, Slot1={slot1WeaponId}, Slot2={slot2WeaponId}, CurrentSlot={unit.GetComponent<WeaponComponent>()?.CurrentSlot ?? 0}");
-            BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), 200200, null);
-            Log.Info($"[WeaponFireTrace][Init] auto fire buff attached, unit={unit.Id}, buffConfigId=200200");
+            BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), AutoFireBuffConfigId, null);
+            Log.Info($"[WeaponFireTrace][Init] auto fire buff attached, unit={unit.Id}, buffConfigId={AutoFireBuffConfigId}");
             WeaponReloadHelper.SyncAmmoState(unit);
+            if (unit.UnitType == UnitType.Player)
+            {
+                WeaponSyncHelper.SendCurrentWeaponStateToViewer(unit, unit);
+            }
         }
 
         public static void InitializeHeroPassiveBuff(Unit unit, int heroConfigId, bool forceRecreate = false)
@@ -133,6 +140,31 @@
             }
 
             return 0;
+        }
+
+        private static void ResetWeaponRuntime(Unit unit)
+        {
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
+            if (unit.GetComponent<WeaponComponent>() != null)
+            {
+                unit.RemoveComponent<WeaponComponent>();
+            }
+
+            BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
+            if (buffComponent != null && buffComponent.HasBuff(AutoFireBuffConfigId))
+            {
+                BuffHelper.RemoveBuffByConfigId(unit, AutoFireBuffConfigId, BuffFlags.SameConfigIdReplaceRemove);
+            }
+
+            TargetSelectorComponent selector = unit.GetComponent<TargetSelectorComponent>();
+            if (selector != null)
+            {
+                selector.MaxRange = 0f;
+            }
         }
     }
 }

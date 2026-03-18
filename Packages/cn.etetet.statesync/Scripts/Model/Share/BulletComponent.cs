@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Mathematics;
 
 namespace ET
@@ -41,5 +42,11 @@ namespace ET
 
         /// <summary>目标位置（Position 类型使用，锁定发射时的目标坐标）</summary>
         public float3 TargetPosition;
+
+        /// <summary>剩余可穿透次数。大于 0 时命中后不立即销毁。</summary>
+        public int RemainingPenetrationCount;
+
+        /// <summary>已经命中过的目标，防止穿透子弹在同一目标上重复结算。</summary>
+        public HashSet<long> HitTargetIds { get; set; } = new();
     }
 }

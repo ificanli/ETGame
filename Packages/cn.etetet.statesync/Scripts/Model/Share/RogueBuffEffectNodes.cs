@@ -11,9 +11,20 @@ namespace ET
         public int Gold;
     }
 
+    public class EffectRogueContainerLowQualityGold : EffectNode
+    {
+        public int Gold;
+        public int HighQualityThreshold;
+    }
+
     public class EffectRogueGoldDamageBonus : EffectNode
     {
         public int GoldPerOnePercent;
+    }
+
+    public class EffectRogueMonsterDamageBonus : EffectNode
+    {
+        public int DamageBonusPermille;
     }
 
     public class EffectRogueLowHpDamageBonus : EffectNode
@@ -72,6 +83,11 @@ namespace ET
         public int Count;
     }
 
+    public class EffectRogueObjectiveRewardBuff : EffectNode
+    {
+        public int BuffConfigId;
+    }
+
     public class EffectRogueSilentSearch : EffectNode
     {
     }
@@ -120,6 +136,16 @@ namespace ET
         public int Permille;
     }
 
+    public class EffectRogueContainerResultProbabilityMultiplier : EffectNode
+    {
+        public int Permille;
+    }
+
+    public class EffectRogueSearchMonsterProbabilityMultiplier : EffectNode
+    {
+        public int Permille;
+    }
+
     public class EffectRogueSkillDisable : EffectNode
     {
     }
@@ -133,6 +159,24 @@ namespace ET
     {
         public int ScalePermille;
         public int MaxHpPermille;
+    }
+
+    public class EffectRogueSizeDifferenceDamageBonus : EffectNode
+    {
+        public int MaxDifferencePermille;
+        public int MaxDamageBonusPermille;
+    }
+
+    public class EffectRogueHitHeroCritGrowth : EffectNode
+    {
+        public int CritPermillePerHit;
+    }
+
+    public class EffectRogueReloadFirstShotsBoost : EffectNode
+    {
+        public int DamageBonusPermille;
+        public int ShotCount;
+        public int PenetrationCount;
     }
 
     public class EffectRogueReplaceAllCards : EffectNode

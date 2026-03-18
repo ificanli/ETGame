@@ -89,6 +89,92 @@ namespace ET.Client
             trigger.triggers.Add(entry);
         }
 
+        private static void BindWarehouseBoardInteract(this LobbyPanelComponent self, RectTransform boardRoot)
+        {
+            if (self == null || self.IsDisposed || boardRoot == null)
+            {
+                return;
+            }
+
+            EnsureRaycastGraphic(boardRoot);
+            EventTrigger trigger = boardRoot.GetComponent<EventTrigger>() ?? boardRoot.gameObject.AddComponent<EventTrigger>();
+            trigger.triggers ??= new List<EventTrigger.Entry>();
+            trigger.triggers.Clear();
+
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            AddWarehouseBoardTrigger(
+                trigger,
+                EventTriggerType.InitializePotentialDrag,
+                selfRef,
+                (panel, eventData) => panel.ForwardWarehouseInitializePotentialDrag(eventData));
+            AddWarehouseBoardTrigger(
+                trigger,
+                EventTriggerType.PointerDown,
+                selfRef,
+                (panel, _) =>
+                {
+                    panel.EndWarehouseScrollForwarding(null);
+                    panel.ClearWarehousePressState();
+                });
+            AddWarehouseBoardTrigger(
+                trigger,
+                EventTriggerType.PointerUp,
+                selfRef,
+                (panel, eventData) =>
+                {
+                    panel.EndWarehouseScrollForwarding(eventData);
+                    panel.ClearWarehousePressState();
+                });
+            AddWarehouseBoardTrigger(
+                trigger,
+                EventTriggerType.BeginDrag,
+                selfRef,
+                (panel, eventData) => panel.BeginWarehouseScrollForwarding(eventData));
+            AddWarehouseBoardTrigger(
+                trigger,
+                EventTriggerType.Drag,
+                selfRef,
+                (panel, eventData) => panel.ForwardWarehouseDrag(eventData));
+            AddWarehouseBoardTrigger(
+                trigger,
+                EventTriggerType.EndDrag,
+                selfRef,
+                (panel, eventData) =>
+                {
+                    panel.EndWarehouseScrollForwarding(eventData);
+                    panel.ClearWarehousePressState();
+                });
+        }
+
+        private static void AddWarehouseBoardTrigger(
+            EventTrigger trigger,
+            EventTriggerType eventType,
+            EntityRef<LobbyPanelComponent> selfRef,
+            Action<LobbyPanelComponent, PointerEventData> handler)
+        {
+            if (trigger == null || handler == null)
+            {
+                return;
+            }
+
+            EventTrigger.Entry entry = new EventTrigger.Entry
+            {
+                eventID = eventType,
+            };
+            entry.callback.AddListener(data =>
+            {
+                LobbyPanelComponent self = selfRef;
+                PointerEventData eventData = data as PointerEventData;
+                if (self == null || self.IsDisposed || eventData == null)
+                {
+                    return;
+                }
+
+                handler(self, eventData);
+            });
+            trigger.triggers.Add(entry);
+        }
+
         private static void OnLoadoutInitializePotentialDragEvent(BaseEventData data)
         {
             if (!TryGetLoadoutDragContext(data, out LobbyPanelComponent self, out _, out LoadoutGridItemViewProxy proxy, out PointerEventData eventData))
