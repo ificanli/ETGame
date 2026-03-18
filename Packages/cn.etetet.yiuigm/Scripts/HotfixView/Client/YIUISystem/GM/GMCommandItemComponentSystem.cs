@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using YIUIFramework;
 using System.Collections.Generic;
 using UnityEngine.UI;

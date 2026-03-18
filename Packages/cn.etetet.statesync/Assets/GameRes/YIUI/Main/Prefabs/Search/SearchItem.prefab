@@ -301,7 +301,7 @@ MonoBehaviour:
   DataTable: {fileID: 0}
   EventTable: {fileID: 0}
   PkgName: Main
-  ResName: YIUICommon
+  ResName: SearchItem
   UICodeType: 2
   WindowOption: 0
   PanelLayer: 3

@@ -19,6 +19,18 @@ namespace ET.Client
         private static void YIUIInitialize(this RogueOptionComponent self)
         {
             self.IconImage = self.u_ComImageRectTransform?.GetComponent<Image>();
+            self.OptionBgImage = self.u_ComRogueOptionRectTransform?.GetComponent<Image>();
+            self.TagBgImage1 = self.u_ComTagRectTransform?.GetComponent<Image>();
+            self.TagBgImage2 = self.u_ComTag2RectTransform?.GetComponent<Image>();
+            self.DefaultBgSprite = self.OptionBgImage?.sprite;
+            self.DefaultBgColor = self.OptionBgImage?.color ?? Color.white;
+            self.DefaultBgImageEnabled = self.OptionBgImage?.enabled ?? true;
+            self.DefaultTagBgSprite1 = self.TagBgImage1?.sprite;
+            self.DefaultTagBgSprite2 = self.TagBgImage2?.sprite;
+            self.DefaultTagBgColor1 = self.TagBgImage1?.color ?? Color.white;
+            self.DefaultTagBgColor2 = self.TagBgImage2?.color ?? Color.white;
+            self.DefaultTagBgImageEnabled1 = self.TagBgImage1?.enabled ?? true;
+            self.DefaultTagBgImageEnabled2 = self.TagBgImage2?.enabled ?? true;
             self.TagText1 = self.u_ComTagRectTransform?.GetComponentInChildren<TMPro.TMP_Text>(true);
             self.TagText2 = self.u_ComTag2RectTransform?.GetComponentInChildren<TMPro.TMP_Text>(true);
             self.IsChoosing = false;
@@ -51,7 +63,21 @@ namespace ET.Client
             self.u_EventClickTagsHandle = null;
             self.u_EventClickTags = null;
             RogueOptionViewHelper.ReleaseSprite(self);
+            RogueOptionViewHelper.ReleaseBackgroundSprite(self);
+            RogueOptionViewHelper.ReleaseTagBackgroundSprite(self);
             self.IconImage = null;
+            self.OptionBgImage = null;
+            self.TagBgImage1 = null;
+            self.TagBgImage2 = null;
+            self.DefaultBgSprite = null;
+            self.DefaultBgColor = Color.white;
+            self.DefaultBgImageEnabled = true;
+            self.DefaultTagBgSprite1 = null;
+            self.DefaultTagBgSprite2 = null;
+            self.DefaultTagBgColor1 = Color.white;
+            self.DefaultTagBgColor2 = Color.white;
+            self.DefaultTagBgImageEnabled1 = true;
+            self.DefaultTagBgImageEnabled2 = true;
             self.TagText1 = null;
             self.TagText2 = null;
             self.Panel = null;

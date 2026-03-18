@@ -103,6 +103,7 @@ MonoBehaviour:
   m_minWidth: -1
   m_minHeight: -1
   m_Space: 0
+  m_Offset: 0
 --- !u!114 &7203092209786032745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2144,6 +2145,7 @@ MonoBehaviour:
   u_CreateInterval: 0.02
   u_ForeverInterval: 0
   u_RefreshCanOption: 0
+  u_PreLoadCount: 0
 --- !u!114 &3683182192851485528
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,6 +5,45 @@ using YIUIFramework;
 
 namespace ET.Client
 {
+    /// <summary>
+    /// 客户端通用 YooAsset 资源名常量表。
+    /// key 使用 const 定义，value 由业务侧维护为对应的 YooAsset 资源名。
+    /// </summary>
+    public static class ClientYooAssetConstTable
+    {
+        public const string RogueOptionBgQuality1 = "rogue.option.bg.quality.1";
+        public const string RogueOptionBgQuality2 = "rogue.option.bg.quality.2";
+        public const string RogueOptionBgQuality3 = "rogue.option.bg.quality.3";
+        public const string RogueOptionTagBgQuality1 = "rogue.option.tag.bg.quality.1";
+        public const string RogueOptionTagBgQuality2 = "rogue.option.tag.bg.quality.2";
+        public const string RogueOptionTagBgQuality3 = "rogue.option.tag.bg.quality.3";
+        public const string RogueOptionBgQuality1Value = "export(6)_0";
+        public const string RogueOptionBgQuality2Value = "export(6)_1";
+        public const string RogueOptionBgQuality3Value = "export(6)_2";
+        public const string RogueOptionTagBgQuality1Value = "";
+        public const string RogueOptionTagBgQuality2Value = "";
+        public const string RogueOptionTagBgQuality3Value = "";
+
+        /// <summary>
+        /// 这里返回每个 key 对应的 YooAsset Sprite 资源名。
+        /// </summary>
+        public static bool TryGetValue(string key, out string value)
+        {
+            value = key switch
+            {
+                RogueOptionBgQuality1 => RogueOptionBgQuality1Value,
+                RogueOptionBgQuality2 => RogueOptionBgQuality2Value,
+                RogueOptionBgQuality3 => RogueOptionBgQuality3Value,
+                RogueOptionTagBgQuality1 => RogueOptionTagBgQuality1Value,
+                RogueOptionTagBgQuality2 => RogueOptionTagBgQuality2Value,
+                RogueOptionTagBgQuality3 => RogueOptionTagBgQuality3Value,
+                _ => string.Empty,
+            };
+
+            return !string.IsNullOrWhiteSpace(value);
+        }
+    }
+
     public static class RogueOptionViewHelper
     {
         public static void BindOption(RogueOptionComponent self, EntityRef<RoguePanelComponent> panelRef, int optionIndex, RogueClientOptionData optionData)
@@ -21,6 +60,8 @@ namespace ET.Client
             self.u_DataTextDes?.SetValue(optionData.Desc ?? string.Empty);
             ConfigureClickRaycastTargets(self);
             SetTags(self, CollectDisplayTags(optionData));
+            ApplyQualityBackground(self, optionData.Quality);
+            ApplyTagQualityBackground(self, optionData.Quality);
             ChangeOptionImage(self, optionData.ImagePath ?? string.Empty).Coroutine();
         }
 
@@ -39,6 +80,8 @@ namespace ET.Client
             ConfigureClickRaycastTargets(self);
             SetTags(self, System.Array.Empty<int>());
             ReleaseSprite(self);
+            ChangeOptionBackgroundImage(self, string.Empty).Coroutine();
+            ChangeTagBackgroundImage(self, string.Empty).Coroutine();
             if (self.IconImage != null)
             {
                 self.IconImage.enabled = false;
@@ -128,26 +171,36 @@ namespace ET.Client
             SetTagDescVisible(self, true);
         }
 
-        public static void ApplyQualityStyle(RectTransform optionRect, int quality)
+        public static void ApplyQualityBackground(RogueOptionComponent self, int quality)
         {
-            if (optionRect == null)
+            if (self == null || self.IsDisposed)
             {
                 return;
             }
 
-            Image optionImage = optionRect.GetComponent<Image>();
-            if (optionImage == null)
+            string key = GetQualityBackgroundKey(quality);
+            if (!ClientYooAssetConstTable.TryGetValue(key, out string imagePath))
+            {
+                imagePath = string.Empty;
+            }
+
+            ChangeOptionBackgroundImage(self, imagePath).Coroutine();
+        }
+
+        public static void ApplyTagQualityBackground(RogueOptionComponent self, int quality)
+        {
+            if (self == null || self.IsDisposed)
             {
                 return;
             }
 
-            optionImage.color = quality switch
+            string key = GetTagQualityBackgroundKey(quality);
+            if (!ClientYooAssetConstTable.TryGetValue(key, out string imagePath))
             {
-                1 => new Color32(70, 130, 255, 255),
-                2 => new Color32(160, 90, 255, 255),
-                3 => new Color32(255, 150, 40, 255),
-                _ => Color.white,
-            };
+                imagePath = string.Empty;
+            }
+
+            ChangeTagBackgroundImage(self, imagePath).Coroutine();
         }
 
         public static async ETTask ChangeOptionImage(RogueOptionComponent self, string imagePath)
@@ -241,6 +294,187 @@ namespace ET.Client
 
             self.LoadedSprite = null;
             self.LoadedSpriteName = string.Empty;
+        }
+
+        public static async ETTask ChangeOptionBackgroundImage(RogueOptionComponent self, string imagePath)
+        {
+            EntityRef<RogueOptionComponent> selfRef = self;
+            int lockHash = unchecked((self.GetHashCode() * 397) ^ 7919);
+
+            using var _ = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_CoroutineLock, ETTask<Entity>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_CoroutineLock { Lock = lockHash });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            Image optionBgImage = self.OptionBgImage ?? ResolveOptionClickRoot(self)?.GetComponent<Image>();
+            self.OptionBgImage = optionBgImage;
+            if (optionBgImage == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                ReleaseBackgroundSprite(self);
+                RestoreDefaultBackground(self);
+                return;
+            }
+
+            if (self.LoadedBgSpriteName == imagePath && self.LoadedBgSprite != null)
+            {
+                optionBgImage.sprite = self.LoadedBgSprite;
+                optionBgImage.enabled = true;
+                optionBgImage.color = Color.white;
+                return;
+            }
+
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = imagePath });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            optionBgImage = self.OptionBgImage ?? ResolveOptionClickRoot(self)?.GetComponent<Image>();
+            self.OptionBgImage = optionBgImage;
+            if (sprite == null || optionBgImage == null)
+            {
+                ReleaseBackgroundSprite(self);
+                RestoreDefaultBackground(self);
+                return;
+            }
+
+            ReleaseBackgroundSprite(self);
+            self.LoadedBgSprite = sprite;
+            self.LoadedBgSpriteName = imagePath;
+            optionBgImage.sprite = sprite;
+            optionBgImage.enabled = true;
+            optionBgImage.color = Color.white;
+        }
+
+        public static void ReleaseBackgroundSprite(RogueOptionComponent self)
+        {
+            if (self == null || self.IsDisposed || self.LoadedBgSprite == null)
+            {
+                return;
+            }
+
+            EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_ReleaseSprite { obj = self.LoadedBgSprite });
+
+            if (self.OptionBgImage != null && self.OptionBgImage.sprite == self.LoadedBgSprite)
+            {
+                self.OptionBgImage.sprite = null;
+            }
+
+            self.LoadedBgSprite = null;
+            self.LoadedBgSpriteName = string.Empty;
+        }
+
+        public static async ETTask ChangeTagBackgroundImage(RogueOptionComponent self, string imagePath)
+        {
+            EntityRef<RogueOptionComponent> selfRef = self;
+            int lockHash = unchecked((self.GetHashCode() * 397) ^ 12347);
+
+            using var _ = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_CoroutineLock, ETTask<Entity>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_CoroutineLock { Lock = lockHash });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            CacheTagBackgroundImages(self);
+            if (self.TagBgImage1 == null && self.TagBgImage2 == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                ReleaseTagBackgroundSprite(self);
+                RestoreDefaultTagBackgrounds(self);
+                return;
+            }
+
+            if (self.LoadedTagBgSpriteName == imagePath && self.LoadedTagBgSprite != null)
+            {
+                ApplyTagBackgroundSprite(self, self.LoadedTagBgSprite);
+                return;
+            }
+
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = imagePath });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            CacheTagBackgroundImages(self);
+            if (sprite == null || (self.TagBgImage1 == null && self.TagBgImage2 == null))
+            {
+                ReleaseTagBackgroundSprite(self);
+                RestoreDefaultTagBackgrounds(self);
+                return;
+            }
+
+            ReleaseTagBackgroundSprite(self);
+            self.LoadedTagBgSprite = sprite;
+            self.LoadedTagBgSpriteName = imagePath;
+            ApplyTagBackgroundSprite(self, sprite);
+        }
+
+        public static void ReleaseTagBackgroundSprite(RogueOptionComponent self)
+        {
+            if (self == null || self.IsDisposed || self.LoadedTagBgSprite == null)
+            {
+                return;
+            }
+
+            EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_ReleaseSprite { obj = self.LoadedTagBgSprite });
+
+            if (self.TagBgImage1 != null && self.TagBgImage1.sprite == self.LoadedTagBgSprite)
+            {
+                self.TagBgImage1.sprite = null;
+            }
+
+            if (self.TagBgImage2 != null && self.TagBgImage2.sprite == self.LoadedTagBgSprite)
+            {
+                self.TagBgImage2.sprite = null;
+            }
+
+            self.LoadedTagBgSprite = null;
+            self.LoadedTagBgSpriteName = string.Empty;
         }
 
         private static int[] CollectDisplayTags(RogueClientOptionData optionData)
@@ -360,6 +594,101 @@ namespace ET.Client
             if (graphic != null)
             {
                 graphic.raycastTarget = true;
+            }
+        }
+
+        private static void RestoreDefaultBackground(RogueOptionComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            Image optionBgImage = self.OptionBgImage ?? ResolveOptionClickRoot(self)?.GetComponent<Image>();
+            self.OptionBgImage = optionBgImage;
+            if (optionBgImage == null)
+            {
+                return;
+            }
+
+            optionBgImage.sprite = self.DefaultBgSprite;
+            optionBgImage.color = self.DefaultBgColor;
+            optionBgImage.enabled = self.DefaultBgImageEnabled;
+        }
+
+        private static void RestoreDefaultTagBackgrounds(RogueOptionComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            CacheTagBackgroundImages(self);
+
+            if (self.TagBgImage1 != null)
+            {
+                self.TagBgImage1.sprite = self.DefaultTagBgSprite1;
+                self.TagBgImage1.color = self.DefaultTagBgColor1;
+                self.TagBgImage1.enabled = self.DefaultTagBgImageEnabled1;
+            }
+
+            if (self.TagBgImage2 != null)
+            {
+                self.TagBgImage2.sprite = self.DefaultTagBgSprite2;
+                self.TagBgImage2.color = self.DefaultTagBgColor2;
+                self.TagBgImage2.enabled = self.DefaultTagBgImageEnabled2;
+            }
+        }
+
+        private static string GetQualityBackgroundKey(int quality)
+        {
+            return quality switch
+            {
+                1 => ClientYooAssetConstTable.RogueOptionBgQuality1,
+                2 => ClientYooAssetConstTable.RogueOptionBgQuality2,
+                3 => ClientYooAssetConstTable.RogueOptionBgQuality3,
+                _ => string.Empty,
+            };
+        }
+
+        private static string GetTagQualityBackgroundKey(int quality)
+        {
+            return quality switch
+            {
+                1 => ClientYooAssetConstTable.RogueOptionTagBgQuality1,
+                2 => ClientYooAssetConstTable.RogueOptionTagBgQuality2,
+                3 => ClientYooAssetConstTable.RogueOptionTagBgQuality3,
+                _ => string.Empty,
+            };
+        }
+
+        private static void CacheTagBackgroundImages(RogueOptionComponent self)
+        {
+            self.TagBgImage1 ??= self.u_ComTagRectTransform?.GetComponent<Image>();
+            self.TagBgImage2 ??= self.u_ComTag2RectTransform?.GetComponent<Image>();
+        }
+
+        private static void ApplyTagBackgroundSprite(RogueOptionComponent self, Sprite sprite)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            CacheTagBackgroundImages(self);
+
+            if (self.TagBgImage1 != null)
+            {
+                self.TagBgImage1.sprite = sprite;
+                self.TagBgImage1.enabled = sprite != null;
+                self.TagBgImage1.color = Color.white;
+            }
+
+            if (self.TagBgImage2 != null)
+            {
+                self.TagBgImage2.sprite = sprite;
+                self.TagBgImage2.enabled = sprite != null;
+                self.TagBgImage2.color = Color.white;
             }
         }
 

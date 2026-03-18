@@ -61,20 +61,12 @@ MonoBehaviour:
         FilterRuleName: YIUIFilterRule
         AssetTags: 
         UserData: 
-      - CollectPath: Packages/cn.etetet.yiuistatesync/Assets/GameRes/YIUI
+      - CollectPath: Packages/cn.etetet.statesync/Assets/GameRes/YIUI
         CollectorGUID: 38aff9b4b3f3ca0459417ed8f1416685
         CollectorType: 0
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
         FilterRuleName: YIUIFilterRule
-        AssetTags: 
-        UserData: 
-      - CollectPath: Packages/cn.etetet.yiuilocalization/Assets/GameRes/I2Localization
-        CollectorGUID: c4920432a4d094241a7ac5e7736f1313
-        CollectorType: 0
-        AddressRuleName: AddressByFileName
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
       - CollectPath: Assets/GameRes/YIUI
@@ -83,6 +75,14 @@ MonoBehaviour:
         AddressRuleName: AddressByFileName
         PackRuleName: PackDirectory
         FilterRuleName: YIUIFilterRule
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/GameRes/YIUI
+        CollectorGUID: 67c63477d0f462e47b72b1f44a4ed7f6
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
         AssetTags: 
         UserData: 
       - CollectPath: Packages/cn.etetet.yiui3ddisplay/Assets/GameRes/YIUI

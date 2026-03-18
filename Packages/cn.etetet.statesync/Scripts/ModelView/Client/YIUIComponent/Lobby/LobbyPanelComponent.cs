@@ -52,9 +52,16 @@ namespace ET.Client
         public int DraggingFixedSlotType;
         public RectTransform DraggingView;
         public Vector3 DragWorldOffset;
+        public bool WarehouseScrollForwarding;
+        public int WarehousePressPointerId;
+        public float WarehousePressStartedAt;
+        public Vector2 WarehousePressPosition;
+        public long WarehousePressItemUid;
+        public RectTransform WarehousePressView;
 
-        public Vector2 GridSpacing = new Vector2(8f, 8f);
-        public Vector2 GridPadding = new Vector2(8f, 8f);
+        public Vector2 GridSpacing = new Vector2(4f, 4f);
+        public Vector2 GridPadding = new Vector2(4f, 4f);
+        public float WarehousePreferredCellSize = 80f;
 
         public RectTransform WarehouseGridRoot;
         public RectTransform WarehouseItemsLayer;

@@ -28,6 +28,8 @@ namespace ET.Client
             self.u_UIBase = self.GetParent<YIUIChild>();
 
             self.u_ComWeaponItemRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComWeaponItemRectTransform");
+            self.u_UIWeaponItem1 = self.UIBase.CDETable.FindUIOwner<ET.Client.WeaponItemComponent>("WeaponItem1");
+            self.u_UIWeaponItem = self.UIBase.CDETable.FindUIOwner<ET.Client.WeaponItemComponent>("WeaponItem");
 
         }
     }

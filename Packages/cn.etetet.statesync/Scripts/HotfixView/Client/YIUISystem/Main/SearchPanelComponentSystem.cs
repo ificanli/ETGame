@@ -313,29 +313,30 @@ namespace ET.Client
         private static void BindItemView(RectTransform view, int configId, int count, int slotIndex)
         {
             ItemConfig config = ItemConfigCategory.Instance.GetOrDefault(configId);
-            string itemName = config?.Name ?? $"Item({configId})";
+            string itemDesc = !string.IsNullOrWhiteSpace(config?.Desc) ? config.Desc : config?.Name ?? $"Item({configId})";
             view.name = $"Item_{slotIndex}_{configId}";
+            ItemQualityBgViewHelper.UpdateQualityBg(view, config?.Quality ?? 1);
 
             TMP_Text[] tmps = view.GetComponentsInChildren<TMP_Text>(true);
             if (tmps.Length == 1)
             {
-                tmps[0].text = $"{itemName}\nX{count}";
+                tmps[0].text = itemDesc;
             }
             else if (tmps.Length > 1)
             {
-                tmps[0].text = itemName;
-                tmps[1].text = $"X{count}";
+                tmps[0].text = itemDesc;
+                tmps[1].text = string.Empty;
             }
 
             Text[] texts = view.GetComponentsInChildren<Text>(true);
             if (texts.Length == 1)
             {
-                texts[0].text = $"{itemName}\nX{count}";
+                texts[0].text = itemDesc;
             }
             else if (texts.Length > 1)
             {
-                texts[0].text = itemName;
-                texts[1].text = $"X{count}";
+                texts[0].text = itemDesc;
+                texts[1].text = string.Empty;
             }
         }
 

@@ -257,8 +257,10 @@ namespace ET.Client
 
             MainPanelComponent mainPanel = self.Root().YIUIMgr().GetPanel<MainPanelComponent>();
             ActionBarComponent actionBar = mainPanel?.UIActionBar;
-            int spellConfigId = actionBar?.UISlot12?.u_DataId?.GetValue() ?? 0;
-            if (spellConfigId <= 0)
+           // int spellConfigId = actionBar?.UISlot12?.u_DataId?.GetValue() ?? 0;
+           int spellConfigId = 0;
+           //todo 更新actionBar的数据，读表，用自己的slot
+           if (spellConfigId <= 0)
             {
                 Log.Warning("[Input] cast spell skipped: action bar skill not bound");
                 return;

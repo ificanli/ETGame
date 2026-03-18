@@ -22,6 +22,7 @@ namespace ET.Client
             loadout.BagHeight = message.CurrentBagHeight;
             loadout.SecureWidth = message.SecureWidth;
             loadout.SecureHeight = message.SecureHeight;
+            loadout.WarehouseColumnCount = message.CurrentWarehouseColumnCount;
             loadout.TotalWealth = message.TotalWealth;
             loadout.IsConfirmed = message.IsConfirmed;
             loadout.ConfirmedAt = message.ConfirmedAt;
@@ -64,6 +65,7 @@ namespace ET.Client
             loadout.BagHeight = message.CurrentBagHeight;
             loadout.SecureWidth = message.SecureWidth;
             loadout.SecureHeight = message.SecureHeight;
+            loadout.WarehouseColumnCount = message.CurrentWarehouseColumnCount;
             loadout.TotalWealth = message.TotalWealth;
             loadout.IsConfirmed = message.IsConfirmed;
             loadout.ConfirmedAt = message.ConfirmedAt;
@@ -141,6 +143,7 @@ namespace ET.Client
                     Count = item.Count,
                     GridWidth = item.GridWidth,
                     GridHeight = item.GridHeight,
+                    AnchorSlotIndex = item.AnchorSlotIndex,
                 });
             }
         }

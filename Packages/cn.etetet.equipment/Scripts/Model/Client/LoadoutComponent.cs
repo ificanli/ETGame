@@ -89,6 +89,11 @@ namespace ET.Client
         public List<LoadoutWarehouseItemInfo> WarehouseItems = new();
 
         /// <summary>
+        /// 局外仓库固定列数。
+        /// </summary>
+        public int WarehouseColumnCount;
+
+        /// <summary>
         /// 局外仓库库存（ConfigId -> Count）
         /// </summary>
         public Dictionary<int, int> StorageItemCounts = new();

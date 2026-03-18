@@ -510,13 +510,14 @@ Animation:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2156494581534932594}
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Animation: {fileID: 7400000, guid: 9c0926859daaf8b468ac2c76129b913f, type: 2}
   m_Animations:
   - {fileID: 7400000, guid: 9c0926859daaf8b468ac2c76129b913f, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
+  m_UpdateMode: 0
   m_CullingType: 0
 --- !u!1 &7013893975606129697
 GameObject:
@@ -863,6 +864,7 @@ MonoBehaviour:
   m_minWidth: 500
   m_minHeight: -1
   m_Space: 0
+  m_Offset: 0
 --- !u!225 &3455070182989220447
 CanvasGroup:
   m_ObjectHideFlags: 0

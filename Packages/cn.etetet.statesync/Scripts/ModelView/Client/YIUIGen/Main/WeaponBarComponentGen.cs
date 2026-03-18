@@ -19,6 +19,10 @@ namespace ET.Client
         public EntityRef<YIUIChild> u_UIBase;
         public YIUIChild UIBase => u_UIBase;
         public UnityEngine.RectTransform u_ComWeaponItemRectTransform;
+        public EntityRef<ET.Client.WeaponItemComponent> u_UIWeaponItem1;
+        public ET.Client.WeaponItemComponent UIWeaponItem1 => u_UIWeaponItem1;
+        public EntityRef<ET.Client.WeaponItemComponent> u_UIWeaponItem;
+        public ET.Client.WeaponItemComponent UIWeaponItem => u_UIWeaponItem;
 
     }
 }

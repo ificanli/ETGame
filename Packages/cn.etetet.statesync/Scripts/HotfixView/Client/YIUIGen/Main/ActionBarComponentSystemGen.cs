@@ -27,7 +27,6 @@ namespace ET.Client
         {
             self.u_UIBase = self.GetParent<YIUIChild>();
 
-            self.u_UISlot12 = self.UIBase.CDETable.FindUIOwner<ET.Client.ActionBarSlotComponent>("Slot12");
 
         }
     }

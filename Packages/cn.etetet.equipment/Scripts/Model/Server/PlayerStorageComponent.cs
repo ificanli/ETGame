@@ -15,6 +15,11 @@ namespace ET.Server
         public List<LoadoutWarehouseItemInfo> WarehouseItems = new();
 
         /// <summary>
+        /// 局外仓库固定列数。
+        /// </summary>
+        public int WarehouseColumnCount;
+
+        /// <summary>
         /// 上一局撤离带出的物品列表（ConfigId -> Count）
         /// </summary>
         public Dictionary<int, int> LastEvacuationItems = new();

@@ -89,6 +89,8 @@ namespace ET
         public int GridWidth { get; set; }
         [MemoryPackOrder(4)]
         public int GridHeight { get; set; }
+        [MemoryPackOrder(5)]
+        public int AnchorSlotIndex { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -101,6 +103,7 @@ namespace ET
             this.Count = default;
             this.GridWidth = default;
             this.GridHeight = default;
+            this.AnchorSlotIndex = default;
 
             ObjectPool.Recycle(this);
         }
@@ -119,6 +122,8 @@ namespace ET
 
         [MemoryPackOrder(0)]
         public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int WarehouseColumnCount { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -127,6 +132,7 @@ namespace ET
             }
 
             this.RpcId = default;
+            this.WarehouseColumnCount = default;
 
             ObjectPool.Recycle(this);
         }
@@ -192,6 +198,8 @@ namespace ET
         [MemoryPackOrder(21)]
         public List<LoadoutWarehouseItemData> CurrentWarehouseItems { get; set; } = new();
 
+        [MemoryPackOrder(22)]
+        public int CurrentWarehouseColumnCount { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -221,6 +229,7 @@ namespace ET
             this.IsConfirmed = default;
             this.ConfirmedAt = default;
             this.CurrentWarehouseItems.Clear();
+            this.CurrentWarehouseColumnCount = default;
 
             ObjectPool.Recycle(this);
         }
@@ -348,6 +357,8 @@ namespace ET
         public int TargetBagWidth { get; set; }
         [MemoryPackOrder(7)]
         public int TargetBagHeight { get; set; }
+        [MemoryPackOrder(8)]
+        public long ItemUid { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -363,6 +374,7 @@ namespace ET
             this.TargetAnchorSlotIndex = default;
             this.TargetBagWidth = default;
             this.TargetBagHeight = default;
+            this.ItemUid = default;
 
             ObjectPool.Recycle(this);
         }
@@ -419,6 +431,8 @@ namespace ET
         public int SourceAnchorSlotIndex { get; set; }
         [MemoryPackOrder(4)]
         public int Count { get; set; }
+        [MemoryPackOrder(5)]
+        public int WarehouseColumnCount { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -431,6 +445,7 @@ namespace ET
             this.SourceSlotType = default;
             this.SourceAnchorSlotIndex = default;
             this.Count = default;
+            this.WarehouseColumnCount = default;
 
             ObjectPool.Recycle(this);
         }
@@ -523,6 +538,71 @@ namespace ET
         public static G2C_LoadoutMoveOwnedItem Create(bool isFromPool = false)
         {
             return ObjectPool.Fetch<G2C_LoadoutMoveOwnedItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 仓库内部移动/交换
+    [MemoryPackable]
+    [Message(Opcode.C2G_LoadoutMoveWarehouseItem)]
+    [ResponseType(nameof(G2C_LoadoutMoveWarehouseItem))]
+    public partial class C2G_LoadoutMoveWarehouseItem : MessageObject, ISessionRequest
+    {
+        public static C2G_LoadoutMoveWarehouseItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2G_LoadoutMoveWarehouseItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public long ItemUid { get; set; }
+        [MemoryPackOrder(2)]
+        public int TargetAnchorSlotIndex { get; set; }
+        [MemoryPackOrder(3)]
+        public int WarehouseColumnCount { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.ItemUid = default;
+            this.TargetAnchorSlotIndex = default;
+            this.WarehouseColumnCount = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.G2C_LoadoutMoveWarehouseItem)]
+    public partial class G2C_LoadoutMoveWarehouseItem : MessageObject, ISessionResponse
+    {
+        public static G2C_LoadoutMoveWarehouseItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<G2C_LoadoutMoveWarehouseItem>(isFromPool);
         }
 
         [MemoryPackOrder(0)]
@@ -654,6 +734,8 @@ namespace ET
         [MemoryPackOrder(17)]
         public List<LoadoutWarehouseItemData> CurrentWarehouseItems { get; set; } = new();
 
+        [MemoryPackOrder(18)]
+        public int CurrentWarehouseColumnCount { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -679,6 +761,7 @@ namespace ET
             this.IsConfirmed = default;
             this.ConfirmedAt = default;
             this.CurrentWarehouseItems.Clear();
+            this.CurrentWarehouseColumnCount = default;
 
             ObjectPool.Recycle(this);
         }
@@ -834,12 +917,14 @@ namespace ET
         public const ushort G2C_LoadoutPutToWarehouse = 11111;
         public const ushort C2G_LoadoutMoveOwnedItem = 11112;
         public const ushort G2C_LoadoutMoveOwnedItem = 11113;
-        public const ushort C2G_LoadoutOneKeyUnload = 11114;
-        public const ushort G2C_LoadoutOneKeyUnload = 11115;
-        public const ushort G2C_LoadoutStateChanged = 11116;
-        public const ushort M2C_EvacuationSettlement = 11117;
-        public const ushort M2C_DeathSettlement = 11118;
-        public const ushort Map2G_EvacuationSettlement = 11119;
-        public const ushort Map2G_LoadoutCarryResult = 11120;
+        public const ushort C2G_LoadoutMoveWarehouseItem = 11114;
+        public const ushort G2C_LoadoutMoveWarehouseItem = 11115;
+        public const ushort C2G_LoadoutOneKeyUnload = 11116;
+        public const ushort G2C_LoadoutOneKeyUnload = 11117;
+        public const ushort G2C_LoadoutStateChanged = 11118;
+        public const ushort M2C_EvacuationSettlement = 11119;
+        public const ushort M2C_DeathSettlement = 11120;
+        public const ushort Map2G_EvacuationSettlement = 11121;
+        public const ushort Map2G_LoadoutCarryResult = 11122;
     }
 }

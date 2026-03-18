@@ -46,12 +46,10 @@ namespace ET.Client
                 optionRect.gameObject.SetActive(hasData);
                 if (!hasData)
                 {
-                    RogueOptionViewHelper.ApplyQualityStyle(optionRect, 0);
                     RogueOptionViewHelper.ResetOption(optionComponent);
                     continue;
                 }
 
-                RogueOptionViewHelper.ApplyQualityStyle(optionRect, runtime.ChoiceOptions[i].Quality);
                 RogueOptionViewHelper.BindOption(optionComponent, self, i, runtime.ChoiceOptions[i]);
             }
         }

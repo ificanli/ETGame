@@ -371,6 +371,7 @@ MonoBehaviour:
   u_CreateInterval: 0
   u_ForeverInterval: 0
   u_RefreshCanOption: 0
+  u_PreLoadCount: 0
 --- !u!114 &8200123029822244613
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -248,6 +248,7 @@ namespace ET.Server
 
             FillWarehouseSummary(storage.WarehouseItems, response.StorageConfigIds, response.StorageCounts);
             CopyWarehouseItemsToMessage(storage.WarehouseItems, response.CurrentWarehouseItems);
+            response.CurrentWarehouseColumnCount = storage.WarehouseColumnCount;
             response.TotalWealth = storage.TotalWealth;
         }
 
@@ -260,6 +261,7 @@ namespace ET.Server
             {
                 FillWarehouseSummary(storage.WarehouseItems, response.StorageConfigIds, response.StorageCounts);
                 CopyWarehouseItemsToMessage(storage.WarehouseItems, response.CurrentWarehouseItems);
+                response.CurrentWarehouseColumnCount = storage.WarehouseColumnCount;
                 response.TotalWealth = storage.TotalWealth;
             }
 
@@ -393,6 +395,7 @@ namespace ET.Server
                 data.Count = item.Count;
                 data.GridWidth = item.GridWidth;
                 data.GridHeight = item.GridHeight;
+                data.AnchorSlotIndex = item.AnchorSlotIndex;
                 target.Add(data);
             }
         }

@@ -25,6 +25,7 @@ message LoadoutWarehouseItemData
     int32 Count = 3;
     int32 GridWidth = 4;
     int32 GridHeight = 5;
+    int32 AnchorSlotIndex = 6;
 }
 
 // 请求可用英雄列表
@@ -32,6 +33,7 @@ message LoadoutWarehouseItemData
 message C2G_GetHeroList // ISessionRequest
 {
     int32 RpcId = 1;
+    int32 WarehouseColumnCount = 2;
 }
 
 message G2C_GetHeroList // ISessionResponse
@@ -58,6 +60,7 @@ message G2C_GetHeroList // ISessionResponse
     bool IsConfirmed = 20;
     int64 ConfirmedAt = 21;
     repeated LoadoutWarehouseItemData CurrentWarehouseItems = 22;
+    int32 CurrentWarehouseColumnCount = 23;
 }
 
 // 确认起装（英雄+4个装备槽位）
@@ -98,6 +101,7 @@ message C2G_LoadoutTakeFromWarehouse // ISessionRequest
     int32 TargetAnchorSlotIndex = 6;
     int32 TargetBagWidth = 7;
     int32 TargetBagHeight = 8;
+    int64 ItemUid = 9;
 }
 
 message G2C_LoadoutTakeFromWarehouse // ISessionResponse
@@ -116,6 +120,7 @@ message C2G_LoadoutPutToWarehouse // ISessionRequest
     int32 SourceSlotType = 3;
     int32 SourceAnchorSlotIndex = 4;
     int32 Count = 5;
+    int32 WarehouseColumnCount = 6;
 }
 
 message G2C_LoadoutPutToWarehouse // ISessionResponse
@@ -141,6 +146,23 @@ message C2G_LoadoutMoveOwnedItem // ISessionRequest
 }
 
 message G2C_LoadoutMoveOwnedItem // ISessionResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+}
+
+// 仓库内部移动/交换
+// ResponseType G2C_LoadoutMoveWarehouseItem
+message C2G_LoadoutMoveWarehouseItem // ISessionRequest
+{
+    int32 RpcId = 1;
+    int64 ItemUid = 2;
+    int32 TargetAnchorSlotIndex = 3;
+    int32 WarehouseColumnCount = 4;
+}
+
+message G2C_LoadoutMoveWarehouseItem // ISessionResponse
 {
     int32 RpcId = 1;
     int32 Error = 2;
@@ -182,6 +204,7 @@ message G2C_LoadoutStateChanged // IMessage
     bool IsConfirmed = 16;
     int64 ConfirmedAt = 17;
     repeated LoadoutWarehouseItemData CurrentWarehouseItems = 18;
+    int32 CurrentWarehouseColumnCount = 19;
 }
 
 // 撤离结算通知（服务端推送）

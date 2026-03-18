@@ -86,6 +86,7 @@ MonoBehaviour:
   u_CreateInterval: 0.02
   u_ForeverInterval: 0
   u_RefreshCanOption: 0
+  u_PreLoadCount: 0
 --- !u!1 &287549711470483207
 GameObject:
   m_ObjectHideFlags: 0
@@ -1078,6 +1079,7 @@ MonoBehaviour:
   u_CreateInterval: 0.02
   u_ForeverInterval: 0
   u_RefreshCanOption: 0
+  u_PreLoadCount: 0
 --- !u!1001 &3089363096819535384
 PrefabInstance:
   m_ObjectHideFlags: 0

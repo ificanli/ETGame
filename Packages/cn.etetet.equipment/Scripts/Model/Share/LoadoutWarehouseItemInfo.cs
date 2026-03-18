@@ -10,5 +10,6 @@ namespace ET
         public int Count;
         public int GridWidth;
         public int GridHeight;
+        public int AnchorSlotIndex;
     }
 }

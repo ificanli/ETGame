@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace ET.Client
 {
@@ -18,10 +20,14 @@ namespace ET.Client
             }
 
             EnsureRaycastGraphic(view);
+            EnsureCanvasGroup(view);
             EventTrigger trigger = view.GetComponent<EventTrigger>() ?? view.gameObject.AddComponent<EventTrigger>();
             trigger.triggers ??= new List<EventTrigger.Entry>();
             trigger.triggers.Clear();
 
+            AddLoadoutTrigger(trigger, EventTriggerType.InitializePotentialDrag, OnLoadoutInitializePotentialDragEvent);
+            AddLoadoutTrigger(trigger, EventTriggerType.PointerDown, OnLoadoutPointerDownEvent);
+            AddLoadoutTrigger(trigger, EventTriggerType.PointerUp, OnLoadoutPointerUpEvent);
             AddLoadoutTrigger(trigger, EventTriggerType.BeginDrag, OnLoadoutBeginDragEvent);
             AddLoadoutTrigger(trigger, EventTriggerType.Drag, OnLoadoutDragEvent);
             AddLoadoutTrigger(trigger, EventTriggerType.EndDrag, OnLoadoutEndDragEvent);
@@ -37,6 +43,7 @@ namespace ET.Client
             }
 
             EnsureRaycastGraphic(view);
+            EnsureCanvasGroup(view);
             LoadoutGridItemViewProxy proxy = view.GetComponent<LoadoutGridItemViewProxy>() ?? view.gameObject.AddComponent<LoadoutGridItemViewProxy>();
             proxy.PanelRef = self;
             proxy.IsWarehouse = false;
@@ -80,6 +87,51 @@ namespace ET.Client
             };
             entry.callback.AddListener(handler);
             trigger.triggers.Add(entry);
+        }
+
+        private static void OnLoadoutInitializePotentialDragEvent(BaseEventData data)
+        {
+            if (!TryGetLoadoutDragContext(data, out LobbyPanelComponent self, out _, out LoadoutGridItemViewProxy proxy, out PointerEventData eventData))
+            {
+                return;
+            }
+
+            if (proxy.IsWarehouse)
+            {
+                self.ForwardWarehouseInitializePotentialDrag(eventData);
+            }
+        }
+
+        private static void OnLoadoutPointerDownEvent(BaseEventData data)
+        {
+            if (!TryGetLoadoutDragContext(data, out LobbyPanelComponent self, out RectTransform view, out LoadoutGridItemViewProxy proxy, out PointerEventData eventData))
+            {
+                return;
+            }
+
+            if (proxy.IsWarehouse)
+            {
+                self.RecordWarehousePressState(view, proxy, eventData);
+            }
+        }
+
+        private static void OnLoadoutPointerUpEvent(BaseEventData data)
+        {
+            if (!TryGetLoadoutDragContext(data, out LobbyPanelComponent self, out RectTransform view, out LoadoutGridItemViewProxy proxy, out PointerEventData eventData))
+            {
+                return;
+            }
+
+            if (!proxy.IsWarehouse)
+            {
+                return;
+            }
+
+            if (!self.IsDragging || self.DraggingView != view)
+            {
+                self.EndWarehouseScrollForwarding(eventData);
+                self.ClearWarehousePressState();
+            }
         }
 
         private static void OnLoadoutBeginDragEvent(BaseEventData data)
@@ -138,13 +190,16 @@ namespace ET.Client
                 return false;
             }
 
-            GameObject go = eventData.pointerDrag != null ? eventData.pointerDrag : eventData.pointerPress;
+            GameObject go = eventData.pointerDrag ??
+                            eventData.pointerPress ??
+                            eventData.pointerPressRaycast.gameObject ??
+                            eventData.pointerCurrentRaycast.gameObject;
             if (go == null)
             {
                 return false;
             }
 
-            proxy = go.GetComponent<LoadoutGridItemViewProxy>();
+            proxy = go.GetComponent<LoadoutGridItemViewProxy>() ?? go.GetComponentInParent<LoadoutGridItemViewProxy>();
             if (proxy == null)
             {
                 return false;
@@ -156,7 +211,7 @@ namespace ET.Client
                 return false;
             }
 
-            view = go.GetComponent<RectTransform>();
+            view = proxy.GetComponent<RectTransform>();
             return view != null;
         }
 
@@ -169,6 +224,18 @@ namespace ET.Client
             if (self == null || self.IsDisposed || view == null || proxy == null || eventData == null || proxy.ConfigId <= 0)
             {
                 return;
+            }
+
+            if (proxy.IsWarehouse)
+            {
+                if (!self.ShouldBeginWarehouseItemDrag(view, proxy))
+                {
+                    self.BeginWarehouseScrollForwarding(eventData);
+                    return;
+                }
+
+                self.StopWarehouseScrollForItemDrag();
+                self.ClearWarehousePressState();
             }
 
             RectTransform sourceLayer = self.GetLoadoutDragSourceLayer(view, proxy);
@@ -196,8 +263,11 @@ namespace ET.Client
                 self.DragWorldOffset = Vector3.zero;
             }
 
-            CanvasGroup canvasGroup = view.GetComponent<CanvasGroup>() ?? view.gameObject.AddComponent<CanvasGroup>();
-            canvasGroup.blocksRaycasts = false;
+            CanvasGroup canvasGroup = EnsureCanvasGroup(view);
+            if (canvasGroup != null)
+            {
+                canvasGroup.blocksRaycasts = false;
+            }
         }
 
         private static void OnLoadoutItemDrag(
@@ -208,6 +278,12 @@ namespace ET.Client
         {
             if (self == null || self.IsDisposed || view == null || proxy == null || eventData == null)
             {
+                return;
+            }
+
+            if (proxy.IsWarehouse && self.WarehouseScrollForwarding && (!self.IsDragging || self.DraggingView != view))
+            {
+                self.ForwardWarehouseDrag(eventData);
                 return;
             }
 
@@ -245,21 +321,41 @@ namespace ET.Client
                 canvasGroup.blocksRaycasts = true;
             }
 
+            if (proxy.IsWarehouse && self.WarehouseScrollForwarding && (!self.IsDragging || self.DraggingView != view))
+            {
+                self.EndWarehouseScrollForwarding(eventData);
+                self.ClearWarehousePressState();
+                return;
+            }
+
             if (!self.IsDragging || self.DraggingView != view)
             {
+                if (proxy.IsWarehouse)
+                {
+                    self.ClearWarehousePressState();
+                }
+
                 return;
             }
 
             bool hasValidTarget = self.TryGetLoadoutDropTarget(eventData, out bool targetIsWarehouse, out LoadoutAreaType targetAreaType, out LoadoutFixedSlotType targetSlotType, out int targetAnchorSlotIndex);
             self.ClearLoadoutDragState();
+            self.ClearWarehousePressState();
 
             if (hasValidTarget)
             {
                 if (proxy.IsWarehouse)
                 {
-                    if (!targetIsWarehouse)
+                    if (targetIsWarehouse)
                     {
-                        self.DragTakeWarehouseItemAsync(proxy.ConfigId, targetAreaType, targetSlotType, targetAnchorSlotIndex).Coroutine();
+                        if (targetAnchorSlotIndex >= 0 && targetAnchorSlotIndex != proxy.AnchorSlotIndex)
+                        {
+                            self.MoveWarehouseItemAsync(proxy.ItemUid, targetAnchorSlotIndex).Coroutine();
+                        }
+                    }
+                    else
+                    {
+                        self.DragTakeWarehouseItemAsync(proxy.ConfigId, proxy.ItemUid, targetAreaType, targetSlotType, targetAnchorSlotIndex).Coroutine();
                     }
                 }
                 else
@@ -372,6 +468,7 @@ namespace ET.Client
             if (warehouseBoard != null && RectTransformUtility.RectangleContainsScreenPoint(warehouseBoard, eventData.position, eventCamera))
             {
                 targetIsWarehouse = true;
+                self.TryResolveWarehouseSlot(eventData.position, eventCamera, out targetAnchorSlotIndex);
                 return true;
             }
 
@@ -530,6 +627,7 @@ namespace ET.Client
         private static async ETTask DragTakeWarehouseItemAsync(
             this LobbyPanelComponent self,
             int configId,
+            long itemUid,
             LoadoutAreaType targetAreaType,
             LoadoutFixedSlotType targetSlotType,
             int targetAnchorSlotIndex)
@@ -539,7 +637,7 @@ namespace ET.Client
                 return;
             }
 
-            await self.TakeWarehouseItemAsync(configId, targetAreaType, targetSlotType, targetAnchorSlotIndex);
+            await self.TakeWarehouseItemAsync(configId, targetAreaType, targetSlotType, targetAnchorSlotIndex, itemUid);
         }
 
         private static async ETTask MoveOwnedItemAsync(
@@ -574,6 +672,7 @@ namespace ET.Client
 
         private static void ClearLoadoutDragState(this LobbyPanelComponent self)
         {
+            bool draggedWarehouse = self.DraggingIsWarehouse;
             self.IsDragging = false;
             self.DraggingIsWarehouse = false;
             self.DraggingItemUid = 0;
@@ -583,6 +682,27 @@ namespace ET.Client
             self.DraggingFixedSlotType = 0;
             self.DraggingView = null;
             self.DragWorldOffset = Vector3.zero;
+
+            if (draggedWarehouse)
+            {
+                self.RestoreWarehouseScrollInteraction();
+            }
+        }
+
+        private static CanvasGroup EnsureCanvasGroup(RectTransform view)
+        {
+            if (view == null)
+            {
+                return null;
+            }
+
+            CanvasGroup canvasGroup = view.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = view.gameObject.AddComponent<CanvasGroup>();
+            }
+
+            return canvasGroup;
         }
 
         private static bool IsScreenPointInFixedSlot(EquipSlotItemComponent slotItem, Vector2 screenPosition, Camera eventCamera)
@@ -606,6 +726,149 @@ namespace ET.Client
                 LoadoutFixedSlotType.Backpack => EquipSlotType.Bag,
                 _ => EquipSlotType.BagContent,
             };
+        }
+
+        private static void RecordWarehousePressState(this LobbyPanelComponent self, RectTransform view, LoadoutGridItemViewProxy proxy, PointerEventData eventData)
+        {
+            if (self == null || self.IsDisposed || view == null || proxy == null || eventData == null)
+            {
+                return;
+            }
+
+            self.WarehousePressView = view;
+            self.WarehousePressItemUid = proxy.ItemUid;
+            self.WarehousePressPointerId = eventData.pointerId;
+            self.WarehousePressPosition = eventData.position;
+            self.WarehousePressStartedAt = Time.unscaledTime;
+            self.WarehouseScrollForwarding = false;
+        }
+
+        private static void ClearWarehousePressState(this LobbyPanelComponent self)
+        {
+            self.WarehousePressView = null;
+            self.WarehousePressItemUid = 0;
+            self.WarehousePressPointerId = -1;
+            self.WarehousePressPosition = Vector2.zero;
+            self.WarehousePressStartedAt = 0f;
+        }
+
+        private static bool ShouldBeginWarehouseItemDrag(this LobbyPanelComponent self, RectTransform view, LoadoutGridItemViewProxy proxy)
+        {
+            if (self == null || self.IsDisposed || view == null || proxy == null || !proxy.IsWarehouse)
+            {
+                return false;
+            }
+
+            if (self.WarehousePressView != view || self.WarehousePressItemUid != proxy.ItemUid || self.WarehousePressStartedAt <= 0f)
+            {
+                return false;
+            }
+
+            return Time.unscaledTime - self.WarehousePressStartedAt >= GetWarehouseHoldDuration();
+        }
+
+        private static void ForwardWarehouseInitializePotentialDrag(this LobbyPanelComponent self, PointerEventData eventData)
+        {
+            LoopScrollRect scrollRect = self.GetWarehouseScrollRect();
+            if (scrollRect != null && eventData != null)
+            {
+                scrollRect.OnInitializePotentialDrag(eventData);
+            }
+        }
+
+        private static void BeginWarehouseScrollForwarding(this LobbyPanelComponent self, PointerEventData eventData)
+        {
+            if (self.WarehouseScrollForwarding)
+            {
+                return;
+            }
+
+            LoopScrollRect scrollRect = self.GetWarehouseScrollRect();
+            if (scrollRect == null || eventData == null)
+            {
+                return;
+            }
+
+            scrollRect.vertical = true;
+            scrollRect.OnBeginDrag(eventData);
+            self.WarehouseScrollForwarding = true;
+        }
+
+        private static void ForwardWarehouseDrag(this LobbyPanelComponent self, PointerEventData eventData)
+        {
+            LoopScrollRect scrollRect = self.GetWarehouseScrollRect();
+            if (scrollRect == null || eventData == null)
+            {
+                return;
+            }
+
+            scrollRect.OnDrag(eventData);
+        }
+
+        private static void EndWarehouseScrollForwarding(this LobbyPanelComponent self, PointerEventData eventData)
+        {
+            if (!self.WarehouseScrollForwarding)
+            {
+                return;
+            }
+
+            LoopScrollRect scrollRect = self.GetWarehouseScrollRect();
+            if (scrollRect != null && eventData != null)
+            {
+                scrollRect.OnEndDrag(eventData);
+                scrollRect.vertical = true;
+            }
+
+            self.WarehouseScrollForwarding = false;
+        }
+
+        private static void StopWarehouseScrollForItemDrag(this LobbyPanelComponent self)
+        {
+            self.WarehouseScrollForwarding = false;
+            LoopScrollRect scrollRect = self.GetWarehouseScrollRect();
+            if (scrollRect == null)
+            {
+                return;
+            }
+
+            scrollRect.StopMovement();
+            scrollRect.vertical = false;
+        }
+
+        private static void RestoreWarehouseScrollInteraction(this LobbyPanelComponent self)
+        {
+            self.WarehouseScrollForwarding = false;
+            LoopScrollRect scrollRect = self.GetWarehouseScrollRect();
+            if (scrollRect != null)
+            {
+                scrollRect.vertical = true;
+            }
+        }
+
+        private static float GetWarehouseHoldDuration()
+        {
+            const float fallbackHoldDuration = 0.4f;
+
+            Type inputSystemType = Type.GetType("UnityEngine.InputSystem.InputSystem, Unity.InputSystem");
+            if (inputSystemType == null)
+            {
+                return fallbackHoldDuration;
+            }
+
+            PropertyInfo settingsProperty = inputSystemType.GetProperty("settings", BindingFlags.Public | BindingFlags.Static);
+            object settings = settingsProperty?.GetValue(null);
+            if (settings == null)
+            {
+                return fallbackHoldDuration;
+            }
+
+            PropertyInfo holdTimeProperty = settings.GetType().GetProperty("defaultHoldTime", BindingFlags.Public | BindingFlags.Instance);
+            if (holdTimeProperty?.GetValue(settings) is float holdTime && holdTime > 0f)
+            {
+                return holdTime;
+            }
+
+            return fallbackHoldDuration;
         }
     }
 }

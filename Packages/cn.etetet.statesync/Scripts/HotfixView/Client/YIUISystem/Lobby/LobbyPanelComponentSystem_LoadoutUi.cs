@@ -51,6 +51,7 @@ namespace ET.Client
             builder.Append(loadout.TotalWealth).Append('|');
             builder.Append(loadout.IsConfirmed ? 1 : 0).Append('|');
             builder.Append(loadout.ConfirmedAt).Append('|');
+            builder.Append(loadout.WarehouseColumnCount).Append('|');
 
             foreach ((int configId, int count) in loadout.StorageItemCounts)
             {
@@ -104,6 +105,8 @@ namespace ET.Client
                         .Append(item.ConfigId)
                         .Append(':')
                         .Append(item.Count)
+                        .Append(':')
+                        .Append(item.AnchorSlotIndex)
                         .Append(':')
                         .Append(item.GridWidth)
                         .Append('x')
@@ -347,6 +350,8 @@ namespace ET.Client
             LoadoutGridItemInfo item)
         {
             ResolveDisplayInfo(item.ConfigId, out string name, out string icon, out _);
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(item.ConfigId);
+            string itemDesc = !string.IsNullOrWhiteSpace(itemConfig?.Desc) ? itemConfig.Desc : name;
             view.name = $"{areaType}_{item.AnchorSlotIndex}_{item.ConfigId}";
 
             LoadoutGridItemViewProxy proxy = view.GetComponent<LoadoutGridItemViewProxy>();
@@ -362,29 +367,30 @@ namespace ET.Client
             proxy.FixedSlotType = 0;
             proxy.AnchorSlotIndex = item.AnchorSlotIndex;
             proxy.ConfigId = item.ConfigId;
-            proxy.IconImage ??= FindBestIconImage(view);
+            proxy.IconImage = FindBestIconImage(view);
             proxy.TmpTexts ??= view.GetComponentsInChildren<TMP_Text>(true);
             proxy.Texts ??= view.GetComponentsInChildren<Text>(true);
 
-            ApplyOwnedGridItemTexts(proxy, name, item.Count);
+            ApplyOwnedGridItemTexts(proxy, itemDesc, item.Count);
+            ItemQualityBgViewHelper.UpdateQualityBgByConfigId(view, item.ConfigId);
             UpdateOwnedGridItemIcon(proxy, icon).Coroutine();
             BindLoadoutGridItemInteract(self, view, proxy);
         }
 
-        private static void ApplyOwnedGridItemTexts(LoadoutGridItemViewProxy proxy, string name, int count)
+        private static void ApplyOwnedGridItemTexts(LoadoutGridItemViewProxy proxy, string text, int count)
         {
-            string countText = count > 1 ? $"x{count}" : string.Empty;
+            _ = count;
 
             if (proxy.TmpTexts != null && proxy.TmpTexts.Length > 0)
             {
                 if (proxy.TmpTexts.Length == 1)
                 {
-                    proxy.TmpTexts[0].text = string.IsNullOrEmpty(countText) ? name : $"{name}\n{countText}";
+                    proxy.TmpTexts[0].text = text;
                 }
                 else
                 {
-                    proxy.TmpTexts[0].text = name;
-                    proxy.TmpTexts[1].text = countText;
+                    proxy.TmpTexts[0].text = text;
+                    proxy.TmpTexts[1].text = string.Empty;
                 }
             }
 
@@ -392,12 +398,12 @@ namespace ET.Client
             {
                 if (proxy.Texts.Length == 1)
                 {
-                    proxy.Texts[0].text = string.IsNullOrEmpty(countText) ? name : $"{name}\n{countText}";
+                    proxy.Texts[0].text = text;
                 }
                 else
                 {
-                    proxy.Texts[0].text = name;
-                    proxy.Texts[1].text = countText;
+                    proxy.Texts[0].text = text;
+                    proxy.Texts[1].text = string.Empty;
                 }
             }
         }
@@ -449,27 +455,82 @@ namespace ET.Client
             proxy.LoadedIconName = iconName;
             proxy.IconImage.sprite = sprite;
             proxy.IconImage.enabled = sprite != null;
+            proxy.IconImage.preserveAspect = true;
         }
 
         private static Image FindBestIconImage(RectTransform view)
         {
+            Image image = FindImageByExactName(view, "ItemImage");
+            if (image != null)
+            {
+                return image;
+            }
+
+            image = FindImageByExactName(view, "ItemIcon");
+            if (image != null)
+            {
+                return image;
+            }
+
+            image = FindImageByExactName(view, "Icon");
+            if (image != null)
+            {
+                return image;
+            }
+
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            Image fallback = null;
+            for (int i = 0; i < images.Length; ++i)
+            {
+                Image current = images[i];
+                if (current == null)
+                {
+                    continue;
+                }
+
+                if (current.gameObject == view.gameObject)
+                {
+                    continue;
+                }
+
+                if (string.Equals(current.name, "QualityBg", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (fallback == null)
+                {
+                    fallback = current;
+                }
+
+                if (current.name.IndexOf("Item", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    current.name.IndexOf("Icon", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return current;
+                }
+            }
+
+            return fallback ?? view.GetComponent<Image>();
+        }
+
+        private static Image FindImageByExactName(RectTransform view, string imageName)
+        {
+            if (view == null || string.IsNullOrWhiteSpace(imageName))
+            {
+                return null;
+            }
+
             Image[] images = view.GetComponentsInChildren<Image>(true);
             for (int i = 0; i < images.Length; ++i)
             {
-                if (images[i] == null)
+                Image image = images[i];
+                if (image != null && string.Equals(image.name, imageName, StringComparison.Ordinal))
                 {
-                    continue;
+                    return image;
                 }
-
-                if (images[i].gameObject == view.gameObject)
-                {
-                    continue;
-                }
-
-                return images[i];
             }
 
-            return view.GetComponent<Image>();
+            return null;
         }
 
         private static void BindGridItemClick(
@@ -516,6 +577,7 @@ namespace ET.Client
             request.SourceSlotType = (int)LoadoutFixedSlotType.None;
             request.SourceAnchorSlotIndex = anchorSlotIndex;
             request.Count = 1;
+            request.WarehouseColumnCount = self.GetWarehouseRequestColumnCount(self.Root()?.GetComponent<LoadoutComponent>());
 
             G2C_LoadoutPutToWarehouse response =
                     await self.Root().GetComponent<ClientSenderComponent>().Call(request) as G2C_LoadoutPutToWarehouse;

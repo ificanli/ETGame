@@ -15,22 +15,15 @@ namespace ET.Server
         {
             message = string.Empty;
 
-            if (request.ConfigId <= 0)
-            {
-                message = "config id invalid";
-                return ErrorCode.ERR_LoadoutItemNotFound;
-            }
-
             if (request.Count <= 0)
             {
                 message = "count invalid";
                 return ErrorCode.ERR_LoadoutCountInvalid;
             }
 
-            if (storage.GetWarehouseCount(request.ConfigId) < request.Count)
+            if (!TryResolveWarehouseRequestItem(storage, request, out LoadoutWarehouseItemInfo warehouseItem, out message))
             {
-                message = "warehouse item not enough";
-                return ErrorCode.ERR_LoadoutWarehouseNotEnough;
+                return ErrorCode.ERR_LoadoutItemNotFound;
             }
 
             if ((LoadoutAreaType)request.TargetAreaType == LoadoutAreaType.FixedSlot)
@@ -44,8 +37,9 @@ namespace ET.Server
                 return TakeFromWarehouseToFixedSlot(
                     loadout,
                     storage,
-                    request.ConfigId,
+                    warehouseItem.ConfigId,
                     (LoadoutFixedSlotType)request.TargetSlotType,
+                    request.ItemUid,
                     out message);
             }
 
@@ -56,7 +50,7 @@ namespace ET.Server
                 request.TargetAnchorSlotIndex,
                 request.TargetBagWidth,
                 request.TargetBagHeight,
-                request.ConfigId,
+                warehouseItem.ConfigId,
                 request.Count,
                 out message);
             if (error != ErrorCode.ERR_Success)
@@ -64,9 +58,16 @@ namespace ET.Server
                 return error;
             }
 
-            if (!storage.TryConsumeWarehouseItem(request.ConfigId, request.Count))
+            bool consumed = request.ItemUid > 0
+                ? storage.TryTakeWarehouseItem(request.ItemUid, request.Count, out _, out message)
+                : storage.TryConsumeWarehouseItem(warehouseItem.ConfigId, request.Count);
+            if (!consumed)
             {
-                message = "warehouse item not enough";
+                if (string.IsNullOrEmpty(message))
+                {
+                    message = "warehouse item not enough";
+                }
+
                 return ErrorCode.ERR_LoadoutWarehouseNotEnough;
             }
 
@@ -81,6 +82,12 @@ namespace ET.Server
             out string message)
         {
             message = string.Empty;
+            if (!storage.EnsureWarehouseLayout(request.WarehouseColumnCount))
+            {
+                message = "warehouse column count invalid";
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
             LoadoutAreaType sourceArea = (LoadoutAreaType)request.SourceAreaType;
 
             if (sourceArea == LoadoutAreaType.FixedSlot)
@@ -178,6 +185,82 @@ namespace ET.Server
                 request.TargetBagWidth,
                 request.TargetBagHeight,
                 out message);
+        }
+
+        public static int MoveWarehouseItem(PlayerStorageComponent storage, C2G_LoadoutMoveWarehouseItem request, out string message)
+        {
+            message = string.Empty;
+            if (storage == null)
+            {
+                message = "storage missing";
+                return ErrorCode.ERR_LoadoutStateConflict;
+            }
+
+            if (!storage.EnsureWarehouseLayout(request.WarehouseColumnCount))
+            {
+                message = "warehouse column count invalid";
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            if (request.ItemUid <= 0)
+            {
+                message = "item uid invalid";
+                return ErrorCode.ERR_LoadoutItemNotFound;
+            }
+
+            if (request.TargetAnchorSlotIndex < 0)
+            {
+                message = "anchor slot invalid";
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            if (!storage.TryGetWarehouseItem(request.ItemUid, out int sourceIndex, out LoadoutWarehouseItemInfo sourceItem))
+            {
+                message = "warehouse item not found";
+                return ErrorCode.ERR_LoadoutItemNotFound;
+            }
+
+            if (sourceItem.AnchorSlotIndex == request.TargetAnchorSlotIndex)
+            {
+                return ErrorCode.ERR_Success;
+            }
+
+            LoadoutWarehouseItemInfo moved = sourceItem;
+            moved.AnchorSlotIndex = request.TargetAnchorSlotIndex;
+            List<int> blockers = GetBlockingWarehouseIndices(storage, storage.WarehouseItems, moved, sourceIndex);
+            if (blockers == null)
+            {
+                message = "target placement invalid";
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            if (blockers.Count == 0)
+            {
+                storage.WarehouseItems[sourceIndex] = moved;
+                return ErrorCode.ERR_Success;
+            }
+
+            if (blockers.Count != 1)
+            {
+                message = "target placement invalid";
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            int blockerIndex = blockers[0];
+            LoadoutWarehouseItemInfo blocker = storage.WarehouseItems[blockerIndex];
+            LoadoutWarehouseItemInfo swapped = blocker;
+            swapped.AnchorSlotIndex = sourceItem.AnchorSlotIndex;
+
+            if (!CanPlaceWarehouseItem(storage, storage.WarehouseItems, moved, sourceIndex, blockerIndex) ||
+                !CanPlaceWarehouseItem(storage, storage.WarehouseItems, swapped, blockerIndex, sourceIndex))
+            {
+                message = "target placement invalid";
+                return ErrorCode.ERR_LoadoutGridInvalid;
+            }
+
+            storage.WarehouseItems[sourceIndex] = moved;
+            storage.WarehouseItems[blockerIndex] = swapped;
+            return ErrorCode.ERR_Success;
         }
 
         public static void OneKeyUnload(LoadoutComponent loadout, PlayerStorageComponent storage)
@@ -380,6 +463,7 @@ namespace ET.Server
             PlayerStorageComponent storage,
             int configId,
             LoadoutFixedSlotType targetSlotType,
+            long itemUid,
             out string message)
         {
             message = string.Empty;
@@ -399,10 +483,17 @@ namespace ET.Server
                 return ErrorCode.ERR_LoadoutGridInvalid;
             }
 
-            if (!storage.TryConsumeWarehouseItem(configId, 1))
+            bool consumed = itemUid > 0
+                ? storage.TryTakeWarehouseItem(itemUid, 1, out _, out message)
+                : storage.TryConsumeWarehouseItem(configId, 1);
+            if (!consumed)
             {
                 RestoreSnapshot(loadout, snapshot);
-                message = "warehouse item not enough";
+                if (string.IsNullOrEmpty(message))
+                {
+                    message = "warehouse item not enough";
+                }
+
                 return ErrorCode.ERR_LoadoutWarehouseNotEnough;
             }
 
@@ -687,6 +778,182 @@ namespace ET.Server
 
             container.Add(item);
             return ErrorCode.ERR_Success;
+        }
+
+        private static bool TryResolveWarehouseRequestItem(
+            PlayerStorageComponent storage,
+            C2G_LoadoutTakeFromWarehouse request,
+            out LoadoutWarehouseItemInfo warehouseItem,
+            out string message)
+        {
+            warehouseItem = default;
+            message = string.Empty;
+
+            if (request.ItemUid > 0)
+            {
+                if (!storage.TryGetWarehouseItem(request.ItemUid, out _, out warehouseItem))
+                {
+                    message = "warehouse item not found";
+                    return false;
+                }
+
+                if (request.ConfigId > 0 && warehouseItem.ConfigId != request.ConfigId)
+                {
+                    message = "warehouse item config mismatch";
+                    return false;
+                }
+
+                if (request.Count > warehouseItem.Count)
+                {
+                    message = "warehouse item not enough";
+                    return false;
+                }
+
+                return true;
+            }
+
+            if (request.ConfigId <= 0)
+            {
+                message = "config id invalid";
+                return false;
+            }
+
+            if (storage.GetWarehouseCount(request.ConfigId) < request.Count)
+            {
+                message = "warehouse item not enough";
+                return false;
+            }
+
+            for (int i = 0; i < storage.WarehouseItems.Count; ++i)
+            {
+                LoadoutWarehouseItemInfo item = storage.WarehouseItems[i];
+                if (item.ConfigId != request.ConfigId || item.Count < request.Count)
+                {
+                    continue;
+                }
+
+                warehouseItem = item;
+                return true;
+            }
+
+            message = "warehouse item not found";
+            return false;
+        }
+
+        private static List<int> GetBlockingWarehouseIndices(
+            PlayerStorageComponent storage,
+            List<LoadoutWarehouseItemInfo> container,
+            LoadoutWarehouseItemInfo targetItem,
+            int ignoreIndex)
+        {
+            int columnCount = storage?.WarehouseColumnCount ?? 0;
+            if (!IsWarehouseItemInBounds(targetItem, columnCount))
+            {
+                return null;
+            }
+
+            List<int> blockers = new();
+            for (int i = 0; i < container.Count; ++i)
+            {
+                if (i == ignoreIndex)
+                {
+                    continue;
+                }
+
+                LoadoutWarehouseItemInfo item = container[i];
+                if (item.ConfigId <= 0 || item.Count <= 0)
+                {
+                    continue;
+                }
+
+                if (!IsWarehouseItemInBounds(item, columnCount))
+                {
+                    return null;
+                }
+
+                if (IsWarehouseItemOverlapping(targetItem, item, columnCount))
+                {
+                    blockers.Add(i);
+                }
+            }
+
+            return blockers;
+        }
+
+        private static bool CanPlaceWarehouseItem(
+            PlayerStorageComponent storage,
+            List<LoadoutWarehouseItemInfo> container,
+            LoadoutWarehouseItemInfo targetItem,
+            int ignoreIndexA,
+            int ignoreIndexB)
+        {
+            int columnCount = storage?.WarehouseColumnCount ?? 0;
+            if (!IsWarehouseItemInBounds(targetItem, columnCount))
+            {
+                return false;
+            }
+
+            int candidateRows = targetItem.AnchorSlotIndex / columnCount + targetItem.GridHeight;
+            List<GridPlacementItemInfo> validationItems = new(container.Count);
+            for (int i = 0; i < container.Count; ++i)
+            {
+                if (i == ignoreIndexA || i == ignoreIndexB)
+                {
+                    continue;
+                }
+
+                LoadoutWarehouseItemInfo item = container[i];
+                if (item.ConfigId <= 0 || item.Count <= 0 || !IsWarehouseItemInBounds(item, columnCount))
+                {
+                    return false;
+                }
+
+                candidateRows = System.Math.Max(candidateRows, item.AnchorSlotIndex / columnCount + item.GridHeight);
+                validationItems.Add(new GridPlacementItemInfo
+                {
+                    ConfigId = item.ConfigId,
+                    Count = item.Count,
+                    AnchorSlotIndex = item.AnchorSlotIndex,
+                    GridWidth = item.GridWidth,
+                    GridHeight = item.GridHeight,
+                });
+            }
+
+            validationItems.Add(new GridPlacementItemInfo
+            {
+                ConfigId = targetItem.ConfigId,
+                Count = targetItem.Count,
+                AnchorSlotIndex = targetItem.AnchorSlotIndex,
+                GridWidth = targetItem.GridWidth,
+                GridHeight = targetItem.GridHeight,
+            });
+            return LoadoutGridPlacementHelper.ArePlacementsValid(validationItems, columnCount, System.Math.Max(1, candidateRows));
+        }
+
+        private static bool IsWarehouseItemInBounds(LoadoutWarehouseItemInfo item, int columnCount)
+        {
+            if (columnCount <= 0 || item.AnchorSlotIndex < 0)
+            {
+                return false;
+            }
+
+            int x = item.AnchorSlotIndex % columnCount;
+            return item.GridWidth > 0 &&
+                   item.GridHeight > 0 &&
+                   x >= 0 &&
+                   x + item.GridWidth <= columnCount;
+        }
+
+        private static bool IsWarehouseItemOverlapping(LoadoutWarehouseItemInfo a, LoadoutWarehouseItemInfo b, int columnCount)
+        {
+            int ax = a.AnchorSlotIndex % columnCount;
+            int ay = a.AnchorSlotIndex / columnCount;
+            int bx = b.AnchorSlotIndex % columnCount;
+            int by = b.AnchorSlotIndex / columnCount;
+            return ax < bx + b.GridWidth &&
+                   ax + a.GridWidth > bx &&
+                   ay < by + b.GridHeight &&
+                   ay + a.GridHeight > by;
         }
 
         private static bool TryTakeOwnedGridItem(

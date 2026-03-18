@@ -18,8 +18,6 @@ namespace ET.Client
 
         public EntityRef<YIUIChild> u_UIBase;
         public YIUIChild UIBase => u_UIBase;
-        public EntityRef<ET.Client.ActionBarSlotComponent> u_UISlot12;
-        public ET.Client.ActionBarSlotComponent UISlot12 => u_UISlot12;
 
     }
 }

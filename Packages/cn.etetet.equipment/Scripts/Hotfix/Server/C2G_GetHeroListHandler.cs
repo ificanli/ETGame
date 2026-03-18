@@ -25,6 +25,7 @@ namespace ET.Server
             if (player != null)
             {
                 PlayerStorageComponent storage = player.GetComponent<PlayerStorageComponent>() ?? player.AddComponent<PlayerStorageComponent>();
+                storage.EnsureWarehouseLayout(request.WarehouseColumnCount);
                 LoadoutStateHelper.FillGetHeroListStorageResponse(storage, response);
 
                 LoadoutComponent loadout = player.GetComponent<LoadoutComponent>();

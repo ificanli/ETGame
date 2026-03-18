@@ -334,6 +334,7 @@ MonoBehaviour:
   m_minWidth: -1
   m_minHeight: -1
   m_Space: 0
+  m_Offset: 0
 --- !u!114 &7503502661147574119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2132,6 +2133,7 @@ MonoBehaviour:
   m_minWidth: -1
   m_minHeight: -1
   m_Space: 0
+  m_Offset: 0
 --- !u!114 &8662974050804764849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3679,6 +3681,7 @@ MonoBehaviour:
   m_minWidth: -1
   m_minHeight: -1
   m_Space: 0
+  m_Offset: 0
 --- !u!1 &8040311121326579567
 GameObject:
   m_ObjectHideFlags: 0
@@ -3789,6 +3792,7 @@ MonoBehaviour:
   m_minWidth: -1
   m_minHeight: -1
   m_Space: 0
+  m_Offset: 0
 --- !u!1 &8604868364258960679
 GameObject:
   m_ObjectHideFlags: 0
@@ -3964,6 +3968,7 @@ MonoBehaviour:
   m_minWidth: -1
   m_minHeight: -1
   m_Space: 0
+  m_Offset: 0
 --- !u!1 &9202540335817115564
 GameObject:
   m_ObjectHideFlags: 0

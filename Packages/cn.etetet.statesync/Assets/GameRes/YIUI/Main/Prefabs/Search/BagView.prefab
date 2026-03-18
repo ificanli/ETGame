@@ -803,8 +803,8 @@ MonoBehaviour:
       Entry: 8
       Data: 
     - Name: m_PackagesName
-      Entry: 6
-      Data: 
+      Entry: 1
+      Data: statesync
     - Name: IsSplitData
       Entry: 5
       Data: false
@@ -868,9 +868,9 @@ MonoBehaviour:
   ComponentTable: {fileID: 0}
   DataTable: {fileID: 0}
   EventTable: {fileID: 0}
-  PkgName: 
-  ResName: 
-  UICodeType: 0
+  PkgName: Main
+  ResName: BagView
+  UICodeType: 1
   WindowOption: 0
   PanelLayer: 3
   PanelOption: 4

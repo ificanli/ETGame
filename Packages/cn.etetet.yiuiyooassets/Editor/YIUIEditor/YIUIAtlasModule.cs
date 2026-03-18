@@ -27,7 +27,9 @@ namespace YIUIFramework.Editor
                     continue;
                 }
 
-                var atlasName = spriteAtlas.name;
+                // YooAsset 在当前项目里按文件名做 AddressByFileName 收集，
+                // 图集映射必须和资源文件名一致，不能依赖 Unity 对象名。
+                var atlasName = Path.GetFileNameWithoutExtension(relativePath);
 
                 var atlasInfo = new YIUIAtlasInfo
                 {

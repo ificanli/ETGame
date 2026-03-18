@@ -738,7 +738,7 @@ MonoBehaviour:
   DataTable: {fileID: 2293221628228102396}
   EventTable: {fileID: 9175301295933787283}
   PkgName: Tips
-  ResName: TipsConfirmView
+  ResName: TipsMessageView
   UICodeType: 1
   WindowOption: 0
   PanelLayer: 3

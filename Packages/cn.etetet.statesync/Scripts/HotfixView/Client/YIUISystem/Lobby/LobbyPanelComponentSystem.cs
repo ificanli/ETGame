@@ -190,7 +190,16 @@ namespace ET.Client
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
 
+            Canvas.ForceUpdateCanvases();
+            LoadoutComponent loadout = self.Root()?.GetComponent<LoadoutComponent>();
+            int requestColumnCount = self.GetWarehouseRequestColumnCount(loadout);
+            Log.Info(
+                $"[WarehouseUI] boardWidth={GetWarehouseRectWidth(self.GetWarehouseBoardRoot()):F2}, " +
+                $"suggestedColumns={self.GetWarehouseSuggestedColumnCount()}, " +
+                $"requestColumns={requestColumnCount}, " +
+                $"currentColumns={(loadout?.WarehouseColumnCount ?? 0)}");
             C2G_GetHeroList request = C2G_GetHeroList.Create();
+            request.WarehouseColumnCount = requestColumnCount;
             G2C_GetHeroList response = (G2C_GetHeroList)await self.Root().GetComponent<ClientSenderComponent>().Call(request);
             self = selfRef;
 
@@ -200,7 +209,7 @@ namespace ET.Client
                 return;
             }
 
-            LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>() ?? self.Root().AddComponent<LoadoutComponent>();
+            loadout = self.Root().GetComponent<LoadoutComponent>() ?? self.Root().AddComponent<LoadoutComponent>();
             loadout.Heroes.Clear();
             foreach (var hero in response.Heroes)
             {
@@ -593,6 +602,7 @@ namespace ET.Client
                         itemConfigId,
                         LoadoutAreaType.FixedSlot,
                         ToFixedSlotType(slotType),
+                        0,
                         0);
                 case EquipSlotType.BagContent:
                     if (!self.TryFindFirstFitAnchorSlot(LoadoutAreaType.Bag, itemConfigId, out int bagAnchorSlotIndex))
@@ -605,7 +615,8 @@ namespace ET.Client
                         itemConfigId,
                         LoadoutAreaType.Bag,
                         LoadoutFixedSlotType.None,
-                        bagAnchorSlotIndex);
+                        bagAnchorSlotIndex,
+                        0);
                 default:
                     return false;
             }
@@ -634,6 +645,7 @@ namespace ET.Client
                 selectedConfigId,
                 LoadoutAreaType.FixedSlot,
                 ToFixedSlotType(slotType),
+                0,
                 0);
             return true;
         }
@@ -652,7 +664,7 @@ namespace ET.Client
                 return true;
             }
 
-            await self.TakeWarehouseItemAsync(selectedConfigId, areaType, LoadoutFixedSlotType.None, anchorSlotIndex);
+            await self.TakeWarehouseItemAsync(selectedConfigId, areaType, LoadoutFixedSlotType.None, anchorSlotIndex, 0);
             return true;
         }
 
@@ -661,7 +673,8 @@ namespace ET.Client
             int configId,
             LoadoutAreaType targetAreaType,
             LoadoutFixedSlotType targetSlotType,
-            int targetAnchorSlotIndex)
+            int targetAnchorSlotIndex,
+            long itemUid)
         {
             C2G_LoadoutTakeFromWarehouse request = C2G_LoadoutTakeFromWarehouse.Create();
             request.ConfigId = configId;
@@ -669,6 +682,7 @@ namespace ET.Client
             request.TargetAreaType = (int)targetAreaType;
             request.TargetSlotType = (int)targetSlotType;
             request.TargetAnchorSlotIndex = targetAnchorSlotIndex;
+            request.ItemUid = itemUid;
 
             if (targetAreaType == LoadoutAreaType.FixedSlot && targetSlotType == LoadoutFixedSlotType.Backpack && TryResolveBackpackSize(configId, out int bagWidth, out int bagHeight))
             {
@@ -694,12 +708,36 @@ namespace ET.Client
             request.SourceSlotType = (int)ToFixedSlotType(slotType);
             request.SourceAnchorSlotIndex = 0;
             request.Count = 1;
+            request.WarehouseColumnCount = self.GetWarehouseRequestColumnCount(self.Root()?.GetComponent<LoadoutComponent>());
 
             G2C_LoadoutPutToWarehouse response =
                     await self.Root().GetComponent<ClientSenderComponent>().Call(request) as G2C_LoadoutPutToWarehouse;
             if (response == null || response.Error != ErrorCode.ERR_Success)
             {
                 Log.Warning($"[LoadoutUI] PutToWarehouse failed: slot={slotType}, error={response?.Error}, message={response?.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static async ETTask<bool> MoveWarehouseItemAsync(this LobbyPanelComponent self, long itemUid, int targetAnchorSlotIndex)
+        {
+            if (itemUid <= 0 || targetAnchorSlotIndex < 0)
+            {
+                return false;
+            }
+
+            C2G_LoadoutMoveWarehouseItem request = C2G_LoadoutMoveWarehouseItem.Create();
+            request.ItemUid = itemUid;
+            request.TargetAnchorSlotIndex = targetAnchorSlotIndex;
+            request.WarehouseColumnCount = self.GetWarehouseRequestColumnCount(self.Root()?.GetComponent<LoadoutComponent>());
+
+            G2C_LoadoutMoveWarehouseItem response =
+                    await self.Root().GetComponent<ClientSenderComponent>().Call(request) as G2C_LoadoutMoveWarehouseItem;
+            if (response == null || response.Error != ErrorCode.ERR_Success)
+            {
+                Log.Warning($"[LoadoutUI] MoveWarehouseItem failed: itemUid={itemUid}, targetAnchor={targetAnchorSlotIndex}, error={response?.Error}, message={response?.Message}");
                 return false;
             }
 
