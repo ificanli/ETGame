@@ -332,7 +332,11 @@ namespace ET.Server
                 }
 
                 container.RemoveItem(slotIndex);
-                NotifyContainerUpdateToInRangePlayers(point, container);
+                UpdateContainerState(point, container);
+                if (point != null && !point.IsDisposed)
+                {
+                    NotifyContainerUpdateToInRangePlayers(point, container);
+                }
                 return ErrorCode.ERR_Success;
             }
         }
@@ -395,7 +399,11 @@ namespace ET.Server
                     }
                 }
 
-                NotifyContainerUpdateToInRangePlayers(point, container);
+                UpdateContainerState(point, container);
+                if (point != null && !point.IsDisposed)
+                {
+                    NotifyContainerUpdateToInRangePlayers(point, container);
+                }
                 return hasBagFailure ? ErrorCode.ERR_ECAContainerBagFull : ErrorCode.ERR_Success;
             }
         }
@@ -509,7 +517,7 @@ namespace ET.Server
 
         private static void NotifyContainerUpdateToInRangePlayers(ECAPointComponent point, ContainerComponent container)
         {
-            if (point == null || container == null)
+            if (point == null || point.IsDisposed || container == null)
             {
                 return;
             }
@@ -719,14 +727,56 @@ namespace ET.Server
 
         private static void UpdateContainerState(ECAPointComponent point, ContainerComponent container)
         {
-            if (point == null || container == null)
+            if (point == null || point.IsDisposed || container == null)
             {
                 return;
             }
 
-            container.State = container.HasAnyItem() ? ContainerState.Opened : ContainerState.Empty;
+            if (!container.HasAnyItem())
+            {
+                container.State = ContainerState.Empty;
+                if (container.OutputMode == ContainerOutputMode.GroundDrop)
+                {
+                    DisposeGroundDropPoint(point);
+                    return;
+                }
+            }
+            else
+            {
+                container.State = ContainerState.Opened;
+            }
+
             ECAPointStateHelper.SetState(point, container.State);
             NotifyPointStateToPlayers(point);
+        }
+
+        private static void DisposeGroundDropPoint(ECAPointComponent point)
+        {
+            if (point == null || point.IsDisposed)
+            {
+                return;
+            }
+
+            Scene scene = point.Scene();
+            UnitComponent unitComponent = scene?.GetComponent<UnitComponent>();
+            if (unitComponent != null)
+            {
+                point.CleanupInvalidPlayersInRange(unitComponent);
+                foreach (long playerId in point.PlayersInRange)
+                {
+                    Unit player = unitComponent.Get(playerId);
+                    if (player == null || player.IsDisposed)
+                    {
+                        continue;
+                    }
+
+                    SendInteractHint(point, player, false);
+                }
+            }
+
+            Unit pointUnit = point.GetParent<Unit>();
+            Log.Info($"[ECAContainer] dispose empty ground drop: point={point.PointId}, unitId={pointUnit?.Id ?? 0}");
+            pointUnit?.Dispose();
         }
 
         private static int ParseOutputMode(string outputModeRaw)

@@ -35,4 +35,20 @@ namespace ET.Server
         [BsonIgnore]
         public List<EntityRef<Item>> SlotItems = new();
     }
+
+    [EnableClass]
+    public class ItemDiscardToGroundContext
+    {
+        public EntityRef<Unit> Player;
+        public int ItemConfigId;
+        public int Count;
+        public int ResultError = ErrorCode.ERR_Cancel;
+        public string ResultPointId;
+        public long ResultPointUnitId;
+    }
+
+    public struct ItemDiscardToGroundEvent
+    {
+        public ItemDiscardToGroundContext Context;
+    }
 }

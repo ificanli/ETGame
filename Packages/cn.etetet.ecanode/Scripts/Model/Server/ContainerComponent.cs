@@ -10,6 +10,8 @@ namespace ET.Server
         public int OutputMode { get; set; }
         public bool LootGenerated { get; set; }
         public bool HasOpenedOnce { get; set; }
+        public long CreatorPlayerId { get; set; }
+        public long CreateTime { get; set; }
 
         // 容器内物品，Key=槽位索引。
         public Dictionary<int, ContainerItemEntry> ItemEntries { get; set; } = new();

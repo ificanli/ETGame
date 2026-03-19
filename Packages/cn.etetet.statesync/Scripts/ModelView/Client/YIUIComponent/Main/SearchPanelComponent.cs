@@ -1,7 +1,10 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using YIUIFramework;
 using System.Collections.Generic;
+using ET;
+using TMPro;
 
 namespace ET.Client
 {
@@ -17,6 +20,11 @@ namespace ET.Client
         public string LastFocusPointId;
         public string LastOpenContainerPointId;
         public string LastContainerSnapshot;
+        public SearchPanelOpenMode OpenMode;
+        public SearchPanelCorpseSubType CorpseSubType;
+        public string CurrentPointId;
+        public string TitleText;
+        public string SubTitleText;
 
         public int ContainerCols;
         public int ContainerRows;
@@ -36,6 +44,20 @@ namespace ET.Client
 
         public RectTransform ContainerGridRoot;
         public RectTransform BagGridRoot;
+        public Dropdown QuickChooseDropdown;
+        public RectTransform QuickChooseButtonRoot;
+        public TMP_Text QuickChooseButtonLabel;
+        public Image QuickChooseButtonImage;
+        public TMP_Text ModeTitleText;
+        public TMP_Text ModeSubTitleText;
+        public TMP_Text ContainerTitleText;
+        public TMP_Text BagTitleText;
+        public Image ModeAccentImage;
+        public Vector2 BagBoardAnchorMin;
+        public Vector2 BagBoardAnchorMax;
+        public Vector2 BagBoardAnchoredPosition;
+        public Vector2 BagBoardSizeDelta;
+        public Vector2 ContainerBoardAnchorMin;
 
         public bool IsDragging;
         public bool DraggingIsBag;

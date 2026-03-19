@@ -21,6 +21,12 @@ namespace ET.Client
                 return;
             }
 
+            if (string.Equals(panelName, nameof(SearchPanelComponent), StringComparison.Ordinal))
+            {
+                SearchPanelOpenContextComponent openContext = SearchPanelOpenContextHelper.GetOrAdd(scene);
+                openContext?.PrepareContainerOpen(args.PointId);
+            }
+
             Log.Info($"[ECAClient][ContainerUI] open panel={panelName}, point={args.PointId}, uiKey={args.UiKey ?? "null"}");
             await yiuiRoot.OpenPanelAsync(panelName);
         }

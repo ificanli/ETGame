@@ -311,6 +311,8 @@ namespace ET.Client
                 return;
             }
 
+            SearchPanelOpenContextComponent openContext = SearchPanelOpenContextHelper.GetOrAdd(root);
+            openContext?.PrepareBackpackOpen();
             await root.YIUIRoot().OpenPanelAsync<SearchPanelComponent>();
         }
 

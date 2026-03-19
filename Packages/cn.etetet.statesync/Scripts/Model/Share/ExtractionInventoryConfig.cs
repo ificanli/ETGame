@@ -47,6 +47,21 @@ namespace ET
             return Math.Max(0, data?.CorpseButtonTextId ?? 0);
         }
 
+        public static float GetGroundDropInteractRange()
+        {
+            return GetCorpseInteractRange();
+        }
+
+        public static int GetGroundDropButtonTextId()
+        {
+            return GetCorpseButtonTextId();
+        }
+
+        public static float GetGroundDropForwardDistance()
+        {
+            return 1f;
+        }
+
         /// <summary>
         /// 根据物品品质获取搜索动效持续时间（毫秒）
         /// 品质越高，搜索时间越长

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Globalization;
+using Unity.Mathematics;
 
 namespace ET.Server
 {
@@ -8,6 +9,8 @@ namespace ET.Server
     /// </summary>
     public static class PlayerCorpseLootHelper
     {
+        private const string GroundDropPointPrefix = "ground_drop_";
+
         public static bool TryCreateCorpse(Unit target)
         {
             if (target == null || target.IsDisposed || target.UnitType != UnitType.Player)
@@ -49,7 +52,7 @@ namespace ET.Server
 
             ECAPointComponent point = target.AddComponent<ECAPointComponent, string, int, float>(pointId, ECAPointType.Container, interactRange);
             point.Params = CreatePointParams(interactRange);
-            point.FlowGraph = CreateCorpseFlowGraph();
+            point.FlowGraph = CreateOpenContainerFlowGraph(ExtractionInventoryConfig.GetCorpseButtonTextId());
 
             ContainerComponent container = target.AddComponent<ContainerComponent, string>(pointId);
             container.PointId = pointId;
@@ -73,6 +76,59 @@ namespace ET.Server
             ecaManager.AddECAPoint(pointId, target.Id);
 
             Log.Info($"[CorpseLoot] created corpse box: unitId={target.Id}, pointId={pointId}, dropCount={dropItems.Count}, safeSlotStart={ExtractionInventoryConfig.GetSafeSlotStart()}, safeSlotCount={ExtractionInventoryConfig.GetSafeSlotCount()}");
+            return true;
+        }
+
+        public static bool TryCreateGroundDrop(Unit player, int itemConfigId, int count, out string pointId, out long pointUnitId)
+        {
+            pointId = null;
+            pointUnitId = 0;
+            if (player == null || player.IsDisposed || itemConfigId <= 0 || count <= 0)
+            {
+                return false;
+            }
+
+            Scene scene = player.Scene();
+            UnitComponent unitComponent = scene?.GetComponent<UnitComponent>();
+            ECAManagerComponent ecaManager = scene?.GetComponent<ECAManagerComponent>();
+            if (scene == null || unitComponent == null || ecaManager == null)
+            {
+                Log.Warning($"[GroundDrop] skip create: missing scene/unit/eca manager, player={player.Id}, itemConfigId={itemConfigId}, count={count}");
+                return false;
+            }
+
+            pointUnitId = IdGenerater.Instance.GenerateId();
+            pointId = $"{GroundDropPointPrefix}{player.Id}_{pointUnitId}";
+
+            Unit pointUnit = unitComponent.AddChildWithId<Unit, int>(pointUnitId, 0);
+            pointUnit.UnitType = UnitType.Virtual;
+            pointUnit.Position = ResolveGroundDropPosition(player);
+            pointUnit.Rotation = player.Rotation;
+
+            float interactRange = ExtractionInventoryConfig.GetGroundDropInteractRange();
+            ECAPointComponent point = pointUnit.AddComponent<ECAPointComponent, string, int, float>(pointId, ECAPointType.Container, interactRange);
+            point.Params = CreatePointParams(interactRange);
+            point.FlowGraph = CreateOpenContainerFlowGraph(ExtractionInventoryConfig.GetGroundDropButtonTextId());
+
+            ContainerComponent container = pointUnit.AddComponent<ContainerComponent, string>(pointId);
+            container.PointId = pointId;
+            container.OutputMode = ContainerOutputMode.GroundDrop;
+            container.LootGenerated = true;
+            container.HasOpenedOnce = false;
+            container.CreatorPlayerId = player.Id;
+            container.CreateTime = TimeInfo.Instance.ServerNow();
+            container.ClearItems();
+            container.SearchTimerIds.Clear();
+            container.SearchStartTimes.Clear();
+            container.SearchDurations.Clear();
+            container.SetItem(0, itemConfigId, count);
+            container.State = ContainerState.Closed;
+
+            ECAPointStateHelper.SetState(point, container.State);
+            ecaManager.AddECAPoint(pointId, pointUnitId);
+            ECAHelper.CheckPlayerInRange(player);
+
+            Log.Info($"[GroundDrop] created point: point={pointId}, unitId={pointUnitId}, player={player.Id}, itemConfigId={itemConfigId}, count={count}, pos={pointUnit.Position}");
             return true;
         }
 
@@ -115,10 +171,8 @@ namespace ET.Server
             };
         }
 
-        private static FlowGraphData CreateCorpseFlowGraph()
+        private static FlowGraphData CreateOpenContainerFlowGraph(int buttonTextId)
         {
-            int buttonTextId = ExtractionInventoryConfig.GetCorpseButtonTextId();
-
             return new FlowGraphData
             {
                 Nodes = new List<FlowNodeData>
@@ -165,7 +219,15 @@ namespace ET.Server
                     {
                         NodeId = 6,
                         NodeType = ECAFlowNodeType.Action,
-                        NodeKey = ECAFlowActionKey.OpenContainerUI
+                        NodeKey = ECAFlowActionKey.OpenContainerUI,
+                        Params = new List<FlowParam>
+                        {
+                            new FlowParam
+                            {
+                                Key = global::ET.SearchPanelOpenConst.OpenContainerUiKeyParam,
+                                Value = global::ET.SearchPanelOpenConst.SearchPanelUiKey
+                            }
+                        }
                     }
                 },
                 Connections = new List<FlowConnectionData>
@@ -175,6 +237,46 @@ namespace ET.Server
                     new FlowConnectionData { FromNodeId = 5, ToNodeId = 6, Branch = "Out" }
                 }
             };
+        }
+
+        private static float3 ResolveGroundDropPosition(Unit player)
+        {
+            float3 fallback = player.Position;
+            float3 forward = player.Forward;
+            if (!math.all(math.isfinite(forward)))
+            {
+                return fallback;
+            }
+
+            forward.y = 0f;
+            if (math.lengthsq(forward) <= 0.0001f)
+            {
+                return fallback;
+            }
+
+            float3 candidate = fallback + math.normalize(forward) * ExtractionInventoryConfig.GetGroundDropForwardDistance();
+            if (TryProjectGroundDropPosition(player, candidate, out float3 projected))
+            {
+                return projected;
+            }
+
+            return fallback;
+        }
+
+        private static bool TryProjectGroundDropPosition(Unit player, float3 candidate, out float3 projected)
+        {
+            projected = candidate;
+            PathfindingComponent pathfinding = player.GetComponent<PathfindingComponent>();
+            if (pathfinding == null)
+            {
+                return false;
+            }
+
+            float unitRadius = player.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
+            return pathfinding.TryRecastFindNearestPointForMovement(candidate, unitRadius, out projected, out _) ||
+                   pathfinding.TryRecastFindNearestPointForSpawn(candidate, unitRadius, out projected, out _) ||
+                   pathfinding.TryRecastFindNearestPoint(player.Position, unitRadius, out projected, out _) ||
+                   pathfinding.TryRecastFindNearestPointForSpawn(player.Position, unitRadius, out projected, out _);
         }
     }
 }

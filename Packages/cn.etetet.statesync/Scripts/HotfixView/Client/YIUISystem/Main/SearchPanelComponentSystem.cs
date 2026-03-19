@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using YIUIFramework;
+using ET;
 
 namespace ET.Client
 {
@@ -20,8 +21,14 @@ namespace ET.Client
         private static void YIUIInitialize(this SearchPanelComponent self)
         {
             self.LastContainerSnapshot = null;
+            self.OpenMode = SearchPanelOpenMode.Unknown;
+            self.CorpseSubType = SearchPanelCorpseSubType.Unknown;
+            self.CurrentPointId = null;
+            self.TitleText = null;
+            self.SubTitleText = null;
             InitLayout(self);
             CacheGridRoots(self);
+            CacheModeWidgets(self);
             self.QuickChooseMinQuality = ReadQuickChooseMinQuality(self);
             SetTemplateActive(self.u_ComContainerItemTemplate, false);
             SetTemplateActive(self.u_ComBagItemTemplate, false);
@@ -42,6 +49,15 @@ namespace ET.Client
             self.LastContainerSnapshot = null;
             self.ContainerGridRoot = null;
             self.BagGridRoot = null;
+            self.QuickChooseDropdown = null;
+            self.QuickChooseButtonRoot = null;
+            self.QuickChooseButtonLabel = null;
+            self.QuickChooseButtonImage = null;
+            self.ModeTitleText = null;
+            self.ModeSubTitleText = null;
+            self.ContainerTitleText = null;
+            self.BagTitleText = null;
+            self.ModeAccentImage = null;
             self.IsDragging = false;
             self.DraggingView = null;
             
@@ -51,6 +67,11 @@ namespace ET.Client
             self.SlotSearchDurations.Clear();
             self.SearchedSlots.Clear();
             self.CurrentSearchingPointId = null;
+            self.OpenMode = SearchPanelOpenMode.Unknown;
+            self.CorpseSubType = SearchPanelCorpseSubType.Unknown;
+            self.CurrentPointId = null;
+            self.TitleText = null;
+            self.SubTitleText = null;
         }
 
         [EntitySystem]
@@ -58,21 +79,6 @@ namespace ET.Client
         {
             self.LastContainerSnapshot = null;
             self.QuickChooseMinQuality = ReadQuickChooseMinQuality(self);
-            
-            // 检查是否切换了容器，如果是则重置搜索状态
-            Scene root = self.Root();
-            ECAInteractClientComponent runtime = root?.GetComponent<ECAInteractClientComponent>();
-            string currentPointId = runtime?.OpenContainerPointId;
-            if (!string.IsNullOrEmpty(currentPointId) && currentPointId != self.CurrentSearchingPointId)
-            {
-                // 切换了容器，重置搜索状态
-                ClearSearchEffects(self);
-                self.SlotSearchStartTimes.Clear();
-                self.SlotSearchDurations.Clear();
-                self.SearchedSlots.Clear();
-                self.CurrentSearchingPointId = currentPointId;
-            }
-            
             TryRefreshView(self, true);
             await ETTask.CompletedTask;
             return true;
@@ -89,7 +95,10 @@ namespace ET.Client
             TryRefreshView(self, false);
             
             // 更新搜索动效状态
-            UpdateSearchEffects(self);
+            if (SearchPanelModeHelper.ShouldUseContainerClose(self.OpenMode))
+            {
+                UpdateSearchEffects(self);
+            }
         }
 
         #region YIUIEvent开始
@@ -115,20 +124,127 @@ namespace ET.Client
                 return;
             }
 
+            TrySyncOpenContext(self, root);
+            SyncSearchStateByMode(self);
             ECAInteractClientComponent runtime = ECAInteractHelper.GetOrAddRuntime(root);
+            ApplyModeStyle(self, runtime);
             ItemComponent itemComponent = root.GetComponent<ItemComponent>();
-            string snapshot = BuildSnapshot(runtime, itemComponent);
+            string snapshot = BuildSnapshot(self, runtime, itemComponent);
             if (!force && self.LastContainerSnapshot == snapshot)
             {
                 return;
             }
 
             self.LastContainerSnapshot = snapshot;
-            RenderContainer(self, runtime);
+            if (SearchPanelModeHelper.ShouldUseContainerClose(self.OpenMode))
+            {
+                RenderContainer(self, runtime);
+            }
             RenderBag(self, itemComponent);
 
             Log.Info(
-                $"[ECAClient][SearchPanel] refresh point={runtime?.OpenContainerPointId ?? "null"}, container={runtime?.ContainerItems.Count ?? 0}, bag={itemComponent?.GetUsedSlotCount() ?? 0}");
+                $"[ECAClient][SearchPanel] refresh mode={self.OpenMode}, point={self.CurrentPointId ?? "null"}, container={runtime?.ContainerItems.Count ?? 0}, bag={itemComponent?.GetUsedSlotCount() ?? 0}");
+        }
+
+        private static void TrySyncOpenContext(SearchPanelComponent self, Scene root)
+        {
+            SearchPanelOpenContextComponent openContext = root.GetComponent<SearchPanelOpenContextComponent>();
+            if (openContext != null && openContext.OpenMode != SearchPanelOpenMode.Unknown)
+            {
+                ApplyOpenContext(
+                    self,
+                    openContext.OpenMode,
+                    openContext.CorpseSubType,
+                    openContext.CurrentPointId,
+                    openContext.TitleText,
+                    openContext.SubTitleText);
+                openContext.ClearOpenContext();
+                return;
+            }
+
+            if (self.OpenMode != SearchPanelOpenMode.Unknown)
+            {
+                return;
+            }
+
+            ECAInteractClientComponent runtime = ECAInteractHelper.GetOrAddRuntime(root);
+            if (runtime != null && !string.IsNullOrWhiteSpace(runtime.OpenContainerPointId))
+            {
+                SearchPanelModeResolveResult result = SearchPanelModeHelper.ResolveContainerMode(runtime.OpenContainerPointId);
+                ApplyOpenContext(self, result.OpenMode, result.CorpseSubType, runtime.OpenContainerPointId, null, null);
+                return;
+            }
+
+            ApplyOpenContext(self, SearchPanelOpenMode.BackpackInspect, SearchPanelCorpseSubType.Unknown, null, null, null);
+        }
+
+        private static void ApplyOpenContext(
+            SearchPanelComponent self,
+            SearchPanelOpenMode openMode,
+            SearchPanelCorpseSubType corpseSubType,
+            string pointId,
+            string titleText,
+            string subTitleText)
+        {
+            self.OpenMode = openMode;
+            self.CorpseSubType = corpseSubType;
+            self.CurrentPointId = pointId;
+            self.TitleText = titleText;
+            self.SubTitleText = subTitleText;
+        }
+
+        private static void SyncSearchStateByMode(SearchPanelComponent self)
+        {
+            string pointId = SearchPanelModeHelper.ShouldUseContainerClose(self.OpenMode) ? self.CurrentPointId : null;
+            if (string.Equals(pointId, self.CurrentSearchingPointId, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            ClearSearchEffects(self);
+            self.SlotSearchStartTimes.Clear();
+            self.SlotSearchDurations.Clear();
+            self.SearchedSlots.Clear();
+            self.CurrentSearchingPointId = pointId;
+        }
+
+        private static void ApplyModeStyle(SearchPanelComponent self, ECAInteractClientComponent runtime)
+        {
+            bool showContainer = SearchPanelModeHelper.ShouldUseContainerClose(self.OpenMode);
+            bool showQuickActions = SearchPanelModeHelper.ShouldShowQuickActionControls(self.OpenMode);
+            bool useBagOnlyLayout = SearchPanelModeHelper.ShouldUseBagOnlyLayout(self.OpenMode);
+            SearchPanelDisplayInfo displayInfo = SearchPanelDisplayHelper.Resolve(
+                self.OpenMode,
+                self.CorpseSubType,
+                runtime?.ContainerOutputMode ?? ContainerOutputMode.ContainerPanel,
+                self.TitleText,
+                self.SubTitleText);
+
+            SetGameObjectActive(self.u_ComContainerBoardRoot, showContainer);
+            SetGameObjectActive(self.u_ComContainerItemsLayer, showContainer);
+            SetGameObjectActive(self.ContainerGridRoot, showContainer);
+            SetGameObjectActive(self.u_ComBagBoardRoot, true);
+            SetGameObjectActive(self.u_ComBagItemsLayer, true);
+            SetGameObjectActive(self.BagGridRoot, true);
+
+            if (useBagOnlyLayout)
+            {
+                ApplyBagOnlyLayout(self);
+            }
+            else
+            {
+                RestoreBagBoardLayout(self);
+            }
+
+            if (self.QuickChooseDropdown != null)
+            {
+                self.QuickChooseDropdown.gameObject.SetActive(showQuickActions);
+            }
+
+            SetGameObjectActive(self.QuickChooseButtonRoot, showQuickActions);
+            SetOwnerChildActive(self, "Arrow", showQuickActions);
+            SetOwnerChildActive(self, "Label", showQuickActions);
+            ApplyDisplayInfo(self, displayInfo);
         }
 
         private static void InitLayout(SearchPanelComponent self)
@@ -153,6 +269,32 @@ namespace ET.Client
         {
             self.ContainerGridRoot = self.u_ComContainerBoardRoot?.Find("GridRoot") as RectTransform;
             self.BagGridRoot = self.u_ComBagBoardRoot?.Find("GridRoot") as RectTransform;
+        }
+
+        private static void CacheModeWidgets(SearchPanelComponent self)
+        {
+            self.QuickChooseDropdown = self.UIBase?.OwnerGameObject?.GetComponentInChildren<Dropdown>(true);
+            self.QuickChooseButtonRoot = FindOwnerChild<RectTransform>(self, "Button");
+            self.QuickChooseButtonLabel = self.QuickChooseButtonRoot?.Find("Text (TMP)")?.GetComponent<TMP_Text>();
+            self.QuickChooseButtonImage = self.QuickChooseButtonRoot?.GetComponent<Image>();
+            self.ModeTitleText = FindOwnerChildRecursive<TMP_Text>(self, "ModeTitleText");
+            self.ModeSubTitleText = FindOwnerChildRecursive<TMP_Text>(self, "ModeSubTitleText");
+            self.ContainerTitleText = FindOwnerChildRecursive<TMP_Text>(self, "ContainerTitleText");
+            self.BagTitleText = FindOwnerChildRecursive<TMP_Text>(self, "BagTitleText");
+            self.ModeAccentImage = FindOwnerChildRecursive<Image>(self, "ModeAccentImage");
+
+            if (self.u_ComBagBoardRoot != null)
+            {
+                self.BagBoardAnchorMin = self.u_ComBagBoardRoot.anchorMin;
+                self.BagBoardAnchorMax = self.u_ComBagBoardRoot.anchorMax;
+                self.BagBoardAnchoredPosition = self.u_ComBagBoardRoot.anchoredPosition;
+                self.BagBoardSizeDelta = self.u_ComBagBoardRoot.sizeDelta;
+            }
+
+            if (self.u_ComContainerBoardRoot != null)
+            {
+                self.ContainerBoardAnchorMin = self.u_ComContainerBoardRoot.anchorMin;
+            }
         }
 
         private static void RenderContainer(SearchPanelComponent self, ECAInteractClientComponent runtime)
@@ -965,13 +1107,19 @@ namespace ET.Client
             }
         }
 
-        private static string BuildSnapshot(ECAInteractClientComponent runtime, ItemComponent itemComponent)
+        private static string BuildSnapshot(SearchPanelComponent self, ECAInteractClientComponent runtime, ItemComponent itemComponent)
         {
             StringBuilder builder = new();
-            builder.Append(runtime?.OpenContainerPointId ?? string.Empty);
+            builder.Append((int)self.OpenMode);
+            builder.Append(':');
+            builder.Append((int)self.CorpseSubType);
+            builder.Append(':');
+            builder.Append(self.CurrentPointId ?? string.Empty);
             builder.Append('|');
 
-            int containerCount = runtime?.ContainerItems.Count ?? 0;
+            int containerCount = SearchPanelModeHelper.ShouldUseContainerClose(self.OpenMode)
+                ? runtime?.ContainerItems.Count ?? 0
+                : 0;
             builder.Append(containerCount);
             for (int i = 0; i < containerCount; ++i)
             {
@@ -1010,7 +1158,7 @@ namespace ET.Client
 
         private static int ReadQuickChooseMinQuality(SearchPanelComponent self)
         {
-            Dropdown dropdown = self.UIBase?.OwnerGameObject?.GetComponentInChildren<Dropdown>(true);
+            Dropdown dropdown = self.QuickChooseDropdown;
             int dropdownValue = dropdown != null ? dropdown.value : 0;
             return ResolveMinQualityFromDropdownValue(dropdownValue);
         }
@@ -1138,7 +1286,7 @@ namespace ET.Client
             out int slotIndex)
         {
             slotIndex = -1;
-            if (boardRoot == null || cols <= 0 || rows <= 0)
+            if (boardRoot == null || !boardRoot.gameObject.activeInHierarchy || cols <= 0 || rows <= 0)
             {
                 return false;
             }
@@ -1170,6 +1318,11 @@ namespace ET.Client
         {
             Scene root = self.Root();
             if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            if (!SearchPanelModeHelper.ShouldUseContainerClose(self.OpenMode))
             {
                 return;
             }
@@ -1230,7 +1383,9 @@ namespace ET.Client
             if (root != null && !root.IsDisposed)
             {
                 ECAInteractClientComponent runtime = root.GetComponent<ECAInteractClientComponent>();
-                if (runtime != null && !string.IsNullOrWhiteSpace(runtime.OpenContainerPointId))
+                if (SearchPanelModeHelper.ShouldUseContainerClose(self.OpenMode) &&
+                    runtime != null &&
+                    !string.IsNullOrWhiteSpace(runtime.OpenContainerPointId))
                 {
                     ECAInteractHelper.CloseContainer(root);
                 }
@@ -1257,7 +1412,7 @@ namespace ET.Client
         /// </summary>
         private static void UpdateSearchEffects(SearchPanelComponent self)
         {
-            if (self == null || self.IsDisposed)
+            if (self == null || self.IsDisposed || !SearchPanelModeHelper.ShouldUseContainerClose(self.OpenMode))
             {
                 return;
             }
@@ -1403,8 +1558,138 @@ namespace ET.Client
                     UnityEngine.Object.Destroy(pair.Value);
                 }
             }
-            
+
             self.SlotSearchingEffects.Clear();
+        }
+
+        private static void SetGameObjectActive(Component component, bool active)
+        {
+            if (component != null && component.gameObject.activeSelf != active)
+            {
+                component.gameObject.SetActive(active);
+            }
+        }
+
+        private static void SetGameObjectActive(GameObject gameObject, bool active)
+        {
+            if (gameObject != null && gameObject.activeSelf != active)
+            {
+                gameObject.SetActive(active);
+            }
+        }
+
+        private static void SetOwnerChildActive(SearchPanelComponent self, string childName, bool active)
+        {
+            Transform childTransform = FindOwnerChildRecursive<Transform>(self, childName);
+            if (childTransform == null)
+            {
+                return;
+            }
+
+            SetGameObjectActive(childTransform.gameObject, active);
+        }
+
+        private static void ApplyBagOnlyLayout(SearchPanelComponent self)
+        {
+            RectTransform bagBoard = self.u_ComBagBoardRoot;
+            if (bagBoard == null)
+            {
+                return;
+            }
+
+            bagBoard.anchorMin = new Vector2(self.BagBoardAnchorMin.x, self.ContainerBoardAnchorMin.y);
+            bagBoard.anchorMax = self.BagBoardAnchorMax;
+            bagBoard.anchoredPosition = self.BagBoardAnchoredPosition;
+            bagBoard.sizeDelta = self.BagBoardSizeDelta;
+        }
+
+        private static void RestoreBagBoardLayout(SearchPanelComponent self)
+        {
+            RectTransform bagBoard = self.u_ComBagBoardRoot;
+            if (bagBoard == null)
+            {
+                return;
+            }
+
+            bagBoard.anchorMin = self.BagBoardAnchorMin;
+            bagBoard.anchorMax = self.BagBoardAnchorMax;
+            bagBoard.anchoredPosition = self.BagBoardAnchoredPosition;
+            bagBoard.sizeDelta = self.BagBoardSizeDelta;
+        }
+
+        private static void ApplyDisplayInfo(SearchPanelComponent self, SearchPanelDisplayInfo displayInfo)
+        {
+            TrySetText(self.ModeTitleText, displayInfo.TitleText);
+            TrySetText(self.ModeSubTitleText, displayInfo.SubTitleText);
+            TrySetText(self.ContainerTitleText, displayInfo.ContainerTitleText);
+            TrySetText(self.BagTitleText, displayInfo.BagTitleText);
+            TrySetText(self.QuickChooseButtonLabel, displayInfo.QuickActionText);
+
+            Color accentColor = ResolveAccentColor(displayInfo.StyleKey);
+            if (self.ModeAccentImage != null)
+            {
+                self.ModeAccentImage.color = accentColor;
+            }
+
+            if (self.QuickChooseButtonImage != null)
+            {
+                self.QuickChooseButtonImage.color = accentColor;
+            }
+        }
+
+        private static void TrySetText(TMP_Text textComponent, string content)
+        {
+            if (textComponent == null || content == null || textComponent.text == content)
+            {
+                return;
+            }
+
+            textComponent.text = content;
+        }
+
+        private static Color ResolveAccentColor(string styleKey)
+        {
+            return styleKey switch
+            {
+                "container" => new Color(0.83f, 0.66f, 0.27f, 1f),
+                "ground_drop" => new Color(0.38f, 0.76f, 0.42f, 1f),
+                "corpse_player" => new Color(0.82f, 0.31f, 0.31f, 1f),
+                "corpse_monster" => new Color(0.73f, 0.43f, 0.23f, 1f),
+                "corpse_boss" => new Color(0.58f, 0.34f, 0.78f, 1f),
+                "corpse" => new Color(0.70f, 0.39f, 0.39f, 1f),
+                _ => new Color(0.28f, 0.56f, 0.88f, 1f),
+            };
+        }
+
+        private static T FindOwnerChild<T>(SearchPanelComponent self, string childName) where T : Component
+        {
+            Transform rootTransform = self.UIBase?.OwnerGameObject?.transform;
+            if (rootTransform == null || string.IsNullOrWhiteSpace(childName))
+            {
+                return null;
+            }
+
+            Transform childTransform = rootTransform.Find(childName);
+            return childTransform != null ? childTransform.GetComponent<T>() : null;
+        }
+
+        private static T FindOwnerChildRecursive<T>(SearchPanelComponent self, string childName) where T : Component
+        {
+            Transform rootTransform = self.UIBase?.OwnerGameObject?.transform;
+            if (rootTransform == null || string.IsNullOrWhiteSpace(childName))
+            {
+                return null;
+            }
+
+            foreach (T component in rootTransform.GetComponentsInChildren<T>(true))
+            {
+                if (component != null && component.name == childName)
+                {
+                    return component;
+                }
+            }
+
+            return null;
         }
 
         #endregion 搜索动效相关方法

@@ -226,6 +226,88 @@ namespace ET.Server
         }
 
         /// <summary>
+        /// 将背包中的物品丢弃为地面可拾取容器。
+        /// </summary>
+        public static async ETTask<int> TryDiscardItemToGroundAsync(Unit unit, long itemId, int count)
+        {
+            if (unit == null || unit.IsDisposed)
+            {
+                return ErrorCode.ERR_Cancel;
+            }
+
+            if (count <= 0)
+            {
+                return ErrorCode.ERR_ItemUseCountInvalid;
+            }
+
+            ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
+            if (itemComponent == null)
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            Item item = itemComponent.GetItemById(itemId);
+            if (item == null || item.IsDisposed)
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            if (count > item.Count)
+            {
+                return ErrorCode.ERR_ItemNotEnough;
+            }
+
+            Scene scene = unit.Scene();
+            if (scene == null || scene.IsDisposed)
+            {
+                return ErrorCode.ERR_Cancel;
+            }
+
+            EntityRef<Unit> unitRef = unit;
+            EntityRef<ItemComponent> itemComponentRef = itemComponent;
+            EntityRef<Item> itemRef = item;
+            ItemDiscardToGroundContext context = new()
+            {
+                Player = unit,
+                ItemConfigId = item.ConfigId,
+                Count = count,
+            };
+
+            await EventSystem.Instance.PublishAsync(scene, new ItemDiscardToGroundEvent { Context = context });
+            if (context.ResultError != ErrorCode.ERR_Success)
+            {
+                return context.ResultError;
+            }
+
+            unit = unitRef;
+            itemComponent = itemComponentRef;
+            item = itemRef;
+            if (unit == null || unit.IsDisposed || itemComponent == null || itemComponent.IsDisposed || item == null || item.IsDisposed)
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            if (count > item.Count)
+            {
+                return ErrorCode.ERR_ItemNotEnough;
+            }
+
+            if (count >= item.Count)
+            {
+                RemoveItemById(itemComponent, itemId, ItemChangeReason.DropItem);
+            }
+            else
+            {
+                item.ReduceCount(count);
+                NotifyItemUpdate(itemComponent, item);
+            }
+
+            Log.Info(
+                $"[Item] discard to ground success: player={unit.Id}, itemId={itemId}, configId={context.ItemConfigId}, count={count}, point={context.ResultPointId ?? "null"}");
+            return ErrorCode.ERR_Success;
+        }
+
+        /// <summary>
         /// 通知客户端物品变化
         /// </summary>
         public static async ETTask NotifyItemChanges(ItemComponent self)

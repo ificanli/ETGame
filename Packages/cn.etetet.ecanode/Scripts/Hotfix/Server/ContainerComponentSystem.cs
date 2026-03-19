@@ -15,6 +15,8 @@ namespace ET.Server
             self.OutputMode = ContainerOutputMode.ContainerPanel;
             self.LootGenerated = false;
             self.HasOpenedOnce = false;
+            self.CreatorPlayerId = 0;
+            self.CreateTime = 0;
             self.ItemEntries.Clear();
             self.SearchTimerIds.Clear();
             self.SearchStartTimes.Clear();
