@@ -17,12 +17,12 @@ namespace ET.Client
         public const string RogueOptionTagBgQuality1 = "rogue.option.tag.bg.quality.1";
         public const string RogueOptionTagBgQuality2 = "rogue.option.tag.bg.quality.2";
         public const string RogueOptionTagBgQuality3 = "rogue.option.tag.bg.quality.3";
-        public const string RogueOptionBgQuality1Value = "export (6)_0";
-        public const string RogueOptionBgQuality2Value = "export (6)_1";
-        public const string RogueOptionBgQuality3Value = "export (6)_2";
-        public const string RogueOptionTagBgQuality1Value = "";
-        public const string RogueOptionTagBgQuality2Value = "";
-        public const string RogueOptionTagBgQuality3Value = "";
+        public const string RogueOptionBgQuality1Value = "export (28)_3";
+        public const string RogueOptionBgQuality2Value = "export (28)_4";
+        public const string RogueOptionBgQuality3Value = "export (28)_7";
+        public const string RogueOptionTagBgQuality1Value = "export (28)_0";
+        public const string RogueOptionTagBgQuality2Value = "export (28)_1";
+        public const string RogueOptionTagBgQuality3Value = "export (28)_2";
 
         /// <summary>
         /// 这里返回每个 key 对应的 YooAsset Sprite 资源名。

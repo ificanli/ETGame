@@ -56,7 +56,7 @@ namespace ET.Server
 
                 // 创建怪物
                 long monsterId = IdGenerater.Instance.GenerateId();
-                Unit monster = UnitFactory.Create(scene, monsterId, unitConfigId);
+                Unit monster = UnitFactory.Create(scene, monsterId, unitConfigId, monsterPosition, quaternion.identity, false);
 
                 if (monster != null)
                 {

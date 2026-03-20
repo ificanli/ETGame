@@ -28,5 +28,8 @@ namespace ET.Client
         public Sprite MarkerSprite;
         public Dictionary<long, RectTransform> MarkerRects = new();
         public Dictionary<long, Image> MarkerImages = new();
+        public Dictionary<long, string> MarkerDesiredSpriteNames = new();
+        public Dictionary<string, Sprite> MarkerLoadedSprites = new();
+        public HashSet<string> MarkerLoadingSpriteNames = new();
     }
 }

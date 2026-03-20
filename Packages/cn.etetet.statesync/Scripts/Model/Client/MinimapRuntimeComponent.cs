@@ -19,6 +19,7 @@ namespace ET.Client
         public float WorldMinZ;
         public float WorldMaxZ;
         public float FogCellSize;
+        public float FogVisionRadius;
         public Dictionary<long, MinimapMarkerRuntime> Markers = new();
         public HashSet<int> CurrentVisibleCells = new();
         public HashSet<int> ExploredCells = new();

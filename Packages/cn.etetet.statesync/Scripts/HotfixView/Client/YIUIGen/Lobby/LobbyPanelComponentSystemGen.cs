@@ -42,7 +42,6 @@ namespace ET.Client
             self.u_ComBuildPanelRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComBuildPanelRectTransform");
             self.u_ComExplorePanelRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComExplorePanelRectTransform");
             self.u_ComHeroList = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComHeroList");
-            self.u_ComEquipBagScroll = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEquipBagScroll");
             self.u_ComCurrentBagGridRoot = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComCurrentBagGridRoot");
             self.u_ComCurrentBagItemsLayer = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComCurrentBagItemsLayer");
             self.u_ComCurrentBagItemTemplate = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComCurrentBagItemTemplate");
@@ -84,6 +83,10 @@ namespace ET.Client
             self.u_EventClickBagHandle = self.u_EventClickBag.Add(self,LobbyPanelComponent.OnEventClickBagInvoke);
             self.u_EventOneKeyUnloadButton = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventOneKeyUnloadButton");
             self.u_EventOneKeyUnloadButtonHandle = self.u_EventOneKeyUnloadButton.Add(self,LobbyPanelComponent.OnEventOneKeyUnloadButtonInvoke);
+            self.u_EventEquip = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventEquip");
+            self.u_EventEquipHandle = self.u_EventEquip.Add(self,LobbyPanelComponent.OnEventEquipInvoke);
+            self.u_EventWarehouse = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventWarehouse");
+            self.u_EventWarehouseHandle = self.u_EventWarehouse.Add(self,LobbyPanelComponent.OnEventWarehouseInvoke);
             self.u_UIEquipSlotItemBag = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemBag");
             self.u_UIEquipSlotItemArmor = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemArmor");
             self.u_UIEquipSlotItemWeapon2 = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemWeapon2");

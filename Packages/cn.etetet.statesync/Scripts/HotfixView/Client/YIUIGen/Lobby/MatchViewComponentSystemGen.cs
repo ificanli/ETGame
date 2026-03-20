@@ -32,8 +32,10 @@ namespace ET.Client
             self.u_UIView = self.UIBase.GetComponent<YIUIViewComponent>();
             self.UIWindow.WindowOption = EWindowOption.None;
             self.UIView.ViewWindowType = EViewWindowType.Popup;
-            self.UIView.StackOption = EViewStackOption.VisibleTween;
+            self.UIView.StackOption = EViewStackOption.Visible;
 
+            self.u_EventCanelMatch = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventCanelMatch");
+            self.u_EventCanelMatchHandle = self.u_EventCanelMatch.Add(self,MatchViewComponent.OnEventCanelMatchInvoke);
 
         }
     }

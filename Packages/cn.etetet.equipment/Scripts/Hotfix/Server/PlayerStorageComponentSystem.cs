@@ -6,6 +6,8 @@ namespace ET.Server
     [EntitySystemOf(typeof(PlayerStorageComponent))]
     public static partial class PlayerStorageComponentSystem
     {
+        private const long DEFAULT_INITIAL_TOTAL_WEALTH = 10_000_000;
+
         [EntitySystem]
         private static void Awake(this PlayerStorageComponent self)
         {
@@ -13,7 +15,7 @@ namespace ET.Server
             self.WarehouseColumnCount = 0;
             self.LastEvacuationItems.Clear();
             self.LastEvacuationWealth = 0;
-            self.TotalWealth = 0;
+            self.TotalWealth = DEFAULT_INITIAL_TOTAL_WEALTH;
             self.InitialItemsGranted = false;
             self.GrantInitialWarehouseItems();
         }
@@ -75,6 +77,22 @@ namespace ET.Server
 
                 self.LastEvacuationItems[kv.Key] = kv.Value;
             }
+        }
+
+        public static bool CanAfford(this PlayerStorageComponent self, long cost)
+        {
+            return self != null && cost >= 0 && self.TotalWealth >= cost;
+        }
+
+        public static bool TrySpendWealth(this PlayerStorageComponent self, long cost)
+        {
+            if (!self.CanAfford(cost))
+            {
+                return false;
+            }
+
+            self.TotalWealth -= cost;
+            return true;
         }
 
         public static int GetWarehouseCount(this PlayerStorageComponent self, int configId)

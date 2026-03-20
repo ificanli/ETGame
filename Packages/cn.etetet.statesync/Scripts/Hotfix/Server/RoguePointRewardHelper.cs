@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace ET.Server
 {
     public static class RoguePointRewardHelper
@@ -10,6 +12,11 @@ namespace ET.Server
             }
 
             if (!FlowParamHelper.TryGetIntParam(point.Params, RogueECAPointParamKey.InteractGold, out int rewardGold) || rewardGold <= 0)
+            {
+                return 0;
+            }
+
+            if (TryGetOwnerPlayerId(point, out long ownerPlayerId) && ownerPlayerId > 0 && ownerPlayerId != player.Id)
             {
                 return 0;
             }
@@ -35,6 +42,11 @@ namespace ET.Server
             }
 
             RogueProgressHelper.SyncProgress(player, progress);
+            if (rewardOnce)
+            {
+                ConsumeRewardPoint(point);
+            }
+
             return finalDelta;
         }
 
@@ -59,6 +71,62 @@ namespace ET.Server
         private static string BuildPointRewardKey(ECAPointComponent point)
         {
             return string.IsNullOrWhiteSpace(point?.PointId) ? string.Empty : point.PointId;
+        }
+
+        private static bool TryGetOwnerPlayerId(ECAPointComponent point, out long ownerPlayerId)
+        {
+            ownerPlayerId = 0;
+            if (!FlowParamHelper.TryGetStringParam(point?.Params, RogueECAPointParamKey.OwnerPlayerId, out string rawOwnerPlayerId))
+            {
+                return false;
+            }
+
+            return long.TryParse(rawOwnerPlayerId, NumberStyles.Integer, CultureInfo.InvariantCulture, out ownerPlayerId);
+        }
+
+        private static void ConsumeRewardPoint(ECAPointComponent point)
+        {
+            if (point == null || point.IsDisposed)
+            {
+                return;
+            }
+
+            point.IsActive = false;
+            HideInteractHints(point);
+
+            bool destroyAfterReward = FlowParamHelper.TryGetBoolParam(
+                point.Params,
+                RogueECAPointParamKey.DestroyAfterReward,
+                out bool configuredDestroyAfterReward) && configuredDestroyAfterReward;
+            if (!destroyAfterReward)
+            {
+                return;
+            }
+
+            Unit pointUnit = point.GetParent<Unit>();
+            pointUnit?.Dispose();
+        }
+
+        private static void HideInteractHints(ECAPointComponent point)
+        {
+            Scene scene = point?.Scene();
+            UnitComponent unitComponent = scene?.GetComponent<UnitComponent>();
+            if (unitComponent == null)
+            {
+                return;
+            }
+
+            point.CleanupInvalidPlayersInRange(unitComponent);
+            foreach (long playerId in point.PlayersInRange)
+            {
+                Unit player = unitComponent.Get(playerId);
+                if (player == null || player.IsDisposed)
+                {
+                    continue;
+                }
+
+                ContainerRuntimeHelper.SendInteractHint(point, player, false);
+            }
         }
     }
 }

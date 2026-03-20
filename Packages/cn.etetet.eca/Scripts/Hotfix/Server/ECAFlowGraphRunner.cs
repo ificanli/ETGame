@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ET;
 
@@ -89,11 +90,18 @@ namespace ET.Server
 
         private static void EnsureRuntimeCache(FlowGraphData graph)
         {
+            bool repairedLegacyNodeIds = NormalizeLegacyNodeIds(graph);
             int nodeCount = graph?.Nodes?.Count ?? 0;
             int connectionCount = graph?.Connections?.Count ?? 0;
             if (graph == null)
             {
                 return;
+            }
+
+            if (repairedLegacyNodeIds)
+            {
+                graph.RuntimeNodeMap = null;
+                graph.RuntimeAdjacency = null;
             }
 
             if (graph.RuntimeNodeMap != null &&
@@ -128,6 +136,39 @@ namespace ET.Server
             graph.RuntimeAdjacency = BuildAdjacency(graph);
             graph.RuntimeNodeCount = nodeCount;
             graph.RuntimeConnectionCount = connectionCount;
+        }
+
+        private static bool NormalizeLegacyNodeIds(FlowGraphData graph)
+        {
+            if (graph?.Nodes == null || graph.Nodes.Count == 0)
+            {
+                return false;
+            }
+
+            int repairedCount = 0;
+            foreach (FlowNodeData node in graph.Nodes)
+            {
+                if (node == null || node.NodeId != 0 || node.LegacyId != 0)
+                {
+                    continue;
+                }
+
+                if (!TryParseNodeIdFromTitle(node.Title, out int parsedNodeId))
+                {
+                    continue;
+                }
+
+                node.NodeId = parsedNodeId;
+                repairedCount++;
+            }
+
+            if (repairedCount == 0)
+            {
+                return false;
+            }
+
+            Log.Warning($"[ECAFlow] repaired zero node ids from title fallback: repaired={repairedCount}");
+            return true;
         }
 
         private static Dictionary<int, Dictionary<string, List<int>>> BuildAdjacency(FlowGraphData graph)
@@ -191,6 +232,35 @@ namespace ET.Server
             }
 
             return node.LegacyId;
+        }
+
+        private static bool TryParseNodeIdFromTitle(string title, out int nodeId)
+        {
+            nodeId = 0;
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                return false;
+            }
+
+            int end = title.Length - 1;
+            while (end >= 0 && char.IsWhiteSpace(title[end]))
+            {
+                end--;
+            }
+
+            if (end < 0 || !char.IsDigit(title[end]))
+            {
+                return false;
+            }
+
+            int start = end;
+            while (start >= 0 && char.IsDigit(title[start]))
+            {
+                start--;
+            }
+
+            string rawNodeId = title.Substring(start + 1, end - start);
+            return int.TryParse(rawNodeId, out nodeId) && nodeId > 0;
         }
 
         private static bool EvaluateCondition(FlowNodeData node, ECAPointComponent point, Unit player)

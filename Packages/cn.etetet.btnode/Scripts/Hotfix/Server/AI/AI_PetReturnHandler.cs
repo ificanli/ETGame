@@ -9,14 +9,23 @@ namespace ET.Server
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.GetOwner();
+            Scene root = unit.Root();
+            EntityRef<Unit> unitRef = unit;
+            EntityRef<Scene> rootRef = root;
             unit.GetComponent<TargetComponent>().Unit = null;
 
-            TimerComponent timerComponent = unit.Root().TimerComponent;
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             while (true)
             {
-                await timerComponent.WaitAsync(1000);
+                unit = unitRef;
+                root = rootRef;
+                if (unit == null || unit.IsDisposed || root == null)
+                {
+                    return;
+                }
+
+                await root.TimerComponent.WaitAsync(1000);
                 if (cancellationToken.IsCancel())
                 {
                     return;

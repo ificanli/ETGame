@@ -13,6 +13,25 @@ namespace ET
         public bool SyncProgress = true;
     }
 
+    public class BTRogueSpawnMerchant : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+
+        public int RewardGold = 30000;
+        public int NpcConfigId;
+        public float SpawnDistance = 2.5f;
+        public float InteractRange = 3f;
+        public bool RewardOnce = true;
+        public bool DestroyAfterReward = true;
+        public int ButtonTextId;
+    }
+
     public class BTRogueGrantItem : BTAction
     {
         [BTInput(typeof(Unit))]

@@ -41,11 +41,18 @@ namespace ET
             self.Slot2LastFireTime = 0;
             self.Slot1ReloadFinishTime = 0;
             self.Slot2ReloadFinishTime = 0;
+            self.ReloadTimerId = 0;
         }
 
         [EntitySystem]
         private static void Destroy(this WeaponComponent self)
         {
+            if (self.ReloadTimerId != 0)
+            {
+                self.Root()?.TimerComponent?.Remove(ref self.ReloadTimerId);
+                self.ReloadTimerId = 0;
+            }
+
             self.Slot1WeaponId = 0;
             self.Slot2WeaponId = 0;
             self.CurrentSlot = 0;

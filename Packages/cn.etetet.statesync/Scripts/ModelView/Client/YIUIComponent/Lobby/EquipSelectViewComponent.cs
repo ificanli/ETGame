@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using YIUIFramework;
-using System.Collections.Generic;
 
 namespace ET.Client
 {
@@ -18,6 +18,7 @@ namespace ET.Client
 
         // 当前选择的槽位类型
         public EquipSlotType CurrentSlotType;
+        public LoadoutItemSourceMode CurrentItemSourceMode;
 
         // LobbyPanel 引用
         public EntityRef<LobbyPanelComponent> m_LobbyPanel;
@@ -25,5 +26,6 @@ namespace ET.Client
 
         // 待确认的装备配置Id（点击Prepared后才真正装备）
         public int PendingItemConfigId;
+        public LoadoutItemSourceMode PendingItemSourceMode;
     }
 }

@@ -19,6 +19,7 @@ namespace ET.Client
             self.ChoicePopupPending = false;
             self.ChoicePopupOpening = false;
             self.ChoiceOptions.Clear();
+            self.SelectedOptions.Clear();
         }
 
         public static void SetPopupShown(this RogueClientComponent self)

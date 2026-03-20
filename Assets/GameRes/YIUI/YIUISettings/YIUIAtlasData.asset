@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: YIUIAtlasData
   m_EditorClassIdentifier: 
   Infos:
-  - AtlasName: Atlas_Common
+  - AtlasName: Atlas_Common_Atlas1
     SpriteNames:
     - export (12)_0
     - export (12)_1
@@ -42,10 +42,44 @@ MonoBehaviour:
     - export (11)_6
     - export (11)_9
     - export (11)_8
+    - export (18)_29
+    - export (18)_2
+    - export (18)_3
+    - export (18)_0
+    - export (18)_1
+    - export (18)_7
+    - export (18)_4
+    - export (18)_8
+    - export (18)_9
+    - export (18)_33
+    - export (18)_32
+    - export (18)_31
+    - export (18)_30
+    - export (18)_37
+    - export (18)_36
+    - export (18)_35
+    - export (18)_19
+    - export (18)_34
+    - export (18)_18
+    - export (18)_11
+    - export (18)_10
+    - export (18)_13
+    - export (18)_15
+    - export (18)_14
+    - export (18)_17
+    - export (18)_16
+    - export (18)_20
+    - export (18)_21
+    - export (18)_23
+    - export (18)_24
+    - export (18)_25
+    - export (18)_26
+    - export (18)_28
     - purpleTicket
     - blueticket
     - redTicket
     - goldTicket
+    - "\u672A\u6807\u9898-1_0"
     - export (13)_6
     - export (13)_5
     - export (13)_4
@@ -58,6 +92,35 @@ MonoBehaviour:
     - gold
     - green
     - red
+    - export (7) 1_1
+    - export (7) 1_0
+    - export (7) 1_3
+    - export (7) 1_2
+    - export (7) 1_5
+    - export (7) 1_4
+    - export (7) 1_7
+    - export (7) 1_6
+    - export (7) 1_8
+    - export (19)_8
+    - export (19)_1
+    - export (19)_0
+    - export (19)_3
+    - export (19)_2
+    - export (19)_5
+    - export (19)_4
+    - export (19)_6
+    - export (19)_10
+    - export (19)_11
+    - export (19)_12
+    - export (19)_13
+    - export (19)_14
+    - export (19)_15
+    - export (28)_4
+    - export (28)_7
+    - export (28)_1
+    - export (28)_0
+    - export (28)_3
+    - export (28)_2
     - export (6)_10
     - export (6)_11
     - export (6)_7

@@ -18,9 +18,14 @@ namespace ET
         public const string MarkerColorEnemyPlayer = "Minimap.MarkerColor.EnemyPlayer";
         public const string MarkerColorMonster = "Minimap.MarkerColor.Monster";
         public const string MarkerColorOther = "Minimap.MarkerColor.Other";
+        public const string MarkerIconUnitConfigPrefix = "Minimap.MarkerIcon.UnitConfig";
         public const string FogColorVisible = "Minimap.FogColor.Visible";
         public const string FogColorExplored = "Minimap.FogColor.Explored";
         public const string FogColorUnexplored = "Minimap.FogColor.Unexplored";
+        public const string SceneFogVisionRadius = "Minimap.SceneFog.VisionRadius";
+        public const string SceneFogRefreshInterval = "Minimap.SceneFog.RefreshInterval";
+        public const string SceneFogEdgeSoftness = "Minimap.SceneFog.EdgeSoftness";
+        public const string SceneFogExploredAlphaScale = "Minimap.SceneFog.ExploredAlphaScale";
 
         public static string GetMapKey(string mapName, string key)
         {
@@ -30,6 +35,11 @@ namespace ET
             }
 
             return $"{mapName}.{key}";
+        }
+
+        public static string GetMarkerIconUnitConfigKey(int configId)
+        {
+            return configId > 0 ? $"{MarkerIconUnitConfigPrefix}.{configId}" : string.Empty;
         }
     }
 }

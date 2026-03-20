@@ -18,7 +18,9 @@ namespace ET.Server
             ThreatComponent threatComponent = unit.GetComponent<ThreatComponent>();
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             TargetSelectorComponent selector = unit.GetComponent<TargetSelectorComponent>();
+            Scene root = unit.Root();
             EntityRef<Unit> unitRef = unit;
+            EntityRef<Scene> rootRef = root;
 
             if (node.ExitCombatBuffConfigId > 0)
             {
@@ -37,9 +39,14 @@ namespace ET.Server
                 selector.ManualTargetId = 0;
             }
 
-            TimerComponent timerComponent = unit.Root().TimerComponent;
             int waitIntervalMs = math.max(100, node.WaitIntervalMs);
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
+
+            unit = unitRef;
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
 
             await unit.FindPathMoveToAsync(birthPos);
             if (cancellationToken.IsCancel())
@@ -49,7 +56,14 @@ namespace ET.Server
 
             while (true)
             {
-                await timerComponent.WaitAsync(waitIntervalMs);
+                unit = unitRef;
+                root = rootRef;
+                if (unit == null || unit.IsDisposed || root == null)
+                {
+                    return;
+                }
+
+                await root.TimerComponent.WaitAsync(waitIntervalMs);
                 if (cancellationToken.IsCancel())
                 {
                     return;

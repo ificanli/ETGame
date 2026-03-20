@@ -14,10 +14,13 @@ namespace ET.Client
     [FriendOf(typeof(EquipSlotItemComponent))]
     public static partial class EquipSlotItemComponentSystem
     {
+        private const float EquippedGunAlpha = 1f;
+        private const float UnequippedGunAlpha = 0f;
+
         [EntitySystem]
         private static void YIUIInitialize(this EquipSlotItemComponent self)
         {
-            self.CacheIconImage();
+            self.SetGunImageAlpha(UnequippedGunAlpha);
         }
 
         [EntitySystem]
@@ -55,6 +58,19 @@ namespace ET.Client
             return self.IconImage;
         }
 
+        private static void SetGunImageAlpha(this EquipSlotItemComponent self, float alpha)
+        {
+            Image iconImage = self.CacheIconImage();
+            if (iconImage == null)
+            {
+                return;
+            }
+
+            Color color = iconImage.color;
+            color.a = Mathf.Clamp01(alpha);
+            iconImage.color = color;
+        }
+
         private static async ETTask ChangeItemIcon(this EquipSlotItemComponent self, string iconName)
         {
             EntityRef<EquipSlotItemComponent> selfRef = self;
@@ -79,6 +95,7 @@ namespace ET.Client
             if (string.IsNullOrWhiteSpace(iconName))
             {
                 self.ReleaseItemIconSprite();
+                self.SetGunImageAlpha(UnequippedGunAlpha);
                 iconImage.enabled = false;
                 self.LoadedIconName = string.Empty;
                 return;
@@ -87,6 +104,7 @@ namespace ET.Client
             if (self.LoadedIconName == iconName && self.LoadedSprite != null)
             {
                 iconImage.sprite = self.LoadedSprite;
+                self.SetGunImageAlpha(EquippedGunAlpha);
                 iconImage.enabled = true;
                 return;
             }
@@ -112,6 +130,7 @@ namespace ET.Client
             if (iconImage == null || sprite == null)
             {
                 self.ReleaseItemIconSprite();
+                self.SetGunImageAlpha(UnequippedGunAlpha);
                 if (iconImage != null)
                 {
                     iconImage.enabled = false;
@@ -125,6 +144,7 @@ namespace ET.Client
             self.LoadedSprite = sprite;
             self.LoadedIconName = iconName;
             iconImage.sprite = sprite;
+            self.SetGunImageAlpha(EquippedGunAlpha);
             iconImage.enabled = true;
         }
 

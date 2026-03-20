@@ -28530,7 +28530,7 @@ MonoBehaviour:
   - Key: nav_block_states
     Value: 
   - Key: team_id
-    Value: 0
+    Value: 6
   LegacyConfig: {fileID: 0}
   FlowGraph: {fileID: 0}
   ShowRange: 1

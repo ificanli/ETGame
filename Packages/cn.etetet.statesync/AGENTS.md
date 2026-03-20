@@ -11,6 +11,8 @@
 - 流程图节点遵循“显示层与业务层分离”原则：
   - 进入/离开范围只做提示显示（如 `ShowInteractButton` / `HideInteractButton`）。
   - 交互后的业务流程放在 `OnPlayerInteract` 触发链路中（如 `StartSearchTimer`、`OpenContainerUI`）。
+- 起装界面的来源列表使用 `u_ComEquipBagScroll`，当前支持 `商店/仓库` 两种来源切换。
+- 若 prefab 已提供来源页签，优先使用名字为 `LoadoutSourceToggleRoot`、`LoadoutShopButton`、`LoadoutWarehouseButton` 的节点；若未提供，代码会在运行时创建兜底按钮。
 
 ## 依赖与边界
 

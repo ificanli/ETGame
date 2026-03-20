@@ -19,7 +19,9 @@
         "ET.MemoryPack",
         "ET.Recast",
         "ET.YIUIFramework",
-        "ET.Scripts.Editor"
+        "ET.Scripts.Editor",
+        "ET.Hotfix",
+        "ET.BehaviorTree.Editor"
     ],
     "includePlatforms": [
         "Editor"

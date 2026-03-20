@@ -40,6 +40,10 @@ namespace ET.Client
             self.u_EventClickPreparedHandle = self.u_EventClickPrepared.Add(self,EquipSelectViewComponent.OnEventClickPreparedInvoke);
             self.u_EventExitView = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventExitView");
             self.u_EventExitViewHandle = self.u_EventExitView.Add(self,EquipSelectViewComponent.OnEventExitViewInvoke);
+            self.u_EventClickWarhouse = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventClickWarhouse");
+            self.u_EventClickWarhouseHandle = self.u_EventClickWarhouse.Add(self,EquipSelectViewComponent.OnEventClickWarhouseInvoke);
+            self.u_EventClickShop = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventClickShop");
+            self.u_EventClickShopHandle = self.u_EventClickShop.Add(self,EquipSelectViewComponent.OnEventClickShopInvoke);
 
         }
     }

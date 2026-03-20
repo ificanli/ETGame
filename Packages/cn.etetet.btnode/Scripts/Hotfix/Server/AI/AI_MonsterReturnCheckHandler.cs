@@ -10,7 +10,13 @@ namespace ET.Server
             Unit unit = buff.GetOwner();
             UnitSpawnPointComponent spawnPointComponent = unit.GetComponent<UnitSpawnPointComponent>();
             float3 birthPos = spawnPointComponent?.Position ?? unit.Position;
-            if (math.distance(unit.Position, birthPos) < 30f)
+            float returnDistance = math.max(0f, node.ReturnDistance);
+            if (returnDistance <= 0f)
+            {
+                return 1;
+            }
+
+            if (math.distance(unit.Position, birthPos) < returnDistance)
             {
                 return 1;
             }

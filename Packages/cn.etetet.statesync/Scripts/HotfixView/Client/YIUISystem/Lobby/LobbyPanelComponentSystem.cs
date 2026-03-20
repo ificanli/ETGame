@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using YIUIFramework;
 using System.Collections.Generic;
 
@@ -41,6 +42,7 @@ namespace ET.Client
             self.InitWarehouseArea();
             self.BindOwnedAreaBoard(self.u_ComCurrentBagBoardRoot, LoadoutAreaType.Bag);
             self.BindOwnedAreaBoard(self.u_ComSecureBoardRoot, LoadoutAreaType.Secure);
+            self.RefreshLoadoutContentTabUi();
         }
 
         [EntitySystem]
@@ -89,6 +91,7 @@ namespace ET.Client
         private static async ETTask OnEventEquipToggleInvoke(this LobbyPanelComponent self)
         {
             self.ShowPanel(self.u_ComEquipPanelRectTransform);
+            self.RefreshLoadoutContentTabUi();
             self.TryRefreshLoadoutUi(true);
             await ETTask.CompletedTask;
         }
@@ -172,6 +175,20 @@ namespace ET.Client
                 Log.Warning($"[LoadoutUI] OneKeyUnload failed: error={response?.Error}, message={response?.Message}");
             }
         }
+        
+        [YIUIInvoke(LobbyPanelComponent.OnEventWarehouseInvoke)]
+        private static async ETTask OnEventWarehouseInvoke(this LobbyPanelComponent self)
+        {
+            self.SwitchLoadoutContentTab(true);
+            await ETTask.CompletedTask;
+        }
+        
+        [YIUIInvoke(LobbyPanelComponent.OnEventEquipInvoke)]
+        private static async ETTask OnEventEquipInvoke(this LobbyPanelComponent self)
+        {
+            self.SwitchLoadoutContentTab(false);
+            await ETTask.CompletedTask;
+        }
         #endregion YIUIEvent结束
 
         #region 页签切换逻辑
@@ -186,6 +203,151 @@ namespace ET.Client
             self.u_ComMatchPanelRectTransform.gameObject.SetActive(self.u_ComMatchPanelRectTransform == targetPanel);
             self.u_ComBuildPanelRectTransform.gameObject.SetActive(self.u_ComBuildPanelRectTransform == targetPanel);
             self.u_ComExplorePanelRectTransform.gameObject.SetActive(self.u_ComExplorePanelRectTransform == targetPanel);
+        }
+
+        private static void SwitchLoadoutContentTab(this LobbyPanelComponent self, bool showWarehouse)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            bool changed = self.IsWarehouseTabActive != showWarehouse;
+            self.IsWarehouseTabActive = showWarehouse;
+            self.RefreshLoadoutContentTabUi();
+            if (!changed)
+            {
+                return;
+            }
+
+            Canvas.ForceUpdateCanvases();
+            self.TryRefreshLoadoutUi(true);
+        }
+
+        private static void RefreshLoadoutContentTabUi(this LobbyPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            self.ResolveLoadoutContentTabRefs();
+
+            bool showWarehouse = self.IsWarehouseTabActive;
+            if (self.LoadoutEquipContentRoot != null)
+            {
+                self.LoadoutEquipContentRoot.gameObject.SetActive(!showWarehouse);
+            }
+
+            if (self.LoadoutWarehouseContentRoot != null)
+            {
+                self.LoadoutWarehouseContentRoot.gameObject.SetActive(showWarehouse);
+            }
+
+            if (self.u_ComCurrentBagRoot != null)
+            {
+                self.u_ComCurrentBagRoot.gameObject.SetActive(!showWarehouse);
+            }
+
+            if (self.u_ComSecureBagRoot != null)
+            {
+                self.u_ComSecureBagRoot.gameObject.SetActive(!showWarehouse);
+            }
+
+            if (self.u_ComWarehouseRoot != null)
+            {
+                self.u_ComWarehouseRoot.gameObject.SetActive(showWarehouse);
+            }
+
+            self.ApplyLoadoutContentTabVisual(
+                self.LoadoutEquipTabButton,
+                self.LoadoutEquipTabGraphic,
+                self.LoadoutEquipTabText,
+                !showWarehouse);
+            self.ApplyLoadoutContentTabVisual(
+                self.LoadoutWarehouseTabButton,
+                self.LoadoutWarehouseTabGraphic,
+                self.LoadoutWarehouseTabText,
+                showWarehouse);
+        }
+
+        private static void ResolveLoadoutContentTabRefs(this LobbyPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            if (self.LoadoutEquipContentRoot == null && self.u_ComEquipPanelRectTransform != null)
+            {
+                self.LoadoutEquipContentRoot = FindDirectChildRectTransform(self.u_ComEquipPanelRectTransform, "Equip");
+            }
+
+            if (self.LoadoutWarehouseContentRoot == null && self.u_ComEquipPanelRectTransform != null)
+            {
+                self.LoadoutWarehouseContentRoot = FindDirectChildRectTransform(self.u_ComEquipPanelRectTransform, "Warehouse");
+            }
+
+            if (self.LoadoutContentSwitchRoot == null)
+            {
+                self.LoadoutContentSwitchRoot = FindDescendantRectTransform(self.u_ComEquipPanelRectTransform, "Switch");
+            }
+
+            if (self.LoadoutContentSwitchRoot == null)
+            {
+                return;
+            }
+
+            if (self.LoadoutEquipTabButton == null)
+            {
+                RectTransform equipTabRect = FindDirectChildRectTransform(self.LoadoutContentSwitchRoot, "Equit", "Equip");
+                if (equipTabRect != null)
+                {
+                    self.LoadoutEquipTabButton = equipTabRect.GetComponent<Button>();
+                    self.LoadoutEquipTabGraphic = equipTabRect.GetComponent<Graphic>();
+                    self.LoadoutEquipTabText = equipTabRect.GetComponentInChildren<TMP_Text>(true);
+                }
+            }
+
+            if (self.LoadoutWarehouseTabButton == null)
+            {
+                RectTransform warehouseTabRect = FindDirectChildRectTransform(self.LoadoutContentSwitchRoot, "Warehouse");
+                if (warehouseTabRect != null)
+                {
+                    self.LoadoutWarehouseTabButton = warehouseTabRect.GetComponent<Button>();
+                    self.LoadoutWarehouseTabGraphic = warehouseTabRect.GetComponent<Graphic>();
+                    self.LoadoutWarehouseTabText = warehouseTabRect.GetComponentInChildren<TMP_Text>(true);
+                }
+            }
+        }
+
+        private static void ApplyLoadoutContentTabVisual(
+            this LobbyPanelComponent self,
+            Button button,
+            Graphic graphic,
+            TMP_Text text,
+            bool selected)
+        {
+            _ = self;
+            Color32 selectedGraphicColor = new Color32(255, 214, 124, 255);
+            Color32 unselectedGraphicColor = new Color32(255, 255, 255, 255);
+            Color32 selectedTextColor = new Color32(92, 57, 20, 255);
+            Color32 unselectedTextColor = new Color32(50, 50, 50, 255);
+
+            if (graphic != null)
+            {
+                graphic.color = selected ? selectedGraphicColor : unselectedGraphicColor;
+            }
+
+            if (text != null)
+            {
+                text.color = selected ? selectedTextColor : unselectedTextColor;
+            }
+
+            if (button != null)
+            {
+                button.targetGraphic = graphic;
+            }
         }
 
         #endregion
@@ -660,12 +822,6 @@ namespace ET.Client
 
         private static Sprite GetMatchModeSelectionBorderSprite(RectTransform buttonRect)
         {
-            Sprite sprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/UISprite.psd");
-            if (sprite != null)
-            {
-                return sprite;
-            }
-
             Image buttonImage = buttonRect.GetComponent<Image>();
             if (buttonImage != null && buttonImage.sprite != null)
             {
@@ -848,18 +1004,14 @@ namespace ET.Client
 
         private static async ETTask HandleFixedSlotClickAsync(this LobbyPanelComponent self, EquipSlotType slotType)
         {
+            int currentConfigId = GetCurrentFixedSlotConfigId(self.Root()?.GetComponent<LoadoutComponent>(), slotType);
+            if (currentConfigId > 0)
+            {
+                await self.OpenItemClickedAsync(currentConfigId, false);
+                return;
+            }
+
             EntityRef<LobbyPanelComponent> selfRef = self;
-            if (await self.TryUnloadSlotAsync(slotType))
-            {
-                return;
-            }
-
-            self = selfRef;
-            if (self == null || self.IsDisposed)
-            {
-                return;
-            }
-
             if (await self.TryEquipSelectedWarehouseIntoFixedSlotAsync(slotType))
             {
                 return;
@@ -872,6 +1024,24 @@ namespace ET.Client
             }
 
             await self.OpenEquipSelectView(slotType);
+        }
+
+        private static async ETTask OpenItemClickedAsync(this LobbyPanelComponent self, int configId, bool allowEquipAction, long itemUid = 0)
+        {
+            if (self == null || self.IsDisposed || self.UIPanel == null || configId <= 0)
+            {
+                return;
+            }
+
+            ItemClickedOpenData openData = new()
+            {
+                LobbyPanelRef = self,
+                ConfigId = configId,
+                ItemUid = itemUid,
+                AllowEquipAction = allowEquipAction,
+            };
+
+            await self.UIPanel.OpenViewAsync<ItemClickedComponent, ItemClickedOpenData>(openData);
         }
 
         /// <summary>
@@ -894,7 +1064,29 @@ namespace ET.Client
 
             equipSelectView.m_LobbyPanel = self;
             equipSelectView.CurrentSlotType = slotType;
+            equipSelectView.CurrentItemSourceMode = self.CurrentItemSourceMode;
             await self.RefreshEquipSelectView(equipSelectView, slotType);
+        }
+
+        public static async ETTask SwitchEquipSelectSourceModeAsync(
+            this LobbyPanelComponent self,
+            EquipSelectViewComponent view,
+            LoadoutItemSourceMode sourceMode)
+        {
+            if (self == null || self.IsDisposed || view == null || view.IsDisposed)
+            {
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            if (view.CurrentItemSourceMode == sourceMode)
+            {
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            view.CurrentItemSourceMode = sourceMode;
+            await self.RefreshEquipSelectView(view, view.CurrentSlotType);
         }
 
         /// <summary>
@@ -905,7 +1097,7 @@ namespace ET.Client
             EntityRef<LobbyPanelComponent> selfRef = self;
             EntityRef<EquipSelectViewComponent> viewRef = view;
 
-            List<LoadoutWarehouseItemViewData> equipList = self.GetEquipListBySlotType(slotType);
+            List<LoadoutWarehouseItemViewData> equipList = self.GetEquipListBySlotType(slotType, view.CurrentItemSourceMode);
 
             if (view.EquipLoop == null)
             {
@@ -925,11 +1117,13 @@ namespace ET.Client
             if (equipList.Count > 0)
             {
                 view.PendingItemConfigId = equipList[0].ConfigId;
+                view.PendingItemSourceMode = equipList[0].SourceMode;
                 view.u_DataGunName?.SetValue(self.BuildEquipPreviewText(equipList[0].ConfigId, slotType));
             }
             else
             {
                 view.PendingItemConfigId = 0;
+                view.PendingItemSourceMode = view.CurrentItemSourceMode;
                 view.u_DataGunName?.SetValue(string.Empty);
             }
         }
@@ -964,8 +1158,16 @@ namespace ET.Client
 
         private static List<LoadoutWarehouseItemViewData> GetEquipListBySlotType(this LobbyPanelComponent self, EquipSlotType slotType)
         {
+            return self.GetEquipListBySlotType(slotType, self.CurrentItemSourceMode);
+        }
+
+        private static List<LoadoutWarehouseItemViewData> GetEquipListBySlotType(
+            this LobbyPanelComponent self,
+            EquipSlotType slotType,
+            LoadoutItemSourceMode sourceMode)
+        {
             LoadoutComponent loadout = self.Root()?.GetComponent<LoadoutComponent>();
-            List<LoadoutWarehouseItemViewData> result = BuildWarehouseItemList(loadout);
+            List<LoadoutWarehouseItemViewData> result = self.BuildLoadoutSourceItemList(loadout, sourceMode);
             if (slotType == EquipSlotType.BagContent)
             {
                 return result;
@@ -978,20 +1180,33 @@ namespace ET.Client
         /// <summary>
         /// 装备物品到槽位
         /// </summary>
-        public static async ETTask<bool> EquipItemAsync(this LobbyPanelComponent self, int itemConfigId, EquipSlotType slotType)
+        public static async ETTask<bool> EquipItemAsync(
+            this LobbyPanelComponent self,
+            int itemConfigId,
+            EquipSlotType slotType,
+            LoadoutItemSourceMode sourceMode,
+            long itemUid = 0)
         {
+            if (itemUid <= 0 &&
+                sourceMode == LoadoutItemSourceMode.Warehouse &&
+                self.SelectedWarehouseConfigId == itemConfigId)
+            {
+                itemUid = self.SelectedWarehouseItemUid;
+            }
+
             switch (slotType)
             {
                 case EquipSlotType.Weapon:
                 case EquipSlotType.Weapon2:
                 case EquipSlotType.Armor:
                 case EquipSlotType.Bag:
-                    return await self.TakeWarehouseItemAsync(
+                    return await self.AcquireLoadoutItemAsync(
+                        sourceMode,
                         itemConfigId,
                         LoadoutAreaType.FixedSlot,
                         ToFixedSlotType(slotType),
                         0,
-                        0);
+                        itemUid);
                 case EquipSlotType.BagContent:
                     if (!self.TryFindFirstFitAnchorSlot(LoadoutAreaType.Bag, itemConfigId, out int bagAnchorSlotIndex))
                     {
@@ -999,12 +1214,13 @@ namespace ET.Client
                         return false;
                     }
 
-                    return await self.TakeWarehouseItemAsync(
+                    return await self.AcquireLoadoutItemAsync(
+                        sourceMode,
                         itemConfigId,
                         LoadoutAreaType.Bag,
                         LoadoutFixedSlotType.None,
                         bagAnchorSlotIndex,
-                        0);
+                        itemUid);
                 default:
                     return false;
             }
@@ -1023,24 +1239,33 @@ namespace ET.Client
 
         private static async ETTask<bool> TryEquipSelectedWarehouseIntoFixedSlotAsync(this LobbyPanelComponent self, EquipSlotType slotType)
         {
-            int selectedConfigId = self.SelectedWarehouseConfigId;
+            LoadoutItemSourceMode sourceMode = self.CurrentItemSourceMode;
+            int selectedConfigId = sourceMode == LoadoutItemSourceMode.Shop
+                ? self.SelectedShopConfigId
+                : self.SelectedWarehouseConfigId;
+            long selectedItemUid = sourceMode == LoadoutItemSourceMode.Warehouse ? self.SelectedWarehouseItemUid : 0;
             if (selectedConfigId <= 0 || !CanConfigFitSlot(selectedConfigId, slotType))
             {
                 return false;
             }
 
-            await self.TakeWarehouseItemAsync(
+            await self.AcquireLoadoutItemAsync(
+                sourceMode,
                 selectedConfigId,
                 LoadoutAreaType.FixedSlot,
                 ToFixedSlotType(slotType),
                 0,
-                0);
+                selectedItemUid);
             return true;
         }
 
         private static async ETTask<bool> TryTakeSelectedWarehouseToAreaAsync(this LobbyPanelComponent self, LoadoutAreaType areaType)
         {
-            int selectedConfigId = self.SelectedWarehouseConfigId;
+            LoadoutItemSourceMode sourceMode = self.CurrentItemSourceMode;
+            int selectedConfigId = sourceMode == LoadoutItemSourceMode.Shop
+                ? self.SelectedShopConfigId
+                : self.SelectedWarehouseConfigId;
+            long selectedItemUid = sourceMode == LoadoutItemSourceMode.Warehouse ? self.SelectedWarehouseItemUid : 0;
             if (selectedConfigId <= 0)
             {
                 return false;
@@ -1052,8 +1277,22 @@ namespace ET.Client
                 return true;
             }
 
-            await self.TakeWarehouseItemAsync(selectedConfigId, areaType, LoadoutFixedSlotType.None, anchorSlotIndex, 0);
+            await self.AcquireLoadoutItemAsync(sourceMode, selectedConfigId, areaType, LoadoutFixedSlotType.None, anchorSlotIndex, selectedItemUid);
             return true;
+        }
+
+        private static async ETTask<bool> AcquireLoadoutItemAsync(
+            this LobbyPanelComponent self,
+            LoadoutItemSourceMode sourceMode,
+            int configId,
+            LoadoutAreaType targetAreaType,
+            LoadoutFixedSlotType targetSlotType,
+            int targetAnchorSlotIndex,
+            long itemUid)
+        {
+            return sourceMode == LoadoutItemSourceMode.Shop
+                ? await self.BuyShopItemAsync(configId, targetAreaType, targetSlotType, targetAnchorSlotIndex)
+                : await self.TakeWarehouseItemAsync(configId, targetAreaType, targetSlotType, targetAnchorSlotIndex, itemUid);
         }
 
         private static async ETTask<bool> TakeWarehouseItemAsync(
@@ -1083,6 +1322,39 @@ namespace ET.Client
             if (response == null || response.Error != ErrorCode.ERR_Success)
             {
                 Log.Warning($"[LoadoutUI] TakeFromWarehouse failed: config={configId}, area={targetAreaType}, slot={targetSlotType}, anchor={targetAnchorSlotIndex}, error={response?.Error}, message={response?.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static async ETTask<bool> BuyShopItemAsync(
+            this LobbyPanelComponent self,
+            int configId,
+            LoadoutAreaType targetAreaType,
+            LoadoutFixedSlotType targetSlotType,
+            int targetAnchorSlotIndex)
+        {
+            C2G_LoadoutBuyFromShop request = C2G_LoadoutBuyFromShop.Create();
+            request.ConfigId = configId;
+            request.Count = 1;
+            request.TargetAreaType = (int)targetAreaType;
+            request.TargetSlotType = (int)targetSlotType;
+            request.TargetAnchorSlotIndex = targetAnchorSlotIndex;
+
+            if (targetAreaType == LoadoutAreaType.FixedSlot &&
+                targetSlotType == LoadoutFixedSlotType.Backpack &&
+                TryResolveBackpackSize(configId, out int bagWidth, out int bagHeight))
+            {
+                request.TargetBagWidth = bagWidth;
+                request.TargetBagHeight = bagHeight;
+            }
+
+            G2C_LoadoutBuyFromShop response =
+                    await self.Root().GetComponent<ClientSenderComponent>().Call(request) as G2C_LoadoutBuyFromShop;
+            if (response == null || response.Error != ErrorCode.ERR_Success)
+            {
+                Log.Warning($"[LoadoutUI] BuyFromShop failed: config={configId}, area={targetAreaType}, slot={targetSlotType}, anchor={targetAnchorSlotIndex}, error={response?.Error}, message={response?.Message}");
                 return false;
             }
 

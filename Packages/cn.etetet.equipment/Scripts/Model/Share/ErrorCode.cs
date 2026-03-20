@@ -26,5 +26,7 @@ namespace ET
         public const int ERR_LoadoutTargetOccupied = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 29; // 200047029
         public const int ERR_LoadoutBagNotEmpty = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 30; // 200047030
         public const int ERR_LoadoutCountInvalid = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 31; // 200047031
+        public const int ERR_LoadoutShopItemUnavailable = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 32; // 200047032
+        public const int ERR_LoadoutWealthNotEnough = ErrorCode.ERR_WithoutException + PackageType.Equipment * 1000 + 33; // 200047033
     }
 }

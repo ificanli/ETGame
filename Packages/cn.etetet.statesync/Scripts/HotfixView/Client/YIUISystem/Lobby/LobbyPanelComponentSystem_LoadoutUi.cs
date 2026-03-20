@@ -12,7 +12,7 @@ namespace ET.Client
     [FriendOf(typeof(LobbyPanelComponent))]
     public static partial class LobbyPanelComponentSystem
     {
-        private const float LOADOUT_GRID_FALLBACK_CELL = 96f;
+        private const float LOADOUT_GRID_FALLBACK_CELL = LobbyPanelComponent.UnifiedCellSize;
 
         [EntitySystem]
         private static void LateUpdate(this LobbyPanelComponent self)
@@ -151,25 +151,13 @@ namespace ET.Client
                     Name = name,
                     Icon = icon,
                     SortCategory = sortCategory,
+                    Price = 0,
+                    Affordable = true,
+                    SourceMode = LoadoutItemSourceMode.Warehouse,
                 });
             }
 
-            result.Sort(static (a, b) =>
-            {
-                int categoryCompare = a.SortCategory.CompareTo(b.SortCategory);
-                if (categoryCompare != 0)
-                {
-                    return categoryCompare;
-                }
-
-                int nameCompare = string.CompareOrdinal(a.Name, b.Name);
-                if (nameCompare != 0)
-                {
-                    return nameCompare;
-                }
-
-                return a.ConfigId.CompareTo(b.ConfigId);
-            });
+            SortLoadoutSourceItems(result);
             return result;
         }
 
@@ -181,8 +169,8 @@ namespace ET.Client
             int index,
             bool select)
         {
-            item.u_DataEquipName.SetValue($"{data.Name} x{data.Count}");
-            item.SetSelected(self.SelectedWarehouseConfigId == data.ConfigId);
+            item.u_DataEquipName.SetValue(FormatLoadoutSourceItemText(data));
+            item.SetSelected(self.IsLoadoutSourceItemSelected(data));
             item.SetItemIcon(data.Icon);
         }
 
@@ -194,9 +182,18 @@ namespace ET.Client
             int index,
             bool select)
         {
-            self.SelectedWarehouseConfigId = self.SelectedWarehouseConfigId == data.ConfigId ? 0 : data.ConfigId;
-            self.SelectedWarehouseItemUid = 0;
-            self.RefreshWarehouseArea(self.Root()?.GetComponent<LoadoutComponent>());
+            self.CurrentItemSourceMode = data.SourceMode;
+            if (data.SourceMode == LoadoutItemSourceMode.Shop)
+            {
+                self.SelectedShopConfigId = data.ConfigId;
+            }
+            else
+            {
+                self.SelectedWarehouseConfigId = data.ConfigId;
+                self.SelectedWarehouseItemUid = 0;
+            }
+
+            self.RefreshLoadoutView();
         }
 
         private static void RefreshLoadoutExtraUi(this LobbyPanelComponent self, LoadoutComponent loadout)
@@ -206,6 +203,7 @@ namespace ET.Client
                 self.u_DataTotalWealthText.SetValue(loadout != null ? loadout.TotalWealth.ToString() : "0");
             }
 
+            self.RefreshLoadoutSourceUi(loadout);
             self.RefreshWarehouseArea(loadout);
 
             if (loadout == null)
@@ -318,6 +316,9 @@ namespace ET.Client
             }
 
             RemoveDeadViews(itemViews, alive);
+
+            ref RectTransform wrapperRef = ref (isSecure ? ref self.SecureContentWrapper : ref self.BagContentWrapper);
+            EnsureOwnedAreaScroll(boardRoot, gridRoot, itemsLayer, cols, rows, cellSize, self.GridSpacing, self.GridPadding, ref wrapperRef);
         }
 
         private static RectTransform GetOrCreateGridView(
@@ -688,6 +689,12 @@ namespace ET.Client
             }
 
             Vector2 cellSize = CalcGridCellSize(boardRoot, cols, rows, spacing, padding);
+            RectTransform cellTemplate = FindDirectChildRectTransform(
+                gridRoot,
+                "CellTemplate",
+                "GridCellTemplate",
+                "CellStyleSource",
+                "GridCellStyleSource");
             HashSet<int> alive = new();
             for (int y = 0; y < rows; ++y)
             {
@@ -697,12 +704,11 @@ namespace ET.Client
                     alive.Add(id);
                     if (!cellMap.TryGetValue(id, out RectTransform cell) || cell == null)
                     {
-                        GameObject go = new GameObject($"Cell_{x}_{y}", typeof(RectTransform), typeof(Image));
-                        go.transform.SetParent(gridRoot, false);
-                        cell = go.GetComponent<RectTransform>();
+                        cell = CreateGridCellView(gridRoot, cellTemplate, $"Cell_{x}_{y}");
                         cellMap[id] = cell;
                     }
 
+                    cell.gameObject.SetActive(true);
                     Image image = cell.GetComponent<Image>();
                     if (image != null)
                     {
@@ -729,6 +735,26 @@ namespace ET.Client
             }
 
             RemoveDeadViews(cellMap, alive);
+        }
+
+        private static RectTransform CreateGridCellView(RectTransform gridRoot, RectTransform cellTemplate, string cellName)
+        {
+            RectTransform cell = null;
+            if (cellTemplate != null)
+            {
+                cell = UnityEngine.Object.Instantiate(cellTemplate, gridRoot);
+            }
+
+            if (cell == null)
+            {
+                GameObject go = new GameObject(cellName, typeof(RectTransform), typeof(Image));
+                go.transform.SetParent(gridRoot, false);
+                cell = go.GetComponent<RectTransform>();
+            }
+
+            cell.name = cellName;
+            cell.gameObject.SetActive(true);
+            return cell;
         }
 
         private static void ApplyGridCellVisual(Image targetImage, RectTransform gridRoot, Color fallbackColor)
@@ -814,21 +840,92 @@ namespace ET.Client
 
         private static Vector2 CalcGridCellSize(RectTransform boardRoot, int cols, int rows, Vector2 spacing, Vector2 padding)
         {
+            return new Vector2(LobbyPanelComponent.UnifiedCellSize, LobbyPanelComponent.UnifiedCellSize);
+        }
+
+        private static void EnsureOwnedAreaScroll(
+            RectTransform boardRoot,
+            RectTransform gridRoot,
+            RectTransform itemsLayer,
+            int cols,
+            int rows,
+            Vector2 cellSize,
+            Vector2 spacing,
+            Vector2 padding,
+            ref RectTransform contentWrapper)
+        {
             if (boardRoot == null || cols <= 0 || rows <= 0)
             {
-                return new Vector2(LOADOUT_GRID_FALLBACK_CELL, LOADOUT_GRID_FALLBACK_CELL);
+                return;
             }
 
-            float width = boardRoot.rect.width;
-            float height = boardRoot.rect.height;
-            if (width <= 0f || height <= 0f)
+            float gridWidth = padding.x * 2f + cols * cellSize.x + Mathf.Max(0, cols - 1) * spacing.x;
+            float gridHeight = padding.y * 2f + rows * cellSize.y + Mathf.Max(0, rows - 1) * spacing.y;
+
+            if (contentWrapper == null)
             {
-                return new Vector2(LOADOUT_GRID_FALLBACK_CELL, LOADOUT_GRID_FALLBACK_CELL);
+                GameObject wrapperGo = new GameObject("GridContentWrapper", typeof(RectTransform));
+                wrapperGo.transform.SetParent(boardRoot, false);
+                contentWrapper = wrapperGo.GetComponent<RectTransform>();
+                contentWrapper.anchorMin = new Vector2(0f, 1f);
+                contentWrapper.anchorMax = new Vector2(0f, 1f);
+                contentWrapper.pivot = new Vector2(0f, 1f);
+                contentWrapper.anchoredPosition = Vector2.zero;
+
+                if (gridRoot != null)
+                {
+                    gridRoot.SetParent(contentWrapper, false);
+                }
+
+                if (itemsLayer != null)
+                {
+                    itemsLayer.SetParent(contentWrapper, false);
+                }
+
+                ScrollRect scrollRect = boardRoot.GetComponent<ScrollRect>();
+                if (scrollRect == null)
+                {
+                    scrollRect = boardRoot.gameObject.AddComponent<ScrollRect>();
+                }
+
+                scrollRect.content = contentWrapper;
+                scrollRect.horizontal = false;
+                scrollRect.vertical = true;
+                scrollRect.movementType = ScrollRect.MovementType.Clamped;
+                scrollRect.viewport = boardRoot;
+
+                Mask mask = boardRoot.GetComponent<Mask>();
+                if (mask == null)
+                {
+                    Image maskImage = boardRoot.GetComponent<Image>();
+                    if (maskImage == null)
+                    {
+                        maskImage = boardRoot.gameObject.AddComponent<Image>();
+                        maskImage.color = new Color(1f, 1f, 1f, 0.001f);
+                    }
+
+                    mask = boardRoot.gameObject.AddComponent<Mask>();
+                    mask.showMaskGraphic = false;
+                }
             }
 
-            float availableWidth = Mathf.Max(1f, width - padding.x * 2f - Mathf.Max(0, cols - 1) * spacing.x);
-            float availableHeight = Mathf.Max(1f, height - padding.y * 2f - Mathf.Max(0, rows - 1) * spacing.y);
-            return new Vector2(availableWidth / cols, availableHeight / rows);
+            contentWrapper.sizeDelta = new Vector2(gridWidth, gridHeight);
+
+            if (gridRoot != null)
+            {
+                gridRoot.anchorMin = Vector2.zero;
+                gridRoot.anchorMax = Vector2.one;
+                gridRoot.offsetMin = Vector2.zero;
+                gridRoot.offsetMax = Vector2.zero;
+            }
+
+            if (itemsLayer != null)
+            {
+                itemsLayer.anchorMin = Vector2.zero;
+                itemsLayer.anchorMax = Vector2.one;
+                itemsLayer.offsetMin = Vector2.zero;
+                itemsLayer.offsetMax = Vector2.zero;
+            }
         }
 
         private static void ApplyFootprint(

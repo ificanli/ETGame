@@ -249,7 +249,8 @@ namespace ET.Client
 
         private static void InitLayout(SearchPanelComponent self)
         {
-            Vector2 defaultCell = new Vector2(96, 96);
+            float unified = LobbyPanelComponent.UnifiedCellSize;
+            Vector2 defaultCell = new Vector2(unified, unified);
             Vector2 containerCell = GetRectSize(self.u_ComContainerItemTemplate, defaultCell);
             Vector2 bagCell = GetRectSize(self.u_ComBagItemTemplate, defaultCell);
             self.CellSize = bagCell.x > 0 && bagCell.y > 0 ? bagCell : containerCell;

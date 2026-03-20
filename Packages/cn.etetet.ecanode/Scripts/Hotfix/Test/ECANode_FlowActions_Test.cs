@@ -666,6 +666,92 @@ namespace ET.Test
         }
     }
 
+    public class Ecanode_FlowGraph_ZeroNodeIdTitleCompat_Test : ATestHandler
+    {
+        public override async ETTask<int> Handle(TestContext context)
+        {
+            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Ecanode_FlowGraph_ZeroNodeIdTitleCompat_Test));
+            Scene scene = scope.TestFiber.Root;
+
+            UnitComponent unitComponent = scene.AddComponent<UnitComponent>();
+            Unit pointUnit = unitComponent.AddChild<Unit, int>(0);
+            ECAPointComponent point = pointUnit.AddComponent<ECAPointComponent, string, int, float>("legacy_zero_id_point", ECAPointType.RangeTrigger, 3f);
+            point.IsActive = true;
+            EntityRef<ECAPointComponent> pointRef = point;
+
+            FlowGraphData graph = new()
+            {
+                Nodes = new List<FlowNodeData>
+                {
+                    new()
+                    {
+                        LegacyId = 0,
+                        NodeId = 0,
+                        NodeType = ECAFlowNodeType.Event,
+                        NodeKey = ECAFlowEventType.OnMapLoaded,
+                        Title = "Event 7"
+                    },
+                    new()
+                    {
+                        LegacyId = 0,
+                        NodeId = 0,
+                        NodeType = ECAFlowNodeType.Action,
+                        NodeKey = ECAFlowActionKey.SetPointActive,
+                        Title = "Action 6",
+                        Params = new List<FlowParam>
+                        {
+                            new() { Key = "active", Value = "0" }
+                        }
+                    }
+                },
+                Connections = new List<FlowConnectionData>
+                {
+                    new()
+                    {
+                        FromNodeId = 7,
+                        ToNodeId = 6,
+                        Branch = "Out"
+                    }
+                }
+            };
+
+            await ECAFlowGraphRunner.TriggerEventAsync(graph, point, null, ECAFlowEventType.OnMapLoaded);
+            point = pointRef;
+            if (point == null)
+            {
+                Log.Console("point should still exist after trigger");
+                return 1;
+            }
+
+            if (point.IsActive)
+            {
+                Log.Console("zero node id graph should execute action via title fallback");
+                return 2;
+            }
+
+            if (graph.RuntimeNodeMap == null || !graph.RuntimeNodeMap.ContainsKey(7) || !graph.RuntimeNodeMap.ContainsKey(6))
+            {
+                Log.Console("zero node id graph should repair runtime node map keys from title");
+                return 3;
+            }
+
+            if (!graph.RuntimeAdjacency.TryGetValue(7, out Dictionary<string, List<int>> branchMap))
+            {
+                Log.Console("zero node id graph should keep adjacency key 7");
+                return 4;
+            }
+
+            if (!branchMap.TryGetValue("Out", out List<int> nextList) || nextList.Count != 1 || nextList[0] != 6)
+            {
+                Log.Console("zero node id graph should keep connection 7->6");
+                return 5;
+            }
+
+            Log.Console("Ecanode_FlowGraph_ZeroNodeIdTitleCompat_Test passed");
+            return ErrorCode.ERR_Success;
+        }
+    }
+
     public class Ecanode_Evacuation_ConfigDriven_Test : ATestHandler
     {
         public override async ETTask<int> Handle(TestContext context)

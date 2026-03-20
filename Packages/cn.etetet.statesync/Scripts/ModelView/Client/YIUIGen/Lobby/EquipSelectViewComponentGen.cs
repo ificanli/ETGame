@@ -30,6 +30,12 @@ namespace ET.Client
         public UITaskEventP0 u_EventExitView;
         public UITaskEventHandleP0 u_EventExitViewHandle;
         public const string OnEventExitViewInvoke = "EquipSelectViewComponent.OnEventExitViewInvoke";
+        public UITaskEventP0 u_EventClickWarhouse;
+        public UITaskEventHandleP0 u_EventClickWarhouseHandle;
+        public const string OnEventClickWarhouseInvoke = "EquipSelectViewComponent.OnEventClickWarhouseInvoke";
+        public UITaskEventP0 u_EventClickShop;
+        public UITaskEventHandleP0 u_EventClickShopHandle;
+        public const string OnEventClickShopInvoke = "EquipSelectViewComponent.OnEventClickShopInvoke";
 
     }
 }

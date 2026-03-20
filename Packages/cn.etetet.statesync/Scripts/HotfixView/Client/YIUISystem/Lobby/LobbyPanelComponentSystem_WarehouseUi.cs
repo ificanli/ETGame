@@ -10,6 +10,9 @@ namespace ET.Client
     [FriendOf(typeof(LobbyPanelComponent))]
     public static partial class LobbyPanelComponentSystem
     {
+        private const int DEFAULT_WAREHOUSE_COLUMN_COUNT = 8;
+        private const int DEFAULT_WAREHOUSE_ROW_COUNT = 15;
+
         private static void InitWarehouseArea(this LobbyPanelComponent self)
         {
             RectTransform boardRoot = self.GetWarehouseBoardRoot();
@@ -204,6 +207,7 @@ namespace ET.Client
         private static void OnWarehouseGridItemClicked(this LobbyPanelComponent self, long itemUid, int configId)
         {
             self.ClearWarehousePressState();
+            self.CurrentItemSourceMode = LoadoutItemSourceMode.Warehouse;
             if (self.SelectedWarehouseItemUid == itemUid)
             {
                 self.SelectedWarehouseItemUid = 0;
@@ -215,7 +219,7 @@ namespace ET.Client
                 self.SelectedWarehouseConfigId = configId;
             }
 
-            self.RefreshWarehouseArea(self.Root()?.GetComponent<LoadoutComponent>());
+            self.RefreshLoadoutView();
         }
 
         private static void ApplyWarehouseSelectionVisual(RectTransform view, bool selected)
@@ -403,11 +407,8 @@ namespace ET.Client
 
         private static int GetWarehouseSuggestedColumnCount(this LobbyPanelComponent self)
         {
-            float width = GetWarehouseRectWidth(self.GetWarehouseBoardRoot());
-            float availableWidth = Mathf.Max(1f, width - self.GridPadding.x * 2f);
-            float preferredCellSize = Mathf.Max(1f, self.WarehousePreferredCellSize);
-            int cols = Mathf.CeilToInt((availableWidth + self.GridSpacing.x) / Mathf.Max(1f, preferredCellSize + self.GridSpacing.x));
-            return Mathf.Max(1, cols);
+            _ = self;
+            return DEFAULT_WAREHOUSE_COLUMN_COUNT;
         }
 
         private static bool TryResolveWarehouseSlot(
@@ -618,7 +619,7 @@ namespace ET.Client
                 return 0;
             }
 
-            int rows = 1;
+            int rows = DEFAULT_WAREHOUSE_ROW_COUNT;
             int extraRows = 1;
             if (loadout?.WarehouseItems == null)
             {
@@ -644,19 +645,12 @@ namespace ET.Client
             }
 
             int bufferRows = Math.Max(1, extraRows / 2);
-            return rows + bufferRows;
+            return Math.Max(DEFAULT_WAREHOUSE_ROW_COUNT, rows + bufferRows);
         }
 
         private static float CalcWarehouseCellSize(RectTransform boardRoot, int cols, Vector2 spacing, Vector2 padding)
         {
-            if (boardRoot == null || cols <= 0)
-            {
-                return LOADOUT_GRID_FALLBACK_CELL;
-            }
-
-            float width = GetWarehouseRectWidth(boardRoot);
-            float availableWidth = Mathf.Max(1f, width - padding.x * 2f - Mathf.Max(0, cols - 1) * spacing.x);
-            return availableWidth / cols;
+            return LobbyPanelComponent.UnifiedCellSize;
         }
 
         private static float GetWarehouseRectWidth(RectTransform rectTransform)

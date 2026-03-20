@@ -47,5 +47,12 @@
     "Port": 0,
     "Num": 1,
     "Name": "MapManager"
+  },
+  {
+    "Id": 27,
+    "MachineId": 1,
+    "Port": 0,
+    "Num": 1,
+    "Name": "Match"
   }
 ]

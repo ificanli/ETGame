@@ -14,6 +14,7 @@ namespace ET.Client
         public bool ChoicePopupPending { get; set; }
         public bool ChoicePopupOpening { get; set; }
         public List<RogueClientOptionData> ChoiceOptions { get; set; } = new();
+        public List<RogueClientOptionData> SelectedOptions { get; set; } = new();
     }
 
     public struct RogueClientOptionData

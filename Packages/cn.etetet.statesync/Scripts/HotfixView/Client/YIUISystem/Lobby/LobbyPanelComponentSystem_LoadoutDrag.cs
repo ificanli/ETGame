@@ -494,7 +494,7 @@ namespace ET.Client
             LoadoutGridItemViewProxy proxy,
             PointerEventData eventData)
         {
-            if (self == null || self.IsDisposed || view == null || proxy == null || eventData == null || eventData.dragging)
+            if (self == null || self.IsDisposed || view == null || proxy == null || eventData == null || eventData.dragging || proxy.ConfigId <= 0)
             {
                 return;
             }
@@ -502,6 +502,7 @@ namespace ET.Client
             if (proxy.IsWarehouse)
             {
                 self.OnWarehouseGridItemClicked(proxy.ItemUid, proxy.ConfigId);
+                self.OpenItemClickedAsync(proxy.ConfigId, true, proxy.ItemUid).Coroutine();
                 return;
             }
 
@@ -510,7 +511,7 @@ namespace ET.Client
                 return;
             }
 
-            self.HandleOwnedGridItemClickAsync((LoadoutAreaType)proxy.AreaType, proxy.AnchorSlotIndex).Coroutine();
+            self.OpenItemClickedAsync(proxy.ConfigId, false).Coroutine();
         }
 
         private static bool TryGetLoadoutDropTarget(

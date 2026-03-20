@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -95,14 +93,17 @@ namespace ET.Client
                 graphAsset.Graph = new FlowGraphData();
             }
 
-            TryMigrateLegacyNodeIdsFromAsset();
+            if (!ECAFlowGraphAssetMigrationUtility.TryPrepareFlowGraph(graphAsset, out _, out string graphErrorMessage))
+            {
+                Debug.LogError($"[ECAFlowGraph] Graph '{graphAsset?.name}' validation failed:\n{graphErrorMessage}");
+            }
 
             nextNodeId = 1;
             foreach (FlowNodeData nodeData in graphAsset.Graph.Nodes)
             {
                 ECAFlowNodeView node = new ECAFlowNodeView(nodeData);
                 AddElement(node);
-                int nodeId = ResolveNodeId(nodeData);
+                int nodeId = ECAFlowGraphAssetMigrationUtility.ResolveNodeId(nodeData);
                 nextNodeId = Math.Max(nextNodeId, nodeId + 1);
             }
 
@@ -145,97 +146,6 @@ namespace ET.Client
             }
         }
 
-        private void TryMigrateLegacyNodeIdsFromAsset()
-        {
-            if (graphAsset?.Graph?.Nodes == null || graphAsset.Graph.Nodes.Count == 0)
-            {
-                return;
-            }
-
-            if (graphAsset.Graph.Nodes.All(node => ResolveNodeId(node) > 0))
-            {
-                return;
-            }
-
-            string assetPath = AssetDatabase.GetAssetPath(graphAsset);
-            if (string.IsNullOrWhiteSpace(assetPath) || !File.Exists(assetPath))
-            {
-                Debug.LogError($"[ECAFlowGraph] Graph '{graphAsset?.name}' asset path invalid, cannot migrate legacy node ids.");
-                return;
-            }
-
-            List<int> legacyNodeIds = ReadLegacyNodeIdsFromAsset(assetPath);
-            if (legacyNodeIds.Count != graphAsset.Graph.Nodes.Count)
-            {
-                Debug.LogError($"[ECAFlowGraph] Graph '{graphAsset?.name}' legacy node id count mismatch: asset={legacyNodeIds.Count}, graph={graphAsset.Graph.Nodes.Count}");
-                return;
-            }
-
-            bool changed = false;
-            for (int i = 0; i < graphAsset.Graph.Nodes.Count; ++i)
-            {
-                FlowNodeData node = graphAsset.Graph.Nodes[i];
-                if (ResolveNodeId(node) > 0)
-                {
-                    continue;
-                }
-
-                int legacyNodeId = legacyNodeIds[i];
-                if (legacyNodeId <= 0)
-                {
-                    continue;
-                }
-
-                node.NodeId = legacyNodeId;
-                changed = true;
-            }
-
-            if (!changed)
-            {
-                return;
-            }
-
-            Debug.Log($"[ECAFlowGraph] Graph '{graphAsset?.name}' migrated legacy node ids to NodeId.");
-            EditorUtility.SetDirty(graphAsset);
-            AssetDatabase.SaveAssets();
-        }
-
-        private static List<int> ReadLegacyNodeIdsFromAsset(string assetPath)
-        {
-            Regex regex = new Regex(@"^\s*-\s+(?:Id|_id):\s*(\d+)\s*$", RegexOptions.Compiled);
-            List<int> nodeIds = new();
-            foreach (string line in File.ReadLines(assetPath))
-            {
-                Match match = regex.Match(line);
-                if (!match.Success)
-                {
-                    continue;
-                }
-
-                if (int.TryParse(match.Groups[1].Value, out int nodeId))
-                {
-                    nodeIds.Add(nodeId);
-                }
-            }
-
-            return nodeIds;
-        }
-
-        private static int ResolveNodeId(FlowNodeData node)
-        {
-            if (node == null)
-            {
-                return 0;
-            }
-
-            if (node.NodeId != 0)
-            {
-                return node.NodeId;
-            }
-
-            return node.LegacyId;
-        }
-
         private void ClearGraph()
         {
             DeleteElements(graphElements.Where(e => e is Node || e is Edge).ToList());
@@ -260,7 +170,7 @@ namespace ET.Client
 
             foreach (FlowNodeData node in data.Nodes)
             {
-                int nodeId = ResolveNodeId(node);
+                int nodeId = ECAFlowGraphAssetMigrationUtility.ResolveNodeId(node);
                 if (string.IsNullOrWhiteSpace(node.NodeKey))
                 {
                     Debug.LogWarning($"[ECAFlowGraph] Node {nodeId}({node.NodeType}) has empty Key.");

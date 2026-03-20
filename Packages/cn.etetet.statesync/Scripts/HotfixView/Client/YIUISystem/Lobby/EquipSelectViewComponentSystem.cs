@@ -45,6 +45,8 @@ namespace ET.Client
         private static async ETTask<bool> YIUIOpen(this EquipSelectViewComponent self)
         {
             self.PendingItemConfigId = 0;
+            self.PendingItemSourceMode = LoadoutItemSourceMode.Warehouse;
+            self.CurrentItemSourceMode = LoadoutItemSourceMode.Warehouse;
             self.u_DataGunName?.SetValue(string.Empty, true);
             await ETTask.CompletedTask;
             return true;
@@ -61,7 +63,7 @@ namespace ET.Client
             int index,
             bool select)
         {
-            item.u_DataEquipName.SetValue($"{data.Name} x{data.Count}");
+            item.u_DataEquipName.SetValue(FormatEquipSelectItemText(data));
             item.SetSelected(select);
             item.SetItemIcon(data.Icon);
         }
@@ -107,7 +109,7 @@ namespace ET.Client
             }
 
             EntityRef<EquipSelectViewComponent> selfRef = self;
-            bool success = await lobbyPanel.EquipItemAsync(self.PendingItemConfigId, self.CurrentSlotType);
+            bool success = await lobbyPanel.EquipItemAsync(self.PendingItemConfigId, self.CurrentSlotType, self.PendingItemSourceMode);
             self = selfRef;
             if (self == null || self.IsDisposed)
             {
@@ -128,6 +130,7 @@ namespace ET.Client
                 if (updatePending)
                 {
                     self.PendingItemConfigId = 0;
+                    self.PendingItemSourceMode = LoadoutItemSourceMode.Warehouse;
                 }
                 return;
             }
@@ -135,6 +138,7 @@ namespace ET.Client
             if (updatePending)
             {
                 self.PendingItemConfigId = itemData.ConfigId;
+                self.PendingItemSourceMode = itemData.SourceMode;
             }
 
             string desc = BuildPreviewText(self, itemData);
@@ -168,12 +172,50 @@ namespace ET.Client
 
             return desc;
         }
+
+        private static string FormatEquipSelectItemText(LoadoutWarehouseItemViewData data)
+        {
+            return data.SourceMode == LoadoutItemSourceMode.Shop
+                ? (data.Affordable ? $"{data.Name} ￥{data.Price}" : $"{data.Name} ￥{data.Price} [不足]")
+                : $"{data.Name} x{data.Count}";
+        }
         
         [YIUIInvoke(EquipSelectViewComponent.OnEventExitViewInvoke)]
         private static async ETTask OnEventExitViewInvoke(this EquipSelectViewComponent self)
         {
             await self.UIView.CloseAsync();
         }
+        
+        [YIUIInvoke(EquipSelectViewComponent.OnEventClickShopInvoke)]
+        private static async ETTask OnEventClickShopInvoke(this EquipSelectViewComponent self)
+        {
+            await self.SwitchSourceModeAsync(LoadoutItemSourceMode.Shop);
+        }
+        
+        [YIUIInvoke(EquipSelectViewComponent.OnEventClickWarhouseInvoke)]
+        private static async ETTask OnEventClickWarhouseInvoke(this EquipSelectViewComponent self)
+        {
+            await self.SwitchSourceModeAsync(LoadoutItemSourceMode.Warehouse);
+        }
         #endregion YIUIEvent结束
+
+        private static async ETTask SwitchSourceModeAsync(this EquipSelectViewComponent self, LoadoutItemSourceMode sourceMode)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            LobbyPanelComponent lobbyPanel = self.LobbyPanel;
+            if (lobbyPanel == null || lobbyPanel.IsDisposed)
+            {
+                Log.Warning("[EquipSelectView] Switch source mode failed: LobbyPanel missing");
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            await lobbyPanel.SwitchEquipSelectSourceModeAsync(self, sourceMode);
+        }
     }
 }

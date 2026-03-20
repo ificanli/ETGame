@@ -410,6 +410,83 @@ namespace ET
         }
     }
 
+    // 从起装商店直接购买到当前携带态
+    [MemoryPackable]
+    [Message(Opcode.C2G_LoadoutBuyFromShop)]
+    [ResponseType(nameof(G2C_LoadoutBuyFromShop))]
+    public partial class C2G_LoadoutBuyFromShop : MessageObject, ISessionRequest
+    {
+        public static C2G_LoadoutBuyFromShop Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2G_LoadoutBuyFromShop>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int ConfigId { get; set; }
+        [MemoryPackOrder(2)]
+        public int Count { get; set; }
+        [MemoryPackOrder(3)]
+        public int TargetAreaType { get; set; }
+        [MemoryPackOrder(4)]
+        public int TargetSlotType { get; set; }
+        [MemoryPackOrder(5)]
+        public int TargetAnchorSlotIndex { get; set; }
+        [MemoryPackOrder(6)]
+        public int TargetBagWidth { get; set; }
+        [MemoryPackOrder(7)]
+        public int TargetBagHeight { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.ConfigId = default;
+            this.Count = default;
+            this.TargetAreaType = default;
+            this.TargetSlotType = default;
+            this.TargetAnchorSlotIndex = default;
+            this.TargetBagWidth = default;
+            this.TargetBagHeight = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.G2C_LoadoutBuyFromShop)]
+    public partial class G2C_LoadoutBuyFromShop : MessageObject, ISessionResponse
+    {
+        public static G2C_LoadoutBuyFromShop Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<G2C_LoadoutBuyFromShop>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     // 从当前携带态放回仓库
     [MemoryPackable]
     [Message(Opcode.C2G_LoadoutPutToWarehouse)]
@@ -913,18 +990,20 @@ namespace ET
         public const ushort G2C_ConfirmLoadout = 11107;
         public const ushort C2G_LoadoutTakeFromWarehouse = 11108;
         public const ushort G2C_LoadoutTakeFromWarehouse = 11109;
-        public const ushort C2G_LoadoutPutToWarehouse = 11110;
-        public const ushort G2C_LoadoutPutToWarehouse = 11111;
-        public const ushort C2G_LoadoutMoveOwnedItem = 11112;
-        public const ushort G2C_LoadoutMoveOwnedItem = 11113;
-        public const ushort C2G_LoadoutMoveWarehouseItem = 11114;
-        public const ushort G2C_LoadoutMoveWarehouseItem = 11115;
-        public const ushort C2G_LoadoutOneKeyUnload = 11116;
-        public const ushort G2C_LoadoutOneKeyUnload = 11117;
-        public const ushort G2C_LoadoutStateChanged = 11118;
-        public const ushort M2C_EvacuationSettlement = 11119;
-        public const ushort M2C_DeathSettlement = 11120;
-        public const ushort Map2G_EvacuationSettlement = 11121;
-        public const ushort Map2G_LoadoutCarryResult = 11122;
+        public const ushort C2G_LoadoutBuyFromShop = 11110;
+        public const ushort G2C_LoadoutBuyFromShop = 11111;
+        public const ushort C2G_LoadoutPutToWarehouse = 11112;
+        public const ushort G2C_LoadoutPutToWarehouse = 11113;
+        public const ushort C2G_LoadoutMoveOwnedItem = 11114;
+        public const ushort G2C_LoadoutMoveOwnedItem = 11115;
+        public const ushort C2G_LoadoutMoveWarehouseItem = 11116;
+        public const ushort G2C_LoadoutMoveWarehouseItem = 11117;
+        public const ushort C2G_LoadoutOneKeyUnload = 11118;
+        public const ushort G2C_LoadoutOneKeyUnload = 11119;
+        public const ushort G2C_LoadoutStateChanged = 11120;
+        public const ushort M2C_EvacuationSettlement = 11121;
+        public const ushort M2C_DeathSettlement = 11122;
+        public const ushort Map2G_EvacuationSettlement = 11123;
+        public const ushort Map2G_LoadoutCarryResult = 11124;
     }
 }

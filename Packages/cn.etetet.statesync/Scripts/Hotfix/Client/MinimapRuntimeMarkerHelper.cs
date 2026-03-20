@@ -1,3 +1,4 @@
+using System;
 using Unity.Mathematics;
 
 namespace ET.Client
@@ -10,8 +11,9 @@ namespace ET.Client
     {
         public static void SyncUnit(MinimapRuntimeComponent runtime, Unit unit)
         {
-            if (runtime == null || unit == null || unit.IsDisposed)
+            if (!ShouldTrackUnit(runtime, unit))
             {
+                RemoveMarker(runtime, unit?.Id ?? 0);
                 return;
             }
 
@@ -30,6 +32,12 @@ namespace ET.Client
 
         public static void SyncPosition(MinimapRuntimeComponent runtime, Unit unit)
         {
+            if (!ShouldTrackUnit(runtime, unit))
+            {
+                RemoveMarker(runtime, unit?.Id ?? 0);
+                return;
+            }
+
             if (!TryGetMarker(runtime, unit, out MinimapMarkerRuntime marker))
             {
                 return;
@@ -43,6 +51,12 @@ namespace ET.Client
 
         public static void SyncForward(MinimapRuntimeComponent runtime, Unit unit)
         {
+            if (!ShouldTrackUnit(runtime, unit))
+            {
+                RemoveMarker(runtime, unit?.Id ?? 0);
+                return;
+            }
+
             if (!TryGetMarker(runtime, unit, out MinimapMarkerRuntime marker))
             {
                 return;
@@ -96,10 +110,20 @@ namespace ET.Client
             return true;
         }
 
+        public static bool ShouldDisplayMarker(MinimapRuntimeComponent runtime, MinimapMarkerRuntime marker)
+        {
+            if (runtime == null || !marker.IsVisible)
+            {
+                return false;
+            }
+
+            return !ShouldHideRemotePlayer(runtime, marker.UnitId, marker.UnitType);
+        }
+
         private static bool TryGetMarker(MinimapRuntimeComponent runtime, Unit unit, out MinimapMarkerRuntime marker)
         {
             marker = default;
-            if (runtime == null || unit == null || unit.IsDisposed)
+            if (!ShouldTrackUnit(runtime, unit))
             {
                 return false;
             }
@@ -111,6 +135,29 @@ namespace ET.Client
 
             SyncUnit(runtime, unit);
             return runtime.Markers.TryGetValue(unit.Id, out marker);
+        }
+
+        private static bool ShouldTrackUnit(MinimapRuntimeComponent runtime, Unit unit)
+        {
+            if (runtime == null || unit == null || unit.IsDisposed)
+            {
+                return false;
+            }
+
+            return !ShouldHideRemotePlayer(runtime, unit.Id, unit.UnitType);
+        }
+
+        private static bool ShouldHideRemotePlayer(MinimapRuntimeComponent runtime, long unitId, UnitType unitType)
+        {
+            if (runtime == null ||
+                unitType != UnitType.Player ||
+                unitId == 0 ||
+                unitId == runtime.MyUnitId)
+            {
+                return false;
+            }
+
+            return string.Equals(runtime.MapName, "SDCMap", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

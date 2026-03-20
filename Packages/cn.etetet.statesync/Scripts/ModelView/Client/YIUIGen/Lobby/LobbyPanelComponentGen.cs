@@ -36,7 +36,6 @@ namespace ET.Client
         public UnityEngine.RectTransform u_ComBuildPanelRectTransform;
         public UnityEngine.RectTransform u_ComExplorePanelRectTransform;
         public UnityEngine.RectTransform u_ComHeroList;
-        public UnityEngine.RectTransform u_ComEquipBagScroll;
         public UnityEngine.RectTransform u_ComCurrentBagGridRoot;
         public UnityEngine.RectTransform u_ComCurrentBagItemsLayer;
         public UnityEngine.RectTransform u_ComCurrentBagItemTemplate;
@@ -98,6 +97,12 @@ namespace ET.Client
         public UITaskEventP0 u_EventOneKeyUnloadButton;
         public UITaskEventHandleP0 u_EventOneKeyUnloadButtonHandle;
         public const string OnEventOneKeyUnloadButtonInvoke = "LobbyPanelComponent.OnEventOneKeyUnloadButtonInvoke";
+        public UITaskEventP0 u_EventEquip;
+        public UITaskEventHandleP0 u_EventEquipHandle;
+        public const string OnEventEquipInvoke = "LobbyPanelComponent.OnEventEquipInvoke";
+        public UITaskEventP0 u_EventWarehouse;
+        public UITaskEventHandleP0 u_EventWarehouseHandle;
+        public const string OnEventWarehouseInvoke = "LobbyPanelComponent.OnEventWarehouseInvoke";
 
     }
 }

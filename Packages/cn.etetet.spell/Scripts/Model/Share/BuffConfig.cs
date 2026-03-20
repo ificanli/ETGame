@@ -33,6 +33,11 @@ namespace ET
             return this.dict.ContainsKey(id);
         }
 
+        public Dictionary<int, BuffConfig> GetAll()
+        {
+            return this.dict;
+        }
+
         public void ResolveRef()
         {
             foreach (var kv in this.dict)

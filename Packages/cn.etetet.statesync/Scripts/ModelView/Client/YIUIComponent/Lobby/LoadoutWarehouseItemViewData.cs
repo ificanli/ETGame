@@ -1,7 +1,7 @@
 namespace ET.Client
 {
     /// <summary>
-    /// 局外仓库列表展示数据。
+    /// 起装来源列表展示数据。
     /// </summary>
     public struct LoadoutWarehouseItemViewData
     {
@@ -10,5 +10,8 @@ namespace ET.Client
         public string Name;
         public string Icon;
         public int SortCategory;
+        public int Price;
+        public bool Affordable;
+        public LoadoutItemSourceMode SourceMode;
     }
 }

@@ -30,6 +30,17 @@ namespace ET.Client
         public int LastRogueLevel = int.MinValue;
         public int LastRogueCurrentExp = int.MinValue;
         public int LastRogueNeedExp = int.MinValue;
+        public RectTransform RogueEffectRoot;
+        public RectTransform RogueEffectTextRect;
+        public TMP_Text RogueEffectText;
+        public List<Button> RogueEffectButtons = new();
+        public List<Image> RogueEffectButtonImages = new();
+        public List<Sprite> RogueEffectButtonSprites = new();
+        public List<string> RogueEffectButtonSpriteNames = new();
+        public List<string> RogueEffectButtonDesiredSpriteNames = new();
+        public List<GameObject> RogueEffectDynamicButtons = new();
+        public int LastRogueEffectSignature = int.MinValue;
+        public int RogueEffectPreviewIndex = -1;
         public RectTransform MinimapRoot;
         public RectTransform MinimapBackground;
         public RectTransform MinimapMask;
@@ -42,5 +53,8 @@ namespace ET.Client
         public Sprite MinimapMarkerSprite;
         public Dictionary<long, RectTransform> MinimapMarkerRects = new();
         public Dictionary<long, Image> MinimapMarkerImages = new();
+        public Dictionary<long, string> MinimapMarkerDesiredSpriteNames = new();
+        public Dictionary<string, Sprite> MinimapMarkerLoadedSprites = new();
+        public HashSet<string> MinimapMarkerLoadingSpriteNames = new();
     }
 }

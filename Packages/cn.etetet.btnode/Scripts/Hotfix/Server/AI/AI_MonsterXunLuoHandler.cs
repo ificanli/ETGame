@@ -7,7 +7,12 @@ namespace ET.Server
         protected override async ETTask RunAsync(AI_MonsterXunLuo node, BTEnv env)
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
-            Unit unit = buff.GetOwner();
+            Unit unit = buff?.GetOwner();
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
             Scene root = buff.Root();
             EntityRef<Scene> rootRef = root;
             EntityRef<Unit> unitRef = unit;
@@ -18,12 +23,26 @@ namespace ET.Server
             NumericComponent numericComponent = unit.NumericComponent;
             UnitSpawnPointComponent spawnPointComponent = unit.GetComponent<UnitSpawnPointComponent>();
             float3 birthPos = spawnPointComponent?.Position ?? unit.Position;
-            float aoi = numericComponent.GetAsFloat(NumericType.AOI);
+            float aoi = numericComponent?.GetAsFloat(NumericType.AOI) ?? 0f;
+            float patrolMinRadius = math.max(0f, node.PatrolMinRadius);
+            float configuredPatrolMaxRadius = node.PatrolMaxRadius > 0f ? node.PatrolMaxRadius : aoi;
+            float patrolMaxRadius = math.max(patrolMinRadius + 0.1f, configuredPatrolMaxRadius);
+            float aggroRange = node.AggroRange > 0f ? node.AggroRange : aoi;
+            int idleMinMs = math.max(100, node.IdleMinMs);
+            int idleMaxMs = math.max(idleMinMs, node.IdleMaxMs);
             
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
-            
-            // 暂时写死
-            BuffHelper.RemoveBuffByConfigId(unit, 200111, BuffFlags.AIRemove);
+
+            unit = unitRef;
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
+            if (node.ExitCombatBuffConfigId > 0)
+            {
+                BuffHelper.RemoveBuffByConfigId(unit, node.ExitCombatBuffConfigId, BuffFlags.AIRemove);
+            }
             
             while (true)
             {
@@ -43,9 +62,14 @@ namespace ET.Server
                     }
 
                     // 巡逻状态下主动感知可见玩家，建立仇恨后切到追击。
-                    if (TryAcquireThreatFromVisiblePlayer(unit, threatComponent, out Unit acquiredTarget))
+                    if (TryAcquireThreatFromVisiblePlayer(unit, threatComponent, aggroRange, out Unit acquiredTarget))
                     {
-                        unit.GetComponent<TargetComponent>().Unit = acquiredTarget;
+                        TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
+                        if (targetComponent != null)
+                        {
+                            targetComponent.Unit = acquiredTarget;
+                        }
+
                         Log.Info($"[MonsterAggro] acquire threat by sight, monster={unit.Id}, target={acquiredTarget.Id}, pos={unit.Position}");
                         return;
                     }
@@ -53,7 +77,12 @@ namespace ET.Server
 
                 // 找一个点
                 pathfindingComponent = pathfindingComponentRef;
-                float3 randomPos = pathfindingComponent.FindRandomPointWithRaduis(birthPos, 0, aoi);
+                if (pathfindingComponent == null)
+                {
+                    return;
+                }
+
+                float3 randomPos = pathfindingComponent.FindRandomPointWithRaduis(birthPos, patrolMinRadius, patrolMaxRadius);
                 
                 // 走过去
                 await unit.FindPathMoveToAsync(randomPos);
@@ -68,7 +97,7 @@ namespace ET.Server
                 {
                     return;
                 }
-                await root.TimerComponent.WaitAsync(RandomGenerator.RandomNumber(1000, 4000));
+                await root.TimerComponent.WaitAsync(RandomGenerator.RandomNumber(idleMinMs, idleMaxMs + 1));
                 if (cancellationToken.IsCancel())
                 {
                     return;
@@ -76,7 +105,7 @@ namespace ET.Server
             }
         }
 
-        private static bool TryAcquireThreatFromVisiblePlayer(Unit unit, ThreatComponent threatComponent, out Unit target)
+        private static bool TryAcquireThreatFromVisiblePlayer(Unit unit, ThreatComponent threatComponent, float aggroRange, out Unit target)
         {
             target = null;
 
@@ -107,6 +136,11 @@ namespace ET.Server
                 }
 
                 float distance = math.distance(new float2(unit.Position.x, unit.Position.z), new float2(candidate.Position.x, candidate.Position.z));
+                if (aggroRange > 0f && distance > aggroRange)
+                {
+                    continue;
+                }
+
                 if (distance >= bestDistance)
                 {
                     continue;

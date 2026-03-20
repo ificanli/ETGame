@@ -83,9 +83,9 @@ namespace ET.Server
             }
         }
 
-        public static void ApplyAssignedTeamIfNeeded(Scene scene, Unit unit, int teamOrder)
+        public static void ApplyAssignedTeamIfNeeded(Scene scene, Unit unit, int configuredTeamIdOrOrder)
         {
-            if (scene == null || unit == null || unit.IsDisposed || teamOrder <= 0)
+            if (scene == null || unit == null || unit.IsDisposed)
             {
                 return;
             }
@@ -93,22 +93,28 @@ namespace ET.Server
             SpawnPointManagerComponent spawnPointManager = scene.GetComponent<SpawnPointManagerComponent>();
             if (spawnPointManager == null || spawnPointManager.TeamSpawnPoints.Count == 0)
             {
-                Log.Warning($"[SpawnAssign] preset team assignment skipped: manager missing or empty, scene={scene?.Name}, unitId={unit?.Id ?? 0}, teamOrder={teamOrder}");
+                Log.Warning($"[SpawnAssign] preset team assignment skipped: manager missing or empty, scene={scene?.Name}, unitId={unit?.Id ?? 0}, configuredTeamIdOrOrder={configuredTeamIdOrOrder}");
                 return;
             }
 
-            if (!TryResolveConfiguredTeamId(spawnPointManager, teamOrder, out int actualTeamId))
+            if (configuredTeamIdOrOrder <= 0 &&
+                !spawnPointManager.TeamSpawnPoints.ContainsKey(configuredTeamIdOrOrder))
             {
-                Log.Warning($"[SpawnAssign] preset team assignment skipped: invalid team order, scene={scene.Name}, unitId={unit.Id}, teamOrder={teamOrder}");
+                return;
+            }
+
+            if (!TryResolveConfiguredTeamId(spawnPointManager, configuredTeamIdOrOrder, out int actualTeamId))
+            {
+                Log.Warning($"[SpawnAssign] preset team assignment skipped: invalid team input, scene={scene.Name}, unitId={unit.Id}, configuredTeamIdOrOrder={configuredTeamIdOrOrder}");
                 return;
             }
 
             spawnPointManager.PlayerTeamAssignments[unit.Id] = actualTeamId;
             spawnPointManager.OccupiedTeamIds.Add(actualTeamId);
-            Log.Info($"[SpawnAssign] preset team assignment, scene={scene.Name}, unitId={unit.Id}, teamOrder={teamOrder}, teamId={actualTeamId}");
+            Log.Info($"[SpawnAssign] preset team assignment, scene={scene.Name}, unitId={unit.Id}, configuredTeamIdOrOrder={configuredTeamIdOrOrder}, teamId={actualTeamId}");
         }
 
-        public static void ApplySpawnPointIfNeeded(Scene scene, Unit unit, int teamOrder = 0)
+        public static void ApplySpawnPointIfNeeded(Scene scene, Unit unit, int configuredTeamIdOrOrder = 0)
         {
             if (scene == null || unit == null || unit.IsDisposed)
             {
@@ -124,7 +130,7 @@ namespace ET.Server
             SpawnPointManagerComponent spawnPointManager = scene.GetComponent<SpawnPointManagerComponent>();
             if (spawnPointManager == null || spawnPointManager.TeamSpawnPoints.Count == 0)
             {
-                if (TryApplyFallbackSpawnPoint(scene, unit, teamOrder))
+                if (TryApplyFallbackSpawnPoint(scene, unit, configuredTeamIdOrOrder))
                 {
                     return;
                 }
@@ -133,10 +139,10 @@ namespace ET.Server
                 return;
             }
 
-            int teamId = GetOrAssignTeamId(spawnPointManager, unit.Id, teamOrder);
+            int teamId = GetOrAssignTeamId(spawnPointManager, unit.Id, configuredTeamIdOrOrder);
             if (!spawnPointManager.TeamSpawnPoints.TryGetValue(teamId, out List<SpawnPointECAConfig> spawnPoints) || spawnPoints.Count == 0)
             {
-                if (TryApplyFallbackSpawnPoint(scene, unit, teamOrder))
+                if (TryApplyFallbackSpawnPoint(scene, unit, configuredTeamIdOrOrder))
                 {
                     return;
                 }
@@ -147,7 +153,7 @@ namespace ET.Server
 
             if (!spawnPointManager.TryGetNextSpawnPoint(teamId, out SpawnPointECAConfig spawnPoint))
             {
-                if (TryApplyFallbackSpawnPoint(scene, unit, teamOrder))
+                if (TryApplyFallbackSpawnPoint(scene, unit, configuredTeamIdOrOrder))
                 {
                     return;
                 }
@@ -161,7 +167,7 @@ namespace ET.Server
             if (!TryResolveSpawnPositionOnNavmesh(unit, configuredPos, out float3 resolvedPos, out float projectedDistance))
             {
                 Log.Warning($"[SpawnAssign] configured spawn point is not on navmesh, scene={scene.Name}, unitId={unit.Id}, teamId={teamId}, configId={spawnPoint.ConfigId}, configuredPos={configuredPos}");
-                if (TryApplyFallbackSpawnPoint(scene, unit, teamOrder))
+                if (TryApplyFallbackSpawnPoint(scene, unit, configuredTeamIdOrOrder))
                 {
                     return;
                 }
@@ -363,7 +369,7 @@ namespace ET.Server
             return teamIndex + 1;
         }
 
-        private static int GetOrAssignTeamId(SpawnPointManagerComponent spawnPointManager, long playerId, int teamOrder)
+        private static int GetOrAssignTeamId(SpawnPointManagerComponent spawnPointManager, long playerId, int configuredTeamIdOrOrder)
         {
             if (spawnPointManager.PlayerTeamAssignments.TryGetValue(playerId, out int assignedTeamId))
             {
@@ -371,11 +377,11 @@ namespace ET.Server
                 return assignedTeamId;
             }
 
-            if (TryResolveConfiguredTeamId(spawnPointManager, teamOrder, out int mappedTeamId))
+            if (TryResolveConfiguredTeamId(spawnPointManager, configuredTeamIdOrOrder, out int mappedTeamId))
             {
                 spawnPointManager.OccupiedTeamIds.Add(mappedTeamId);
                 spawnPointManager.PlayerTeamAssignments[playerId] = mappedTeamId;
-                Log.Info($"[SpawnAssign] assign preset team order, unitId={playerId}, teamOrder={teamOrder}, teamId={mappedTeamId}");
+                Log.Info($"[SpawnAssign] assign preset team input, unitId={playerId}, configuredTeamIdOrOrder={configuredTeamIdOrOrder}, teamId={mappedTeamId}");
                 return mappedTeamId;
             }
 
@@ -416,10 +422,21 @@ namespace ET.Server
             return teamId;
         }
 
-        private static bool TryResolveConfiguredTeamId(SpawnPointManagerComponent spawnPointManager, int teamOrder, out int actualTeamId)
+        private static bool TryResolveConfiguredTeamId(SpawnPointManagerComponent spawnPointManager, int configuredTeamIdOrOrder, out int actualTeamId)
         {
             actualTeamId = 0;
-            if (spawnPointManager == null || teamOrder <= 0 || spawnPointManager.TeamSpawnPoints.Count == 0)
+            if (spawnPointManager == null || spawnPointManager.TeamSpawnPoints.Count == 0)
+            {
+                return false;
+            }
+
+            if (spawnPointManager.TeamSpawnPoints.ContainsKey(configuredTeamIdOrOrder))
+            {
+                actualTeamId = configuredTeamIdOrOrder;
+                return true;
+            }
+
+            if (configuredTeamIdOrOrder <= 0)
             {
                 return false;
             }
@@ -427,10 +444,10 @@ namespace ET.Server
             List<int> orderedTeamIds = new List<int>(spawnPointManager.TeamSpawnPoints.Keys);
             orderedTeamIds.Sort();
 
-            int teamIndex = teamOrder - 1;
+            int teamIndex = configuredTeamIdOrOrder - 1;
             if (teamIndex < 0 || teamIndex >= orderedTeamIds.Count)
             {
-                Log.Warning($"[SpawnAssign] invalid team order, teamOrder={teamOrder}, availableTeams=[{string.Join(",", orderedTeamIds)}]");
+                Log.Warning($"[SpawnAssign] invalid team input, configuredTeamIdOrOrder={configuredTeamIdOrOrder}, availableTeams=[{string.Join(",", orderedTeamIds)}]");
                 return false;
             }
 

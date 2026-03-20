@@ -9,28 +9,44 @@ namespace ET.Server
             Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.GetOwner();
             Unit owner = PetHelper.GetOwner(unit);
+            Scene root = unit.Root();
             
             EntityRef<Unit> unitRef = unit;
             EntityRef<Unit> ownerRef = owner;
-
-            TimerComponent timerComponent = unit.Root().TimerComponent;
+            EntityRef<Scene> rootRef = root;
             
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
             
             unit = unitRef;
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
             SpellHelper.Cast(unit, 100110);
             
             while (true)
             {
                 unit = unitRef;
                 owner = ownerRef;
+                if (unit == null || unit.IsDisposed || owner == null || owner.IsDisposed)
+                {
+                    return;
+                }
+
                 await unit.FindPathMoveToAsync(owner.Position);
                 if (cancellationToken.IsCancel())
                 {
                     return;
                 }
                 
-                await timerComponent.WaitAsync(200);
+                root = rootRef;
+                if (root == null)
+                {
+                    return;
+                }
+
+                await root.TimerComponent.WaitAsync(200);
                 if (cancellationToken.IsCancel())
                 {
                     return;

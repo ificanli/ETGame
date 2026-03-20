@@ -9,6 +9,8 @@
 - `LoadoutComponent`、`PlayerStorageComponent` 只存状态，不写业务方法。
 - 起装、撤离、阵亡等复杂流程放在 `Helper` 中，`Handler` 只做协议编排与错误返回。
 - 任何修改玩家正式起装状态或仓库状态的服务端入口，都要考虑 Gate 侧串行化与 `IsConfirmed` 失效逻辑。
+- 起装商店购买走 `C2G_LoadoutBuyFromShop`，服务端统一在 `LoadoutOperationHelper.BuyFromShop` 做商品可售校验、财富扣除和目标区域写入。
+- 起装商店购买成功后，物品应直接进入目标槽位/背包/安全箱，不先落仓库；`TotalWealth` 通过 `PlayerStorageComponent` 权威扣减。
 
 ## 依赖与边界
 

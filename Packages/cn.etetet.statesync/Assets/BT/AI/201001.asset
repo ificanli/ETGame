@@ -113,10 +113,10 @@ MonoBehaviour:
       Data: false
     - Name: EditorNodeWidth
       Entry: 4
-      Data: 0
+      Data: 250
     - Name: EditorHorizontalSpacing
       Entry: 4
-      Data: 0
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -125,7 +125,7 @@ MonoBehaviour:
       Data: 300
     - Name: 
       Entry: 4
-      Data: -100
+      Data: -172.5
     - Name: 
       Entry: 8
       Data: 
@@ -209,10 +209,10 @@ MonoBehaviour:
       Data: false
     - Name: EditorNodeWidth
       Entry: 4
-      Data: 0
+      Data: 250
     - Name: EditorHorizontalSpacing
       Entry: 4
-      Data: 0
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -221,7 +221,7 @@ MonoBehaviour:
       Data: 600
     - Name: 
       Entry: 4
-      Data: 100
+      Data: 231.5
     - Name: 
       Entry: 8
       Data: 
@@ -260,10 +260,10 @@ MonoBehaviour:
       Data: false
     - Name: EditorNodeWidth
       Entry: 4
-      Data: 0
+      Data: 250
     - Name: EditorHorizontalSpacing
       Entry: 4
-      Data: 0
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -272,7 +272,7 @@ MonoBehaviour:
       Data: 300
     - Name: 
       Entry: 4
-      Data: 100
+      Data: 231.5
     - Name: 
       Entry: 8
       Data: 
@@ -308,10 +308,10 @@ MonoBehaviour:
       Data: false
     - Name: EditorNodeWidth
       Entry: 4
-      Data: 0
+      Data: 250
     - Name: EditorHorizontalSpacing
       Entry: 4
-      Data: 0
+      Data: 50
     - Name: Position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
@@ -330,6 +330,12 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: Unit
+      Entry: 6
+      Data: 
+    - Name: Caster
+      Entry: 6
+      Data: 
     - Name: RootMustBeBuffTick
       Entry: 6
       Data: 

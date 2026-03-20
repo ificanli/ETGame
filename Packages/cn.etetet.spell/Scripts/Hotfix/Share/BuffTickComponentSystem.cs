@@ -76,9 +76,7 @@ namespace ET
             {
                 Unit unit = buff.Parent.GetParent<Unit>();
                 using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
-                env.AddEntity(effect.Buff, buff);
-                env.AddEntity(effect.Unit, unit);
-                env.AddEntity(effect.Caster, buff.GetCaster());
+                BuffEnvBindingHelper.AddDefaultBuffBindings(env, effect.Buff, effect.Unit, effect.Caster, buff, unit);
                 BTHelper.RunTree(effect, env);
             }
         }
@@ -96,6 +94,21 @@ namespace ET
             self.CancellationToken = null;
             self.Current = 0;
             self.HashCode = 0;
+        }
+    }
+
+    public static class BuffEnvBindingHelper
+    {
+        public static void AddDefaultBuffBindings(BTEnv env, string buffKey, string unitKey, string casterKey, Buff buff, Unit unit)
+        {
+            env.AddEntity(ResolveKey(buffKey, nameof(EffectServerBuffTick.Buff)), buff);
+            env.AddEntity(ResolveKey(unitKey, nameof(EffectServerBuffTick.Unit)), unit);
+            env.AddEntity(ResolveKey(casterKey, nameof(EffectServerBuffTick.Caster)), buff.GetCaster());
+        }
+
+        private static string ResolveKey(string key, string fallback)
+        {
+            return string.IsNullOrWhiteSpace(key) ? fallback : key;
         }
     }
 }

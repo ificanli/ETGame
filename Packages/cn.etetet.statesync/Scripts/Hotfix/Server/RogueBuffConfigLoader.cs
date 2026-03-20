@@ -1,10 +1,25 @@
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace ET.Server
 {
     public static class RogueBuffConfigLoader
     {
+        public static List<BuffConfig> BuildBuiltinBuffConfigs()
+        {
+            BuffConfigCategory category = new();
+            RegisterGoldExpert(category);
+            RegisterAllSearch(category);
+            RegisterBossHunter(category);
+            RegisterFirepower(category);
+            RegisterEndurance(category);
+            RegisterHunter(category);
+            RegisterDiceManiac(category);
+
+            return category.GetAll().Values.OrderBy(static config => config.Id).ToList();
+        }
+
         public static void EnsureRegistered()
         {
             BuffConfigCategory category = BuffConfigCategory.Instance;
@@ -30,7 +45,7 @@ namespace ET.Server
 
         private static void RegisterGoldExpert(BuffConfigCategory category)
         {
-            Register(category, Buff(1001, "Rogue 1001", add: Add(new BTRogueAddGold { Amount = 30000 })));
+            Register(category, Buff(1001, "Rogue 1001", add: Add(new BTRogueSpawnMerchant { RewardGold = 30000 })));
             Register(category, Buff(1002, "Rogue 1002", add: Add(new BTRogueAddGold { Amount = 5000 })));
             Register(category, Buff(
                 1003,

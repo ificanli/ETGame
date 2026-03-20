@@ -31,6 +31,13 @@ namespace ET.Client
         }
 
         #region YIUIEvent开始
+        
+        [YIUIInvoke(MatchViewComponent.OnEventCanelMatchInvoke)]
+        private static async ETTask OnEventCanelMatchInvoke(this MatchViewComponent self)
+        {
+            
+            await ETTask.CompletedTask;
+        }
         #endregion YIUIEvent结束
     }
 }

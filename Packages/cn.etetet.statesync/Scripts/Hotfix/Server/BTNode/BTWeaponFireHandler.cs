@@ -44,7 +44,10 @@ namespace ET.Server
             weaponComp.RecordFireTime(node.SlotIndex);
             if (weaponComp.GetAmmo(node.SlotIndex) <= 0)
             {
-                WeaponReloadHelper.TryStartReload(caster, node.SlotIndex);
+                if (WeaponReloadHelper.TryStartReload(caster, node.SlotIndex))
+                {
+                    WeaponReloadSchedulerHelper.RefreshTimer(caster);
+                }
             }
             else
             {

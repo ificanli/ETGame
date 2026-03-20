@@ -43,6 +43,8 @@
 							}],
 						"TreeId" : NumberLong("8941461366428657591"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : false
 					}]
 			}], [300001, {
@@ -74,12 +76,14 @@
 												"_t" : "ET.AI_MonsterReturnCheck",
 												"_id" : 10,
 												"Children" : [],
-												"Buff" : "Buff"
+												"Buff" : "Buff",
+												"ReturnDistance" : 0.0
 											}, {
 												"_t" : "ET.AI_MonsterReturn",
 												"_id" : 6,
 												"Children" : [],
-												"Buff" : "Buff"
+												"Buff" : "Buff",
+												"WaitIntervalMs" : 0
 											}]
 									}, {
 										"_t" : "ET.BTSequence",
@@ -93,7 +97,10 @@
 												"_t" : "ET.AI_MonsterZhuiJi",
 												"_id" : 7,
 												"Children" : [],
-												"Buff" : "Buff"
+												"Buff" : "Buff",
+												"ThinkIntervalMs" : 0,
+												"PreCastSpellId" : 0,
+												"MainSpellId" : 0
 											}]
 									}, {
 										"_t" : "ET.BTSequence",
@@ -111,12 +118,20 @@
 												"_t" : "ET.AI_MonsterXunLuo",
 												"_id" : 8,
 												"Children" : [],
-												"Buff" : "Buff"
+												"Buff" : "Buff",
+												"PatrolMinRadius" : 0.0,
+												"PatrolMaxRadius" : 0.0,
+												"AggroRange" : 0.0,
+												"IdleMinMs" : 0,
+												"IdleMaxMs" : 0,
+												"ExitCombatBuffConfigId" : 0
 											}]
 									}]
 							}],
 						"TreeId" : NumberLong("9160521892227564777"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : true
 					}]
 			}], [300010, {
@@ -206,7 +221,1944 @@
 							}],
 						"TreeId" : NumberLong("5247162988964213440"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : true
+					}]
+			}], [1001, {
+				"_id" : 1001,
+				"Desc" : "Rogue 1001",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueSpawnMerchant",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"RewardGold" : 30000,
+								"NpcConfigId" : 0,
+								"SpawnDistance" : 2.5,
+								"InteractRange" : 3.0,
+								"RewardOnce" : true,
+								"DestroyAfterReward" : true,
+								"ButtonTextId" : 0
+							}],
+						"TreeId" : NumberLong("258388987297531241"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1002, {
+				"_id" : 1002,
+				"Desc" : "Rogue 1002",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueAddGold",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Amount" : 5000,
+								"SourceType" : 1,
+								"SyncProgress" : true
+							}],
+						"TreeId" : NumberLong("8280654594434508141"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1003, {
+				"_id" : 1003,
+				"Desc" : "Rogue 1003",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueKillGoldBonus",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("3568248307083969898"),
+						"Gold" : 300
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("5118782633183280021"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("547536020525535529"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1004, {
+				"_id" : 1004,
+				"Desc" : "Rogue 1004",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueFatalImmunity",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("4100961188543825407")
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("4802222085645177348"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7045129732526563060"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1005, {
+				"_id" : 1005,
+				"Desc" : "Rogue 1005",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueContainerLowQualityGold",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("7317088251356162139"),
+						"Gold" : 300,
+						"HighQualityThreshold" : 4
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2833082166144231554"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("6580746610366126746"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1006, {
+				"_id" : 1006,
+				"Desc" : "Rogue 1006",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueGoldDamageBonus",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("3480889828103097871"),
+						"GoldPerOnePercent" : 500
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("4717265812273580224"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("5546371451668157479"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1007, {
+				"_id" : 1007,
+				"Desc" : "Rogue 1007",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueAreaDiscoveryGold",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("5507003966635173503"),
+						"Gold" : 800
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("8822833871646863457"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("6168702924651516466"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1011, {
+				"_id" : 1011,
+				"Desc" : "Rogue 1011",
+				"Duration" : -1,
+				"TickTime" : 20000,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueContainerRadar",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("3191196548306818696"),
+						"Radius" : 30,
+						"IntervalMs" : 20000
+					}, {
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRadarScan",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2330573347006932317"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : false
+					}]
+			}], [1012, {
+				"_id" : 1012,
+				"Desc" : "Rogue 1012",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueContainerResultProbabilityMultiplier",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("8803087932223086186"),
+						"Permille" : 2000
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("271448037209148805"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7143388233050111519"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1013, {
+				"_id" : 1013,
+				"Desc" : "Rogue 1013",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueTemporaryKey",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("3503534308889115226"),
+						"ItemConfigId" : 10001,
+						"Count" : 1
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueGrantItem",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"ItemConfigId" : 10001,
+								"Count" : 1
+							}],
+						"TreeId" : NumberLong("8417420729679092782"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueCleanupTemporaryItems",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("270714606308624133"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1014, {
+				"_id" : 1014,
+				"Desc" : "Rogue 1014",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueInteractRangeBonus",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("4308812721116410836"),
+						"Distance" : 3.0
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyInteractRangeBonus",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1547652017921949632"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveInteractRangeBonus",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1174312711628742863"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1015, {
+				"_id" : 1015,
+				"Desc" : "Rogue 1015",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueSilentSearch",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("679879228091514220")
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplySilentSearch",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit"
+							}],
+						"TreeId" : NumberLong("6305757636945751597"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveSilentSearch",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit"
+							}],
+						"TreeId" : NumberLong("4695101525670575496"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1016, {
+				"_id" : 1016,
+				"Desc" : "Rogue 1016",
+				"Duration" : -1,
+				"TickTime" : 1000,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueBagSpaceHpBonus",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("7559059592645465756"),
+						"MaxHpPermilleAtFull" : 300
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueClearBagSpaceHpBonus",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("5419487720783255896"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueUpdateBagSpaceHpBonus",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1924955134779841048"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : false
+					}]
+			}], [1021, {
+				"_id" : 1021,
+				"Desc" : "Rogue 1021",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueObjectiveRewardBuff",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("9160648922933067170"),
+						"BuffConfigId" : 102101
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRegisterObjective",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"ObjectiveId" : 0,
+								"GoalValue" : 15
+							}],
+						"TreeId" : NumberLong("2265876691105882017"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueUnregisterObjective",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("4763065152631325389"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1022, {
+				"_id" : 1022,
+				"Desc" : "Rogue 1022",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueDamageReduction",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("7410841624306028356"),
+						"DamageReduction" : 300,
+						"SourceFilter" : 1
+					}, {
+						"_t" : "ET.EffectRogueLifeSteal",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("381273967515912169"),
+						"LifeStealPermille" : 300
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7793738808429448405"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1896388256374989535"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1023, {
+				"_id" : 1023,
+				"Desc" : "Rogue 1023",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueOnKillHeal",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("7239627669798520714"),
+						"HealLostHpPermille" : 20
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("6113755217114177199"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2293695828697492392"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1024, {
+				"_id" : 1024,
+				"Desc" : "Rogue 1024",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueSearchMonsterProbabilityMultiplier",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("2704134998692668164"),
+						"Permille" : 2000
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("5759225267645977380"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1220877508619088844"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1025, {
+				"_id" : 1025,
+				"Desc" : "Rogue 1025",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueWeaponModifiers",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("7531380851048715830"),
+						"Entries" : [{
+								"ModType" : 6,
+								"ValuePermille" : 100
+							}, {
+								"ModType" : 5,
+								"ValuePermille" : 150
+							}]
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueAddWeaponModifiers",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7378851688247216094"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveWeaponModifiers",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7572525886773648053"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1026, {
+				"_id" : 1026,
+				"Desc" : "Rogue 1026",
+				"Duration" : -1,
+				"TickTime" : 1000,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueNearMonsterSpeedBonus",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("8915479430694476417"),
+						"Radius" : 30,
+						"SpeedPct" : 30
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueClearNearMonsterSpeed",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("6864382990731513298"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueUpdateNearMonsterSpeed",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("4280240211466422919"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : false
+					}]
+			}], [1031, {
+				"_id" : 1031,
+				"Desc" : "Rogue 1031",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueWeaponModifiers",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("5680091643152576320"),
+						"Entries" : [{
+								"ModType" : 1,
+								"ValuePermille" : 200
+							}]
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueAddWeaponModifiers",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7999260432914696881"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveWeaponModifiers",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("4085520093990315197"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1032, {
+				"_id" : 1032,
+				"Desc" : "Rogue 1032",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueSkillDisable",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("8321361784524620713")
+					}, {
+						"_t" : "ET.EffectRogueWeaponModifiers",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("7983904696874156158"),
+						"Entries" : [{
+								"ModType" : 2,
+								"ValuePermille" : 500
+							}]
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTRogueAddWeaponModifiers",
+								"_id" : 3,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7595398103833977375"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTRogueRemoveWeaponModifiers",
+								"_id" : 3,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("3361112107061470248"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1033, {
+				"_id" : 1033,
+				"Desc" : "Rogue 1033",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueHitHeroCritGrowth",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("5647310991722717917"),
+						"CritPermillePerHit" : 10
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyHitHeroCritGrowth",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1953082679943095536"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveHitHeroCritGrowth",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("5949980549695806901"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1034, {
+				"_id" : 1034,
+				"Desc" : "Rogue 1034",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueWeaponModifiers",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("8337551710792371294"),
+						"Entries" : [{
+								"ModType" : 3,
+								"ValuePermille" : 500
+							}, {
+								"ModType" : 4,
+								"ValuePermille" : 300
+							}]
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueAddWeaponModifiers",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2681760456659993339"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveWeaponModifiers",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("74763217360275145"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1035, {
+				"_id" : 1035,
+				"Desc" : "Rogue 1035",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueTrapMaster",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("6542819571396579698"),
+						"IdleMs" : 5000,
+						"BulletCount" : 15
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyTrapMaster",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("4675553927041169552"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveTrapMaster",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2165575100213741690"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1036, {
+				"_id" : 1036,
+				"Desc" : "Rogue 1036",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueReloadFirstShotsBoost",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("5560493717645647400"),
+						"DamageBonusPermille" : 2000,
+						"ShotCount" : 3,
+						"PenetrationCount" : 1
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyReloadFirstShotsBoost",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("645247773138921715"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveReloadFirstShotsBoost",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("3840469511502248386"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1041, {
+				"_id" : 1041,
+				"Desc" : "Rogue 1041",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueScaleModifier",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("942505916419898401"),
+						"ScalePermille" : 200,
+						"MaxHpPermille" : 300
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyScaleModifier",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"MaxHpPermille" : 300
+							}],
+						"TreeId" : NumberLong("1153669924986006006"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRevertScaleModifier",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("4086080730327881340"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1042, {
+				"_id" : 1042,
+				"Desc" : "Rogue 1042",
+				"Duration" : -1,
+				"TickTime" : 1000,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueHealMaxHpPermille",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"HealPermille" : 10
+							}],
+						"TreeId" : NumberLong("4433740919479717989"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : false
+					}]
+			}], [1043, {
+				"_id" : 1043,
+				"Desc" : "Rogue 1043",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueLowHpShield",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("5881479244486090756"),
+						"TriggerHpPermille" : 200,
+						"ShieldMaxHpPermille" : 500
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("9167238976240583281"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("4160723696197866202"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1044, {
+				"_id" : 1044,
+				"Desc" : "Rogue 1044",
+				"Duration" : -1,
+				"TickTime" : 30000,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueExtendGameTime",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("1961870409710768705"),
+						"DurationMs" : NumberLong(300000)
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1230642367302267106"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRevertPeriodicHpScale",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 3,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("6390095435262617624"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRoguePeriodicHpScale",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"MaxHpPermille" : 30
+							}],
+						"TreeId" : NumberLong("2634227907284341248"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : false
+					}]
+			}], [1045, {
+				"_id" : 1045,
+				"Desc" : "Rogue 1045",
+				"Duration" : -1,
+				"TickTime" : 30000,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueHealSpirit",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("5347638630345758978"),
+						"HealPermille" : 50,
+						"IntervalMs" : 30000
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueSummonHealSpirit",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2105111919417609845"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveSummonedSpirit",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("398650533765034878"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueSummonHealSpirit",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("6031469347891609050"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : false
+					}]
+			}], [1051, {
+				"_id" : 1051,
+				"Desc" : "Rogue 1051",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueLowHpDamageBonus",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("4518661538530238073"),
+						"HpThresholdPermille" : 300,
+						"DamageBonusPermille" : 300
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7529609766126716054"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7918859546236884904"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1052, {
+				"_id" : 1052,
+				"Desc" : "Rogue 1052",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueOnKillStackAttack",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("943351316675904805"),
+						"BonusPermillePerStack" : 300,
+						"MaxStacks" : 3
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1839192236302299248"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("171333716219907162"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1053, {
+				"_id" : 1053,
+				"Desc" : "Rogue 1053",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueOutOfCombatStealth",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("3703947438749361080")
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2258693933640148244"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTRogueClearOutOfCombatStealth",
+								"_id" : 3,
+								"Children" : [],
+								"Unit" : "Unit"
+							}],
+						"TreeId" : NumberLong("845230220890937401"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1054, {
+				"_id" : 1054,
+				"Desc" : "Rogue 1054",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueScaleModifier",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("6589278335388468562"),
+						"ScalePermille" : -200,
+						"MaxHpPermille" : -200
+					}, {
+						"_t" : "ET.EffectRogueSizeDifferenceDamageBonus",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("4538290808572047499"),
+						"MaxDifferencePermille" : 500,
+						"MaxDamageBonusPermille" : 500
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyScaleModifier",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"MaxHpPermille" : -200
+							}, {
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 3,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTRogueApplySpeedFinalPct",
+								"_id" : 4,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"Value" : 30
+							}],
+						"TreeId" : NumberLong("3566851592176108716"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRevertScaleModifier",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 3,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTRogueRemoveSpeedFinalPct",
+								"_id" : 4,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("8295924978074258442"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1055, {
+				"_id" : 1055,
+				"Desc" : "Rogue 1055",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueWeaponModifiers",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("6967872504972464044"),
+						"Entries" : [{
+								"ModType" : 1,
+								"ValuePermille" : -800
+							}, {
+								"ModType" : 5,
+								"ValuePermille" : 4000
+							}]
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueAddWeaponModifiers",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1558471777449991761"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemoveWeaponModifiers",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2526239094054015493"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1056, {
+				"_id" : 1056,
+				"Desc" : "Rogue 1056",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueAfterSkillSpeedBoost",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("1021056909513949879"),
+						"SpeedPct" : 10,
+						"DurationMs" : 3000
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("7113327073429025998"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("8462534456353380241"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1061, {
+				"_id" : 1061,
+				"Desc" : "Rogue 1061",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueGrantRandomCard",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"Quality" : 2,
+								"Count" : 1,
+								"FixedOptionId" : 0
+							}],
+						"TreeId" : NumberLong("5946759269839855381"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1062, {
+				"_id" : 1062,
+				"Desc" : "Rogue 1062",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueGrantRandomCard",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"Quality" : 3,
+								"Count" : 2,
+								"FixedOptionId" : 0
+							}],
+						"TreeId" : NumberLong("3824010436688664976"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1063, {
+				"_id" : 1063,
+				"Desc" : "Rogue 1063",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueInstantKillChance",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("7138998477074872290"),
+						"ChancePermille" : 10,
+						"GoldReward" : 8888
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("3222852085290131862"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("19518006712794440"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1064, {
+				"_id" : 1064,
+				"Desc" : "Rogue 1064",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueProbabilityMultiplier",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("3860106977858516750"),
+						"Permille" : 1500
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2132720563189382448"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("1678343058053563705"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [1065, {
+				"_id" : 1065,
+				"Desc" : "Rogue 1065",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueReplaceAllCards",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("2277260157322400303")
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueReplaceAllCards",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTRogueGrantRandomCard",
+								"_id" : 3,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"Quality" : 2,
+								"Count" : 2,
+								"FixedOptionId" : 0
+							}, {
+								"_t" : "ET.BTRogueGrantRandomCard",
+								"_id" : 4,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"Quality" : 3,
+								"Count" : 1,
+								"FixedOptionId" : 0
+							}],
+						"TreeId" : NumberLong("5102751934793451396"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [102101, {
+				"_id" : 102101,
+				"Desc" : "Rogue 1021 Reward",
+				"Duration" : -1,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectRogueMonsterDamageBonus",
+						"_id" : 1,
+						"Children" : [],
+						"TreeId" : NumberLong("4666019438359704744"),
+						"DamageBonusPermille" : 500
+					}, {
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueApplyPassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("2348680914317761724"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTRogueRemovePassiveEffects",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff"
+							}],
+						"TreeId" : NumberLong("8771886354829958633"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
 					}]
 			}], [200000, {
 				"_id" : 200000,
@@ -248,6 +2200,8 @@
 							}],
 						"TreeId" : NumberLong("3815612886719013578"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : true
 					}, {
 						"_t" : "ET.EffectServerBuffAdd",
@@ -416,6 +2370,8 @@
 							}],
 						"TreeId" : NumberLong("892299141201969128"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : false
 					}, {
 						"_t" : "ET.EffectClientBuffAdd",
@@ -641,6 +2597,8 @@
 							}],
 						"TreeId" : NumberLong("911151293205797089"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : false
 					}, {
 						"_t" : "ET.EffectServerBuffHitted",
@@ -971,6 +2929,8 @@
 							}],
 						"TreeId" : NumberLong("7821291767413523228"),
 						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : null,
 						"Override" : true
 					}]
 			}], [200040, {
@@ -1076,6 +3036,8 @@
 							}],
 						"TreeId" : NumberLong("564552055616284588"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : false
 					}, {
 						"_t" : "ET.EffectServerBuffAdd",
@@ -1223,7 +3185,7 @@
 						"Children" : [{
 								"_t" : "ET.BTAddBuff",
 								"_id" : 2,
-								"Children" : null,
+								"Children" : [],
 								"Caster" : "Caster",
 								"Target" : "Caster",
 								"Buff" : "Buff",
@@ -1329,6 +3291,8 @@
 							}],
 						"TreeId" : NumberLong("6153392924137937051"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : true
 					}]
 			}], [200130, {
@@ -1399,6 +3363,8 @@
 							}],
 						"TreeId" : NumberLong("8260875540629730541"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : true
 					}]
 			}], [200200, {
@@ -1440,8 +3406,15 @@
 								"Caster" : "Unit",
 								"SlotIndex" : 1
 							}, {
-								"_t" : "ET.BTWeaponFire",
+								"_t" : "ET.BTTurnToUnit",
 								"_id" : 6,
+								"Children" : [],
+								"Caster" : "Unit",
+								"Target" : "Target",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTWeaponFire",
+								"_id" : 7,
 								"Children" : [],
 								"Caster" : "Unit",
 								"Target" : "Target",
@@ -1449,6 +3422,8 @@
 							}],
 						"TreeId" : NumberLong("2979943332127943200"),
 						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
 						"Override" : false
 					}]
 			}], [200300, {

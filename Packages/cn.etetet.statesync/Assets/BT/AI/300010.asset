@@ -125,7 +125,7 @@ MonoBehaviour:
       Data: 300
     - Name: 
       Entry: 4
-      Data: -803.5
+      Data: -795.5
     - Name: 
       Entry: 8
       Data: 
@@ -209,7 +209,7 @@ MonoBehaviour:
       Data: 950
     - Name: 
       Entry: 4
-      Data: -562.5
+      Data: -550.5
     - Name: 
       Entry: 8
       Data: 
@@ -269,7 +269,7 @@ MonoBehaviour:
       Data: 950
     - Name: 
       Entry: 4
-      Data: -321.5
+      Data: -305.5
     - Name: 
       Entry: 8
       Data: 
@@ -323,7 +323,7 @@ MonoBehaviour:
       Data: 600
     - Name: 
       Entry: 4
-      Data: -385
+      Data: -371
     - Name: 
       Entry: 8
       Data: 
@@ -389,7 +389,7 @@ MonoBehaviour:
       Data: 950
     - Name: 
       Entry: 4
-      Data: -60.5
+      Data: -40.5
     - Name: 
       Entry: 8
       Data: 
@@ -452,7 +452,7 @@ MonoBehaviour:
       Data: 950
     - Name: 
       Entry: 4
-      Data: 200.5
+      Data: 224.5
     - Name: 
       Entry: 8
       Data: 
@@ -509,7 +509,7 @@ MonoBehaviour:
       Data: 600
     - Name: 
       Entry: 4
-      Data: 137
+      Data: 159
     - Name: 
       Entry: 8
       Data: 
@@ -587,7 +587,7 @@ MonoBehaviour:
       Data: 1300
     - Name: 
       Entry: 4
-      Data: 538.5
+      Data: 566.5
     - Name: 
       Entry: 8
       Data: 
@@ -638,7 +638,7 @@ MonoBehaviour:
       Data: 950
     - Name: 
       Entry: 4
-      Data: 538.5
+      Data: 566.5
     - Name: 
       Entry: 8
       Data: 
@@ -692,7 +692,7 @@ MonoBehaviour:
       Data: 950
     - Name: 
       Entry: 4
-      Data: 742.5
+      Data: 774.5
     - Name: 
       Entry: 8
       Data: 
@@ -755,7 +755,7 @@ MonoBehaviour:
       Data: 600
     - Name: 
       Entry: 4
-      Data: 699
+      Data: 729
     - Name: 
       Entry: 8
       Data: 
@@ -797,7 +797,7 @@ MonoBehaviour:
       Data: 300
     - Name: 
       Entry: 4
-      Data: 177
+      Data: 199
     - Name: 
       Entry: 8
       Data: 
@@ -849,6 +849,12 @@ MonoBehaviour:
     - Name: Buff
       Entry: 1
       Data: Buff
+    - Name: Unit
+      Entry: 6
+      Data: 
+    - Name: Caster
+      Entry: 6
+      Data: 
     - Name: RootMustBeBuffTick
       Entry: 1
       Data: RootMustBeBuffTick

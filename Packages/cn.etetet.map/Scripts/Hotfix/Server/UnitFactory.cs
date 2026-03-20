@@ -7,6 +7,11 @@ namespace ET.Server
     {
         public static Unit Create(Scene scene, long id, int configId)
         {
+            return Create(scene, id, configId, float3.zero, quaternion.identity, true);
+        }
+
+        public static Unit Create(Scene scene, long id, int configId, float3 initialPosition, quaternion initialRotation, bool createInitialAiBuff)
+        {
             UnitComponent unitComponent = scene.GetComponent<UnitComponent>();
             
             Unit unit = unitComponent.AddChildWithId<Unit, int>(id, configId);
@@ -22,8 +27,8 @@ namespace ET.Server
 
             // 初始落点统一交给运行时控制：
             // 玩家/机器人由 SpawnPoint ECA 决定，怪物/NPC 由调用方或 MonsterSpawnPoint ECA 显式赋值。
-            unit.Position = float3.zero;
-            unit.Rotation = quaternion.identity;
+            unit.Position = initialPosition;
+            unit.Rotation = initialRotation;
             unit.AddComponent<UnitSpawnPointComponent, float3, quaternion>(unit.Position, unit.Rotation);
             
             unit.AddComponent<MoveComponent>();
@@ -62,7 +67,7 @@ namespace ET.Server
             }
             
             int ai = numericComponent.GetAsInt(NumericType.AI);
-            if (ai != 0)
+            if (createInitialAiBuff && ai != 0)
             {
                 if (BuffConfigCategory.Instance.Contain(ai))
                 {

@@ -62,7 +62,7 @@
   {
     "Id": 11,
     "Key": "SDCMap.WorldMaxZ",
-    "FloatValue": 120,
+    "FloatValue": 132,
     "StringValue": ""
   },
   {
@@ -106,5 +106,23 @@
     "Key": "Minimap.FogColor.Unexplored",
     "FloatValue": 0,
     "StringValue": "#09131EE8"
+  },
+  {
+    "Id": 19,
+    "Key": "Minimap.MarkerIcon.UnitConfig.1005",
+    "FloatValue": 0,
+    "StringValue": "UI-ChatIcon-Battlenet"
+  },
+  {
+    "Id": 20,
+    "Key": "Minimap.SceneFog.VisionRadius",
+    "FloatValue": 12,
+    "StringValue": ""
+  },
+  {
+    "Id": 21,
+    "Key": "SDCMap.Minimap.SceneFog.VisionRadius",
+    "FloatValue": 8,
+    "StringValue": ""
   }
 ]

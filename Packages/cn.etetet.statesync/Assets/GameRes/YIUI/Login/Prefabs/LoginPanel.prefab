@@ -942,7 +942,7 @@ MonoBehaviour:
       Data: 
     - Name: m_PackagesName
       Entry: 1
-      Data: wow
+      Data: statesync
     - Name: IsSplitData
       Entry: 5
       Data: false
@@ -1011,8 +1011,8 @@ MonoBehaviour:
   UICodeType: 0
   WindowOption: 0
   PanelLayer: 3
-  PanelOption: 4
-  PanelStackOption: 2
+  PanelOption: 0
+  PanelStackOption: 1
   ViewWindowType: 0
   ViewStackOption: 2
   CachePanelTime: 10

@@ -42,6 +42,14 @@ namespace ET.Server
                 LoadoutStateHelper.ApplyConfirmedSnapshot(loadout, request, finalBagItems, finalSecureItems);
                 PlayerStorageComponent storage = player.GetComponent<PlayerStorageComponent>() ?? player.AddComponent<PlayerStorageComponent>();
                 LoadoutOperationHelper.PushStateChanged(player, loadout, storage);
+                EventSystem.Instance.Publish(session.Root(), new PlayerLoadoutConfirmed
+                {
+                    PlayerId = player.Id,
+                    HeroConfigId = request.HeroConfigId,
+                    MainWeaponConfigId = request.MainWeaponConfigId,
+                    SubWeaponConfigId = request.SubWeaponConfigId,
+                    ArmorConfigId = request.ArmorConfigId,
+                });
                 response.Message = "success";
             }
 

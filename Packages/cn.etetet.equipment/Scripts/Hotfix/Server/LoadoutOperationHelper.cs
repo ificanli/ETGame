@@ -75,6 +75,59 @@ namespace ET.Server
             return ErrorCode.ERR_Success;
         }
 
+        public static int BuyFromShop(
+            LoadoutComponent loadout,
+            PlayerStorageComponent storage,
+            C2G_LoadoutBuyFromShop request,
+            out string message)
+        {
+            message = string.Empty;
+
+            if (request.Count <= 0)
+            {
+                message = "count invalid";
+                return ErrorCode.ERR_LoadoutCountInvalid;
+            }
+
+            if (!TryResolveShopPurchaseItem(request.ConfigId, request.Count, out ItemConfig shopItem, out long totalCost, out message))
+            {
+                return ErrorCode.ERR_LoadoutShopItemUnavailable;
+            }
+
+            if (!storage.CanAfford(totalCost))
+            {
+                message = "wealth not enough";
+                return ErrorCode.ERR_LoadoutWealthNotEnough;
+            }
+
+            object[] snapshot = CaptureSnapshot(loadout);
+            int error = AddOwnedItem(
+                loadout,
+                request.TargetAreaType,
+                request.TargetSlotType,
+                request.TargetAnchorSlotIndex,
+                request.TargetBagWidth,
+                request.TargetBagHeight,
+                shopItem.Id,
+                request.Count,
+                out message);
+            if (error != ErrorCode.ERR_Success)
+            {
+                RestoreSnapshot(loadout, snapshot);
+                return error;
+            }
+
+            if (!storage.TrySpendWealth(totalCost))
+            {
+                RestoreSnapshot(loadout, snapshot);
+                message = "wealth not enough";
+                return ErrorCode.ERR_LoadoutWealthNotEnough;
+            }
+
+            InvalidateConfirmedState(loadout);
+            return ErrorCode.ERR_Success;
+        }
+
         public static int PutToWarehouse(
             LoadoutComponent loadout,
             PlayerStorageComponent storage,
@@ -838,6 +891,52 @@ namespace ET.Server
 
             message = "warehouse item not found";
             return false;
+        }
+
+        private static bool TryResolveShopPurchaseItem(
+            int configId,
+            int count,
+            out ItemConfig shopItem,
+            out long totalCost,
+            out string message)
+        {
+            shopItem = null;
+            totalCost = 0;
+            message = string.Empty;
+
+            if (configId <= 0)
+            {
+                message = "config id invalid";
+                return false;
+            }
+
+            if (count <= 0)
+            {
+                message = "count invalid";
+                return false;
+            }
+
+            shopItem = ItemConfigCategory.Instance.GetOrDefault(configId);
+            if (shopItem == null)
+            {
+                message = "shop item config not found";
+                return false;
+            }
+
+            if (!shopItem.LoadoutShopVisible)
+            {
+                message = "shop item hidden";
+                return false;
+            }
+
+            if (shopItem.LoadoutBuyPrice < 0)
+            {
+                message = "shop item price invalid";
+                return false;
+            }
+
+            totalCost = (long)shopItem.LoadoutBuyPrice * count;
+            return true;
         }
 
         private static List<int> GetBlockingWarehouseIndices(

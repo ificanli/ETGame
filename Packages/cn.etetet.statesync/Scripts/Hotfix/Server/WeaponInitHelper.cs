@@ -149,8 +149,10 @@ namespace ET.Server
                 return;
             }
 
-            if (unit.GetComponent<WeaponComponent>() != null)
+            WeaponComponent weaponComponent = unit.GetComponent<WeaponComponent>();
+            if (weaponComponent != null)
             {
+                WeaponReloadSchedulerHelper.StopTimer(weaponComponent);
                 unit.RemoveComponent<WeaponComponent>();
             }
 

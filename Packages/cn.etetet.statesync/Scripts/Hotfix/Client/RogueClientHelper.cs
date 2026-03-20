@@ -51,6 +51,11 @@ namespace ET.Client
                 return;
             }
 
+            if (TryGetSelectedOptionData(runtime, response.OptionId, response.BuffConfigId, out RogueClientOptionData selectedOption))
+            {
+                runtime.SelectedOptions.Add(selectedOption);
+            }
+
             runtime.ChoiceSerial = 0;
             runtime.ChoicePopupPending = false;
             runtime.ChoiceOptions.Clear();
@@ -196,6 +201,51 @@ namespace ET.Client
         {
             RogueClientComponent runtime = GetOrAddRuntime(root);
             runtime?.ResetRuntime();
+        }
+
+        private static bool TryGetSelectedOptionData(RogueClientComponent runtime, int optionId, int buffConfigId, out RogueClientOptionData result)
+        {
+            result = default;
+            if (runtime != null)
+            {
+                foreach (RogueClientOptionData optionData in runtime.ChoiceOptions)
+                {
+                    if (optionData.OptionId != optionId)
+                    {
+                        continue;
+                    }
+
+                    result = optionData;
+                    result.BuffConfigId = buffConfigId > 0 ? buffConfigId : optionData.BuffConfigId;
+                    return true;
+                }
+            }
+
+            RogueRuntimeConfigCategory configCategory = RogueRuntimeConfigCategory.Instance;
+            if (configCategory == null ||
+                !configCategory.TryGetOption(optionId, out RogueOptionConfig optionConfig) ||
+                optionConfig == null)
+            {
+                return false;
+            }
+
+            result = new RogueClientOptionData
+            {
+                OptionId = optionId,
+                BuffConfigId = buffConfigId,
+                Name = optionConfig.GetDisplayName(),
+                Desc = optionConfig.GetDisplayDesc(),
+                ImagePath = optionConfig.GetImagePath(),
+                BTConfig = optionConfig.BTConfig ?? string.Empty,
+                NameTextId = optionConfig.NameTextId,
+                DescTextId = optionConfig.DescTextId,
+                Icon = optionConfig.Icon ?? string.Empty,
+                RerollCount = 0,
+                Quality = optionConfig.Quality,
+                ShowTags = optionConfig.ShowTags ?? System.Array.Empty<int>(),
+                HideTags = optionConfig.HideTags ?? System.Array.Empty<int>(),
+            };
+            return true;
         }
     }
 }

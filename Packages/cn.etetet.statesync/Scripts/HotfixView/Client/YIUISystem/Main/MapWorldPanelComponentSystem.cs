@@ -28,6 +28,7 @@ namespace ET.Client
         private static void Destroy(this MapWorldPanelComponent self)
         {
             self.SetRuntimeDisplayMode(MinimapDisplayMode.Compact);
+            self.ReleaseAllWorldMarkerSprites();
             self.ClearWorldMapMarkers();
             if (self.MarkerSprite != null)
             {
@@ -120,6 +121,11 @@ namespace ET.Client
                 return;
             }
 
+            MinimapDisplayHelper.StretchToFillParent(self.MapTexture?.rectTransform);
+            MinimapDisplayHelper.StretchToFillParent(self.FogOverlay?.rectTransform);
+            MinimapDisplayHelper.StretchToFillParent(self.MarkerLayer);
+            MinimapDisplayHelper.StretchToFillParent(self.PingLayer);
+
             if (self.FogOverlay == null)
             {
                 Transform fogTransform = self.MapMask.Find("FogOverlay");
@@ -154,6 +160,11 @@ namespace ET.Client
                 markerRect.SetSiblingIndex(self.MapMask.childCount - 1);
                 self.MarkerLayer = markerRect;
             }
+
+            MinimapDisplayHelper.StretchToFillParent(self.MapTexture?.rectTransform);
+            MinimapDisplayHelper.StretchToFillParent(self.FogOverlay?.rectTransform);
+            MinimapDisplayHelper.StretchToFillParent(self.MarkerLayer);
+            MinimapDisplayHelper.StretchToFillParent(self.PingLayer);
 
             if (self.PlayerArrow != null && self.PlayerArrow.sprite == null)
             {
@@ -200,14 +211,13 @@ namespace ET.Client
                 return;
             }
 
-            self.RefreshWorldMapTexture();
-            runtime.RefreshLocalFog();
+            self.RefreshWorldMapTexture(runtime);
             self.RefreshWorldMapFog(runtime);
             self.RefreshWorldMapArrow(runtime, myPosition);
             self.RefreshWorldMapMarkers(runtime);
         }
 
-        private static void RefreshWorldMapTexture(this MapWorldPanelComponent self)
+        private static void RefreshWorldMapTexture(this MapWorldPanelComponent self, MinimapRuntimeComponent runtime)
         {
             if (self.MapTexture == null)
             {
@@ -220,10 +230,10 @@ namespace ET.Client
                 self.MapTexture.texture = mainPanel.MinimapTexture.texture;
             }
 
-            self.MapTexture.uvRect = new Rect(0f, 0f, 1f, 1f);
+            self.MapTexture.uvRect = MinimapDisplayHelper.GetExpandedBaseUvRect(runtime, self.MapTexture.texture);
             if (self.FogOverlay != null)
             {
-                self.FogOverlay.uvRect = self.MapTexture.uvRect;
+                self.FogOverlay.uvRect = MinimapDisplayHelper.GetExpandedFogUvRect();
             }
         }
 
@@ -344,7 +354,7 @@ namespace ET.Client
             foreach (KeyValuePair<long, MinimapMarkerRuntime> pair in runtime.GetMarkers())
             {
                 MinimapMarkerRuntime marker = pair.Value;
-                if (marker.UnitId == runtime.MyUnitId)
+                if (marker.UnitId == runtime.MyUnitId || !MinimapRuntimeMarkerHelper.ShouldDisplayMarker(runtime, marker))
                 {
                     continue;
                 }
@@ -362,7 +372,7 @@ namespace ET.Client
 
                 if (self.MarkerImages.TryGetValue(marker.UnitId, out Image markerImage) && markerImage != null)
                 {
-                    markerImage.color = self.ResolveWorldMarkerColor(runtime, marker);
+                    self.RefreshWorldMarkerVisual(runtime, marker, markerImage);
                 }
             }
 
@@ -371,6 +381,7 @@ namespace ET.Client
                 if (!activeMarkerIds.Contains(pair.Key) && pair.Value != null)
                 {
                     pair.Value.gameObject.SetActive(false);
+                    self.MarkerDesiredSpriteNames.Remove(pair.Key);
                 }
             }
         }
@@ -406,6 +417,7 @@ namespace ET.Client
             markerImage.raycastTarget = false;
             markerImage.sprite = self.GetWorldMarkerSprite();
             markerImage.type = Image.Type.Simple;
+            markerImage.preserveAspect = false;
 
             self.MarkerRects[unitId] = markerRect;
             self.MarkerImages[unitId] = markerImage;
@@ -424,6 +436,7 @@ namespace ET.Client
 
             self.MarkerRects.Clear();
             self.MarkerImages.Clear();
+            self.MarkerDesiredSpriteNames.Clear();
         }
 
         private static Sprite GetWorldMarkerSprite(this MapWorldPanelComponent self)
@@ -461,6 +474,121 @@ namespace ET.Client
             }
 
             return Color.white;
+        }
+
+        private static void RefreshWorldMarkerVisual(this MapWorldPanelComponent self, MinimapRuntimeComponent runtime, MinimapMarkerRuntime marker, Image markerImage)
+        {
+            if (markerImage == null)
+            {
+                return;
+            }
+
+            string iconName = MinimapMarkerIconHelper.ResolveIconName(marker);
+            self.MarkerDesiredSpriteNames[marker.UnitId] = iconName ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(iconName))
+            {
+                if (self.MarkerLoadedSprites.TryGetValue(iconName, out Sprite customSprite) && customSprite != null)
+                {
+                    markerImage.sprite = customSprite;
+                    markerImage.color = Color.white;
+                    markerImage.preserveAspect = true;
+                    return;
+                }
+
+                markerImage.sprite = self.GetWorldMarkerSprite();
+                markerImage.color = self.ResolveWorldMarkerColor(runtime, marker);
+                markerImage.preserveAspect = false;
+                self.RequestWorldMarkerSprite(iconName);
+                return;
+            }
+
+            markerImage.sprite = self.GetWorldMarkerSprite();
+            markerImage.color = self.ResolveWorldMarkerColor(runtime, marker);
+            markerImage.preserveAspect = false;
+        }
+
+        private static void RequestWorldMarkerSprite(this MapWorldPanelComponent self, string spriteName)
+        {
+            if (self == null || self.IsDisposed || string.IsNullOrWhiteSpace(spriteName))
+            {
+                return;
+            }
+
+            if (self.MarkerLoadedSprites.ContainsKey(spriteName) || !self.MarkerLoadingSpriteNames.Add(spriteName))
+            {
+                return;
+            }
+
+            self.LoadWorldMarkerSpriteAsync(spriteName).Coroutine();
+        }
+
+        private static async ETTask LoadWorldMarkerSpriteAsync(this MapWorldPanelComponent self, string spriteName)
+        {
+            EntityRef<MapWorldPanelComponent> selfRef = self;
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = spriteName });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            self.MarkerLoadingSpriteNames.Remove(spriteName);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            if (self.MarkerLoadedSprites.TryGetValue(spriteName, out Sprite cachedSprite) && cachedSprite != null)
+            {
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                    YIUISingletonHelper.YIUIMgr,
+                    new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                return;
+            }
+
+            self.MarkerLoadedSprites[spriteName] = sprite;
+            foreach (KeyValuePair<long, Image> pair in self.MarkerImages)
+            {
+                if (!self.MarkerDesiredSpriteNames.TryGetValue(pair.Key, out string desiredSpriteName) ||
+                    desiredSpriteName != spriteName ||
+                    pair.Value == null)
+                {
+                    continue;
+                }
+
+                pair.Value.sprite = sprite;
+                pair.Value.color = Color.white;
+                pair.Value.preserveAspect = true;
+            }
+        }
+
+        private static void ReleaseAllWorldMarkerSprites(this MapWorldPanelComponent self)
+        {
+            foreach (Sprite sprite in self.MarkerLoadedSprites.Values)
+            {
+                if (sprite == null)
+                {
+                    continue;
+                }
+
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                    YIUISingletonHelper.YIUIMgr,
+                    new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+            }
+
+            self.MarkerLoadedSprites.Clear();
+            self.MarkerLoadingSpriteNames.Clear();
+            self.MarkerDesiredSpriteNames.Clear();
         }
 
         private static string ResolveWorldPlayerMarkerColorKey(this MapWorldPanelComponent self, MinimapRuntimeComponent runtime, MinimapMarkerRuntime marker)

@@ -22,6 +22,14 @@ namespace ET.Client
                 return;
             }
 
+            ECAPointMarker[] markers = GameObject.FindObjectsByType<ECAPointMarker>(FindObjectsSortMode.None);
+            if (!ECAFlowGraphAssetMigrationUtility.TryPrepareReferencedFlowGraphs(markers, out string graphErrorMessage))
+            {
+                Debug.LogError($"[ExportECAConfig] FlowGraph validation failed in scene '{sceneName}':\n{graphErrorMessage}");
+                EditorUtility.DisplayDialog("Export ECA Config", $"场景 {sceneName} 的 FlowGraph 存在无效节点，请先修复后再导出：\n\n{graphErrorMessage}", "知道了");
+                return;
+            }
+
             List<ECAConfig> configs = ECASceneHelper.CollectECAConfigs();
             if (configs.Count == 0)
             {

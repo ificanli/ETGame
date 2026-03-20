@@ -126,9 +126,7 @@ namespace ET.Server
             if (effect != null)
             {
                 using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
-                env.AddEntity(effect.Buff, buff);
-                env.AddEntity(effect.Unit, buff.Parent.GetParent<Unit>());
-                env.AddEntity(effect.Caster, buff.GetCaster());
+                BuffEnvBindingHelper.AddDefaultBuffBindings(env, effect.Buff, effect.Unit, effect.Caster, buff, unit);
                 BTHelper.RunTree(effect, env);
             }
             
@@ -284,9 +282,7 @@ namespace ET.Server
             if (effect != null)
             {
                 using BTEnv env = BTEnv.Create(buff.Scene(), unit.Id);
-                env.AddEntity(effect.Buff, buff);
-                env.AddEntity(effect.Unit, unit);
-                env.AddEntity(effect.Caster, buff.GetCaster());
+                BuffEnvBindingHelper.AddDefaultBuffBindings(env, effect.Buff, effect.Unit, effect.Caster, buff, unit);
                 BTHelper.RunTree(effect, env);
             }
 

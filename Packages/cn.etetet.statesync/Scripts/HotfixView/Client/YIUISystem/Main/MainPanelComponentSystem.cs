@@ -64,6 +64,9 @@ namespace ET.Client
             self.RefreshSearchButtonVisual(0, false);
             self.RefreshOpenDoorButton(false, string.Empty, false);
             self.BindRogueLevelBar();
+            self.BindRogueEffectUI();
+            self.HideRogueEffectDesc(true);
+            self.RefreshRogueEffectPanel(true);
             self.BindFpsCounter();
             self.ResetFpsCounter();
             self.BindMinimap();
@@ -109,6 +112,9 @@ namespace ET.Client
             self.SearchButtonText = null;
             self.OpenDoorButton = null;
             self.FpsCounterText = null;
+            self.ReleaseAllRogueEffectButtonSprites();
+            self.ReleaseAllMinimapMarkerSprites();
+            self.ClearRogueEffectButtons();
             self.ClearMinimapMarkers();
             if (self.MinimapMarkerSprite != null)
             {
@@ -132,6 +138,11 @@ namespace ET.Client
             self.MinimapMarkerSprite = null;
             self.RogueLevelSlider = null;
             self.RogueLevelText = null;
+            self.RogueEffectRoot = null;
+            self.RogueEffectTextRect = null;
+            self.RogueEffectText = null;
+            self.LastRogueEffectSignature = int.MinValue;
+            self.RogueEffectPreviewIndex = -1;
         }
 
         [EntitySystem]
@@ -151,6 +162,9 @@ namespace ET.Client
             self.BindOpenDoorButtonUI();
             self.RefreshSearchButtonVisual(0, false);
             self.RefreshOpenDoorButton(false, string.Empty, false);
+            self.BindRogueEffectUI();
+            self.HideRogueEffectDesc(true);
+            self.RefreshRogueEffectPanel(true);
             self.BindFpsCounter();
             self.ResetFpsCounter();
             self.RefreshRogueLevelBar(true);
@@ -261,6 +275,8 @@ namespace ET.Client
             self.RefreshOpenDoorButton(showOpenDoorButton, openDoorText, canInteract);
 
             self.RefreshRogueLevelBar();
+            self.RefreshRogueEffectPanel();
+            self.TryCloseRogueEffectDescOnOutsideClick();
             self.RefreshMinimap();
         }
 
@@ -453,6 +469,539 @@ namespace ET.Client
             self.OpenDoorButton = openDoorButtonTransform.GetComponent<Button>();
         }
 
+        private static void BindRogueEffectUI(this MainPanelComponent self)
+        {
+            Transform rootTransform = self.UIBase?.OwnerGameObject?.transform;
+            if (rootTransform == null)
+            {
+                return;
+            }
+
+            self.RogueEffectRoot ??= rootTransform.Find("RogueEffect") as RectTransform;
+            self.RogueEffectTextRect ??= rootTransform.Find("RogueEffectText") as RectTransform;
+            if (self.RogueEffectTextRect != null && self.RogueEffectText == null)
+            {
+                self.RogueEffectText = self.RogueEffectTextRect.GetComponent<TMP_Text>();
+                self.RogueEffectText ??= self.RogueEffectTextRect.GetComponentInChildren<TMP_Text>(true);
+            }
+
+            if (self.RogueEffectRoot == null || self.RogueEffectButtons.Count > 0)
+            {
+                return;
+            }
+
+            List<Button> buttons = new();
+            foreach (Button button in self.RogueEffectRoot.GetComponentsInChildren<Button>(true))
+            {
+                if (button != null && button.transform.parent == self.RogueEffectRoot)
+                {
+                    buttons.Add(button);
+                }
+            }
+
+            buttons.Sort((left, right) => left.transform.GetSiblingIndex().CompareTo(right.transform.GetSiblingIndex()));
+            foreach (Button button in buttons)
+            {
+                self.RegisterRogueEffectButton(button);
+            }
+        }
+
+        private static void RefreshRogueEffectPanel(this MainPanelComponent self, bool force = false)
+        {
+            self.BindRogueEffectUI();
+            if (self.RogueEffectRoot == null)
+            {
+                return;
+            }
+
+            RogueClientComponent runtime = self.Root()?.GetComponent<RogueClientComponent>();
+            int selectedCount = runtime?.SelectedOptions?.Count ?? 0;
+            bool hasSelectedOptions = selectedCount > 0;
+            if (self.RogueEffectRoot.gameObject.activeSelf != hasSelectedOptions)
+            {
+                self.RogueEffectRoot.gameObject.SetActive(hasSelectedOptions);
+            }
+
+            if (!hasSelectedOptions)
+            {
+                self.LastRogueEffectSignature = 0;
+                self.HideRogueEffectDesc(true);
+                self.DisableUnusedRogueEffectButtons(0);
+                return;
+            }
+
+            int signature = ComputeRogueEffectSignature(runtime.SelectedOptions);
+            if (!force && self.LastRogueEffectSignature == signature)
+            {
+                return;
+            }
+
+            self.LastRogueEffectSignature = signature;
+            self.HideRogueEffectDesc(true);
+            self.EnsureRogueEffectButtonPool(selectedCount);
+            self.RebindRogueEffectButtonListeners();
+
+            int bindCount = Mathf.Min(selectedCount, self.RogueEffectButtons.Count);
+            for (int i = 0; i < bindCount; ++i)
+            {
+                Button button = self.RogueEffectButtons[i];
+                if (button == null)
+                {
+                    continue;
+                }
+
+                button.gameObject.SetActive(true);
+                button.interactable = true;
+                Image buttonImage = self.GetRogueEffectButtonImage(i);
+                self.PrepareRogueEffectButtonVisual(button, buttonImage);
+                self.SetRogueEffectButtonSprite(i, runtime.SelectedOptions[i].ImagePath ?? string.Empty).Coroutine();
+            }
+
+            self.DisableUnusedRogueEffectButtons(bindCount);
+        }
+
+        private static void EnsureRogueEffectButtonPool(this MainPanelComponent self, int count)
+        {
+            self.BindRogueEffectUI();
+            if (self.RogueEffectRoot == null || count <= 0)
+            {
+                return;
+            }
+
+            while (self.RogueEffectButtons.Count < count)
+            {
+                Button templateButton = self.RogueEffectButtons.Count > 0 ? self.RogueEffectButtons[0] : null;
+                if (templateButton == null)
+                {
+                    Log.Warning("[MainPanel] missing rogue effect button template");
+                    return;
+                }
+
+                GameObject cloneObject = UnityEngine.Object.Instantiate(templateButton.gameObject, self.RogueEffectRoot);
+                cloneObject.name = $"RogueEffectButton_{self.RogueEffectButtons.Count}";
+                cloneObject.SetActive(false);
+                cloneObject.transform.SetSiblingIndex(self.RogueEffectButtons.Count);
+                self.RogueEffectDynamicButtons.Add(cloneObject);
+                self.RegisterRogueEffectButton(cloneObject.GetComponent<Button>());
+            }
+        }
+
+        private static void RegisterRogueEffectButton(this MainPanelComponent self, Button button)
+        {
+            if (button == null || self.RogueEffectButtons.Contains(button))
+            {
+                return;
+            }
+
+            Image buttonImage = button.targetGraphic as Image ?? button.GetComponent<Image>();
+            self.RogueEffectButtons.Add(button);
+            self.RogueEffectButtonImages.Add(buttonImage);
+            self.RogueEffectButtonSprites.Add(null);
+            self.RogueEffectButtonSpriteNames.Add(string.Empty);
+            self.RogueEffectButtonDesiredSpriteNames.Add(string.Empty);
+            self.PrepareRogueEffectButtonVisual(button, buttonImage);
+        }
+
+        private static void PrepareRogueEffectButtonVisual(this MainPanelComponent self, Button button, Image buttonImage)
+        {
+            if (buttonImage != null)
+            {
+                buttonImage.raycastTarget = true;
+                buttonImage.preserveAspect = true;
+                buttonImage.color = Color.white;
+            }
+
+            foreach (TMP_Text text in button.GetComponentsInChildren<TMP_Text>(true))
+            {
+                text.text = string.Empty;
+                text.gameObject.SetActive(false);
+            }
+        }
+
+        private static void RebindRogueEffectButtonListeners(this MainPanelComponent self)
+        {
+            EntityRef<MainPanelComponent> selfRef = self;
+            for (int i = 0; i < self.RogueEffectButtons.Count; ++i)
+            {
+                Button button = self.RogueEffectButtons[i];
+                if (button == null)
+                {
+                    continue;
+                }
+
+                int buttonIndex = i;
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => HandleRogueEffectButtonClick(selfRef, buttonIndex));
+            }
+        }
+
+        private static void HandleRogueEffectButtonClick(EntityRef<MainPanelComponent> selfRef, int buttonIndex)
+        {
+            MainPanelComponent self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            self.OnRogueEffectButtonClicked(buttonIndex);
+        }
+
+        private static void OnRogueEffectButtonClicked(this MainPanelComponent self, int buttonIndex)
+        {
+            RogueClientComponent runtime = self.Root()?.GetComponent<RogueClientComponent>();
+            if (runtime == null || buttonIndex < 0 || buttonIndex >= runtime.SelectedOptions.Count)
+            {
+                self.HideRogueEffectDesc(true);
+                return;
+            }
+
+            self.BindRogueEffectUI();
+            if (self.RogueEffectTextRect == null || self.RogueEffectText == null)
+            {
+                return;
+            }
+
+            self.RogueEffectPreviewIndex = buttonIndex;
+            self.RogueEffectText.text = ResolveRogueEffectDesc(runtime.SelectedOptions[buttonIndex]);
+            if (!self.RogueEffectTextRect.gameObject.activeSelf)
+            {
+                self.RogueEffectTextRect.gameObject.SetActive(true);
+            }
+        }
+
+        private static void TryCloseRogueEffectDescOnOutsideClick(this MainPanelComponent self)
+        {
+            if (self.RogueEffectPreviewIndex < 0 || self.RogueEffectTextRect == null || !self.RogueEffectTextRect.gameObject.activeInHierarchy)
+            {
+                return;
+            }
+
+            if (!TryGetPointerDownScreenPosition(out Vector2 screenPosition))
+            {
+                return;
+            }
+
+            Camera uiCamera = self.ResolveUICamera();
+            if (RectTransformUtility.RectangleContainsScreenPoint(self.RogueEffectTextRect, screenPosition, uiCamera))
+            {
+                return;
+            }
+
+            foreach (Button button in self.RogueEffectButtons)
+            {
+                if (button == null || !button.gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                RectTransform buttonRect = button.transform as RectTransform;
+                if (buttonRect != null && RectTransformUtility.RectangleContainsScreenPoint(buttonRect, screenPosition, uiCamera))
+                {
+                    return;
+                }
+            }
+
+            self.HideRogueEffectDesc(true);
+        }
+
+        private static void HideRogueEffectDesc(this MainPanelComponent self, bool clearText)
+        {
+            self.RogueEffectPreviewIndex = -1;
+            if (clearText && self.RogueEffectText != null)
+            {
+                self.RogueEffectText.text = string.Empty;
+            }
+
+            if (self.RogueEffectTextRect != null && self.RogueEffectTextRect.gameObject.activeSelf)
+            {
+                self.RogueEffectTextRect.gameObject.SetActive(false);
+            }
+        }
+
+        private static async ETTask SetRogueEffectButtonSprite(this MainPanelComponent self, int buttonIndex, string imagePath)
+        {
+            if (self == null || self.IsDisposed || buttonIndex < 0 || buttonIndex >= self.RogueEffectButtons.Count)
+            {
+                return;
+            }
+
+            self.RogueEffectButtonDesiredSpriteNames[buttonIndex] = imagePath ?? string.Empty;
+            Image buttonImage = self.GetRogueEffectButtonImage(buttonIndex);
+            if (buttonImage == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(imagePath))
+            {
+                self.ReleaseRogueEffectButtonSprite(buttonIndex);
+                buttonImage.sprite = null;
+                buttonImage.enabled = false;
+                return;
+            }
+
+            if (self.RogueEffectButtonSpriteNames[buttonIndex] == imagePath && self.RogueEffectButtonSprites[buttonIndex] != null)
+            {
+                buttonImage.sprite = self.RogueEffectButtonSprites[buttonIndex];
+                buttonImage.enabled = true;
+                buttonImage.color = Color.white;
+                return;
+            }
+
+            buttonImage.sprite = null;
+            buttonImage.enabled = false;
+
+            EntityRef<MainPanelComponent> selfRef = self;
+            int lockHash = unchecked((self.GetHashCode() * 397) ^ (buttonIndex + 4099));
+            using var _ = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_CoroutineLock, ETTask<Entity>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_CoroutineLock { Lock = lockHash });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed || buttonIndex < 0 || buttonIndex >= self.RogueEffectButtons.Count)
+            {
+                return;
+            }
+
+            if (!string.Equals(self.RogueEffectButtonDesiredSpriteNames[buttonIndex], imagePath, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            if (self.RogueEffectButtonSpriteNames[buttonIndex] == imagePath && self.RogueEffectButtonSprites[buttonIndex] != null)
+            {
+                buttonImage = self.GetRogueEffectButtonImage(buttonIndex);
+                if (buttonImage != null)
+                {
+                    buttonImage.sprite = self.RogueEffectButtonSprites[buttonIndex];
+                    buttonImage.enabled = true;
+                    buttonImage.color = Color.white;
+                }
+
+                return;
+            }
+
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = imagePath });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed || buttonIndex < 0 || buttonIndex >= self.RogueEffectButtons.Count)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            if (!string.Equals(self.RogueEffectButtonDesiredSpriteNames[buttonIndex], imagePath, StringComparison.Ordinal))
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            buttonImage = self.GetRogueEffectButtonImage(buttonIndex);
+            if (sprite == null || buttonImage == null)
+            {
+                self.ReleaseRogueEffectButtonSprite(buttonIndex);
+                if (buttonImage != null)
+                {
+                    buttonImage.sprite = null;
+                    buttonImage.enabled = false;
+                }
+
+                return;
+            }
+
+            self.ReleaseRogueEffectButtonSprite(buttonIndex);
+            self.RogueEffectButtonSprites[buttonIndex] = sprite;
+            self.RogueEffectButtonSpriteNames[buttonIndex] = imagePath;
+            buttonImage.sprite = sprite;
+            buttonImage.enabled = true;
+            buttonImage.color = Color.white;
+            buttonImage.preserveAspect = true;
+        }
+
+        private static void ReleaseRogueEffectButtonSprite(this MainPanelComponent self, int buttonIndex)
+        {
+            if (buttonIndex < 0 || buttonIndex >= self.RogueEffectButtonSprites.Count)
+            {
+                return;
+            }
+
+            Sprite sprite = self.RogueEffectButtonSprites[buttonIndex];
+            if (sprite == null)
+            {
+                self.RogueEffectButtonSpriteNames[buttonIndex] = string.Empty;
+                return;
+            }
+
+            EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+
+            Image buttonImage = self.GetRogueEffectButtonImage(buttonIndex);
+            if (buttonImage != null && buttonImage.sprite == sprite)
+            {
+                buttonImage.sprite = null;
+            }
+
+            self.RogueEffectButtonSprites[buttonIndex] = null;
+            self.RogueEffectButtonSpriteNames[buttonIndex] = string.Empty;
+        }
+
+        private static void ReleaseAllRogueEffectButtonSprites(this MainPanelComponent self)
+        {
+            for (int i = 0; i < self.RogueEffectButtonSprites.Count; ++i)
+            {
+                self.RogueEffectButtonDesiredSpriteNames[i] = string.Empty;
+                self.ReleaseRogueEffectButtonSprite(i);
+            }
+        }
+
+        private static void DisableUnusedRogueEffectButtons(this MainPanelComponent self, int startIndex)
+        {
+            for (int i = startIndex; i < self.RogueEffectButtons.Count; ++i)
+            {
+                Button button = self.RogueEffectButtons[i];
+                if (button != null && button.gameObject.activeSelf)
+                {
+                    button.gameObject.SetActive(false);
+                }
+
+                if (i < self.RogueEffectButtonDesiredSpriteNames.Count)
+                {
+                    self.RogueEffectButtonDesiredSpriteNames[i] = string.Empty;
+                }
+
+                self.ReleaseRogueEffectButtonSprite(i);
+                Image buttonImage = self.GetRogueEffectButtonImage(i);
+                if (buttonImage != null)
+                {
+                    buttonImage.sprite = null;
+                    buttonImage.enabled = false;
+                }
+            }
+        }
+
+        private static void ClearRogueEffectButtons(this MainPanelComponent self)
+        {
+            foreach (Button button in self.RogueEffectButtons)
+            {
+                button?.onClick.RemoveAllListeners();
+            }
+
+            foreach (GameObject dynamicButton in self.RogueEffectDynamicButtons)
+            {
+                if (dynamicButton != null)
+                {
+                    UnityEngine.Object.Destroy(dynamicButton);
+                }
+            }
+
+            self.RogueEffectButtons.Clear();
+            self.RogueEffectButtonImages.Clear();
+            self.RogueEffectButtonSprites.Clear();
+            self.RogueEffectButtonSpriteNames.Clear();
+            self.RogueEffectButtonDesiredSpriteNames.Clear();
+            self.RogueEffectDynamicButtons.Clear();
+        }
+
+        private static Image GetRogueEffectButtonImage(this MainPanelComponent self, int buttonIndex)
+        {
+            if (buttonIndex < 0 || buttonIndex >= self.RogueEffectButtons.Count)
+            {
+                return null;
+            }
+
+            if (buttonIndex >= self.RogueEffectButtonImages.Count)
+            {
+                return null;
+            }
+
+            Image buttonImage = self.RogueEffectButtonImages[buttonIndex];
+            if (buttonImage == null)
+            {
+                Button button = self.RogueEffectButtons[buttonIndex];
+                buttonImage = button?.targetGraphic as Image ?? button?.GetComponent<Image>();
+                self.RogueEffectButtonImages[buttonIndex] = buttonImage;
+            }
+
+            return buttonImage;
+        }
+
+        private static int ComputeRogueEffectSignature(List<RogueClientOptionData> selectedOptions)
+        {
+            if (selectedOptions == null || selectedOptions.Count == 0)
+            {
+                return 0;
+            }
+
+            int signature = 17;
+            unchecked
+            {
+                signature = signature * 31 + selectedOptions.Count;
+                foreach (RogueClientOptionData option in selectedOptions)
+                {
+                    signature = signature * 31 + option.OptionId;
+                    signature = signature * 31 + option.BuffConfigId;
+                }
+            }
+
+            return signature;
+        }
+
+        private static string ResolveRogueEffectDesc(RogueClientOptionData optionData)
+        {
+            if (!string.IsNullOrWhiteSpace(optionData.Desc))
+            {
+                return optionData.Desc;
+            }
+
+            return optionData.Name ?? string.Empty;
+        }
+
+        private static Camera ResolveUICamera(this MainPanelComponent self)
+        {
+            Canvas canvas = self.UIBase?.OwnerGameObject?.GetComponentInParent<Canvas>();
+            return canvas?.worldCamera;
+        }
+
+        private static bool TryGetPointerDownScreenPosition(out Vector2 screenPosition)
+        {
+            if (Input.touchCount > 0)
+            {
+                for (int i = 0; i < Input.touchCount; ++i)
+                {
+                    Touch touch = Input.GetTouch(i);
+                    if (touch.phase == TouchPhase.Began)
+                    {
+                        screenPosition = touch.position;
+                        return true;
+                    }
+                }
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                screenPosition = Input.mousePosition;
+                return true;
+            }
+
+            screenPosition = default;
+            return false;
+        }
+
         private static void RefreshSearchButtonVisual(this MainPanelComponent self, int buttonTextId, bool canInteract)
         {
             self.BindSearchButtonUI();
@@ -463,7 +1012,7 @@ namespace ET.Client
 
             if (self.SearchButtonText != null)
             {
-                self.SearchButtonText.text = ResolveText(buttonTextId);
+                self.SearchButtonText.text = ResolveText(buttonTextId, "交互");
             }
         }
 
@@ -483,15 +1032,15 @@ namespace ET.Client
             self.u_DataOpenDoorText?.SetValue(show ? text ?? string.Empty : string.Empty);
         }
 
-        private static string ResolveText(int textId)
+        private static string ResolveText(int textId, string defaultText = "")
         {
             if (textId <= 0)
             {
-                return string.Empty;
+                return defaultText;
             }
 
             TextConfig config = TextConfigCategory.Instance.GetOrDefault(textId);
-            return config?.CN ?? string.Empty;
+            return string.IsNullOrWhiteSpace(config?.CN) ? defaultText : config.CN;
         }
 
         private static string ResolveDoorText(
@@ -591,6 +1140,9 @@ namespace ET.Client
                 return;
             }
 
+            MinimapDisplayHelper.StretchToFillParent(self.MinimapTexture?.rectTransform);
+            MinimapDisplayHelper.StretchToFillParent(self.MinimapFogOverlay?.rectTransform);
+
             if (self.MinimapFogOverlay == null)
             {
                 GameObject fogObject = new GameObject("Minimap Fog", typeof(RectTransform), typeof(CanvasRenderer), typeof(RawImage));
@@ -627,6 +1179,8 @@ namespace ET.Client
             {
                 self.MinimapMarkerLayer = markerLayerTransform as RectTransform;
             }
+
+            MinimapDisplayHelper.StretchToFillParent(self.MinimapMarkerLayer);
         }
 
         private static void RefreshMinimap(this MainPanelComponent self, bool force = false)
@@ -657,7 +1211,6 @@ namespace ET.Client
 
             self.RefreshMinimapArrow(runtime);
             self.RefreshMinimapTexture(runtime, myPosition);
-            runtime.RefreshLocalFog();
             self.RefreshMinimapFog(runtime);
             self.RefreshMinimapMarkers(runtime, myPosition);
         }
@@ -698,9 +1251,7 @@ namespace ET.Client
                 return;
             }
 
-            float width = runtime.WorldMaxX - runtime.WorldMinX;
-            float height = runtime.WorldMaxZ - runtime.WorldMinZ;
-            if (width <= 0f || height <= 0f)
+            if (runtime == null)
             {
                 self.MinimapTexture.uvRect = new Rect(0f, 0f, 1f, 1f);
                 if (self.MinimapFogOverlay != null)
@@ -710,26 +1261,10 @@ namespace ET.Client
                 return;
             }
 
-            Vector2 center = runtime.WorldToNormalizedPosition(myPosition);
-            float uvWidth = Mathf.Clamp01((runtime.CompactRange * 2f) / width);
-            float uvHeight = Mathf.Clamp01((runtime.CompactRange * 2f) / height);
-            float x = Mathf.Clamp01(center.x - uvWidth * 0.5f);
-            float y = Mathf.Clamp01(center.y - uvHeight * 0.5f);
-
-            if (x + uvWidth > 1f)
-            {
-                x = 1f - uvWidth;
-            }
-
-            if (y + uvHeight > 1f)
-            {
-                y = 1f - uvHeight;
-            }
-
-            self.MinimapTexture.uvRect = new Rect(x, y, uvWidth, uvHeight);
+            self.MinimapTexture.uvRect = MinimapDisplayHelper.GetCompactBaseUvRect(runtime, self.MinimapTexture.texture, myPosition);
             if (self.MinimapFogOverlay != null)
             {
-                self.MinimapFogOverlay.uvRect = self.MinimapTexture.uvRect;
+                self.MinimapFogOverlay.uvRect = MinimapDisplayHelper.GetCompactFogUvRect(runtime, myPosition);
             }
         }
 
@@ -808,7 +1343,7 @@ namespace ET.Client
             foreach (KeyValuePair<long, MinimapMarkerRuntime> pair in runtime.GetMarkers())
             {
                 MinimapMarkerRuntime marker = pair.Value;
-                if (marker.UnitId == runtime.MyUnitId)
+                if (marker.UnitId == runtime.MyUnitId || !MinimapRuntimeMarkerHelper.ShouldDisplayMarker(runtime, marker))
                 {
                     continue;
                 }
@@ -832,7 +1367,7 @@ namespace ET.Client
 
                 if (self.MinimapMarkerImages.TryGetValue(marker.UnitId, out Image markerImage) && markerImage != null)
                 {
-                    markerImage.color = self.ResolveMinimapMarkerColor(runtime, marker);
+                    self.RefreshMinimapMarkerVisual(runtime, marker, markerImage);
                 }
             }
 
@@ -841,6 +1376,7 @@ namespace ET.Client
                 if (!activeMarkerIds.Contains(pair.Key) && pair.Value != null)
                 {
                     pair.Value.gameObject.SetActive(false);
+                    self.MinimapMarkerDesiredSpriteNames.Remove(pair.Key);
                 }
             }
         }
@@ -868,6 +1404,7 @@ namespace ET.Client
             markerImage.raycastTarget = false;
             markerImage.sprite = self.GetMinimapMarkerSprite();
             markerImage.type = Image.Type.Simple;
+            markerImage.preserveAspect = false;
 
             self.MinimapMarkerRects[unitId] = markerRect;
             self.MinimapMarkerImages[unitId] = markerImage;
@@ -894,6 +1431,7 @@ namespace ET.Client
 
             self.MinimapMarkerRects.Clear();
             self.MinimapMarkerImages.Clear();
+            self.MinimapMarkerDesiredSpriteNames.Clear();
         }
 
         private static Sprite GetMinimapMarkerSprite(this MainPanelComponent self)
@@ -931,6 +1469,121 @@ namespace ET.Client
             }
 
             return Color.white;
+        }
+
+        private static void RefreshMinimapMarkerVisual(this MainPanelComponent self, MinimapRuntimeComponent runtime, MinimapMarkerRuntime marker, Image markerImage)
+        {
+            if (markerImage == null)
+            {
+                return;
+            }
+
+            string iconName = MinimapMarkerIconHelper.ResolveIconName(marker);
+            self.MinimapMarkerDesiredSpriteNames[marker.UnitId] = iconName ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(iconName))
+            {
+                if (self.MinimapMarkerLoadedSprites.TryGetValue(iconName, out Sprite customSprite) && customSprite != null)
+                {
+                    markerImage.sprite = customSprite;
+                    markerImage.color = Color.white;
+                    markerImage.preserveAspect = true;
+                    return;
+                }
+
+                markerImage.sprite = self.GetMinimapMarkerSprite();
+                markerImage.color = self.ResolveMinimapMarkerColor(runtime, marker);
+                markerImage.preserveAspect = false;
+                self.RequestMinimapMarkerSprite(iconName);
+                return;
+            }
+
+            markerImage.sprite = self.GetMinimapMarkerSprite();
+            markerImage.color = self.ResolveMinimapMarkerColor(runtime, marker);
+            markerImage.preserveAspect = false;
+        }
+
+        private static void RequestMinimapMarkerSprite(this MainPanelComponent self, string spriteName)
+        {
+            if (self == null || self.IsDisposed || string.IsNullOrWhiteSpace(spriteName))
+            {
+                return;
+            }
+
+            if (self.MinimapMarkerLoadedSprites.ContainsKey(spriteName) || !self.MinimapMarkerLoadingSpriteNames.Add(spriteName))
+            {
+                return;
+            }
+
+            self.LoadMinimapMarkerSpriteAsync(spriteName).Coroutine();
+        }
+
+        private static async ETTask LoadMinimapMarkerSpriteAsync(this MainPanelComponent self, string spriteName)
+        {
+            EntityRef<MainPanelComponent> selfRef = self;
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = spriteName });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            self.MinimapMarkerLoadingSpriteNames.Remove(spriteName);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            if (self.MinimapMarkerLoadedSprites.TryGetValue(spriteName, out Sprite cachedSprite) && cachedSprite != null)
+            {
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                    YIUISingletonHelper.YIUIMgr,
+                    new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                return;
+            }
+
+            self.MinimapMarkerLoadedSprites[spriteName] = sprite;
+            foreach (KeyValuePair<long, Image> pair in self.MinimapMarkerImages)
+            {
+                if (!self.MinimapMarkerDesiredSpriteNames.TryGetValue(pair.Key, out string desiredSpriteName) ||
+                    desiredSpriteName != spriteName ||
+                    pair.Value == null)
+                {
+                    continue;
+                }
+
+                pair.Value.sprite = sprite;
+                pair.Value.color = Color.white;
+                pair.Value.preserveAspect = true;
+            }
+        }
+
+        private static void ReleaseAllMinimapMarkerSprites(this MainPanelComponent self)
+        {
+            foreach (Sprite sprite in self.MinimapMarkerLoadedSprites.Values)
+            {
+                if (sprite == null)
+                {
+                    continue;
+                }
+
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                    YIUISingletonHelper.YIUIMgr,
+                    new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+            }
+
+            self.MinimapMarkerLoadedSprites.Clear();
+            self.MinimapMarkerLoadingSpriteNames.Clear();
+            self.MinimapMarkerDesiredSpriteNames.Clear();
         }
 
         private static string ResolvePlayerMarkerColorKey(this MainPanelComponent self, MinimapRuntimeComponent runtime, MinimapMarkerRuntime marker)

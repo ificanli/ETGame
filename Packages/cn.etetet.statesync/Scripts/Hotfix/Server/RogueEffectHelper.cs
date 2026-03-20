@@ -552,6 +552,7 @@ namespace ET.Server
             foreach (BTNode node in addEffect.Children)
             {
                 if (node is BTRogueAddGold ||
+                    node is BTRogueSpawnMerchant ||
                     node is BTRogueGrantRandomCard ||
                     node is BTRogueGrantItem ||
                     node is BTRogueReplaceAllCards ||

@@ -35,6 +35,12 @@ namespace ET.Server
 
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
 
+            unit = unitRef;
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
             if (node.ExitCombatBuffConfigId > 0)
             {
                 BuffHelper.RemoveBuffByConfigId(unit, node.ExitCombatBuffConfigId, BuffFlags.AIRemove);

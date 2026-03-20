@@ -1,7 +1,9 @@
-﻿using System;
-using UnityEngine;
-using YIUIFramework;
+using System;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using YIUIFramework;
 
 namespace ET.Client
 {
@@ -19,6 +21,8 @@ namespace ET.Client
 
     public partial class LobbyPanelComponent : Entity, ILateUpdate
     {
+        public const float UnifiedCellSize = 96f;
+
         public EntityRef<YIUILoopScrollChild> m_HeroLoop;
         public YIUILoopScrollChild HeroLoop => m_HeroLoop;
 
@@ -42,6 +46,8 @@ namespace ET.Client
 
         public string LastLoadoutSnapshot = string.Empty;
         public int SelectedMatchGameMode = GameModeType.OneVsOne;
+        public LoadoutItemSourceMode CurrentItemSourceMode = LoadoutItemSourceMode.Warehouse;
+        public int SelectedShopConfigId;
         public int SelectedWarehouseConfigId;
         public long SelectedWarehouseItemUid;
         public bool IsDragging;
@@ -62,11 +68,28 @@ namespace ET.Client
 
         public Vector2 GridSpacing = new Vector2(4f, 4f);
         public Vector2 GridPadding = new Vector2(4f, 4f);
-        public float WarehousePreferredCellSize = 80f;
+        public float WarehousePreferredCellSize = UnifiedCellSize;
 
         public RectTransform WarehouseGridRoot;
         public RectTransform WarehouseItemsLayer;
         public RectTransform WarehouseItemTemplate;
+        public bool IsWarehouseTabActive;
+        public RectTransform LoadoutEquipContentRoot;
+        public RectTransform LoadoutWarehouseContentRoot;
+        public RectTransform LoadoutContentSwitchRoot;
+        public Button LoadoutEquipTabButton;
+        public Button LoadoutWarehouseTabButton;
+        public Graphic LoadoutEquipTabGraphic;
+        public Graphic LoadoutWarehouseTabGraphic;
+        public TMP_Text LoadoutEquipTabText;
+        public TMP_Text LoadoutWarehouseTabText;
+        public RectTransform LoadoutSourceToggleRoot;
+        public Button LoadoutShopButton;
+        public Button LoadoutWarehouseButton;
+        public Graphic LoadoutShopButtonGraphic;
+        public Graphic LoadoutWarehouseButtonGraphic;
+        public TMP_Text LoadoutShopButtonText;
+        public TMP_Text LoadoutWarehouseButtonText;
 
         public readonly Dictionary<long, RectTransform> CurrentBagItemViews = new();
         public readonly Dictionary<long, RectTransform> SecureItemViews = new();
@@ -74,5 +97,8 @@ namespace ET.Client
         public readonly Dictionary<int, RectTransform> CurrentBagGridCellViews = new();
         public readonly Dictionary<int, RectTransform> SecureGridCellViews = new();
         public readonly Dictionary<int, RectTransform> WarehouseGridCellViews = new();
+
+        public RectTransform BagContentWrapper;
+        public RectTransform SecureContentWrapper;
     }
 }

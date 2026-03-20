@@ -9,6 +9,7 @@ namespace ET
         public const int CombatStateCheck = PackageType.StateSync * 1000 + 6;
         public const int RogueAfterSkillSpeedBoostExpire = PackageType.StateSync * 1000 + 7;
         public const int RunTimeLimitExpire = PackageType.StateSync * 1000 + 8;
+        public const int WeaponReloadComplete = PackageType.StateSync * 1000 + 9;
     }
 
     /// <summary>

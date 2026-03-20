@@ -20,11 +20,11 @@ namespace ET.Server
             }
 
             TargetSelectorComponent selector = unit.GetComponent<TargetSelectorComponent>();
+            Scene root = unit.Root();
             EntityRef<Unit> unitRef = unit;
             EntityRef<TargetComponent> targetComponentRef = targetComponent;
             EntityRef<TargetSelectorComponent> selectorRef = selector;
-
-            TimerComponent timerComponent = unit.Root().TimerComponent;
+            EntityRef<Scene> rootRef = root;
             float unitRadius = unit.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
             int thinkIntervalMs = math.max(50, node.ThinkIntervalMs);
 
@@ -37,7 +37,13 @@ namespace ET.Server
 
             while (true)
             {
-                await timerComponent.WaitAsync(thinkIntervalMs);
+                root = rootRef;
+                if (root == null)
+                {
+                    return;
+                }
+
+                await root.TimerComponent.WaitAsync(thinkIntervalMs);
                 if (cancellationToken.IsCancel())
                 {
                     return;

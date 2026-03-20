@@ -111,6 +111,27 @@ message G2C_LoadoutTakeFromWarehouse // ISessionResponse
     string Message = 3;
 }
 
+// 从起装商店直接购买到当前携带态
+// ResponseType G2C_LoadoutBuyFromShop
+message C2G_LoadoutBuyFromShop // ISessionRequest
+{
+    int32 RpcId = 1;
+    int32 ConfigId = 2;
+    int32 Count = 3;
+    int32 TargetAreaType = 4;
+    int32 TargetSlotType = 5;
+    int32 TargetAnchorSlotIndex = 6;
+    int32 TargetBagWidth = 7;
+    int32 TargetBagHeight = 8;
+}
+
+message G2C_LoadoutBuyFromShop // ISessionResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
+}
+
 // 从当前携带态放回仓库
 // ResponseType G2C_LoadoutPutToWarehouse
 message C2G_LoadoutPutToWarehouse // ISessionRequest

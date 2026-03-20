@@ -40,6 +40,9 @@ namespace ET
         /// <summary>第2槽换弹完成时间（毫秒时间戳）</summary>
         public long Slot2ReloadFinishTime;
 
+        /// <summary>服务端当前挂起的一次性换弹完成定时器 ID</summary>
+        public long ReloadTimerId;
+
         /// <summary>第1槽生效射程（已叠加肉鸽修正）</summary>
         public float Slot1EffectiveAttackRange;
 

@@ -1,169 +1,6 @@
 {
 	"_t" : "System.Collections.Generic.List`1[[ET.ECAConfig, ET.Model]]",
 	"_v" : [{
-			"ConfigId" : "eca_sdcmap_monster_spawn_0006",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 15.0,
-			"PosY" : 0.0,
-			"PosZ" : 12.0,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0002",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 25.659999847412109,
-			"PosY" : 0.0,
-			"PosZ" : 26.739999771118164,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "05104",
-			"Type" : 2,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}, {
-					"Key" : "team_id",
-					"Value" : "3"
-				}],
-			"PosX" : 19.0,
-			"PosY" : 0.0,
-			"PosZ" : 94.5,
-			"FlowGraph" : null,
-			"PointType" : 2,
-			"TeamId" : 3,
-			"InteractRange" : 3.0
-		}, {
 			"ConfigId" : "eca_sdcmap_container_0001",
 			"Type" : 3,
 			"Params" : [{
@@ -300,7 +137,135 @@
 			"TeamId" : 0,
 			"InteractRange" : 1.5
 		}, {
-			"ConfigId" : "05103",
+			"ConfigId" : "eca_sdcmap_monster_spawn_0001",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 12.0,
+			"PosY" : 0.0,
+			"PosZ" : 30.0,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0005",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 74.0,
+			"PosY" : 0.0,
+			"PosZ" : 17.0,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "05106",
 			"Type" : 2,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -325,154 +290,18 @@
 					"Value" : ""
 				}, {
 					"Key" : "team_id",
-					"Value" : "2"
+					"Value" : "5"
 				}],
-			"PosX" : 8.1999998092651367,
+			"PosX" : 144.69999694824219,
 			"PosY" : 0.0,
-			"PosZ" : 12.699999809265137,
+			"PosZ" : 100.30000305175781,
 			"FlowGraph" : null,
 			"PointType" : 2,
-			"TeamId" : 2,
+			"TeamId" : 5,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "eca_sdcmap_container_0006",
-			"Type" : 3,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "1.5"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 59.900001525878906,
-			"PosY" : 0.0,
-			"PosZ" : 124.30000305175781,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 1,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerEnterRange",
-						"Title" : "Event 1",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 2,
-						"NodeType" : "Action",
-						"NodeKey" : "ShowInteractButton",
-						"Title" : "Action 2",
-						"PosX" : 373.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "button_text_id",
-								"Value" : "0"
-							}]
-					}, {
-						"_id" : 0,
-						"Id" : 3,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerLeaveRange",
-						"Title" : "Event 3",
-						"PosX" : 0.0,
-						"PosY" : 210.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 4,
-						"NodeType" : "Action",
-						"NodeKey" : "HideInteractButton",
-						"Title" : "Action 4",
-						"PosX" : 373.0,
-						"PosY" : 210.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 5,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerInteract",
-						"Title" : "Event 5",
-						"PosX" : 0.0,
-						"PosY" : 420.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 6,
-						"NodeType" : "Action",
-						"NodeKey" : "OpenContainerUI",
-						"Title" : "Action 6",
-						"PosX" : 373.0,
-						"PosY" : 540.0,
-						"Params" : [{
-								"Key" : "ui_key",
-								"Value" : "SearchPanelComponent"
-							}]
-					}, {
-						"_id" : 0,
-						"Id" : 7,
-						"NodeType" : "Action",
-						"NodeKey" : "GenerateContainerLoot",
-						"Title" : "Action 7",
-						"PosX" : 373.0,
-						"PosY" : 420.0,
-						"Params" : [{
-								"Key" : "output_mode",
-								"Value" : "ContainerPanel"
-							}, {
-								"Key" : "loot_table",
-								"Value" : "10001*1|10002*1|10003*1|10004*1|10005*1|10006*1|10007*1|10008*1|10009*1|10010*1|10011*1|10012*1|60001*1|60002*1"
-							}, {
-								"Key" : "count",
-								"Value" : "1-3"
-							}, {
-								"Key" : "radius",
-								"Value" : "0"
-							}, {
-								"Key" : "allow_repeat",
-								"Value" : "0"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 1,
-						"ToNodeId" : 2,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 3,
-						"ToNodeId" : 4,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 5,
-						"ToNodeId" : 7,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 3,
-			"TeamId" : 0,
-			"InteractRange" : 1.5
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0013",
-			"Type" : 4,
+			"ConfigId" : "05105",
+			"Type" : 2,
 			"Params" : [{
 					"Key" : "interact_range",
 					"Value" : "3"
@@ -494,237 +323,16 @@
 				}, {
 					"Key" : "nav_block_states",
 					"Value" : ""
+				}, {
+					"Key" : "team_id",
+					"Value" : "4"
 				}],
-			"PosX" : 11.600000381469727,
+			"PosX" : 72.400001525878906,
 			"PosY" : 0.0,
-			"PosZ" : 51.200000762939453,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0004",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 89.0,
-			"PosY" : 0.0,
-			"PosZ" : 46.0,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0015",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 35.0,
-			"PosY" : 0.0,
-			"PosZ" : 44.0,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0024",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 112.09999847412109,
-			"PosY" : 0.0,
-			"PosZ" : 21.399999618530273,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
+			"PosZ" : 132.0,
+			"FlowGraph" : null,
+			"PointType" : 2,
+			"TeamId" : 4,
 			"InteractRange" : 3.0
 		}, {
 			"ConfigId" : "eca_sdcmap_container_0003",
@@ -863,7 +471,7 @@
 			"TeamId" : 0,
 			"InteractRange" : 1.5
 		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0007",
+			"ConfigId" : "eca_sdcmap_monster_spawn_0015",
 			"Type" : 4,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -887,9 +495,9 @@
 					"Key" : "nav_block_states",
 					"Value" : ""
 				}],
-			"PosX" : 98.0,
+			"PosX" : 35.0,
 			"PosY" : 0.0,
-			"PosZ" : 95.0,
+			"PosZ" : 44.0,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
@@ -927,7 +535,7 @@
 			"TeamId" : 0,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "eca_sdcmap_container_0007",
+			"ConfigId" : "eca_sdcmap_container_0006",
 			"Type" : 3,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -951,9 +559,9 @@
 					"Key" : "nav_block_states",
 					"Value" : ""
 				}],
-			"PosX" : 19.100000381469727,
+			"PosX" : 59.900001525878906,
 			"PosY" : 0.0,
-			"PosZ" : 89.900001525878906,
+			"PosZ" : 124.30000305175781,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
@@ -1063,7 +671,7 @@
 			"TeamId" : 0,
 			"InteractRange" : 1.5
 		}, {
-			"ConfigId" : "05105",
+			"ConfigId" : "05102",
 			"Type" : 2,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -1088,17 +696,138 @@
 					"Value" : ""
 				}, {
 					"Key" : "team_id",
-					"Value" : "4"
+					"Value" : "1"
 				}],
-			"PosX" : 72.400001525878906,
+			"PosX" : 77.599998474121094,
 			"PosY" : 0.0,
-			"PosZ" : 132.0,
+			"PosZ" : 8.3999996185302734,
 			"FlowGraph" : null,
 			"PointType" : 2,
-			"TeamId" : 4,
+			"TeamId" : 1,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0001",
+			"ConfigId" : "05201",
+			"Type" : 1,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}, {
+					"Key" : "evacuation_duration_ms",
+					"Value" : "10000"
+				}, {
+					"Key" : "lobby_map_name",
+					"Value" : "Home"
+				}],
+			"PosX" : 157.32000732421875,
+			"PosY" : 0.0,
+			"PosZ" : 2.7000000476837158,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerEnterRange",
+						"Title" : "Event 1",
+						"PosX" : 0.0,
+						"PosY" : 145.0,
+						"Params" : [{
+								"Key" : "5",
+								"Value" : ""
+							}]
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Condition",
+						"NodeKey" : "PlayerInRange",
+						"Title" : "Condition 2",
+						"PosX" : 366.0,
+						"PosY" : 145.0,
+						"Params" : [{
+								"Key" : "4",
+								"Value" : ""
+							}]
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "StartEvacCountdown",
+						"Title" : "Action 6",
+						"PosX" : 685.0,
+						"PosY" : 145.0,
+						"Params" : [{
+								"Key" : "seconds",
+								"Value" : "10"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 1,
+						"ToNodeId" : 2,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 2,
+						"ToNodeId" : 6,
+						"Branch" : "True"
+					}]
+			},
+			"PointType" : 1,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "05104",
+			"Type" : 2,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}, {
+					"Key" : "team_id",
+					"Value" : "3"
+				}],
+			"PosX" : 19.0,
+			"PosY" : 0.0,
+			"PosZ" : 94.5,
+			"FlowGraph" : null,
+			"PointType" : 2,
+			"TeamId" : 3,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0006",
 			"Type" : 4,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -1122,9 +851,9 @@
 					"Key" : "nav_block_states",
 					"Value" : ""
 				}],
-			"PosX" : 12.0,
+			"PosX" : 15.0,
 			"PosY" : 0.0,
-			"PosZ" : 30.0,
+			"PosZ" : 12.0,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
@@ -1162,7 +891,7 @@
 			"TeamId" : 0,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0005",
+			"ConfigId" : "eca_sdcmap_monster_spawn_0009",
 			"Type" : 4,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -1186,9 +915,201 @@
 					"Key" : "nav_block_states",
 					"Value" : ""
 				}],
-			"PosX" : 74.0,
+			"PosX" : 134.0,
 			"PosY" : 0.0,
-			"PosZ" : 17.0,
+			"PosZ" : 21.0,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0020",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 43.700000762939453,
+			"PosY" : 0.0,
+			"PosZ" : 6.6999998092651367,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0021",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 135.39999389648438,
+			"PosY" : 0.0,
+			"PosZ" : 125.09999847412109,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0022",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 118.0,
+			"PosY" : 0.0,
+			"PosZ" : 112.40000152587891,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
@@ -1334,6 +1255,70 @@
 			"TeamId" : 0,
 			"InteractRange" : 2.0
 		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0007",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 98.0,
+			"PosY" : 0.0,
+			"PosZ" : 95.0,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
 			"ConfigId" : "eca_sdcmap_container_0004",
 			"Type" : 3,
 			"Params" : [{
@@ -1470,7 +1455,71 @@
 			"TeamId" : 0,
 			"InteractRange" : 1.5
 		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0011",
+			"ConfigId" : "eca_sdcmap_monster_spawn_0019",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 35.099998474121094,
+			"PosY" : 0.0,
+			"PosZ" : 97.400001525878906,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0012",
 			"Type" : 4,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -1496,7 +1545,7 @@
 				}],
 			"PosX" : 44.0,
 			"PosY" : 0.0,
-			"PosZ" : 49.0,
+			"PosZ" : 42.0,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
@@ -1534,7 +1583,7 @@
 			"TeamId" : 0,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0021",
+			"ConfigId" : "eca_sdcmap_monster_spawn_0002",
 			"Type" : 4,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -1558,201 +1607,9 @@
 					"Key" : "nav_block_states",
 					"Value" : ""
 				}],
-			"PosX" : 135.39999389648438,
+			"PosX" : 25.659999847412109,
 			"PosY" : 0.0,
-			"PosZ" : 125.09999847412109,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0023",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 128.0,
-			"PosY" : 0.0,
-			"PosZ" : 94.0,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0020",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 43.700000762939453,
-			"PosY" : 0.0,
-			"PosZ" : 6.6999998092651367,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0022",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 118.0,
-			"PosY" : 0.0,
-			"PosZ" : 112.40000152587891,
+			"PosZ" : 26.739999771118164,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
@@ -1854,134 +1711,6 @@
 			"TeamId" : 0,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0009",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 134.0,
-			"PosY" : 0.0,
-			"PosZ" : 21.0,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0019",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 35.099998474121094,
-			"PosY" : 0.0,
-			"PosZ" : 97.400001525878906,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
 			"ConfigId" : "eca_sdcmap_monster_spawn_0003",
 			"Type" : 4,
 			"Params" : [{
@@ -2046,8 +1775,8 @@
 			"TeamId" : 0,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "05101",
-			"Type" : 2,
+			"ConfigId" : "eca_sdcmap_monster_spawn_0011",
+			"Type" : 4,
 			"Params" : [{
 					"Key" : "interact_range",
 					"Value" : "3"
@@ -2069,155 +1798,48 @@
 				}, {
 					"Key" : "nav_block_states",
 					"Value" : ""
-				}, {
-					"Key" : "team_id",
-					"Value" : "0"
 				}],
-			"PosX" : 140.30000305175781,
+			"PosX" : 44.0,
 			"PosY" : 0.0,
-			"PosZ" : 14.300000190734863,
-			"FlowGraph" : null,
-			"PointType" : 2,
-			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_container_0002",
-			"Type" : 3,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "1.5"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 69.800003051757813,
-			"PosY" : 0.0,
-			"PosZ" : 20.200000762939453,
+			"PosZ" : 49.0,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
 						"_id" : 0,
-						"Id" : 1,
+						"Id" : 0,
 						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerEnterRange",
-						"Title" : "Event 1",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
 						"PosX" : 0.0,
 						"PosY" : 0.0,
 						"Params" : []
 					}, {
 						"_id" : 0,
-						"Id" : 2,
+						"Id" : 0,
 						"NodeType" : "Action",
-						"NodeKey" : "ShowInteractButton",
-						"Title" : "Action 2",
-						"PosX" : 373.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "button_text_id",
-								"Value" : "0"
-							}]
-					}, {
-						"_id" : 0,
-						"Id" : 3,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerLeaveRange",
-						"Title" : "Event 3",
-						"PosX" : 0.0,
-						"PosY" : 210.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 4,
-						"NodeType" : "Action",
-						"NodeKey" : "HideInteractButton",
-						"Title" : "Action 4",
-						"PosX" : 373.0,
-						"PosY" : 210.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 5,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerInteract",
-						"Title" : "Event 5",
-						"PosX" : 0.0,
-						"PosY" : 420.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 6,
-						"NodeType" : "Action",
-						"NodeKey" : "OpenContainerUI",
+						"NodeKey" : "SpawnMonsters",
 						"Title" : "Action 6",
-						"PosX" : 373.0,
-						"PosY" : 540.0,
+						"PosX" : 300.0,
+						"PosY" : 0.0,
 						"Params" : [{
-								"Key" : "ui_key",
-								"Value" : "SearchPanelComponent"
-							}]
-					}, {
-						"_id" : 0,
-						"Id" : 7,
-						"NodeType" : "Action",
-						"NodeKey" : "GenerateContainerLoot",
-						"Title" : "Action 7",
-						"PosX" : 373.0,
-						"PosY" : 420.0,
-						"Params" : [{
-								"Key" : "output_mode",
-								"Value" : "ContainerPanel"
-							}, {
-								"Key" : "loot_table",
-								"Value" : "10001*1|10002*1|10003*1|10004*1|10005*1|10006*1|10007*1|10008*1|10009*1|10010*1|10011*1|10012*1|60001*1|60002*1"
+								"Key" : "group_id",
+								"Value" : "1003"
 							}, {
 								"Key" : "count",
-								"Value" : "1-3"
-							}, {
-								"Key" : "radius",
-								"Value" : "0"
-							}, {
-								"Key" : "allow_repeat",
-								"Value" : "0"
+								"Value" : "1"
 							}]
 					}],
 				"Connections" : [{
-						"FromNodeId" : 1,
-						"ToNodeId" : 2,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 3,
-						"ToNodeId" : 4,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 5,
-						"ToNodeId" : 7,
-						"Branch" : "Out"
-					}, {
 						"FromNodeId" : 7,
 						"ToNodeId" : 6,
 						"Branch" : "Out"
 					}]
 			},
-			"PointType" : 3,
+			"PointType" : 4,
 			"TeamId" : 0,
-			"InteractRange" : 1.5
+			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "05201",
+			"ConfigId" : "05202",
 			"Type" : 1,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -2247,9 +1869,9 @@
 					"Key" : "lobby_map_name",
 					"Value" : "Home"
 				}],
-			"PosX" : 157.32000732421875,
+			"PosX" : 3.8399999141693115,
 			"PosY" : 0.0,
-			"PosZ" : 2.7000000476837158,
+			"PosZ" : 117.80000305175781,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
@@ -2303,178 +1925,7 @@
 			"TeamId" : 0,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "05106",
-			"Type" : 2,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}, {
-					"Key" : "team_id",
-					"Value" : "5"
-				}],
-			"PosX" : 144.69999694824219,
-			"PosY" : 0.0,
-			"PosZ" : 100.30000305175781,
-			"FlowGraph" : null,
-			"PointType" : 2,
-			"TeamId" : 5,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "eca_sdcmap_container_0005",
-			"Type" : 3,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "1.5"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}],
-			"PosX" : 139.10000610351563,
-			"PosY" : 0.0,
-			"PosZ" : 97.900001525878906,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 1,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerEnterRange",
-						"Title" : "Event 1",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 2,
-						"NodeType" : "Action",
-						"NodeKey" : "ShowInteractButton",
-						"Title" : "Action 2",
-						"PosX" : 373.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "button_text_id",
-								"Value" : "0"
-							}]
-					}, {
-						"_id" : 0,
-						"Id" : 3,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerLeaveRange",
-						"Title" : "Event 3",
-						"PosX" : 0.0,
-						"PosY" : 210.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 4,
-						"NodeType" : "Action",
-						"NodeKey" : "HideInteractButton",
-						"Title" : "Action 4",
-						"PosX" : 373.0,
-						"PosY" : 210.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 5,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerInteract",
-						"Title" : "Event 5",
-						"PosX" : 0.0,
-						"PosY" : 420.0,
-						"Params" : []
-					}, {
-						"_id" : 0,
-						"Id" : 6,
-						"NodeType" : "Action",
-						"NodeKey" : "OpenContainerUI",
-						"Title" : "Action 6",
-						"PosX" : 373.0,
-						"PosY" : 540.0,
-						"Params" : [{
-								"Key" : "ui_key",
-								"Value" : "SearchPanelComponent"
-							}]
-					}, {
-						"_id" : 0,
-						"Id" : 7,
-						"NodeType" : "Action",
-						"NodeKey" : "GenerateContainerLoot",
-						"Title" : "Action 7",
-						"PosX" : 373.0,
-						"PosY" : 420.0,
-						"Params" : [{
-								"Key" : "output_mode",
-								"Value" : "ContainerPanel"
-							}, {
-								"Key" : "loot_table",
-								"Value" : "10001*1|10002*1|10003*1|10004*1|10005*1|10006*1|10007*1|10008*1|10009*1|10010*1|10011*1|10012*1|60001*1|60002*1"
-							}, {
-								"Key" : "count",
-								"Value" : "1-3"
-							}, {
-								"Key" : "radius",
-								"Value" : "0"
-							}, {
-								"Key" : "allow_repeat",
-								"Value" : "0"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 1,
-						"ToNodeId" : 2,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 3,
-						"ToNodeId" : 4,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 5,
-						"ToNodeId" : 7,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 3,
-			"TeamId" : 0,
-			"InteractRange" : 1.5
-		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0018",
+			"ConfigId" : "eca_sdcmap_monster_spawn_0013",
 			"Type" : 4,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -2498,9 +1949,9 @@
 					"Key" : "nav_block_states",
 					"Value" : ""
 				}],
-			"PosX" : 32.900001525878906,
+			"PosX" : 11.600000381469727,
 			"PosY" : 0.0,
-			"PosZ" : 113.0,
+			"PosZ" : 51.200000762939453,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{
@@ -2536,41 +1987,6 @@
 			},
 			"PointType" : 4,
 			"TeamId" : 0,
-			"InteractRange" : 3.0
-		}, {
-			"ConfigId" : "05102",
-			"Type" : 2,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "3"
-				}, {
-					"Key" : "check_range_interval_ms",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_enabled",
-					"Value" : "0"
-				}, {
-					"Key" : "nav_block_half_extents_x",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_half_extents_y",
-					"Value" : "2.5"
-				}, {
-					"Key" : "nav_block_half_extents_z",
-					"Value" : "1.25"
-				}, {
-					"Key" : "nav_block_states",
-					"Value" : ""
-				}, {
-					"Key" : "team_id",
-					"Value" : "1"
-				}],
-			"PosX" : 77.599998474121094,
-			"PosY" : 0.0,
-			"PosZ" : 8.3999996185302734,
-			"FlowGraph" : null,
-			"PointType" : 2,
-			"TeamId" : 1,
 			"InteractRange" : 3.0
 		}, {
 			"ConfigId" : "eca_sdcmap_container_0008",
@@ -2709,8 +2125,280 @@
 			"TeamId" : 0,
 			"InteractRange" : 1.5
 		}, {
-			"ConfigId" : "05202",
-			"Type" : 1,
+			"ConfigId" : "eca_sdcmap_container_0002",
+			"Type" : 3,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "1.5"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 69.800003051757813,
+			"PosY" : 0.0,
+			"PosZ" : 20.200000762939453,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 1,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerEnterRange",
+						"Title" : "Event 1",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 2,
+						"NodeType" : "Action",
+						"NodeKey" : "ShowInteractButton",
+						"Title" : "Action 2",
+						"PosX" : 373.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "button_text_id",
+								"Value" : "0"
+							}]
+					}, {
+						"_id" : 0,
+						"Id" : 3,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerLeaveRange",
+						"Title" : "Event 3",
+						"PosX" : 0.0,
+						"PosY" : 210.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 4,
+						"NodeType" : "Action",
+						"NodeKey" : "HideInteractButton",
+						"Title" : "Action 4",
+						"PosX" : 373.0,
+						"PosY" : 210.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 5,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerInteract",
+						"Title" : "Event 5",
+						"PosX" : 0.0,
+						"PosY" : 420.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 6,
+						"NodeType" : "Action",
+						"NodeKey" : "OpenContainerUI",
+						"Title" : "Action 6",
+						"PosX" : 373.0,
+						"PosY" : 540.0,
+						"Params" : [{
+								"Key" : "ui_key",
+								"Value" : "SearchPanelComponent"
+							}]
+					}, {
+						"_id" : 0,
+						"Id" : 7,
+						"NodeType" : "Action",
+						"NodeKey" : "GenerateContainerLoot",
+						"Title" : "Action 7",
+						"PosX" : 373.0,
+						"PosY" : 420.0,
+						"Params" : [{
+								"Key" : "output_mode",
+								"Value" : "ContainerPanel"
+							}, {
+								"Key" : "loot_table",
+								"Value" : "10001*1|10002*1|10003*1|10004*1|10005*1|10006*1|10007*1|10008*1|10009*1|10010*1|10011*1|10012*1|60001*1|60002*1"
+							}, {
+								"Key" : "count",
+								"Value" : "1-3"
+							}, {
+								"Key" : "radius",
+								"Value" : "0"
+							}, {
+								"Key" : "allow_repeat",
+								"Value" : "0"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 1,
+						"ToNodeId" : 2,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 3,
+						"ToNodeId" : 4,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 5,
+						"ToNodeId" : 7,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 3,
+			"TeamId" : 0,
+			"InteractRange" : 1.5
+		}, {
+			"ConfigId" : "eca_sdcmap_container_0007",
+			"Type" : 3,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "1.5"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 19.100000381469727,
+			"PosY" : 0.0,
+			"PosZ" : 89.900001525878906,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 1,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerEnterRange",
+						"Title" : "Event 1",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 2,
+						"NodeType" : "Action",
+						"NodeKey" : "ShowInteractButton",
+						"Title" : "Action 2",
+						"PosX" : 373.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "button_text_id",
+								"Value" : "0"
+							}]
+					}, {
+						"_id" : 0,
+						"Id" : 3,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerLeaveRange",
+						"Title" : "Event 3",
+						"PosX" : 0.0,
+						"PosY" : 210.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 4,
+						"NodeType" : "Action",
+						"NodeKey" : "HideInteractButton",
+						"Title" : "Action 4",
+						"PosX" : 373.0,
+						"PosY" : 210.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 5,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerInteract",
+						"Title" : "Event 5",
+						"PosX" : 0.0,
+						"PosY" : 420.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 6,
+						"NodeType" : "Action",
+						"NodeKey" : "OpenContainerUI",
+						"Title" : "Action 6",
+						"PosX" : 373.0,
+						"PosY" : 540.0,
+						"Params" : [{
+								"Key" : "ui_key",
+								"Value" : "SearchPanelComponent"
+							}]
+					}, {
+						"_id" : 0,
+						"Id" : 7,
+						"NodeType" : "Action",
+						"NodeKey" : "GenerateContainerLoot",
+						"Title" : "Action 7",
+						"PosX" : 373.0,
+						"PosY" : 420.0,
+						"Params" : [{
+								"Key" : "output_mode",
+								"Value" : "ContainerPanel"
+							}, {
+								"Key" : "loot_table",
+								"Value" : "10001*1|10002*1|10003*1|10004*1|10005*1|10006*1|10007*1|10008*1|10009*1|10010*1|10011*1|10012*1|60001*1|60002*1"
+							}, {
+								"Key" : "count",
+								"Value" : "1-3"
+							}, {
+								"Key" : "radius",
+								"Value" : "0"
+							}, {
+								"Key" : "allow_repeat",
+								"Value" : "0"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 1,
+						"ToNodeId" : 2,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 3,
+						"ToNodeId" : 4,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 5,
+						"ToNodeId" : 7,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 3,
+			"TeamId" : 0,
+			"InteractRange" : 1.5
+		}, {
+			"ConfigId" : "05101",
+			"Type" : 2,
 			"Params" : [{
 					"Key" : "interact_range",
 					"Value" : "3"
@@ -2733,69 +2421,18 @@
 					"Key" : "nav_block_states",
 					"Value" : ""
 				}, {
-					"Key" : "evacuation_duration_ms",
-					"Value" : "10000"
-				}, {
-					"Key" : "lobby_map_name",
-					"Value" : "Home"
+					"Key" : "team_id",
+					"Value" : "6"
 				}],
-			"PosX" : 3.8399999141693115,
+			"PosX" : 140.30000305175781,
 			"PosY" : 0.0,
-			"PosZ" : 117.80000305175781,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Event",
-						"NodeKey" : "OnPlayerEnterRange",
-						"Title" : "Event 1",
-						"PosX" : 0.0,
-						"PosY" : 145.0,
-						"Params" : [{
-								"Key" : "5",
-								"Value" : ""
-							}]
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Condition",
-						"NodeKey" : "PlayerInRange",
-						"Title" : "Condition 2",
-						"PosX" : 366.0,
-						"PosY" : 145.0,
-						"Params" : [{
-								"Key" : "4",
-								"Value" : ""
-							}]
-					}, {
-						"_id" : 0,
-						"Id" : 0,
-						"NodeType" : "Action",
-						"NodeKey" : "StartEvacCountdown",
-						"Title" : "Action 6",
-						"PosX" : 685.0,
-						"PosY" : 145.0,
-						"Params" : [{
-								"Key" : "seconds",
-								"Value" : "10"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 1,
-						"ToNodeId" : 2,
-						"Branch" : "Out"
-					}, {
-						"FromNodeId" : 2,
-						"ToNodeId" : 6,
-						"Branch" : "True"
-					}]
-			},
-			"PointType" : 1,
-			"TeamId" : 0,
+			"PosZ" : 14.300000190734863,
+			"FlowGraph" : null,
+			"PointType" : 2,
+			"TeamId" : 6,
 			"InteractRange" : 3.0
 		}, {
-			"ConfigId" : "eca_sdcmap_monster_spawn_0012",
+			"ConfigId" : "eca_sdcmap_monster_spawn_0018",
 			"Type" : 4,
 			"Params" : [{
 					"Key" : "interact_range",
@@ -2819,9 +2456,372 @@
 					"Key" : "nav_block_states",
 					"Value" : ""
 				}],
-			"PosX" : 44.0,
+			"PosX" : 32.900001525878906,
 			"PosY" : 0.0,
-			"PosZ" : 42.0,
+			"PosZ" : 113.0,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0024",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 112.09999847412109,
+			"PosY" : 0.0,
+			"PosZ" : 21.399999618530273,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_container_0005",
+			"Type" : 3,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "1.5"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 139.10000610351563,
+			"PosY" : 0.0,
+			"PosZ" : 97.900001525878906,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 1,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerEnterRange",
+						"Title" : "Event 1",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 2,
+						"NodeType" : "Action",
+						"NodeKey" : "ShowInteractButton",
+						"Title" : "Action 2",
+						"PosX" : 373.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "button_text_id",
+								"Value" : "0"
+							}]
+					}, {
+						"_id" : 0,
+						"Id" : 3,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerLeaveRange",
+						"Title" : "Event 3",
+						"PosX" : 0.0,
+						"PosY" : 210.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 4,
+						"NodeType" : "Action",
+						"NodeKey" : "HideInteractButton",
+						"Title" : "Action 4",
+						"PosX" : 373.0,
+						"PosY" : 210.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 5,
+						"NodeType" : "Event",
+						"NodeKey" : "OnPlayerInteract",
+						"Title" : "Event 5",
+						"PosX" : 0.0,
+						"PosY" : 420.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 6,
+						"NodeType" : "Action",
+						"NodeKey" : "OpenContainerUI",
+						"Title" : "Action 6",
+						"PosX" : 373.0,
+						"PosY" : 540.0,
+						"Params" : [{
+								"Key" : "ui_key",
+								"Value" : "SearchPanelComponent"
+							}]
+					}, {
+						"_id" : 0,
+						"Id" : 7,
+						"NodeType" : "Action",
+						"NodeKey" : "GenerateContainerLoot",
+						"Title" : "Action 7",
+						"PosX" : 373.0,
+						"PosY" : 420.0,
+						"Params" : [{
+								"Key" : "output_mode",
+								"Value" : "ContainerPanel"
+							}, {
+								"Key" : "loot_table",
+								"Value" : "10001*1|10002*1|10003*1|10004*1|10005*1|10006*1|10007*1|10008*1|10009*1|10010*1|10011*1|10012*1|60001*1|60002*1"
+							}, {
+								"Key" : "count",
+								"Value" : "1-3"
+							}, {
+								"Key" : "radius",
+								"Value" : "0"
+							}, {
+								"Key" : "allow_repeat",
+								"Value" : "0"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 1,
+						"ToNodeId" : 2,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 3,
+						"ToNodeId" : 4,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 5,
+						"ToNodeId" : 7,
+						"Branch" : "Out"
+					}, {
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 3,
+			"TeamId" : 0,
+			"InteractRange" : 1.5
+		}, {
+			"ConfigId" : "05103",
+			"Type" : 2,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}, {
+					"Key" : "team_id",
+					"Value" : "2"
+				}],
+			"PosX" : 8.1999998092651367,
+			"PosY" : 0.0,
+			"PosZ" : 12.699999809265137,
+			"FlowGraph" : null,
+			"PointType" : 2,
+			"TeamId" : 2,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0004",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 89.0,
+			"PosY" : 0.0,
+			"PosZ" : 46.0,
+			"FlowGraph" : {
+				"Version" : 1,
+				"Nodes" : [{
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Event",
+						"NodeKey" : "OnMapLoaded",
+						"Title" : "Event 7",
+						"PosX" : 0.0,
+						"PosY" : 0.0,
+						"Params" : []
+					}, {
+						"_id" : 0,
+						"Id" : 0,
+						"NodeType" : "Action",
+						"NodeKey" : "SpawnMonsters",
+						"Title" : "Action 6",
+						"PosX" : 300.0,
+						"PosY" : 0.0,
+						"Params" : [{
+								"Key" : "group_id",
+								"Value" : "1003"
+							}, {
+								"Key" : "count",
+								"Value" : "1"
+							}]
+					}],
+				"Connections" : [{
+						"FromNodeId" : 7,
+						"ToNodeId" : 6,
+						"Branch" : "Out"
+					}]
+			},
+			"PointType" : 4,
+			"TeamId" : 0,
+			"InteractRange" : 3.0
+		}, {
+			"ConfigId" : "eca_sdcmap_monster_spawn_0023",
+			"Type" : 4,
+			"Params" : [{
+					"Key" : "interact_range",
+					"Value" : "3"
+				}, {
+					"Key" : "check_range_interval_ms",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_enabled",
+					"Value" : "0"
+				}, {
+					"Key" : "nav_block_half_extents_x",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_half_extents_y",
+					"Value" : "2.5"
+				}, {
+					"Key" : "nav_block_half_extents_z",
+					"Value" : "1.25"
+				}, {
+					"Key" : "nav_block_states",
+					"Value" : ""
+				}],
+			"PosX" : 128.0,
+			"PosY" : 0.0,
+			"PosZ" : 94.0,
 			"FlowGraph" : {
 				"Version" : 1,
 				"Nodes" : [{

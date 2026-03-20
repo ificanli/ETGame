@@ -28,6 +28,17 @@ namespace ET.Server
         }
     }
 
+    public class BTRogueSpawnMerchantHandler : ABTHandler<BTRogueSpawnMerchant>
+    {
+        protected override int Run(BTRogueSpawnMerchant node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            RogueMerchantHelper.TrySpawnMerchant(unit, buff, node);
+            return 0;
+        }
+    }
+
     public class BTRogueGrantRandomCardHandler : ABTHandler<BTRogueGrantRandomCard>
     {
         protected override int Run(BTRogueGrantRandomCard node, BTEnv env)

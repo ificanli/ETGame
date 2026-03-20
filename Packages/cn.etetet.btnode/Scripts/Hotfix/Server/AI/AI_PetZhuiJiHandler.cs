@@ -8,30 +8,48 @@ namespace ET.Server
         {
             Buff buff = env.GetEntity<Buff>(node.Buff);
             Unit unit = buff.GetOwner();
+            Scene root = unit.Root();
             EntityRef<Unit> unitRef = unit;
+            EntityRef<Scene> rootRef = root;
 
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
             EntityRef<TargetComponent> targetComponentRef = targetComponent;
-            
-            TimerComponent timerComponent = unit.Root().TimerComponent;
             
             float unitRadius = unit.NumericComponent.GetAsFloat(NumericType.Radius);
             
             ETCancellationToken cancellationToken = await ETTask.GetContextAsync<ETCancellationToken>();
 
+            unit = unitRef;
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
             SpellHelper.Cast(unit, 100110);
             
             while (true)
             {
-                await timerComponent.WaitAsync(200);
+                root = rootRef;
+                if (root == null)
+                {
+                    return;
+                }
+
+                await root.TimerComponent.WaitAsync(200);
                 if (cancellationToken.IsCancel())
                 {
                     return;
                 }
 
+                unit = unitRef;
                 targetComponent = targetComponentRef;
+                if (unit == null || unit.IsDisposed || targetComponent == null)
+                {
+                    return;
+                }
+
                 Unit target = targetComponent.Unit;
-                if (target == null)
+                if (target == null || target.IsDisposed)
                 {
                     continue;
                 }
@@ -39,7 +57,6 @@ namespace ET.Server
                 // 选择技能，移动到技能攻击范围
                 int spellId = 100100;
                 SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellId);
-                unit = unitRef;
                 float distance = math.distance(unit.Position, target.Position);
                 float targetRadius = target.NumericComponent.GetAsFloat(NumericType.Radius);
                 float d1 = distance - targetRadius - unitRadius;

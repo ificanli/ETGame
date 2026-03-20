@@ -14,10 +14,15 @@ namespace ET.Server
                 return 1;
             }
 
-            WeaponReloadHelper.TryCompleteReload(caster, node.SlotIndex);
+            bool reloadStateChanged = WeaponReloadHelper.TryCompleteReload(caster, node.SlotIndex);
             if (weaponComp.GetAmmo(node.SlotIndex) <= 0 && !weaponComp.IsReloading(node.SlotIndex))
             {
-                WeaponReloadHelper.TryStartReload(caster, node.SlotIndex);
+                reloadStateChanged = WeaponReloadHelper.TryStartReload(caster, node.SlotIndex) || reloadStateChanged;
+            }
+
+            if (reloadStateChanged)
+            {
+                WeaponReloadSchedulerHelper.RefreshTimer(caster);
             }
 
             bool canFire = weaponComp.CanFire(node.SlotIndex);

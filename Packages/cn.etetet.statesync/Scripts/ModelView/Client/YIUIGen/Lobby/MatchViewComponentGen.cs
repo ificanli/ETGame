@@ -22,6 +22,9 @@ namespace ET.Client
         public YIUIWindowComponent UIWindow => u_UIWindow;
         public EntityRef<YIUIViewComponent> u_UIView;
         public YIUIViewComponent UIView => u_UIView;
+        public UITaskEventP0 u_EventCanelMatch;
+        public UITaskEventHandleP0 u_EventCanelMatchHandle;
+        public const string OnEventCanelMatchInvoke = "MatchViewComponent.OnEventCanelMatchInvoke";
 
     }
 }
