@@ -428,7 +428,7 @@ namespace ET.Client
             bool select)
         {
             item.u_DataHeroName.SetValue(data.Name);
-            item.u_DataSelect.SetValue(select);
+            item.SetSelected(select);
 
             UnitConfig unitConfig = UnitConfigCategory.Instance.GetOrDefault(data.UnitConfigId);
             item.SetHeroIcon(unitConfig?.HeadIcon);
@@ -442,7 +442,7 @@ namespace ET.Client
             int index,
             bool select)
         {
-            item.u_DataSelect.SetValue(select);
+            item.SetSelected(select);
             if (select)
             {
                 LoadoutComponent loadout = self.Root().GetComponent<LoadoutComponent>();

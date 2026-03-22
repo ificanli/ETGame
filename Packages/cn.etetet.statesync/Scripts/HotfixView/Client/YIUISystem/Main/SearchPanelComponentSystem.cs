@@ -877,6 +877,12 @@ namespace ET.Client
             }
 
             HashSet<int> alive = new();
+            RectTransform cellTemplate = FindDirectChildRectTransform(
+                gridRoot,
+                "CellTemplate",
+                "GridCellTemplate",
+                "CellStyleSource",
+                "GridCellStyleSource");
             for (int y = 0; y < rows; ++y)
             {
                 for (int x = 0; x < cols; ++x)
@@ -885,16 +891,14 @@ namespace ET.Client
                     alive.Add(id);
                     if (!cellMap.TryGetValue(id, out RectTransform cell) || cell == null)
                     {
-                        GameObject go = new GameObject($"Cell_{x}_{y}", typeof(RectTransform), typeof(Image));
-                        go.transform.SetParent(gridRoot, false);
-                        cell = go.GetComponent<RectTransform>();
+                        cell = CreateGridCellView(gridRoot, cellTemplate, $"Cell_{x}_{y}");
                         cellMap[id] = cell;
                     }
 
                     Image cellImage = cell.GetComponent<Image>();
                     if (cellImage != null)
                     {
-                        cellImage.color = GetGridCellColor(isBag, id);
+                        ApplyGridCellVisual(cellImage, gridRoot, GetGridCellColor(isBag, id));
                         cellImage.raycastTarget = false;
                     }
 
@@ -911,6 +915,139 @@ namespace ET.Client
             }
 
             RemoveDeadViews(cellMap, alive);
+        }
+
+        private static RectTransform CreateGridCellView(RectTransform gridRoot, RectTransform cellTemplate, string cellName)
+        {
+            RectTransform cell = null;
+            if (cellTemplate != null)
+            {
+                cell = UnityEngine.Object.Instantiate(cellTemplate, gridRoot);
+            }
+
+            if (cell == null)
+            {
+                GameObject go = new GameObject(cellName, typeof(RectTransform), typeof(Image));
+                go.transform.SetParent(gridRoot, false);
+                cell = go.GetComponent<RectTransform>();
+            }
+
+            cell.name = cellName;
+            cell.gameObject.SetActive(true);
+            return cell;
+        }
+
+        private static void ApplyGridCellVisual(Image targetImage, RectTransform gridRoot, Color fallbackColor)
+        {
+            if (targetImage == null)
+            {
+                return;
+            }
+
+            Image styleSource = ResolveGridCellStyleSource(gridRoot);
+            if (styleSource != null)
+            {
+                CopyGridCellImageStyle(styleSource, targetImage);
+                // 用代码侧颜色覆盖，保留安全格子/普通格子差异。
+                targetImage.color = fallbackColor;
+                // styleSource 可能是 gridRoot 自己的 Image（作为整体背景）。这种情况下不要禁用它。
+                // 只隐藏作为模板的子节点，避免在界面上多出一个“样式源”图片。
+                if (styleSource.transform != gridRoot)
+                {
+                    styleSource.enabled = false;
+                    styleSource.raycastTarget = false;
+                }
+            }
+            else
+            {
+                targetImage.overrideSprite = null;
+                targetImage.material = null;
+                targetImage.type = Image.Type.Simple;
+                targetImage.preserveAspect = false;
+                targetImage.fillCenter = true;
+                targetImage.fillMethod = Image.FillMethod.Radial360;
+                targetImage.fillOrigin = 0;
+                targetImage.fillClockwise = true;
+                targetImage.fillAmount = 1f;
+                targetImage.useSpriteMesh = false;
+                targetImage.pixelsPerUnitMultiplier = 1f;
+                targetImage.maskable = true;
+                targetImage.color = fallbackColor;
+                targetImage.enabled = true;
+            }
+
+            targetImage.raycastTarget = false;
+        }
+
+        private static Image ResolveGridCellStyleSource(RectTransform gridRoot)
+        {
+            if (gridRoot == null)
+            {
+                return null;
+            }
+
+            RectTransform styleRect = FindDirectChildRectTransform(
+                gridRoot,
+                "CellTemplate",
+                "GridCellTemplate",
+                "CellStyleSource",
+                "GridCellStyleSource");
+            Image styleImage = styleRect?.GetComponent<Image>();
+            if (styleImage != null && styleImage.sprite != null)
+            {
+                return styleImage;
+            }
+
+            Image rootImage = gridRoot.GetComponent<Image>();
+            return rootImage != null && rootImage.sprite != null ? rootImage : null;
+        }
+
+        private static void CopyGridCellImageStyle(Image sourceImage, Image targetImage)
+        {
+            if (sourceImage == null || targetImage == null)
+            {
+                return;
+            }
+
+            targetImage.sprite = sourceImage.sprite;
+            targetImage.overrideSprite = sourceImage.overrideSprite;
+            targetImage.material = sourceImage.material;
+            targetImage.type = sourceImage.type;
+            targetImage.preserveAspect = sourceImage.preserveAspect;
+            targetImage.fillCenter = sourceImage.fillCenter;
+            targetImage.fillMethod = sourceImage.fillMethod;
+            targetImage.fillOrigin = sourceImage.fillOrigin;
+            targetImage.fillClockwise = sourceImage.fillClockwise;
+            targetImage.fillAmount = sourceImage.fillAmount;
+            targetImage.useSpriteMesh = sourceImage.useSpriteMesh;
+            targetImage.pixelsPerUnitMultiplier = sourceImage.pixelsPerUnitMultiplier;
+            targetImage.maskable = sourceImage.maskable;
+            targetImage.enabled = true;
+        }
+
+        private static RectTransform FindDirectChildRectTransform(RectTransform parent, params string[] names)
+        {
+            if (parent == null || names == null || names.Length == 0)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < names.Length; ++i)
+            {
+                string name = names[i];
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    continue;
+                }
+
+                Transform child = parent.Find(name);
+                if (child is RectTransform rect)
+                {
+                    return rect;
+                }
+            }
+
+            return null;
         }
 
         private static Color GetGridCellColor(bool isBag, int slotIndex)

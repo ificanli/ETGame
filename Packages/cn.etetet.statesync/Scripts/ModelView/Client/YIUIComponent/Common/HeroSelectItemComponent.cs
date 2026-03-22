@@ -13,7 +13,9 @@ namespace ET.Client
     /// </summary>
     public partial class HeroSelectItemComponent : Entity
     {
-        public Image m_HeroIconImage;
+        public readonly List<Image> m_HeroIconImages = new();
+        public readonly List<RectTransform> m_VisualRects = new();
+        public readonly List<Vector2> m_VisualBaseAnchoredPositions = new();
         public string m_LastHeroIconName = string.Empty;
         public Sprite m_LastHeroSprite;
     }
