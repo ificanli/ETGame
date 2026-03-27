@@ -17,6 +17,20 @@ namespace ET.Client
             runtime.NeedExp = message.NeedExp;
             runtime.CurrentGold = message.CurrentGold;
 
+            Unit myUnit = root.GetComponent<CurrentScenesComponent>()?.Scene?.GetComponent<UnitComponent>()?.Get(root.GetComponent<PlayerComponent>()?.MyId ?? 0);
+            if (myUnit != null)
+            {
+                UnitDisplayLevelComponent displayLevelComponent = myUnit.GetComponent<UnitDisplayLevelComponent>();
+                if (displayLevelComponent == null)
+                {
+                    myUnit.AddComponent<UnitDisplayLevelComponent, int>(message.Level);
+                }
+                else
+                {
+                    displayLevelComponent.SetLevel(message.Level);
+                }
+            }
+
             Log.Info($"[RogueClient] exp sync level={message.Level}, exp={message.CurrentExp}/{message.NeedExp}, gold={message.CurrentGold}");
             await ETTask.CompletedTask;
         }

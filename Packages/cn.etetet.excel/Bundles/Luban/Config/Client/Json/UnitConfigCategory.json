@@ -37,22 +37,43 @@
   {
     "Id": 1006,
     "UnitType": 1,
-    "Name": "Agou",
-    "head_icon": "Agou_Icon",
+    "Name": "Agou1",
+    "head_icon": "export (32)_0",
     "class_type": 5
   },
   {
     "Id": 1007,
     "UnitType": 1,
     "Name": "Ayin",
-    "head_icon": "Ayin_Icon",
+    "head_icon": "export (32)_1",
     "class_type": 5
   },
   {
     "Id": 1008,
     "UnitType": 1,
-    "Name": "Aniao",
-    "head_icon": "Aniao_Icon",
+    "Name": "Axiong",
+    "head_icon": "export (32)_3",
+    "class_type": 5
+  },
+  {
+    "Id": 1009,
+    "UnitType": 1,
+    "Name": "Axi",
+    "head_icon": "export (32)_6",
+    "class_type": 5
+  },
+  {
+    "Id": 1010,
+    "UnitType": 1,
+    "Name": "Atu",
+    "head_icon": "export (32)_4",
+    "class_type": 5
+  },
+  {
+    "Id": 1011,
+    "UnitType": 1,
+    "Name": "Aqi",
+    "head_icon": "export (32)_5",
     "class_type": 5
   }
 ]

@@ -20,6 +20,7 @@ namespace ET.Server
             unit.UnitType = unitConfig.UnitType;
             
             NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
+            unit.AddComponent<UnitDisplayLevelComponent, int>(1);
             foreach ((int k, long v) in unitConfig.KV)
             {
                 numericComponent.SetNoEvent(k, v);

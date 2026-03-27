@@ -42,14 +42,18 @@ namespace ET.Client
                 return worldUvRect;
             }
 
-            float2 center = runtime.WorldToNormalizedPosition(centerPosition);
-            float uvWidth = Mathf.Clamp01((runtime.CompactRange * 2f) / width) * worldUvRect.width;
-            float uvHeight = Mathf.Clamp01((runtime.CompactRange * 2f) / height) * worldUvRect.height;
-            float x = center.x * worldUvRect.width + worldUvRect.x - uvWidth * 0.5f;
-            float y = center.y * worldUvRect.height + worldUvRect.y - uvHeight * 0.5f;
-            x = Mathf.Clamp(x, worldUvRect.x, worldUvRect.x + worldUvRect.width - uvWidth);
-            y = Mathf.Clamp(y, worldUvRect.y, worldUvRect.y + worldUvRect.height - uvHeight);
-            return new Rect(x, y, uvWidth, uvHeight);
+            Rect worldView = ComputeWorldViewRect(runtime, centerPosition);
+            float normX = (worldView.x - runtime.WorldMinX) / width;
+            float normY = (worldView.y - runtime.WorldMinZ) / height;
+            float normW = worldView.width / width;
+            float normH = worldView.height / height;
+
+            float uvX = worldUvRect.x + normX * worldUvRect.width;
+            float uvY = worldUvRect.y + normY * worldUvRect.height;
+            float uvW = normW * worldUvRect.width;
+            float uvH = normH * worldUvRect.height;
+
+            return new Rect(uvX, uvY, uvW, uvH);
         }
 
         public static Rect GetCompactFogUvRect(MinimapRuntimeComponent runtime, float3 centerPosition)
@@ -59,12 +63,56 @@ namespace ET.Client
                 return new Rect(0f, 0f, 1f, 1f);
             }
 
-            float2 center = runtime.WorldToNormalizedPosition(centerPosition);
-            float uvWidth = Mathf.Clamp01((runtime.CompactRange * 2f) / width);
-            float uvHeight = Mathf.Clamp01((runtime.CompactRange * 2f) / height);
-            float x = Mathf.Clamp(center.x - uvWidth * 0.5f, 0f, 1f - uvWidth);
-            float y = Mathf.Clamp(center.y - uvHeight * 0.5f, 0f, 1f - uvHeight);
-            return new Rect(x, y, uvWidth, uvHeight);
+            Rect worldView = ComputeWorldViewRect(runtime, centerPosition);
+            float uvX = (worldView.x - runtime.WorldMinX) / width;
+            float uvY = (worldView.y - runtime.WorldMinZ) / height;
+            float uvW = worldView.width / width;
+            float uvH = worldView.height / height;
+
+            return new Rect(uvX, uvY, uvW, uvH);
+        }
+
+        private static Rect ComputeWorldViewRect(MinimapRuntimeComponent runtime, float3 centerPosition)
+        {
+            float worldWidth = runtime.WorldMaxX - runtime.WorldMinX;
+            float worldHeight = runtime.WorldMaxZ - runtime.WorldMinZ;
+            float range = runtime.CompactRange;
+
+            float viewMinX = centerPosition.x - range;
+            float viewMaxX = centerPosition.x + range;
+            float viewMinZ = centerPosition.z - range;
+            float viewMaxZ = centerPosition.z + range;
+
+            if (viewMinX < runtime.WorldMinX)
+            {
+                viewMaxX += runtime.WorldMinX - viewMinX;
+                viewMinX = runtime.WorldMinX;
+            }
+
+            if (viewMaxX > runtime.WorldMaxX)
+            {
+                viewMinX -= viewMaxX - runtime.WorldMaxX;
+                viewMaxX = runtime.WorldMaxX;
+            }
+
+            if (viewMinZ < runtime.WorldMinZ)
+            {
+                viewMaxZ += runtime.WorldMinZ - viewMinZ;
+                viewMinZ = runtime.WorldMinZ;
+            }
+
+            if (viewMaxZ > runtime.WorldMaxZ)
+            {
+                viewMinZ -= viewMaxZ - runtime.WorldMaxZ;
+                viewMaxZ = runtime.WorldMaxZ;
+            }
+
+            viewMinX = Mathf.Max(viewMinX, runtime.WorldMinX);
+            viewMaxX = Mathf.Min(viewMaxX, runtime.WorldMaxX);
+            viewMinZ = Mathf.Max(viewMinZ, runtime.WorldMinZ);
+            viewMaxZ = Mathf.Min(viewMaxZ, runtime.WorldMaxZ);
+
+            return new Rect(viewMinX, viewMinZ, viewMaxX - viewMinX, viewMaxZ - viewMinZ);
         }
 
         private static Rect GetBaseTextureWorldUvRect(MinimapRuntimeComponent runtime, Texture texture)
@@ -96,6 +144,19 @@ namespace ET.Client
             float activeHeight = textureAspect / worldAspect;
             float paddingY = (1f - activeHeight) * 0.5f;
             return new Rect(0f, paddingY, 1f, activeHeight);
+        }
+
+        /// <summary>
+        /// 返回紧凑模式下经过世界边界钳制后的视野中心点。
+        /// 当玩家靠近地图边缘时，视野中心会偏离玩家位置。
+        /// </summary>
+        public static float3 GetCompactViewCenter(MinimapRuntimeComponent runtime, float3 playerPosition)
+        {
+            Rect worldView = ComputeWorldViewRect(runtime, playerPosition);
+            return new float3(
+                worldView.x + worldView.width * 0.5f,
+                playerPosition.y,
+                worldView.y + worldView.height * 0.5f);
         }
 
         private static bool TryGetWorldSpan(MinimapRuntimeComponent runtime, out float width, out float height)

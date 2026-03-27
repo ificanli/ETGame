@@ -33,7 +33,7 @@ namespace ET.Client
             self.UIWindow.WindowOption = EWindowOption.None;
             self.UIPanel.Layer = EPanelLayer.Panel;
             self.UIPanel.PanelOption = EPanelOption.None;
-            self.UIPanel.StackOption = EPanelStackOption.VisibleTween;
+            self.UIPanel.StackOption = EPanelStackOption.Visible;
             self.UIPanel.Priority = 0;
 
             self.u_ComContainerBoardRoot = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComContainerBoardRoot");
@@ -42,12 +42,21 @@ namespace ET.Client
             self.u_ComBagItemsLayer = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComBagItemsLayer");
             self.u_ComContainerItemTemplate = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComContainerItemTemplate");
             self.u_ComBagItemTemplate = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComBagItemTemplate");
+            self.u_ComEquipSlotItemWeaponRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEquipSlotItemWeaponRectTransform");
+            self.u_ComEquipSlotItemWeapon2RectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEquipSlotItemWeapon2RectTransform");
+            self.u_ComEquipSlotItemArmorRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEquipSlotItemArmorRectTransform");
+            self.u_ComEquipSlotItemBagRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEquipSlotItemBagRectTransform");
+            self.u_ComSecureBagRootRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComSecureBagRootRectTransform");
             self.u_EventQuickChoose = self.UIBase.EventTable.FindEvent<UIEventP1<int>>("u_EventQuickChoose");
             self.u_EventQuickChooseHandle = self.u_EventQuickChoose.Add(self,SearchPanelComponent.OnEventQuickChooseInvoke);
             self.u_EventExit = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventExit");
             self.u_EventExitHandle = self.u_EventExit.Add(self,SearchPanelComponent.OnEventExitInvoke);
             self.u_EventClickQuickChoose = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventClickQuickChoose");
             self.u_EventClickQuickChooseHandle = self.u_EventClickQuickChoose.Add(self,SearchPanelComponent.OnEventClickQuickChooseInvoke);
+            self.u_UIEquipSlotItemBag = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemBag");
+            self.u_UIEquipSlotItemArmor = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemArmor");
+            self.u_UIEquipSlotItemWeapon2 = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemWeapon2");
+            self.u_UIEquipSlotItemWeapon = self.UIBase.CDETable.FindUIOwner<ET.Client.EquipSlotItemComponent>("EquipSlotItemWeapon");
 
         }
     }

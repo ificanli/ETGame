@@ -57,7 +57,24 @@
       "Bash(test:*)",
       "Bash(taskkill:*)",
       "Bash(tasklist:*)",
-      "Bash(wmic process:*)"
+      "Bash(wmic process:*)",
+      "Bash(npm install:*)",
+      "Bash(npm update:*)",
+      "Bash(claude:*)",
+      "Bash(find D:/05ET/MatchTest/ETGame -path */Library -prune -o -path */Temp -prune -o -type f \\\\\\(-name *green* -o -name *quality* -o -name *品质* \\\\\\) -print)",
+      "Read(//c/Users/luxinyu/AppData/Local/Unity/Editor/**)",
+      "Read(//d/05ET/MatchTest/ETGame/$LOCALAPPDATA/Unity/Editor/**)",
+      "Bash(while read:*)",
+      "Bash(do python3 -c \":*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Bash(do grep:*)",
+      "Bash(\"C:/Program Files \\(x86\\)/Microsoft Visual Studio/Installer/vswhere.exe\" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "Bash('D:/05ET/MatchTest/ETGame/Book/移动手感优化方案_360旋转问题分析.md':*)",
+      "Bash('D:/05ET/MatchTest/ETGame/Book/移动系统改进建议.md':*)",
+      "Bash(/d/05ET/MatchTest/ETGame/Book/移动系统改进建议.md:*)"
     ],
     "deny": []
   }

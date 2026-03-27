@@ -44,6 +44,11 @@ namespace ET.Client
                 return;
             }
 
+            if (runtime.ShouldRetryResolveWorldBounds())
+            {
+                runtime.RefreshWorldBoundsFromTerrain();
+            }
+
             if (!self.TryResolveTargetTexture(scene.Root(), out RenderTexture targetTexture))
             {
                 self.SetCaptureActive(false);

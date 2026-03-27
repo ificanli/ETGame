@@ -128,10 +128,44 @@ namespace ET.Test
                 return 13;
             }
 
-            if (robotUnit.GetComponent<MatchRobotComponent>() != null)
+            MatchRobotComponent matchRobot = robotUnit.GetComponent<MatchRobotComponent>();
+            if (matchRobot == null)
             {
-                Log.Console("match robot marker should be consumed after setup");
+                Log.Console("match robot marker should remain after setup");
                 return 14;
+            }
+
+            if (matchRobot.HeroConfigId <= 0 || matchRobot.MainWeaponConfigId <= 0 || matchRobot.AIBuffConfigId <= 0)
+            {
+                Log.Console($"match robot profile invalid: hero={matchRobot.HeroConfigId}, main={matchRobot.MainWeaponConfigId}, ai={matchRobot.AIBuffConfigId}");
+                return 15;
+            }
+
+            HeroConfig heroConfig = HeroConfigCategory.Instance.GetOrDefault(matchRobot.HeroConfigId);
+            if (heroConfig == null || robotUnit.ConfigId != heroConfig.UnitConfigId)
+            {
+                Log.Console($"robot hero config mismatch: hero={matchRobot.HeroConfigId}, unitConfig={robotUnit.ConfigId}, expected={heroConfig?.UnitConfigId ?? 0}");
+                return 16;
+            }
+
+            EquipmentComponent equipmentComponent = robotUnit.GetComponent<EquipmentComponent>();
+            if (equipmentComponent == null || equipmentComponent.GetEquippedItem(EquipmentSlotType.MainHand)?.ConfigId != matchRobot.MainWeaponConfigId)
+            {
+                Log.Console($"robot main weapon mismatch: equipped={equipmentComponent?.GetEquippedItem(EquipmentSlotType.MainHand)?.ConfigId ?? 0}, expected={matchRobot.MainWeaponConfigId}");
+                return 17;
+            }
+
+            WeaponComponent weaponComponent = robotUnit.GetComponent<WeaponComponent>();
+            if (weaponComponent == null || weaponComponent.Slot1WeaponId != matchRobot.MainWeaponConfigId)
+            {
+                Log.Console($"robot weapon runtime mismatch: slot1={weaponComponent?.Slot1WeaponId ?? 0}, expected={matchRobot.MainWeaponConfigId}");
+                return 18;
+            }
+
+            if (robotUnit.NumericComponent?.GetAsInt(NumericType.AI) != matchRobot.AIBuffConfigId)
+            {
+                Log.Console($"robot ai numeric mismatch: ai={robotUnit.NumericComponent?.GetAsInt(NumericType.AI) ?? 0}, expected={matchRobot.AIBuffConfigId}");
+                return 19;
             }
 
             SpawnPointManagerComponent spawnPointManager = mapScene.GetComponent<SpawnPointManagerComponent>();
@@ -139,13 +173,13 @@ namespace ET.Test
                 (!spawnPointManager.PlayerTeamAssignments.TryGetValue(robot1, out int robotTeamId) || robotTeamId != 3))
             {
                 Log.Console($"robot team assignment mismatch: {robotTeamId}");
-                return 15;
+                return 20;
             }
 
             if (contextComponent.EnteredHumanPlayerIds.Count != 2)
             {
                 Log.Console($"entered human count mismatch: {contextComponent.EnteredHumanPlayerIds.Count}");
-                return 16;
+                return 21;
             }
 
             return ErrorCode.ERR_Success;

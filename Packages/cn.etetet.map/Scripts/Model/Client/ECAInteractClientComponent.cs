@@ -15,6 +15,10 @@ namespace ET.Client
         public string SearchingPointId { get; set; }
         public int SearchState { get; set; }
         public long SearchRemainMs { get; set; }
+        public string EvacuationPointId { get; set; }
+        public int EvacuationState { get; set; }
+        public long EvacuationRemainMs { get; set; }
+        public long EvacuationEndTimeMs { get; set; }
 
         public string OpenContainerPointId { get; set; }
         public string OpenContainerUiKey { get; set; }

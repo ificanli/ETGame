@@ -20,6 +20,8 @@ namespace ET.Client
         public Text[] Texts;
         public Sprite LoadedSprite;
         public string LoadedIconName = string.Empty;
+        public RectTransform DragOriginalParent;
+        public int DragOriginalSiblingIndex;
 
         private void OnDestroy()
         {

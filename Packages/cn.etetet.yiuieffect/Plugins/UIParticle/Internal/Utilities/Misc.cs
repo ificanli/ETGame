@@ -1,9 +1,9 @@
 using System;
 using System.Diagnostics;
-using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 #if UNITY_EDITOR
+using UnityEditor;
 using System.IO;
 using System.Linq;
 using System.Reflection;

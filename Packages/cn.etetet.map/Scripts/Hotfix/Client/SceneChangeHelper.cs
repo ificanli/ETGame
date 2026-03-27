@@ -16,17 +16,29 @@
                 currentScenesComponent.Scene?.Dispose(); // 删除之前的CurrentScene，创建新的
                 Scene currentScene = CurrentSceneFactory.Create(sceneId, sceneName, currentScenesComponent);
                 currentScene.AddComponent<UnitComponent>();
-                await WaitUnitCreateFinish(root, currentScenesComponent.Scene);
             }
+
+            // 新场景容器已经准备完成后，立刻通知开始切场，让 Loading 能尽早显示。
             root = rootRef;
             EventSystem.Instance.Publish(root, new SceneChangeStart() {ChangeScene = changeScene});          // 可以订阅这个事件中创建Loading界面
+
             if (changeScene)
             {
+                currentScenesComponent = currentScenesComponentRef;
+                await WaitUnitCreateFinish(root, currentScenesComponent.Scene);
+
                 // Home 场景不需要加载寻路数据
                 string configName = sceneName.GetSceneConfigName();
                 if (configName != "Home")
                 {
                     await NavmeshComponent.Instance.Load(configName);
+                    root = rootRef;
+                    currentScenesComponent = currentScenesComponentRef;
+                    Scene currentScene = currentScenesComponent.Scene;
+                    if (currentScene != null && !currentScene.IsDisposed && currentScene.GetComponent<SceneNavmeshComponent>() == null)
+                    {
+                        currentScene.AddComponent<SceneNavmeshComponent, string, DotRecast.Detour.DtNavMesh>(configName, NavmeshComponent.Instance.CreateInstance(configName));
+                    }
                 }
             }
             root = rootRef;

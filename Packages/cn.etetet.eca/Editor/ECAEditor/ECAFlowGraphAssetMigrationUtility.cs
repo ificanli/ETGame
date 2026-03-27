@@ -67,6 +67,7 @@ namespace ET.Client
             }
 
             changed = TryMigrateLegacyNodeIds(graphAsset);
+            changed |= TrySanitizePlaceholderParams(graphAsset);
 
             if (TryValidateGraph(graphAsset, out errorMessage))
             {
@@ -196,6 +197,41 @@ namespace ET.Client
 
             errorMessage = builder.ToString().TrimEnd();
             return false;
+        }
+
+        private static bool TrySanitizePlaceholderParams(FlowGraphAsset graphAsset)
+        {
+            FlowGraphData graph = graphAsset?.Graph;
+            if (graph?.Nodes == null || graph.Nodes.Count == 0)
+            {
+                return false;
+            }
+
+            bool changed = false;
+            foreach (FlowNodeData node in graph.Nodes)
+            {
+                if (node?.Params == null || node.Params.Count == 0)
+                {
+                    continue;
+                }
+
+                int removedCount = node.Params.RemoveAll(param => !FlowParamHelper.IsMeaningfulParam(param));
+                if (removedCount <= 0)
+                {
+                    continue;
+                }
+
+                changed = true;
+                Debug.Log($"[ECAFlowGraph] Graph '{graphAsset.name}' removed {removedCount} placeholder params from node {ResolveNodeId(node)}({node.NodeKey}).");
+            }
+
+            if (!changed)
+            {
+                return false;
+            }
+
+            EditorUtility.SetDirty(graphAsset);
+            return true;
         }
 
         private static List<int> ReadLegacyNodeIdsFromAsset(string assetPath)

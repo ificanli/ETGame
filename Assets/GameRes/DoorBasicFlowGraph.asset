@@ -15,45 +15,51 @@ MonoBehaviour:
   Graph:
     Version: 1
     Nodes:
-    - Id: 1
+    - LegacyId: 0
+      NodeId: 1
       NodeType: Event
       NodeKey: OnPlayerEnterRange
-      Title: 玩家进入范围
+      Title: "\u73A9\u5BB6\u8FDB\u5165\u8303\u56F4"
       PosX: -600
       PosY: -120
       Params: []
-    - Id: 2
+    - LegacyId: 0
+      NodeId: 2
       NodeType: Action
       NodeKey: RefreshDoorInteractHint
-      Title: 刷新门交互提示
+      Title: "\u5237\u65B0\u95E8\u4EA4\u4E92\u63D0\u793A"
       PosX: -240
       PosY: -120
       Params: []
-    - Id: 3
+    - LegacyId: 0
+      NodeId: 3
       NodeType: Event
       NodeKey: OnPlayerLeaveRange
-      Title: 玩家离开范围
+      Title: "\u73A9\u5BB6\u79BB\u5F00\u8303\u56F4"
       PosX: -600
       PosY: 80
       Params: []
-    - Id: 4
+    - LegacyId: 0
+      NodeId: 4
       NodeType: Action
       NodeKey: HideInteractButton
-      Title: 隐藏交互按钮
+      Title: "\u9690\u85CF\u4EA4\u4E92\u6309\u94AE"
       PosX: -240
       PosY: 80
       Params: []
-    - Id: 5
+    - LegacyId: 0
+      NodeId: 5
       NodeType: Event
       NodeKey: OnPlayerInteract
-      Title: 玩家交互
+      Title: "\u73A9\u5BB6\u4EA4\u4E92"
       PosX: -600
       PosY: 280
       Params: []
-    - Id: 6
+    - LegacyId: 0
+      NodeId: 6
       NodeType: Action
       NodeKey: ToggleDoor
-      Title: 切换门状态
+      Title: "\u5207\u6362\u95E8\u72B6\u6001"
       PosX: -240
       PosY: 280
       Params: []
@@ -67,7 +73,5 @@ MonoBehaviour:
     - FromNodeId: 5
       ToNodeId: 6
       Branch: Out
-    RuntimeNodeMap: {}
-    RuntimeAdjacency: {}
     RuntimeNodeCount: 0
     RuntimeConnectionCount: 0

@@ -7,11 +7,13 @@
 using System;
 using System.Collections.Generic;
 using Coffee.UIParticleInternal;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Coffee.UIExtensions
 {

@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using Coffee.UIEffectInternal;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Object = UnityEngine.Object;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Coffee.UIEffects
 {

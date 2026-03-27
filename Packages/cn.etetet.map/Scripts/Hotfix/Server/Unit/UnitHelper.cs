@@ -15,6 +15,7 @@ namespace ET.Server
             unitInfo.Position = unit.Position;
             unitInfo.Forward = unit.Forward;
             unitInfo.CampId = unit.GetComponent<CampComponent>()?.CampId ?? 0;
+            unitInfo.DisplayLevel = unit.GetComponent<UnitDisplayLevelComponent>()?.Level ?? 1;
 
             MoveComponent moveComponent = unit.GetComponent<MoveComponent>();
             if (moveComponent != null)

@@ -22,5 +22,10 @@ namespace ET.Client
 
         public EntityRef<NumericComponent> m_Numeric;
         public NumericComponent            Numeric => m_Numeric;
+
+        public Transform ExpBarRoot;
+        public bool LastShowExpBar;
+        public int LastDisplayLevel = int.MinValue;
+        public float LastDisplayExpRatio = float.MinValue;
     }
 }

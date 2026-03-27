@@ -18,6 +18,10 @@ namespace ET.Client
             self.SearchingPointId = null;
             self.SearchState = ContainerSearchState.Idle;
             self.SearchRemainMs = 0;
+            self.EvacuationPointId = null;
+            self.EvacuationState = ECAEvacuationState.None;
+            self.EvacuationRemainMs = 0;
+            self.EvacuationEndTimeMs = 0;
             self.OpenContainerPointId = null;
             self.OpenContainerUiKey = null;
             self.ContainerOutputMode = ContainerOutputMode.ContainerPanel;

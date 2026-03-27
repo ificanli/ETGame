@@ -52,6 +52,11 @@ namespace ET.Server
             serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
             await serviceDiscoveryProxy.SubscribeServiceChange("MapManager",
                 new StringKV() { {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.MapManager)} });
+
+            // 订阅Archive，Gate 侧负责按账号加载和同步玩家档案
+            serviceDiscoveryProxy = serviceDiscoveryProxyComponentRef;
+            await serviceDiscoveryProxy.SubscribeServiceChange("Archive",
+                new StringKV() { {ServiceMetaKey.SceneType, SceneTypeSingleton.Instance.GetSceneName(SceneType.Archive)} });
         }
     }
 }

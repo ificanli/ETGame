@@ -1,0 +1,165 @@
+syntax = "proto3";
+
+package ET;
+
+message ArchiveWarehouseItemProto
+{
+	int64 ItemUid = 1;
+	int32 ConfigId = 2;
+	int32 Count = 3;
+	int32 GridWidth = 4;
+	int32 GridHeight = 5;
+	int32 AnchorSlotIndex = 6;
+}
+
+message ArchiveItemCountProto
+{
+	int32 ConfigId = 1;
+	int32 Count = 2;
+}
+
+message ArchiveBattleEventProto
+{
+	int64 Timestamp = 1;
+	int32 EventType = 2;
+	int64 PlayerId = 3;
+	int64 Value = 4;
+	string Text = 5;
+}
+
+message ArchiveBattleRecordSummaryProto
+{
+	int64 RecordId = 1;
+	int64 PlayerId = 2;
+	int32 GameMode = 3;
+	string MapName = 4;
+	int64 MapId = 5;
+	int64 StartedAt = 6;
+	int64 FinishedAt = 7;
+	int32 ResultType = 8;
+	bool IsSuccess = 9;
+	int32 KillNum = 10;
+	int64 TotalWealth = 11;
+}
+
+// ResponseType Archive2G_GetOrCreatePlayerArchiveResponse
+message G2Archive_GetOrCreatePlayerArchiveRequest // IRequest
+{
+	int32 RpcId = 1;
+	string Account = 2;
+	int64 TotalWealth = 3;
+	int64 LastEvacuationWealth = 4;
+	int32 WarehouseColumnCount = 5;
+	repeated ArchiveWarehouseItemProto WarehouseItems = 6;
+	repeated ArchiveItemCountProto LastEvacuationItems = 7;
+}
+
+message Archive2G_GetOrCreatePlayerArchiveResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 TotalWealth = 4;
+	int64 LastEvacuationWealth = 5;
+	int32 WarehouseColumnCount = 6;
+	repeated ArchiveWarehouseItemProto WarehouseItems = 7;
+	repeated ArchiveItemCountProto LastEvacuationItems = 8;
+}
+
+// ResponseType Archive2G_SavePlayerArchiveResponse
+message G2Archive_SavePlayerArchiveRequest // IRequest
+{
+	int32 RpcId = 1;
+	string Account = 2;
+	int64 TotalWealth = 3;
+	int64 LastEvacuationWealth = 4;
+	int32 WarehouseColumnCount = 5;
+	repeated ArchiveWarehouseItemProto WarehouseItems = 6;
+	repeated ArchiveItemCountProto LastEvacuationItems = 7;
+}
+
+message Archive2G_SavePlayerArchiveResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 TotalWealth = 4;
+	int64 LastEvacuationWealth = 5;
+	int32 WarehouseColumnCount = 6;
+	repeated ArchiveWarehouseItemProto WarehouseItems = 7;
+	repeated ArchiveItemCountProto LastEvacuationItems = 8;
+}
+
+// ResponseType Archive2G_RecordMatchStartResponse
+message G2Archive_RecordMatchStartRequest // IRequest
+{
+	int32 RpcId = 1;
+	string Account = 2;
+	int64 PlayerId = 3;
+	int32 GameMode = 4;
+	string MapName = 5;
+	int64 MapId = 6;
+	int64 StartTime = 7;
+}
+
+message Archive2G_RecordMatchStartResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RecordId = 4;
+}
+
+// ResponseType Archive2G_RecordBattleResultResponse
+message G2Archive_RecordBattleResultRequest // IRequest
+{
+	int32 RpcId = 1;
+	string Account = 2;
+	int64 PlayerId = 3;
+	int32 ResultType = 4;
+	bool IsSuccess = 5;
+	int64 TotalWealth = 6;
+	int32 KillNum = 7;
+	int64 FinishTime = 8;
+}
+
+message Archive2G_RecordBattleResultResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RecordId = 4;
+}
+
+// ResponseType Archive2G_GetBattleRecordListResponse
+message G2Archive_GetBattleRecordListRequest // IRequest
+{
+	int32 RpcId = 1;
+	string Account = 2;
+	int32 Limit = 3;
+}
+
+message Archive2G_GetBattleRecordListResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated ArchiveBattleRecordSummaryProto Records = 4;
+}
+
+// ResponseType Archive2G_GetBattleRecordDetailResponse
+message G2Archive_GetBattleRecordDetailRequest // IRequest
+{
+	int32 RpcId = 1;
+	string Account = 2;
+	int64 RecordId = 3;
+}
+
+message Archive2G_GetBattleRecordDetailResponse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	ArchiveBattleRecordSummaryProto Record = 4;
+	repeated ArchiveBattleEventProto Events = 5;
+}

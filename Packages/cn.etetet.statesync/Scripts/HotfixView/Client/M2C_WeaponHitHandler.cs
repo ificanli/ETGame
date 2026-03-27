@@ -7,21 +7,6 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene root, M2C_WeaponHit message)
         {
-            global::ET.WeaponConfig weaponConfig = global::ET.WeaponConfigCategory.Instance.GetOrDefault(message.WeaponId);
-            if (weaponConfig == null)
-            {
-                Log.Warning($"[WeaponFireTrace][Hit] missing config, weaponId={message.WeaponId}, target={message.TargetUnitId}");
-                await ETTask.CompletedTask;
-                return;
-            }
-
-            if (string.IsNullOrEmpty(weaponConfig.HitEffect))
-            {
-                Log.Warning($"[WeaponFireTrace][Hit] empty hit effect, weaponId={message.WeaponId}");
-                await ETTask.CompletedTask;
-                return;
-            }
-
             Scene currentScene = root.CurrentScene();
             UnitComponent unitComponent = currentScene?.GetComponent<UnitComponent>();
             if (unitComponent == null)
@@ -35,6 +20,27 @@ namespace ET.Client
             if (target == null)
             {
                 Log.Warning($"[WeaponFireTrace][Hit] target missing, target={message.TargetUnitId}, weaponId={message.WeaponId}");
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            if (target.IsMyUnit())
+            {
+                MainPanelComponent mainPanel = root.YIUIMgr()?.GetPanel<MainPanelComponent>();
+                mainPanel?.NotifyHitDirection(message.CasterUnitId);
+            }
+
+            global::ET.WeaponConfig weaponConfig = global::ET.WeaponConfigCategory.Instance.GetOrDefault(message.WeaponId);
+            if (weaponConfig == null)
+            {
+                Log.Warning($"[WeaponFireTrace][Hit] missing config, weaponId={message.WeaponId}, target={message.TargetUnitId}");
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            if (string.IsNullOrEmpty(weaponConfig.HitEffect))
+            {
+                Log.Warning($"[WeaponFireTrace][Hit] empty hit effect, weaponId={message.WeaponId}");
                 await ETTask.CompletedTask;
                 return;
             }

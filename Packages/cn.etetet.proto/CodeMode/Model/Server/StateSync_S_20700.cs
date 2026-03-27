@@ -79,6 +79,18 @@ namespace ET
         public int SubWeaponConfigId { get; set; }
         [MemoryPackOrder(4)]
         public int ArmorConfigId { get; set; }
+        [MemoryPackOrder(5)]
+        public List<int> ConsumableConfigIds { get; set; } = new();
+
+        [MemoryPackOrder(6)]
+        public int BackpackConfigId { get; set; }
+        [MemoryPackOrder(7)]
+        public int BagWidth { get; set; }
+        [MemoryPackOrder(8)]
+        public int BagHeight { get; set; }
+        [MemoryPackOrder(9)]
+        public List<LoadoutGridItemData> BagItems { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -91,6 +103,11 @@ namespace ET
             this.MainWeaponConfigId = default;
             this.SubWeaponConfigId = default;
             this.ArmorConfigId = default;
+            this.ConsumableConfigIds.Clear();
+            this.BackpackConfigId = default;
+            this.BagWidth = default;
+            this.BagHeight = default;
+            this.BagItems.Clear();
 
             ObjectPool.Recycle(this);
         }

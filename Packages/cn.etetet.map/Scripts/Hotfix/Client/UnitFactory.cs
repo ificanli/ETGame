@@ -14,6 +14,7 @@ namespace ET.Client
 	        unit.Forward = unitInfo.Forward;
 	        unit.UnitType = (UnitType)unitInfo.Type;
             unit.AddComponent<CampComponent, int>(unitInfo.CampId);
+            unit.AddComponent<UnitDisplayLevelComponent, int>(unitInfo.DisplayLevel);
 	        NumericComponent numericComponent = unit.AddComponent<NumericComponent>();
 
 			foreach (var kv in unitInfo.KV)

@@ -54,7 +54,7 @@ namespace ET.Server
                 GameModeType.OneVsOne => seatIndex + 1,
                 GameModeType.ThreeVsThree => seatIndex < totalPlayerCount / 2 ? 1 : 2,
                 // Extraction: 使用 seatIndex (0-based) 匹配 ECA 配置中的 team_id (0, 1, 2, 3, 4, 5)
-                GameModeType.Extraction => seatIndex,
+                GameModeType.Extraction => seatIndex+1,
                 _ => 1
             };
         }

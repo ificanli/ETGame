@@ -57,6 +57,13 @@ namespace ET
             return GetCorpseButtonTextId();
         }
 
+        public static int GetDefaultMonsterCorpseLootBoxUnitConfigId()
+        {
+            RogueGlobalConfigCategory category = RogueGlobalConfigCategory.Instance;
+            RogueGlobalConfig data = category?.Data;
+            return Math.Max(0, data?.DefaultMonsterCorpseLootBoxUnitConfigId ?? 0);
+        }
+
         public static float GetGroundDropForwardDistance()
         {
             return 1f;

@@ -15,6 +15,7 @@ namespace ET.Client
     {
         public Image IconImage;
         public RectTransform BgRectTransform;
+        public RectTransform SelectIndicatorRectTransform;
         public string LoadedIconName = string.Empty;
         public Sprite LoadedSprite;
     }

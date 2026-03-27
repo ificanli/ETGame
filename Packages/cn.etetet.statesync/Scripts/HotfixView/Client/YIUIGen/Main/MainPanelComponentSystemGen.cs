@@ -39,6 +39,12 @@ namespace ET.Client
 
             self.u_ComJoyStickRangeRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComJoyStickRangeRectTransform");
             self.u_ComJoyStickRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComJoyStickRectTransform");
+            self.u_ComRogueEffectRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComRogueEffectRectTransform");
+            self.u_ComRogueEffectTextRectTransform = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComRogueEffectTextRectTransform");
+            self.u_ComEffectButton1 = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEffectButton1");
+            self.u_ComEffectButton2 = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEffectButton2");
+            self.u_ComEffectButton3 = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEffectButton3");
+            self.u_ComEffectButton4 = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEffectButton4");
             self.u_DataSearchingButton = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueBool>("u_DataSearchingButton");
             self.u_DataTxtLevel = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataTxtLevel");
             self.u_DataCurExp = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueFloat>("u_DataCurExp");

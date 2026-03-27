@@ -1,5 +1,6 @@
 ﻿namespace ET.Server
 {
+    using System.Collections.Generic;
     /// <summary>
     /// 直接应用当前起装到 Unit（Home/Map 场景）
     /// </summary>
@@ -10,7 +11,30 @@
         {
             Log.Info($"A2Map_ApplyLoadout: unit={unit.Id}, hero={request.HeroConfigId}, mainWeapon={request.MainWeaponConfigId}, subWeapon={request.SubWeaponConfigId}");
 
-            LoadoutHelper.ApplyLoadout(unit, request.MainWeaponConfigId, request.SubWeaponConfigId, request.ArmorConfigId);
+            List<LoadoutGridItemInfo> bagItems = new();
+            for (int i = 0; i < request.BagItems.Count; ++i)
+            {
+                LoadoutGridItemData item = request.BagItems[i];
+                bagItems.Add(new LoadoutGridItemInfo
+                {
+                    ConfigId = item.ConfigId,
+                    Count = item.Count,
+                    AnchorSlotIndex = item.AnchorSlotIndex,
+                    GridWidth = item.GridWidth,
+                    GridHeight = item.GridHeight,
+                });
+            }
+
+            LoadoutHelper.ApplyLoadout(
+                unit,
+                request.MainWeaponConfigId,
+                request.SubWeaponConfigId,
+                request.ArmorConfigId,
+                request.ConsumableConfigIds,
+                request.BackpackConfigId,
+                request.BagWidth,
+                request.BagHeight,
+                bagItems);
 
             WeaponInitHelper.InitializeWeaponsFromUnit(unit);
             WeaponInitHelper.InitializeHeroPassiveBuff(unit, request.HeroConfigId);

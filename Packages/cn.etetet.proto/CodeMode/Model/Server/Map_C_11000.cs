@@ -147,6 +147,8 @@ namespace ET
         public PetInfo PetInfo { get; set; }
         [MemoryPackOrder(8)]
         public int CampId { get; set; }
+        [MemoryPackOrder(9)]
+        public int DisplayLevel { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -163,6 +165,7 @@ namespace ET
             this.MoveInfo = default;
             this.PetInfo = default;
             this.CampId = default;
+            this.DisplayLevel = default;
 
             ObjectPool.Recycle(this);
         }
@@ -437,6 +440,33 @@ namespace ET
             this.UnitId = default;
             this.NumericType = default;
             this.Value = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_UnitDisplayLevelChange)]
+    public partial class M2C_UnitDisplayLevelChange : MessageObject, IMessage
+    {
+        public static M2C_UnitDisplayLevelChange Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_UnitDisplayLevelChange>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+        [MemoryPackOrder(1)]
+        public int DisplayLevel { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.DisplayLevel = default;
 
             ObjectPool.Recycle(this);
         }
@@ -830,6 +860,36 @@ namespace ET
     }
 
     [MemoryPackable]
+    [Message(Opcode.M2C_ECAEvacuationState)]
+    public partial class M2C_ECAEvacuationState : MessageObject, IMessage
+    {
+        public static M2C_ECAEvacuationState Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_ECAEvacuationState>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public string PointId { get; set; }
+        [MemoryPackOrder(1)]
+        public int State { get; set; }
+        [MemoryPackOrder(2)]
+        public long RemainMs { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.PointId = default;
+            this.State = default;
+            this.RemainMs = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
     [Message(Opcode.ContainerItemData)]
     public partial class ContainerItemData : MessageObject
     {
@@ -1160,28 +1220,30 @@ namespace ET
         public const ushort M2C_Stop = 11013;
         public const ushort M2C_Error = 11014;
         public const ushort M2C_NumericChange = 11015;
-        public const ushort M2C_Turn = 11016;
-        public const ushort C2M_ClickUnitRequest = 11017;
-        public const ushort M2C_ClickUnitResponse = 11018;
-        public const ushort C2M_UseTacticalItem = 11019;
-        public const ushort M2C_UseTacticalItem = 11020;
-        public const ushort C2M_TransferMap = 11021;
-        public const ushort M2C_TransferMap = 11022;
-        public const ushort C2M_ECAInteract = 11023;
-        public const ushort M2C_ECAInteract = 11024;
-        public const ushort C2M_ECASearchCancel = 11025;
-        public const ushort M2C_ECAInteractHint = 11026;
-        public const ushort M2C_ECAPointState = 11027;
-        public const ushort M2C_ECASearchState = 11028;
-        public const ushort ContainerItemData = 11029;
-        public const ushort M2C_ContainerOpen = 11030;
-        public const ushort M2C_ContainerUpdate = 11031;
-        public const ushort C2M_ContainerTakeItem = 11032;
-        public const ushort M2C_ContainerTakeItem = 11033;
-        public const ushort C2M_ContainerTakeAll = 11034;
-        public const ushort M2C_ContainerTakeAll = 11035;
-        public const ushort C2M_ContainerClose = 11036;
-        public const ushort C2M_ContainerMoveItem = 11037;
-        public const ushort M2C_ContainerMoveItem = 11038;
+        public const ushort M2C_UnitDisplayLevelChange = 11016;
+        public const ushort M2C_Turn = 11017;
+        public const ushort C2M_ClickUnitRequest = 11018;
+        public const ushort M2C_ClickUnitResponse = 11019;
+        public const ushort C2M_UseTacticalItem = 11020;
+        public const ushort M2C_UseTacticalItem = 11021;
+        public const ushort C2M_TransferMap = 11022;
+        public const ushort M2C_TransferMap = 11023;
+        public const ushort C2M_ECAInteract = 11024;
+        public const ushort M2C_ECAInteract = 11025;
+        public const ushort C2M_ECASearchCancel = 11026;
+        public const ushort M2C_ECAInteractHint = 11027;
+        public const ushort M2C_ECAPointState = 11028;
+        public const ushort M2C_ECASearchState = 11029;
+        public const ushort M2C_ECAEvacuationState = 11030;
+        public const ushort ContainerItemData = 11031;
+        public const ushort M2C_ContainerOpen = 11032;
+        public const ushort M2C_ContainerUpdate = 11033;
+        public const ushort C2M_ContainerTakeItem = 11034;
+        public const ushort M2C_ContainerTakeItem = 11035;
+        public const ushort C2M_ContainerTakeAll = 11036;
+        public const ushort M2C_ContainerTakeAll = 11037;
+        public const ushort C2M_ContainerClose = 11038;
+        public const ushort C2M_ContainerMoveItem = 11039;
+        public const ushort M2C_ContainerMoveItem = 11040;
     }
 }

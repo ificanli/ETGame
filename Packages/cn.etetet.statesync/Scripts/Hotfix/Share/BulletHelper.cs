@@ -38,6 +38,15 @@ namespace ET
             // 根据锁定类型初始化方向和目标位置
             InitializeBulletDirection(bulletComp, owner, target, lockType);
 
+            HighFrequencySchedulerComponent scheduler = scene.GetComponent<HighFrequencySchedulerComponent>();
+            if (scheduler == null)
+            {
+                Log.Warning($"[HighFreq][Bullet] scheduler missing when create bullet. scene={scene.Name}, bulletId={bullet.Id}");
+                return bullet;
+            }
+
+            scheduler.AddEntity(HighFrequencyChannelId.Bullet33ms, bulletComp);
+
             return bullet;
         }
 

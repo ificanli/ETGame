@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ET.Client
@@ -22,5 +23,6 @@ namespace ET.Client
         public bool ShaderMissingLogged;
         public long LastDiagnosticLogTime;
         public string LastDiagnosticSignature;
+        public HashSet<string> LoggedDebugKeys;
     }
 }

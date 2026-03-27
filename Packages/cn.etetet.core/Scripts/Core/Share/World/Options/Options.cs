@@ -25,6 +25,9 @@ namespace ET
         [Option("SingleThread", Required = false, Default = 0)]
         public int SingleThread { get; set; }
 
+        [Option("TestName", Required = false, Default = "")]
+        public string TestName { get; set; }
+
         public void Awake()
         {
         }

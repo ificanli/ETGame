@@ -146,8 +146,6 @@ namespace ET.Client
         private static void BindWarehouseGridItemView(this LobbyPanelComponent self, RectTransform view, LoadoutWarehouseRenderItemInfo item)
         {
             ResolveDisplayInfo(item.ConfigId, out string name, out string icon, out _);
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(item.ConfigId);
-            string itemDesc = !string.IsNullOrWhiteSpace(itemConfig?.Desc) ? itemConfig.Desc : name;
             view.name = $"Warehouse_{item.ItemUid}_{item.ConfigId}";
 
             LoadoutGridItemViewProxy proxy = view.GetComponent<LoadoutGridItemViewProxy>();
@@ -167,7 +165,7 @@ namespace ET.Client
             proxy.TmpTexts ??= view.GetComponentsInChildren<TMP_Text>(true);
             proxy.Texts ??= view.GetComponentsInChildren<Text>(true);
 
-            ApplyOwnedGridItemTexts(proxy, itemDesc, item.Count);
+            ApplyOwnedGridItemTexts(proxy, name, item.Count);
             ItemQualityBgViewHelper.UpdateQualityBgByConfigId(view, item.ConfigId);
             UpdateOwnedGridItemIcon(proxy, icon).Coroutine();
             ApplyWarehouseSelectionVisual(view, self.SelectedWarehouseItemUid == item.ItemUid);

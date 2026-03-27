@@ -26,6 +26,28 @@ namespace ET.Server
                 request.MainWeaponConfigId = args.MainWeaponConfigId;
                 request.SubWeaponConfigId = args.SubWeaponConfigId;
                 request.ArmorConfigId = args.ArmorConfigId;
+                request.BackpackConfigId = args.BackpackConfigId;
+                request.BagWidth = args.BagWidth;
+                request.BagHeight = args.BagHeight;
+                if (args.ConsumableConfigIds != null)
+                {
+                    request.ConsumableConfigIds.AddRange(args.ConsumableConfigIds);
+                }
+
+                if (args.CarriedBagItems != null)
+                {
+                    for (int i = 0; i < args.CarriedBagItems.Count; ++i)
+                    {
+                        LoadoutGridItemInfo bagItem = args.CarriedBagItems[i];
+                        LoadoutGridItemData message = LoadoutGridItemData.Create();
+                        message.ConfigId = bagItem.ConfigId;
+                        message.Count = bagItem.Count;
+                        message.AnchorSlotIndex = bagItem.AnchorSlotIndex;
+                        message.GridWidth = bagItem.GridWidth;
+                        message.GridHeight = bagItem.GridHeight;
+                        request.BagItems.Add(message);
+                    }
+                }
 
                 A2Map_ApplyLoadoutResponse response =
                         await senderComponent.Get(LocationType.Unit).Call(args.PlayerId, request) as A2Map_ApplyLoadoutResponse;
@@ -47,7 +69,8 @@ namespace ET.Server
                     return;
                 }
 
-                Log.Info($"[LoadoutRuntimeSync] applied to live unit, player={args.PlayerId}, hero={args.HeroConfigId}, main={args.MainWeaponConfigId}, sub={args.SubWeaponConfigId}, armor={args.ArmorConfigId}");
+                Log.Info(
+                    $"[LoadoutRuntimeSync] applied to live unit, player={args.PlayerId}, hero={args.HeroConfigId}, main={args.MainWeaponConfigId}, sub={args.SubWeaponConfigId}, armor={args.ArmorConfigId}, bag={args.BagWidth}x{args.BagHeight}, bagItemCount={args.CarriedBagItems?.Count ?? 0}");
             }
             catch (RpcException e)
             {

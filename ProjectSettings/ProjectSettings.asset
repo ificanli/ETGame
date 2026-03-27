@@ -86,6 +86,7 @@ PlayerSettings:
   muteOtherAudioSources: 0
   Prepare IOS For Recording: 0
   Force IOS Speakers When Recording: 0
+  audioSpatialExperience: 0
   deferSystemGesturesMode: 0
   hideHomeButton: 0
   submitAnalytics: 1
@@ -144,6 +145,8 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: 11400000, guid: 1a4fcb951610a3d44a29d290d6197fdf, type: 2}
   - {fileID: 11400000, guid: 19006e4e7cc199b42840783a9d999d36, type: 2}
+  - {fileID: -944628639613478452, guid: eb57a930bb50b3b408571cb8bcbf032b, type: 3}
+  - {fileID: 11400000, guid: 6f9fe1c16a47b854ba25d5ad9a0c5670, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -277,6 +280,9 @@ PlayerSettings:
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 1
   AndroidIsGame: 1
+  androidAppCategory: 3
+  useAndroidAppCategory: 1
+  androidAppCategoryOther: 
   AndroidEnableTango: 0
   androidEnableBanner: 1
   androidUseLowAccuracyLocation: 0
@@ -1029,7 +1035,13 @@ PlayerSettings:
   windowsGamepadBackendHint: 0
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
-  qualitySettingsNames: []
+  qualitySettingsNames:
+  - Fastest
+  - Fast
+  - Simple
+  - Good
+  - Beautiful
+  - Fantastic
   projectName: 
   organizationId: 
   cloudEnabled: 0

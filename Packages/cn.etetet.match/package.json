@@ -5,6 +5,7 @@
   "unity": "2022.3",
   "description": "ET Framework Match System - 匹配队列、模式管理",
   "dependencies": {
+    "cn.etetet.archive": "4.0.0",
     "cn.etetet.core": "4.0.0",
     "cn.etetet.excel": "4.0.0",
     "cn.etetet.proto": "4.0.0",

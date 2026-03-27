@@ -1,5 +1,3 @@
-using Unity.Mathematics;
-
 namespace ET.Server
 {
     /// <summary>
@@ -8,8 +6,6 @@ namespace ET.Server
     [MessageHandler(SceneType.Map)]
     public class C2M_JoystickInputHandler : MessageLocationHandler<Unit, C2M_JoystickInput>
     {
-        private const int InputProcessThrottleMs = 16;
-
         protected override async ETTask Run(Unit unit, C2M_JoystickInput message)
         {
             // 确保JoystickMoveComponent存在
@@ -21,20 +17,34 @@ namespace ET.Server
 
             long now = TimeInfo.Instance.ServerNow();
             bool isStop = message.DirX == 0f && message.DirZ == 0f;
-
-            // 节流窗口内：仅静默覆盖方向，下次 Tick 使用最新值；不走 SetDirection 避免多余日志
-            if (!isStop && now - joystickMove.LastInputProcessTime < InputProcessThrottleMs)
+            uint lastSequenceBefore = joystickMove.LastClientInputSequence;
+            if (message.InputSequence > 0)
             {
-                float3 newDir = new float3(message.DirX, 0, message.DirZ);
-                float len = math.length(newDir);
-                if (len > 1f) newDir /= len;
-                joystickMove.Direction = newDir;
-                await ETTask.CompletedTask;
-                return;
+                if (message.InputSequence <= joystickMove.LastClientInputSequence)
+                {
+                    if (now - joystickMove.LastStaleInputLogTime >= 250)
+                    {
+                        joystickMove.LastStaleInputLogTime = now;
+                        Log.Info(
+                            $"[NavMove][ServerInputDrop] unitId={unit.Id}, seq={message.InputSequence}, lastSeq={joystickMove.LastClientInputSequence}, " +
+                            $"dir=({message.DirX:F3},{message.DirZ:F3}), stop={isStop}");
+                    }
+
+                    await ETTask.CompletedTask;
+                    return;
+                }
+
+                joystickMove.LastClientInputSequence = message.InputSequence;
             }
 
             joystickMove.LastInputProcessTime = now;
+            Log.Info(
+                $"[NavMove][TraceServerInputRecv] unitId={unit.Id}, serverNow={now}, seq={message.InputSequence}, dirX={message.DirX:F6}, dirZ={message.DirZ:F6}, stop={isStop}, lastSeqBefore={lastSequenceBefore}, lastSeqAfter={joystickMove.LastClientInputSequence}");
             joystickMove.SetDirection(message.DirX, message.DirZ);
+            if (isStop)
+            {
+                Log.Info($"[NavMove][ServerStop] unitId={unit.Id}, seq={message.InputSequence}, serverNow={now}");
+            }
 
             await ETTask.CompletedTask;
         }

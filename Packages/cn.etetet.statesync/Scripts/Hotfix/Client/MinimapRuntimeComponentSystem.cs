@@ -6,6 +6,9 @@ namespace ET.Client
     [EntitySystemOf(typeof(MinimapRuntimeComponent))]
     public static partial class MinimapRuntimeComponentSystem
     {
+        private const float WorldBoundsComparisonTolerance = 0.001f;
+        private const int MaxWorldBoundsAutoResolveRetryCount = 60;
+
         [EntitySystem]
         private static void Awake(this MinimapRuntimeComponent self)
         {
@@ -26,10 +29,6 @@ namespace ET.Client
             self.DisplayMode = MinimapDisplayMode.Compact;
             self.MyUnitId = 0;
             self.CompactRange = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.CompactRange), 40f);
-            self.WorldMinX = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.WorldMinX), 0f);
-            self.WorldMaxX = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.WorldMaxX), 0f);
-            self.WorldMinZ = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.WorldMinZ), 0f);
-            self.WorldMaxZ = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.WorldMaxZ), 0f);
             self.FogCellSize = global::ET.MinimapConstConfigHelper.GetFloat(
                 global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.FogCellSize),
                 global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.FogCellSize, 4f));
@@ -38,7 +37,71 @@ namespace ET.Client
                 global::ET.MinimapConstConfigHelper.GetFloat(
                     global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.SceneFogVisionRadius),
                     global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.SceneFogVisionRadius, 0f)));
+            self.WorldBoundsResolvedFromTerrain = false;
+            self.WorldBoundsAutoResolveAttempted = false;
+            self.WorldBoundsAutoResolveRetryCount = 0;
+            self.ApplyConfiguredWorldBounds();
             self.Markers.Clear();
+            self.CurrentVisibleCells.Clear();
+            self.ExploredCells.Clear();
+        }
+
+        public static bool TryGetConfiguredWorldBounds(
+            this MinimapRuntimeComponent self,
+            out float minX,
+            out float maxX,
+            out float minZ,
+            out float maxZ)
+        {
+            string mapName = self?.MapName ?? string.Empty;
+            minX = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.WorldMinX), 0f);
+            maxX = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.WorldMaxX), 0f);
+            minZ = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.WorldMinZ), 0f);
+            maxZ = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.GetMapKey(mapName, global::ET.MinimapConstKey.WorldMaxZ), 0f);
+            return maxX > minX && maxZ > minZ;
+        }
+
+        public static void ApplyConfiguredWorldBounds(this MinimapRuntimeComponent self)
+        {
+            if (!self.TryGetConfiguredWorldBounds(out float minX, out float maxX, out float minZ, out float maxZ))
+            {
+                self.UpdateWorldBounds(0f, 0f, 0f, 0f, false);
+                return;
+            }
+
+            self.UpdateWorldBounds(minX, maxX, minZ, maxZ, false);
+        }
+
+        public static void UpdateWorldBounds(
+            this MinimapRuntimeComponent self,
+            float minX,
+            float maxX,
+            float minZ,
+            float maxZ,
+            bool resolvedFromTerrain)
+        {
+            float normalizedMinX = math.min(minX, maxX);
+            float normalizedMaxX = math.max(minX, maxX);
+            float normalizedMinZ = math.min(minZ, maxZ);
+            float normalizedMaxZ = math.max(minZ, maxZ);
+            bool boundsChanged =
+                !ApproximatelyEqual(self.WorldMinX, normalizedMinX) ||
+                !ApproximatelyEqual(self.WorldMaxX, normalizedMaxX) ||
+                !ApproximatelyEqual(self.WorldMinZ, normalizedMinZ) ||
+                !ApproximatelyEqual(self.WorldMaxZ, normalizedMaxZ);
+
+            self.WorldMinX = normalizedMinX;
+            self.WorldMaxX = normalizedMaxX;
+            self.WorldMinZ = normalizedMinZ;
+            self.WorldMaxZ = normalizedMaxZ;
+            self.WorldBoundsResolvedFromTerrain = resolvedFromTerrain;
+
+            if (!boundsChanged)
+            {
+                return;
+            }
+
+            // 网格尺寸依赖世界边界，边界发生变化时清空迷雾缓存，避免沿用旧索引。
             self.CurrentVisibleCells.Clear();
             self.ExploredCells.Clear();
         }
@@ -68,11 +131,21 @@ namespace ET.Client
             self.WorldMaxX = 0f;
             self.WorldMinZ = 0f;
             self.WorldMaxZ = 0f;
+            self.WorldBoundsResolvedFromTerrain = false;
+            self.WorldBoundsAutoResolveAttempted = false;
+            self.WorldBoundsAutoResolveRetryCount = 0;
             self.FogCellSize = 0f;
             self.FogVisionRadius = 0f;
             self.Markers.Clear();
             self.CurrentVisibleCells.Clear();
             self.ExploredCells.Clear();
+        }
+
+        public static bool ShouldRetryResolveWorldBounds(this MinimapRuntimeComponent self)
+        {
+            return self != null &&
+                    !self.WorldBoundsResolvedFromTerrain &&
+                    self.WorldBoundsAutoResolveRetryCount < MaxWorldBoundsAutoResolveRetryCount;
         }
 
         public static float2 WorldToNormalizedPosition(this MinimapRuntimeComponent self, float3 worldPosition)
@@ -270,6 +343,11 @@ namespace ET.Client
                     self.CurrentVisibleCells.Add(y * gridWidth + x);
                 }
             }
+        }
+
+        private static bool ApproximatelyEqual(float left, float right)
+        {
+            return math.abs(left - right) <= WorldBoundsComparisonTolerance;
         }
     }
 }

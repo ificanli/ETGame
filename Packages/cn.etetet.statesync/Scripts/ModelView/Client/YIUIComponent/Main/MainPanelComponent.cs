@@ -56,5 +56,11 @@ namespace ET.Client
         public Dictionary<long, string> MinimapMarkerDesiredSpriteNames = new();
         public Dictionary<string, Sprite> MinimapMarkerLoadedSprites = new();
         public HashSet<string> MinimapMarkerLoadingSpriteNames = new();
+        public EntityRef<EvacuateTipsComponent> EvacuateTipsViewRef;
+        public EvacuateTipsComponent EvacuateTipsView => this.EvacuateTipsViewRef;
+        public bool IsEvacuateTipsOpening;
+        public bool LastEvacuateTipsVisible;
+        public string LastEvacuationPointId;
+        public int LastEvacuateRemainSeconds = int.MinValue;
     }
 }

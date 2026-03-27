@@ -70,9 +70,14 @@ namespace ET.Client
             self.BindFpsCounter();
             self.ResetFpsCounter();
             self.BindMinimap();
+            self.BindHitDirectionUI();
             self.RefreshRogueLevelBar(true);
             self.RefreshMinimap(true);
             self.UIWeaponBar?.RefreshCurrentPlayerWeaponBar();
+            self.LastEvacuateTipsVisible = false;
+            self.LastEvacuationPointId = null;
+            self.LastEvacuateRemainSeconds = int.MinValue;
+            self.IsEvacuateTipsOpening = false;
         }
 
         [EntitySystem]
@@ -136,6 +141,20 @@ namespace ET.Client
             self.MinimapNameText = null;
             self.MinimapMarkerLayer = null;
             self.MinimapMarkerSprite = null;
+            self.ClearHitDirectionIndicators();
+            if (self.HitDirectionRoot != null)
+            {
+                UnityEngine.Object.Destroy(self.HitDirectionRoot.gameObject);
+            }
+
+            if (self.HitDirectionSprite != null)
+            {
+                UnityEngine.Object.Destroy(self.HitDirectionSprite.texture);
+                UnityEngine.Object.Destroy(self.HitDirectionSprite);
+            }
+
+            self.HitDirectionRoot = null;
+            self.HitDirectionSprite = null;
             self.RogueLevelSlider = null;
             self.RogueLevelText = null;
             self.RogueEffectRoot = null;
@@ -143,6 +162,11 @@ namespace ET.Client
             self.RogueEffectText = null;
             self.LastRogueEffectSignature = int.MinValue;
             self.RogueEffectPreviewIndex = -1;
+            self.EvacuateTipsViewRef = default;
+            self.IsEvacuateTipsOpening = false;
+            self.LastEvacuateTipsVisible = false;
+            self.LastEvacuationPointId = null;
+            self.LastEvacuateRemainSeconds = int.MinValue;
         }
 
         [EntitySystem]
@@ -169,8 +193,13 @@ namespace ET.Client
             self.ResetFpsCounter();
             self.RefreshRogueLevelBar(true);
             self.BindMinimap();
+            self.BindHitDirectionUI();
             self.RefreshMinimap(true);
             self.UIWeaponBar?.RefreshCurrentPlayerWeaponBar();
+            self.LastEvacuateTipsVisible = false;
+            self.LastEvacuationPointId = null;
+            self.LastEvacuateRemainSeconds = int.MinValue;
+            self.IsEvacuateTipsOpening = false;
 
             Scene root = self.Root();
             RogueClientComponent rogueRuntime = root?.GetComponent<RogueClientComponent>();
@@ -187,6 +216,7 @@ namespace ET.Client
         private static void LateUpdate(this MainPanelComponent self)
         {
             self.UpdateFpsCounter();
+            self.RefreshHitDirectionIndicators();
 
             Scene root = self.Root();
             RogueClientComponent rogueRuntime = root?.GetComponent<RogueClientComponent>();
@@ -278,6 +308,7 @@ namespace ET.Client
             self.RefreshRogueEffectPanel();
             self.TryCloseRogueEffectDescOnOutsideClick();
             self.RefreshMinimap();
+            self.RefreshEvacuateTips(runtime);
         }
 
         #region YIUIEvent开始
@@ -471,14 +502,8 @@ namespace ET.Client
 
         private static void BindRogueEffectUI(this MainPanelComponent self)
         {
-            Transform rootTransform = self.UIBase?.OwnerGameObject?.transform;
-            if (rootTransform == null)
-            {
-                return;
-            }
-
-            self.RogueEffectRoot ??= rootTransform.Find("RogueEffect") as RectTransform;
-            self.RogueEffectTextRect ??= rootTransform.Find("RogueEffectText") as RectTransform;
+            self.RogueEffectRoot ??= self.u_ComRogueEffectRectTransform;
+            self.RogueEffectTextRect ??= self.u_ComRogueEffectTextRectTransform;
             if (self.RogueEffectTextRect != null && self.RogueEffectText == null)
             {
                 self.RogueEffectText = self.RogueEffectTextRect.GetComponent<TMP_Text>();
@@ -491,11 +516,19 @@ namespace ET.Client
             }
 
             List<Button> buttons = new();
-            foreach (Button button in self.RogueEffectRoot.GetComponentsInChildren<Button>(true))
+            self.TryAddRogueEffectButton(buttons, self.u_ComEffectButton1);
+            self.TryAddRogueEffectButton(buttons, self.u_ComEffectButton2);
+            self.TryAddRogueEffectButton(buttons, self.u_ComEffectButton3);
+            self.TryAddRogueEffectButton(buttons, self.u_ComEffectButton4);
+
+            if (buttons.Count == 0)
             {
-                if (button != null && button.transform.parent == self.RogueEffectRoot)
+                foreach (Button button in self.RogueEffectRoot.GetComponentsInChildren<Button>(true))
                 {
-                    buttons.Add(button);
+                    if (button != null && button.transform.parent == self.RogueEffectRoot)
+                    {
+                        buttons.Add(button);
+                    }
                 }
             }
 
@@ -503,6 +536,15 @@ namespace ET.Client
             foreach (Button button in buttons)
             {
                 self.RegisterRogueEffectButton(button);
+            }
+        }
+
+        private static void TryAddRogueEffectButton(this MainPanelComponent self, List<Button> buttons, RectTransform buttonRect)
+        {
+            Button button = buttonRect?.GetComponent<Button>();
+            if (button != null && !buttons.Contains(button))
+            {
+                buttons.Add(button);
             }
         }
 
@@ -1032,6 +1074,179 @@ namespace ET.Client
             self.u_DataOpenDoorText?.SetValue(show ? text ?? string.Empty : string.Empty);
         }
 
+        private static void RefreshEvacuateTips(this MainPanelComponent self, ECAInteractClientComponent runtime)
+        {
+            bool show = runtime != null &&
+                runtime.EvacuationState == ECAEvacuationState.Running &&
+                !string.IsNullOrWhiteSpace(runtime.EvacuationPointId);
+
+            string pointId = show ? runtime.EvacuationPointId : null;
+            long remainMs = 0;
+            int remainSeconds = 0;
+            if (show)
+            {
+                remainMs = Math.Max(runtime.EvacuationEndTimeMs - TimeInfo.Instance.ClientNow(), 0);
+                runtime.EvacuationRemainMs = remainMs;
+                remainSeconds = remainMs <= 0 ? 0 : (int)Math.Ceiling(remainMs / 1000d);
+            }
+
+            bool needOpen = show &&
+                !self.IsEvacuateTipsOpening &&
+                (!self.LastEvacuateTipsVisible ||
+                 self.LastEvacuationPointId != pointId ||
+                 self.EvacuateTipsView == null ||
+                 self.EvacuateTipsView.IsDisposed);
+
+            if (needOpen)
+            {
+                self.EnsureEvacuateTipsViewOpenAsync(remainSeconds).Coroutine();
+            }
+            else if (!show && (self.LastEvacuateTipsVisible || self.IsEvacuateTipsOpening || (self.EvacuateTipsView != null && !self.EvacuateTipsView.IsDisposed)))
+            {
+                self.HideEvacuateTips();
+            }
+
+            EvacuateTipsComponent tipsView = self.EvacuateTipsView;
+            if (show && tipsView != null && !tipsView.IsDisposed && self.LastEvacuateRemainSeconds != remainSeconds)
+            {
+                tipsView.SetRemainSeconds(remainSeconds);
+            }
+
+            self.LastEvacuateTipsVisible = show;
+            self.LastEvacuationPointId = pointId;
+            self.LastEvacuateRemainSeconds = remainSeconds;
+        }
+
+        private static async ETTask EnsureEvacuateTipsViewOpenAsync(this MainPanelComponent self, int remainSeconds)
+        {
+            if (self == null || self.IsDisposed || self.UIPanel == null)
+            {
+                return;
+            }
+
+            if (self.IsEvacuateTipsOpening)
+            {
+                return;
+            }
+
+            EvacuateTipsComponent currentView = self.EvacuateTipsView;
+            if (currentView != null && !currentView.IsDisposed)
+            {
+                currentView.SetRemainSeconds(remainSeconds);
+                return;
+            }
+
+            self.IsEvacuateTipsOpening = true;
+
+            self.EnsureViewParentRegistered(EvacuateTipsComponent.ResName, $"{EvacuateTipsComponent.ResName}ViewParent");
+
+            EntityRef<MainPanelComponent> selfRef = self;
+            EvacuateTipsComponent view;
+            try
+            {
+                view = await self.UIPanel.OpenViewAsync<EvacuateTipsComponent>();
+            }
+            catch (Exception e)
+            {
+                self = selfRef;
+                if (self != null && !self.IsDisposed)
+                {
+                    self.IsEvacuateTipsOpening = false;
+                }
+
+                Log.Error($"[MainPanel] open evacuate tips failed: {e}");
+                return;
+            }
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            self.IsEvacuateTipsOpening = false;
+            if (view == null)
+            {
+                return;
+            }
+
+            if (!self.LastEvacuateTipsVisible)
+            {
+                self.UIPanel.CloseView<EvacuateTipsComponent>();
+                return;
+            }
+
+            self.EvacuateTipsViewRef = view;
+            view.SetRemainSeconds(remainSeconds);
+        }
+
+        private static void HideEvacuateTips(this MainPanelComponent self)
+        {
+            if (self == null || self.IsDisposed || self.UIPanel == null)
+            {
+                return;
+            }
+
+            self.IsEvacuateTipsOpening = false;
+            self.UIPanel.CloseView<EvacuateTipsComponent>();
+            self.EvacuateTipsViewRef = default;
+        }
+
+        private static void EnsureViewParentRegistered(this MainPanelComponent self, string viewName, string explicitParentName = null)
+        {
+            if (self == null || self.IsDisposed || self.UIPanel == null || string.IsNullOrEmpty(viewName))
+            {
+                return;
+            }
+
+            if (self.UIPanel.m_ViewParent.ContainsKey(viewName))
+            {
+                return;
+            }
+
+            RectTransform root = self.UIBase?.OwnerRectTransform;
+            if (root == null)
+            {
+                return;
+            }
+
+            RectTransform viewParent = FindViewParent(root, explicitParentName, $"{viewName}{YIUIConstHelper.Const.UIParentName}");
+            if (viewParent == null)
+            {
+                Log.Warning($"[MainPanel] 未找到View父节点: view={viewName}, explicitParent={explicitParentName ?? "null"}");
+                return;
+            }
+
+            self.UIPanel.m_ViewParent.Add(viewName, viewParent);
+        }
+
+        private static RectTransform FindViewParent(RectTransform root, string explicitParentName, string fallbackParentName)
+        {
+            Transform popupRoot = root.FindChildByName(YIUIConstHelper.Const.UIAllPopupViewParentName);
+            if (!string.IsNullOrEmpty(explicitParentName))
+            {
+                RectTransform explicitRect = popupRoot?.FindChildByName(explicitParentName) as RectTransform;
+                if (explicitRect != null)
+                {
+                    return explicitRect;
+                }
+
+                explicitRect = root.FindChildByName(explicitParentName) as RectTransform;
+                if (explicitRect != null)
+                {
+                    return explicitRect;
+                }
+            }
+
+            RectTransform fallbackRect = popupRoot?.FindChildByName(fallbackParentName) as RectTransform;
+            if (fallbackRect != null)
+            {
+                return fallbackRect;
+            }
+
+            return root.FindChildByName(fallbackParentName) as RectTransform;
+        }
+
         private static string ResolveText(int textId, string defaultText = "")
         {
             if (textId <= 0)
@@ -1209,13 +1424,14 @@ namespace ET.Client
                 return;
             }
 
-            self.RefreshMinimapArrow(runtime);
+            float3 viewCenter = MinimapDisplayHelper.GetCompactViewCenter(runtime, myPosition);
+            self.RefreshMinimapArrow(runtime, myPosition, viewCenter);
             self.RefreshMinimapTexture(runtime, myPosition);
             self.RefreshMinimapFog(runtime);
-            self.RefreshMinimapMarkers(runtime, myPosition);
+            self.RefreshMinimapMarkers(runtime, myPosition, viewCenter);
         }
 
-        private static void RefreshMinimapArrow(this MainPanelComponent self, MinimapRuntimeComponent runtime)
+        private static void RefreshMinimapArrow(this MainPanelComponent self, MinimapRuntimeComponent runtime, float3 myPosition, float3 viewCenter)
         {
             if (self.MinimapArrow == null)
             {
@@ -1232,6 +1448,16 @@ namespace ET.Client
             if (myUnit == null || myUnit.IsDisposed)
             {
                 return;
+            }
+
+            // 根据钳制后的视野中心计算箭头偏移位置（与迷雾显示一致）
+            float range = runtime.CompactRange;
+            if (range > 0f && self.MinimapMask != null)
+            {
+                float offsetX = (myPosition.x - viewCenter.x) / range;
+                float offsetZ = (myPosition.z - viewCenter.z) / range;
+                float radius = Mathf.Min(self.MinimapMask.rect.width, self.MinimapMask.rect.height) * 0.5f;
+                self.MinimapArrow.rectTransform.anchoredPosition = new Vector2(offsetX * radius, offsetZ * radius);
             }
 
             Vector3 forward = myUnit.Forward;
@@ -1334,7 +1560,7 @@ namespace ET.Client
             };
         }
 
-        private static void RefreshMinimapMarkers(this MainPanelComponent self, MinimapRuntimeComponent runtime, Vector3 myPosition)
+        private static void RefreshMinimapMarkers(this MainPanelComponent self, MinimapRuntimeComponent runtime, float3 myPosition, float3 viewCenter)
         {
             HashSet<long> activeMarkerIds = new HashSet<long>();
             float markerSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.MarkerSize, 10f), 4f);
@@ -1348,7 +1574,7 @@ namespace ET.Client
                     continue;
                 }
 
-                if (!MinimapRuntimeMarkerHelper.TryWorldToCompactLocalPosition(runtime, myPosition, marker.Position, out float2 localPosition))
+                if (!MinimapRuntimeMarkerHelper.TryWorldToCompactLocalPosition(runtime, viewCenter, marker.Position, out float2 localPosition))
                 {
                     self.HideMinimapMarker(marker.UnitId);
                     continue;

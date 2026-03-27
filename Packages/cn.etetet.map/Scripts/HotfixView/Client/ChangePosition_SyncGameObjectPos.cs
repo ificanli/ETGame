@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace ET.Client
@@ -29,13 +30,16 @@ namespace ET.Client
                     interpolationComponent.PredictionEnabled = true;
                     interpolationComponent.PredictedDirection = isMoving ? delta.normalized : Vector3.zero;
                     interpolationComponent.PredictedSpeed = isMoving ? speed : 0f;
+                    interpolationComponent.PositionPredictionDirection = interpolationComponent.PredictedDirection;
+                    interpolationComponent.PositionPredictionSpeed = interpolationComponent.PredictedSpeed;
+                    interpolationComponent.PositionPredictionBlocked = false;
+                    interpolationComponent.LastAuthoritativeSyncTime = TimeInfo.Instance.ClientNow();
 
                     interpolationComponent.ApplyAuthoritativePosition(unit.Position);
                     await ETTask.CompletedTask;
                     return;
                 }
 
-                // 本机单位的预测路径
                 if (interpolationComponent.PredictionEnabled)
                 {
                     if (interpolationComponent.SkipNextChangePositionSync)
@@ -45,7 +49,44 @@ namespace ET.Client
                         return;
                     }
 
+                    JoystickMoveAuthorityStateComponent authorityState = unit.GetComponent<JoystickMoveAuthorityStateComponent>();
+                    if (unit.IsMyUnit())
+                    {
+                        GameObjectComponent currentGameObjectComponent = unit.GetComponent<GameObjectComponent>();
+                        Vector3 viewPosition = currentGameObjectComponent?.Transform != null
+                            ? currentGameObjectComponent.Transform.position
+                            : unit.Position;
+                        Log.Info(
+                            $"[NavMove][ChangePosBefore] unitId={unit.Id}, unitPos={unit.Position}, viewPos={viewPosition}, authPos={interpolationComponent.AuthoritativePosition}, targetPos={interpolationComponent.TargetPosition}, predictedDelta={interpolationComponent.PredictedDelta}, visualCorrection={interpolationComponent.VisualCorrection}, predictedSpeed={interpolationComponent.PredictedSpeed:F3}, constrainedSpeed={interpolationComponent.PositionPredictionSpeed:F3}, blocked={interpolationComponent.PositionPredictionBlocked}, hold={interpolationComponent.HoldLocalPredictionOnStationarySync}, authoritySpeed={authorityState?.LastSpeed ?? -1f:F3}, authorityDir={authorityState?.LastDirection.ToString() ?? "null"}, ackInputSeq={authorityState?.LastProcessedInputSequence ?? 0}");
+                    }
+
+                    InputSystemComponent inputSystemComponent = unit.GetComponent<InputSystemComponent>();
+                    if (unit.IsMyUnit() &&
+                        inputSystemComponent != null &&
+                        inputSystemComponent.TryReconcileAuthoritativeMove(unit, interpolationComponent, unit.Position,
+                            authorityState?.LastProcessedInputSequence ?? 0))
+                    {
+                        Log.Info(
+                            $"[NavMove][ChangePosAfter] unitId={unit.Id}, unitPos={unit.Position}, authPos={interpolationComponent.AuthoritativePosition}, targetPos={interpolationComponent.TargetPosition}, predictedDelta={interpolationComponent.PredictedDelta}, visualCorrection={interpolationComponent.VisualCorrection}, predictedSpeed={interpolationComponent.PredictedSpeed:F3}, constrainedSpeed={interpolationComponent.PositionPredictionSpeed:F3}, blocked={interpolationComponent.PositionPredictionBlocked}, hold={interpolationComponent.HoldLocalPredictionOnStationarySync}, ackInputSeq={authorityState?.LastProcessedInputSequence ?? 0}");
+                        await ETTask.CompletedTask;
+                        return;
+                    }
+
+                    if (unit.IsMyUnit() &&
+                        authorityState != null &&
+                        authorityState.LastSpeed <= 0.01f &&
+                        math.lengthsq(authorityState.LastDirection) <= 0.0001f)
+                    {
+                        interpolationComponent.ClearLocalMotionOnAuthoritativeStop();
+                    }
+
+                    interpolationComponent.ResolveLocalPositionPrediction(unit, unit.Position);
                     interpolationComponent.ApplyAuthoritativePosition(unit.Position);
+                    if (unit.IsMyUnit())
+                    {
+                        Log.Info(
+                            $"[NavMove][ChangePosAfter] unitId={unit.Id}, unitPos={unit.Position}, authPos={interpolationComponent.AuthoritativePosition}, targetPos={interpolationComponent.TargetPosition}, predictedDelta={interpolationComponent.PredictedDelta}, visualCorrection={interpolationComponent.VisualCorrection}, predictedSpeed={interpolationComponent.PredictedSpeed:F3}, constrainedSpeed={interpolationComponent.PositionPredictionSpeed:F3}, blocked={interpolationComponent.PositionPredictionBlocked}, hold={interpolationComponent.HoldLocalPredictionOnStationarySync}, ackInputSeq={authorityState?.LastProcessedInputSequence ?? 0}");
+                    }
                     await ETTask.CompletedTask;
                     return;
                 }

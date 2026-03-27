@@ -16,6 +16,7 @@
     "registry": "https://npm.pkg.github.com/@ET-Packages"
   },
   "dependencies": {
+    "cn.etetet.archive": "4.0.0",
     "cn.etetet.core": "4.0.0",
     "cn.etetet.excel": "4.0.0",
     "cn.etetet.item": "4.0.0",

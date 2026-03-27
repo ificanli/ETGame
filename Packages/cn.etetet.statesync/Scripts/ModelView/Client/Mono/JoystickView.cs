@@ -28,6 +28,9 @@ namespace ET.Client
         private bool m_IsDragging;
         private EntityRef<Entity> m_EntityRef;
         private float m_LastSendTime;
+        private Vector2 m_LastPublishedInput;
+        private float m_LastTraceTime;
+        private Vector2 m_LastTracedInput;
 
         /// <summary>
         /// 由HotfixView层调用，注入Entity引用（任意Entity即可，用于获取Root Scene）
@@ -43,6 +46,7 @@ namespace ET.Client
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            Log.Info($"[NavMove][UIPointer] source=joystick action=down pos=({eventData.position.x:F1},{eventData.position.y:F1})");
             m_IsDragging = true;
             UpdateKnob(eventData);
         }
@@ -55,9 +59,66 @@ namespace ET.Client
 
         public void OnPointerUp(PointerEventData eventData)
         {
+            Log.Info($"[NavMove][UIPointer] source=joystick action=up pos=({eventData.position.x:F1},{eventData.position.y:F1})");
+            ForceRelease("pointer-up");
+        }
+
+        private void Update()
+        {
+            if (!m_IsDragging)
+            {
+                return;
+            }
+
+            bool pointerReleased = Input.touchSupported
+                ? Input.touchCount == 0
+                : !Input.GetMouseButton(0);
+            if (!pointerReleased)
+            {
+                return;
+            }
+
+            ForceRelease("update-release-check");
+        }
+
+        private void OnDisable()
+        {
+            ForceRelease("disable");
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus)
+            {
+                ForceRelease("focus-lost");
+            }
+        }
+
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus)
+            {
+                ForceRelease("pause");
+            }
+        }
+
+        public void ForceRelease(string reason = "unknown")
+        {
+            if (!m_IsDragging && m_LastPublishedInput.sqrMagnitude < 0.000001f)
+            {
+                return;
+            }
+
+            Vector2 lastPublishedInput = m_LastPublishedInput;
             m_IsDragging = false;
-            Knob.anchoredPosition = Vector2.zero;
-            // 松手时立即发送停止，不受频率限制
+            if (Knob != null)
+            {
+                Knob.anchoredPosition = Vector2.zero;
+            }
+
+            m_LastPublishedInput = Vector2.zero;
+            Log.Info($"[NavMove][JoystickRelease] reason={reason}, lastInput=({lastPublishedInput.x:F2}, {lastPublishedInput.y:F2})");
+            // 兜底释放：UI失焦、禁用、丢失PointerUp时也必须归零。
             PublishInput(0f, 0f, true);
         }
 
@@ -87,6 +148,10 @@ namespace ET.Client
                 m_LastSendTime = now;
             }
 
+            Vector2 previousInput = m_LastPublishedInput;
+            m_LastPublishedInput = new Vector2(dirX, dirZ);
+            this.TracePublishedInput(previousInput, m_LastPublishedInput, force);
+
             Entity entity = m_EntityRef;
             if (entity == null || entity.IsDisposed)
             {
@@ -100,6 +165,21 @@ namespace ET.Client
                 DirX = dirX,
                 DirZ = dirZ,
             });
+        }
+
+        private void TracePublishedInput(Vector2 previousInput, Vector2 currentInput, bool force)
+        {
+            float now = Time.unscaledTime;
+            bool changed = (currentInput - m_LastTracedInput).sqrMagnitude >= 0.01f;
+            if (!force && !changed && now - m_LastTraceTime < 0.08f)
+            {
+                return;
+            }
+
+            m_LastTraceTime = now;
+            m_LastTracedInput = currentInput;
+            Log.Info(
+                $"[NavMove][UIPublish] force={force}, dragging={m_IsDragging}, prev=({previousInput.x:F2},{previousInput.y:F2}), current=({currentInput.x:F2},{currentInput.y:F2}), uiTime={now:F3}");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using YIUIFramework;
 using System.Collections.Generic;
@@ -8,6 +8,9 @@ namespace ET.Client
     /// <summary>
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
+    [FriendOf(typeof(YIUIChild))]
+    [FriendOf(typeof(YIUIWindowComponent))]
+    [FriendOf(typeof(YIUIViewComponent))]
     [EntitySystemOf(typeof(HPViewComponent))]
     public static partial class HPViewComponentSystem
     {
@@ -33,6 +36,8 @@ namespace ET.Client
 
             self.u_ComHPContent = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComHPContent");
             self.u_DataHPRatio = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueFloat>("u_DataHPRatio");
+            self.u_DataTxtLevel = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataTxtLevel");
+            self.u_DataCurExp = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueFloat>("u_DataCurExp");
 
         }
     }

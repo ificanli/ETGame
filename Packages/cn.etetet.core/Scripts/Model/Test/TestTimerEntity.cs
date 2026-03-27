@@ -5,4 +5,13 @@ namespace ET.Test
     {
         public int TriggerCount;
     }
+
+    [ChildOf]
+    public class TestHighFrequencyEntity : Entity, IAwake
+    {
+        public int TickCount;
+        public int RemovedCount;
+        public bool RemoveOnFirstTick;
+        public bool DeferredRemoveObserved;
+    }
 }

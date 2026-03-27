@@ -50,6 +50,31 @@ namespace ET.Server
             ApplyFixedLoadout(equipComp, mainWeaponConfigId, subWeaponConfigId, armorConfigId, null);
         }
 
+        /// <summary>
+        /// 直接用完整运行时快照应用起装（固定装备 + 消耗品 + 背包）。
+        /// </summary>
+        public static void ApplyLoadout(
+            Unit unit,
+            int mainWeaponConfigId,
+            int subWeaponConfigId,
+            int armorConfigId,
+            IList<int> consumableConfigIds,
+            int backpackConfigId,
+            int bagWidth,
+            int bagHeight,
+            IList<LoadoutGridItemInfo> bagItems)
+        {
+            EquipmentComponent equipComp = unit.GetComponent<EquipmentComponent>();
+            if (equipComp == null)
+            {
+                Log.Error($"LoadoutHelper.ApplyLoadout: unit {unit.Id} has no EquipmentComponent");
+                return;
+            }
+
+            ApplyFixedLoadout(equipComp, mainWeaponConfigId, subWeaponConfigId, armorConfigId, consumableConfigIds);
+            ApplyBagItems(unit, backpackConfigId, bagWidth, bagHeight, bagItems);
+        }
+
         private static void ApplyFixedLoadout(
             EquipmentComponent equipComp,
             int mainWeaponConfigId,
@@ -114,6 +139,16 @@ namespace ET.Server
 
         private static void ApplyBagItems(Unit unit, LoadoutComponent loadout)
         {
+            ApplyBagItems(unit, loadout.BackpackConfigId, loadout.BagWidth, loadout.BagHeight, loadout.CarriedBagItems);
+        }
+
+        private static void ApplyBagItems(
+            Unit unit,
+            int backpackConfigId,
+            int bagWidth,
+            int bagHeight,
+            IList<LoadoutGridItemInfo> bagItems)
+        {
             ItemComponent itemComp = unit.GetComponent<ItemComponent>();
             if (itemComp == null)
             {
@@ -121,9 +156,9 @@ namespace ET.Server
             }
 
             itemComp.Clear();
-            itemComp.BagConfigId = loadout.BackpackConfigId;
+            itemComp.BagConfigId = backpackConfigId;
 
-            if (loadout.BackpackConfigId <= 0 || loadout.BagWidth <= 0 || loadout.BagHeight <= 0)
+            if (backpackConfigId <= 0 || bagWidth <= 0 || bagHeight <= 0)
             {
                 itemComp.BagConfigId = 0;
                 itemComp.SetSize(0, 0);
@@ -131,9 +166,10 @@ namespace ET.Server
             }
 
             List<GridPlacementItemInfo> validationItems = new();
-            for (int i = 0; i < loadout.CarriedBagItems.Count; ++i)
+            int bagItemCount = bagItems?.Count ?? 0;
+            for (int i = 0; i < bagItemCount; ++i)
             {
-                LoadoutGridItemInfo bagItem = loadout.CarriedBagItems[i];
+                LoadoutGridItemInfo bagItem = bagItems[i];
                 validationItems.Add(new GridPlacementItemInfo
                 {
                     ConfigId = bagItem.ConfigId,
@@ -144,7 +180,7 @@ namespace ET.Server
                 });
             }
 
-            if (!LoadoutGridPlacementHelper.ArePlacementsValid(validationItems, loadout.BagWidth, loadout.BagHeight))
+            if (!LoadoutGridPlacementHelper.ArePlacementsValid(validationItems, bagWidth, bagHeight))
             {
                 Log.Error($"LoadoutHelper.ApplyBagItems: invalid carried bag layout, player={unit.Id}");
                 itemComp.BagConfigId = 0;
@@ -152,11 +188,11 @@ namespace ET.Server
                 return;
             }
 
-            itemComp.SetSize(loadout.BagWidth, loadout.BagHeight);
+            itemComp.SetSize(bagWidth, bagHeight);
 
-            for (int i = 0; i < loadout.CarriedBagItems.Count; ++i)
+            for (int i = 0; i < bagItemCount; ++i)
             {
-                LoadoutGridItemInfo bagItem = loadout.CarriedBagItems[i];
+                LoadoutGridItemInfo bagItem = bagItems[i];
                 Item item = itemComp.AddChild<Item>();
                 item.ConfigId = bagItem.ConfigId;
                 item.Count = bagItem.Count;

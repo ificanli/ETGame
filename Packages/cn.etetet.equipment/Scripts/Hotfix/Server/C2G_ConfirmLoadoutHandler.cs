@@ -49,6 +49,11 @@ namespace ET.Server
                     MainWeaponConfigId = request.MainWeaponConfigId,
                     SubWeaponConfigId = request.SubWeaponConfigId,
                     ArmorConfigId = request.ArmorConfigId,
+                    ConsumableConfigIds = new List<int>(request.ConsumableConfigIds),
+                    BackpackConfigId = request.BackpackConfigId,
+                    BagWidth = request.BagWidth,
+                    BagHeight = request.BagHeight,
+                    CarriedBagItems = new List<LoadoutGridItemInfo>(finalBagItems),
                 });
                 response.Message = "success";
             }

@@ -82,6 +82,8 @@ namespace ET.Server
         {
             EntityRef<Unit> unitRef = unit;
             long unitId = unit.Id;
+            EntityRef<Scene> oldSceneRef = unit.Scene();
+            UnitType unitType = unit.UnitType;
             Log.Debug("start transfer1 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);
             
             Scene root = unit.Root();
@@ -138,6 +140,15 @@ namespace ET.Server
                 }
                 ReleaseSpawnPointAssignment(unit);
                 unit.GetParent<UnitComponent>().Remove(unit.Id);
+            }
+
+            Scene oldScene = oldSceneRef;
+            if (unitType == UnitType.Player && oldScene != null && !oldScene.IsDisposed)
+            {
+                EventSystem.Instance.Publish(oldScene, new PlayerRemovedFromMap
+                {
+                    UnitId = unitId,
+                });
             }
 
             Log.Debug("start transfer2 unit: " + unitId + ", mapActorId: " + mapActorId + ", changeScene: " + changeScene);

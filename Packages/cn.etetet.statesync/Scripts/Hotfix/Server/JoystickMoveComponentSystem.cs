@@ -5,17 +5,38 @@ namespace ET.Server
     [EntitySystemOf(typeof(JoystickMoveComponent))]
     public static partial class JoystickMoveComponentSystem
     {
-        private const int MoveTickIntervalMs = 16;
-        private const float MaxTickDeltaTime = 0.1f;
         private const float MinTickDeltaTime = 0.001f;
-        private const float MaxTrustedGroundDeltaY = 1.5f;
+        private const float StopDirectionEpsilonSqr = 0.0001f;
 
-        [Invoke(TimerInvokeType.JoystickMoveTimer)]
-        public class JoystickMoveTimer : ATimer<JoystickMoveComponent>
+        [Invoke(HighFrequencyInvokeType.Move16msTick)]
+        public class JoystickMoveTickInvoker : AInvokeHandler<HighFrequencyTickCallback>
         {
-            protected override void Run(JoystickMoveComponent self)
+            public override void Handle(HighFrequencyTickCallback args)
             {
-                self.Tick();
+                Entity entity = args.Entity;
+                JoystickMoveComponent self = entity as JoystickMoveComponent;
+                if (self == null || self.IsDisposed)
+                {
+                    return;
+                }
+
+                self.TickFixedStep(args.DeltaTimeMs, args.NowMs);
+            }
+        }
+
+        [Invoke(HighFrequencyInvokeType.Move16msRemoved)]
+        public class JoystickMoveRemovedInvoker : AInvokeHandler<HighFrequencyEntityRemovedCallback>
+        {
+            public override void Handle(HighFrequencyEntityRemovedCallback args)
+            {
+                Entity entity = args.Entity;
+                JoystickMoveComponent self = entity as JoystickMoveComponent;
+                if (self == null || self.IsDisposed)
+                {
+                    return;
+                }
+
+                self.OnMoveChannelRemoved(args);
             }
         }
 
@@ -23,24 +44,27 @@ namespace ET.Server
         private static void Awake(this JoystickMoveComponent self)
         {
             self.Direction = float3.zero;
-            self.MoveTimerId = 0;
+            self.IsMoveChannelRegistered = false;
+            self.PendingStopBroadcast = false;
             self.LastTickTraceLogTime = 0;
+            self.LastNavResolveLogTime = 0;
             self.LastInputProcessTime = 0;
-            self.LastTickTime = 0;
+            self.MoveSequence = 0;
+            self.LastClientInputSequence = 0;
+            self.LastStaleInputLogTime = 0;
         }
 
         [EntitySystem]
         private static void Destroy(this JoystickMoveComponent self)
         {
-            self.StopTimer();
+            self.LeaveMoveChannel();
         }
 
         /// <summary>
-        /// 更新摇杆方向并确保定时器在运行
+        /// 更新摇杆方向并接入统一高频调度器
         /// </summary>
         public static void SetDirection(this JoystickMoveComponent self, float dirX, float dirZ)
         {
-            Unit unit = self.GetParent<Unit>();
             float3 newDir = new float3(dirX, 0, dirZ);
 
             // 超过1时归一化（摇杆输入已在客户端归一化，这里做安全检查）
@@ -54,39 +78,98 @@ namespace ET.Server
 
             if (len < 0.01f)
             {
-                // 方向接近零，停止移动
-                self.StopTimer();
-                self.BroadcastStop();
+                self.RequestStopMove();
             }
             else
             {
-                self.StartTimer();
+                self.PendingStopBroadcast = false;
+                self.EnterMoveChannel();
             }
         }
 
-        private static void StartTimer(this JoystickMoveComponent self)
+        private static void EnterMoveChannel(this JoystickMoveComponent self)
         {
-            if (self.MoveTimerId != 0)
+            Scene scene = self.Scene();
+            HighFrequencySchedulerComponent scheduler = scene?.GetComponent<HighFrequencySchedulerComponent>();
+            if (scheduler == null)
+            {
+                self.IsMoveChannelRegistered = false;
+                Log.Warning($"[HighFreq][Move] scheduler missing when register move. unitId={self.GetParent<Unit>()?.Id ?? 0}");
+                return;
+            }
+
+            if (scheduler.AddEntity(HighFrequencyChannelId.Move16ms, self))
+            {
+                self.IsMoveChannelRegistered = true;
+                return;
+            }
+
+            self.IsMoveChannelRegistered = false;
+        }
+
+        private static void LeaveMoveChannel(this JoystickMoveComponent self)
+        {
+            Scene scene = self.Scene();
+            HighFrequencySchedulerComponent scheduler = scene?.GetComponent<HighFrequencySchedulerComponent>();
+            if (scheduler == null)
+            {
+                self.IsMoveChannelRegistered = false;
+                self.PendingStopBroadcast = false;
+                return;
+            }
+
+            scheduler.RequestRemoveEntity(HighFrequencyChannelId.Move16ms, self, out _);
+            self.IsMoveChannelRegistered = false;
+            self.PendingStopBroadcast = false;
+        }
+
+        private static void RequestStopMove(this JoystickMoveComponent self)
+        {
+            Scene scene = self.Scene();
+            HighFrequencySchedulerComponent scheduler = scene?.GetComponent<HighFrequencySchedulerComponent>();
+            if (scheduler == null)
+            {
+                self.IsMoveChannelRegistered = false;
+                self.PendingStopBroadcast = false;
+                self.BroadcastStop();
+                return;
+            }
+
+            if (!scheduler.RequestRemoveEntity(HighFrequencyChannelId.Move16ms, self, out bool deferred))
+            {
+                self.IsMoveChannelRegistered = false;
+                self.PendingStopBroadcast = false;
+                self.BroadcastStop();
+                return;
+            }
+
+            if (deferred)
+            {
+                self.PendingStopBroadcast = true;
+                return;
+            }
+
+            self.IsMoveChannelRegistered = false;
+            self.PendingStopBroadcast = false;
+            self.BroadcastStop();
+        }
+
+        public static void OnMoveChannelRemoved(this JoystickMoveComponent self, HighFrequencyEntityRemovedCallback args)
+        {
+            self.IsMoveChannelRegistered = false;
+            if (!self.PendingStopBroadcast)
             {
                 return;
             }
 
-            self.LastTickTime = TimeInfo.Instance.ServerNow();
-            self.MoveTimerId = self.Root().TimerComponent.NewRepeatedTimer(MoveTickIntervalMs, TimerInvokeType.JoystickMoveTimer, self);
-        }
-
-        private static void StopTimer(this JoystickMoveComponent self)
-        {
-            if (self.MoveTimerId == 0)
+            self.PendingStopBroadcast = false;
+            if (math.lengthsq(self.Direction) <= StopDirectionEpsilonSqr)
             {
-                return;
+                self.BroadcastStop();
             }
-
-            self.Root()?.TimerComponent?.Remove(ref self.MoveTimerId);
-            self.MoveTimerId = 0;
         }
 
-        private static void Tick(this JoystickMoveComponent self)
+        public static void TickFixedStep(this JoystickMoveComponent self, long deltaTimeMs, long nowMs)
         {
             Unit unit = self.GetParent<Unit>();
             if (unit == null || unit.IsDisposed)
@@ -94,81 +177,61 @@ namespace ET.Server
                 return;
             }
 
-            long now = TimeInfo.Instance.ServerNow();
-            float realDeltaTime = (now - self.LastTickTime) / 1000f;
-            realDeltaTime = math.clamp(realDeltaTime, MinTickDeltaTime, MaxTickDeltaTime);
-            self.LastTickTime = now;
+            if (math.lengthsq(self.Direction) <= StopDirectionEpsilonSqr)
+            {
+                return;
+            }
+
+            float fixedDeltaTime = math.max(deltaTimeMs / 1000f, MinTickDeltaTime);
 
             float speed = unit.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
             if (speed < 0.01f)
             {
-                if (now - self.LastTickTraceLogTime >= 500)
+                if (nowMs - self.LastTickTraceLogTime >= 500)
                 {
-                    self.LastTickTraceLogTime = now;
-                    Log.Warning($"[JoystickTrace][ServerMove] tick skipped by speed unitId={unit.Id}, speed={speed:F3}, dir=({self.Direction.x:F3},{self.Direction.z:F3})");
+                    self.LastTickTraceLogTime = nowMs;
+                    Log.Debug($"[JoystickTrace][ServerMove] tick skipped by speed unitId={unit.Id}, speed={speed:F3}, dir=({self.Direction.x:F3},{self.Direction.z:F3})");
                 }
                 return;
             }
 
             float3 oldPos = unit.Position;
-            float3 delta = self.Direction * speed * realDeltaTime;
+            float3 delta = self.Direction * speed * fixedDeltaTime;
             float3 expectedNextPos = oldPos + delta;
             expectedNextPos.y = oldPos.y;
             float3 nextPos = expectedNextPos;
+            bool reachedExpectedPos = true;
 
-            // 摇杆移动优先信任导航修正后的平面位置；
-            // Y 轴仅在高度差处于可信范围内时跟随导航，避免被吸到错误楼层。
+            // NavMesh 防穿墙：沿 NavMesh 表面移动，碰墙自动贴墙滑动
             PathfindingComponent pathfinding = unit.GetComponent<PathfindingComponent>();
-            bool shouldApplyNavGuard = pathfinding != null && unit.GetComponent<UnitGateInfoComponent>() == null;
-            if (shouldApplyNavGuard)
+            if (self.EnableNavRaycast && pathfinding != null)
             {
-                float unitRadius = unit.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
                 try
                 {
-                    if (!pathfinding.TryRecastFindNearestPointForMovement(expectedNextPos, unitRadius, out float3 projectedPos, out float projectedDeltaXZ))
-                    {
-                        self.Direction = float3.zero;
-                        self.StopTimer();
-                        self.BroadcastStop();
-                        Log.Warning($"[NavGuard] stop joystick move: no nearest poly. unitId={unit.Id}, pos={expectedNextPos}");
-                        return;
-                    }
-
-                    float maxProjectedDeltaXZ = pathfinding.GetMovementRejectDistance(unitRadius);
-                    if (projectedDeltaXZ > maxProjectedDeltaXZ)
-                    {
-                        self.Direction = float3.zero;
-                        self.StopTimer();
-                        self.BroadcastStop();
-                        Log.Warning($"[NavGuard] stop joystick move: projection delta too large. unitId={unit.Id}, expected={expectedNextPos}, projected={projectedPos}, deltaXZ={projectedDeltaXZ:F3}, threshold={maxProjectedDeltaXZ:F3}");
-                        return;
-                    }
-
-                    nextPos.x = projectedPos.x;
-                    nextPos.z = projectedPos.z;
-                    float projectedDeltaY = math.abs(projectedPos.y - oldPos.y);
-                    if (projectedDeltaY <= MaxTrustedGroundDeltaY)
-                    {
-                        nextPos.y = projectedPos.y;
-                    }
-                    else
-                    {
-                        long nowForGround = TimeInfo.Instance.ServerNow();
-                        if (nowForGround - self.LastTickTraceLogTime >= 500)
-                        {
-                            self.LastTickTraceLogTime = nowForGround;
-                            Log.Warning($"[JoystickTrace][ServerMove] ignore abnormal ground snap unitId={unit.Id}, oldY={oldPos.y:F3}, projectedY={projectedPos.y:F3}, deltaY={projectedDeltaY:F3}");
-                        }
-                    }
+                    reachedExpectedPos = pathfinding.TryMoveAlongSurface(oldPos, expectedNextPos, out nextPos);
                 }
                 catch (System.Exception e)
                 {
-                    self.Direction = float3.zero;
-                    self.StopTimer();
-                    self.BroadcastStop();
-                    Log.Warning($"[NavGuard] stop joystick move: navmesh project failed. unitId={unit.Id}, pos={expectedNextPos}, error={e.Message}");
-                    return;
+                    // 异常时放行，避免卡死
+                    nextPos = expectedNextPos;
+                    reachedExpectedPos = true;
+                    if (nowMs - self.LastTickTraceLogTime >= 500)
+                    {
+                        self.LastTickTraceLogTime = nowMs;
+                        Log.Warning($"[NavMove] exception, allow move. unitId={unit.Id}, error={e.Message}");
+                    }
                 }
+            }
+
+            float expectedMoveDist = math.distance(new float2(oldPos.x, oldPos.z), new float2(expectedNextPos.x, expectedNextPos.z));
+            float actualMoveDist = math.distance(new float2(oldPos.x, oldPos.z), new float2(nextPos.x, nextPos.z));
+            if (!reachedExpectedPos && nowMs - self.LastNavResolveLogTime >= 250)
+            {
+                self.LastNavResolveLogTime = nowMs;
+                string resolveState = actualMoveDist > 0.001f ? "slide" : "blocked";
+                float moveRatio = expectedMoveDist > 0.0001f ? actualMoveDist / expectedMoveDist : 0f;
+                Log.Info(
+                    $"[NavMove][ServerResolve] state={resolveState}, unitId={unit.Id}, oldPos={oldPos}, expectedNextPos={expectedNextPos}, nextPos={nextPos}, expectedMove={expectedMoveDist:F4}, actualMove={actualMoveDist:F4}, moveRatio={moveRatio:F3}, dir=({self.Direction.x:F3},{self.Direction.z:F3}), speed={speed:F3}, dt={fixedDeltaTime:F4}");
             }
 
             unit.Position = nextPos;
@@ -181,12 +244,13 @@ namespace ET.Server
             }
 
             // 先发给自己，保证玩家在不被任何人看见时也能收到自身位移同步
-            M2C_JoystickMove selfMsg = CreateMoveMessage(unit, self.Direction, speed);
+            uint moveSequence = self.NextMoveSequence();
+
+            M2C_JoystickMove selfMsg = CreateMoveMessage(unit, self.Direction, speed, moveSequence, self.LastClientInputSequence);
             MapMessageHelper.NoticeClient(unit, selfMsg, NoticeType.Self);
 
-            M2C_JoystickMove broadcastMsg = CreateMoveMessage(unit, self.Direction, speed);
+            M2C_JoystickMove broadcastMsg = CreateMoveMessage(unit, self.Direction, speed, moveSequence, self.LastClientInputSequence);
             MapMessageHelper.NoticeClient(unit, broadcastMsg, NoticeType.BroadcastWithoutSelf);
-
         }
 
         private static void BroadcastStop(this JoystickMoveComponent self)
@@ -198,14 +262,22 @@ namespace ET.Server
             }
 
             // 先发给自己，保证玩家松手时自身状态立即同步
-            M2C_JoystickMove selfMsg = CreateMoveMessage(unit, float3.zero, 0f);
+            uint moveSequence = self.NextMoveSequence();
+
+            M2C_JoystickMove selfMsg = CreateMoveMessage(unit, float3.zero, 0f, moveSequence, self.LastClientInputSequence);
             MapMessageHelper.NoticeClient(unit, selfMsg, NoticeType.Self);
 
-            M2C_JoystickMove broadcastMsg = CreateMoveMessage(unit, float3.zero, 0f);
+            M2C_JoystickMove broadcastMsg = CreateMoveMessage(unit, float3.zero, 0f, moveSequence, self.LastClientInputSequence);
             MapMessageHelper.NoticeClient(unit, broadcastMsg, NoticeType.BroadcastWithoutSelf);
         }
 
-        private static M2C_JoystickMove CreateMoveMessage(Unit unit, float3 direction, float speed)
+        private static uint NextMoveSequence(this JoystickMoveComponent self)
+        {
+            ++self.MoveSequence;
+            return self.MoveSequence;
+        }
+
+        private static M2C_JoystickMove CreateMoveMessage(Unit unit, float3 direction, float speed, uint moveSequence, uint lastProcessedInputSequence)
         {
             M2C_JoystickMove msg = M2C_JoystickMove.Create();
             msg.UnitId = unit.Id;
@@ -219,6 +291,8 @@ namespace ET.Server
             msg.DirX = direction.x;
             msg.DirZ = direction.z;
             msg.Speed = speed;
+            msg.MoveSequence = moveSequence;
+            msg.LastProcessedInputSequence = lastProcessedInputSequence;
             return msg;
         }
     }

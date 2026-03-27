@@ -13,17 +13,24 @@ namespace ET.Server
             self.RequiredTime = requiredTime;
             self.LobbyMapName = lobbyMapName;
             self.StartTime = TimeInfo.Instance.ServerNow();
-            self.Status = 1;
+            self.Status = ECAEvacuationState.Running;
 
             self.TimerId = self.Root().TimerComponent.NewFrameTimer(TimerInvokeType.PlayerEvacuationTimer, self);
 
             Unit player = self.GetParent<Unit>();
+            EvacuationRuntimeHelper.SendEvacuationState(evacuationPointId, player, ECAEvacuationState.Running, requiredTime);
             Log.Info($"[PlayerEvacuation] Player {player.Id} started evacuation, time: {requiredTime}ms");
         }
 
         [EntitySystem]
         private static void Destroy(this PlayerEvacuationComponent self)
         {
+            Unit player = self.GetParent<Unit>();
+            if (self.Status == ECAEvacuationState.Running && player != null && !player.IsDisposed)
+            {
+                EvacuationRuntimeHelper.SendEvacuationState(self.EvacuationPointId, player, ECAEvacuationState.Cancelled, 0);
+            }
+
             if (self.TimerId != 0)
             {
                 long timerId = self.TimerId;
@@ -76,11 +83,12 @@ namespace ET.Server
 
         private static async ETTask CompleteEvacuation(this PlayerEvacuationComponent self)
         {
-            self.Status = 2;
+            self.Status = ECAEvacuationState.Completed;
 
             Unit player = self.GetParent<Unit>();
             EntityRef<Unit> playerRef = player;
             string lobbyMapName = string.IsNullOrWhiteSpace(self.LobbyMapName) ? ECAConfig.DefaultLobbyMapName : self.LobbyMapName;
+            EvacuationRuntimeHelper.SendEvacuationState(self.EvacuationPointId, player, ECAEvacuationState.Completed, 0);
             Log.Info($"[PlayerEvacuation] Player {player.Id} evacuation completed, settling items then transferring to lobby map: {lobbyMapName}");
 
             // 撤离结算：收集物品、计算财富、通知客户端（case 1 EvacuationPoint 结算逻辑）
@@ -93,9 +101,10 @@ namespace ET.Server
 
         private static void CancelEvacuation(this PlayerEvacuationComponent self)
         {
-            self.Status = 3;
+            self.Status = ECAEvacuationState.Cancelled;
 
             Unit player = self.GetParent<Unit>();
+            EvacuationRuntimeHelper.SendEvacuationState(self.EvacuationPointId, player, ECAEvacuationState.Cancelled, 0);
             Log.Info($"[PlayerEvacuation] Player {player.Id} evacuation cancelled (left range)");
 
             self.Dispose();

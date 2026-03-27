@@ -14,5 +14,15 @@ namespace ET.Client
         public Vector3 VisualCorrection;
         public Vector3 PredictedDirection;
         public float PredictedSpeed;
+        public Vector3 PositionPredictionDirection;
+        public float PositionPredictionSpeed;
+        public bool PositionPredictionBlocked;
+        public bool HoldLocalPredictionOnStationarySync;
+        public long LastAuthoritativeSyncTime;
+        public long LastPredictionTraceLogTime;
+        public long LastVisualMoveTraceLogTime;
+        public long LastAnimatorStateTraceLogTime;
+        public long LastFrameTraceLogTime;
+        public int WallBlockedCount;
     }
 }

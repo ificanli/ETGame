@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using YIUIFramework;
 using System.Collections.Generic;
@@ -24,6 +24,8 @@ namespace ET.Client
         public YIUIViewComponent UIView => u_UIView;
         public UnityEngine.RectTransform u_ComHPContent;
         public YIUIFramework.UIDataValueFloat u_DataHPRatio;
+        public YIUIFramework.UIDataValueString u_DataTxtLevel;
+        public YIUIFramework.UIDataValueFloat u_DataCurExp;
 
     }
 }

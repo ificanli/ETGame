@@ -225,6 +225,97 @@
 						"Caster" : null,
 						"Override" : true
 					}]
+			}], [300011, {
+				"_id" : 300011,
+				"Desc" : "匹配机器人枪械AI",
+				"Duration" : -1,
+				"TickTime" : 500,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 16,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTSelector",
+								"_id" : 5,
+								"Children" : [{
+										"_t" : "ET.BTSequence",
+										"_id" : 9,
+										"Children" : [{
+												"_t" : "ET.AI_RobotReturnCheck",
+												"_id" : 10,
+												"Children" : [],
+												"Buff" : "Buff",
+												"MaxDistance" : 35.0
+											}, {
+												"_t" : "ET.AI_RobotReturn",
+												"_id" : 6,
+												"Children" : [],
+												"Buff" : "Buff",
+												"WaitIntervalMs" : 1000,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 11,
+										"Children" : [{
+												"_t" : "ET.AI_RobotWeaponCombatCheck",
+												"_id" : 17,
+												"Children" : [],
+												"Buff" : "Buff",
+												"MaxRange" : 18.0,
+												"SelectIntervalMs" : 300
+											}, {
+												"_t" : "ET.AI_RobotWeaponCombat",
+												"_id" : 7,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ThinkIntervalMs" : 200,
+												"PreCastSpellId" : 0,
+												"MainSpellId" : 0
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 13,
+										"Children" : [{
+												"_t" : "ET.BTNot",
+												"_id" : 15,
+												"Children" : [{
+														"_t" : "ET.AI_RobotWeaponCombatCheck",
+														"_id" : 14,
+														"Children" : [],
+														"Buff" : "Buff",
+														"MaxRange" : 18.0,
+														"SelectIntervalMs" : 300
+													}]
+											}, {
+												"_t" : "ET.AI_RobotPatrol",
+												"_id" : 8,
+												"Children" : [],
+												"Buff" : "Buff",
+												"MinRadius" : 2.0,
+												"MaxRadius" : 8.0,
+												"IdleMinMs" : 1000,
+												"IdleMaxMs" : 3000,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}]
+							}],
+						"TreeId" : NumberLong("5247162988964213441"),
+						"Buff" : "Buff",
+						"Unit" : null,
+						"Caster" : null,
+						"Override" : true
+					}]
 			}], [1001, {
 				"_id" : 1001,
 				"Desc" : "Rogue 1001",

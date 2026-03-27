@@ -7,6 +7,30 @@ using YIUIFramework;
 
 namespace ET.Client
 {
+    public struct BattleRecordSummaryViewData
+    {
+        public long RecordId;
+        public long PlayerId;
+        public int GameMode;
+        public string MapName;
+        public long MapId;
+        public long StartedAt;
+        public long FinishedAt;
+        public int ResultType;
+        public bool IsSuccess;
+        public int KillNum;
+        public long TotalWealth;
+    }
+
+    public struct BattleRecordEventViewData
+    {
+        public long Timestamp;
+        public int EventType;
+        public long PlayerId;
+        public long Value;
+        public string Text;
+    }
+
     /// <summary>
     /// 装备槽位类型
     /// </summary>
@@ -70,6 +94,8 @@ namespace ET.Client
         public Vector2 GridPadding = new Vector2(4f, 4f);
         public float WarehousePreferredCellSize = UnifiedCellSize;
 
+        public EntityRef<BattleRecordPanelComponent> BattleRecordPanel;
+
         public RectTransform WarehouseGridRoot;
         public RectTransform WarehouseItemsLayer;
         public RectTransform WarehouseItemTemplate;
@@ -100,5 +126,6 @@ namespace ET.Client
 
         public RectTransform BagContentWrapper;
         public RectTransform SecureContentWrapper;
+        public EntityRef<ItemClickedComponent> ItemClickedCommon;
     }
 }

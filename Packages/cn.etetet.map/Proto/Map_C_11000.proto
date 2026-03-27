@@ -40,6 +40,7 @@ message UnitInfo
 	MoveInfo MoveInfo = 7;
 	PetInfo PetInfo = 8;
 	int32 CampId = 9;
+	int32 DisplayLevel = 10;
 }
 
 message M2C_CreateUnits // IMessage
@@ -101,6 +102,12 @@ message M2C_NumericChange // IMessage
 	int64 UnitId = 1;
 	int32 NumericType = 2;
 	int64 Value = 3;
+}
+
+message M2C_UnitDisplayLevelChange // IMessage
+{
+	int64 UnitId = 1;
+	int32 DisplayLevel = 2;
 }
 
 message M2C_Turn // IMessage
@@ -192,6 +199,13 @@ message M2C_ECAPointState // IMessage
 }
 
 message M2C_ECASearchState // IMessage
+{
+	string PointId = 1;
+	int32 State = 2;
+	int64 RemainMs = 3;
+}
+
+message M2C_ECAEvacuationState // IMessage
 {
 	string PointId = 1;
 	int32 State = 2;

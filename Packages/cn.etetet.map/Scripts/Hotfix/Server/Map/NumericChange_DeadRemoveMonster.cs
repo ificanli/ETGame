@@ -20,7 +20,17 @@ namespace ET.Server
                 return;
             }
 
+            Scene scene = unit.Scene();
+            if (scene == null || scene.IsDisposed)
+            {
+                return;
+            }
+
             Log.Info($"[MonsterDeath] remove monster: unitId={unit.Id}, configId={unit.ConfigId}, oldHp={args.Old}, newHp={args.New}");
+            EventSystem.Instance.Publish(scene, new MonsterDeadBeforeRemove
+            {
+                Unit = unit,
+            });
 
             foreach (AOIEntity viewerAoi in unit.GetBeSeePlayers().Values)
             {
@@ -33,7 +43,7 @@ namespace ET.Server
                 MapMessageHelper.NoticeUnitRemove(viewer, unit);
             }
 
-            unit.Scene()?.GetComponent<UnitComponent>()?.Remove(unit.Id);
+            scene.GetComponent<UnitComponent>()?.Remove(unit.Id);
         }
     }
 }

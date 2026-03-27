@@ -145,7 +145,7 @@ namespace ET.Client
         /// </summary>
         internal static async ETTask OpenPanelBefore(this YIUIMgrComponent self, PanelInfo info)
         {
-            if (info.UIWindow is { WindowLastClose: false })
+            if (info.UIWindow is { WindowUseLastClose: false })
             {
                 await self.AddUICloseElse(info);
             }
@@ -160,7 +160,7 @@ namespace ET.Client
 
             if (success)
             {
-                if (info.UIWindow is { WindowLastClose: true })
+                if (info.UIWindow is { WindowUseLastClose: true })
                 {
                     await self.AddUICloseElse(info);
                 }

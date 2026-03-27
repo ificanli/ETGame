@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package ET;
+
+import "Archive_S_22020.proto";
+
+// ResponseType G2C_GetBattleRecordList
+message C2G_GetBattleRecordList // ISessionRequest
+{
+	int32 RpcId = 1;
+	int32 Limit = 2;
+}
+
+message G2C_GetBattleRecordList // ISessionResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated ArchiveBattleRecordSummaryProto Records = 4;
+}
+
+// ResponseType G2C_GetBattleRecordDetail
+message C2G_GetBattleRecordDetail // ISessionRequest
+{
+	int32 RpcId = 1;
+	int64 RecordId = 2;
+}
+
+message G2C_GetBattleRecordDetail // ISessionResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	ArchiveBattleRecordSummaryProto Record = 4;
+	repeated ArchiveBattleEventProto Events = 5;
+}

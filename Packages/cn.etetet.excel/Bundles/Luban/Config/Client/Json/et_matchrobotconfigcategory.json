@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "MapName": "",
+    "GameMode": 0,
+    "AIBuffConfigId": 300011,
+    "HeroConfigIds": "1001|1002|1003|1004|1005|1006",
+    "HeroWeights": "100|100|100|100|100|100",
+    "MainWeaponConfigIds": "50009|50010|50011|50012|50013",
+    "MainWeaponWeights": "60|100|100|40|80",
+    "AutoChooseDelayMinMs": 600,
+    "AutoChooseDelayMaxMs": 1200
+  },
+  {
+    "Id": 2,
+    "MapName": "",
+    "GameMode": 2,
+    "AIBuffConfigId": 300011,
+    "HeroConfigIds": "1001|1002|1003|1004|1005|1006",
+    "HeroWeights": "100|100|100|100|100|100",
+    "MainWeaponConfigIds": "50009|50010|50011|50012|50013",
+    "MainWeaponWeights": "40|120|120|20|100",
+    "AutoChooseDelayMinMs": 500,
+    "AutoChooseDelayMaxMs": 1000
+  }
+]

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using YIUIFramework;
 using System.Collections.Generic;
@@ -31,6 +31,11 @@ namespace ET.Client
             }
 
             self.m_Numeric = self.OwnerUnit.NumericComponent;
+            self.ExpBarRoot = FindExpBarRoot(self);
+            self.LastShowExpBar = self.ExpBarRoot != null && self.ExpBarRoot.gameObject.activeSelf;
+            self.u_DataTxtLevel?.SetValue("1", true);
+            self.u_DataCurExp?.SetValue(0f, true);
+            self.SetExpBarVisible(false);
         }
 
         [EntitySystem]
@@ -77,6 +82,8 @@ namespace ET.Client
                 self.SetUICache();
                 return;
             }
+
+            self.UpdateDisplayLevelAndExp();
 
             if (Vector3.Distance(self.Player.Position, self.OwnerUnit.Position) <= 10)
             {
@@ -127,6 +134,84 @@ namespace ET.Client
             var ratio = maxHP <= 0 ? 0 : (float)hp / maxHP;
             self.u_DataHPRatio.SetValue(ratio);
             return ratio;
+        }
+
+        private static void UpdateDisplayLevelAndExp(this HPViewComponent self)
+        {
+            if (self.OwnerUnit == null || self.Player == null)
+            {
+                return;
+            }
+
+            bool isMyUnit = self.OwnerUnit.Id == self.Player.Id;
+            int displayLevel = self.OwnerUnit.GetComponent<UnitDisplayLevelComponent>()?.Level ?? 1;
+            float expRatio = 0f;
+
+            if (isMyUnit)
+            {
+                RogueClientComponent runtime = RogueClientHelper.GetOrAddRuntime(self.Root());
+                if (runtime != null)
+                {
+                    displayLevel = runtime.Level > 0 ? runtime.Level : displayLevel;
+                    int safeNeedExp = runtime.NeedExp > 0 ? runtime.NeedExp : 1;
+                    expRatio = Mathf.Clamp01(runtime.CurrentExp / (float)safeNeedExp);
+                }
+            }
+
+            if (displayLevel <= 0)
+            {
+                displayLevel = 1;
+            }
+
+            if (self.LastDisplayLevel != displayLevel)
+            {
+                self.LastDisplayLevel = displayLevel;
+                self.u_DataTxtLevel?.SetValue(displayLevel.ToString(), true);
+            }
+
+            if (Mathf.Abs(self.LastDisplayExpRatio - expRatio) > 0.0001f)
+            {
+                self.LastDisplayExpRatio = expRatio;
+                self.u_DataCurExp?.SetValue(expRatio, true);
+            }
+
+            self.SetExpBarVisible(isMyUnit);
+        }
+
+        private static void SetExpBarVisible(this HPViewComponent self, bool visible)
+        {
+            if (self.ExpBarRoot == null || self.LastShowExpBar == visible)
+            {
+                return;
+            }
+
+            self.LastShowExpBar = visible;
+            self.ExpBarRoot.gameObject.SetActive(visible);
+        }
+
+        private static Transform FindExpBarRoot(HPViewComponent self)
+        {
+            Transform rootTransform = self.UIBase?.OwnerGameObject?.transform;
+            if (rootTransform == null)
+            {
+                return null;
+            }
+
+            Transform expBar = rootTransform.Find("ExpBar");
+            if (expBar != null)
+            {
+                return expBar;
+            }
+
+            foreach (Transform child in rootTransform.GetComponentsInChildren<Transform>(true))
+            {
+                if (child != null && child.name == "ExpBar")
+                {
+                    return child;
+                }
+            }
+
+            return null;
         }
 
         #region YIUIEvent开始

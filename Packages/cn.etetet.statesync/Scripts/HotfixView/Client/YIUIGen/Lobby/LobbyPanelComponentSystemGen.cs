@@ -54,6 +54,8 @@ namespace ET.Client
             self.u_ComSecureBagRoot = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComSecureBagRoot");
             self.u_ComSecureBoardRoot = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComSecureBoardRoot");
             self.u_ComWarehouseRoot = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComWarehouseRoot");
+            self.u_ComBattleRecordButton = self.UIBase.ComponentTable.FindComponent<UnityEngine.UI.Button>("u_ComBattleRecordButton");
+            self.u_ComBattleRecordOverlayRoot = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComBattleRecordOverlayRoot");
             self.u_DataRoleSkillDes = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataRoleSkillDes");
             self.u_DataRoleSurviveAbility = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataRoleSurviveAbility");
             self.u_DataRoleAttackAbility = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataRoleAttackAbility");

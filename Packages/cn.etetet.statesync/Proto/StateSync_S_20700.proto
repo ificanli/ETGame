@@ -24,6 +24,11 @@ message A2Map_ApplyLoadoutRequest // ILocationRequest
 	int32 MainWeaponConfigId = 3;
 	int32 SubWeaponConfigId = 4;
 	int32 ArmorConfigId = 5;
+	repeated int32 ConsumableConfigIds = 6;
+	int32 BackpackConfigId = 7;
+	int32 BagWidth = 8;
+	int32 BagHeight = 9;
+	repeated LoadoutGridItemData BagItems = 10;
 }
 
 message A2Map_ApplyLoadoutResponse // ILocationResponse

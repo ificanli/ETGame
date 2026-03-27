@@ -107,20 +107,48 @@ namespace ET
                 return true;
             }
 
-            if (actualParams == null || actualParams.Count == 0)
-            {
-                return false;
-            }
-
             foreach (FlowParam expectedParam in expectedParams)
             {
-                if (expectedParam == null)
+                if (!IsMeaningfulParam(expectedParam))
                 {
                     continue;
                 }
 
+                if (actualParams == null || actualParams.Count == 0)
+                {
+                    return false;
+                }
+
                 if (!TryGetParamValue(actualParams, expectedParam.Key, out string actualValue) ||
                     !string.Equals(actualValue, expectedParam.Value, StringComparison.Ordinal))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool IsMeaningfulParam(FlowParam param)
+        {
+            if (param == null || string.IsNullOrWhiteSpace(param.Key))
+            {
+                return false;
+            }
+
+            return !(string.IsNullOrWhiteSpace(param.Value) && IsDigitsOnly(param.Key));
+        }
+
+        private static bool IsDigitsOnly(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            foreach (char c in value)
+            {
+                if (!char.IsDigit(c))
                 {
                     return false;
                 }

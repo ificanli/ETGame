@@ -1,5 +1,4 @@
-﻿using Cinemachine;
-using Unity.Mathematics;
+using Cinemachine;
 using UnityEngine;
 
 namespace ET.Client
@@ -11,65 +10,97 @@ namespace ET.Client
         private static void Awake(this CinemachineComponent self)
         {
             GameObjectComponent gameObjectComponent = self.GetParent<Unit>().GetComponent<GameObjectComponent>();
-            
-            GameObject virtualCamera = GameObject.Find("/Global/Virtual Camera");
-            CinemachineVirtualCamera cinemachineVirtualCamera = virtualCamera.GetComponent<CinemachineVirtualCamera>();
-            self.VirtualCamera = cinemachineVirtualCamera;
-            
-            // 创建跟踪的GameObject
-            Transform headbone = gameObjectComponent.GameObject.GetComponent<BindPointComponent>().GetBindPoints()[BindPoint.Head];
-            self.Head = headbone;
-            self.Follow = new GameObject("CameraFollow").transform;
-            Transform followTransform = self.Follow;
-            followTransform.SetParent(GameObject.Find("Global/Unit").transform, true);
-            followTransform.position = self.Head.position;
-            followTransform.rotation = gameObjectComponent.GameObject.transform.rotation;
-            
-            cinemachineVirtualCamera.LookAt = followTransform;
-            cinemachineVirtualCamera.Follow = followTransform;
+            GameObject virtualCameraObject = GameObject.Find("/Global/Virtual Camera");
+            GameObject followRootObject = GameObject.Find("Global/Unit");
+            if (gameObjectComponent?.GameObject == null || virtualCameraObject == null || followRootObject == null)
+            {
+                Log.Warning("[Camera] missing camera bootstrap objects");
+                return;
+            }
 
-            cinemachineVirtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>().CameraDistance =12;
-            Vector3 eulerAngles = self.Follow.transform.eulerAngles;
-            eulerAngles.x += 40;
-            self.Follow.rotation = Quaternion.Euler(eulerAngles);
+            CinemachineVirtualCamera cinemachineVirtualCamera = virtualCameraObject.GetComponent<CinemachineVirtualCamera>();
+            BindPointComponent bindPointComponent = gameObjectComponent.GameObject.GetComponent<BindPointComponent>();
+            if (cinemachineVirtualCamera == null || bindPointComponent == null ||
+                !bindPointComponent.GetBindPoints().TryGetValue(BindPoint.Head, out Transform headbone) ||
+                headbone == null)
+            {
+                Log.Warning("[Camera] failed to resolve virtual camera or head bind point");
+                return;
+            }
+
+            self.VirtualCamera = cinemachineVirtualCamera;
+            self.Head = headbone;
+            self.BaseRotation = cinemachineVirtualCamera.transform.rotation;
+            self.BaseDistance = cinemachineVirtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>()?.CameraDistance ?? 0f;
+            self.FollowOffset = Vector3.zero;
+            self.Follow = new GameObject("CameraFollow").transform;
+            self.Follow.SetParent(followRootObject.transform, true);
+
+            cinemachineVirtualCamera.LookAt = self.Follow;
+            cinemachineVirtualCamera.Follow = self.Follow;
+            self.ApplyFollowTransform();
         }
 
-        public static void RotationFollow(this CinemachineComponent self, Vector2 v)
+        [EntitySystem]
+        private static void Destroy(this CinemachineComponent self)
         {
-            Vector3 eulerAngles = self.Follow.transform.eulerAngles;
-            v /= 5;
-            eulerAngles.x += v.y;
-            if (eulerAngles.x >= 360)
+            if (self.VirtualCamera != null)
             {
-                eulerAngles.x -= 360;
+                if (self.VirtualCamera.LookAt == self.Follow)
+                {
+                    self.VirtualCamera.LookAt = null;
+                }
+
+                if (self.VirtualCamera.Follow == self.Follow)
+                {
+                    self.VirtualCamera.Follow = null;
+                }
             }
 
-            if (eulerAngles.x < 0)
+            if (self.Follow != null)
             {
-                eulerAngles.x += 360;
-            }
-            
-            eulerAngles.y += v.x;
-            if (eulerAngles.y >= 360)
-            {
-                eulerAngles.y -= 360;
+                UnityEngine.Object.Destroy(self.Follow.gameObject);
             }
 
-            if (eulerAngles.y < 0)
+            self.VirtualCamera = null;
+            self.Follow = null;
+            self.Head = null;
+            self.FollowOffset = Vector3.zero;
+            self.BaseDistance = 0f;
+            self.BaseRotation = Quaternion.identity;
+        }
+
+        public static void ResetFollowOffset(this CinemachineComponent self)
+        {
+            if (self == null)
             {
-                eulerAngles.y += 360;
+                return;
             }
 
-            if (eulerAngles.x < 10)
+            self.FollowOffset = Vector3.zero;
+            self.ApplyFollowTransform();
+        }
+
+        public static void SetFollowOffset(this CinemachineComponent self, Vector3 worldOffset)
+        {
+            if (self == null)
             {
-                eulerAngles.x = 10;
+                return;
             }
 
-            if (eulerAngles.x > 80)
+            self.FollowOffset = worldOffset;
+            self.ApplyFollowTransform();
+        }
+
+        public static void ApplyFollowTransform(this CinemachineComponent self)
+        {
+            if (self?.Follow == null || self.Head == null)
             {
-                eulerAngles.x = 80;
+                return;
             }
-            self.Follow.rotation = Quaternion.Euler(eulerAngles);
+
+            self.Follow.position = self.Head.position + self.FollowOffset;
+            self.Follow.rotation = self.BaseRotation;
         }
     }
 }

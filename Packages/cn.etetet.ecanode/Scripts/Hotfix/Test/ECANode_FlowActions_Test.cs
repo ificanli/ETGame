@@ -1116,4 +1116,135 @@ namespace ET.Test
             return ErrorCode.ERR_Success;
         }
     }
+
+    public class Ecanode_Evacuation_EventPlaceholderParam_Compat_Test : ATestHandler
+    {
+        public override async ETTask<int> Handle(TestContext context)
+        {
+            await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Ecanode_Evacuation_EventPlaceholderParam_Compat_Test));
+            Scene scene = scope.TestFiber.Root;
+            EntityRef<Scene> sceneRef = scene;
+
+            scene.AddComponent<TimerComponent>();
+            UnitComponent unitComponent = scene.AddComponent<UnitComponent>();
+
+            FlowGraphData graph = new()
+            {
+                Nodes = new List<FlowNodeData>
+                {
+                    new FlowNodeData
+                    {
+                        NodeId = 1,
+                        NodeType = ECAFlowNodeType.Event,
+                        NodeKey = ECAFlowEventType.OnPlayerEnterRange,
+                        Params = new List<FlowParam>
+                        {
+                            new FlowParam { Key = "5", Value = "" }
+                        }
+                    },
+                    new FlowNodeData
+                    {
+                        NodeId = 2,
+                        NodeType = ECAFlowNodeType.Condition,
+                        NodeKey = ECAFlowConditionKey.PlayerInRange
+                    },
+                    new FlowNodeData
+                    {
+                        NodeId = 3,
+                        NodeType = ECAFlowNodeType.Action,
+                        NodeKey = ECAFlowActionKey.StartEvacCountdown,
+                        Params = new List<FlowParam>
+                        {
+                            new FlowParam { Key = "seconds", Value = "12" }
+                        }
+                    }
+                },
+                Connections = new List<FlowConnectionData>
+                {
+                    new FlowConnectionData { FromNodeId = 1, ToNodeId = 2, Branch = "Out" },
+                    new FlowConnectionData { FromNodeId = 2, ToNodeId = 3, Branch = "True" }
+                }
+            };
+
+            ECAConfig config = new()
+            {
+                ConfigId = "evacuation_event_placeholder_param_point",
+                Type = ECAPointType.EvacuationPoint,
+                PosX = 0f,
+                PosY = 0f,
+                PosZ = 0f,
+                Params = new List<FlowParam>
+                {
+                    new FlowParam { Key = ECAPointParamKey.InteractRange, Value = "5" },
+                    new FlowParam { Key = ECAPointParamKey.LobbyMapName, Value = "Home" }
+                },
+                FlowGraph = graph
+            };
+
+            ECALoader.LoadECAPoints(scene, new List<ECAConfig> { config });
+
+            ECAManagerComponent manager = scene.GetComponent<ECAManagerComponent>();
+            if (manager == null)
+            {
+                Log.Console("ECAManagerComponent not created");
+                return 1;
+            }
+
+            ECAPointComponent point = manager.GetECAPoint("evacuation_event_placeholder_param_point");
+            if (point == null)
+            {
+                Log.Console("ECAPointComponent not found");
+                return 2;
+            }
+
+            Unit player = unitComponent.AddChild<Unit, int>(0);
+            player.UnitType = UnitType.Player;
+            player.Position = new float3(0f, 0f, 0f);
+
+            EntityRef<ECAPointComponent> pointRef = point;
+            EntityRef<Unit> playerRef = player;
+            await point.OnPlayerEnter(player);
+
+            scene = sceneRef;
+            point = pointRef;
+            player = playerRef;
+            if (point == null || player == null)
+            {
+                Log.Console("point or player disposed after OnPlayerEnter");
+                return 3;
+            }
+
+            PlayerEvacuationComponent evacuation = player.GetComponent<PlayerEvacuationComponent>();
+            if (evacuation == null)
+            {
+                Log.Console("evacuation component should be created when event node contains placeholder params");
+                return 4;
+            }
+
+            if (evacuation.RequiredTime != 12000)
+            {
+                Log.Console($"expected evacuation duration 12000, got {evacuation.RequiredTime}");
+                return 5;
+            }
+
+            if (evacuation.LobbyMapName != "Home")
+            {
+                Log.Console($"expected lobby map Home, got {evacuation.LobbyMapName}");
+                return 6;
+            }
+
+            point.OnPlayerLeave(player);
+            await scene.TimerComponent.WaitAsync(100);
+            scene = sceneRef;
+            player = playerRef;
+            if (player.GetComponent<PlayerEvacuationComponent>() != null)
+            {
+                Log.Console("evacuation component should be removed after leaving range");
+                return 7;
+            }
+
+            Log.Console("Ecanode_Evacuation_EventPlaceholderParam_Compat_Test passed");
+            return ErrorCode.ERR_Success;
+        }
+    }
 }

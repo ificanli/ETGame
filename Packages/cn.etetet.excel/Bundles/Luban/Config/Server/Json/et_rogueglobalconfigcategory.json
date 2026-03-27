@@ -9,6 +9,7 @@
     "SafeSlotStart": 0,
     "SafeSlotCount": 4,
     "CorpseInteractRange": 3,
-    "CorpseButtonTextId": 0
+    "CorpseButtonTextId": 0,
+    "DefaultMonsterCorpseLootBoxUnitConfigId": 1002
   }
 ]

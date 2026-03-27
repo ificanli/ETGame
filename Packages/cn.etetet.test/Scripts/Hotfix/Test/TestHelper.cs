@@ -19,20 +19,59 @@ namespace ET.Test
         
         public static Fiber GetMap(Fiber testFiber, Fiber robotFiber)
         {
-            Scene clientScene = robotFiber.Root;
-            string mapName = clientScene.CurrentScene().Name;
-            Fiber map = testFiber.GetFiber("MapManager").GetFiber(mapName);
-            return map;
+            if (!TryGetMapFiber(testFiber, robotFiber, out Fiber mapFiber))
+            {
+                return null;
+            }
+
+            return mapFiber;
         }
 
         public static Unit GetServerUnit(Fiber testFiber, Fiber robotFiber)
         {
-            Scene clientScene = robotFiber.Root;
-            string mapName = clientScene.CurrentScene().Name;
-            Fiber map = testFiber.GetFiber("MapManager").GetFiber(mapName);
-            ET.Client.PlayerComponent player = clientScene.GetComponent<ET.Client.PlayerComponent>();
-            Unit unit = map.Root.GetComponent<UnitComponent>().Get(player.MyId);
-            return unit;
+            if (!TryGetMapFiber(testFiber, robotFiber, out Fiber mapFiber))
+            {
+                return null;
+            }
+
+            Scene clientScene = robotFiber?.Root;
+            ET.Client.PlayerComponent player = clientScene?.GetComponent<ET.Client.PlayerComponent>();
+            if (player == null || player.MyId == 0)
+            {
+                return null;
+            }
+
+            UnitComponent unitComponent = mapFiber.Root?.GetComponent<UnitComponent>();
+            return unitComponent?.Get(player.MyId);
+        }
+
+        private static bool TryGetMapFiber(Fiber testFiber, Fiber robotFiber, out Fiber mapFiber)
+        {
+            mapFiber = null;
+
+            Scene clientScene = robotFiber?.Root;
+            Scene currentScene = clientScene?.CurrentScene();
+            if (currentScene == null)
+            {
+                return false;
+            }
+
+            Fiber mapManagerFiber = testFiber?.GetFiber("MapManager");
+            MapManagerComponent mapManagerComponent = mapManagerFiber?.Root?.GetComponent<MapManagerComponent>();
+            if (mapManagerComponent == null)
+            {
+                return false;
+            }
+
+            string mapConfigName = currentScene.Name.GetSceneConfigName();
+            MapCopy mapCopy = mapManagerComponent.GetMap(mapConfigName, currentScene.Id);
+            if (mapCopy == null)
+            {
+                return false;
+            }
+
+            mapFiber = mapManagerFiber.GetFiber(mapCopy.FiberId);
+            return mapFiber != null;
         }
 
         public static UnitConfig FindUnitConfig(UnitType unitType)

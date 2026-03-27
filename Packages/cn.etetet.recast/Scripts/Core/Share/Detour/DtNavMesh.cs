@@ -636,7 +636,7 @@ namespace DotRecast.Detour
         }
 
         /// Builds internal polygons links for a tile.
-        void ConnectIntLinks(DtMeshTile tile)
+        public void ConnectIntLinks(DtMeshTile tile)
         {
             if (tile == null)
             {

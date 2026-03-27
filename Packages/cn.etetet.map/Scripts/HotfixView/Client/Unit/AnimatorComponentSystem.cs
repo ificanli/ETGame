@@ -57,9 +57,9 @@ namespace ET.Client
 				self.Parameter.Add(animatorControllerParameter.name);
 			}
 
-			// 视图异步创建时，Speed 事件可能先于 Animator 准备完成，这里补一次当前速度。
-			float currentSpeed = unit?.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
-			self.SetFloat(nameof(MotionType.MoveSpeed), currentSpeed);
+			// NumericType.Speed 表示角色能力移速，不代表当前是否正在移动。
+			// 动画 MoveSpeed 由可视位移和移动事件驱动，这里初始化为 0，避免静止时误播跑动。
+			self.SetFloat(nameof(MotionType.MoveSpeed), 0f);
 		}
 		
 		[EntitySystem]

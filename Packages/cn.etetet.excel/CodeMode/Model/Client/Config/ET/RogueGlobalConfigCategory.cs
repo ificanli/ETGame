@@ -72,6 +72,10 @@ namespace ET
         /// 尸体盒交互按钮文案ID
         /// </summary>
         public int CorpseButtonTextId => _data.CorpseButtonTextId;
+        /// <summary>
+        /// 默认怪物尸体盒UnitConfigId
+        /// </summary>
+        public int DefaultMonsterCorpseLootBoxUnitConfigId => _data.DefaultMonsterCorpseLootBoxUnitConfigId;
         
         public void ResolveRef()
         {

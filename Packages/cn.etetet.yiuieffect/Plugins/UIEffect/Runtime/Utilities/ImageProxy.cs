@@ -1,6 +1,8 @@
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Coffee.UIEffects
 {

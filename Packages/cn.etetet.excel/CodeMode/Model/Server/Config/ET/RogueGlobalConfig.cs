@@ -27,6 +27,7 @@ namespace ET
             SafeSlotCount = _buf.ReadInt();
             CorpseInteractRange = _buf.ReadFloat();
             CorpseButtonTextId = _buf.ReadInt();
+            DefaultMonsterCorpseLootBoxUnitConfigId = _buf.ReadInt();
 
             EndInit();
         }
@@ -76,6 +77,10 @@ namespace ET
         /// 尸体盒交互按钮文案ID
         /// </summary>
         public readonly int CorpseButtonTextId;
+        /// <summary>
+        /// 默认怪物尸体盒UnitConfigId
+        /// </summary>
+        public readonly int DefaultMonsterCorpseLootBoxUnitConfigId;
     
         public const int __ID__ = 597591072;
         public override int GetTypeId() => __ID__;
@@ -98,6 +103,7 @@ namespace ET
             + "SafeSlotCount:" + SafeSlotCount + ","
             + "CorpseInteractRange:" + CorpseInteractRange + ","
             + "CorpseButtonTextId:" + CorpseButtonTextId + ","
+            + "DefaultMonsterCorpseLootBoxUnitConfigId:" + DefaultMonsterCorpseLootBoxUnitConfigId + ","
             + "}";
         }
 

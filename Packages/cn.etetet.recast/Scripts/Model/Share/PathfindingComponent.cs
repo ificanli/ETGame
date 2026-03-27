@@ -88,5 +88,10 @@ namespace ET
         /// 避免坐标系切换日志刷屏。
         /// </summary>
         public bool navXSignAdjusted;
+
+        /// <summary>
+        /// Raycast 日志节流时间（毫秒）。
+        /// </summary>
+        public long lastRaycastLogTime;
     }
 }

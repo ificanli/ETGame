@@ -5,7 +5,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 [assembly: InternalsVisibleTo("UIEffect")]
 [assembly: InternalsVisibleTo("Coffee.UIEffect.Editor")]

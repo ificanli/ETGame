@@ -9,5 +9,7 @@
         // Test
         public const int TestOnceTimer = PackageType.Core * 1000 + 100;
         public const int TestRepeatedTimer = PackageType.Core * 1000 + 101;
+        public const int TestHighFrequencyTick = PackageType.Core * 1000 + 102;
+        public const int TestHighFrequencyRemoved = PackageType.Core * 1000 + 103;
     }
 }

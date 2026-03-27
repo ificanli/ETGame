@@ -105,25 +105,47 @@ namespace ET.Server
                 return;
             }
 
-            int unitConfigId = HeroConfigHelper.GetDefaultUnitConfigId();
-            if (unitConfigId <= 0)
-            {
-                Log.Error($"[MatchCopy] spawn robots failed: invalid default player unit config, map={context.MapName}@{context.MapId}");
-                return;
-            }
-
             foreach (long robotPlayerId in context.RobotPlayerIds)
             {
-                SpawnRobot(scene, robotPlayerId, unitConfigId);
+                SpawnRobot(scene, context, robotPlayerId);
             }
         }
 
-        private static void SpawnRobot(Scene scene, long robotPlayerId, int unitConfigId)
+        private static void SpawnRobot(Scene scene, MatchCopyContextComponent context, long robotPlayerId)
         {
-            Unit robotUnit = UnitFactory.Create(scene, robotPlayerId, unitConfigId);
-            robotUnit.AddComponent<MatchRobotComponent>();
+            string mapName = context?.MapName;
+            if (string.IsNullOrWhiteSpace(mapName))
+            {
+                mapName = scene.Name.GetSceneConfigName();
+            }
 
-            MatchCopyContextComponent context = scene.GetComponent<MatchCopyContextComponent>();
+            if (!MatchRobotRuntimeHelper.TryBuildSpawnProfile(
+                    mapName,
+                    context?.GameMode ?? 0,
+                    robotPlayerId,
+                    out int matchRobotConfigId,
+                    out int heroConfigId,
+                    out int unitConfigId,
+                    out int mainWeaponConfigId,
+                    out int aiBuffConfigId,
+                    out int autoChooseDelayMinMs,
+                    out int autoChooseDelayMaxMs))
+            {
+                Log.Error($"[MatchCopy] spawn robot failed: profile invalid, map={mapName}, robotId={robotPlayerId}, gameMode={context?.GameMode ?? 0}");
+                return;
+            }
+
+            Unit robotUnit = UnitFactory.Create(scene, robotPlayerId, unitConfigId);
+            MatchRobotComponent matchRobot = robotUnit.AddComponent<MatchRobotComponent>();
+            matchRobot.MatchRobotConfigId = matchRobotConfigId;
+            matchRobot.HeroConfigId = heroConfigId;
+            matchRobot.MainWeaponConfigId = mainWeaponConfigId;
+            matchRobot.AIBuffConfigId = aiBuffConfigId;
+            matchRobot.AutoChooseDelayMinMs = autoChooseDelayMinMs;
+            matchRobot.AutoChooseDelayMaxMs = autoChooseDelayMaxMs;
+            matchRobot.AutoChooseScheduledSerial = 0;
+            matchRobot.AutoChooseCompletedSerial = 0;
+
             if (context != null &&
                 context.PlayerTeamIds.TryGetValue(robotPlayerId, out int teamId) &&
                 teamId > 0)
@@ -132,11 +154,13 @@ namespace ET.Server
             }
 
             MapUnitEnterHelper.EnsureMapRuntimeComponents(scene, robotUnit);
+            MatchRobotRuntimeHelper.ApplyLoadout(robotUnit, matchRobot);
             MapUnitEnterHelper.InitializePlayerGameplay(robotUnit);
             MapUnitEnterHelper.ApplySpawnPointIfNeeded(scene, robotUnit, context != null && context.PlayerTeamIds.TryGetValue(robotPlayerId, out int teamOrder) ? teamOrder : 0);
             MapUnitEnterHelper.SetupMatchRobotIfNeeded(scene, robotUnit);
 
-            Log.Info($"[MatchCopy] spawned local robot, map={scene.Name}, robotId={robotPlayerId}, unitConfigId={unitConfigId}");
+            Log.Info(
+                $"[MatchCopy] spawned local robot, map={scene.Name}, robotId={robotPlayerId}, unitConfigId={unitConfigId}, heroConfigId={heroConfigId}, mainWeaponConfigId={mainWeaponConfigId}, aiBuffConfigId={aiBuffConfigId}");
         }
     }
 }

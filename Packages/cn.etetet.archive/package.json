@@ -1,0 +1,12 @@
+{
+  "name": "cn.etetet.archive",
+  "displayName": "ET.Archive",
+  "version": "4.0.0",
+  "description": "ET Framework Archive System - 玩家档案、战绩和运行时数据平台",
+  "dependencies": {
+    "cn.etetet.core": "4.0.0",
+    "cn.etetet.netinner": "4.0.0",
+    "cn.etetet.proto": "4.0.0",
+    "cn.etetet.servicediscovery": "4.0.0"
+  }
+}

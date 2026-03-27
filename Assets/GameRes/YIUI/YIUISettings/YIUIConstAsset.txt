@@ -62,7 +62,9 @@
         0.8,
         0.8
     },
-    "BanDotweenAnim": false,
+    "BanDotweenAnim": true,
+    "DefaultPanelLastClose": true,
+    "DefaultViewFirstOpen": true,
     "OpenGMViewKey": 27,
     "OpenGMViewFirstType": false
 }

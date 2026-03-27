@@ -19,6 +19,8 @@ namespace ET.Client
         [EntitySystem]
         private static void YIUIInitialize(this EquipSelectViewComponent self)
         {
+            EquipSelectViewPreviewHelper.BindPreviewReferences(self);
+
             // 初始化装备列表 LoopScroll
             var loopScroll = self.u_ComEquipSelectLoopScroll.GetComponentInChildren<LoopScrollRect>();
             if (loopScroll == null)
@@ -33,12 +35,16 @@ namespace ET.Client
             );
 
             self.PendingItemConfigId = 0;
-            self.u_DataGunName?.SetValue(string.Empty, true);
+            EquipSelectViewPreviewHelper.ClearPreview(self);
         }
 
         [EntitySystem]
         private static void Destroy(this EquipSelectViewComponent self)
         {
+            EquipSelectViewPreviewHelper.ReleaseSelectedIconSprite(self);
+            self.GunDescData = null;
+            self.SelectImage = null;
+            self.LoadedSelectIconName = string.Empty;
         }
 
         [EntitySystem]
@@ -47,7 +53,7 @@ namespace ET.Client
             self.PendingItemConfigId = 0;
             self.PendingItemSourceMode = LoadoutItemSourceMode.Warehouse;
             self.CurrentItemSourceMode = LoadoutItemSourceMode.Warehouse;
-            self.u_DataGunName?.SetValue(string.Empty, true);
+            EquipSelectViewPreviewHelper.ClearPreview(self);
             await ETTask.CompletedTask;
             return true;
         }
@@ -79,13 +85,13 @@ namespace ET.Client
             int index,
             bool select)
         {
+            item.SetSelected(select);
             if (!select)
             {
                 return;
             }
 
-            item.SetSelected(true);
-            self.UpdatePreview(data, true);
+            EquipSelectViewPreviewHelper.UpdatePreview(self, data, true);
         }
 
         #region YIUIEvent开始
@@ -120,57 +126,6 @@ namespace ET.Client
             {
                 await self.UIView.CloseAsync();
             }
-        }
-
-        public static void UpdatePreview(this EquipSelectViewComponent self, LoadoutWarehouseItemViewData itemData, bool updatePending)
-        {
-            if (itemData.ConfigId <= 0)
-            {
-                self.u_DataGunName?.SetValue(string.Empty);
-                if (updatePending)
-                {
-                    self.PendingItemConfigId = 0;
-                    self.PendingItemSourceMode = LoadoutItemSourceMode.Warehouse;
-                }
-                return;
-            }
-
-            if (updatePending)
-            {
-                self.PendingItemConfigId = itemData.ConfigId;
-                self.PendingItemSourceMode = itemData.SourceMode;
-            }
-
-            string desc = BuildPreviewText(self, itemData);
-            self.u_DataGunName?.SetValue(desc);
-        }
-
-        private static string BuildPreviewText(EquipSelectViewComponent self, LoadoutWarehouseItemViewData itemData)
-        {
-            if (itemData.ConfigId <= 0)
-            {
-                return string.Empty;
-            }
-
-            string desc = null;
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(itemData.ConfigId);
-            if (self.CurrentSlotType == EquipSlotType.Weapon || self.CurrentSlotType == EquipSlotType.Weapon2)
-            {
-                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemData.ConfigId);
-                desc = weaponConfig?.Desc;
-            }
-
-            if (string.IsNullOrWhiteSpace(desc) && itemConfig != null)
-            {
-                desc = itemConfig.Desc;
-            }
-
-            if (string.IsNullOrWhiteSpace(desc))
-            {
-                desc = itemData.Name;
-            }
-
-            return desc;
         }
 
         private static string FormatEquipSelectItemText(LoadoutWarehouseItemViewData data)
@@ -216,6 +171,227 @@ namespace ET.Client
             }
 
             await lobbyPanel.SwitchEquipSelectSourceModeAsync(self, sourceMode);
+        }
+    }
+
+    [FriendOf(typeof(EquipSelectViewComponent))]
+    public static class EquipSelectViewPreviewHelper
+    {
+        public static void BindPreviewReferences(EquipSelectViewComponent self)
+        {
+            YIUIChild uiBase = self.UIBase;
+            if (uiBase == null)
+            {
+                return;
+            }
+
+            if (self.GunDescData == null && uiBase.DataTable?.DataDic.ContainsKey("u_DataGunDesc") == true)
+            {
+                self.GunDescData = uiBase.DataTable.FindDataValue<UIDataValueString>("u_DataGunDesc");
+            }
+
+            if (self.SelectImage == null && uiBase.ComponentTable?.AllBindDic.ContainsKey("SelectImage") == true)
+            {
+                self.SelectImage = uiBase.ComponentTable.FindComponent<Image>("SelectImage");
+                if (self.SelectImage != null)
+                {
+                    self.SelectImage.preserveAspect = true;
+                }
+            }
+
+            if (self.PreviewRootRectTransform == null)
+            {
+                self.PreviewRootRectTransform = uiBase.OwnerRectTransform?.FindChildByName("GunBg") as RectTransform;
+            }
+        }
+
+        public static void ClearPreview(EquipSelectViewComponent self)
+        {
+            BindPreviewReferences(self);
+            self.u_DataGunName?.SetValue(string.Empty, true);
+            self.GunDescData?.SetValue(string.Empty, true);
+            ReleaseSelectedIconSprite(self);
+
+            if (self.PreviewRootRectTransform != null)
+            {
+                self.PreviewRootRectTransform.gameObject.SetActive(false);
+            }
+
+            if (self.SelectImage != null)
+            {
+                self.SelectImage.enabled = false;
+            }
+
+            self.LoadedSelectIconName = string.Empty;
+        }
+
+        public static void UpdatePreview(EquipSelectViewComponent self, LoadoutWarehouseItemViewData itemData, bool updatePending)
+        {
+            if (itemData.ConfigId <= 0)
+            {
+                ClearPreview(self);
+                if (updatePending)
+                {
+                    self.PendingItemConfigId = 0;
+                    self.PendingItemSourceMode = self.CurrentItemSourceMode;
+                }
+
+                return;
+            }
+
+            if (updatePending)
+            {
+                self.PendingItemConfigId = itemData.ConfigId;
+                self.PendingItemSourceMode = itemData.SourceMode;
+            }
+
+            if (self.PreviewRootRectTransform != null)
+            {
+                self.PreviewRootRectTransform.gameObject.SetActive(true);
+            }
+
+            ResolvePreviewDisplayInfo(self, itemData, out string title, out string desc, out string iconName);
+            self.u_DataGunName?.SetValue(title);
+            self.GunDescData?.SetValue(desc);
+            ChangeSelectedIcon(self, iconName).Coroutine();
+        }
+
+        public static void ReleaseSelectedIconSprite(EquipSelectViewComponent self)
+        {
+            if (self.LoadedSelectSprite == null)
+            {
+                return;
+            }
+
+            EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_ReleaseSprite { obj = self.LoadedSelectSprite });
+
+            if (self.SelectImage != null && self.SelectImage.sprite == self.LoadedSelectSprite)
+            {
+                self.SelectImage.sprite = null;
+            }
+
+            self.LoadedSelectSprite = null;
+        }
+
+        private static void ResolvePreviewDisplayInfo(
+            EquipSelectViewComponent self,
+            LoadoutWarehouseItemViewData itemData,
+            out string title,
+            out string desc,
+            out string iconName)
+        {
+            title = itemData.Name;
+            desc = null;
+            iconName = itemData.Icon ?? string.Empty;
+
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(itemData.ConfigId);
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                title = itemConfig?.Name;
+            }
+
+            if (self.CurrentSlotType == EquipSlotType.Weapon || self.CurrentSlotType == EquipSlotType.Weapon2)
+            {
+                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemData.ConfigId);
+                desc = weaponConfig?.Desc;
+            }
+
+            if (string.IsNullOrWhiteSpace(desc) && itemConfig != null)
+            {
+                desc = itemConfig.Desc;
+            }
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                title = $"Item({itemData.ConfigId})";
+            }
+
+            if (string.IsNullOrWhiteSpace(desc))
+            {
+                desc = title;
+            }
+        }
+
+        private static Image CacheSelectedIconImage(EquipSelectViewComponent self)
+        {
+            BindPreviewReferences(self);
+            return self.SelectImage;
+        }
+
+        private static async ETTask ChangeSelectedIcon(EquipSelectViewComponent self, string iconName)
+        {
+            EntityRef<EquipSelectViewComponent> selfRef = self;
+            int lockHash = self.GetHashCode();
+
+            using var _ = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_CoroutineLock, ETTask<Entity>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_CoroutineLock { Lock = lockHash });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            Image iconImage = CacheSelectedIconImage(self);
+            if (iconImage == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(iconName))
+            {
+                ReleaseSelectedIconSprite(self);
+                iconImage.enabled = false;
+                self.LoadedSelectIconName = string.Empty;
+                return;
+            }
+
+            if (self.LoadedSelectIconName == iconName && self.LoadedSelectSprite != null)
+            {
+                iconImage.sprite = self.LoadedSelectSprite;
+                iconImage.enabled = true;
+                return;
+            }
+
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = iconName });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            iconImage = CacheSelectedIconImage(self);
+            if (iconImage == null || sprite == null)
+            {
+                ReleaseSelectedIconSprite(self);
+                self.LoadedSelectIconName = string.Empty;
+                if (iconImage != null)
+                {
+                    iconImage.enabled = false;
+                }
+
+                return;
+            }
+
+            ReleaseSelectedIconSprite(self);
+            self.LoadedSelectSprite = sprite;
+            self.LoadedSelectIconName = iconName;
+            iconImage.sprite = sprite;
+            iconImage.enabled = true;
+            iconImage.preserveAspect = true;
         }
     }
 }

@@ -19,5 +19,26 @@
     "UnitConfigId": 1008,
     "SkillConfigId": 100020,
     "PassiveBuffId": 0
+  },
+  {
+    "Id": 1004,
+    "Name": "Agou_Icon",
+    "UnitConfigId": 1009,
+    "SkillConfigId": 100010,
+    "PassiveBuffId": 0
+  },
+  {
+    "Id": 1005,
+    "Name": "Agou_Icon",
+    "UnitConfigId": 1010,
+    "SkillConfigId": 100010,
+    "PassiveBuffId": 0
+  },
+  {
+    "Id": 1006,
+    "Name": "Agou_Icon",
+    "UnitConfigId": 1011,
+    "SkillConfigId": 100010,
+    "PassiveBuffId": 0
   }
 ]

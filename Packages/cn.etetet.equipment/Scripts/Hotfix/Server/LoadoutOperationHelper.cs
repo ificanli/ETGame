@@ -364,6 +364,11 @@ namespace ET.Server
             G2C_LoadoutStateChanged message = G2C_LoadoutStateChanged.Create();
             LoadoutStateHelper.FillLoadoutStateChangedResponse(loadout, storage, message);
             session.Send(message);
+
+            if (storage != null)
+            {
+                ArchiveStorageSyncHelper.Sync(player, storage).Coroutine();
+            }
         }
 
         private static int MoveFromFixedSlot(

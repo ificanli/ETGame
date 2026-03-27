@@ -80,13 +80,13 @@
   {
     "Id": 14,
     "Key": "Minimap.FogCellSize",
-    "FloatValue": 4,
+    "FloatValue": 2,
     "StringValue": ""
   },
   {
     "Id": 15,
     "Key": "SDCMap.FogCellSize",
-    "FloatValue": 4,
+    "FloatValue": 0.25,
     "StringValue": ""
   },
   {
@@ -99,13 +99,13 @@
     "Id": 17,
     "Key": "Minimap.FogColor.Explored",
     "FloatValue": 0,
-    "StringValue": "#09131E88"
+    "StringValue": "#09131EBF"
   },
   {
     "Id": 18,
     "Key": "Minimap.FogColor.Unexplored",
     "FloatValue": 0,
-    "StringValue": "#09131EE8"
+    "StringValue": "#09131EFF"
   },
   {
     "Id": 19,
@@ -116,13 +116,13 @@
   {
     "Id": 20,
     "Key": "Minimap.SceneFog.VisionRadius",
-    "FloatValue": 12,
+    "FloatValue": 3,
     "StringValue": ""
   },
   {
     "Id": 21,
     "Key": "SDCMap.Minimap.SceneFog.VisionRadius",
-    "FloatValue": 8,
+    "FloatValue": 3,
     "StringValue": ""
   }
 ]

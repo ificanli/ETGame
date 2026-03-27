@@ -25,9 +25,9 @@ namespace ET.Client
         {
             m_IsActive = false;
 
-            if (JoystickView != null && JoystickView.Knob != null)
+            if (JoystickView != null)
             {
-                JoystickView.Knob.anchoredPosition = Vector2.zero;
+                JoystickView.ForceRelease("range-reset");
             }
 
             if (JoystickBackground != null)
@@ -48,6 +48,8 @@ namespace ET.Client
             }
 
             PointerHitType hitType = GetPointerHitType(eventData);
+            Log.Info(
+                $"[NavMove][UIPointer] source=range action=down hitType={hitType} pos=({eventData.position.x:F1},{eventData.position.y:F1}) active={m_IsActive}");
             if (hitType == PointerHitType.OtherUI)
             {
                 return;
@@ -93,6 +95,7 @@ namespace ET.Client
                 return;
             }
 
+            Log.Info($"[NavMove][UIPointer] source=range action=up pos=({eventData.position.x:F1},{eventData.position.y:F1}) active={m_IsActive}");
             JoystickView.OnPointerUp(eventData);
             ResetVisualState();
         }

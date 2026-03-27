@@ -89,4 +89,91 @@ namespace ET.Test
             return ErrorCode.ERR_Success;
         }
     }
+
+    public class Core_HighFrequencyScheduler_Basic_Test : ATestHandler
+    {
+        private const int TestHighFrequencyChannelId = 9001;
+
+        public override async ETTask<int> Handle(TestContext context)
+        {
+            await using TestFiberScope scope = await TestFiberScope.CreateOneFiber(
+                context.Fiber, SceneType.TestEmpty, nameof(Core_HighFrequencyScheduler_Basic_Test));
+
+            Scene scene = scope.TestFiber.Root;
+            EntityRef<Scene> sceneRef = scene;
+            scene.AddComponent<TimerComponent>();
+            HighFrequencySchedulerComponent scheduler = scene.AddComponent<HighFrequencySchedulerComponent>();
+            EntityRef<HighFrequencySchedulerComponent> schedulerRef = scheduler;
+            scheduler.RegisterChannel(new HighFrequencyChannelConfig
+            {
+                ChannelId = TestHighFrequencyChannelId,
+                IntervalMs = 16,
+                MaxCatchUpCount = 3,
+                TickInvokeType = TimerInvokeType.TestHighFrequencyTick,
+                RemovedInvokeType = TimerInvokeType.TestHighFrequencyRemoved,
+                WarningBudgetMs = 8,
+            });
+
+            TestHighFrequencyEntity steadyEntity = scene.AddChild<TestHighFrequencyEntity>();
+            EntityRef<TestHighFrequencyEntity> steadyEntityRef = steadyEntity;
+            scheduler.AddEntity(TestHighFrequencyChannelId, steadyEntity);
+            scheduler.AddEntity(TestHighFrequencyChannelId, steadyEntity);
+
+            await scene.TimerComponent.WaitAsync(70);
+            steadyEntity = steadyEntityRef;
+
+            if (steadyEntity.TickCount < 2)
+            {
+                Log.Console($"steady entity tick count too low: {steadyEntity.TickCount}");
+                return 1;
+            }
+
+            if (steadyEntity.TickCount > 6)
+            {
+                Log.Console($"steady entity tick count too high, duplicate registration may exist: {steadyEntity.TickCount}");
+                return 2;
+            }
+
+            scene = sceneRef;
+            TestHighFrequencyEntity removeEntity = scene.AddChild<TestHighFrequencyEntity>();
+            EntityRef<TestHighFrequencyEntity> removeEntityRef = removeEntity;
+            removeEntity.RemoveOnFirstTick = true;
+            scheduler = schedulerRef;
+            scheduler.AddEntity(TestHighFrequencyChannelId, removeEntity);
+
+            scene = sceneRef;
+            await scene.TimerComponent.WaitAsync(80);
+            removeEntity = removeEntityRef;
+
+            if (removeEntity.TickCount != 1)
+            {
+                Log.Console($"remove entity tick count invalid: {removeEntity.TickCount}");
+                return 3;
+            }
+
+            if (removeEntity.RemovedCount != 1)
+            {
+                Log.Console($"remove entity removed callback count invalid: {removeEntity.RemovedCount}");
+                return 4;
+            }
+
+            if (!removeEntity.DeferredRemoveObserved)
+            {
+                Log.Console("remove entity did not observe deferred removal");
+                return 5;
+            }
+
+            scheduler = schedulerRef;
+            if (scheduler.ActiveChannelCount != 1)
+            {
+                Log.Console($"active channel count invalid: {scheduler.ActiveChannelCount}");
+                return 6;
+            }
+
+            steadyEntity = steadyEntityRef;
+            Log.Debug(
+                $"Core_HighFrequencyScheduler_Basic_Test passed: steadyTicks={steadyEntity.TickCount}, removeTicks={removeEntity.TickCount}, removedCount={removeEntity.RemovedCount}");
+            return ErrorCode.ERR_Success;
+        }
+    }
 }

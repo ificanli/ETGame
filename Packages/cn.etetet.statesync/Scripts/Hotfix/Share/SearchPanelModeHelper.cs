@@ -15,8 +15,19 @@ namespace ET
                 CorpseSubType = SearchPanelCorpseSubType.Unknown,
             };
 
-            if (!string.IsNullOrWhiteSpace(pointId) &&
-                pointId.StartsWith(SearchPanelOpenConst.PlayerCorpsePointPrefix, StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(pointId))
+            {
+                return result;
+            }
+
+            if (pointId.StartsWith(SearchPanelOpenConst.MonsterCorpsePointPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                result.OpenMode = SearchPanelOpenMode.CorpseLoot;
+                result.CorpseSubType = SearchPanelCorpseSubType.Monster;
+                return result;
+            }
+
+            if (pointId.StartsWith(SearchPanelOpenConst.PlayerCorpsePointPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 result.OpenMode = SearchPanelOpenMode.CorpseLoot;
                 result.CorpseSubType = SearchPanelCorpseSubType.Player;

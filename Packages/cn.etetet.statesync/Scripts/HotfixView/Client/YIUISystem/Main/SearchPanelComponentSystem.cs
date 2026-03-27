@@ -15,6 +15,8 @@ namespace ET.Client
     public static partial class SearchPanelComponentSystem
     {
         private const int FallbackCols = 8;
+        private const int ContainerFixedCols = 4;
+        private const int ContainerFixedRows = 3;
         private const int MinRows = 4;
 
         [EntitySystem]
@@ -28,10 +30,12 @@ namespace ET.Client
             self.SubTitleText = null;
             InitLayout(self);
             CacheGridRoots(self);
+            CacheSecureWidgets(self);
             CacheModeWidgets(self);
             self.QuickChooseMinQuality = ReadQuickChooseMinQuality(self);
             SetTemplateActive(self.u_ComContainerItemTemplate, false);
             SetTemplateActive(self.u_ComBagItemTemplate, false);
+            SetTemplateActive(self.SecureItemTemplate, false);
             
             // 初始化搜索动效配置
             self.CurrentSearchingPointId = null;
@@ -42,13 +46,20 @@ namespace ET.Client
         {
             ReleaseViews(self.ContainerItemViews);
             ReleaseViews(self.BagItemViews);
+            ReleaseViews(self.SecureItemViews);
             ReleaseViews(self.ContainerGridCellViews);
             ReleaseViews(self.BagGridCellViews);
+            ReleaseViews(self.SecureGridCellViews);
             self.ContainerSolver = null;
             self.BagSolver = null;
+            self.SecureSolver = null;
             self.LastContainerSnapshot = null;
             self.ContainerGridRoot = null;
             self.BagGridRoot = null;
+            self.SecureBoardRoot = null;
+            self.SecureItemsLayer = null;
+            self.SecureItemTemplate = null;
+            self.SecureGridRoot = null;
             self.QuickChooseDropdown = null;
             self.QuickChooseButtonRoot = null;
             self.QuickChooseButtonLabel = null;
@@ -140,7 +151,10 @@ namespace ET.Client
             {
                 RenderContainer(self, runtime);
             }
+
+            RefreshLoadoutSlots(self, root.GetComponent<LoadoutComponent>());
             RenderBag(self, itemComponent);
+            RenderSecure(self, root.GetComponent<LoadoutComponent>());
 
             Log.Info(
                 $"[ECAClient][SearchPanel] refresh mode={self.OpenMode}, point={self.CurrentPointId ?? "null"}, container={runtime?.ContainerItems.Count ?? 0}, bag={itemComponent?.GetUsedSlotCount() ?? 0}");
@@ -226,6 +240,10 @@ namespace ET.Client
             SetGameObjectActive(self.u_ComBagBoardRoot, true);
             SetGameObjectActive(self.u_ComBagItemsLayer, true);
             SetGameObjectActive(self.BagGridRoot, true);
+            SetGameObjectActive(self.u_ComSecureBagRootRectTransform, true);
+            SetGameObjectActive(self.SecureBoardRoot, true);
+            SetGameObjectActive(self.SecureItemsLayer, true);
+            SetGameObjectActive(self.SecureGridRoot, true);
 
             if (useBagOnlyLayout)
             {
@@ -257,19 +275,31 @@ namespace ET.Client
             self.CellSpacing = new Vector2(8, 8);
             self.CellPadding = new Vector2(8, 8);
 
-            self.ContainerCols = CalcCols(self.u_ComContainerBoardRoot, self.CellSize, self.CellSpacing, FallbackCols);
+            self.ContainerCols = ContainerFixedCols;
             self.BagCols = CalcCols(self.u_ComBagBoardRoot, self.CellSize, self.CellSpacing, FallbackCols);
-            self.ContainerRows = MinRows;
+            self.ContainerRows = ContainerFixedRows;
             self.BagRows = MinRows;
+            self.SecureCols = Math.Max(1, ExtractionInventoryConfig.GetSafeSlotCount());
+            self.SecureRows = 1;
 
             EnsureContainerSolver(self, self.ContainerRows);
-            EnsureBagSolver(self, self.BagRows);
+            EnsureBagSolver(self, self.BagCols, self.BagRows);
+            EnsureSecureSolver(self, self.SecureCols, self.SecureRows);
         }
 
         private static void CacheGridRoots(SearchPanelComponent self)
         {
             self.ContainerGridRoot = self.u_ComContainerBoardRoot?.Find("GridRoot") as RectTransform;
             self.BagGridRoot = self.u_ComBagBoardRoot?.Find("GridRoot") as RectTransform;
+        }
+
+        private static void CacheSecureWidgets(SearchPanelComponent self)
+        {
+            RectTransform secureRoot = self.u_ComSecureBagRootRectTransform;
+            self.SecureBoardRoot = FindDirectChildRectTransform(secureRoot, "SecureBoardRoot");
+            self.SecureItemsLayer = FindDirectChildRectTransform(secureRoot, "SecureItemsLayer");
+            self.SecureItemTemplate = FindDirectChildRectTransform(secureRoot, "SecureItemTemplate");
+            self.SecureGridRoot = FindDirectChildRectTransform(secureRoot, "SecureGridRoot");
         }
 
         private static void CacheModeWidgets(SearchPanelComponent self)
@@ -311,7 +341,7 @@ namespace ET.Client
                 }
             }
 
-            int needRows = CalcRowsBySlot(maxSlot + 1, self.ContainerCols, MinRows);
+            int needRows = ContainerFixedRows;
             EnsureContainerSolver(self, needRows);
             self.ContainerSolver.Clear();
 
@@ -347,7 +377,7 @@ namespace ET.Client
 
                 ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
                 BindItemView(view, item.ConfigId, item.Count, slot);
-                BindDrag(self, view, viewId, false);
+                BindItemInteract(self, view, viewId, false, item.ConfigId, true);
                 
                 // 处理搜索动效
                 bool isSearched = self.SearchedSlots.Contains(slot);
@@ -382,17 +412,30 @@ namespace ET.Client
 
         private static void RenderBag(SearchPanelComponent self, ItemComponent itemComponent)
         {
+            LoadoutComponent loadout = self.Root()?.GetComponent<LoadoutComponent>();
             int capacity = itemComponent?.Capacity ?? 0;
-            int needRows = CalcRowsBySlot(capacity, self.BagCols, MinRows);
-            EnsureBagSolver(self, needRows);
+            int visibleCapacity = GetVisibleBagSlotCount(capacity);
+            ResolveBagLayout(self, itemComponent, loadout, visibleCapacity, out int cols, out int rows);
+            EnsureBagSolver(self, cols, rows);
             self.BagSolver.Clear();
 
             HashSet<long> alive = new();
             if (itemComponent != null)
             {
-                for (int slot = 0; slot < capacity; ++slot)
+                for (int actualSlot = 0; actualSlot < capacity; ++actualSlot)
                 {
-                    Item item = itemComponent.GetItemBySlot(slot);
+                    if (ExtractionInventoryConfig.IsSafeSlot(actualSlot))
+                    {
+                        continue;
+                    }
+
+                    int slot = ConvertActualBagSlotToDisplaySlot(actualSlot);
+                    if (slot < 0)
+                    {
+                        continue;
+                    }
+
+                    Item item = itemComponent.GetItemBySlot(actualSlot);
                     if (item == null || item.Count <= 0)
                     {
                         continue;
@@ -402,8 +445,8 @@ namespace ET.Client
                     GridItemFootprint footprint = new GridItemFootprint
                     {
                         ItemId = item.Id,
-                        X = slot % self.BagCols,
-                        Y = slot / self.BagCols,
+                        X = slot % cols,
+                        Y = slot / cols,
                         Width = GetItemWidth(item.ConfigId),
                         Height = GetItemHeight(item.ConfigId)
                     };
@@ -421,13 +464,103 @@ namespace ET.Client
 
                     ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
                     BindItemView(view, item.ConfigId, item.Count, slot);
-                    BindDrag(self, view, item.Id, true);
+                    BindItemInteract(self, view, item.Id, true, item.ConfigId, true);
                 }
             }
 
             RemoveDeadViews(self.BagItemViews, alive);
-            ResizeBoard(self.u_ComBagBoardRoot, self.u_ComBagItemsLayer, self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding);
-            RenderGrid(self.BagGridRoot, self.BagGridCellViews, self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding, true);
+            ResizeBoard(self.u_ComBagBoardRoot, self.u_ComBagItemsLayer, cols, rows, self.CellSize, self.CellSpacing, self.CellPadding);
+            RenderGrid(self.BagGridRoot, self.BagGridCellViews, cols, rows, self.CellSize, self.CellSpacing, self.CellPadding, false);
+        }
+
+        private static void RenderSecure(SearchPanelComponent self, LoadoutComponent loadout)
+        {
+            if (self.SecureBoardRoot == null || self.SecureItemsLayer == null || self.SecureGridRoot == null)
+            {
+                ReleaseViews(self.SecureItemViews);
+                ReleaseViews(self.SecureGridCellViews);
+                return;
+            }
+
+            int cols = Math.Max(1, loadout?.SecureWidth ?? ExtractionInventoryConfig.GetSafeSlotCount());
+            int rows = Math.Max(1, loadout?.SecureHeight ?? 1);
+            EnsureSecureSolver(self, cols, rows);
+            self.SecureSolver.Clear();
+
+            HashSet<long> alive = new();
+            List<LoadoutGridItemInfo> items = loadout?.CarriedSecureItems;
+            if (items != null && self.SecureItemTemplate != null)
+            {
+                for (int i = 0; i < items.Count; ++i)
+                {
+                    LoadoutGridItemInfo item = items[i];
+                    long viewId = item.AnchorSlotIndex + 1L;
+                    alive.Add(viewId);
+
+                    GridItemFootprint footprint = new GridItemFootprint
+                    {
+                        ItemId = viewId,
+                        X = item.AnchorSlotIndex % cols,
+                        Y = item.AnchorSlotIndex / cols,
+                        Width = Math.Max(1, item.GridWidth),
+                        Height = Math.Max(1, item.GridHeight)
+                    };
+
+                    if (!self.SecureSolver.TryPlaceOrMove(footprint))
+                    {
+                        continue;
+                    }
+
+                    RectTransform view = GetOrCreateView(self.SecureItemViews, self.SecureItemTemplate, self.SecureItemsLayer, viewId);
+                    if (view == null)
+                    {
+                        continue;
+                    }
+
+                    ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
+                    BindItemView(view, item.ConfigId, item.Count, item.AnchorSlotIndex);
+                    BindItemInteract(self, view, viewId, false, item.ConfigId, false);
+                }
+            }
+
+            RemoveDeadViews(self.SecureItemViews, alive);
+            ResizeBoard(self.SecureBoardRoot, self.SecureItemsLayer, cols, rows, self.CellSize, self.CellSpacing, self.CellPadding);
+            RenderGrid(self.SecureGridRoot, self.SecureGridCellViews, cols, rows, self.CellSize, self.CellSpacing, self.CellPadding, false);
+        }
+
+        private static void RefreshLoadoutSlots(SearchPanelComponent self, LoadoutComponent loadout)
+        {
+            RefreshSlotView(self.UIEquipSlotItemWeapon, loadout?.MainWeaponConfigId ?? 0, "武器1", true);
+            RefreshSlotView(self.UIEquipSlotItemWeapon2, loadout?.SubWeaponConfigId ?? 0, "武器2", true);
+            RefreshSlotView(self.UIEquipSlotItemArmor, loadout?.ArmorConfigId ?? 0, "防具");
+            RefreshSlotView(self.UIEquipSlotItemBag, loadout?.BackpackConfigId ?? 0, "背包");
+        }
+
+        private static void RefreshSlotView(
+            EquipSlotItemComponent slotItem,
+            int configId,
+            string slotName,
+            bool hideTextWhenEquipped = false)
+        {
+            if (slotItem == null)
+            {
+                return;
+            }
+
+            if (configId <= 0)
+            {
+                slotItem.u_DataSlotName.SetValue(slotName);
+                slotItem.u_DataEquipName.SetValue(string.Empty);
+                slotItem.u_DataIsEmpty.SetValue(true);
+                slotItem.SetItemIcon(string.Empty);
+                return;
+            }
+
+            ResolveDisplayInfo(configId, out string name, out string icon, out _);
+            slotItem.u_DataSlotName.SetValue(hideTextWhenEquipped ? string.Empty : slotName);
+            slotItem.u_DataEquipName.SetValue(hideTextWhenEquipped ? string.Empty : name);
+            slotItem.u_DataIsEmpty.SetValue(false);
+            slotItem.SetItemIcon(icon);
         }
 
         private static RectTransform GetOrCreateView(
@@ -455,35 +588,211 @@ namespace ET.Client
 
         private static void BindItemView(RectTransform view, int configId, int count, int slotIndex)
         {
-            ItemConfig config = ItemConfigCategory.Instance.GetOrDefault(configId);
-            string itemDesc = !string.IsNullOrWhiteSpace(config?.Desc) ? config.Desc : config?.Name ?? $"Item({configId})";
+            ItemConfig config = LegacyItemConfigCompatHelper.GetDisplayItemConfig(configId);
+            ResolveDisplayInfo(configId, out string displayName, out string iconName, out _);
             view.name = $"Item_{slotIndex}_{configId}";
             ItemQualityBgViewHelper.UpdateQualityBg(view, config?.Quality ?? 1);
 
-            TMP_Text[] tmps = view.GetComponentsInChildren<TMP_Text>(true);
-            if (tmps.Length == 1)
+            SearchItemDragProxy proxy = view.GetComponent<SearchItemDragProxy>() ?? view.gameObject.AddComponent<SearchItemDragProxy>();
+            proxy.ConfigId = configId;
+            proxy.IconImage = FindBestIconImage(view);
+            proxy.TmpTexts ??= view.GetComponentsInChildren<TMP_Text>(true);
+            proxy.Texts ??= view.GetComponentsInChildren<Text>(true);
+
+            ApplySearchGridItemTexts(proxy, !string.IsNullOrWhiteSpace(displayName) ? displayName : config?.Name ?? $"Item({configId})", count);
+            UpdateSearchGridItemIcon(proxy, iconName).Coroutine();
+        }
+
+        private static void ApplySearchGridItemTexts(SearchItemDragProxy proxy, string text, int count)
+        {
+            _ = count;
+
+            if (proxy?.TmpTexts != null && proxy.TmpTexts.Length > 0)
             {
-                tmps[0].text = itemDesc;
-            }
-            else if (tmps.Length > 1)
-            {
-                tmps[0].text = itemDesc;
-                tmps[1].text = string.Empty;
+                if (proxy.TmpTexts.Length == 1)
+                {
+                    proxy.TmpTexts[0].text = text;
+                }
+                else
+                {
+                    proxy.TmpTexts[0].text = text;
+                    proxy.TmpTexts[1].text = string.Empty;
+                }
             }
 
-            Text[] texts = view.GetComponentsInChildren<Text>(true);
-            if (texts.Length == 1)
+            if (proxy?.Texts != null && proxy.Texts.Length > 0)
             {
-                texts[0].text = itemDesc;
-            }
-            else if (texts.Length > 1)
-            {
-                texts[0].text = itemDesc;
-                texts[1].text = string.Empty;
+                if (proxy.Texts.Length == 1)
+                {
+                    proxy.Texts[0].text = text;
+                }
+                else
+                {
+                    proxy.Texts[0].text = text;
+                    proxy.Texts[1].text = string.Empty;
+                }
             }
         }
 
-        private static void BindDrag(SearchPanelComponent self, RectTransform view, long itemId, bool isBag)
+        private static async ETTask UpdateSearchGridItemIcon(SearchItemDragProxy proxy, string iconName)
+        {
+            if (proxy == null || proxy.IconImage == null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(iconName))
+            {
+                ReleaseSearchGridItemSprite(proxy);
+                proxy.IconImage.sprite = null;
+                proxy.IconImage.enabled = false;
+                proxy.LoadedIconName = string.Empty;
+                return;
+            }
+
+            if (proxy.LoadedSprite != null && proxy.LoadedIconName == iconName)
+            {
+                proxy.IconImage.sprite = proxy.LoadedSprite;
+                proxy.IconImage.enabled = true;
+                proxy.IconImage.preserveAspect = true;
+                return;
+            }
+
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = iconName });
+
+            if (proxy == null || proxy.IconImage == null)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            if (sprite == null)
+            {
+                ReleaseSearchGridItemSprite(proxy);
+                proxy.IconImage.sprite = null;
+                proxy.IconImage.enabled = false;
+                proxy.LoadedIconName = string.Empty;
+                return;
+            }
+
+            ReleaseSearchGridItemSprite(proxy);
+            proxy.LoadedSprite = sprite;
+            proxy.LoadedIconName = iconName;
+            proxy.IconImage.sprite = sprite;
+            proxy.IconImage.enabled = true;
+            proxy.IconImage.preserveAspect = true;
+        }
+
+        private static void ReleaseSearchGridItemSprite(SearchItemDragProxy proxy)
+        {
+            if (proxy?.LoadedSprite == null)
+            {
+                return;
+            }
+
+            EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_ReleaseSprite { obj = proxy.LoadedSprite });
+
+            if (proxy.IconImage != null && proxy.IconImage.sprite == proxy.LoadedSprite)
+            {
+                proxy.IconImage.sprite = null;
+            }
+
+            proxy.LoadedSprite = null;
+        }
+
+        private static Image FindBestIconImage(RectTransform view)
+        {
+            Image image = FindImageByExactName(view, "ItemImage");
+            if (image != null)
+            {
+                return image;
+            }
+
+            image = FindImageByExactName(view, "ItemIcon");
+            if (image != null)
+            {
+                return image;
+            }
+
+            image = FindImageByExactName(view, "Icon");
+            if (image != null)
+            {
+                return image;
+            }
+
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            Image fallback = null;
+            for (int i = 0; i < images.Length; ++i)
+            {
+                Image current = images[i];
+                if (current == null)
+                {
+                    continue;
+                }
+
+                if (current.gameObject == view.gameObject)
+                {
+                    continue;
+                }
+
+                if (string.Equals(current.name, "QualityBg", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(current.name, "Bg", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (fallback == null)
+                {
+                    fallback = current;
+                }
+
+                if (current.name.IndexOf("Item", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    current.name.IndexOf("Icon", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return current;
+                }
+            }
+
+            return fallback;
+        }
+
+        private static Image FindImageByExactName(RectTransform view, string imageName)
+        {
+            if (view == null || string.IsNullOrWhiteSpace(imageName))
+            {
+                return null;
+            }
+
+            Image[] images = view.GetComponentsInChildren<Image>(true);
+            for (int i = 0; i < images.Length; ++i)
+            {
+                Image image = images[i];
+                if (image != null && string.Equals(image.name, imageName, StringComparison.Ordinal))
+                {
+                    return image;
+                }
+            }
+
+            return null;
+        }
+
+        private static void BindItemInteract(
+            SearchPanelComponent self,
+            RectTransform view,
+            long itemId,
+            bool isBag,
+            int configId,
+            bool enableDrag)
         {
             if (view == null)
             {
@@ -498,6 +807,7 @@ namespace ET.Client
             proxy.PanelRef = self;
             proxy.ItemId = itemId;
             proxy.IsBag = isBag;
+            proxy.ConfigId = configId;
 
             EventTrigger trigger = view.GetComponent<EventTrigger>();
             if (trigger == null)
@@ -508,9 +818,13 @@ namespace ET.Client
             trigger.triggers ??= new List<EventTrigger.Entry>();
             trigger.triggers.Clear();
 
-            AddTrigger(trigger, EventTriggerType.BeginDrag, OnBeginDragEvent);
-            AddTrigger(trigger, EventTriggerType.Drag, OnDragEvent);
-            AddTrigger(trigger, EventTriggerType.EndDrag, OnEndDragEvent);
+            if (enableDrag)
+            {
+                AddTrigger(trigger, EventTriggerType.BeginDrag, OnBeginDragEvent);
+                AddTrigger(trigger, EventTriggerType.Drag, OnDragEvent);
+                AddTrigger(trigger, EventTriggerType.EndDrag, OnEndDragEvent);
+            }
+
             AddTrigger(trigger, EventTriggerType.PointerClick, OnClickEvent);
         }
 
@@ -526,7 +840,7 @@ namespace ET.Client
 
         private static void OnBeginDragEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out _, out PointerEventData eventData))
             {
                 return;
             }
@@ -536,7 +850,7 @@ namespace ET.Client
 
         private static void OnDragEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out _, out PointerEventData eventData))
             {
                 return;
             }
@@ -546,7 +860,7 @@ namespace ET.Client
 
         private static void OnEndDragEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out _, out PointerEventData eventData))
             {
                 return;
             }
@@ -556,12 +870,12 @@ namespace ET.Client
 
         private static void OnClickEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out int configId, out PointerEventData eventData))
             {
                 return;
             }
 
-            OnItemClick(self, view, itemId, isBag, eventData).Coroutine();
+            OnItemClick(self, view, itemId, isBag, configId, eventData).Coroutine();
         }
 
         private static bool TryGetDragContext(
@@ -570,12 +884,14 @@ namespace ET.Client
             out RectTransform view,
             out long itemId,
             out bool isBag,
+            out int configId,
             out PointerEventData eventData)
         {
             self = null;
             view = null;
             itemId = 0;
             isBag = false;
+            configId = 0;
             eventData = data as PointerEventData;
             if (eventData == null)
             {
@@ -588,7 +904,7 @@ namespace ET.Client
                 return false;
             }
 
-            SearchItemDragProxy proxy = go.GetComponent<SearchItemDragProxy>();
+            SearchItemDragProxy proxy = go.GetComponent<SearchItemDragProxy>() ?? go.GetComponentInParent<SearchItemDragProxy>();
             if (proxy == null)
             {
                 return false;
@@ -608,6 +924,7 @@ namespace ET.Client
 
             itemId = proxy.ItemId;
             isBag = proxy.IsBag;
+            configId = proxy.ConfigId;
             return true;
         }
 
@@ -781,6 +1098,7 @@ namespace ET.Client
             RectTransform view,
             long itemId,
             bool isBag,
+            int configId,
             PointerEventData eventData)
         {
             if (self == null || self.IsDisposed || view == null || eventData == null)
@@ -788,20 +1106,74 @@ namespace ET.Client
                 return;
             }
 
-            if (!isBag || eventData.dragging)
+            if (eventData.dragging || configId <= 0)
             {
                 await ETTask.CompletedTask;
                 return;
             }
 
-            Scene root = self.Root();
-            if (root == null || root.IsDisposed)
+            await self.OpenItemClickedAsync(configId, isBag ? itemId : 0);
+        }
+
+        private static async ETTask OpenItemClickedAsync(this SearchPanelComponent self, int configId, long itemUid)
+        {
+            if (self == null || self.IsDisposed || configId <= 0)
             {
-                await ETTask.CompletedTask;
                 return;
             }
 
-            await TacticalItemClientHelper.TryUseBagItem(root, itemId);
+            ItemClickedComponent itemClicked = self.GetOrCreateItemClickedCommon();
+            if (itemClicked == null || itemClicked.IsDisposed)
+            {
+                return;
+            }
+
+            ItemClickedOpenData openData = new()
+            {
+                LobbyPanelRef = default,
+                ConfigId = configId,
+                ItemUid = itemUid,
+                AllowEquipAction = false,
+            };
+
+            await YIUIEventSystem.Open(itemClicked, openData);
+        }
+
+        private static ItemClickedComponent GetOrCreateItemClickedCommon(this SearchPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return null;
+            }
+
+            ItemClickedComponent existing = self.ItemClickedCommon;
+            if (existing != null && !existing.IsDisposed)
+            {
+                return existing;
+            }
+
+            RectTransform root = self.UIBase?.OwnerRectTransform;
+            if (root == null)
+            {
+                return null;
+            }
+
+            Transform parent = root.FindChildByName($"{ItemClickedComponent.ResName}{YIUIConstHelper.Const.UIParentName}");
+            if (parent == null)
+            {
+                Log.Warning("[SearchPanel] 未找到 ItemClickedParent");
+                return null;
+            }
+
+            ItemClickedComponent created = YIUIFactory.Instantiate<ItemClickedComponent>(self.Scene(), self, parent) as ItemClickedComponent;
+            if (created == null)
+            {
+                return null;
+            }
+
+            created.UIBase?.SetActive(false);
+            self.ItemClickedCommon = created;
+            return created;
         }
 
         private static void ApplyFootprintFromSolver(SearchPanelComponent self, bool isBag, long itemId)
@@ -851,13 +1223,27 @@ namespace ET.Client
             }
         }
 
-        private static void EnsureBagSolver(SearchPanelComponent self, int rows)
+        private static void EnsureBagSolver(SearchPanelComponent self, int cols, int rows)
         {
-            rows = Math.Max(rows, MinRows);
+            cols = Math.Max(cols, 1);
+            rows = Math.Max(rows, 1);
+            self.BagCols = cols;
             self.BagRows = rows;
-            if (self.BagSolver == null || self.BagSolver.Cols != self.BagCols || self.BagSolver.Rows != rows)
+            if (self.BagSolver == null || self.BagSolver.Cols != cols || self.BagSolver.Rows != rows)
             {
-                self.BagSolver = new GridPlacementSolver(self.BagCols, rows);
+                self.BagSolver = new GridPlacementSolver(cols, rows);
+            }
+        }
+
+        private static void EnsureSecureSolver(SearchPanelComponent self, int cols, int rows)
+        {
+            cols = Math.Max(1, cols);
+            rows = Math.Max(1, rows);
+            self.SecureCols = cols;
+            self.SecureRows = rows;
+            if (self.SecureSolver == null || self.SecureSolver.Cols != cols || self.SecureSolver.Rows != rows)
+            {
+                self.SecureSolver = new GridPlacementSolver(cols, rows);
             }
         }
 
@@ -1090,7 +1476,7 @@ namespace ET.Client
 
         private static int GetItemWidth(int configId)
         {
-            ItemConfig config = ItemConfigCategory.Instance.GetOrDefault(configId);
+            ItemConfig config = LegacyItemConfigCompatHelper.GetDisplayItemConfig(configId);
             if (config == null || config.GridWidth <= 0)
             {
                 return 1;
@@ -1101,7 +1487,7 @@ namespace ET.Client
 
         private static int GetItemHeight(int configId)
         {
-            ItemConfig config = ItemConfigCategory.Instance.GetOrDefault(configId);
+            ItemConfig config = LegacyItemConfigCompatHelper.GetDisplayItemConfig(configId);
             if (config == null || config.GridHeight <= 0)
             {
                 return 1;
@@ -1245,6 +1631,31 @@ namespace ET.Client
             }
         }
 
+        private static void ResolveDisplayInfo(int configId, out string name, out string icon, out int sortCategory)
+        {
+            ItemConfig itemConfig = LegacyItemConfigCompatHelper.GetDisplayItemConfig(configId);
+            if (itemConfig != null)
+            {
+                name = itemConfig.Name;
+                icon = itemConfig.Icon;
+                sortCategory = itemConfig.LoadoutShopCategory;
+                return;
+            }
+
+            EquipmentConfig equipmentConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
+            if (equipmentConfig != null)
+            {
+                name = $"装备({configId})";
+                icon = string.Empty;
+                sortCategory = equipmentConfig.EquipSlot;
+                return;
+            }
+
+            name = $"Item({configId})";
+            icon = string.Empty;
+            sortCategory = int.MaxValue;
+        }
+
         private static string BuildSnapshot(SearchPanelComponent self, ECAInteractClientComponent runtime, ItemComponent itemComponent)
         {
             StringBuilder builder = new();
@@ -1273,6 +1684,10 @@ namespace ET.Client
             builder.Append('|');
             int capacity = itemComponent?.Capacity ?? 0;
             builder.Append(capacity);
+            builder.Append(':');
+            builder.Append(itemComponent?.Width ?? 0);
+            builder.Append('x');
+            builder.Append(itemComponent?.Height ?? 0);
             for (int slot = 0; slot < capacity; ++slot)
             {
                 Item item = itemComponent.GetItemBySlot(slot);
@@ -1289,6 +1704,42 @@ namespace ET.Client
                 builder.Append(item.ConfigId);
                 builder.Append(':');
                 builder.Append(item.Count);
+            }
+
+            LoadoutComponent loadout = self.Root()?.GetComponent<LoadoutComponent>();
+            builder.Append('|');
+            builder.Append(loadout?.MainWeaponConfigId ?? 0);
+            builder.Append(':');
+            builder.Append(loadout?.SubWeaponConfigId ?? 0);
+            builder.Append(':');
+            builder.Append(loadout?.ArmorConfigId ?? 0);
+            builder.Append(':');
+            builder.Append(loadout?.BackpackConfigId ?? 0);
+            builder.Append(':');
+            builder.Append(loadout?.BagWidth ?? 0);
+            builder.Append('x');
+            builder.Append(loadout?.BagHeight ?? 0);
+            builder.Append(':');
+            builder.Append(loadout?.SecureWidth ?? 0);
+            builder.Append('x');
+            builder.Append(loadout?.SecureHeight ?? 0);
+
+            if (loadout?.CarriedSecureItems != null)
+            {
+                for (int i = 0; i < loadout.CarriedSecureItems.Count; ++i)
+                {
+                    LoadoutGridItemInfo item = loadout.CarriedSecureItems[i];
+                    builder.Append('|');
+                    builder.Append(item.AnchorSlotIndex);
+                    builder.Append(':');
+                    builder.Append(item.ConfigId);
+                    builder.Append(':');
+                    builder.Append(item.Count);
+                    builder.Append(':');
+                    builder.Append(item.GridWidth);
+                    builder.Append('x');
+                    builder.Append(item.GridHeight);
+                }
             }
 
             return builder.ToString();
@@ -1397,7 +1848,8 @@ namespace ET.Client
             }
 
             Camera eventCamera = eventData.pressEventCamera;
-            if (TryResolveBoardSlot(self.u_ComBagBoardRoot, self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding, eventData.position, eventCamera, out targetSlot))
+            if (TryResolveBoardSlot(self.u_ComBagBoardRoot, self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding, eventData.position, eventCamera, out int bagDisplaySlot) &&
+                TryMapBagDisplaySlotToActualSlot(self.Root()?.GetComponent<ItemComponent>(), bagDisplaySlot, out targetSlot))
             {
                 targetIsBag = true;
                 return true;
@@ -1452,6 +1904,99 @@ namespace ET.Client
             return true;
         }
 
+        private static int GetVisibleBagSlotCount(int capacity)
+        {
+            if (capacity <= 0)
+            {
+                return 0;
+            }
+
+            int count = 0;
+            for (int actualSlot = 0; actualSlot < capacity; ++actualSlot)
+            {
+                if (!ExtractionInventoryConfig.IsSafeSlot(actualSlot))
+                {
+                    ++count;
+                }
+            }
+
+            return count;
+        }
+
+        private static void ResolveBagLayout(
+            SearchPanelComponent self,
+            ItemComponent itemComponent,
+            LoadoutComponent loadout,
+            int visibleCapacity,
+            out int cols,
+            out int rows)
+        {
+            int configuredCols = loadout?.BagWidth ?? 0;
+            int configuredRows = loadout?.BagHeight ?? 0;
+            if (configuredCols <= 0 || configuredRows <= 0)
+            {
+                configuredCols = itemComponent?.Width ?? 0;
+                configuredRows = itemComponent?.Height ?? 0;
+            }
+
+            if (configuredCols > 0 && configuredRows > 0)
+            {
+                cols = configuredCols;
+                rows = configuredRows;
+                return;
+            }
+
+            cols = CalcCols(self.u_ComBagBoardRoot, self.CellSize, self.CellSpacing, FallbackCols);
+            rows = CalcRowsBySlot(visibleCapacity, cols, MinRows);
+        }
+
+        private static int ConvertActualBagSlotToDisplaySlot(int actualSlot)
+        {
+            if (actualSlot < 0 || ExtractionInventoryConfig.IsSafeSlot(actualSlot))
+            {
+                return -1;
+            }
+
+            int displaySlot = 0;
+            for (int slot = 0; slot < actualSlot; ++slot)
+            {
+                if (!ExtractionInventoryConfig.IsSafeSlot(slot))
+                {
+                    ++displaySlot;
+                }
+            }
+
+            return displaySlot;
+        }
+
+        private static bool TryMapBagDisplaySlotToActualSlot(ItemComponent itemComponent, int displaySlot, out int actualSlot)
+        {
+            actualSlot = -1;
+            if (itemComponent == null || displaySlot < 0)
+            {
+                return false;
+            }
+
+            int currentDisplaySlot = 0;
+            for (int slot = 0; slot < itemComponent.Capacity; ++slot)
+            {
+                if (ExtractionInventoryConfig.IsSafeSlot(slot))
+                {
+                    continue;
+                }
+
+                if (currentDisplaySlot == displaySlot)
+                {
+                    actualSlot = slot;
+                    return true;
+                }
+
+                ++currentDisplaySlot;
+            }
+
+            return false;
+        }
+
         private static async ETTask TakeQualifiedItems(SearchPanelComponent self)
         {
             Scene root = self.Root();
@@ -1477,7 +2022,7 @@ namespace ET.Client
             for (int i = 0; i < count; ++i)
             {
                 ContainerClientItemData item = runtime.ContainerItems[i];
-                ItemConfig config = ItemConfigCategory.Instance.GetOrDefault(item.ConfigId);
+                ItemConfig config = LegacyItemConfigCompatHelper.GetDisplayItemConfig(item.ConfigId);
                 if (config == null || config.Quality < minQuality)
                 {
                     continue;

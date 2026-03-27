@@ -170,6 +170,11 @@ namespace ET.Server
                 Log.Info($"[Rogue] resend pending choice popup unit={unit.Id}, serial={progress.ChoiceSerial}, options={progress.PendingOptionIds.Count}");
             }
 
+            if (progress.ChoicePending && progress.PendingOptionIds.Count > 0)
+            {
+                TryScheduleMatchRobotAutoChoose(unit, progress);
+            }
+
             return sent;
         }
 
@@ -287,6 +292,11 @@ namespace ET.Server
                         TryOpenChoice(unit, progress);
                     }
                 }
+            }
+
+            if (oldLevelSnapshot != progress.Level)
+            {
+                RogueUnitDisplayLevelHelper.RefreshPlayerDisplayLevel(unit, progress, true);
             }
 
             Log.Info($"[RogueExp] add exp applied, unitId={unit.Id}, addExp={addExp}, level={oldLevelSnapshot}->{progress.Level}, exp={oldExpSnapshot}->{progress.CurrentExp}, needExp={oldNeedExpSnapshot}->{progress.NeedExp}");
@@ -712,7 +722,108 @@ namespace ET.Server
                     $"[RogueInit] choice popup send failed after roll, unit={unit.Id}, serial={progress.ChoiceSerial}, options=[{string.Join(",", progress.PendingOptionIds)}], quality={resolvedQuality}");
             }
 
+            if (progress.ChoicePending && progress.PendingOptionIds.Count > 0)
+            {
+                TryScheduleMatchRobotAutoChoose(unit, progress);
+            }
+
             return popupSent;
+        }
+
+        private static void TryScheduleMatchRobotAutoChoose(Unit unit, RogueProgressComponent progress)
+        {
+            if (unit == null || unit.IsDisposed || progress == null || !progress.ChoicePending || progress.ChoiceSerial <= 0 || progress.PendingOptionIds.Count == 0)
+            {
+                return;
+            }
+
+            MatchRobotComponent matchRobot = unit.GetComponent<MatchRobotComponent>();
+            if (matchRobot == null)
+            {
+                return;
+            }
+
+            long choiceSerial = progress.ChoiceSerial;
+            if (matchRobot.AutoChooseCompletedSerial >= choiceSerial || matchRobot.AutoChooseScheduledSerial == choiceSerial)
+            {
+                return;
+            }
+
+            int delayMs = MatchRobotRuntimeHelper.ResolveAutoChoiceDelayMs(
+                unit.Id,
+                choiceSerial,
+                matchRobot.AutoChooseDelayMinMs,
+                matchRobot.AutoChooseDelayMaxMs);
+
+            matchRobot.AutoChooseScheduledSerial = choiceSerial;
+            AutoChoosePendingOptionAsync(unit, choiceSerial, delayMs).Coroutine();
+            Log.Info($"[MatchRobot] schedule auto choice, unitId={unit.Id}, serial={choiceSerial}, delayMs={delayMs}, optionCount={progress.PendingOptionIds.Count}");
+        }
+
+        private static async ETTask AutoChoosePendingOptionAsync(Unit unit, long choiceSerial, int delayMs)
+        {
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
+            EntityRef<Unit> unitRef = unit;
+            await unit.Root().TimerComponent.WaitAsync(delayMs);
+
+            unit = unitRef;
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
+            MatchRobotComponent matchRobot = unit.GetComponent<MatchRobotComponent>();
+            RogueProgressComponent progress = unit.GetComponent<RogueProgressComponent>();
+            if (matchRobot == null || progress == null || !progress.ChoicePending || progress.ChoiceSerial != choiceSerial || progress.PendingOptionIds.Count == 0)
+            {
+                return;
+            }
+
+            if (matchRobot.AutoChooseCompletedSerial >= choiceSerial)
+            {
+                return;
+            }
+
+            int optionId = MatchRobotRuntimeHelper.ResolveAutoChoiceOptionId(unit, progress);
+            if (optionId <= 0)
+            {
+                matchRobot.AutoChooseScheduledSerial = 0;
+                Log.Warning($"[MatchRobot] auto choice aborted: no valid option, unitId={unit.Id}, serial={choiceSerial}");
+                return;
+            }
+
+            int error = await ChooseOption(unit, choiceSerial, optionId, null);
+
+            unit = unitRef;
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
+            matchRobot = unit.GetComponent<MatchRobotComponent>();
+            progress = unit.GetComponent<RogueProgressComponent>();
+            if (matchRobot == null)
+            {
+                return;
+            }
+
+            if (error == ErrorCode.ERR_Success)
+            {
+                matchRobot.AutoChooseCompletedSerial = choiceSerial;
+                Log.Info($"[MatchRobot] auto choice success, unitId={unit.Id}, serial={choiceSerial}, optionId={optionId}");
+                return;
+            }
+
+            if (progress != null && progress.ChoicePending && progress.ChoiceSerial == choiceSerial)
+            {
+                matchRobot.AutoChooseScheduledSerial = 0;
+            }
+
+            Log.Warning($"[MatchRobot] auto choice failed, unitId={unit.Id}, serial={choiceSerial}, optionId={optionId}, error={error}");
         }
 
         private static int TryAppendRolledOptions(
@@ -794,6 +905,17 @@ namespace ET.Server
 
             progress.CurrentExp = 0;
             progress.CurrentGold = 0;
+            RogueRuntimeConfigCategory configCategory = RogueRuntimeConfigCategory.Instance;
+            if (configCategory != null && configCategory.TryGetStartLevel(out int startLevel, out RogueLevelConfig levelConfig))
+            {
+                progress.Level = startLevel;
+                progress.NeedExp = RogueProgressComponentSystem.NormalizeNeedExp(levelConfig?.NeedExp ?? int.MaxValue);
+            }
+            else
+            {
+                progress.Level = 1;
+                progress.NeedExp = int.MaxValue;
+            }
             progress.ChoiceSerial = 0;
             progress.ChoicePending = false;
             progress.PendingOptionIds.Clear();
@@ -806,6 +928,8 @@ namespace ET.Server
             progress.AppliedLevelNumericTotals.Clear();
             progress.CommonShowTagCounts.Clear();
             progress.AppliedShowTagBuffIds.Clear();
+
+            RogueUnitDisplayLevelHelper.RefreshPlayerDisplayLevel(unit, progress, false, false);
 
             if (removeProgressComponent)
             {

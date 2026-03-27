@@ -58,7 +58,15 @@ namespace ET.Client
             self.u_DataValue?.SetValue(BuildValueText(openData.ConfigId), true);
             self.SetEquipVisible(self.AllowEquipAction);
 
+            EntityRef<ItemClickedComponent> selfRef = self;
             await self.ChangeItemIcon(iconName);
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return false;
+            }
+
+            self.UIBase?.SetActive(true);
             return true;
         }
 
@@ -88,7 +96,7 @@ namespace ET.Client
 
         private static void ResolveDisplayInfo(int configId, out string title, out string iconName, out string desc)
         {
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            ItemConfig itemConfig = LegacyItemConfigCompatHelper.GetDisplayItemConfig(configId);
             WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(configId);
             EquipmentConfig equipmentConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
 
@@ -130,7 +138,7 @@ namespace ET.Client
                 return $"伤害 {weaponConfig.Damage:0.##}  射程 {weaponConfig.AttackRange:0.#}m  弹夹 {weaponConfig.MagazineSize}";
             }
 
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            ItemConfig itemConfig = LegacyItemConfigCompatHelper.GetDisplayItemConfig(configId);
             if (itemConfig == null)
             {
                 return string.Empty;
@@ -342,12 +350,14 @@ namespace ET.Client
             {
                 return;
             }
-
-            YIUIViewComponent viewComponent = self.UIBase?.GetComponent<YIUIViewComponent>();
-            if (viewComponent != null)
-            {
-                await viewComponent.CloseAsync();
-            }
+            self.UIBase?.SetActive(false);
+        }
+        
+        [YIUIInvoke(ItemClickedComponent.OnEventExitInvoke)]
+        private static async ETTask OnEventExitInvoke(this ItemClickedComponent self)
+        {
+            self.UIBase?.SetActive(false);
+            await ETTask.CompletedTask;
         }
         #endregion YIUIEvent结束
     }

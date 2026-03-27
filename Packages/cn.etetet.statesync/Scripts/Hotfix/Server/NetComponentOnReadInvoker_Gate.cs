@@ -33,6 +33,14 @@ namespace ET.Server
                     MessageSessionDispatcher.Instance.Handle(session, message);
                     break;
                 }
+                case C2M_JoystickInput joystickInput:
+                {
+                    long unitId = session.GetComponent<SessionPlayerComponent>().Player.Id;
+                    // 摇杆输入是高频冗余消息，走缓存 ActorId 的 fire-and-forget 路径，
+                    // 避免每个方向包都触发一次 Location 查询并在 Gate 侧串行积压。
+                    root.GetComponent<MessageLocationSenderComponent>().Get(LocationType.Unit).Send(unitId, (IMessage)joystickInput);
+                    break;
+                }
                 case ILocationMessage actorLocationMessage:
                 {
                     long unitId = session.GetComponent<SessionPlayerComponent>().Player.Id;

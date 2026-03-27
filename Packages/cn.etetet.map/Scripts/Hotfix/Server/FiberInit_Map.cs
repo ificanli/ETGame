@@ -14,6 +14,9 @@ namespace ET.Server
             
             root.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
             root.AddComponent<TimerComponent>();
+            HighFrequencySchedulerComponent highFrequencyScheduler = root.AddComponent<HighFrequencySchedulerComponent>();
+            highFrequencyScheduler.RegisterChannel(HighFrequencyChannelConfigFactory.CreateMove16ms());
+            highFrequencyScheduler.RegisterChannel(HighFrequencyChannelConfigFactory.CreateBullet33ms());
             root.AddComponent<CoroutineLockComponent>();
             root.AddComponent<ProcessInnerSender>();
             root.AddComponent<MessageSender>();

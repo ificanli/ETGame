@@ -247,6 +247,8 @@ namespace ET
         public float DirX { get; set; }
         [MemoryPackOrder(2)]
         public float DirZ { get; set; }
+        [MemoryPackOrder(3)]
+        public uint InputSequence { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -257,6 +259,7 @@ namespace ET
             this.RpcId = default;
             this.DirX = default;
             this.DirZ = default;
+            this.InputSequence = default;
 
             ObjectPool.Recycle(this);
         }
@@ -293,6 +296,10 @@ namespace ET
         public float DirZ { get; set; }
         [MemoryPackOrder(10)]
         public float Speed { get; set; }
+        [MemoryPackOrder(11)]
+        public uint MoveSequence { get; set; }
+        [MemoryPackOrder(12)]
+        public uint LastProcessedInputSequence { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -311,6 +318,8 @@ namespace ET
             this.DirX = default;
             this.DirZ = default;
             this.Speed = default;
+            this.MoveSequence = default;
+            this.LastProcessedInputSequence = default;
 
             ObjectPool.Recycle(this);
         }

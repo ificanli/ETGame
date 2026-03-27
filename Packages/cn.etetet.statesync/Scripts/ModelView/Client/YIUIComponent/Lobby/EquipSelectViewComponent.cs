@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using YIUIFramework;
 
 namespace ET.Client
@@ -27,5 +28,12 @@ namespace ET.Client
         // 待确认的装备配置Id（点击Prepared后才真正装备）
         public int PendingItemConfigId;
         public LoadoutItemSourceMode PendingItemSourceMode;
+
+        // 预览区域的扩展绑定，prefab 已配置但生成代码尚未更新。
+        public UIDataValueString GunDescData;
+        public Image SelectImage;
+        public RectTransform PreviewRootRectTransform;
+        public string LoadedSelectIconName = string.Empty;
+        public Sprite LoadedSelectSprite;
     }
 }

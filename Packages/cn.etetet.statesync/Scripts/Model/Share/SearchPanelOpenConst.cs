@@ -8,5 +8,6 @@ namespace ET
         public const string SearchPanelUiKey = "SearchPanelComponent";
         public const string OpenContainerUiKeyParam = "ui_key";
         public const string PlayerCorpsePointPrefix = "corpse_";
+        public const string MonsterCorpsePointPrefix = "corpse_monster_";
     }
 }

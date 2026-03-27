@@ -34,6 +34,8 @@ namespace ET.Client
             self.u_DataDesc = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataDesc");
             self.u_EventEquip = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventEquip");
             self.u_EventEquipHandle = self.u_EventEquip.Add(self,ItemClickedComponent.OnEventEquipInvoke);
+            self.u_EventExit = self.UIBase.EventTable.FindEvent<UITaskEventP0>("u_EventExit");
+            self.u_EventExitHandle = self.u_EventExit.Add(self,ItemClickedComponent.OnEventExitInvoke);
 
         }
     }

@@ -26,6 +26,12 @@ namespace ET.Server
                     LoadoutStateHelper.ApplyCarryResult(loadout, message);
                     storage.RecordEvacuationSummary(LoadoutStateHelper.BuildEvacuationSummary(message), message.TotalWealthDelta);
                     LoadoutOperationHelper.PushStateChanged(player, loadout, storage);
+                    ArchiveStorageSyncHelper.RecordBattleResult(
+                        player,
+                        (int)ArchiveBattleResultType.Evacuated,
+                        true,
+                        message.TotalWealthDelta,
+                        0).Coroutine();
                     Log.Info($"[Map2G_LoadoutCarryResult] player {player.Id} evacuated, wealth={message.TotalWealthDelta}");
                     return;
                 }
@@ -34,6 +40,12 @@ namespace ET.Server
                 {
                     LoadoutStateHelper.ResetToSecureOnly(loadout);
                     LoadoutOperationHelper.PushStateChanged(player, loadout, storage);
+                    ArchiveStorageSyncHelper.RecordBattleResult(
+                        player,
+                        (int)ArchiveBattleResultType.Dead,
+                        false,
+                        0,
+                        0).Coroutine();
                     Log.Info($"[Map2G_LoadoutCarryResult] player {player.Id} dead, reset to secure only");
                 }
             }

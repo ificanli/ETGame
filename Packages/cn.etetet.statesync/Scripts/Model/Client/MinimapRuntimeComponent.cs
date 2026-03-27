@@ -18,6 +18,9 @@ namespace ET.Client
         public float WorldMaxX;
         public float WorldMinZ;
         public float WorldMaxZ;
+        public bool WorldBoundsResolvedFromTerrain;
+        public bool WorldBoundsAutoResolveAttempted;
+        public int WorldBoundsAutoResolveRetryCount;
         public float FogCellSize;
         public float FogVisionRadius;
         public Dictionary<long, MinimapMarkerRuntime> Markers = new();

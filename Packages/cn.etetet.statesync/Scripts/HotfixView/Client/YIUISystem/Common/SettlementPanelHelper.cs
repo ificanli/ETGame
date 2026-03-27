@@ -19,7 +19,9 @@ namespace ET.Client
             }
 
             EntityRef<Scene> rootRef = root;
-            if (root.YIUIMgr()?.GetPanel<SettlementPanelComponent>() == null)
+            YIUIMgrComponent yiuiMgr = root.YIUIMgr();
+            if (yiuiMgr?.GetPanel<SettlementPanelComponent>() == null ||
+                !yiuiMgr.ActiveSelf<SettlementPanelComponent>())
             {
                 await yiuiRoot.OpenPanelAsync<SettlementPanelComponent>();
                 root = rootRef;
@@ -30,7 +32,6 @@ namespace ET.Client
             }
 
             root.YIUIMgr()?.GetPanel<SettlementPanelComponent>()?.RefreshView();
-            root.GetComponent<SettlementClientComponent>()?.MarkShown();
         }
     }
 }

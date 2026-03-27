@@ -1,3 +1,5 @@
+using DotRecast.Detour;
+
 namespace ET.Client
 {
     public static class CurrentSceneFactory

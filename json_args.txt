@@ -1,0 +1,1 @@
+﻿{"operation":"get_content","path":"Packages/cn.etetet.statesync/Luban/Config/Datas/MinimapConstConfig.xlsx","range":"A1:E50"}

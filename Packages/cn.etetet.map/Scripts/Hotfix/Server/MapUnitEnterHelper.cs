@@ -8,7 +8,7 @@ namespace ET.Server
     /// </summary>
     public static class MapUnitEnterHelper
     {
-        private const int MatchRobotDefaultAIBuffConfigId = 300010;
+        private const int MatchRobotDefaultAIBuffConfigId = 300011;
 
         public static void EnsureMapRuntimeComponents(Scene scene, Unit unit)
         {
@@ -58,6 +58,7 @@ namespace ET.Server
             WeaponInitHelper.InitializeWeaponsFromUnit(unit);
             WeaponInitHelper.InitializeHeroPassiveBuffFromUnitConfig(unit, true);
             RogueProgressComponent progress = RogueProgressHelper.EnsureProgress(unit, true);
+            RogueUnitDisplayLevelHelper.RefreshPlayerDisplayLevel(unit, progress, true);
 
             Scene scene = unit.Scene();
             string mapName = scene?.Name.GetSceneConfigName();
@@ -207,16 +208,19 @@ namespace ET.Server
                 return;
             }
 
-            int robotAIBuffConfigId = 0;
-            if (BuffConfigCategory.Instance.Contain(MatchRobotDefaultAIBuffConfigId))
+            int gameMode = scene.GetComponent<MatchCopyContextComponent>()?.GameMode ?? 0;
+            int robotAIBuffConfigId = MatchRobotRuntimeHelper.ResolveMatchRobotAIBuffConfigId(
+                scene.Name.GetSceneConfigName(),
+                gameMode,
+                matchRobot.AIBuffConfigId);
+            if (robotAIBuffConfigId <= 0 && BuffConfigCategory.Instance.Contain(MatchRobotDefaultAIBuffConfigId))
             {
                 robotAIBuffConfigId = MatchRobotDefaultAIBuffConfigId;
-                Log.Info($"[MatchRobot] use configured robot ai buff, unitId={unit.Id}, map={scene.Name}, aiBuffConfigId={robotAIBuffConfigId}");
             }
-            else if (!TryResolveRobotRuntimeConfig(scene.Name.GetSceneConfigName(), out robotAIBuffConfigId))
+
+            if (robotAIBuffConfigId <= 0)
             {
-                Log.Warning($"[MatchRobot] setup skipped: no runtime config, unitId={unit.Id}, map={scene.Name}");
-                unit.RemoveComponent<MatchRobotComponent>();
+                Log.Warning($"[MatchRobot] setup skipped: invalid ai buff, unitId={unit.Id}, map={scene.Name}, gameMode={gameMode}");
                 return;
             }
 
@@ -227,11 +231,9 @@ namespace ET.Server
 
             NumericComponent numeric = unit.NumericComponent;
             numeric.SetNoEvent(NumericType.AI, robotAIBuffConfigId);
-
-            BuffHelper.CreateBuff(unit, unit.Id, IdGenerater.Instance.GenerateId(), robotAIBuffConfigId, null);
+            matchRobot.AIBuffConfigId = robotAIBuffConfigId;
+            EnsureConfiguredAIBuff(unit, true);
             Log.Info($"[MatchRobot] setup complete: unitId={unit.Id}, pos={unit.Position}, camp={unit.GetComponent<CampComponent>()?.CampId ?? 0}, ai={robotAIBuffConfigId}");
-
-            unit.RemoveComponent<MatchRobotComponent>();
         }
 
         public static void EnsureConfiguredAIBuff(Unit unit, bool forceRecreate = false)

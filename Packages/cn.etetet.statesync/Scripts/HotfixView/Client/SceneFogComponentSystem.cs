@@ -37,6 +37,8 @@ namespace ET.Client
             self.ShaderMissingLogged = false;
             self.LastDiagnosticLogTime = 0;
             self.LastDiagnosticSignature = string.Empty;
+            self.LoggedDebugKeys = new System.Collections.Generic.HashSet<string>();
+            Log.Info("[SceneFogDebug] SceneFogComponent created");
         }
 
         [EntitySystem]
@@ -51,6 +53,8 @@ namespace ET.Client
             self.ShaderMissingLogged = false;
             self.LastDiagnosticLogTime = 0;
             self.LastDiagnosticSignature = string.Empty;
+            self.LoggedDebugKeys?.Clear();
+            self.LoggedDebugKeys = null;
         }
 
         [EntitySystem]
@@ -65,8 +69,14 @@ namespace ET.Client
             MinimapRuntimeComponent runtime = scene.GetComponent<MinimapRuntimeComponent>();
             if (runtime == null)
             {
+                self.LogDebugOnce("no_runtime", "[SceneFogDebug] MinimapRuntimeComponent is null");
                 self.SetOverlayVisible(false);
                 return;
+            }
+
+            if (runtime.ShouldRetryResolveWorldBounds())
+            {
+                runtime.RefreshWorldBoundsFromTerrain();
             }
 
             self.HandleDebugRadiusInput(runtime);
@@ -74,6 +84,7 @@ namespace ET.Client
             self.RefreshFogTexture(runtime);
             if (self.FogTexture == null)
             {
+                self.LogDebugOnce("no_texture", $"[SceneFogDebug] FogTexture is null, mapName={runtime.MapName}, worldBounds=({runtime.WorldMinX},{runtime.WorldMinZ})-({runtime.WorldMaxX},{runtime.WorldMaxZ}), fogCellSize={runtime.FogCellSize}");
                 self.SetOverlayVisible(false);
                 return;
             }
@@ -81,12 +92,14 @@ namespace ET.Client
             Camera camera = Camera.main;
             if (camera == null)
             {
+                self.LogDebugOnce("no_camera", "[SceneFogDebug] Camera.main is null");
                 return;
             }
 
             camera.depthTextureMode |= DepthTextureMode.Depth;
             if (!self.EnsureOverlay(camera))
             {
+                self.LogDebugOnce("no_overlay", "[SceneFogDebug] EnsureOverlay failed");
                 self.SetOverlayVisible(false);
                 return;
             }
@@ -94,6 +107,23 @@ namespace ET.Client
             self.UpdateOverlayTransform(camera);
             self.UpdateOverlayMaterial(runtime);
             self.SetOverlayVisible(true);
+            
+            // 详细的调试信息
+            if (self.ProjectorView?.MeshRenderer != null)
+            {
+                var mr = self.ProjectorView.MeshRenderer;
+                var mat = mr.sharedMaterial;
+                var bounds = runtime != null ? new Vector4(runtime.WorldMinX, runtime.WorldMinZ, runtime.WorldMaxX - runtime.WorldMinX, runtime.WorldMaxZ - runtime.WorldMinZ) : Vector4.zero;
+                self.LogDebugOnce("success", $"[SceneFogDebug] Fog overlay active, mapName={runtime.MapName}, texSize={self.FogTexture.width}x{self.FogTexture.height}, " +
+                    $"overlayLayer={self.OverlayObject?.layer}, camCullingMask={camera.cullingMask}, " +
+                    $"rendererEnabled={mr.enabled}, materialValid={mat != null}, " +
+                    $"fogBounds=({bounds.x},{bounds.y},{bounds.z},{bounds.w}), " +
+                    $"camPos={camera.transform.position}, camNear={camera.nearClipPlane}, camFar={camera.farClipPlane}");
+            }
+            else
+            {
+                self.LogDebugOnce("success", $"[SceneFogDebug] Fog overlay active, mapName={runtime.MapName}, texSize={self.FogTexture.width}x{self.FogTexture.height}");
+            }
         }
 
         private static void RefreshRuntimeSettings(this SceneFogComponent self, MinimapRuntimeComponent runtime)
@@ -140,11 +170,11 @@ namespace ET.Client
 
             runtime.RefreshLocalFog();
 
-            Color32 visibleColor = self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorVisible, "#00000000");
+            // 贴图只写已探索/未探索两种状态，可见区域由 Shader 实时计算
             Color32 exploredColor = self.ScaleColorAlpha(
-                self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorExplored, "#09131E88"),
+                self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorExplored, "#000020C0"),
                 self.ExploredAlphaScale);
-            Color32 unexploredColor = self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorUnexplored, "#09131EE8");
+            Color32 unexploredColor = self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorUnexplored, "#000010F0");
 
             int totalCount = gridWidth * gridHeight;
             if (self.FogPixels == null || self.FogPixels.Length != totalCount)
@@ -154,12 +184,6 @@ namespace ET.Client
 
             for (int i = 0; i < totalCount; ++i)
             {
-                if (runtime.CurrentVisibleCells.Contains(i))
-                {
-                    self.FogPixels[i] = visibleColor;
-                    continue;
-                }
-
                 self.FogPixels[i] = runtime.ExploredCells.Contains(i) ? exploredColor : unexploredColor;
             }
 
@@ -229,7 +253,8 @@ namespace ET.Client
             self.EnsureOverlayMesh();
 
             GameObject overlayObject = new GameObject(OverlayObjectName, typeof(MeshFilter), typeof(MeshRenderer), typeof(SceneFogProjectorView));
-            overlayObject.layer = camera.gameObject.layer;
+            // 使用Default layer (0) 确保被大多数相机渲染
+            overlayObject.layer = 0;
             overlayObject.transform.SetParent(camera.transform, false);
 
             SceneFogProjectorView view = overlayObject.GetComponent<SceneFogProjectorView>();
@@ -335,16 +360,46 @@ namespace ET.Client
 
             Color outsideFogColor = self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorUnexplored, "#09131EE8");
             float fogPlaneY = 0f;
-            if (runtime.TryGetMyPosition(out float3 myPosition))
+            float visionCenterX = 0f;
+            float visionCenterZ = 0f;
+            Unit myUnit = runtime.GetMyUnit();
+            if (myUnit != null && !myUnit.IsDisposed)
+            {
+                // 优先读 GameObject Transform，实时跟随渲染位置（无网络延迟）
+                Transform unitTransform = myUnit.GetComponent<GameObjectComponent>()?.Transform;
+                Vector3 pos = unitTransform != null ? unitTransform.position : (Vector3)myUnit.Position;
+                fogPlaneY = pos.y;
+                visionCenterX = pos.x;
+                visionCenterZ = pos.z;
+            }
+            else if (runtime.TryGetMyPosition(out float3 myPosition))
             {
                 fogPlaneY = myPosition.y;
+                visionCenterX = myPosition.x;
+                visionCenterZ = myPosition.z;
             }
+
+            // 实时可见圆：FogVisionRadius > 0 时传玩家位置和半径给 Shader
+            float visionRadius = runtime.FogVisionRadius > 0f ? runtime.FogVisionRadius : 0f;
+            Color visibleColor = self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorVisible, "#00000000");
 
             self.OverlayMaterial.SetTexture("_FogTex", self.FogTexture);
             self.OverlayMaterial.SetVector("_FogBounds", new Vector4(runtime.WorldMinX, runtime.WorldMinZ, width, height));
             self.OverlayMaterial.SetColor("_OutsideFogColor", outsideFogColor);
             self.OverlayMaterial.SetFloat("_EdgeSoftness", self.EdgeSoftness);
             self.OverlayMaterial.SetFloat("_FogPlaneY", fogPlaneY);
+            self.OverlayMaterial.SetVector("_VisionCenter", new Vector4(visionCenterX, visionCenterZ, 0f, 0f));
+            self.OverlayMaterial.SetFloat("_VisionRadius", visionRadius);
+            self.OverlayMaterial.SetColor("_VisibleColor", visibleColor);
+
+            // 调试模式：
+            // 0 = 正常迷雾渲染
+            // 1 = 纯红色（测试shader执行）
+            // 2 = 显示深度值（灰度）
+            // 3 = 分支调试（蓝=天空, 黄=水平射线, 紫=交点在后, 橙=超出边界, 绿=正常区域）
+            // 4 = 显示迷雾纹理采样值（alpha通道，黑=可见，白=未探索）
+            // 5 = 显示UV坐标（R=U, G=V）
+            self.OverlayMaterial.SetFloat("_DebugMode", 0f);
         }
 
         private static void HandleDebugRadiusInput(this SceneFogComponent self, MinimapRuntimeComponent runtime)
@@ -545,6 +600,22 @@ namespace ET.Client
             }
 
             self.OverlayMesh = null;
+        }
+
+        private static void LogDebugOnce(this SceneFogComponent self, string key, string message)
+        {
+            if (self.LoggedDebugKeys == null)
+            {
+                self.LoggedDebugKeys = new System.Collections.Generic.HashSet<string>();
+            }
+
+            if (self.LoggedDebugKeys.Contains(key))
+            {
+                return;
+            }
+
+            self.LoggedDebugKeys.Add(key);
+            Log.Info(message);
         }
     }
 }

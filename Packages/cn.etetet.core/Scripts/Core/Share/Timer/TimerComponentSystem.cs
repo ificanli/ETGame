@@ -313,4 +313,397 @@ namespace ET
             return self.NewRepeatedTimerInner(time, type, args);
         }
     }
+
+    [EntitySystemOf(typeof(HighFrequencySchedulerComponent))]
+    public static partial class HighFrequencySchedulerComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this HighFrequencySchedulerComponent self)
+        {
+            self.ActiveChannelCount = 0;
+            self.LastUpdateTime = TimeInfo.Instance.ServerNow();
+            self.TotalTickCount = 0;
+        }
+
+        [EntitySystem]
+        private static void Destroy(this HighFrequencySchedulerComponent self)
+        {
+            self.ActiveChannelCount = 0;
+            self.LastUpdateTime = 0;
+            self.TotalTickCount = 0;
+        }
+
+        [EntitySystem]
+        private static void Update(this HighFrequencySchedulerComponent self)
+        {
+            if (self.Children == null || self.Children.Count == 0)
+            {
+                return;
+            }
+
+            long nowMs = TimeInfo.Instance.ServerNow();
+            if (self.LastUpdateTime == 0)
+            {
+                self.LastUpdateTime = nowMs;
+                return;
+            }
+
+            long elapsedMs = nowMs - self.LastUpdateTime;
+            if (elapsedMs <= 0)
+            {
+                return;
+            }
+
+            self.LastUpdateTime = nowMs;
+
+            foreach (Entity child in self.Children.Values)
+            {
+                if (child is not HighFrequencyChannelComponent channel)
+                {
+                    continue;
+                }
+
+                self.UpdateChannel(channel, nowMs, elapsedMs);
+            }
+        }
+
+        public static HighFrequencyChannelComponent RegisterChannel(this HighFrequencySchedulerComponent self, HighFrequencyChannelConfig config)
+        {
+            self.ValidateChannelConfig(config);
+
+            HighFrequencyChannelComponent existing = self.GetChild<HighFrequencyChannelComponent>(config.ChannelId);
+            if (existing != null)
+            {
+                self.ValidateChannelMatch(existing, config);
+                return existing;
+            }
+
+            return self.AddChildWithId<HighFrequencyChannelComponent, HighFrequencyChannelConfig>(config.ChannelId, config);
+        }
+
+        public static bool AddEntity(this HighFrequencySchedulerComponent self, int channelId, Entity entity)
+        {
+            if (!self.TryGetChannel(channelId, out HighFrequencyChannelComponent channel) || entity == null || entity.IsDisposed)
+            {
+                return false;
+            }
+
+            Scene scene = self.GetParent<Scene>();
+            if (entity.Scene() != scene)
+            {
+                Log.Warning($"[HighFreq] reject cross-scene add. channel={channelId}, entityId={entity.Id}, scene={scene?.Name}, entityScene={entity.Scene()?.Name}");
+                return false;
+            }
+
+            int oldCount = channel.ActiveEntities.Count;
+            channel.ActiveEntities[entity.Id] = entity;
+            channel.PendingRemoveEntityIds.Remove(entity.Id);
+
+            if (oldCount == 0 && channel.ActiveEntities.Count > 0)
+            {
+                channel.AccumulatorMs = 0;
+            }
+
+            self.UpdateActiveChannelCount(oldCount, channel.ActiveEntities.Count);
+            return true;
+        }
+
+        public static bool RequestRemoveEntity(this HighFrequencySchedulerComponent self, int channelId, Entity entity, out bool deferred)
+        {
+            deferred = false;
+            if (entity == null)
+            {
+                return false;
+            }
+
+            if (!self.TryGetChannel(channelId, out HighFrequencyChannelComponent channel))
+            {
+                return false;
+            }
+
+            if (!channel.ActiveEntities.ContainsKey(entity.Id))
+            {
+                return false;
+            }
+
+            if (channel.IsTicking)
+            {
+                channel.PendingRemoveEntityIds.Add(entity.Id);
+                deferred = true;
+                return true;
+            }
+
+            int oldCount = channel.ActiveEntities.Count;
+            channel.PendingRemoveEntityIds.Remove(entity.Id);
+            channel.ActiveEntities.Remove(entity.Id);
+            self.UpdateActiveChannelCount(oldCount, channel.ActiveEntities.Count);
+            if (channel.ActiveEntities.Count == 0)
+            {
+                channel.AccumulatorMs = 0;
+            }
+
+            return true;
+        }
+
+        public static bool IsEntityRegistered(this HighFrequencySchedulerComponent self, int channelId, Entity entity)
+        {
+            return entity != null &&
+                !entity.IsDisposed &&
+                self.TryGetChannel(channelId, out HighFrequencyChannelComponent channel) &&
+                channel.ActiveEntities.ContainsKey(entity.Id) &&
+                !channel.PendingRemoveEntityIds.Contains(entity.Id);
+        }
+
+        private static void UpdateChannel(this HighFrequencySchedulerComponent self, HighFrequencyChannelComponent channel, long nowMs, long elapsedMs)
+        {
+            channel.LastUpdateTime = nowMs;
+
+            if (channel.PendingRemoveEntityIds.Count > 0 && !channel.IsTicking)
+            {
+                self.CommitPendingRemoves(channel, nowMs, false);
+            }
+
+            if (channel.ActiveEntities.Count == 0)
+            {
+                channel.AccumulatorMs = 0;
+                channel.LastFrameCostMs = 0;
+                channel.LastFrameTickCount = 0;
+                return;
+            }
+
+            channel.AccumulatorMs += elapsedMs;
+            if (channel.AccumulatorMs < channel.IntervalMs)
+            {
+                channel.LastFrameCostMs = 0;
+                channel.LastFrameTickCount = 0;
+                return;
+            }
+
+            long frameStartMs = TimeInfo.Instance.ServerNow();
+            int frameTickCount = 0;
+            using ListComponent<long> invalidEntityIds = ListComponent<long>.Create();
+
+            channel.IsTicking = true;
+            while (channel.AccumulatorMs >= channel.IntervalMs && frameTickCount < channel.MaxCatchUpCount)
+            {
+                ++channel.TickIndex;
+                ++channel.TotalTickCount;
+                ++self.TotalTickCount;
+                ++frameTickCount;
+
+                foreach (KeyValuePair<long, EntityRef<Entity>> kv in channel.ActiveEntities)
+                {
+                    if (channel.PendingRemoveEntityIds.Contains(kv.Key))
+                    {
+                        continue;
+                    }
+
+                    Entity entity = kv.Value;
+                    if (entity == null || entity.IsDisposed)
+                    {
+                        invalidEntityIds.Add(kv.Key);
+                        continue;
+                    }
+
+                    EventSystem.Instance.TryInvoke(
+                        channel.TickInvokeType,
+                        new HighFrequencyTickCallback
+                        {
+                            Entity = kv.Value,
+                            ChannelId = channel.ChannelId,
+                            DeltaTimeMs = channel.IntervalMs,
+                            DeltaTimeSeconds = channel.IntervalMs / 1000f,
+                            TickIndex = channel.TickIndex,
+                            NowMs = nowMs,
+                        });
+                }
+
+                channel.AccumulatorMs -= channel.IntervalMs;
+            }
+
+            channel.IsTicking = false;
+
+            foreach (long entityId in invalidEntityIds)
+            {
+                channel.PendingRemoveEntityIds.Add(entityId);
+            }
+
+            if (channel.PendingRemoveEntityIds.Count > 0)
+            {
+                self.CommitPendingRemoves(channel, nowMs, true);
+            }
+
+            if (channel.AccumulatorMs >= channel.IntervalMs)
+            {
+                long droppedTickCount = channel.AccumulatorMs / channel.IntervalMs;
+                channel.AccumulatorMs %= channel.IntervalMs;
+                channel.DroppedCatchUpCount += droppedTickCount;
+                Log.Warning(
+                    $"[HighFreq][Drop] channel={channel.ChannelId}, droppedTicks={droppedTickCount}, active={channel.ActiveEntities.Count}, maxCatchUp={channel.MaxCatchUpCount}");
+            }
+
+            long frameCostMs = TimeInfo.Instance.ServerNow() - frameStartMs;
+            channel.LastFrameCostMs = frameCostMs;
+            channel.TotalCostMs += frameCostMs;
+            channel.LastFrameTickCount = frameTickCount;
+
+            if (frameCostMs >= channel.WarningBudgetMs)
+            {
+                ++channel.OverBudgetCount;
+                Log.Warning(
+                    $"[HighFreq][Budget] channel={channel.ChannelId}, frameCostMs={frameCostMs}, budgetMs={channel.WarningBudgetMs}, ticks={frameTickCount}, active={channel.ActiveEntities.Count}");
+            }
+        }
+
+        private static void CommitPendingRemoves(this HighFrequencySchedulerComponent self, HighFrequencyChannelComponent channel, long nowMs, bool isDeferredCommit)
+        {
+            if (channel.PendingRemoveEntityIds.Count == 0)
+            {
+                return;
+            }
+
+            int oldCount = channel.ActiveEntities.Count;
+            using ListComponent<long> toRemove = ListComponent<long>.Create();
+            toRemove.AddRange(channel.PendingRemoveEntityIds);
+
+            foreach (long entityId in toRemove)
+            {
+                if (!channel.ActiveEntities.TryGetValue(entityId, out EntityRef<Entity> entityRef))
+                {
+                    continue;
+                }
+
+                if (channel.RemovedInvokeType != 0)
+                {
+                    EventSystem.Instance.TryInvoke(
+                        channel.RemovedInvokeType,
+                        new HighFrequencyEntityRemovedCallback
+                        {
+                            Entity = entityRef,
+                            ChannelId = channel.ChannelId,
+                            NowMs = nowMs,
+                            IsDeferredCommit = isDeferredCommit,
+                        });
+                }
+
+                channel.ActiveEntities.Remove(entityId);
+            }
+
+            channel.PendingRemoveEntityIds.Clear();
+            self.UpdateActiveChannelCount(oldCount, channel.ActiveEntities.Count);
+            if (channel.ActiveEntities.Count == 0)
+            {
+                channel.AccumulatorMs = 0;
+            }
+        }
+
+        private static bool TryGetChannel(this HighFrequencySchedulerComponent self, int channelId, out HighFrequencyChannelComponent channel)
+        {
+            channel = self.GetChild<HighFrequencyChannelComponent>(channelId);
+            return channel != null;
+        }
+
+        private static void UpdateActiveChannelCount(this HighFrequencySchedulerComponent self, int oldCount, int newCount)
+        {
+            if (oldCount == 0 && newCount > 0)
+            {
+                ++self.ActiveChannelCount;
+            }
+            else if (oldCount > 0 && newCount == 0)
+            {
+                --self.ActiveChannelCount;
+            }
+        }
+
+        private static void ValidateChannelConfig(this HighFrequencySchedulerComponent self, HighFrequencyChannelConfig config)
+        {
+            if (config.ChannelId <= 0)
+            {
+                throw new Exception("high frequency channel id must be > 0");
+            }
+
+            if (config.IntervalMs <= 0)
+            {
+                throw new Exception($"high frequency channel interval invalid: {config.IntervalMs}");
+            }
+
+            if (config.MaxCatchUpCount <= 0)
+            {
+                throw new Exception($"high frequency channel catch up invalid: {config.MaxCatchUpCount}");
+            }
+
+            if (config.TickInvokeType == 0)
+            {
+                throw new Exception($"high frequency channel tick invoke type invalid: channel={config.ChannelId}");
+            }
+
+            if (config.WarningBudgetMs <= 0)
+            {
+                throw new Exception($"high frequency channel warning budget invalid: channel={config.ChannelId}, budget={config.WarningBudgetMs}");
+            }
+        }
+
+        private static void ValidateChannelMatch(this HighFrequencySchedulerComponent self, HighFrequencyChannelComponent existing, HighFrequencyChannelConfig config)
+        {
+            if (existing.IntervalMs != config.IntervalMs ||
+                existing.MaxCatchUpCount != config.MaxCatchUpCount ||
+                existing.TickInvokeType != config.TickInvokeType ||
+                existing.RemovedInvokeType != config.RemovedInvokeType ||
+                existing.WarningBudgetMs != config.WarningBudgetMs)
+            {
+                throw new Exception(
+                    $"high frequency channel config mismatch: channel={config.ChannelId}, existingInterval={existing.IntervalMs}, newInterval={config.IntervalMs}");
+            }
+        }
+    }
+
+    [EntitySystemOf(typeof(HighFrequencyChannelComponent))]
+    public static partial class HighFrequencyChannelComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this HighFrequencyChannelComponent self, HighFrequencyChannelConfig config)
+        {
+            self.ChannelId = config.ChannelId;
+            self.IntervalMs = config.IntervalMs;
+            self.MaxCatchUpCount = config.MaxCatchUpCount;
+            self.TickInvokeType = config.TickInvokeType;
+            self.RemovedInvokeType = config.RemovedInvokeType;
+            self.WarningBudgetMs = config.WarningBudgetMs;
+            self.AccumulatorMs = 0;
+            self.LastUpdateTime = 0;
+            self.TickIndex = 0;
+            self.TotalTickCount = 0;
+            self.DroppedCatchUpCount = 0;
+            self.OverBudgetCount = 0;
+            self.LastFrameCostMs = 0;
+            self.TotalCostMs = 0;
+            self.LastFrameTickCount = 0;
+            self.IsTicking = false;
+            self.ActiveEntities.Clear();
+            self.PendingRemoveEntityIds.Clear();
+        }
+
+        [EntitySystem]
+        private static void Destroy(this HighFrequencyChannelComponent self)
+        {
+            self.ChannelId = 0;
+            self.IntervalMs = 0;
+            self.MaxCatchUpCount = 0;
+            self.TickInvokeType = 0;
+            self.RemovedInvokeType = 0;
+            self.WarningBudgetMs = 0;
+            self.AccumulatorMs = 0;
+            self.LastUpdateTime = 0;
+            self.TickIndex = 0;
+            self.TotalTickCount = 0;
+            self.DroppedCatchUpCount = 0;
+            self.OverBudgetCount = 0;
+            self.LastFrameCostMs = 0;
+            self.TotalCostMs = 0;
+            self.LastFrameTickCount = 0;
+            self.IsTicking = false;
+            self.ActiveEntities.Clear();
+            self.PendingRemoveEntityIds.Clear();
+        }
+    }
 }

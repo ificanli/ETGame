@@ -25,6 +25,13 @@ namespace ET
         [EntitySystem]
         private static void Destroy(this BulletComponent self)
         {
+            Scene scene = self.Scene();
+            HighFrequencySchedulerComponent scheduler = scene?.GetComponent<HighFrequencySchedulerComponent>();
+            if (scheduler != null)
+            {
+                scheduler.RequestRemoveEntity(HighFrequencyChannelId.Bullet33ms, self, out _);
+            }
+
             self.OwnerId = 0;
             self.TargetId = 0;
             self.Damage = 0;
@@ -34,9 +41,9 @@ namespace ET
         }
 
         /// <summary>
-        /// 更新子弹位置（每帧调用）
+        /// 更新子弹位置（固定步长调用）
         /// </summary>
-        public static void Update(this BulletComponent self)
+        public static void TickFixedStep(this BulletComponent self, long deltaTimeMs)
         {
             Unit bullet = self.GetParent<Unit>();
             if (bullet == null || bullet.IsDisposed)
@@ -44,7 +51,7 @@ namespace ET
                 return;
             }
 
-            float deltaTime = 0.033f;  // 假设30fps
+            float deltaTime = math.max(deltaTimeMs / 1000f, 0.001f);
             float moveDistance = self.Speed * deltaTime;
 
             // 根据锁定类型计算飞行方向
@@ -69,6 +76,11 @@ namespace ET
 
             // 检查是否命中目标
             self.CheckHit(bullet);
+        }
+
+        public static void Update(this BulletComponent self)
+        {
+            self.TickFixedStep(33);
         }
 
         /// <summary>

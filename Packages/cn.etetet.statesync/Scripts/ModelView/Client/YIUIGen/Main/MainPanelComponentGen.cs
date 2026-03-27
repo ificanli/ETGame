@@ -5,7 +5,14 @@ using System.Collections.Generic;
 
 namespace ET.Client
 {
-
+    /// <summary>
+    /// 由YIUI工具自动创建 请勿修改
+    /// 当前Panel所有可用view枚举
+    /// </summary>
+    public enum EMainPanelViewEnum
+    {
+        EvacuateTipsView = 1,
+    }
     /// <summary>
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
@@ -24,6 +31,12 @@ namespace ET.Client
         public YIUIPanelComponent UIPanel => u_UIPanel;
         public UnityEngine.RectTransform u_ComJoyStickRangeRectTransform;
         public UnityEngine.RectTransform u_ComJoyStickRectTransform;
+        public UnityEngine.RectTransform u_ComRogueEffectRectTransform;
+        public UnityEngine.RectTransform u_ComRogueEffectTextRectTransform;
+        public UnityEngine.RectTransform u_ComEffectButton1;
+        public UnityEngine.RectTransform u_ComEffectButton2;
+        public UnityEngine.RectTransform u_ComEffectButton3;
+        public UnityEngine.RectTransform u_ComEffectButton4;
         public YIUIFramework.UIDataValueBool u_DataSearchingButton;
         public YIUIFramework.UIDataValueString u_DataTxtLevel;
         public YIUIFramework.UIDataValueFloat u_DataCurExp;

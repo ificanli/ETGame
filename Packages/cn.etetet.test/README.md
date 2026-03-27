@@ -7,19 +7,26 @@
 ## 快速运行
 - 启动测试场景：
   - `pwsh -Command "dotnet ./Bin/ET.App.dll --Console=1 --SceneName=Test"`
+- 非交互式执行示例：
+  - `pwsh -Command "dotnet ./Bin/ET.App.dll --Console=1 --SceneName=Test --TestName=Test_CreateRobot_Test"`
+  - `pwsh -Command "dotnet ./Bin/ET.App.dll --Console=1 --SceneName=Test --TestName='Test_(CreateRobot|Home_.*)_Test'"`
 - 交互式执行示例：
   - `Test`
   - `Test --Name=CreateRobot`
   - `Test --Name=CreateRobot2`（无匹配时提示 not found test）
 - 注意测试执行完成会退出进程
+- `--TestName` 与交互式 `Test --Name=...` 等价，都是按测试类名正则筛选
 
 ## 命令参数
+- `--TestName`：启动参数，只有 `SceneName=Test` 时生效。带上后会在测试场景初始化完成后一帧自动执行匹配测试并退出。
 - `--Name`：处理器类名正则，默认 `.*`，匹配所有测试用例。
-- 解析与分发：控制台命令由 `TestConsoleHandler` 解析，按正则从 `TestDispatcher` 获取匹配的处理器并逐一运行。
+- 解析与分发：控制台命令由 `TestConsoleHandler` 解析，启动参数由 `FiberInit_Test` 触发，两者最终都通过 `TestRunnerHelper` 按正则从 `TestDispatcher` 获取匹配的处理器并逐一运行。
 
 ## 核心类
 - `Scripts/Hotfix/Test/TestConsoleHandler.cs:12`：声明控制台处理器并进入测试模式。
-- `Scripts/Hotfix/Test/TestConsoleHandler.cs:25`：按 `Package/Name` 正则获取用例并执行，`ret == 0` 视为成功。
+- `Scripts/Hotfix/Test/TestConsoleHandler.cs:24`：交互式模式下转发到统一执行入口。
+- `Scripts/Hotfix/Test/TestRunnerHelper.cs:7`：统一执行匹配测试、汇总结果并返回退出码。
+- `Scripts/Hotfix/Test/FiberInit_Test.cs:21`：检测 `--TestName`，在非交互模式下自动执行测试。
 - `Scripts/Model/Test/TestDispatcher.cs:48`：按包名与处理器名正则筛选并返回匹配的 `ITestHandler` 列表。
 - `Scripts/Model/Test/TestArgs.cs:7`：命令行参数定义，`Package/Name` 默认 `.*`。
 - `Scripts/Model/Test/ITestHandler.cs:5`：测试处理器接口约定。
@@ -101,7 +108,12 @@ namespace ET.Test
 - `> Test` → `Test.Test_CreateRobot start` → `Test.Test_CreateRobot success`
 - `> Test --Name=CreateRobot` → `Test.Test_CreateRobot start` → `Test.Test_CreateRobot success`
 - `> Test --Name=CreateRobot2` → `not found test! name: CreateRobot2`
+- `dotnet ./Bin/ET.App.dll --Console=1 --SceneName=Test --TestName=Test_CreateRobot_Test`
+  → `auto run tests: Test_CreateRobot_Test`
+  → `Test_CreateRobot_Test start`
+  → `Test_CreateRobot_Test success`
 
 ## 常见问题
 - `not found test`：无匹配用例。检查类名与正则是否匹配，是否继承了 `ATestHandler`，热更/编译是否完成。
 - 正则匹配范围过大或过小：调整 `--Name` 参数，建议先用默认值确认整体列表再收敛过滤。
+- 非交互模式没有自动执行：检查是否传了 `--TestName`，以及 `SceneName` 是否为 `Test`。

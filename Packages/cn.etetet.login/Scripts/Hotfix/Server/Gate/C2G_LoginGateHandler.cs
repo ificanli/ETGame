@@ -43,6 +43,18 @@ namespace ET.Server
                 player.GetComponent<PlayerSessionComponent>().Session = session;
             }
 
+            PlayerStorageComponent storage = player.GetComponent<PlayerStorageComponent>() ?? player.AddComponent<PlayerStorageComponent>();
+            EntityRef<Player> loginPlayerRef = player;
+            EntityRef<PlayerStorageComponent> storageRef = storage;
+            await ArchiveStorageSyncHelper.LoadOrCreate(player, storage);
+
+            player = loginPlayerRef;
+            storage = storageRef;
+            if (player == null || storage == null)
+            {
+                return;
+            }
+
             response.PlayerId = player.Id;
             await ETTask.CompletedTask;
         }

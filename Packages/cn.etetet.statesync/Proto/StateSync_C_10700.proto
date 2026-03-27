@@ -64,6 +64,7 @@ message C2M_JoystickInput // ILocationMessage
 	int32 RpcId = 1;
 	float DirX = 2;
 	float DirZ = 3;
+	uint32 InputSequence = 4;
 }
 
 message M2C_JoystickMove // IMessage
@@ -79,6 +80,8 @@ message M2C_JoystickMove // IMessage
 	float DirX = 9;
 	float DirZ = 10;
 	float Speed = 11;
+	uint32 MoveSequence = 12;
+	uint32 LastProcessedInputSequence = 13;
 }
 
 // 武器切换消息

@@ -345,6 +345,150 @@ namespace ET
             }
         }
 
+        /// <summary>
+        /// 沿 NavMesh 表面从 startPos 向 endPos 移动。
+        /// 如果全程可达，返回 true，safePos = endPos。
+        /// 如果碰到墙壁，返回 false，safePos = NavMesh 上最近可达点（已自动贴墙滑动）。
+        /// 如果起点不在 NavMesh 上，返回 true 并放行（避免卡死）。
+        /// </summary>
+        public static bool TryMoveAlongSurface(this PathfindingComponent self, float3 startPos, float3 endPos, out float3 safePos)
+        {
+            safePos = endPos;
+
+            if (self.navMesh == null)
+            {
+                return true;
+            }
+
+            // 找到起点所在的多边形（用移动专用的小范围 extents，避免跨墙抓到错误多边形）
+            if (!self.TryProjectNearestPoly(startPos, self.movementProjectExtents, out long startRef, out RcVec3f startNavPt, out float startDist))
+            {
+                long now1 = TimeInfo.Instance.ServerNow();
+                if (now1 - self.lastRaycastLogTime >= 500)
+                {
+                    self.lastRaycastLogTime = now1;
+                    Log.Info($"[NavMove] start not on navmesh, pass through. unitId={self.Parent?.Id}, startPos={startPos}, navXSign={self.navXSign}");
+                }
+                return true;
+            }
+
+            // 起点离 NavMesh 太远，放行
+            if (startDist > 2f)
+            {
+                long now2 = TimeInfo.Instance.ServerNow();
+                if (now2 - self.lastRaycastLogTime >= 500)
+                {
+                    self.lastRaycastLogTime = now2;
+                    Log.Info($"[NavMove] start too far from navmesh, pass through. unitId={self.Parent?.Id}, startPos={startPos}, startDist={startDist:F3}");
+                }
+                return true;
+            }
+
+            // 用 startPos 的 NavMesh 坐标作为起点，而非投影点（startNavPt）。
+            // startNavPt 是 FindNearestPoly 的表面投影结果，当玩家贴着多边形边界时，
+            // 投影点恰好在边界上，MoveAlongSurface 从边界出发会立即被截断，
+            // 导致所有方向都走不了（空气墙）或产生误差（穿墙）。
+            RcVec3f navStart = self.ToNavPos(startPos, self.navXSign);
+            RcVec3f navEnd = self.ToNavPos(endPos, self.navXSign);
+
+            List<long> visited = new List<long>(16);
+            DtStatus status = self.query.MoveAlongSurface(startRef, navStart, navEnd, self.filter, out RcVec3f resultPos, ref visited);
+
+            if (status.Failed())
+            {
+                long now3 = TimeInfo.Instance.ServerNow();
+                if (now3 - self.lastRaycastLogTime >= 500)
+                {
+                    self.lastRaycastLogTime = now3;
+                    Log.Info($"[NavMove] MoveAlongSurface failed, pass through. unitId={self.Parent?.Id}, status={status}");
+                }
+                return true;
+            }
+
+            float3 resultUnity = self.ToUnityPos(resultPos, self.navXSign);
+            safePos = new float3(resultUnity.x, startPos.y, resultUnity.z);
+
+            // 判断是否到达了目标点
+            float reachedDist = math.distance(
+                new float2(safePos.x, safePos.z),
+                new float2(endPos.x, endPos.z));
+
+            if (reachedDist < 0.001f)
+            {
+                return true;
+            }
+
+            // 没到达目标 = 碰到了墙
+            long now4 = TimeInfo.Instance.ServerNow();
+            if (now4 - self.lastRaycastLogTime >= 500)
+            {
+                self.lastRaycastLogTime = now4;
+                Log.Info($"[NavMove] wall hit. unitId={self.Parent?.Id}, startPos={startPos}, endPos={endPos}, safePos={safePos}, reachedDist={reachedDist:F4}, visitedPolys={visited.Count}, navXSign={self.navXSign}");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 提取 NavMesh 所有可行走多边形的三角形顶点（Unity 坐标系），用于可视化调试。
+        /// 返回三角形顶点列表（每 3 个顶点组成一个三角形）和对应的 flag。
+        /// </summary>
+        public static void ExtractNavMeshTriangles(this PathfindingComponent self, List<float3> vertices, List<int> flags)
+        {
+            vertices.Clear();
+            flags.Clear();
+
+            if (self.navMesh == null)
+            {
+                return;
+            }
+
+            int maxTiles = self.navMesh.GetMaxTiles();
+            for (int tileIndex = 0; tileIndex < maxTiles; ++tileIndex)
+            {
+                DtMeshTile tile = self.navMesh.GetTile(tileIndex);
+                if (tile?.data?.header == null)
+                {
+                    continue;
+                }
+
+                int polyCount = tile.data.header.polyCount;
+                for (int polyIndex = 0; polyIndex < polyCount; ++polyIndex)
+                {
+                    DtPoly poly = tile.data.polys[polyIndex];
+                    if (poly.GetPolyType() == DtPoly.DT_POLYTYPE_OFFMESH_CONNECTION)
+                    {
+                        continue;
+                    }
+
+                    // 凸多边形扇形三角化：以第一个顶点为中心
+                    for (int j = 1; j < poly.vertCount - 1; ++j)
+                    {
+                        int v0 = poly.verts[0] * 3;
+                        int v1 = poly.verts[j] * 3;
+                        int v2 = poly.verts[j + 1] * 3;
+
+                        float3 p0 = self.ToUnityPos(
+                            new RcVec3f(tile.data.verts[v0], tile.data.verts[v0 + 1], tile.data.verts[v0 + 2]),
+                            self.navXSign);
+                        float3 p1 = self.ToUnityPos(
+                            new RcVec3f(tile.data.verts[v1], tile.data.verts[v1 + 1], tile.data.verts[v1 + 2]),
+                            self.navXSign);
+                        float3 p2 = self.ToUnityPos(
+                            new RcVec3f(tile.data.verts[v2], tile.data.verts[v2 + 1], tile.data.verts[v2 + 2]),
+                            self.navXSign);
+
+                        vertices.Add(p0);
+                        vertices.Add(p1);
+                        vertices.Add(p2);
+                        flags.Add(poly.flags);
+                    }
+                }
+            }
+
+            Log.Info($"[NavMeshDebug] extracted {vertices.Count / 3} triangles from {maxTiles} tiles, navXSign={self.navXSign}");
+        }
+
         private static void ApplySceneGuardConfig(this PathfindingComponent self, SceneNavmeshComponent sceneNavmeshComponent)
         {
             if (sceneNavmeshComponent == null)

@@ -55,6 +55,9 @@ namespace ET.Server
                     session.Send(g2cSuccess);
                 }
 
+                ArchiveMessageHelper.RecordMatchStart(root, player.Account, player.Id, request.GameMode, request.MapName, request.MapId)
+                    .Coroutine();
+
                 MapManager2Map_NotifyPlayerTransferRequest transferRequest = MapManager2Map_NotifyPlayerTransferRequest.Create();
                 transferRequest.MapName = request.MapName;
                 transferRequest.MapId = request.MapId;

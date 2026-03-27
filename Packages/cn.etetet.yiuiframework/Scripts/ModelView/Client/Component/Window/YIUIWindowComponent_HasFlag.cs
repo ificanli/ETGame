@@ -32,6 +32,12 @@ namespace ET.Client
         //后关
         public bool WindowLastClose => WindowOption.HasFlag(EWindowOption.LastClose);
 
+        //最终采用的先开配置: 显式界面配置优先启用, 否则走全局默认
+        public bool WindowUseFirstOpen => YIUIConstHelper.Const.DefaultViewFirstOpen || WindowFirstOpen;
+
+        //最终采用的后关配置: 显式界面配置优先启用, 否则走全局默认
+        public bool WindowUseLastClose => YIUIConstHelper.Const.DefaultPanelLastClose || WindowLastClose;
+
         //禁止打开动画
         public bool WindowBanOpenTween => WindowOption.HasFlag(EWindowOption.BanOpenTween);
 

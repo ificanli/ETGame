@@ -48,6 +48,8 @@ namespace ET.Client
         public UnityEngine.RectTransform u_ComSecureBagRoot;
         public UnityEngine.RectTransform u_ComSecureBoardRoot;
         public UnityEngine.RectTransform u_ComWarehouseRoot;
+        public UnityEngine.UI.Button u_ComBattleRecordButton;
+        public UnityEngine.RectTransform u_ComBattleRecordOverlayRoot;
         public YIUIFramework.UIDataValueString u_DataRoleSkillDes;
         public YIUIFramework.UIDataValueString u_DataRoleSurviveAbility;
         public YIUIFramework.UIDataValueString u_DataRoleAttackAbility;

@@ -30,20 +30,29 @@ namespace ET.Client
         public int ContainerRows;
         public int BagCols;
         public int BagRows;
+        public int SecureCols;
+        public int SecureRows;
         public Vector2 CellSize;
         public Vector2 CellSpacing;
         public Vector2 CellPadding;
 
         public GridPlacementSolver ContainerSolver;
         public GridPlacementSolver BagSolver;
+        public GridPlacementSolver SecureSolver;
 
         public readonly Dictionary<long, RectTransform> ContainerItemViews = new();
         public readonly Dictionary<long, RectTransform> BagItemViews = new();
+        public readonly Dictionary<long, RectTransform> SecureItemViews = new();
         public readonly Dictionary<int, RectTransform> ContainerGridCellViews = new();
         public readonly Dictionary<int, RectTransform> BagGridCellViews = new();
+        public readonly Dictionary<int, RectTransform> SecureGridCellViews = new();
 
         public RectTransform ContainerGridRoot;
         public RectTransform BagGridRoot;
+        public RectTransform SecureBoardRoot;
+        public RectTransform SecureItemsLayer;
+        public RectTransform SecureItemTemplate;
+        public RectTransform SecureGridRoot;
         public Dropdown QuickChooseDropdown;
         public RectTransform QuickChooseButtonRoot;
         public TMP_Text QuickChooseButtonLabel;
@@ -91,5 +100,6 @@ namespace ET.Client
         /// 当前容器的PointId，用于判断是否切换了容器
         /// </summary>
         public string CurrentSearchingPointId;
+        public EntityRef<ItemClickedComponent> ItemClickedCommon;
     }
 }

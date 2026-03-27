@@ -19,6 +19,7 @@ namespace ET.Client
         {
             self.CacheIconImage();
             self.CacheBgRectTransform();
+            self.CacheSelectIndicatorRectTransform();
             self.RefreshSelectVisual(self.u_DataSelect?.GetValue() ?? false);
         }
 
@@ -28,6 +29,7 @@ namespace ET.Client
             self.ReleaseItemIconSprite();
             self.IconImage = null;
             self.BgRectTransform = null;
+            self.SelectIndicatorRectTransform = null;
             self.LoadedIconName = string.Empty;
         }
 
@@ -81,15 +83,36 @@ namespace ET.Client
             return self.BgRectTransform;
         }
 
+        private static RectTransform CacheSelectIndicatorRectTransform(this EquipSelectItemComponent self)
+        {
+            if (self.SelectIndicatorRectTransform != null)
+            {
+                return self.SelectIndicatorRectTransform;
+            }
+
+            Transform root = self.UIBase?.OwnerGameObject?.transform;
+            if (root == null)
+            {
+                return null;
+            }
+
+            self.SelectIndicatorRectTransform = root.FindChildByName("SelectIndicator") as RectTransform;
+            return self.SelectIndicatorRectTransform;
+        }
+
         private static void RefreshSelectVisual(this EquipSelectItemComponent self, bool selected)
         {
             RectTransform bgRectTransform = self.CacheBgRectTransform();
-            if (bgRectTransform == null)
+            if (bgRectTransform != null)
             {
-                return;
+                bgRectTransform.gameObject.SetActive(true);
             }
 
-            bgRectTransform.gameObject.SetActive(!selected);
+            RectTransform selectIndicatorRectTransform = self.CacheSelectIndicatorRectTransform();
+            if (selectIndicatorRectTransform != null)
+            {
+                selectIndicatorRectTransform.gameObject.SetActive(selected);
+            }
         }
 
         private static async ETTask ChangeItemIcon(this EquipSelectItemComponent self, string iconName)

@@ -1,0 +1,22 @@
+[
+  {
+    "Id": 1,
+    "MapName": "Map1",
+    "MonsterUnitConfigId": 1003,
+    "LootBoxUnitConfigId": 0,
+    "LootTable": "22001*1|20001*1",
+    "DropCountMin": 1,
+    "DropCountMax": 2,
+    "AllowRepeat": false
+  },
+  {
+    "Id": 2,
+    "MapName": "Map1",
+    "MonsterUnitConfigId": 1004,
+    "LootBoxUnitConfigId": 0,
+    "LootTable": "22001*1|20002*1|21001*1",
+    "DropCountMin": 1,
+    "DropCountMax": 2,
+    "AllowRepeat": false
+  }
+]

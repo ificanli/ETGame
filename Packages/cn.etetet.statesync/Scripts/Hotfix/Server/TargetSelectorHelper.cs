@@ -21,13 +21,36 @@ namespace ET.Server
         /// </summary>
         public static Unit SelectTarget(this TargetSelectorComponent self)
         {
+            return SelectTarget(self, self?.MaxRange ?? 0f);
+        }
+
+        /// <summary>
+        /// 在不修改 Selector.MaxRange 的前提下按指定范围选目标。
+        /// </summary>
+        public static Unit SelectTarget(this TargetSelectorComponent self, float maxRange)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return null;
+            }
+
             Unit owner = self.GetParent<Unit>();
+            if (owner == null || owner.IsDisposed)
+            {
+                return null;
+            }
 
             // 检查选择间隔
             long now = TimeInfo.Instance.ServerNow();
             if (now - self.LastSelectTime < self.SelectIntervalMs && self.CurrentTargetId != 0)
             {
-                return owner.Scene().GetComponent<UnitComponent>().Get(self.CurrentTargetId);
+                Unit cachedTarget = owner.Scene().GetComponent<UnitComponent>().Get(self.CurrentTargetId);
+                if (IsValidTarget(owner, cachedTarget, maxRange))
+                {
+                    return cachedTarget;
+                }
+
+                self.CurrentTargetId = 0;
             }
 
             self.LastSelectTime = now;
@@ -36,7 +59,7 @@ namespace ET.Server
             if (self.ManualTargetId != 0)
             {
                 Unit manualTarget = owner.Scene().GetComponent<UnitComponent>().Get(self.ManualTargetId);
-                if (IsValidTarget(owner, manualTarget, self.MaxRange))
+                if (IsValidTarget(owner, manualTarget, maxRange))
                 {
                     self.CurrentTargetId = self.ManualTargetId;
                     return manualTarget;
@@ -46,7 +69,7 @@ namespace ET.Server
             }
 
             // 自动选择最优目标
-            Unit bestTarget = FindBestTarget(owner, self.MaxRange);
+            Unit bestTarget = FindBestTarget(owner, maxRange);
             if (bestTarget != null)
             {
                 self.CurrentTargetId = bestTarget.Id;
@@ -57,7 +80,7 @@ namespace ET.Server
             return null;
         }
 
-        private static Unit FindBestTarget(Unit owner, float maxRange)
+        public static Unit FindBestTarget(Unit owner, float maxRange)
         {
             List<Unit> enemies = GetEnemiesInRange(owner, maxRange);
             if (enemies.Count == 0)

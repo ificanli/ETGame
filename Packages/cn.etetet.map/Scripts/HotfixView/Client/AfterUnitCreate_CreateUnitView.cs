@@ -42,16 +42,19 @@ namespace ET.Client
             
             if (scene.Root().GetComponent<PlayerComponent>().MyId == unit.Id)
             {
+                if (unit.GetComponent<PathfindingComponent>() == null)
+                {
+                    unit.AddComponent<PathfindingComponent, string>(scene.Name.GetSceneConfigName());
+                }
+
                 unit.AddComponent<CinemachineComponent>();
                 unit.AddComponent<InputSystemComponent>();
                 unit.AddComponent<SpellIndicatorComponent>();
             }
-            else
-            {
-                //临时做法 //不是玩家的Unit，添加一个血条显示
-                //await YIUIFactory.InstantiateAsync<HPView3DComponent>(unit, go.transform);
-                await YIUIFactory.InstantiateAsync<HPViewComponent>(scene, unit, scene.YIUIMgr().UICache);
-            }
+
+            // 头顶血条需要对所有单位生效，不能排除本地玩家单位。
+            //await YIUIFactory.InstantiateAsync<HPView3DComponent>(unit, go.transform);
+            await YIUIFactory.InstantiateAsync<HPViewComponent>(scene, unit, scene.YIUIMgr().UICache);
             
             await ETTask.CompletedTask;
         }

@@ -60,6 +60,7 @@ namespace ET.Server
 
                 if (monster != null)
                 {
+                    RogueUnitDisplayLevelHelper.RefreshMonsterDisplayLevel(monster, false);
                     float3 resolvedPosition = monsterPosition;
                     float unitRadius = monster.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
                     PathfindingComponent pathfinding = monster.GetComponent<PathfindingComponent>();

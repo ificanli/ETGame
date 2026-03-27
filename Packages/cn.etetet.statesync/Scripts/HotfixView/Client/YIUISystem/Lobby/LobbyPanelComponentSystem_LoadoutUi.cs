@@ -351,8 +351,6 @@ namespace ET.Client
             LoadoutGridItemInfo item)
         {
             ResolveDisplayInfo(item.ConfigId, out string name, out string icon, out _);
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(item.ConfigId);
-            string itemDesc = !string.IsNullOrWhiteSpace(itemConfig?.Desc) ? itemConfig.Desc : name;
             view.name = $"{areaType}_{item.AnchorSlotIndex}_{item.ConfigId}";
 
             LoadoutGridItemViewProxy proxy = view.GetComponent<LoadoutGridItemViewProxy>();
@@ -372,7 +370,7 @@ namespace ET.Client
             proxy.TmpTexts ??= view.GetComponentsInChildren<TMP_Text>(true);
             proxy.Texts ??= view.GetComponentsInChildren<Text>(true);
 
-            ApplyOwnedGridItemTexts(proxy, itemDesc, item.Count);
+            ApplyOwnedGridItemTexts(proxy, name, item.Count);
             ItemQualityBgViewHelper.UpdateQualityBgByConfigId(view, item.ConfigId);
             UpdateOwnedGridItemIcon(proxy, icon).Coroutine();
             BindLoadoutGridItemInteract(self, view, proxy);
@@ -713,9 +711,9 @@ namespace ET.Client
                     if (image != null)
                     {
                         ApplyGridCellVisual(
-                            image,
-                            gridRoot,
-                            isSecure ? new Color(0.25f, 0.65f, 0.95f, 0.18f) : new Color(1f, 1f, 1f, 0.08f));
+                                image,
+                                gridRoot,
+                                isSecure ? new Color(0.25f, 0.65f, 0.95f, 0.5f) : new Color(0.8f, 0.7f, 0.5f, 0.3f));
                     }
 
                     ApplyFootprint(
@@ -859,13 +857,14 @@ namespace ET.Client
                 return;
             }
 
+            RectTransform viewport = ResolveOwnedAreaViewport(boardRoot);
             float gridWidth = padding.x * 2f + cols * cellSize.x + Mathf.Max(0, cols - 1) * spacing.x;
             float gridHeight = padding.y * 2f + rows * cellSize.y + Mathf.Max(0, rows - 1) * spacing.y;
 
             if (contentWrapper == null)
             {
                 GameObject wrapperGo = new GameObject("GridContentWrapper", typeof(RectTransform));
-                wrapperGo.transform.SetParent(boardRoot, false);
+                wrapperGo.transform.SetParent(viewport, false);
                 contentWrapper = wrapperGo.GetComponent<RectTransform>();
                 contentWrapper.anchorMin = new Vector2(0f, 1f);
                 contentWrapper.anchorMax = new Vector2(0f, 1f);
@@ -892,21 +891,17 @@ namespace ET.Client
                 scrollRect.horizontal = false;
                 scrollRect.vertical = true;
                 scrollRect.movementType = ScrollRect.MovementType.Clamped;
-                scrollRect.viewport = boardRoot;
+                scrollRect.viewport = viewport;
+            }
+            else if (contentWrapper.parent != viewport)
+            {
+                contentWrapper.SetParent(viewport, false);
+            }
 
-                Mask mask = boardRoot.GetComponent<Mask>();
-                if (mask == null)
-                {
-                    Image maskImage = boardRoot.GetComponent<Image>();
-                    if (maskImage == null)
-                    {
-                        maskImage = boardRoot.gameObject.AddComponent<Image>();
-                        maskImage.color = new Color(1f, 1f, 1f, 0.001f);
-                    }
-
-                    mask = boardRoot.gameObject.AddComponent<Mask>();
-                    mask.showMaskGraphic = false;
-                }
+            ScrollRect currentScrollRect = boardRoot.GetComponent<ScrollRect>();
+            if (currentScrollRect != null)
+            {
+                currentScrollRect.viewport = viewport;
             }
 
             contentWrapper.sizeDelta = new Vector2(gridWidth, gridHeight);
@@ -926,6 +921,35 @@ namespace ET.Client
                 itemsLayer.offsetMin = Vector2.zero;
                 itemsLayer.offsetMax = Vector2.zero;
             }
+        }
+
+        private static RectTransform ResolveOwnedAreaViewport(RectTransform boardRoot)
+        {
+            if (boardRoot == null)
+            {
+                return null;
+            }
+
+            RectTransform namedViewport = FindDirectChildRectTransform(boardRoot, "Viewport", "MaskRoot", "ScrollViewport");
+            if (namedViewport != null)
+            {
+                return namedViewport;
+            }
+
+            for (int i = 0; i < boardRoot.childCount; ++i)
+            {
+                if (boardRoot.GetChild(i) is not RectTransform childRect)
+                {
+                    continue;
+                }
+
+                if (childRect.GetComponent<Mask>() != null || childRect.GetComponent<RectMask2D>() != null)
+                {
+                    return childRect;
+                }
+            }
+
+            return boardRoot;
         }
 
         private static void ApplyFootprint(

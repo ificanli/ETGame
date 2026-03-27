@@ -338,9 +338,18 @@ namespace ET.Client
             self.DraggingAreaType = proxy.AreaType;
             self.DraggingFixedSlotType = proxy.FixedSlotType;
             self.DraggingView = view;
+
+            proxy.DragOriginalParent = view.parent as RectTransform;
+            proxy.DragOriginalSiblingIndex = view.GetSiblingIndex();
+            RectTransform dragRoot = self.GetLoadoutDragRoot(view);
+            if (dragRoot != null && view.parent != dragRoot)
+            {
+                view.SetParent(dragRoot, true);
+            }
+
             view.SetAsLastSibling();
 
-            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(sourceLayer, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(dragRoot, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
             {
                 self.DragWorldOffset = view.position - worldPoint;
             }
@@ -378,13 +387,13 @@ namespace ET.Client
                 return;
             }
 
-            RectTransform sourceLayer = self.GetLoadoutDragSourceLayer(view, proxy);
-            if (sourceLayer == null)
+            RectTransform dragRoot = self.GetLoadoutDragRoot(view);
+            if (dragRoot == null)
             {
                 return;
             }
 
-            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(sourceLayer, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(dragRoot, eventData.position, eventData.pressEventCamera, out Vector3 worldPoint))
             {
                 view.position = worldPoint + self.DragWorldOffset;
             }
@@ -411,6 +420,7 @@ namespace ET.Client
             {
                 self.EndWarehouseScrollForwarding(eventData);
                 self.ClearWarehousePressState();
+                self.RestoreDraggedViewParent(view, proxy);
                 return;
             }
 
@@ -421,10 +431,12 @@ namespace ET.Client
                     self.ClearWarehousePressState();
                 }
 
+                self.RestoreDraggedViewParent(view, proxy);
                 return;
             }
 
             bool hasValidTarget = self.TryGetLoadoutDropTarget(eventData, out bool targetIsWarehouse, out LoadoutAreaType targetAreaType, out LoadoutFixedSlotType targetSlotType, out int targetAnchorSlotIndex);
+            self.RestoreDraggedViewParent(view, proxy);
             self.ClearLoadoutDragState();
             self.ClearWarehousePressState();
 
@@ -669,6 +681,50 @@ namespace ET.Client
             }
 
             return self.GetOwnedAreaItemsLayer((LoadoutAreaType)proxy.AreaType);
+        }
+
+        private static RectTransform GetLoadoutDragRoot(this LobbyPanelComponent self, RectTransform view)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return view?.parent as RectTransform;
+            }
+
+            RectTransform panelRoot = self.UIBase?.OwnerGameObject?.GetComponent<RectTransform>();
+            if (panelRoot != null)
+            {
+                return panelRoot;
+            }
+
+            Canvas canvas = view?.GetComponentInParent<Canvas>();
+            return canvas != null ? canvas.transform as RectTransform : view?.parent as RectTransform;
+        }
+
+        private static void RestoreDraggedViewParent(this LobbyPanelComponent self, RectTransform view, LoadoutGridItemViewProxy proxy)
+        {
+            if (view == null || proxy == null)
+            {
+                return;
+            }
+
+            RectTransform originalParent = proxy.DragOriginalParent;
+            int originalSiblingIndex = proxy.DragOriginalSiblingIndex;
+            proxy.DragOriginalParent = null;
+            proxy.DragOriginalSiblingIndex = 0;
+
+            if (originalParent == null || view.parent == originalParent)
+            {
+                return;
+            }
+
+            view.SetParent(originalParent, true);
+            int childCount = originalParent.childCount;
+            if (childCount <= 0)
+            {
+                return;
+            }
+
+            view.SetSiblingIndex(Mathf.Clamp(originalSiblingIndex, 0, childCount - 1));
         }
 
         private static bool TryResolveLoadoutBoardSlot(

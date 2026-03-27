@@ -263,6 +263,18 @@ namespace YIUIFramework
 
         #endregion
 
+        #region 切换
+
+        [BoxGroup("切换", CenterLabel = true)]
+        [LabelText("Panel 切换默认先开后关")]
+        public bool DefaultPanelLastClose = true;
+
+        [BoxGroup("切换", CenterLabel = true)]
+        [LabelText("View 切换默认先开后关")]
+        public bool DefaultViewFirstOpen = true;
+
+        #endregion
+
         #region GM
 
         [BoxGroup("GM", CenterLabel = true)]

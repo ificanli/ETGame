@@ -39,6 +39,7 @@ namespace ET.Client
             self.InitEquipSlots();
             self.BindMatchModeButtons();
             self.RefreshMatchModeSelection();
+            self.InitBattleRecordUi();
             self.InitWarehouseArea();
             self.BindOwnedAreaBoard(self.u_ComCurrentBagBoardRoot, LoadoutAreaType.Bag);
             self.BindOwnedAreaBoard(self.u_ComSecureBoardRoot, LoadoutAreaType.Secure);
@@ -83,6 +84,7 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventRoleToggleInvoke)]
         private static async ETTask OnEventRoleToggleInvoke(this LobbyPanelComponent self)
         {
+            self.CloseBattleRecordOverlay();
             self.ShowPanel(self.u_ComRolePanelRectTransform);
             await ETTask.CompletedTask;
         }
@@ -90,6 +92,7 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventEquipToggleInvoke)]
         private static async ETTask OnEventEquipToggleInvoke(this LobbyPanelComponent self)
         {
+            self.CloseBattleRecordOverlay();
             self.ShowPanel(self.u_ComEquipPanelRectTransform);
             self.RefreshLoadoutContentTabUi();
             self.TryRefreshLoadoutUi(true);
@@ -102,12 +105,15 @@ namespace ET.Client
             self.ShowPanel(self.u_ComMatchPanelRectTransform);
             self.BindMatchModeButtons();
             self.RefreshMatchModeSelection();
+            self.InitBattleRecordUi();
+            self.CloseBattleRecordOverlay();
             await ETTask.CompletedTask;
         }
 
         [YIUIInvoke(LobbyPanelComponent.OnEventBuildToggleInvoke)]
         private static async ETTask OnEventBuildToggleInvoke(this LobbyPanelComponent self)
         {
+            self.CloseBattleRecordOverlay();
             self.ShowPanel(self.u_ComBuildPanelRectTransform);
             await ETTask.CompletedTask;
         }
@@ -115,6 +121,7 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventExploreToggleInvoke)]
         private static async ETTask OnEventExploreToggleInvoke(this LobbyPanelComponent self)
         {
+            self.CloseBattleRecordOverlay();
             self.ShowPanel(self.u_ComExplorePanelRectTransform);
             await ETTask.CompletedTask;
         }
@@ -1028,11 +1035,18 @@ namespace ET.Client
 
         private static async ETTask OpenItemClickedAsync(this LobbyPanelComponent self, int configId, bool allowEquipAction, long itemUid = 0)
         {
-            if (self == null || self.IsDisposed || self.UIPanel == null || configId <= 0)
+            if (self == null || self.IsDisposed || configId <= 0)
             {
                 return;
             }
 
+            ItemClickedComponent itemClicked = self.GetOrCreateItemClickedCommon();
+            if (itemClicked == null || itemClicked.IsDisposed)
+            {
+                return;
+            }
+
+            EntityRef<LobbyPanelComponent> selfRef = self;
             ItemClickedOpenData openData = new()
             {
                 LobbyPanelRef = self,
@@ -1041,7 +1055,45 @@ namespace ET.Client
                 AllowEquipAction = allowEquipAction,
             };
 
-            await self.UIPanel.OpenViewAsync<ItemClickedComponent, ItemClickedOpenData>(openData);
+            await YIUIEventSystem.Open(itemClicked, openData);
+            self = selfRef;
+        }
+
+        private static ItemClickedComponent GetOrCreateItemClickedCommon(this LobbyPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return null;
+            }
+
+            ItemClickedComponent existing = self.ItemClickedCommon;
+            if (existing != null && !existing.IsDisposed)
+            {
+                return existing;
+            }
+
+            RectTransform root = self.UIBase?.OwnerRectTransform;
+            if (root == null)
+            {
+                return null;
+            }
+
+            Transform parent = root.FindChildByName($"{ItemClickedComponent.ResName}{YIUIConstHelper.Const.UIParentName}");
+            if (parent == null)
+            {
+                Log.Warning("[LobbyPanel] 未找到 ItemClickedParent");
+                return null;
+            }
+
+            ItemClickedComponent created = YIUIFactory.Instantiate<ItemClickedComponent>(self.Scene(), self, parent) as ItemClickedComponent;
+            if (created == null)
+            {
+                return null;
+            }
+
+            created.UIBase?.SetActive(false);
+            self.ItemClickedCommon = created;
+            return created;
         }
 
         /// <summary>
@@ -1105,7 +1157,15 @@ namespace ET.Client
                 return;
             }
 
-            await view.EquipLoop.SetDataRefresh(equipList, 0);
+            view.EquipLoop.ClearSelect();
+            if (equipList.Count > 0)
+            {
+                await view.EquipLoop.SetDataRefresh(equipList, 0);
+            }
+            else
+            {
+                await view.EquipLoop.SetDataRefresh(equipList);
+            }
             self = selfRef;
             view = viewRef;
 
@@ -1116,44 +1176,12 @@ namespace ET.Client
 
             if (equipList.Count > 0)
             {
-                view.PendingItemConfigId = equipList[0].ConfigId;
-                view.PendingItemSourceMode = equipList[0].SourceMode;
-                view.u_DataGunName?.SetValue(self.BuildEquipPreviewText(equipList[0].ConfigId, slotType));
+                EquipSelectViewPreviewHelper.UpdatePreview(view, equipList[0], true);
             }
             else
             {
-                view.PendingItemConfigId = 0;
-                view.PendingItemSourceMode = view.CurrentItemSourceMode;
-                view.u_DataGunName?.SetValue(string.Empty);
+                EquipSelectViewPreviewHelper.UpdatePreview(view, default, true);
             }
-        }
-
-        private static string BuildEquipPreviewText(this LobbyPanelComponent self, int configId, EquipSlotType slotType)
-        {
-            if (configId <= 0)
-            {
-                return string.Empty;
-            }
-
-            string desc = null;
-            if (slotType == EquipSlotType.Weapon || slotType == EquipSlotType.Weapon2)
-            {
-                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(configId);
-                desc = weaponConfig?.Desc;
-            }
-
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
-            if (string.IsNullOrWhiteSpace(desc) && itemConfig != null)
-            {
-                desc = itemConfig.Desc;
-            }
-
-            if (string.IsNullOrWhiteSpace(desc))
-            {
-                ResolveDisplayInfo(configId, out desc, out _, out _);
-            }
-
-            return desc;
         }
 
         private static List<LoadoutWarehouseItemViewData> GetEquipListBySlotType(this LobbyPanelComponent self, EquipSlotType slotType)

@@ -60,6 +60,17 @@ namespace ET.Client
             }
 
             await combatIndicatorComponent.InitializeAsync(scene);
+            scene = sceneRef;
+            unit = unitRef;
+            if (scene == null || unit == null)
+            {
+                return;
+            }
+
+            if (unit.GetComponent<CombatLockCameraComponent>() == null)
+            {
+                unit.AddComponent<CombatLockCameraComponent>();
+            }
         }
 
         private static WeaponComponent TryCreateLocalWeaponComponent(Scene scene, Unit unit)

@@ -15,14 +15,16 @@ MonoBehaviour:
   Graph:
     Version: 1
     Nodes:
-    - Id: 7
+    - LegacyId: 0
+      NodeId: 7
       NodeType: Event
       NodeKey: OnMapLoaded
       Title: Event 7
       PosX: 0
       PosY: 0
       Params: []
-    - Id: 6
+    - LegacyId: 0
+      NodeId: 6
       NodeType: Action
       NodeKey: SpawnMonsters
       Title: Action 6
@@ -37,3 +39,5 @@ MonoBehaviour:
     - FromNodeId: 7
       ToNodeId: 6
       Branch: Out
+    RuntimeNodeCount: 0
+    RuntimeConnectionCount: 0

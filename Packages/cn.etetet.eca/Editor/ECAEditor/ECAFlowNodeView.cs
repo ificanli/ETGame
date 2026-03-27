@@ -167,7 +167,7 @@ namespace ET.Client
                 return string.Empty;
             }
 
-            return string.Join("\n", list.Where(p => p != null).Select(p => $"{p.Key}={p.Value}"));
+            return string.Join("\n", list.Where(FlowParamHelper.IsMeaningfulParam).Select(p => $"{p.Key}={p.Value}"));
         }
 
         private static List<FlowParam> ParseParamsText(string text)
@@ -201,7 +201,13 @@ namespace ET.Client
                     value = line.Substring(index + 1).Trim();
                 }
 
-                result.Add(new FlowParam { Key = key, Value = value });
+                FlowParam param = new FlowParam { Key = key, Value = value };
+                if (!FlowParamHelper.IsMeaningfulParam(param))
+                {
+                    continue;
+                }
+
+                result.Add(param);
             }
 
             return result;

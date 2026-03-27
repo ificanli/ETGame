@@ -26,6 +26,9 @@ namespace ET.Client
         public UITaskEventP0 u_EventEquip;
         public UITaskEventHandleP0 u_EventEquipHandle;
         public const string OnEventEquipInvoke = "ItemClickedComponent.OnEventEquipInvoke";
+        public UITaskEventP0 u_EventExit;
+        public UITaskEventHandleP0 u_EventExitHandle;
+        public const string OnEventExitInvoke = "ItemClickedComponent.OnEventExitInvoke";
 
     }
 }

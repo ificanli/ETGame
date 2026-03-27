@@ -239,7 +239,7 @@ namespace ET.Client
         /// </summary>
         internal static async ETTask OpenViewBefore(this YIUIPanelComponent self, Entity view)
         {
-            if (!view.GetParent<YIUIChild>().GetComponent<YIUIWindowComponent>().WindowFirstOpen)
+            if (!view.GetParent<YIUIChild>().GetComponent<YIUIWindowComponent>().WindowUseFirstOpen)
             {
                 await self.CloseLastView(view);
             }
@@ -252,7 +252,7 @@ namespace ET.Client
         {
             if (success)
             {
-                if (view.GetParent<YIUIChild>().GetComponent<YIUIWindowComponent>().WindowFirstOpen)
+                if (view.GetParent<YIUIChild>().GetComponent<YIUIWindowComponent>().WindowUseFirstOpen)
                 {
                     await self.CloseLastView(view);
                 }

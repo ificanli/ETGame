@@ -12,6 +12,8 @@ namespace ET.Server
 			EntityRef<Unit> unitRef = unit;
 			ServiceDiscoveryProxy serviceDiscoveryProxy = unit.Root().GetComponent<ServiceDiscoveryProxy>();
 			int zone = unit.Zone();
+            EntityRef<Scene> sceneRef = unit.Scene();
+            long unitId = unit.Id;
 
 			List<ServiceInfo> serviceInfos = serviceDiscoveryProxy.GetBySceneTypeAndZone(SceneType.MapManager, zone);
 			string mapManagerName = serviceInfos[0].SceneName;
@@ -25,6 +27,15 @@ namespace ET.Server
 			ReleaseSpawnPointAssignment(unit);
 			UnitComponent unitComponent = unit.GetParent<UnitComponent>();
 			unitComponent.Remove(unit.Id);
+
+            Scene scene = sceneRef;
+            if (scene != null && !scene.IsDisposed)
+            {
+                EventSystem.Instance.Publish(scene, new PlayerRemovedFromMap
+                {
+                    UnitId = unitId,
+                });
+            }
 		}
 
 		private static void ReleaseSpawnPointAssignment(Unit unit)

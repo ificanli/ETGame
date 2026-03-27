@@ -116,7 +116,7 @@ namespace ET.Client
                 ignoreTween = self.IsClose(info.UIPanel);
             }
 
-            if (!ignoreTween && info.UIWindow is { WindowLastClose: false })
+            if (!ignoreTween && info.UIWindow is { WindowUseLastClose: false })
             {
                 await info.UIPanel.CloseAllView(tween);
                 await info.UIWindow.InternalOnWindowCloseTween(tween);
@@ -128,7 +128,7 @@ namespace ET.Client
                 await self.RemoveUIAddElse(info);
             }
 
-            if (!ignoreTween && info.UIWindow is { WindowLastClose: true })
+            if (!ignoreTween && info.UIWindow is { WindowUseLastClose: true })
             {
                 await info.UIPanel.CloseAllView(tween);
                 await info.UIWindow.InternalOnWindowCloseTween(tween);

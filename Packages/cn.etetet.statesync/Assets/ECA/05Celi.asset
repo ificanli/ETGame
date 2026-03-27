@@ -15,7 +15,8 @@ MonoBehaviour:
   Graph:
     Version: 1
     Nodes:
-    - Id: 1
+    - LegacyId: 0
+      NodeId: 1
       NodeType: Event
       NodeKey: OnPlayerEnterRange
       Title: Event 1
@@ -24,7 +25,8 @@ MonoBehaviour:
       Params:
       - Key: 5
         Value: 
-    - Id: 2
+    - LegacyId: 0
+      NodeId: 2
       NodeType: Condition
       NodeKey: PlayerInRange
       Title: Condition 2
@@ -33,7 +35,8 @@ MonoBehaviour:
       Params:
       - Key: 4
         Value: 
-    - Id: 6
+    - LegacyId: 0
+      NodeId: 6
       NodeType: Action
       NodeKey: StartEvacCountdown
       Title: Action 6
@@ -49,3 +52,5 @@ MonoBehaviour:
     - FromNodeId: 2
       ToNodeId: 6
       Branch: True
+    RuntimeNodeCount: 0
+    RuntimeConnectionCount: 0
