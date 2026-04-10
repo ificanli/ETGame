@@ -13,5 +13,8 @@ namespace ET
         public const int ERR_TacticalTargetComponentMissing = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 9;
         public const int ERR_RogueChoiceRerollFailed = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 10;
         public const int ERR_RogueChoiceRerollExhausted = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 11;
+        public const int ERR_DebugSpawnMonsterContextInvalid = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 12;
+        public const int ERR_DebugSpawnMonsterInvalidConfig = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 13;
+        public const int ERR_DebugSpawnMonsterCreateFailed = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 14;
     }
 }

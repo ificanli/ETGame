@@ -1,4 +1,5 @@
 using ET.Server;
+using Unity.Mathematics;
 
 namespace ET.Test
 {
@@ -44,6 +45,7 @@ namespace ET.Test
             unit.AddComponent<BuffComponent>();
 
             RogueBuffConfigLoader.EnsureRegistered();
+            RogueEffectGroupLoader.RegisterAll();
 
             BuffConfig buffConfig = BuffConfigCategory.Instance.Get(1045);
             if (buffConfig == null)
@@ -151,10 +153,13 @@ namespace ET.Test
                 return 14;
             }
 
+            unit.Position = float3.zero;
+            unit.Rotation = quaternion.identity;
+
             long actualHp = unit.NumericComponent?.GetAsLong(NumericType.HP) ?? 0;
-            if (actualHp != expectedHp)
+            if (actualHp != startHp)
             {
-                Log.Console($"rogue option 1045 immediate heal mismatch, hp={actualHp}, expected={expectedHp}, startHp={startHp}, maxHp={maxHp}");
+                Log.Console($"rogue option 1045 should not heal immediately, hp={actualHp}, startHp={startHp}, expectedPickupHp={expectedHp}");
                 return 15;
             }
 
@@ -166,9 +171,11 @@ namespace ET.Test
             }
 
             long spiritUnitId = 0;
+            RogueSummonedSpiritSourceData spiritSourceData = default;
             foreach (RogueSummonedSpiritSourceData sourceData in spiritState.Sources.Values)
             {
                 spiritUnitId = sourceData.SpiritUnitId;
+                spiritSourceData = sourceData;
                 break;
             }
 
@@ -192,18 +199,33 @@ namespace ET.Test
                 return 19;
             }
 
+            RogueWeaponModifierComponent modifierComponent = unit.GetComponent<RogueWeaponModifierComponent>();
+            int auraDamageBonus = modifierComponent?.GetModifier(1, WeaponModType.BulletDamage) ?? 0;
+            if (!spiritSourceData.AuraActive || auraDamageBonus != healSpiritEffect.DamageBonusPermille)
+            {
+                Log.Console($"rogue option 1045 aura mismatch, active={spiritSourceData.AuraActive}, damageBonus={auraDamageBonus}, expected={healSpiritEffect.DamageBonusPermille}");
+                return 20;
+            }
+
             RogueEffectHelper.RemoveSelectedOption(unit, progress, 1045);
             if (unit.GetComponent<RogueSummonedSpiritStateComponent>() != null)
             {
                 Log.Console("rogue option 1045 spirit state should be removed after option remove");
-                return 20;
+                return 21;
             }
 
             spirit = scene.GetComponent<UnitComponent>()?.Get(spiritUnitId);
             if (spirit != null && !spirit.IsDisposed)
             {
                 Log.Console("rogue option 1045 spirit should be disposed after option remove");
-                return 21;
+                return 22;
+            }
+
+            modifierComponent = unit.GetComponent<RogueWeaponModifierComponent>();
+            if (modifierComponent != null && modifierComponent.GetModifier(1, WeaponModType.BulletDamage) != 0)
+            {
+                Log.Console("rogue option 1045 aura modifier should be removed after option remove");
+                return 23;
             }
 
             return ErrorCode.ERR_Success;

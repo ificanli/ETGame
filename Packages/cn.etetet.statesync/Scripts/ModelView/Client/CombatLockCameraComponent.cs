@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ET.Client
 {
     /// <summary>
-    /// 本地玩家锁定目标后的战斗相机偏移状态。
+    /// 本地玩家基于当前战斗目标的战斗相机偏移状态。
     /// </summary>
     [ComponentOf(typeof(Unit))]
     public class CombatLockCameraComponent : Entity, IAwake, IUpdate, IDestroy

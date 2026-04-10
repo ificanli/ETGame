@@ -51,35 +51,26 @@ namespace ET.Test
                 return 2;
             }
 
-            List<int> legacyOptions = new();
-            foreach (KeyValuePair<int, RogueOptionConfig> kv in configCategory.GetOptions())
+            HashSet<int> excludedOptionIds = new();
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, excludedOptionIds, out int baseOptionId, out _, out _))
             {
-                if (kv.Value == null ||
-                    !kv.Value.TryGetLegacyBuffConfigId(out int buffConfigId) ||
-                    !BuffConfigCategory.Instance.Contain(buffConfigId))
-                {
-                    continue;
-                }
-
-                legacyOptions.Add(kv.Key);
-                if (legacyOptions.Count >= 3)
-                {
-                    break;
-                }
-            }
-
-            if (legacyOptions.Count < 3)
-            {
-                Log.Console($"not enough legacy rogue options, count={legacyOptions.Count}");
+                Log.Console("base keepable rogue option not found");
                 return 3;
             }
 
-            int baseOptionId = legacyOptions[0];
-            int grantOptionId = legacyOptions[1];
-            int resetOptionId = legacyOptions[2];
+            excludedOptionIds.Add(baseOptionId);
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, excludedOptionIds, out int grantOptionId, out _, out _))
+            {
+                Log.Console("grant keepable rogue option not found");
+                return 4;
+            }
 
-            RogueOptionConfig grantOptionConfig = configCategory.GetOptions()[grantOptionId];
-            RogueOptionConfig resetOptionConfig = configCategory.GetOptions()[resetOptionId];
+            excludedOptionIds.Add(grantOptionId);
+            if (!TestHelper.TryFindExecutableRogueOption(configCategory, excludedOptionIds, out int resetOptionId, out RogueOptionConfig resetOptionConfig))
+            {
+                Log.Console("reset rogue option not found");
+                return 5;
+            }
 
             string oldResetBtConfig = resetOptionConfig.BTConfig;
             int oldResetEffectGroupId = resetOptionConfig.EffectGroupId;
@@ -112,7 +103,7 @@ namespace ET.Test
                 if (progress == null)
                 {
                     Log.Console("rogue progress is null");
-                    return 4;
+                    return 6;
                 }
 
                 progress.ChoicePending = true;
@@ -128,13 +119,13 @@ namespace ET.Test
                 if (unit == null || progress == null)
                 {
                     Log.Console("unit or progress disposed after first base choose");
-                    return 5;
+                    return 7;
                 }
 
                 if (chooseError != ErrorCode.ERR_Success)
                 {
                     Log.Console($"first base choose failed, error={chooseError}");
-                    return 6;
+                    return 8;
                 }
 
                 progress.ChoicePending = true;
@@ -150,19 +141,19 @@ namespace ET.Test
                 if (unit == null || progress == null)
                 {
                     Log.Console("unit or progress disposed after second base choose");
-                    return 7;
+                    return 9;
                 }
 
                 if (chooseError != ErrorCode.ERR_Success)
                 {
                     Log.Console($"second base choose failed, error={chooseError}");
-                    return 8;
+                    return 10;
                 }
 
                 if (progress.SelectedOptionIds.Count != 2)
                 {
                     Log.Console($"selected option count mismatch before reset, count={progress.SelectedOptionIds.Count}");
-                    return 9;
+                    return 11;
                 }
 
                 progress.ChoicePending = true;
@@ -178,44 +169,44 @@ namespace ET.Test
                 if (unit == null || progress == null)
                 {
                     Log.Console("unit or progress disposed after reset choose");
-                    return 10;
+                    return 12;
                 }
 
                 if (chooseError != ErrorCode.ERR_Success)
                 {
                     Log.Console($"reset choose failed, error={chooseError}");
-                    return 11;
+                    return 13;
                 }
 
                 if (progress.SelectedOptionIds.Count != 1)
                 {
                     Log.Console($"selected option count mismatch after reset, count={progress.SelectedOptionIds.Count}");
-                    return 12;
+                    return 14;
                 }
 
                 if (progress.SelectedOptionIds[0] != grantOptionId)
                 {
                     Log.Console($"granted option mismatch, optionId={progress.SelectedOptionIds[0]}, expected={grantOptionId}");
-                    return 13;
+                    return 15;
                 }
 
                 if (progress.SelectedOptionIds.Contains(resetOptionId))
                 {
                     Log.Console("reset option should not remain in selected options");
-                    return 14;
+                    return 16;
                 }
 
                 if (progress.AppliedBuffIds.Count != 1)
                 {
                     Log.Console($"applied buff count mismatch after reset, count={progress.AppliedBuffIds.Count}");
-                    return 15;
+                    return 17;
                 }
 
                 RogueEffectRuntimeComponent runtimeComponent = unit.GetComponent<RogueEffectRuntimeComponent>();
                 if (runtimeComponent == null || runtimeComponent.ChildrenCount() != 1)
                 {
                     Log.Console($"runtime component count mismatch after reset, count={runtimeComponent?.ChildrenCount() ?? 0}");
-                    return 16;
+                    return 18;
                 }
 
                 return ErrorCode.ERR_Success;

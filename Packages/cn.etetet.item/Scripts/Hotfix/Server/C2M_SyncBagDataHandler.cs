@@ -1,5 +1,7 @@
 namespace ET.Server
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// 同步背包数据Handler
     /// </summary>
@@ -32,6 +34,14 @@ namespace ET.Server
                 itemData.GridWidth = item.GridWidth > 0 ? item.GridWidth : LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
                 itemData.GridHeight = item.GridHeight > 0 ? item.GridHeight : LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
                 response.Items.Add(itemData);
+            }
+
+            RuntimeSecureInventoryComponent secureInventory = unit.GetComponent<RuntimeSecureInventoryComponent>();
+            response.SecureWidth = secureInventory?.Width ?? 0;
+            response.SecureHeight = secureInventory?.Height ?? 0;
+            if (secureInventory != null)
+            {
+                RuntimeSecureInventoryHelper.FillMessage(secureInventory, response.SecureItems);
             }
 
             await ETTask.CompletedTask;

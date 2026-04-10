@@ -40,6 +40,9 @@ namespace ET.Client
                 itemComponent.UpdateItem(itemData.ItemId, itemData.SlotIndex, itemData.ConfigId, itemData.Count, itemData.GridWidth, itemData.GridHeight);
             }
 
+            LoadoutComponent loadout = scene.GetComponent<LoadoutComponent>() ?? scene.AddComponent<LoadoutComponent>();
+            LoadoutClientStateHelper.ApplyRuntimeSecureState(loadout, message.SecureWidth, message.SecureHeight, message.SecureItems);
+
             Log.Debug($"bag data synced, size: {itemComponent.Width}x{itemComponent.Height}, item count: {message.Items.Count}");
             
             await ETTask.CompletedTask;

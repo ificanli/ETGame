@@ -80,9 +80,8 @@ namespace ET.Server
             // 获取背包组件
             ItemComponent itemComponent = unit.GetComponent<ItemComponent>();
 
-            // 检查背包是否有空槽位
-            int emptySlot = itemComponent.FindEmptySlot();
-            if (emptySlot < 0)
+            // 检查背包是否有合法二维锚点
+            if (!itemComponent.TryFindFirstFitAnchorSlot(item.GridWidth, item.GridHeight, out int emptySlot))
             {
                 Log.Error("bag is full");
                 return ErrorCode.ERR_EquipmentBagFull;

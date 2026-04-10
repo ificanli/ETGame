@@ -4,10 +4,12 @@
     "references": [
         "ET.Core",
         "ET.YooAssets",
+        "ET.YooAssets.Editor",
         "ET.Core.Editor",
         "ET.Loader",
         "ET.Init.Editor",
         "ET.HybridCLR",
+        "ET.HybridCLR.Editor",
         "ET.MemoryPack",
         "ET.Scripts.Editor",
         "ET.Init"

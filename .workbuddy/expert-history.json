@@ -3,6 +3,15 @@
   "sessions": {
     "73acb28837d34858a66b5e0ddeda17a2": [
       {
+        "expertId": "SeniorProjectManager",
+        "name": "Dylan",
+        "profession": "高级项目经理",
+        "avatarUrl": "https://acc-1258344699.cos.accelerate.myqcloud.com/workbuddy/experts/avatars/07-ProjectManagement/SeniorProjectManager/SeniorProjectManager.png",
+        "promptUrl": "https://acc-1258344699.cos.accelerate.myqcloud.com/workbuddy/experts/experts/07-ProjectManagement/SeniorProjectManager/SeniorProjectManager_zh.md",
+        "usedAt": 1774689634084,
+        "industryId": "all"
+      },
+      {
         "expertId": "SeniorDeveloper",
         "name": "Will",
         "profession": "高级开发工程师",
@@ -19,17 +28,8 @@
         "promptUrl": "https://acc-1258344699.cos.accelerate.myqcloud.com/workbuddy/experts/experts/01-Design/UserExperienceResearcher/UserExperienceResearcher_zh.md",
         "usedAt": 1774513086507,
         "industryId": "01-Design"
-      },
-      {
-        "expertId": "UiDesigner",
-        "name": "Sam",
-        "profession": "UI设计师",
-        "avatarUrl": "https://acc-1258344699.cos.accelerate.myqcloud.com/workbuddy/experts/avatars/01-Design/UiDesigner/UiDesigner.png",
-        "promptUrl": "https://acc-1258344699.cos.accelerate.myqcloud.com/workbuddy/experts/experts/01-Design/UiDesigner/UiDesigner_zh.md",
-        "usedAt": 1774513063916,
-        "industryId": "01-Design"
       }
     ]
   },
-  "lastUpdated": 1774574590272
+  "lastUpdated": 1774724635045
 }

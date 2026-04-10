@@ -241,6 +241,13 @@ message M2C_DeathSettlement // IMessage
 {
 }
 
+message M2C_RuntimeSecureStateChanged // IMessage
+{
+    int32 SecureWidth = 1;
+    int32 SecureHeight = 2;
+    repeated LoadoutGridItemData Items = 3;
+}
+
 // Map 侧向 Gate 侧 Player 发送的撤离结算通知
 message Map2G_EvacuationSettlement // IMessage
 {
@@ -260,4 +267,7 @@ message Map2G_LoadoutCarryResult // IMessage
     int32 BagHeight = 7;
     repeated LoadoutGridItemData FinalBagItems = 8;
     int64 TotalWealthDelta = 9;
+    int32 SecureWidth = 10;
+    int32 SecureHeight = 11;
+    repeated LoadoutGridItemData FinalSecureItems = 12;
 }

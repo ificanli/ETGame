@@ -10,6 +10,7 @@
     "SafeSlotCount": 4,
     "CorpseInteractRange": 3,
     "CorpseButtonTextId": 0,
-    "DefaultMonsterCorpseLootBoxUnitConfigId": 1002
+    "DefaultMonsterCorpseLootBoxUnitConfigId": 1002,
+    "AutoSecureMinValuePerGrid": 300
   }
 ]

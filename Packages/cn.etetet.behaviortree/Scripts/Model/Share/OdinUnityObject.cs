@@ -46,10 +46,10 @@ namespace ET
             {
                 s = $"{s} t:{this.Object.GetType().Name}";
             }
-            foreach (string guid in UnityEditor.AssetDatabase.FindAssets($"{s}", null))
+            foreach (string guid in UnityEditorReflectionHelper.FindAssets(s))
             {
-                string path   = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                UnityEngine.Object obj = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+                string path = UnityEditorReflectionHelper.GuidToAssetPath(guid);
+                UnityEngine.Object obj = UnityEditorReflectionHelper.LoadAssetAtPath(path) as UnityEngine.Object;
                 if (obj == null)
                 {
                     UnityEngine.Debug.LogError($"找不到资源: {this.Name}");

@@ -73,6 +73,12 @@ namespace ET
         /// <summary>第2槽生效基础伤害</summary>
         public float Slot2EffectiveDamage;
 
+        /// <summary>第1槽生效穿透次数</summary>
+        public int Slot1EffectivePenetrationCount;
+
+        /// <summary>第2槽生效穿透次数</summary>
+        public int Slot2EffectivePenetrationCount;
+
         // ---- 只读便捷属性 ----
 
         /// <summary>当前槽的武器ID（0=无武器）</summary>

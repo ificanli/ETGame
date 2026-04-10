@@ -24,6 +24,7 @@ namespace ET.Client
                 return;
             }
 
+            AudioHelper.PlayUi(root, AudioEventId.SfxChoiceConfirm);
             EntityRef<RoguePanelComponent> panelRef = panel;
             EntityRef<Scene> rootRef = root;
             await RogueClientHelper.ChooseOption(root, runtime.ChoiceOptions[index].OptionId);

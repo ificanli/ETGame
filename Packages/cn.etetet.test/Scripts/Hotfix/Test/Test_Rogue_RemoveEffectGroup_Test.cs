@@ -50,16 +50,10 @@ namespace ET.Test
                 return 2;
             }
 
-            if (!configCategory.TryGetOption(1, out RogueOptionConfig optionConfig) || optionConfig == null)
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, null, out int optionId, out RogueOptionConfig optionConfig, out int buffConfigId))
             {
-                Log.Console("rogue option config 1 is null");
+                Log.Console("failed to find keepable rogue option");
                 return 3;
-            }
-
-            if (!optionConfig.TryGetLegacyBuffConfigId(out int buffConfigId) || !BuffConfigCategory.Instance.Contain(buffConfigId))
-            {
-                Log.Console($"legacy buff config invalid, buffConfigId={buffConfigId}");
-                return 4;
             }
 
             const int effectGroupId = 7011;
@@ -100,11 +94,11 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(optionId);
 
                 EntityRef<Unit> unitRef = unit;
                 EntityRef<RogueProgressComponent> progressRef = progress;
-                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1, null);
+                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, optionId, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)

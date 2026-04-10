@@ -1,305 +1,197 @@
 # ECA 框架使用指南 - 场景配置流程
 
-> 说明：本文档保留“整体配置流程”说明。
+> 本文档只描述当前工程里已经接上的配置流程。
 >
-> 如果你现在要查“具体参数怎么配、默认值是什么、哪些点位类型生效”，请优先看：
-> `MyBook/ECA/ECA2/ECA场景配置参数手册.md`
+> 具体参数、默认值、节点能力边界，请配合阅读：
+> `Book/07-ECA框架/ECA2/ECA场景配置参数手册.md`
 
-## 配置流程
+## 1. 当前有效入口
 
-### 第一步：在场景中创建撤离点
+当前场景配置入口只有 `ECAPointMarker`，不再使用旧版 `ECAConfigAsset` / `Config` 字段手工关联方案。
 
-1. **在 Unity 场景中创建 GameObject**
-   - 在 Hierarchy 中右键 → Create Empty
-   - 命名为 "EvacuationPoint_001"
-   - 移动到你想要的位置（例如：100, 0, 50）
+每个点位在 Unity 场景里直接配置：
+- `ConfigId`
+- `Type`
+- `Params`
+- 可选 `FlowGraph`
+- `ShowRange`
+- `RangeColor`
 
-2. **添加 ECAPointMarker 组件**
-   - 选中 GameObject
-   - 在 Inspector 中点击 "Add Component"
-   - 搜索 "ECAPointMarker"
-   - 添加组件
+`ECAPointMarker` 会按 `Type` 自动补齐一组模板参数：
+- 撤离点：补 `evacuation_duration_ms`、`lobby_map_name`
+- 出生点：补 `team_id`
+- 门/钥匙门：补导航阻挡和门交互参数
 
-3. **配置参数**
-   - **Config**: 关联 ECAConfig（见第二步）
-   - **Interact Range**: 5（交互范围5米）
-   - **Show Range**: ✓（显示范围）
-   - **Range Color**: 绿色
+## 2. 场景配置步骤
 
-### 第二步：创建 ECA 配置（临时方案）
+### 第一步：在 Unity 场景中创建点位
 
-**注意**：由于 GraphView 编辑器还未实现，暂时使用代码方式创建配置。
+1. 创建一个空物体，例如 `EvacuationPoint_001`
+2. 添加 `ECAPointMarker`
+3. 配置 `ConfigId`
+4. 选择 `Type`
+5. 在 `Params` 里填写当前点位需要的参数
+6. 如果这个点位要走 `FlowGraph`，再关联 `FlowGraph`
 
-在 Unity 中创建一个临时脚本：
+注意：
+- `ConfigId` 必须在同一张图内唯一
+- 不要再创建 `ScriptableObject.CreateInstance<ECAConfig>()`
+- 不要再找旧文档里的 `Config` 字段，当前组件没有这个运行入口
 
-```csharp
-using UnityEngine;
-using ET;
+### 第二步：导出场景配置
 
-public class CreateTestECAConfig : MonoBehaviour
-{
-    [ContextMenu("Create Test Evacuation Config")]
-    void CreateConfig()
-    {
-        // 创建配置
-        ECAConfig config = ScriptableObject.CreateInstance<ECAConfig>();
-        config.ConfigId = "evac_001";
-        config.PointType = 1; // EvacuationPoint
-        config.InteractRange = 5f;
-        config.InitialState = 0; // Available
-        config.IsResetable = false;
+在 Unity 菜单执行：
 
-        // 创建状态节点
-        ECAStateNode availableState = new ECAStateNode
-        {
-            Id = 1,
-            StateName = "Available",
-            IsInitialState = true,
-            IsResetable = false
-        };
-
-        ECAStateNode evacuatedState = new ECAStateNode
-        {
-            Id = 2,
-            StateName = "Evacuated",
-            IsInitialState = false,
-            IsResetable = false
-        };
-
-        // 创建事件节点
-        ECAEventNode enterEvent = new ECAEventNode
-        {
-            Id = 3,
-            EventType = 1, // OnPlayerEnter
-            EventParams = "{}"
-        };
-
-        // 创建条件节点
-        ECAConditionNode stateCheck = new ECAConditionNode
-        {
-            Id = 4,
-            ConditionType = 3, // StateCheck
-            ConditionParams = "{\"allowedStates\": [0]}"
-        };
-
-        // 创建动作节点
-        ECAActionNode startEvacuation = new ECAActionNode
-        {
-            Id = 5,
-            ActionType = 1, // StartEvacuation
-            ActionParams = "{\"evacuateTime\": 10000}" // 10秒
-        };
-
-        // 添加节点
-        config.Nodes.Add(availableState);
-        config.Nodes.Add(evacuatedState);
-        config.Nodes.Add(enterEvent);
-        config.Nodes.Add(stateCheck);
-        config.Nodes.Add(startEvacuation);
-
-        // 创建连接
-        config.Connections.Add(new ECAConnection
-        {
-            FromNodeId = 1, // Available
-            FromPortName = "exit",
-            ToNodeId = 3, // OnPlayerEnter
-            ToPortName = "input"
-        });
-
-        config.Connections.Add(new ECAConnection
-        {
-            FromNodeId = 3, // OnPlayerEnter
-            FromPortName = "output",
-            ToNodeId = 4, // StateCheck
-            ToPortName = "input"
-        });
-
-        config.Connections.Add(new ECAConnection
-        {
-            FromNodeId = 4, // StateCheck
-            FromPortName = "True",
-            ToNodeId = 5, // StartEvacuation
-            ToPortName = "input"
-        });
-
-        config.Connections.Add(new ECAConnection
-        {
-            FromNodeId = 5, // StartEvacuation
-            FromPortName = "output",
-            ToNodeId = 2, // Evacuated
-            ToPortName = "input"
-        });
-
-        // 保存为 Asset
-#if UNITY_EDITOR
-        UnityEditor.AssetDatabase.CreateAsset(config, "Assets/ECAConfigs/evac_001.asset");
-        UnityEditor.AssetDatabase.SaveAssets();
-        Debug.Log("ECA Config created at: Assets/ECAConfigs/evac_001.asset");
-#endif
-    }
-}
+```text
+ET/ECA/Export ECA Config
 ```
 
-**使用方法**：
-1. 创建 `Assets/ECAConfigs` 文件夹
-2. 创建上述脚本并挂到任意 GameObject 上
-3. 右键组件 → "Create Test Evacuation Config"
-4. 会在 `Assets/ECAConfigs/evac_001.asset` 生成配置
+导出结果：
+- 路径：`Packages/cn.etetet.map/Bundles/ECA/{SceneName}.txt`
+- 内容：当前场景所有 `ECAPointMarker` 收集后的 `ECAConfig` JSON
 
-### 第三步：关联配置到场景标记
+导出前校验：
+- `ConfigId` 不能重复
+- `FlowGraph` 里的节点必须通过编辑器校验
 
-1. 选中场景中的 "EvacuationPoint_001" GameObject
-2. 在 Inspector 中找到 ECAPointMarker 组件
-3. 将 `evac_001.asset` 拖到 "Config" 字段
-4. 保存场景
+### 第三步：确认服务端加载链路
 
-### 第四步：在地图加载时加载 ECA 点
+当前正式链路已经接好，不需要再手工补代码。
 
-找到地图初始化代码（例如 `MapHelper.cs` 或地图加载相关的 System），添加：
+地图初始化时：
+- [`FiberInit_Map.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.map/Scripts/Hotfix/Server/FiberInit_Map.cs#L45) 会自动调用 `ECALoader.LoadFromFile(root, mapName)`
+- [`ECALoader.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/Hotfix/Server/ECALoader.cs#L13) 会从 `Packages/cn.etetet.map/Bundles/ECA/{mapName}.txt` 加载
 
-```csharp
-// 在地图加载完成后
-ECALoader.LoadECAPoints(mapScene, mapName);
+这里最容易出错的是文件名：
+- Unity 导出名来自当前场景名
+- 服务端加载名来自 `root.Name.GetSceneConfigName()`
+- 两边必须一致
+
+### 第四步：确认运行时触发链路
+
+当前正式运行时链路如下：
+
+范围检测：
+- 不是挂在 `MoveTimer`
+- 由 [`ECACheckRangeTimer.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.ecanode/Scripts/Hotfix/Server/ECACheckRangeTimer.cs#L3) 按全图统一间隔轮询
+
+进入/离开范围：
+- 由 [`ECAHelper.CheckPlayerInRange`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/Hotfix/Server/ECAHelper.cs#L17) 触发
+- 最终走 [`ECAPointComponentSystem`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/Hotfix/Server/ECAPointComponentSystem.cs#L41)
+
+玩家交互：
+- 客户端发 `C2M_ECAInteract`
+- 服务端由 [`C2M_ECAInteractHandler.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.map/Scripts/Hotfix/Server/Map/C2M_ECAInteractHandler.cs#L3) 校验距离后触发 `OnPlayerInteractAsync`
+
+### 第五步：理解 FlowGraph 与 fallback 的关系
+
+规则是：
+- 点位有 `FlowGraph` 时，优先走 FlowGraph
+- 点位没有 `FlowGraph` 时，走点位类型 fallback
+- 当前真正仍在用的 fallback，主要是“撤离点旧逻辑”
+
+撤离点有一个特殊兼容分支：
+- 如果撤离点挂了 `FlowGraph`
+- 但图里没有 `StartEvacCountdown`
+- 那么进入范围后仍然会 fallback 到旧撤离逻辑
+
+对应代码：
+- [`ECAPointComponentSystem.ShouldFallbackToLegacyEvacuation`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/Hotfix/Server/ECAPointComponentSystem.cs#L302)
+
+## 3. 推荐配置模式
+
+### 3.1 纯 fallback 撤离点
+
+适合：
+- 只要“进圈开始撤离，离圈取消，完成后回大厅”的简单撤离点
+
+点位参数示例：
+
+```text
+interact_range=5
+evacuation_duration_ms=15000
+lobby_map_name=Home
 ```
 
-**示例位置**：
-- 可能在 `cn.etetet.map` 包中
-- 可能在地图的 `Awake` 或 `Start` 方法中
-- 搜索关键字：`MapComponent`、`MapHelper`、地图初始化
+说明：
+- 不配置 `FlowGraph`
+- 玩家进入范围后直接启动撤离
 
-### 第五步：添加玩家移动检测
+### 3.2 FlowGraph 容器
 
-找到玩家移动相关的 System，添加 ECA 点检测：
+适合：
+- 搜索、掉落、开容器 UI 这类有明确流程的点位
 
-```csharp
-// 在玩家移动更新中（例如 MoveComponentSystem.cs）
-public static void Update(this MoveComponent self)
-{
-    // ... 原有移动逻辑 ...
+常见流程：
+- `OnPlayerEnterRange -> ShowInteractButton`
+- `OnPlayerLeaveRange -> HideInteractButton`
+- `OnPlayerInteract -> ShowSearchUI -> StartSearchTimer`
+- `OnTimerElapsed(timer_id=...) -> GenerateContainerLoot -> OpenContainerUI`
 
-    // 检查 ECA 点
-    Unit player = self.GetParent<Unit>();
-    CheckECAPoints(player);
-}
+### 3.3 门/钥匙门
 
-private static void CheckECAPoints(Unit player)
-{
-    UnitComponent unitComponent = player.Domain().GetComponent<UnitComponent>();
-    if (unitComponent == null) return;
+推荐流程：
+- `OnPlayerEnterRange -> RefreshDoorInteractHint`
+- `OnPlayerLeaveRange -> HideInteractButton`
+- `OnPlayerInteract -> ToggleDoor`
 
-    foreach (Unit unit in unitComponent.GetAll())
-    {
-        ECAPointComponent ecaPoint = unit.GetComponent<ECAPointComponent>();
-        if (ecaPoint == null || !ecaPoint.IsActive)
-        {
-            continue;
-        }
+说明：
+- 钥匙门是否可交互、显示什么按钮文字，运行时会结合点位参数自动判断
+- 导航阻挡会根据点位状态自动刷新，不要再手工写额外门阻挡逻辑
 
-        float distance = Unity.Mathematics.math.distance(player.Position, unit.Position);
-        bool inRange = distance <= ecaPoint.InteractRange;
-        bool wasInRange = ecaPoint.PlayersInRange.Contains(player.Id);
+## 4. 不要再做的旧操作
 
-        if (inRange && !wasInRange)
-        {
-            // 进入范围
-            ecaPoint.OnPlayerEnter(player).Coroutine();
-        }
-        else if (!inRange && wasInRange)
-        {
-            // 离开范围
-            ecaPoint.OnPlayerLeave(player);
-        }
-    }
-}
-```
+以下做法都是旧文档遗留，当前不要再照着做：
 
-### 第六步：集成跳转回 Lobby
+- 不要创建 `ECAConfigAsset`
+- 不要手写 `ScriptableObject.CreateInstance<ECAConfig>()`
+- 不要手工在地图初始化里补 `ECALoader.LoadECAPoints(mapScene, mapName)`
+- 不要把 `ECAHelper.CheckPlayerInRange(unit)` 塞回 `MoveTimer`
+- 不要把 `StartEvacCountdown -> TransferToLobby` 当成“延迟传送”流程
 
-找到 `PlayerEvacuationComponentSystem.cs` 的第 58 行，替换 TODO：
+最后一点尤其重要：
+- `StartEvacCountdown` 只是启动撤离组件
+- `TransferToLobby` 是立即执行的动作
+- 两者直接串起来会立刻跳图，不会等倒计时结束
 
-```csharp
-// 原代码（第58行）
-// TODO: 跳转回 lobby
-// 示例：await MapHelper.TransferToLobby(player);
+## 5. 常见问题
 
-// 替换为你的实际跳转逻辑
-// 例如：
-await TransferHelper.Transfer(player, SceneType.Lobby);
-// 或者：
-await MapHelper.ExitMap(player);
-```
+### Q1：为什么导出了配置，但进图后没有生效？
+
+优先检查：
+- 导出文件名是否和服务端 `mapName` 一致
+- 当前地图是否真的会走 `FiberInit_Map`
+- 导出的 `ConfigId` 是否重复
+
+### Q2：为什么门状态变了，但路网没变化？
+
+优先检查：
+- 点位是否配置了 `nav_block_enabled`
+- `nav_block_states` 是否覆盖了当前状态
+- 当前地图是否在初始化后执行了 `ECAPointNavBlockHelper.Rebuild`
+
+### Q3：为什么 FlowGraph 里写了 `OnMapLoaded`，进图没触发？
+
+截至当前代码：
+- `OnMapLoaded` 已经出现在枚举、编辑器模板和导出数据里
+- 但没有看到地图加载完成后统一转发到每个点位 `FlowGraph` 的正式运行时接线
+
+结论：
+- 当前正式关卡配置不要依赖 `OnMapLoaded`
+- 如果后面补了接线，再单独更新文档
+
+## 6. 相关代码入口
+
+- 点位组件：[`ECAPointMarker.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/ModelView/Client/ECAPointMarker.cs)
+- 导出入口：[`ExportECAConfigEditor.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Editor/ECAEditor/ExportECAConfigEditor.cs)
+- 场景收集：[`ECASceneHelper.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/ModelView/Client/ECASceneHelper.cs)
+- 服务端加载：[`ECALoader.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/Hotfix/Server/ECALoader.cs)
+- 范围检测：[`ECAHelper.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/Hotfix/Server/ECAHelper.cs)
+- 范围轮询定时器：[`ECACheckRangeTimer.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.ecanode/Scripts/Hotfix/Server/ECACheckRangeTimer.cs)
+- FlowGraph 执行：[`ECAFlowGraphRunner.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.eca/Scripts/Hotfix/Server/ECAFlowGraphRunner.cs)
+- Action 实现：[`ECAFlowActionInvokeHandler.cs`](D:/05ET/MatchTest/ETGame/Packages/cn.etetet.ecanode/Scripts/Hotfix/Server/ECAFlowActionInvokeHandler.cs)
 
 ---
 
-## 测试流程
-
-1. **启动游戏，进入地图**
-2. **走到撤离点附近**（100, 0, 50）
-3. **进入5米范围内**
-   - 应该看到日志：`Player {id} started evacuation, time: 10000ms`
-4. **等待10秒**
-   - 可以看到撤离进度（如果有UI）
-5. **撤离完成**
-   - 应该看到日志：`Player {id} evacuation completed, returning to lobby`
-   - 跳转回 Lobby
-
----
-
-## 调试技巧
-
-### 查看日志
-
-关键日志位置：
-- `ECALoader.LoadECAPoints`: 加载了多少个 ECA 点
-- `ECAPointComponentSystem.OnPlayerEnter`: 玩家进入撤离点
-- `ECAActionHelper.ExecuteStartEvacuation`: 开始撤离
-- `PlayerEvacuationComponentSystem.CompleteEvacuation`: 撤离完成
-
-### 检查状态
-
-在 Unity 编辑器中：
-1. 运行游戏
-2. 在 Hierarchy 中找到撤离点 GameObject
-3. 查看 ECAPointMarker 组件的参数
-4. 确认 Config 已关联
-
-### 常见问题
-
-**问题1：看不到撤离点范围**
-- 检查 ECAPointMarker 的 "Show Range" 是否勾选
-- 检查 Scene 视图是否开启 Gizmos
-
-**问题2：进入范围没有反应**
-- 检查是否调用了 `ECALoader.LoadECAPoints`
-- 检查日志是否有 "Loading ECA points" 信息
-- 检查是否添加了玩家移动检测代码
-
-**问题3：撤离倒计时不工作**
-- 检查 `PlayerEvacuationComponent` 的 `Status` 是否为 1
-- 检查 `Update` 方法是否被调用
-- 检查玩家是否在范围内（距离 <= 5米）
-
-**问题4：撤离完成后没有跳转**
-- 检查 `PlayerEvacuationComponentSystem.cs` 第58行的 TODO 是否已替换
-- 检查跳转逻辑是否正确
-
----
-
-## 场景可视化
-
-在 Scene 视图中，你应该能看到：
-- 绿色的线框球体（撤离点范围）
-- 黄色的标签显示配置ID
-- 选中时高亮显示
-
----
-
-## 下一步
-
-等 GraphView 编辑器实现后，你就可以：
-1. 双击 ECAConfig 打开可视化编辑器
-2. 拖拽节点配置状态流转
-3. 可视化调试执行路径
-
-但现在你已经可以测试基本的撤离功能了！
-
+最后更新：2026-03-27
+状态：已按当前实现重写

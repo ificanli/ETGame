@@ -65,6 +65,7 @@ namespace ET.Server
             ECAFlowActionRegistry.Register(ECAFlowActionKey.TransferToLobby, HandleTransferToLobbyAsync);
             ECAFlowActionRegistry.Register(ECAFlowActionKey.ApplyStealth, HandleApplyStealthAsync);
             ECAFlowActionRegistry.Register(ECAFlowActionKey.RemoveStealth, HandleRemoveStealthAsync);
+            ECAFlowActionRegistry.Register(ECAFlowActionKey.StartDissolve, HandleStartDissolveAsync);
         }
 
         private static ETTask HandleSetPointActiveAsync(ECAFlowActionInvoke args)
@@ -507,6 +508,45 @@ namespace ET.Server
             }
 
             point.Scene()?.GetComponent<ExtraUnitVisibilityComponent>()?.SetPlayerConcealmentState(point.PointId, player, false);
+            return ETTask.CompletedTask;
+        }
+
+        private static ETTask HandleStartDissolveAsync(ECAFlowActionInvoke args)
+        {
+            ECAPointComponent point = args.Point;
+            Unit player = args.Player;
+            if (point == null || point.IsDisposed)
+            {
+                return ETTask.CompletedTask;
+            }
+
+            if (point.CurrentState == StarWishBlockState.Dissolved)
+            {
+                return ETTask.CompletedTask;
+            }
+
+            ECAPointStateHelper.SetState(point, StarWishBlockState.Dissolved);
+            point.IsActive = false;
+            ContainerRuntimeHelper.NotifyPointStateToPlayers(point);
+
+            Scene scene = point.Scene();
+            UnitComponent unitComponent = scene?.GetComponent<UnitComponent>();
+            if (unitComponent != null)
+            {
+                point.CleanupInvalidPlayersInRange(unitComponent);
+                foreach (long playerId in point.PlayersInRange)
+                {
+                    Unit inRangePlayer = unitComponent.Get(playerId);
+                    if (inRangePlayer == null || inRangePlayer.IsDisposed)
+                    {
+                        continue;
+                    }
+
+                    ContainerRuntimeHelper.SendInteractHint(point, inRangePlayer, false);
+                }
+            }
+
+            Log.Info($"[ECAFlow] Point {point.PointId} dissolved by player={player?.Id ?? 0}");
             return ETTask.CompletedTask;
         }
 

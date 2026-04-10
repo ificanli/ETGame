@@ -145,6 +145,12 @@ namespace ET
             {
                 File.Delete(path);
             }
+
+            string metaPath = $"{path}.meta";
+            if (File.Exists(metaPath))
+            {
+                File.Delete(metaPath);
+            }
         }
 
         private static void CreateAssemblyReference(string path, string modelDir)

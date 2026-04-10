@@ -28,5 +28,6 @@ namespace ET
         public const string RemoveStealth = "RemoveStealth";
         public const string RefreshDoorInteractHint = "RefreshDoorInteractHint";
         public const string ToggleDoor = "ToggleDoor";
+        public const string StartDissolve = "StartDissolve";
     }
 }

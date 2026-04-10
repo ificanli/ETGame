@@ -50,9 +50,9 @@ namespace ET.Test
                 return 2;
             }
 
-            if (!configCategory.TryGetOption(1, out RogueOptionConfig optionConfig) || optionConfig == null)
+            if (!TestHelper.TryFindExecutableRogueOption(configCategory, null, out int optionId, out RogueOptionConfig optionConfig))
             {
-                Log.Console("rogue option config 1 is null");
+                Log.Console("failed to find executable rogue option");
                 return 3;
             }
 
@@ -99,11 +99,11 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(optionId);
 
                 EntityRef<Unit> playerRef = player;
                 EntityRef<RogueProgressComponent> progressRef = progress;
-                int chooseError = await RogueProgressHelper.ChooseOption(player, progress.ChoiceSerial, 1, null);
+                int chooseError = await RogueProgressHelper.ChooseOption(player, progress.ChoiceSerial, optionId, null);
                 player = playerRef;
                 progress = progressRef;
 
@@ -129,7 +129,7 @@ namespace ET.Test
                 }
 
                 // 移除选项 — 应移除所有 3 个 Runtime
-                int removedCount = RogueEffectHelper.RemoveSelectedOption(player, progress, 1);
+                int removedCount = RogueEffectHelper.RemoveSelectedOption(player, progress, optionId);
 
                 runtimeComponent = player.GetComponent<RogueEffectRuntimeComponent>();
                 int remainingCount = runtimeComponent?.ChildrenCount() ?? 0;

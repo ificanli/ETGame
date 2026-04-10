@@ -31,6 +31,8 @@ namespace ET.Client
                 }
             }
 
+            runtime = root.GetComponent<SettlementClientComponent>();
+            runtime?.MarkShown();
             root.YIUIMgr()?.GetPanel<SettlementPanelComponent>()?.RefreshView();
         }
     }

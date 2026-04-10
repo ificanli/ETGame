@@ -69,7 +69,7 @@ namespace ET.Client
         public Vector2 ContainerBoardAnchorMin;
 
         public bool IsDragging;
-        public bool DraggingIsBag;
+        public int DraggingAreaType;
         public long DraggingItemId;
         public RectTransform DraggingView;
         public Vector3 DragWorldOffset;

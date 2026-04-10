@@ -15,6 +15,8 @@ namespace ET.Server
                 return;
             }
 
+            RuntimeSecureInventoryComponent secureInventory = unit.GetComponent<RuntimeSecureInventoryComponent>();
+
             // 清空背包
             ItemComponent itemComp = unit.GetComponent<ItemComponent>();
             if (itemComp != null)
@@ -51,8 +53,26 @@ namespace ET.Server
                 Map2G_LoadoutCarryResult carryResult = Map2G_LoadoutCarryResult.Create();
                 carryResult.ResultType = (int)LoadoutCarryResultType.Dead;
                 carryResult.TotalWealthDelta = 0;
+                carryResult.SecureWidth = secureInventory?.Width ?? 0;
+                carryResult.SecureHeight = secureInventory?.Height ?? 0;
+                if (secureInventory != null)
+                {
+                    for (int i = 0; i < secureInventory.Items.Count; ++i)
+                    {
+                        LoadoutGridItemInfo secureItem = secureInventory.Items[i];
+                        LoadoutGridItemData message = LoadoutGridItemData.Create();
+                        message.ConfigId = secureItem.ConfigId;
+                        message.Count = secureItem.Count;
+                        message.AnchorSlotIndex = secureItem.AnchorSlotIndex;
+                        message.GridWidth = secureItem.GridWidth;
+                        message.GridHeight = secureItem.GridHeight;
+                        carryResult.FinalSecureItems.Add(message);
+                    }
+                }
                 unit.Root().GetComponent<MessageSender>().Send(gateInfo.ActorId, carryResult);
             }
+
+            RuntimeSecureInventoryHelper.Clear(unit);
 
             string mapName = unit.Scene()?.Name.GetSceneConfigName();
             if (!string.IsNullOrWhiteSpace(mapName) && mapName != "Home")

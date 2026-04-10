@@ -20,6 +20,7 @@ namespace ET.Server
             self.OccupiedTeamIds.Clear();
             self.PlayerTeamAssignments.Clear();
             self.TeamNextSpawnIndices.Clear();
+            self.RogueMerchantSpawnPoints.Clear();
         }
 
         /// <summary>
@@ -64,11 +65,6 @@ namespace ET.Server
                 }
 
                 int teamId = config.GetTeamId();
-                if (!self.TeamSpawnPoints.ContainsKey(teamId))
-                {
-                    self.TeamSpawnPoints[teamId] = new List<SpawnPointECAConfig>();
-                }
-
                 SpawnPointECAConfig spawnPoint = new SpawnPointECAConfig
                 {
                     ConfigId = config.ConfigId,
@@ -94,6 +90,18 @@ namespace ET.Server
                     }
                 }
 
+                if (spawnPoint.TryGetBoolParam(SpawnPointECAConfig.RogueMerchantSpawnParamKey, out bool isMerchantSpawn) && isMerchantSpawn)
+                {
+                    self.RogueMerchantSpawnPoints.Add(spawnPoint);
+                    Log.Info($"SpawnPointManager: add rogue merchant spawn point configId={config.ConfigId}, pos=({config.PosX},{config.PosY},{config.PosZ})");
+                    continue;
+                }
+
+                if (!self.TeamSpawnPoints.ContainsKey(teamId))
+                {
+                    self.TeamSpawnPoints[teamId] = new List<SpawnPointECAConfig>();
+                }
+
                 self.TeamSpawnPoints[teamId].Add(spawnPoint);
                 Log.Info($"SpawnPointManager: add spawn point configId={config.ConfigId}, team={teamId}, pos=({config.PosX},{config.PosY},{config.PosZ})");
             }
@@ -103,6 +111,8 @@ namespace ET.Server
             {
                 Log.Info($"  Team {kvp.Key}: {kvp.Value.Count} spawn points");
             }
+
+            Log.Info($"SpawnPointManager: Loaded {self.RogueMerchantSpawnPoints.Count} rogue merchant spawn points");
         }
 
         /// <summary>
@@ -180,6 +190,19 @@ namespace ET.Server
             return self.TryGetNextSpawnPoint(teamId, out SpawnPointECAConfig spawnPoint)
                 ? new float3(spawnPoint.PosX, spawnPoint.PosY, spawnPoint.PosZ)
                 : float3.zero;
+        }
+
+        public static bool TryGetRandomRogueMerchantSpawnPoint(this SpawnPointManagerComponent self, out SpawnPointECAConfig spawnPoint)
+        {
+            spawnPoint = default;
+            if (self == null || self.RogueMerchantSpawnPoints == null || self.RogueMerchantSpawnPoints.Count == 0)
+            {
+                return false;
+            }
+
+            int index = RandomGenerator.RandomNumber(0, self.RogueMerchantSpawnPoints.Count);
+            spawnPoint = self.RogueMerchantSpawnPoints[index];
+            return true;
         }
 
         /// <summary>

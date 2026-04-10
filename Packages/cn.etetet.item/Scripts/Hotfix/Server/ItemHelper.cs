@@ -33,15 +33,18 @@ namespace ET.Server
             }
 
             ItemConfigCategory itemConfigCategory = ItemConfigCategory.Instance;
-            ItemConfig itemConfig = itemConfigCategory.Get(configId);
+            int resolvedConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(configId);
+            ItemConfig itemConfig = itemConfigCategory.GetOrDefault(resolvedConfigId);
             if (itemConfig == null)
             {
-                throw new Exception($"item config not found: {configId}");
+                throw new Exception($"item config not found: {configId}, resolvedConfigId={resolvedConfigId}");
             }
 
-            Log.Debug($"add item: configId={configId}, count={count}, reason={reason}");
+            Log.Debug($"add item: configId={configId}, resolvedConfigId={resolvedConfigId}, count={count}, reason={reason}");
 
             int maxStack = itemConfig.MaxStack;
+            int itemGridWidth = ResolveGridWidth(itemConfig);
+            int itemGridHeight = ResolveGridHeight(itemConfig);
             int remainCount = count;
             List<long> updatedItemIds = new();
 
@@ -56,8 +59,13 @@ namespace ET.Server
                         continue;
                     }
 
-                    if (item.ConfigId == configId && item.Count < maxStack)
+                    if (LegacyItemConfigIdHelper.MatchesConfigId(item.ConfigId, resolvedConfigId) && item.Count < maxStack)
                     {
+                        if (item.ConfigId != resolvedConfigId)
+                        {
+                            item.ConfigId = resolvedConfigId;
+                        }
+
                         int addCount = System.Math.Min(remainCount, maxStack - item.Count);
                         item.AddCount(addCount);
                         remainCount -= addCount;
@@ -74,18 +82,17 @@ namespace ET.Server
             // 需要创建新物品
             while (remainCount > 0)
             {
-                int slotIndex = self.FindEmptySlot();
-                if (slotIndex < 0)
+                if (!self.TryFindFirstFitAnchorSlot(itemGridWidth, itemGridHeight, out int slotIndex))
                 {
                     throw new Exception("bag is full");
                 }
 
                 int addCount = System.Math.Min(remainCount, maxStack);
                 Item newItem = self.AddChild<Item>();
-                newItem.ConfigId = configId;
+                newItem.ConfigId = resolvedConfigId;
                 newItem.Count = addCount;
-                newItem.GridWidth = ResolveGridWidth(itemConfig);
-                newItem.GridHeight = ResolveGridHeight(itemConfig);
+                newItem.GridWidth = itemGridWidth;
+                newItem.GridHeight = itemGridHeight;
 
                 self.SetSlotItem(slotIndex, newItem);
                 updatedItemIds.Add(newItem.Id);
@@ -118,14 +125,15 @@ namespace ET.Server
                 return false;
             }
 
+            int resolvedConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(configId);
             // 先检查是否有足够的物品
-            int totalCount = self.GetItemCount(configId);
+            int totalCount = self.GetItemCount(resolvedConfigId);
             if (totalCount < count)
             {
                 return false;
             }
 
-            Log.Debug($"remove item: configId={configId}, count={count}, reason={reason}");
+            Log.Debug($"remove item: configId={configId}, resolvedConfigId={resolvedConfigId}, count={count}, reason={reason}");
 
             int remainCount = count;
             List<long> updatedItemIds = new();
@@ -143,8 +151,13 @@ namespace ET.Server
                     continue;
                 }
 
-                if (item.ConfigId == configId)
+                if (LegacyItemConfigIdHelper.MatchesConfigId(item.ConfigId, resolvedConfigId))
                 {
+                    if (item.ConfigId != resolvedConfigId)
+                    {
+                        item.ConfigId = resolvedConfigId;
+                    }
+
                     if (item.Count <= remainCount)
                     {
                         remainCount -= item.Count;
@@ -416,6 +429,11 @@ namespace ET.Server
             // 情况1：目标槽位为空，直接移动
             if (toItem == null)
             {
+                if (!self.CanPlaceAtAnchorSlot(toSlot, fromItem.GridWidth, fromItem.GridHeight, fromItem.Id))
+                {
+                    return ErrorCode.ERR_ItemSlotInvalid;
+                }
+
                 // 更新物品槽位
                 self.ClearSlot(fromSlot);
                 self.SetSlotItem(toSlot, fromItem);
@@ -426,19 +444,34 @@ namespace ET.Server
             }
 
             // 情况2：目标槽位有物品
-            // 如果ConfigId相同且可以堆叠，尝试堆叠
-            if (fromItem.ConfigId != toItem.ConfigId)
+            if (!LegacyItemConfigIdHelper.MatchesConfigId(fromItem.ConfigId, toItem.ConfigId))
             {
+                if (!CanSwapBagItems(self, fromItem, fromSlot, toSlot, toItem))
+                {
+                    return ErrorCode.ERR_ItemSlotInvalid;
+                }
+
                 SwapItems(self, fromSlot, toSlot, fromItem, toItem);
                 return ErrorCode.ERR_Success;
             }
 
-            // 情况3：ConfigId不同，交换位置
+            // 情况3：ConfigId相同，尝试堆叠
             ItemConfigCategory itemConfigCategory = ItemConfigCategory.Instance;
-            ItemConfig itemConfig = itemConfigCategory.Get(fromItem.ConfigId);
+            int resolvedConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(fromItem.ConfigId);
+            ItemConfig itemConfig = itemConfigCategory.GetOrDefault(resolvedConfigId);
             if (itemConfig == null)
             {
                 return ErrorCode.ERR_ItemNotFound;
+            }
+
+            if (fromItem.ConfigId != resolvedConfigId)
+            {
+                fromItem.ConfigId = resolvedConfigId;
+            }
+
+            if (toItem.ConfigId != resolvedConfigId)
+            {
+                toItem.ConfigId = resolvedConfigId;
             }
 
             int maxStack = itemConfig.MaxStack;
@@ -446,6 +479,11 @@ namespace ET.Server
             // 只有可堆叠物品才能堆叠
             if (maxStack <= 1)
             {
+                if (!CanSwapBagItems(self, fromItem, fromSlot, toSlot, toItem))
+                {
+                    return ErrorCode.ERR_ItemSlotInvalid;
+                }
+
                 SwapItems(self, fromSlot, toSlot, fromItem, toItem);
                 return ErrorCode.ERR_Success;
             }
@@ -455,6 +493,11 @@ namespace ET.Server
             // 目标堆已满，执行交换
             if (canStackCount <= 0)
             {
+                if (!CanSwapBagItems(self, fromItem, fromSlot, toSlot, toItem))
+                {
+                    return ErrorCode.ERR_ItemSlotInvalid;
+                }
+
                 SwapItems(self, fromSlot, toSlot, fromItem, toItem);
                 return ErrorCode.ERR_Success;
             }
@@ -485,6 +528,17 @@ namespace ET.Server
             // 通知目标槽位更新
             NotifyItemUpdate(self, toItem);
             return ErrorCode.ERR_Success;
+        }
+
+        private static bool CanSwapBagItems(ItemComponent self, Item fromItem, int fromSlot, int toSlot, Item toItem)
+        {
+            if (self == null || fromItem == null || toItem == null)
+            {
+                return false;
+            }
+
+            return self.CanPlaceAtAnchorSlot(toSlot, fromItem.GridWidth, fromItem.GridHeight, fromItem.Id, toItem.Id) &&
+                    self.CanPlaceAtAnchorSlot(fromSlot, toItem.GridWidth, toItem.GridHeight, fromItem.Id, toItem.Id);
         }
 
         /// <summary>
@@ -525,9 +579,10 @@ namespace ET.Server
                     continue;
                 }
 
-                configIdToCount.TryAdd(item.ConfigId, 0);
+                int resolvedConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(item.ConfigId);
+                configIdToCount.TryAdd(resolvedConfigId, 0);
 
-                configIdToCount[item.ConfigId] += item.Count;
+                configIdToCount[resolvedConfigId] += item.Count;
                 oldItemInfos.Add((item.Id, item.SlotIndex));
             }
 
@@ -547,16 +602,16 @@ namespace ET.Server
             {
                 Item item = self.SlotItems[i];
                 item?.Dispose();
+                self.SlotItems[i] = default;
             }
 
             // 第四步：按ConfigId排序，重新创建物品堆, 相同ConfigId的物品尽量堆叠在一起, 不排序的话可能每次整理结果都不一样
             List<int> sortedConfigIds = new(configIdToCount.Keys);
             sortedConfigIds.Sort();
 
-            int currentSlot = 0;
             foreach (int configId in sortedConfigIds)
             {
-                ItemConfig itemConfig = itemConfigCategory.Get(configId);
+                ItemConfig itemConfig = itemConfigCategory.GetOrDefault(configId);
                 if (itemConfig == null)
                 {
                     Log.Error($"item config not found: {configId}");
@@ -569,9 +624,11 @@ namespace ET.Server
                 // 创建物品堆，每堆最多maxStack个
                 while (remainCount > 0)
                 {
-                    if (currentSlot >= self.Capacity)
+                    int gridWidth = ResolveGridWidth(itemConfig);
+                    int gridHeight = ResolveGridHeight(itemConfig);
+                    if (!self.TryFindFirstFitAnchorSlot(gridWidth, gridHeight, out int anchorSlotIndex))
                     {
-                        Log.Error("bag is full during sorting, this should not happen");
+                        Log.Error("bag has no valid placement during sorting, this should not happen");
                         break;
                     }
 
@@ -580,13 +637,12 @@ namespace ET.Server
                     Item newItem = self.AddChild<Item>();
                     newItem.ConfigId = configId;
                     newItem.Count = stackCount;
-                    newItem.GridWidth = ResolveGridWidth(itemConfig);
-                    newItem.GridHeight = ResolveGridHeight(itemConfig);
+                    newItem.GridWidth = gridWidth;
+                    newItem.GridHeight = gridHeight;
 
-                    self.SetSlotItem(currentSlot, newItem);
+                    self.SetSlotItem(anchorSlotIndex, newItem);
 
                     remainCount -= stackCount;
-                    currentSlot++;
                 }
             }
 

@@ -25,6 +25,7 @@ namespace ET.Client
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this HUDPanelComponent self)
         {
+            AudioHelper.PlayBgm(self.Root(), AudioEventId.BgmBattle);
             await ETTask.CompletedTask;
             self.m_Unit = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
             if (self.Unit == null)

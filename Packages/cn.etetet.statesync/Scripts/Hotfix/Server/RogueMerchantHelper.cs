@@ -89,6 +89,12 @@ namespace ET.Server
 
         private static float3 ResolveSpawnPosition(Unit owner, float configuredSpawnDistance)
         {
+            SpawnPointManagerComponent spawnPointManager = owner.Scene()?.GetComponent<SpawnPointManagerComponent>();
+            if (TryResolveMerchantCandidateSpawnPosition(owner, spawnPointManager, out float3 candidatePosition))
+            {
+                return candidatePosition;
+            }
+
             float spawnDistance = configuredSpawnDistance > 0f ? configuredSpawnDistance : DefaultSpawnDistance;
             float3 fallback = owner.Position;
             float3 forward = owner.Forward;
@@ -109,6 +115,41 @@ namespace ET.Server
 
             float3 candidate = fallback + forward * spawnDistance;
             return TryProjectSpawnPosition(owner, candidate, out float3 projected) ? projected : fallback;
+        }
+
+        private static bool TryResolveMerchantCandidateSpawnPosition(Unit owner, SpawnPointManagerComponent spawnPointManager, out float3 resolvedPosition)
+        {
+            resolvedPosition = default;
+            if (owner == null || owner.IsDisposed || spawnPointManager == null || spawnPointManager.RogueMerchantSpawnPoints == null)
+            {
+                return false;
+            }
+
+            int candidateCount = spawnPointManager.RogueMerchantSpawnPoints.Count;
+            if (candidateCount == 0)
+            {
+                return false;
+            }
+
+            int startIndex = RandomGenerator.RandomNumber(0, candidateCount);
+            for (int offset = 0; offset < candidateCount; ++offset)
+            {
+                SpawnPointECAConfig spawnPoint = spawnPointManager.RogueMerchantSpawnPoints[(startIndex + offset) % candidateCount];
+                float3 candidate = new float3(spawnPoint.PosX, spawnPoint.PosY, spawnPoint.PosZ);
+                if (TryProjectSpawnPosition(owner, candidate, out resolvedPosition))
+                {
+                    return true;
+                }
+
+                if (owner.GetComponent<PathfindingComponent>() == null)
+                {
+                    resolvedPosition = candidate;
+                    return true;
+                }
+            }
+
+            Log.Warning($"[RogueMerchant] rogue merchant spawn points configured but none resolved on navmesh, owner={owner.Id}, scene={owner.Scene()?.Name}");
+            return false;
         }
 
         private static bool TryProjectSpawnPosition(Unit owner, float3 candidate, out float3 projected)

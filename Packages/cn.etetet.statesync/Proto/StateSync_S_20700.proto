@@ -29,6 +29,9 @@ message A2Map_ApplyLoadoutRequest // ILocationRequest
 	int32 BagWidth = 8;
 	int32 BagHeight = 9;
 	repeated LoadoutGridItemData BagItems = 10;
+	int32 SecureWidth = 11;
+	int32 SecureHeight = 12;
+	repeated LoadoutGridItemData SecureItems = 13;
 }
 
 message A2Map_ApplyLoadoutResponse // ILocationResponse

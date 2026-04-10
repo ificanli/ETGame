@@ -18,6 +18,7 @@ namespace ET.Client
         private const int ContainerFixedCols = 4;
         private const int ContainerFixedRows = 3;
         private const int MinRows = 4;
+        private const string MissingBackpackTipText = "<color=red>未装备背包，无法拾取容器物品</color>";
 
         [EntitySystem]
         private static void YIUIInitialize(this SearchPanelComponent self)
@@ -70,6 +71,7 @@ namespace ET.Client
             self.BagTitleText = null;
             self.ModeAccentImage = null;
             self.IsDragging = false;
+            self.DraggingAreaType = (int)ContainerItemAreaType.None;
             self.DraggingView = null;
             
             // 清理搜索动效相关数据
@@ -88,6 +90,7 @@ namespace ET.Client
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this SearchPanelComponent self)
         {
+            AudioHelper.PlayUi(self.Root(), AudioEventId.SfxItemPickup);
             self.LastContainerSnapshot = null;
             self.QuickChooseMinQuality = ReadQuickChooseMinQuality(self);
             TryRefreshView(self, true);
@@ -377,7 +380,7 @@ namespace ET.Client
 
                 ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
                 BindItemView(view, item.ConfigId, item.Count, slot);
-                BindItemInteract(self, view, viewId, false, item.ConfigId, true);
+                BindItemInteract(self, view, viewId, (int)ContainerItemAreaType.Container, slot, item.ConfigId, true);
                 
                 // 处理搜索动效
                 bool isSearched = self.SearchedSlots.Contains(slot);
@@ -416,6 +419,8 @@ namespace ET.Client
             int capacity = itemComponent?.Capacity ?? 0;
             int visibleCapacity = GetVisibleBagSlotCount(capacity);
             ResolveBagLayout(self, itemComponent, loadout, visibleCapacity, out int cols, out int rows);
+            self.BagCols = cols;
+            self.BagRows = rows;
             EnsureBagSolver(self, cols, rows);
             self.BagSolver.Clear();
 
@@ -424,23 +429,13 @@ namespace ET.Client
             {
                 for (int actualSlot = 0; actualSlot < capacity; ++actualSlot)
                 {
-                    if (ExtractionInventoryConfig.IsSafeSlot(actualSlot))
-                    {
-                        continue;
-                    }
-
-                    int slot = ConvertActualBagSlotToDisplaySlot(actualSlot);
-                    if (slot < 0)
-                    {
-                        continue;
-                    }
-
                     Item item = itemComponent.GetItemBySlot(actualSlot);
                     if (item == null || item.Count <= 0)
                     {
                         continue;
                     }
 
+                    int slot = ConvertActualBagSlotToDisplaySlot(actualSlot);
                     alive.Add(item.Id);
                     GridItemFootprint footprint = new GridItemFootprint
                     {
@@ -464,7 +459,7 @@ namespace ET.Client
 
                     ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
                     BindItemView(view, item.ConfigId, item.Count, slot);
-                    BindItemInteract(self, view, item.Id, true, item.ConfigId, true);
+                    BindItemInteract(self, view, item.Id, (int)ContainerItemAreaType.Bag, actualSlot, item.ConfigId, true);
                 }
             }
 
@@ -484,6 +479,8 @@ namespace ET.Client
 
             int cols = Math.Max(1, loadout?.SecureWidth ?? ExtractionInventoryConfig.GetSafeSlotCount());
             int rows = Math.Max(1, loadout?.SecureHeight ?? 1);
+            self.SecureCols = cols;
+            self.SecureRows = rows;
             EnsureSecureSolver(self, cols, rows);
             self.SecureSolver.Clear();
 
@@ -519,7 +516,7 @@ namespace ET.Client
 
                     ApplyFootprint(view, footprint, self.CellSize, self.CellSpacing, self.CellPadding);
                     BindItemView(view, item.ConfigId, item.Count, item.AnchorSlotIndex);
-                    BindItemInteract(self, view, viewId, false, item.ConfigId, false);
+                    BindItemInteract(self, view, viewId, (int)ContainerItemAreaType.Secure, item.AnchorSlotIndex, item.ConfigId, true);
                 }
             }
 
@@ -790,7 +787,8 @@ namespace ET.Client
             SearchPanelComponent self,
             RectTransform view,
             long itemId,
-            bool isBag,
+            int areaType,
+            int slotIndex,
             int configId,
             bool enableDrag)
         {
@@ -806,7 +804,8 @@ namespace ET.Client
             }
             proxy.PanelRef = self;
             proxy.ItemId = itemId;
-            proxy.IsBag = isBag;
+            proxy.AreaType = areaType;
+            proxy.SlotIndex = slotIndex;
             proxy.ConfigId = configId;
 
             EventTrigger trigger = view.GetComponent<EventTrigger>();
@@ -840,42 +839,42 @@ namespace ET.Client
 
         private static void OnBeginDragEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out _, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out int areaType, out int slotIndex, out _, out PointerEventData eventData))
             {
                 return;
             }
 
-            OnItemBeginDrag(self, view, itemId, isBag, eventData);
+            OnItemBeginDrag(self, view, itemId, areaType, slotIndex, eventData);
         }
 
         private static void OnDragEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out _, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out int areaType, out int slotIndex, out _, out PointerEventData eventData))
             {
                 return;
             }
 
-            OnItemDrag(self, view, itemId, isBag, eventData);
+            OnItemDrag(self, view, itemId, areaType, slotIndex, eventData);
         }
 
         private static void OnEndDragEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out _, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out int areaType, out int slotIndex, out _, out PointerEventData eventData))
             {
                 return;
             }
 
-            OnItemEndDrag(self, view, itemId, isBag, eventData);
+            OnItemEndDrag(self, view, itemId, areaType, slotIndex, eventData);
         }
 
         private static void OnClickEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out bool isBag, out int configId, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out int areaType, out _, out int configId, out PointerEventData eventData))
             {
                 return;
             }
 
-            OnItemClick(self, view, itemId, isBag, configId, eventData).Coroutine();
+            OnItemClick(self, view, itemId, areaType, configId, eventData).Coroutine();
         }
 
         private static bool TryGetDragContext(
@@ -883,14 +882,16 @@ namespace ET.Client
             out SearchPanelComponent self,
             out RectTransform view,
             out long itemId,
-            out bool isBag,
+            out int areaType,
+            out int slotIndex,
             out int configId,
             out PointerEventData eventData)
         {
             self = null;
             view = null;
             itemId = 0;
-            isBag = false;
+            areaType = (int)ContainerItemAreaType.None;
+            slotIndex = -1;
             configId = 0;
             eventData = data as PointerEventData;
             if (eventData == null)
@@ -923,7 +924,8 @@ namespace ET.Client
             }
 
             itemId = proxy.ItemId;
-            isBag = proxy.IsBag;
+            areaType = proxy.AreaType;
+            slotIndex = proxy.SlotIndex;
             configId = proxy.ConfigId;
             return true;
         }
@@ -932,7 +934,8 @@ namespace ET.Client
             SearchPanelComponent self,
             RectTransform view,
             long itemId,
-            bool isBag,
+            int areaType,
+            int slotIndex,
             PointerEventData eventData)
         {
             if (self == null || self.IsDisposed || view == null || eventData == null)
@@ -940,15 +943,15 @@ namespace ET.Client
                 return;
             }
 
-            GridPlacementSolver solver = isBag ? self.BagSolver : self.ContainerSolver;
-            RectTransform layer = isBag ? self.u_ComBagItemsLayer : self.u_ComContainerItemsLayer;
+            GridPlacementSolver solver = GetAreaSolver(self, areaType);
+            RectTransform layer = GetAreaItemsLayer(self, areaType);
             if (solver == null || layer == null || !solver.TryGetItem(itemId, out _))
             {
                 return;
             }
 
             self.IsDragging = true;
-            self.DraggingIsBag = isBag;
+            self.DraggingAreaType = areaType;
             self.DraggingItemId = itemId;
             self.DraggingView = view;
             view.SetAsLastSibling();
@@ -974,15 +977,16 @@ namespace ET.Client
             SearchPanelComponent self,
             RectTransform view,
             long itemId,
-            bool isBag,
+            int areaType,
+            int slotIndex,
             PointerEventData eventData)
         {
-            if (self == null || self.IsDisposed || !self.IsDragging || self.DraggingView != view || self.DraggingItemId != itemId || self.DraggingIsBag != isBag || eventData == null)
+            if (self == null || self.IsDisposed || !self.IsDragging || self.DraggingView != view || self.DraggingItemId != itemId || self.DraggingAreaType != areaType || eventData == null)
             {
                 return;
             }
 
-            RectTransform layer = isBag ? self.u_ComBagItemsLayer : self.u_ComContainerItemsLayer;
+            RectTransform layer = GetAreaItemsLayer(self, areaType);
             if (layer == null)
             {
                 return;
@@ -998,7 +1002,8 @@ namespace ET.Client
             SearchPanelComponent self,
             RectTransform view,
             long itemId,
-            bool isBag,
+            int areaType,
+            int slotIndex,
             PointerEventData eventData)
         {
             if (self == null || self.IsDisposed || view == null)
@@ -1012,7 +1017,7 @@ namespace ET.Client
                 canvasGroup.blocksRaycasts = true;
             }
 
-            if (!self.IsDragging || self.DraggingView != view || self.DraggingItemId != itemId || self.DraggingIsBag != isBag)
+            if (!self.IsDragging || self.DraggingView != view || self.DraggingItemId != itemId || self.DraggingAreaType != areaType)
             {
                 return;
             }
@@ -1020,25 +1025,25 @@ namespace ET.Client
             self.IsDragging = false;
             self.DraggingView = null;
 
-            GridPlacementSolver solver = isBag ? self.BagSolver : self.ContainerSolver;
+            GridPlacementSolver solver = GetAreaSolver(self, areaType);
             if (solver == null || !solver.TryGetItem(itemId, out GridItemFootprint oldFootprint))
             {
                 return;
             }
 
-            if (!TryGetSourceSlot(self, isBag, itemId, out int sourceSlot))
+            if (!TryGetSourceSlot(self, areaType, slotIndex, itemId, out int sourceSlot))
             {
                 ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
                 return;
             }
 
-            if (!TryGetDropArea(self, eventData, out bool targetIsBag, out int targetSlot))
+            if (!TryGetDropArea(self, eventData, out int targetAreaType, out int targetSlot))
             {
                 ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
                 return;
             }
 
-            if (targetIsBag == isBag)
+            if (targetAreaType == areaType)
             {
                 int targetX = targetSlot % solver.Cols;
                 int targetY = targetSlot / solver.Cols;
@@ -1057,47 +1062,43 @@ namespace ET.Client
                     return;
                 }
 
-                if (isBag)
-                {
-                    if (!CanMoveBagToSlot(self, targetSlot))
-                    {
-                        ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
-                        return;
-                    }
-
-                    MoveBagItem(self.Root(), itemId, targetSlot).Coroutine();
-                }
-                else
-                {
-                    MoveContainerItem(self.Root(), false, sourceSlot, 0, false, targetSlot).Coroutine();
-                }
-
-                ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
-                Log.Info(
-                    $"[SearchDrag] request move {(isBag ? "bag" : "container")} item={itemId}, fromSlot={sourceSlot}, toSlot={targetSlot}, targetIsBag={targetIsBag}, result={dropResult.ResultType}");
-                return;
-            }
-
-            if (targetIsBag)
-            {
-                if (!CanMoveBagToSlot(self, targetSlot))
+                if (!CanMoveAreaToSlot(self, areaType, targetSlot))
                 {
                     ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
                     return;
                 }
+
+                MoveContainerItem(self.Root(), areaType, sourceSlot, areaType == (int)ContainerItemAreaType.Bag ? itemId : 0, areaType, targetSlot).Coroutine();
+
+                ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
+                Log.Info(
+                    $"[SearchDrag] request move area={GetAreaName(areaType)} item={itemId}, fromSlot={sourceSlot}, toSlot={targetSlot}, result={dropResult.ResultType}");
+                return;
             }
 
-            MoveContainerItem(self.Root(), isBag, sourceSlot, isBag ? itemId : 0, targetIsBag, targetSlot).Coroutine();
+            if (!CanMoveAreaToSlot(self, targetAreaType, targetSlot))
+            {
+                ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
+                return;
+            }
+
+            MoveContainerItem(
+                self.Root(),
+                areaType,
+                sourceSlot,
+                areaType == (int)ContainerItemAreaType.Bag ? itemId : 0,
+                targetAreaType,
+                targetSlot).Coroutine();
             ApplyFootprint(view, oldFootprint, self.CellSize, self.CellSpacing, self.CellPadding);
             Log.Info(
-                $"[SearchDrag] request cross move {(isBag ? "bag" : "container")} item={itemId}, fromSlot={sourceSlot}, toSlot={targetSlot}, targetIsBag={targetIsBag}");
+                $"[SearchDrag] request cross move sourceArea={GetAreaName(areaType)} item={itemId}, fromSlot={sourceSlot}, targetArea={GetAreaName(targetAreaType)}, toSlot={targetSlot}");
         }
 
         private static async ETTask OnItemClick(
             SearchPanelComponent self,
             RectTransform view,
             long itemId,
-            bool isBag,
+            int areaType,
             int configId,
             PointerEventData eventData)
         {
@@ -1112,7 +1113,7 @@ namespace ET.Client
                 return;
             }
 
-            await self.OpenItemClickedAsync(configId, isBag ? itemId : 0);
+            await self.OpenItemClickedAsync(configId, areaType == (int)ContainerItemAreaType.Bag ? itemId : 0);
         }
 
         private static async ETTask OpenItemClickedAsync(this SearchPanelComponent self, int configId, long itemUid)
@@ -1438,12 +1439,34 @@ namespace ET.Client
 
         private static Color GetGridCellColor(bool isBag, int slotIndex)
         {
-            if (isBag && ExtractionInventoryConfig.IsSafeSlot(slotIndex))
-            {
-                return new Color(0.22f, 0.58f, 0.95f, 0.18f);
-            }
-
             return new Color(1f, 1f, 1f, 0.08f);
+        }
+
+        private static GridPlacementSolver GetAreaSolver(SearchPanelComponent self, int areaType)
+        {
+            return (ContainerItemAreaType)areaType switch
+            {
+                ContainerItemAreaType.Container => self.ContainerSolver,
+                ContainerItemAreaType.Bag => self.BagSolver,
+                ContainerItemAreaType.Secure => self.SecureSolver,
+                _ => null,
+            };
+        }
+
+        private static RectTransform GetAreaItemsLayer(SearchPanelComponent self, int areaType)
+        {
+            return (ContainerItemAreaType)areaType switch
+            {
+                ContainerItemAreaType.Container => self.u_ComContainerItemsLayer,
+                ContainerItemAreaType.Bag => self.u_ComBagItemsLayer,
+                ContainerItemAreaType.Secure => self.SecureItemsLayer,
+                _ => null,
+            };
+        }
+
+        private static string GetAreaName(int areaType)
+        {
+            return ((ContainerItemAreaType)areaType).ToString();
         }
 
         private static int CalcCols(RectTransform boardRoot, Vector2 cellSize, Vector2 spacing, int fallback)
@@ -1757,7 +1780,59 @@ namespace ET.Client
             return Math.Max(1, dropdownValue + 1);
         }
 
-        private static bool TryGetSourceSlot(SearchPanelComponent self, bool isBag, long itemId, out int sourceSlot)
+        private static bool HasBackpackState(Scene root)
+        {
+            if (root == null || root.IsDisposed)
+            {
+                return false;
+            }
+
+            return root.GetComponent<LoadoutComponent>() != null || root.GetComponent<ItemComponent>() != null;
+        }
+
+        private static bool HasBackpackAvailable(Scene root)
+        {
+            if (root == null || root.IsDisposed)
+            {
+                return false;
+            }
+
+            LoadoutComponent loadout = root.GetComponent<LoadoutComponent>();
+            if (loadout != null)
+            {
+                if (loadout.BackpackConfigId > 0)
+                {
+                    return true;
+                }
+
+                if (loadout.BagWidth > 0 && loadout.BagHeight > 0)
+                {
+                    return true;
+                }
+            }
+
+            ItemComponent itemComponent = root.GetComponent<ItemComponent>();
+            if (itemComponent == null)
+            {
+                return false;
+            }
+
+            return itemComponent.Capacity > 0 || (itemComponent.Width > 0 && itemComponent.Height > 0);
+        }
+
+        private static bool TryShowMissingBackpackTip(Scene root)
+        {
+            if (!HasBackpackState(root) || HasBackpackAvailable(root))
+            {
+                return false;
+            }
+
+            TipsHelper.OpenSync<TipsTextViewComponent>(root, MissingBackpackTipText);
+            Log.Info("[ECAClient][SearchPanel] blocked container pickup because backpack is not equipped");
+            return true;
+        }
+
+        private static bool TryGetSourceSlot(SearchPanelComponent self, int areaType, int dragSlotIndex, long itemId, out int sourceSlot)
         {
             sourceSlot = -1;
             if (self == null || self.IsDisposed)
@@ -1765,7 +1840,7 @@ namespace ET.Client
                 return false;
             }
 
-            if (isBag)
+            if ((ContainerItemAreaType)areaType == ContainerItemAreaType.Bag)
             {
                 ItemComponent itemComponent = self.Root()?.GetComponent<ItemComponent>();
                 Item item = itemComponent?.GetItemById(itemId);
@@ -1778,52 +1853,45 @@ namespace ET.Client
                 return true;
             }
 
-            sourceSlot = (int)(itemId - 1);
+            sourceSlot = dragSlotIndex;
             return sourceSlot >= 0;
         }
 
-        private static bool CanMoveBagToSlot(SearchPanelComponent self, int targetSlot)
+        private static bool CanMoveAreaToSlot(SearchPanelComponent self, int areaType, int targetSlot)
         {
             if (targetSlot < 0)
             {
                 return false;
             }
 
-            ItemComponent itemComponent = self.Root()?.GetComponent<ItemComponent>();
-            return itemComponent != null && targetSlot < itemComponent.Capacity;
-        }
-
-        private static async ETTask MoveBagItem(Scene root, long itemId, int targetSlot)
-        {
-            if (root == null || root.IsDisposed)
+            switch ((ContainerItemAreaType)areaType)
             {
-                return;
-            }
-
-            C2M_MoveItem request = C2M_MoveItem.Create();
-            request.ItemId = itemId;
-            request.ToSlot = targetSlot;
-
-            EntityRef<Scene> rootRef = root;
-            M2C_MoveItem response = await root.GetComponent<ClientSenderComponent>().Call(request) as M2C_MoveItem;
-            root = rootRef;
-            if (root == null || root.IsDisposed)
-            {
-                return;
-            }
-
-            if (response != null && response.Error != ErrorCode.ERR_Success)
-            {
-                Log.Warning($"[SearchDrag] bag move failed: itemId={itemId}, toSlot={targetSlot}, error={response.Error}, msg={response.Message}");
+                case ContainerItemAreaType.Container:
+                    return targetSlot < self.ContainerCols * self.ContainerRows;
+                case ContainerItemAreaType.Bag:
+                {
+                    ItemComponent itemComponent = self.Root()?.GetComponent<ItemComponent>();
+                    return itemComponent != null && targetSlot < itemComponent.Capacity;
+                }
+                case ContainerItemAreaType.Secure:
+                {
+                    LoadoutComponent loadout = self.Root()?.GetComponent<LoadoutComponent>();
+                    return loadout != null &&
+                           loadout.SecureWidth > 0 &&
+                           loadout.SecureHeight > 0 &&
+                           targetSlot < loadout.SecureWidth * loadout.SecureHeight;
+                }
+                default:
+                    return false;
             }
         }
 
         private static async ETTask MoveContainerItem(
             Scene root,
-            bool sourceIsBag,
+            int sourceAreaType,
             int sourceSlot,
             long sourceItemId,
-            bool targetIsBag,
+            int targetAreaType,
             int targetSlot)
         {
             if (root == null || root.IsDisposed || sourceSlot < 0 || targetSlot < 0)
@@ -1831,33 +1899,52 @@ namespace ET.Client
                 return;
             }
 
-            await ECAInteractHelper.MoveContainerItem(root, sourceIsBag, sourceSlot, sourceItemId, targetIsBag, targetSlot);
+            await ECAInteractHelper.MoveContainerItem(root, sourceAreaType, sourceSlot, sourceItemId, targetAreaType, targetSlot);
         }
 
         private static bool TryGetDropArea(
             SearchPanelComponent self,
             PointerEventData eventData,
-            out bool targetIsBag,
+            out int targetAreaType,
             out int targetSlot)
         {
-            targetIsBag = false;
+            targetAreaType = (int)ContainerItemAreaType.None;
             targetSlot = -1;
             if (self == null || self.IsDisposed || eventData == null)
             {
                 return false;
             }
 
+            Scene root = self.Root();
             Camera eventCamera = eventData.pressEventCamera;
-            if (TryResolveBoardSlot(self.u_ComBagBoardRoot, self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding, eventData.position, eventCamera, out int bagDisplaySlot) &&
-                TryMapBagDisplaySlotToActualSlot(self.Root()?.GetComponent<ItemComponent>(), bagDisplaySlot, out targetSlot))
+            if (TryResolveBoardSlot(self.u_ComBagBoardRoot, self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding, eventData.position, eventCamera, out int bagDisplaySlot))
             {
-                targetIsBag = true;
-                return true;
+                if (TryMapBagDisplaySlotToActualSlot(root?.GetComponent<ItemComponent>(), bagDisplaySlot, out targetSlot))
+                {
+                    targetAreaType = (int)ContainerItemAreaType.Bag;
+                    return true;
+                }
+
+                if (TryShowMissingBackpackTip(root))
+                {
+                    return false;
+                }
+            }
+
+            if (TryResolveBoardSlot(self.SecureBoardRoot, self.SecureCols, self.SecureRows, self.CellSize, self.CellSpacing, self.CellPadding, eventData.position, eventCamera, out targetSlot))
+            {
+                if (CanMoveAreaToSlot(self, (int)ContainerItemAreaType.Secure, targetSlot))
+                {
+                    targetAreaType = (int)ContainerItemAreaType.Secure;
+                    return true;
+                }
+
+                return false;
             }
 
             if (TryResolveBoardSlot(self.u_ComContainerBoardRoot, self.ContainerCols, self.ContainerRows, self.CellSize, self.CellSpacing, self.CellPadding, eventData.position, eventCamera, out targetSlot))
             {
-                targetIsBag = false;
+                targetAreaType = (int)ContainerItemAreaType.Container;
                 return true;
             }
 
@@ -1906,21 +1993,7 @@ namespace ET.Client
 
         private static int GetVisibleBagSlotCount(int capacity)
         {
-            if (capacity <= 0)
-            {
-                return 0;
-            }
-
-            int count = 0;
-            for (int actualSlot = 0; actualSlot < capacity; ++actualSlot)
-            {
-                if (!ExtractionInventoryConfig.IsSafeSlot(actualSlot))
-                {
-                    ++count;
-                }
-            }
-
-            return count;
+            return Math.Max(0, capacity);
         }
 
         private static void ResolveBagLayout(
@@ -1952,21 +2025,7 @@ namespace ET.Client
 
         private static int ConvertActualBagSlotToDisplaySlot(int actualSlot)
         {
-            if (actualSlot < 0 || ExtractionInventoryConfig.IsSafeSlot(actualSlot))
-            {
-                return -1;
-            }
-
-            int displaySlot = 0;
-            for (int slot = 0; slot < actualSlot; ++slot)
-            {
-                if (!ExtractionInventoryConfig.IsSafeSlot(slot))
-                {
-                    ++displaySlot;
-                }
-            }
-
-            return displaySlot;
+            return actualSlot >= 0 ? actualSlot : -1;
         }
 
         private static bool TryMapBagDisplaySlotToActualSlot(ItemComponent itemComponent, int displaySlot, out int actualSlot)
@@ -1977,21 +2036,10 @@ namespace ET.Client
                 return false;
             }
 
-            int currentDisplaySlot = 0;
-            for (int slot = 0; slot < itemComponent.Capacity; ++slot)
+            if (displaySlot < itemComponent.Capacity)
             {
-                if (ExtractionInventoryConfig.IsSafeSlot(slot))
-                {
-                    continue;
-                }
-
-                if (currentDisplaySlot == displaySlot)
-                {
-                    actualSlot = slot;
-                    return true;
-                }
-
-                ++currentDisplaySlot;
+                actualSlot = displaySlot;
+                return true;
             }
 
             return false;

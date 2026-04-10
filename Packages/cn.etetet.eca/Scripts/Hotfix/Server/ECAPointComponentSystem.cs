@@ -45,6 +45,16 @@ namespace ET.Server
 
             Log.Info($"[ECAPoint] Player {player.Id} entered ECA point: {self.PointId}");
 
+            Scene scene = self.Scene();
+            if (scene != null && !scene.IsDisposed)
+            {
+                EventSystem.Instance.Publish(scene, new ECAPointPlayerEnterEvent
+                {
+                    Point = self,
+                    Player = player,
+                });
+            }
+
             if (!self.IsActive)
             {
                 return;

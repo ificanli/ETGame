@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ET;
 
-import "Archive_S_22020.proto";
+import "Archive_C_12024.proto";
 
 // ResponseType G2C_GetBattleRecordList
 message C2G_GetBattleRecordList // ISessionRequest

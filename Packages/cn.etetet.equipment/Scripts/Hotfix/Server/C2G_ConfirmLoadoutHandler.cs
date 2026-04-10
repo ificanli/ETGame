@@ -53,7 +53,10 @@ namespace ET.Server
                     BackpackConfigId = request.BackpackConfigId,
                     BagWidth = request.BagWidth,
                     BagHeight = request.BagHeight,
+                    SecureWidth = request.SecureWidth,
+                    SecureHeight = request.SecureHeight,
                     CarriedBagItems = new List<LoadoutGridItemInfo>(finalBagItems),
+                    CarriedSecureItems = new List<LoadoutGridItemInfo>(finalSecureItems),
                 });
                 response.Message = "success";
             }

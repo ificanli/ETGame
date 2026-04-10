@@ -50,6 +50,7 @@ namespace ET.Server
 
                 Unit target = targetComponent.Unit;
                 TargetSelectorComponent selector = unit.GetComponent<TargetSelectorComponent>();
+                float weaponRange = ResolveWeaponRange(unit, selector);
                 float chaseRange = math.max(selector?.MaxRange ?? 0f, 10f);
                 if (!TargetSelectorHelper.IsValidTarget(unit, target, math.max(chaseRange, node.PreferredMaxDistance + 6f)))
                 {
@@ -57,10 +58,9 @@ namespace ET.Server
                     continue;
                 }
 
-                float preferredDistance = ResolvePreferredDistance(node, unit.Id, target.Id);
-                float stopMoveTolerance = math.max(0.1f, node.StopMoveTolerance);
-                float retreatDistance = math.max(0.1f, node.RetreatDistance);
-                float retreatStepDistance = math.max(retreatDistance, node.RetreatStepDistance);
+                ResolveDistanceSettings(node, weaponRange, out float preferredMinDistance, out float preferredMaxDistance, out float stopMoveTolerance,
+                    out float retreatDistance, out float retreatStepDistance);
+                float preferredDistance = ResolvePreferredDistance(unit.Id, target.Id, preferredMinDistance, preferredMaxDistance);
 
                 float horizontalDistance = math.distance(
                     new float2(unit.Position.x, unit.Position.z),
@@ -88,10 +88,55 @@ namespace ET.Server
             }
         }
 
-        private static float ResolvePreferredDistance(AI_RobotWeaponCombat node, long unitId, long targetId)
+        private static float ResolveWeaponRange(Unit unit, TargetSelectorComponent selector)
         {
-            float minDistance = math.max(1f, node.PreferredMinDistance);
-            float maxDistance = math.max(minDistance, node.PreferredMaxDistance);
+            float selectorRange = selector?.MaxRange ?? 0f;
+            if (selectorRange > 0.01f)
+            {
+                return selectorRange;
+            }
+
+            WeaponComponent weaponComponent = unit.GetComponent<WeaponComponent>();
+            if (weaponComponent == null || weaponComponent.CurrentSlot <= 0)
+            {
+                return 0f;
+            }
+
+            return weaponComponent.GetEffectiveAttackRange(weaponComponent.CurrentSlot);
+        }
+
+        private static void ResolveDistanceSettings(
+            AI_RobotWeaponCombat node,
+            float weaponRange,
+            out float preferredMinDistance,
+            out float preferredMaxDistance,
+            out float stopMoveTolerance,
+            out float retreatDistance,
+            out float retreatStepDistance)
+        {
+            preferredMinDistance = math.max(1f, node.PreferredMinDistance);
+            preferredMaxDistance = math.max(preferredMinDistance, node.PreferredMaxDistance);
+            stopMoveTolerance = math.max(0.1f, node.StopMoveTolerance);
+            retreatDistance = math.max(0.1f, node.RetreatDistance);
+            retreatStepDistance = math.max(retreatDistance, node.RetreatStepDistance);
+
+            if (weaponRange <= 0.01f)
+            {
+                return;
+            }
+
+            preferredMaxDistance = math.min(preferredMaxDistance, math.max(0.75f, weaponRange - 0.5f));
+            float dynamicBandWidth = math.min(3f, math.max(1f, weaponRange * 0.5f));
+            preferredMinDistance = math.min(preferredMinDistance, math.max(0.5f, preferredMaxDistance - dynamicBandWidth));
+            preferredMaxDistance = math.max(preferredMinDistance, preferredMaxDistance);
+
+            stopMoveTolerance = math.min(stopMoveTolerance, math.max(0.15f, weaponRange - preferredMaxDistance));
+            retreatDistance = math.min(retreatDistance, math.max(0.35f, preferredMinDistance - stopMoveTolerance));
+            retreatStepDistance = math.max(retreatDistance, math.min(retreatStepDistance, preferredMaxDistance));
+        }
+
+        private static float ResolvePreferredDistance(long unitId, long targetId, float minDistance, float maxDistance)
+        {
             if (maxDistance <= minDistance + 0.01f)
             {
                 return minDistance;

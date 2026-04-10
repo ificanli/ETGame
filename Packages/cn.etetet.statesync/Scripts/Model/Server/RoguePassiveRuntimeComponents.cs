@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 
 namespace ET.Server
 {
@@ -12,6 +13,12 @@ namespace ET.Server
     {
         public int DamageReduction;
         public int SourceFilter;
+    }
+
+    public struct RogueLifeStealSourceData
+    {
+        public int LifeStealPermille;
+        public int TargetFilter;
     }
 
     public struct RogueContainerLowQualityGoldSourceData
@@ -73,12 +80,28 @@ namespace ET.Server
         public long DisposeTimerId;
         public int HealPermille;
         public int LifetimeMs;
+        public int DamageBonusPermille;
+        public float AuraRadius;
+        public float PickupRadius;
+        public bool AuraActive;
     }
 
     public struct RogueTrapMasterSourceData
     {
         public int IdleMs;
         public int BulletCount;
+        public int TrapDamagePermille;
+        public float TrapRadius;
+        public int TrapLifetimeMs;
+        public int TrapTickIntervalMs;
+    }
+
+    public struct RogueOnKillWeaponEnchantSourceData
+    {
+        public int SlotIndex;
+        public int DamageBonusPermille;
+        public int PenetrationCount;
+        public int TargetFilter;
     }
 
     [ComponentOf(typeof(Unit))]
@@ -100,10 +123,28 @@ namespace ET.Server
     {
         public Dictionary<long, RogueTrapMasterSourceData> Sources { get; set; } = new();
         public int EffectiveIdleMs;
-        public int EffectiveBulletCount;
+        public int EffectiveRequiredShotCount;
+        public int EffectiveTrapDamagePermille;
+        public float EffectiveTrapRadius;
+        public int EffectiveTrapLifetimeMs;
+        public int EffectiveTrapTickIntervalMs;
+        public int AccumulatedShots;
         public long LastMoveTime;
         public long MoveVersion;
         public long LastTriggeredMoveVersion;
+    }
+
+    [ChildOf(typeof(Scene))]
+    public class RogueTrapEntity : Entity, IAwake, IDestroy
+    {
+        public long OwnerId;
+        public float3 Position;
+        public long Damage;
+        public int WeaponId;
+        public float Radius;
+        public int TickIntervalMs;
+        public long ExpireTime;
+        public long TimerId;
     }
 
     [ComponentOf(typeof(Unit))]
@@ -116,6 +157,12 @@ namespace ET.Server
     public class RogueReloadFirstShotsStateComponent : Entity, IAwake, IDestroy
     {
         public Dictionary<long, RogueReloadFirstShotsSourceData> Sources { get; set; } = new();
+    }
+
+    [ComponentOf(typeof(Unit))]
+    public class RogueOnKillWeaponEnchantStateComponent : Entity, IAwake, IDestroy
+    {
+        public Dictionary<long, RogueOnKillWeaponEnchantSourceData> Sources { get; set; } = new();
     }
 
     [ComponentOf(typeof(Unit))]
@@ -141,7 +188,7 @@ namespace ET.Server
         public Dictionary<long, int> ProbabilityMultiplierBySource { get; set; } = new();
         public Dictionary<long, int> ContainerResultProbabilityMultiplierBySource { get; set; } = new();
         public Dictionary<long, int> SearchMonsterProbabilityMultiplierBySource { get; set; } = new();
-        public Dictionary<long, int> LifeStealPermilleBySource { get; set; } = new();
+        public Dictionary<long, RogueLifeStealSourceData> LifeStealPermilleBySource { get; set; } = new();
         public Dictionary<long, int> SizeDifferenceDamageBonusBySource { get; set; } = new();
         public Dictionary<long, int> OnKillHealPermilleBySource { get; set; } = new();
 

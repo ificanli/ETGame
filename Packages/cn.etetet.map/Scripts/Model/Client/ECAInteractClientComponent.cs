@@ -44,4 +44,9 @@ namespace ET.Client
         public float Radius;
         public float SelfAlpha;
     }
+
+    public struct ECAConcealmentConfigLoader
+    {
+        public string Location;
+    }
 }

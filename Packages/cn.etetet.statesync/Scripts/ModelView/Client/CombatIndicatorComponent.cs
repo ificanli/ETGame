@@ -19,4 +19,12 @@ namespace ET.Client
         public int LoadVersion;
         public bool IsInitialized;
     }
+
+    [ComponentOf(typeof(Unit))]
+    public class RogueScaleVisualComponent : Entity, IAwake, IUpdate, IDestroy
+    {
+        public Vector3 BaseScale;
+        public int AppliedScalePermille;
+        public bool IsInitialized;
+    }
 }

@@ -25,6 +25,20 @@
                 });
             }
 
+            List<LoadoutGridItemInfo> secureItems = new();
+            for (int i = 0; i < request.SecureItems.Count; ++i)
+            {
+                LoadoutGridItemData item = request.SecureItems[i];
+                secureItems.Add(new LoadoutGridItemInfo
+                {
+                    ConfigId = item.ConfigId,
+                    Count = item.Count,
+                    AnchorSlotIndex = item.AnchorSlotIndex,
+                    GridWidth = item.GridWidth,
+                    GridHeight = item.GridHeight,
+                });
+            }
+
             LoadoutHelper.ApplyLoadout(
                 unit,
                 request.MainWeaponConfigId,
@@ -34,7 +48,10 @@
                 request.BackpackConfigId,
                 request.BagWidth,
                 request.BagHeight,
-                bagItems);
+                bagItems,
+                request.SecureWidth,
+                request.SecureHeight,
+                secureItems);
 
             WeaponInitHelper.InitializeWeaponsFromUnit(unit);
             WeaponInitHelper.InitializeHeroPassiveBuff(unit, request.HeroConfigId);

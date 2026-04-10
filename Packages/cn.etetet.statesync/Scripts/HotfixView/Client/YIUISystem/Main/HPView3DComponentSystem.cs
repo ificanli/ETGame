@@ -21,6 +21,13 @@ namespace ET.Client
         [EntitySystem]
         private static void Destroy(this HPView3DComponent self)
         {
+            self.HideImmediately();
+        }
+
+        public static void HideImmediately(this HPView3DComponent self)
+        {
+            // Unit 销毁或移除前主动隐藏 3D 血条，避免世界空间血条残留。
+            self?.u_DataShow?.SetValue(false);
         }
 
         [EntitySystem]

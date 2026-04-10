@@ -62,7 +62,10 @@ namespace ET.Server
             int backpackConfigId,
             int bagWidth,
             int bagHeight,
-            IList<LoadoutGridItemInfo> bagItems)
+            IList<LoadoutGridItemInfo> bagItems,
+            int secureWidth,
+            int secureHeight,
+            IList<LoadoutGridItemInfo> secureItems)
         {
             EquipmentComponent equipComp = unit.GetComponent<EquipmentComponent>();
             if (equipComp == null)
@@ -73,6 +76,7 @@ namespace ET.Server
 
             ApplyFixedLoadout(equipComp, mainWeaponConfigId, subWeaponConfigId, armorConfigId, consumableConfigIds);
             ApplyBagItems(unit, backpackConfigId, bagWidth, bagHeight, bagItems);
+            RuntimeSecureInventoryHelper.Apply(unit, secureWidth, secureHeight, secureItems);
         }
 
         private static void ApplyFixedLoadout(
@@ -140,6 +144,7 @@ namespace ET.Server
         private static void ApplyBagItems(Unit unit, LoadoutComponent loadout)
         {
             ApplyBagItems(unit, loadout.BackpackConfigId, loadout.BagWidth, loadout.BagHeight, loadout.CarriedBagItems);
+            RuntimeSecureInventoryHelper.Apply(unit, loadout.SecureWidth, loadout.SecureHeight, loadout.CarriedSecureItems);
         }
 
         private static void ApplyBagItems(

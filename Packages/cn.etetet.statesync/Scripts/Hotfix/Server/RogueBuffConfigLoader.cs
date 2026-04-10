@@ -28,16 +28,13 @@ namespace ET.Server
                 return;
             }
 
-            if (!category.Contain(1001))
-            {
-                RegisterGoldExpert(category);
-                RegisterAllSearch(category);
-                RegisterBossHunter(category);
-                RegisterFirepower(category);
-                RegisterEndurance(category);
-                RegisterHunter(category);
-                RegisterDiceManiac(category);
-            }
+            RegisterGoldExpert(category);
+            RegisterAllSearch(category);
+            RegisterBossHunter(category);
+            RegisterFirepower(category);
+            RegisterEndurance(category);
+            RegisterHunter(category);
+            RegisterDiceManiac(category);
 
             RegisterCommonShowTagBuffs(category);
             RegisterMissingLegacyOptionBuffs(category);
@@ -142,8 +139,8 @@ namespace ET.Server
             Register(category, Buff(
                 1022,
                 "Rogue 1022",
-                new EffectRogueDamageReduction { DamageReduction = 300, SourceFilter = 1 },
-                new EffectRogueLifeSteal { LifeStealPermille = 300 },
+                new EffectRogueDamageReduction { DamageReduction = 300, SourceFilter = RogueUnitFilterType.Boss },
+                new EffectRogueLifeSteal { LifeStealPermille = 300, TargetFilter = RogueUnitFilterType.Boss },
                 add: Add(new BTRogueApplyPassiveEffects()),
                 remove: Remove(new BTRogueRemovePassiveEffects())));
             Register(category, Buff(
@@ -161,16 +158,15 @@ namespace ET.Server
             Register(category, Buff(
                 1025,
                 "Rogue 1025",
-                new EffectRogueWeaponModifiers
+                new EffectRogueOnKillWeaponEnchant
                 {
-                    Entries = new List<RogueWeaponModifierEntry>
-                    {
-                        WeaponModifier(WeaponModType.Penetration, 100),
-                        WeaponModifier(WeaponModType.BulletDamage, 150),
-                    },
+                    SlotIndex = 1,
+                    DamageBonusPermille = 150,
+                    PenetrationCount = 1,
+                    TargetFilter = RogueUnitFilterType.EliteOrBoss,
                 },
-                add: Add(new BTRogueAddWeaponModifiers()),
-                remove: Remove(new BTRogueRemoveWeaponModifiers())));
+                add: Add(new BTRogueApplyOnKillWeaponEnchant()),
+                remove: Remove(new BTRogueRemoveOnKillWeaponEnchant())));
             Register(category, Buff(
                 1026,
                 "Rogue 1026",
@@ -229,7 +225,15 @@ namespace ET.Server
             Register(category, Buff(
                 1035,
                 "Rogue 1035",
-                new EffectRogueTrapMaster { IdleMs = 5000, BulletCount = 15 },
+                new EffectRogueTrapMaster
+                {
+                    IdleMs = 5000,
+                    BulletCount = 15,
+                    TrapDamagePermille = 3000,
+                    TrapRadius = 3f,
+                    TrapLifetimeMs = 30000,
+                    TrapTickIntervalMs = 250,
+                },
                 add: Add(new BTRogueApplyTrapMaster()),
                 remove: Remove(new BTRogueRemoveTrapMaster())));
             Register(category, Buff(
@@ -270,7 +274,14 @@ namespace ET.Server
             Register(category, Buff(
                 1045,
                 "Rogue 1045",
-                new EffectRogueHealSpirit { HealPermille = 50, IntervalMs = 30000 },
+                new EffectRogueHealSpirit
+                {
+                    HealPermille = 50,
+                    IntervalMs = 30000,
+                    DamageBonusPermille = 300,
+                    AuraRadius = 6f,
+                    PickupRadius = 1.5f,
+                },
                 tickTime: 30000,
                 add: Add(new BTRogueSummonHealSpirit()),
                 tick: Tick(new BTRogueSummonHealSpirit()),
@@ -355,6 +366,22 @@ namespace ET.Server
         {
             if (category.Contain(buffConfig.Id))
             {
+                BuffConfig existing = category.Get(buffConfig.Id);
+                if (existing == null)
+                {
+                    return;
+                }
+
+                existing.Desc = buffConfig.Desc;
+                existing.Duration = buffConfig.Duration;
+                existing.TickTime = buffConfig.TickTime;
+                existing.MaxStack = buffConfig.MaxStack;
+                existing.Stack = buffConfig.Stack;
+                existing.OverLayRuleType = buffConfig.OverLayRuleType;
+                existing.Flags = buffConfig.Flags != null ? new HashSet<BuffFlags>(buffConfig.Flags) : new HashSet<BuffFlags>();
+                existing.NoticeType = buffConfig.NoticeType;
+                existing.Effects = buffConfig.Effects != null ? new List<EffectNode>(buffConfig.Effects) : new List<EffectNode>();
+                existing.OnAfterDeserialize();
                 return;
             }
 

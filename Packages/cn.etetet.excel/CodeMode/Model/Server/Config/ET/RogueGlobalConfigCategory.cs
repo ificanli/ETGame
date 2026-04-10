@@ -76,6 +76,10 @@ namespace ET
         /// 默认怪物尸体盒UnitConfigId
         /// </summary>
         public int DefaultMonsterCorpseLootBoxUnitConfigId => _data.DefaultMonsterCorpseLootBoxUnitConfigId;
+        /// <summary>
+        /// 自动拾取进安全格的单格最小价值
+        /// </summary>
+        public int AutoSecureMinValuePerGrid => _data.AutoSecureMinValuePerGrid;
         
         public void ResolveRef()
         {

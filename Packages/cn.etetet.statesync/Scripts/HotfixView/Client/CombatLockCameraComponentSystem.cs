@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ET.Client
 {
     /// <summary>
-    /// 管理本地玩家锁定目标后的相机偏移。
+    /// 管理本地玩家基于当前战斗目标的相机偏移。
     /// </summary>
     [EntitySystemOf(typeof(CombatLockCameraComponent))]
     public static partial class CombatLockCameraComponentSystem
@@ -91,6 +91,19 @@ namespace ET.Client
         {
             TargetComponent targetComponent = owner.GetComponent<TargetComponent>();
             Unit target = targetComponent?.Unit;
+            if (self.IsValidLockedTarget(owner, target))
+            {
+                return target;
+            }
+
+            CombatIndicatorComponent combatIndicatorComponent = owner.GetComponent<CombatIndicatorComponent>();
+            if (combatIndicatorComponent == null || combatIndicatorComponent.CurrentTargetUnitId == 0)
+            {
+                return null;
+            }
+
+            UnitComponent unitComponent = owner.Scene()?.GetComponent<UnitComponent>();
+            target = unitComponent?.Get(combatIndicatorComponent.CurrentTargetUnitId);
             return self.IsValidLockedTarget(owner, target) ? target : null;
         }
 
@@ -150,15 +163,8 @@ namespace ET.Client
             UnitViewInterpolationComponent interpolationComponent = owner.GetComponent<UnitViewInterpolationComponent>();
             if (interpolationComponent != null)
             {
-                Vector3 direction = interpolationComponent.PositionPredictionDirection;
-                moveSpeed = interpolationComponent.PositionPredictionSpeed;
-                if (direction.sqrMagnitude > 0.000001f && moveSpeed > 0.01f)
-                {
-                    return direction.normalized;
-                }
-
-                direction = interpolationComponent.PredictedDirection;
-                moveSpeed = interpolationComponent.PredictedSpeed;
+                Vector3 direction = interpolationComponent.LocalMoveDirection;
+                moveSpeed = interpolationComponent.LocalMoveSpeed;
                 if (direction.sqrMagnitude > 0.000001f && moveSpeed > 0.01f)
                 {
                     return direction.normalized;

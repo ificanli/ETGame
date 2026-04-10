@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using Unity.Mathematics;
 
 namespace ET.Client
@@ -51,12 +50,15 @@ namespace ET.Client
             self.SelfConcealmentAlpha = 1f;
 
             string path = $"Packages/cn.etetet.map/Bundles/ECA/{mapName}.txt";
-            if (!File.Exists(path))
+            string json = EventSystem.Instance.Invoke<ECAConcealmentConfigLoader, string>(new ECAConcealmentConfigLoader
+            {
+                Location = path
+            });
+            if (string.IsNullOrWhiteSpace(json))
             {
                 return;
             }
 
-            string json = File.ReadAllText(path);
             List<ECAConfig> configs = MongoHelper.FromJson<List<ECAConfig>>(json);
             if (configs == null || configs.Count == 0)
             {

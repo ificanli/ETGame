@@ -1964,14 +1964,23 @@ namespace ET.Client
             }
 
             int displayFps = Mathf.Max(0, Mathf.RoundToInt(self.SmoothedFps));
-            if (displayFps != self.LastDisplayedFps)
+            long pingMs = GetCurrentPing(self);
+            if (displayFps != self.LastDisplayedFps || pingMs != self.LastDisplayedPing)
             {
-                self.FpsCounterText.text = $"FPS: {displayFps}";
+                self.FpsCounterText.text = $"FPS: {displayFps} | Ping: {pingMs}ms";
                 self.LastDisplayedFps = displayFps;
+                self.LastDisplayedPing = pingMs;
             }
 
             self.FpsAccumulatedTime = 0f;
             self.FpsAccumulatedFrames = 0;
+        }
+
+        private static long GetCurrentPing(MainPanelComponent self)
+        {
+            Session session = self.Root()?.GetComponent<SessionComponent>()?.Session;
+            PingComponent pingComponent = session?.GetComponent<PingComponent>();
+            return pingComponent?.Ping ?? -1;
         }
         
         [YIUIInvoke(MainPanelComponent.OnEventClickOpenMapInvoke)]

@@ -10,6 +10,7 @@ namespace ET
     public static class BuildHelper
     {
         private const string relativeDirPrefix = "./Release";
+        private static readonly string[] defaultLevels = { "Packages/cn.etetet.statesync/Scenes/Init.unity" };
 
         public static string BuildFolder = "./Release/{0}/StreamingAssets/";
 
@@ -59,47 +60,75 @@ namespace ET
 
         public static void Build(PlatformType type, BuildOptions buildOptions)
         {
-            BuildTarget buildTarget = BuildTarget.StandaloneWindows;
-            string programName = "ET";
-            string exeName = programName;
-            switch (type)
+            string outputPath = GetDefaultOutputPath(type);
+            Build(type, buildOptions, outputPath, null, true);
+        }
+
+        public static BuildReport Build(PlatformType type, BuildOptions buildOptions, string outputPath, string[] levels = null, bool revealOutput = false)
+        {
+            BuildTarget buildTarget = GetBuildTarget(type, out _);
+            string[] buildLevels = levels ?? defaultLevels;
+            string finalOutputPath = string.IsNullOrWhiteSpace(outputPath) ? GetDefaultOutputPath(type) : outputPath;
+            string outputDirectory = Path.GetDirectoryName(finalOutputPath);
+
+            if (!string.IsNullOrEmpty(outputDirectory) && !Directory.Exists(outputDirectory))
             {
-                case PlatformType.Windows:
-                    buildTarget = BuildTarget.StandaloneWindows64;
-                    exeName += ".exe";
-                    break;
-                case PlatformType.Android:
-                    buildTarget = BuildTarget.Android;
-                    exeName += ".apk";
-                    break;
-                case PlatformType.IOS:
-                    buildTarget = BuildTarget.iOS;
-                    break;
-                case PlatformType.MacOS:
-                    buildTarget = BuildTarget.StandaloneOSX;
-                    break;
-                case PlatformType.Linux:
-                    buildTarget = BuildTarget.StandaloneLinux64;
-                    break;
-                case PlatformType.WebGL:
-                    buildTarget = BuildTarget.WebGL;
-                    break;
+                Directory.CreateDirectory(outputDirectory);
             }
 
             AssetDatabase.Refresh();
 
-            Debug.Log("start build");
+            Debug.Log($"start build: {finalOutputPath}");
 
-            string[] levels = { "Packages/cn.etetet.wow/Scenes/Init.unity" };
-            BuildReport report = BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, buildOptions);
+            BuildReport report = BuildPipeline.BuildPlayer(buildLevels, finalOutputPath, buildTarget, buildOptions);
             if (report.summary.result != BuildResult.Succeeded)
             {
                 Debug.Log($"BuildResult:{report.summary.result}");
-                return;
+                return report;
             }
 
             Debug.Log("finish build");
-            EditorUtility.OpenWithDefaultApp(relativeDirPrefix);
+            if (revealOutput && !Application.isBatchMode)
+            {
+                EditorUtility.OpenWithDefaultApp(outputDirectory ?? relativeDirPrefix);
+            }
+
+            return report;
+        }
+
+        public static string[] GetDefaultLevels()
+        {
+            return defaultLevels.ToArray();
+        }
+
+        public static string GetDefaultOutputPath(PlatformType type)
+        {
+            GetBuildTarget(type, out string executableName);
+            return $"{relativeDirPrefix}/{executableName}";
+        }
+
+        private static BuildTarget GetBuildTarget(PlatformType type, out string executableName)
+        {
+            executableName = "ET";
+            switch (type)
+            {
+                case PlatformType.Windows:
+                    executableName += ".exe";
+                    return BuildTarget.StandaloneWindows64;
+                case PlatformType.Android:
+                    executableName += ".apk";
+                    return BuildTarget.Android;
+                case PlatformType.IOS:
+                    return BuildTarget.iOS;
+                case PlatformType.MacOS:
+                    return BuildTarget.StandaloneOSX;
+                case PlatformType.Linux:
+                    return BuildTarget.StandaloneLinux64;
+                case PlatformType.WebGL:
+                    return BuildTarget.WebGL;
+                default:
+                    return BuildTarget.StandaloneWindows64;
+            }
         }
     }
 }

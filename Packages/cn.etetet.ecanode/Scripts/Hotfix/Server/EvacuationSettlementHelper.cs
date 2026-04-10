@@ -31,6 +31,17 @@ namespace ET.Server
                 }
             }
 
+            RuntimeSecureInventoryComponent secureInventory = player.GetComponent<RuntimeSecureInventoryComponent>();
+            if (secureInventory != null)
+            {
+                for (int i = 0; i < secureInventory.Items.Count; ++i)
+                {
+                    LoadoutGridItemInfo item = secureInventory.Items[i];
+                    AddMergedItem(mergedItems, item.ConfigId, item.Count);
+                    totalWealth += (long)item.ConfigId * item.Count;
+                }
+            }
+
             // 收集装备槽中的装备
             EquipmentComponent equipComp = player.GetComponent<EquipmentComponent>();
             if (equipComp != null)
@@ -99,6 +110,23 @@ namespace ET.Server
                         bagItem.GridWidth = item.GridWidth;
                         bagItem.GridHeight = item.GridHeight;
                         actorMsg.FinalBagItems.Add(bagItem);
+                    }
+                }
+
+                if (secureInventory != null)
+                {
+                    actorMsg.SecureWidth = secureInventory.Width;
+                    actorMsg.SecureHeight = secureInventory.Height;
+                    for (int i = 0; i < secureInventory.Items.Count; ++i)
+                    {
+                        LoadoutGridItemInfo item = secureInventory.Items[i];
+                        LoadoutGridItemData secureItem = LoadoutGridItemData.Create();
+                        secureItem.ConfigId = item.ConfigId;
+                        secureItem.Count = item.Count;
+                        secureItem.AnchorSlotIndex = item.AnchorSlotIndex;
+                        secureItem.GridWidth = item.GridWidth;
+                        secureItem.GridHeight = item.GridHeight;
+                        actorMsg.FinalSecureItems.Add(secureItem);
                     }
                 }
 

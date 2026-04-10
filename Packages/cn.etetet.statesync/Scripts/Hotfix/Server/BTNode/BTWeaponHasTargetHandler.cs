@@ -14,12 +14,21 @@ namespace ET.Server
                 return 1;
             }
 
-            Unit target = selector.SelectTarget();
+            Unit target = caster.GetComponent<TargetComponent>()?.Unit;
+            if (TargetSelectorHelper.IsValidTarget(caster, target, float.MaxValue))
+            {
+                selector.CurrentTargetId = target.Id;
+            }
+            else
+            {
+                target = selector.SelectTarget();
+            }
+
             if (target == null)
             {
                 int seeUnitCount = caster.GetComponent<AOIEntity>()?.GetSeeUnits().Count ?? 0;
                 Log.Warning(
-                    $"[WeaponFireTrace][HasTarget] no target, caster={caster.Id}, unitType={caster.UnitType}, configId={caster.ConfigId}, pos=({caster.Position.x:F2},{caster.Position.y:F2},{caster.Position.z:F2}), maxRange={selector.MaxRange}, currentTargetId={selector.CurrentTargetId}, manualTargetId={selector.ManualTargetId}, seeUnits={seeUnitCount}");
+                    $"[WeaponFireTrace][HasTarget] no target, caster={caster.Id}, unitType={caster.UnitType}, configId={caster.ConfigId}, pos=({caster.Position.x:F2},{caster.Position.y:F2},{caster.Position.z:F2}), maxRange={selector.MaxRange}, currentTargetId={selector.CurrentTargetId}, seeUnits={seeUnitCount}");
                 Log.Warning($"BTWeaponHasTarget: unit {caster.Id} found no target (MaxRange={selector.MaxRange})");
                 return 1;
             }

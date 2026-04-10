@@ -1,111 +1,109 @@
+using System.Reflection;
+
 namespace ET.Test
 {
     /// <summary>
-    /// 测试目标选择系统：TargetSelectorComponent + TargetSelectorHelper
-    /// TDD: 验证自动索敌的核心逻辑（手动目标优先、无目标时返回null）
-    /// 注意：AOI范围目标查找需要服务端AOI，这里主要测试组件的状态管理逻辑
+    /// 验证 TargetSelectorComponent 默认值，以及手动锁定字段/方法已被删除。
     /// </summary>
     public class Test_TargetSelector_Basic_Test : ATestHandler
     {
         public override async ETTask<int> Handle(TestContext context)
         {
             await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Test_TargetSelector_Basic_Test));
-            Fiber testFiber = scope.TestFiber;
+            Scene scene = scope.TestFiber.Root;
 
-            // 创建两个机器人
-            Fiber robot1 = await TestHelper.CreateRobot(testFiber, "TargetRobot1");
-            Scene scene1 = robot1.Root;
-            EntityRef<Scene> scene1Ref = scene1;
-
-            Fiber robot2 = await TestHelper.CreateRobot(testFiber, "TargetRobot2");
-            scene1 = scene1Ref;
-
-            // 获取服务端Unit
-            Unit unit1 = TestHelper.GetServerUnit(testFiber, robot1);
-            Unit unit2 = TestHelper.GetServerUnit(testFiber, robot2);
-
-            if (unit1 == null)
+            Unit unit = TestHelper.CreateServerUnit(scene, UnitType.Player, campId: 1);
+            if (unit == null)
             {
-                Log.Console("unit1 is null");
+                Log.Console("server unit is null");
                 return 1;
             }
 
-            if (unit2 == null)
+            if (unit.GetComponent<TargetSelectorComponent>() != null)
             {
-                Log.Console("unit2 is null");
+                Log.Console("target selector should not exist initially");
                 return 2;
             }
 
-            // 验证初始状态下单位没有 TargetSelectorComponent
-            TargetSelectorComponent initSelector = unit1.GetComponent<TargetSelectorComponent>();
-            if (initSelector != null)
+            unit.AddComponent<TargetSelectorComponent>();
+            TargetSelectorComponent selector = unit.GetComponent<TargetSelectorComponent>();
+            if (selector == null)
             {
-                Log.Console("unit1 should not have TargetSelectorComponent initially");
+                Log.Console("target selector add failed");
                 return 3;
             }
 
-            // 给 unit1 添加 TargetSelectorComponent
-            unit1.AddComponent<TargetSelectorComponent>();
-            TargetSelectorComponent selector = unit1.GetComponent<TargetSelectorComponent>();
-
-            if (selector == null)
+            if (selector.CurrentTargetId != 0)
             {
-                Log.Console("TargetSelectorComponent AddComponent failed");
+                Log.Console($"current target should be 0, actual={selector.CurrentTargetId}");
                 return 4;
             }
 
-            // 验证初始值
-            if (selector.CurrentTargetId != 0)
+            if (selector.LastSelectTime != 0)
             {
-                Log.Console($"CurrentTargetId should be 0, but is {selector.CurrentTargetId}");
+                Log.Console($"last select time should be 0, actual={selector.LastSelectTime}");
                 return 5;
             }
 
             if (selector.SelectIntervalMs != 1000)
             {
-                Log.Console($"SelectIntervalMs should be 1000, but is {selector.SelectIntervalMs}");
+                Log.Console($"select interval should be 1000, actual={selector.SelectIntervalMs}");
                 return 6;
             }
 
             if (selector.MaxRange != 10f)
             {
-                Log.Console($"MaxRange should be 10f, but is {selector.MaxRange}");
+                Log.Console($"max range should be 10, actual={selector.MaxRange}");
                 return 7;
             }
 
-            // 验证 GetCurrentTarget 在无目标时返回 null
-            Unit currentTarget = selector.GetCurrentTarget();
-            if (currentTarget != null)
+            if (selector.LastLineOfSightCheckTime != 0)
             {
-                Log.Console("GetCurrentTarget should return null when no target set");
+                Log.Console($"last los check time should be 0, actual={selector.LastLineOfSightCheckTime}");
                 return 8;
             }
 
-            // 保存引用，准备设置手动目标
-            EntityRef<Unit> unit1Ref = unit1;
-            EntityRef<Unit> unit2Ref = unit2;
-
-            // 设置手动目标（unit2）
-            unit1 = unit1Ref;
-            unit2 = unit2Ref;
-            selector = unit1.GetComponent<TargetSelectorComponent>();
-
-            selector.SetManualTarget(unit2.Id);
-
-            if (selector.ManualTargetId != unit2.Id)
+            if (selector.LastLineOfSightTargetId != 0)
             {
-                Log.Console($"ManualTargetId should be {unit2.Id}, but is {selector.ManualTargetId}");
+                Log.Console($"last los target id should be 0, actual={selector.LastLineOfSightTargetId}");
                 return 9;
             }
 
-            // 验证 SetManualTarget 重置了 LastSelectTime
-            if (selector.LastSelectTime != 0)
+            if (selector.LastLineOfSightPassed)
             {
-                Log.Console($"LastSelectTime should be reset to 0 after SetManualTarget, but is {selector.LastSelectTime}");
+                Log.Console("last los passed should be false initially");
                 return 10;
             }
 
-            Log.Console("Test_TargetSelector_BasicTest PASSED");
+            if (selector.ConsecutiveLineOfSightBlockedCount != 0)
+            {
+                Log.Console($"los blocked count should be 0, actual={selector.ConsecutiveLineOfSightBlockedCount}");
+                return 11;
+            }
+
+            if (selector.GetCurrentTarget() != null)
+            {
+                Log.Console("current target should be null when current target id is 0");
+                return 12;
+            }
+
+            FieldInfo manualTargetField = typeof(TargetSelectorComponent).GetField("ManualTargetId",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (manualTargetField != null)
+            {
+                Log.Console("manual target field should be removed");
+                return 13;
+            }
+
+            MethodInfo setManualTargetMethod = typeof(TargetSelectorComponentSystem).GetMethod("SetManualTarget",
+                BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (setManualTargetMethod != null)
+            {
+                Log.Console("SetManualTarget method should be removed");
+                return 14;
+            }
+
+            Log.Console("Test_TargetSelector_Basic_Test PASSED");
             return ErrorCode.ERR_Success;
         }
     }

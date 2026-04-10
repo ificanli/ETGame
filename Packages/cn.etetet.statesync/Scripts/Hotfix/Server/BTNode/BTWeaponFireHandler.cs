@@ -77,6 +77,7 @@ namespace ET.Server
             float damage = weaponComp.GetEffectiveDamage(node.SlotIndex);
             int reloadDamageBonusPermille = 0;
             int reloadPenetrationCount = 0;
+            int weaponPenetrationCount = weaponComp.GetEffectivePenetrationCount(node.SlotIndex);
             RogueReloadFirstShotsStateComponent reloadFirstShotsState = caster.GetComponent<RogueReloadFirstShotsStateComponent>();
             if (reloadFirstShotsState != null)
             {
@@ -100,7 +101,7 @@ namespace ET.Server
                     weaponConfig.BulletCount,
                     weaponConfig.SpreadAngle,
                     weaponId,
-                    reloadPenetrationCount
+                    weaponPenetrationCount + reloadPenetrationCount
                 );
             }
             else
@@ -113,7 +114,7 @@ namespace ET.Server
                     damage,
                     lockType,
                     weaponId,
-                    reloadPenetrationCount
+                    weaponPenetrationCount + reloadPenetrationCount
                 );
             }
 

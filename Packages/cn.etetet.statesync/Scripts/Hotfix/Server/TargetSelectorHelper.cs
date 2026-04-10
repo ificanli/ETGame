@@ -5,7 +5,6 @@ namespace ET.Server
 {
     /// <summary>
     /// 目标选择辅助工具类，提供自动索敌逻辑（服务端）。
-    /// 选择优先级：手动目标 > 自动（距离权重0.7 + 血量权重0.3 + 攻击自己加成）
     /// </summary>
     public static class TargetSelectorHelper
     {
@@ -15,6 +14,9 @@ namespace ET.Server
         private const float HpWeight = 0.3f;
         // 正在攻击自己的优先级加成（分数乘以此系数，越小越优先）
         private const float AttackMeBonus = 0.5f;
+        private const float LineOfSightMaxVerticalDelta = 4f;
+        private const long LineOfSightPassCacheMs = 120;
+        private const int LineOfSightBlockedFailureThreshold = 2;
 
         /// <summary>
         /// 选择目标，有缓存机制避免频繁计算
@@ -55,19 +57,6 @@ namespace ET.Server
 
             self.LastSelectTime = now;
 
-            // 优先使用手动指定的目标
-            if (self.ManualTargetId != 0)
-            {
-                Unit manualTarget = owner.Scene().GetComponent<UnitComponent>().Get(self.ManualTargetId);
-                if (IsValidTarget(owner, manualTarget, maxRange))
-                {
-                    self.CurrentTargetId = self.ManualTargetId;
-                    return manualTarget;
-                }
-
-                self.ManualTargetId = 0;
-            }
-
             // 自动选择最优目标
             Unit bestTarget = FindBestTarget(owner, maxRange);
             if (bestTarget != null)
@@ -93,6 +82,11 @@ namespace ET.Server
 
             foreach (Unit enemy in enemies)
             {
+                if (!HasDirectLineOfSight(owner, enemy))
+                {
+                    continue;
+                }
+
                 float distance = GetHorizontalDistance(owner.Position, enemy.Position);
                 float score = CalculateScore(owner, enemy, distance, maxRange);
 
@@ -180,7 +174,55 @@ namespace ET.Server
 
         public static bool IsValidTarget(Unit owner, Unit target, float maxRange)
         {
-            if (target == null || target.IsDisposed)
+            if (!PassesBasicTargetRules(owner, target, maxRange))
+            {
+                return false;
+            }
+
+            TargetSelectorComponent selector = owner.GetComponent<TargetSelectorComponent>();
+            if (selector == null)
+            {
+                return HasDirectLineOfSight(owner, target);
+            }
+
+            long now = TimeInfo.Instance.ServerNow();
+            if (selector.LastLineOfSightTargetId == target.Id &&
+                selector.LastLineOfSightPassed &&
+                now - selector.LastLineOfSightCheckTime < LineOfSightPassCacheMs)
+            {
+                return true;
+            }
+
+            bool passed = HasDirectLineOfSight(owner, target);
+            if (passed)
+            {
+                selector.LastLineOfSightCheckTime = now;
+                selector.LastLineOfSightTargetId = target.Id;
+                selector.LastLineOfSightPassed = true;
+                selector.ConsecutiveLineOfSightBlockedCount = 0;
+                return true;
+            }
+
+            if (selector.LastLineOfSightTargetId != target.Id)
+            {
+                selector.ConsecutiveLineOfSightBlockedCount = 0;
+            }
+
+            selector.LastLineOfSightCheckTime = now;
+            selector.LastLineOfSightTargetId = target.Id;
+            selector.LastLineOfSightPassed = false;
+            selector.ConsecutiveLineOfSightBlockedCount++;
+            return selector.ConsecutiveLineOfSightBlockedCount < LineOfSightBlockedFailureThreshold;
+        }
+
+        private static bool PassesBasicTargetRules(Unit owner, Unit target, float maxRange)
+        {
+            if (owner == null || owner.IsDisposed || target == null || target.IsDisposed)
+            {
+                return false;
+            }
+
+            if (!IsVisibleInAoi(owner, target))
             {
                 return false;
             }
@@ -197,6 +239,30 @@ namespace ET.Server
             }
 
             return IsAlive(target);
+        }
+
+        private static bool HasDirectLineOfSight(Unit owner, Unit target)
+        {
+            if (owner == null || target == null || owner.IsDisposed || target.IsDisposed)
+            {
+                return false;
+            }
+
+            PathfindingComponent pathfinding = owner.GetComponent<PathfindingComponent>();
+            float unitRadius = owner.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
+            return pathfinding.HasLineOfSight(owner.Position, target.Position, unitRadius, LineOfSightMaxVerticalDelta, out _);
+        }
+
+        private static bool IsVisibleInAoi(Unit owner, Unit target)
+        {
+            AOIEntity ownerAoi = owner.GetComponent<AOIEntity>();
+            if (ownerAoi == null)
+            {
+                Log.Warning($"TargetSelector: unit {owner.Id} has no AOIEntity");
+                return false;
+            }
+
+            return ownerAoi.GetSeeUnits().ContainsKey(target.Id);
         }
 
         private static bool IsAlive(Unit target)

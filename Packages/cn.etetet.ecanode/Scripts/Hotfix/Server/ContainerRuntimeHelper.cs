@@ -315,20 +315,16 @@ namespace ET.Server
                     return ErrorCode.ERR_ECAContainerItemNotFound;
                 }
 
-                ItemComponent itemComponent = player.GetComponent<ItemComponent>();
-                if (itemComponent == null)
+                int takeError = TryAutoStoreContainerItem(
+                    player,
+                    point,
+                    slotIndex,
+                    item,
+                    player.GetComponent<ItemComponent>(),
+                    RuntimeSecureInventoryHelper.Get(player));
+                if (takeError != ErrorCode.ERR_Success)
                 {
-                    return ErrorCode.ERR_ECAContainerBagFull;
-                }
-
-                try
-                {
-                    ItemHelper.AddItem(itemComponent, item.ConfigId, item.Count, ItemChangeReason.MonsterDrop);
-                }
-                catch (Exception e)
-                {
-                    Log.Warning($"[ECAContainer] take item failed by bag state: player={player.Id}, point={point.PointId}, slot={slotIndex}, error={e.Message}");
-                    return ErrorCode.ERR_ECAContainerBagFull;
+                    return takeError;
                 }
 
                 container.RemoveItem(slotIndex);
@@ -337,6 +333,7 @@ namespace ET.Server
                 {
                     NotifyContainerUpdateToInRangePlayers(point, container);
                 }
+
                 return ErrorCode.ERR_Success;
             }
         }
@@ -372,12 +369,8 @@ namespace ET.Server
                 }
 
                 ItemComponent itemComponent = player.GetComponent<ItemComponent>();
-                if (itemComponent == null)
-                {
-                    return ErrorCode.ERR_ECAContainerBagFull;
-                }
-
-                bool hasBagFailure = false;
+                RuntimeSecureInventoryComponent secureInventory = RuntimeSecureInventoryHelper.Get(player);
+                bool hasTakeFailure = false;
                 List<int> slots = new List<int>(container.ItemEntries.Keys);
                 slots.Sort();
                 foreach (int slotIndex in slots)
@@ -387,16 +380,14 @@ namespace ET.Server
                         continue;
                     }
 
-                    try
+                    int takeError = TryAutoStoreContainerItem(player, point, slotIndex, item, itemComponent, secureInventory);
+                    if (takeError == ErrorCode.ERR_Success)
                     {
-                        ItemHelper.AddItem(itemComponent, item.ConfigId, item.Count, ItemChangeReason.MonsterDrop);
                         container.RemoveItem(slotIndex);
+                        continue;
                     }
-                    catch (Exception e)
-                    {
-                        hasBagFailure = true;
-                        Log.Warning($"[ECAContainer] take all partial by bag: player={player.Id}, point={point.PointId}, slot={slotIndex}, error={e.Message}");
-                    }
+
+                    hasTakeFailure = true;
                 }
 
                 UpdateContainerState(point, container);
@@ -404,20 +395,21 @@ namespace ET.Server
                 {
                     NotifyContainerUpdateToInRangePlayers(point, container);
                 }
-                return hasBagFailure ? ErrorCode.ERR_ECAContainerBagFull : ErrorCode.ERR_Success;
+
+                return hasTakeFailure ? ErrorCode.ERR_ECAContainerBagFull : ErrorCode.ERR_Success;
             }
         }
 
         public static async ETTask<int> MoveItem(
             Unit player,
             ECAPointComponent point,
-            bool sourceIsBag,
+            int sourceAreaType,
             int sourceSlot,
             long sourceItemId,
-            bool targetIsBag,
+            int targetAreaType,
             int targetSlot)
         {
-            if (player == null || player.IsDisposed || point == null || point.IsDisposed)
+            if (player == null || player.IsDisposed)
             {
                 return ErrorCode.ERR_Cancel;
             }
@@ -427,72 +419,128 @@ namespace ET.Server
                 return ErrorCode.ERR_ItemSlotInvalid;
             }
 
-            if (sourceIsBag == targetIsBag && sourceSlot == targetSlot)
+            ContainerItemAreaType sourceArea = (ContainerItemAreaType)sourceAreaType;
+            ContainerItemAreaType targetArea = (ContainerItemAreaType)targetAreaType;
+            if (!IsValidAreaType(sourceArea) || !IsValidAreaType(targetArea))
+            {
+                return ErrorCode.ERR_ItemSlotInvalid;
+            }
+
+            if (sourceArea == targetArea && sourceSlot == targetSlot)
             {
                 return ErrorCode.ERR_Success;
             }
 
-            Unit pointUnit = point.GetParent<Unit>();
-            if (pointUnit == null)
+            bool requiresContainer = sourceArea == ContainerItemAreaType.Container || targetArea == ContainerItemAreaType.Container;
+            Unit pointUnit = point?.GetParent<Unit>();
+            if (requiresContainer && pointUnit == null)
             {
                 return ErrorCode.ERR_ECAPointNotFound;
             }
 
             EntityRef<Unit> playerRef = player;
             EntityRef<ECAPointComponent> pointRef = point;
-            using (await player.Root().CoroutineLockComponent.Wait(CoroutineLockType.ECAContainer, pointUnit.Id))
+            long lockId = pointUnit?.Id ?? player.Id;
+            using (await player.Root().CoroutineLockComponent.Wait(CoroutineLockType.ECAContainer, lockId))
             {
                 player = playerRef;
                 point = pointRef;
-                if (player == null || player.IsDisposed || point == null || point.IsDisposed)
+                if (player == null || player.IsDisposed)
                 {
                     return ErrorCode.ERR_Cancel;
                 }
 
-                ContainerComponent container = ContainerComponentSystem.GetOrAdd(point);
-                if (container == null || (container.State != ContainerState.Opened && container.State != ContainerState.Empty))
+                ContainerComponent container = null;
+                if (requiresContainer)
                 {
-                    return ErrorCode.ERR_ECAContainerNotOpened;
+                    if (point == null || point.IsDisposed)
+                    {
+                        return ErrorCode.ERR_Cancel;
+                    }
+
+                    container = ContainerComponentSystem.GetOrAdd(point);
+                    if (container == null || (container.State != ContainerState.Opened && container.State != ContainerState.Empty))
+                    {
+                        return ErrorCode.ERR_ECAContainerNotOpened;
+                    }
                 }
 
                 ItemComponent itemComponent = player.GetComponent<ItemComponent>();
-                if (itemComponent == null)
-                {
-                    return ErrorCode.ERR_ECAContainerBagFull;
-                }
+                RuntimeSecureInventoryComponent secureInventory = RuntimeSecureInventoryHelper.Get(player);
 
-                if (targetIsBag && targetSlot >= itemComponent.Capacity)
+                if (targetArea == ContainerItemAreaType.Bag)
                 {
-                    return ErrorCode.ERR_ItemSlotInvalid;
-                }
-
-                if (sourceIsBag)
-                {
-                    Item sourceBagItem = itemComponent.GetItemById(sourceItemId);
-                    if (sourceBagItem == null || sourceBagItem.IsDisposed || sourceBagItem.SlotIndex != sourceSlot)
+                    if (itemComponent == null)
                     {
-                        return ErrorCode.ERR_ItemNotFound;
+                        return ErrorCode.ERR_ECAContainerBagFull;
                     }
 
-                    if (targetIsBag)
+                    if (targetSlot >= itemComponent.Capacity)
                     {
-                        return ItemHelper.MoveItem(itemComponent, sourceItemId, targetSlot);
+                        return ErrorCode.ERR_ItemSlotInvalid;
                     }
-
-                    return MoveBagToContainer(point, container, itemComponent, sourceBagItem, targetSlot);
                 }
 
-                if (!container.TryGetItem(sourceSlot, out ContainerItemEntry sourceContainerItem))
+                switch (sourceArea)
                 {
-                    return ErrorCode.ERR_ECAContainerItemNotFound;
-                }
+                    case ContainerItemAreaType.Container:
+                    {
+                        if (!container.TryGetItem(sourceSlot, out ContainerItemEntry sourceContainerItem))
+                        {
+                            return ErrorCode.ERR_ECAContainerItemNotFound;
+                        }
 
-                if (targetIsBag)
-                {
-                    return MoveContainerToBag(point, container, itemComponent, sourceSlot, sourceContainerItem, targetSlot);
-                }
+                        return targetArea switch
+                        {
+                            ContainerItemAreaType.Container => MoveContainerToContainer(point, container, sourceSlot, sourceContainerItem, targetSlot),
+                            ContainerItemAreaType.Bag => itemComponent == null
+                                ? ErrorCode.ERR_ECAContainerBagFull
+                                : MoveContainerToBag(point, container, itemComponent, sourceSlot, sourceContainerItem, targetSlot),
+                            ContainerItemAreaType.Secure => MoveContainerToSecure(player, point, container, secureInventory, sourceSlot, sourceContainerItem, targetSlot),
+                            _ => ErrorCode.ERR_ItemSlotInvalid,
+                        };
+                    }
+                    case ContainerItemAreaType.Bag:
+                    {
+                        if (itemComponent == null)
+                        {
+                            return ErrorCode.ERR_ItemNotFound;
+                        }
 
-                return MoveContainerToContainer(point, container, sourceSlot, sourceContainerItem, targetSlot);
+                        Item sourceBagItem = itemComponent.GetItemById(sourceItemId);
+                        if (sourceBagItem == null || sourceBagItem.IsDisposed || sourceBagItem.SlotIndex != sourceSlot)
+                        {
+                            return ErrorCode.ERR_ItemNotFound;
+                        }
+
+                        return targetArea switch
+                        {
+                            ContainerItemAreaType.Bag => ItemHelper.MoveItem(itemComponent, sourceItemId, targetSlot),
+                            ContainerItemAreaType.Container => MoveBagToContainer(point, container, itemComponent, sourceBagItem, targetSlot),
+                            ContainerItemAreaType.Secure => MoveBagToSecure(player, itemComponent, secureInventory, sourceBagItem, targetSlot),
+                            _ => ErrorCode.ERR_ItemSlotInvalid,
+                        };
+                    }
+                    case ContainerItemAreaType.Secure:
+                    {
+                        if (!TryGetSecureItem(secureInventory, sourceSlot, out int secureSourceIndex, out LoadoutGridItemInfo sourceSecureItem))
+                        {
+                            return ErrorCode.ERR_ItemNotFound;
+                        }
+
+                        return targetArea switch
+                        {
+                            ContainerItemAreaType.Secure => RuntimeSecureInventoryHelper.MoveItem(player, sourceSlot, targetSlot),
+                            ContainerItemAreaType.Container => MoveSecureToContainer(player, point, container, secureInventory, secureSourceIndex, sourceSecureItem, targetSlot),
+                            ContainerItemAreaType.Bag => itemComponent == null
+                                ? ErrorCode.ERR_ECAContainerBagFull
+                                : MoveSecureToBag(player, itemComponent, secureInventory, secureSourceIndex, sourceSecureItem, targetSlot),
+                            _ => ErrorCode.ERR_ItemSlotInvalid,
+                        };
+                    }
+                    default:
+                        return ErrorCode.ERR_ItemSlotInvalid;
+                }
             }
         }
 
@@ -606,20 +654,34 @@ namespace ET.Server
             ContainerItemEntry sourceItem,
             int targetSlot)
         {
+            if (!TryResolveBagItemPlacement(sourceItem.ConfigId, out int resolvedSourceConfigId, out ItemConfig sourceItemConfig, out int sourceGridWidth, out int sourceGridHeight))
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
             Item targetBagItem = itemComponent.GetItemBySlot(targetSlot);
             if (targetBagItem == null)
             {
-                CreateBagItem(itemComponent, targetSlot, sourceItem.ConfigId, sourceItem.Count);
+                if (!itemComponent.CanPlaceAtAnchorSlot(targetSlot, sourceGridWidth, sourceGridHeight))
+                {
+                    return ErrorCode.ERR_ECAContainerBagFull;
+                }
+
+                CreateBagItem(itemComponent, targetSlot, resolvedSourceConfigId, sourceItem.Count, sourceGridWidth, sourceGridHeight);
                 container.ItemEntries.Remove(sourceSlot);
                 UpdateContainerState(point, container);
                 NotifyContainerUpdateToInRangePlayers(point, container);
                 return ErrorCode.ERR_Success;
             }
 
-            ItemConfig itemConfig = ItemConfigCategory.Instance.Get(sourceItem.ConfigId);
-            if (sourceItem.ConfigId == targetBagItem.ConfigId && itemConfig != null && itemConfig.MaxStack > 1)
+            if (LegacyItemConfigIdHelper.MatchesConfigId(resolvedSourceConfigId, targetBagItem.ConfigId) && sourceItemConfig.MaxStack > 1)
             {
-                int stackCount = Math.Min(itemConfig.MaxStack - targetBagItem.Count, sourceItem.Count);
+                if (targetBagItem.ConfigId != resolvedSourceConfigId)
+                {
+                    targetBagItem.ConfigId = resolvedSourceConfigId;
+                }
+
+                int stackCount = Math.Min(sourceItemConfig.MaxStack - targetBagItem.Count, sourceItem.Count);
                 if (stackCount > 0)
                 {
                     targetBagItem.AddCount(stackCount);
@@ -641,9 +703,15 @@ namespace ET.Server
                 }
             }
 
-            container.SetItem(sourceSlot, targetBagItem.ConfigId, targetBagItem.Count);
+            if (!itemComponent.CanPlaceAtAnchorSlot(targetSlot, sourceGridWidth, sourceGridHeight, targetBagItem.Id))
+            {
+                return ErrorCode.ERR_ECAContainerBagFull;
+            }
+
+            int resolvedTargetBagConfigId = NormalizeBagItemConfigId(targetBagItem);
+            container.SetItem(sourceSlot, resolvedTargetBagConfigId, targetBagItem.Count);
             RemoveBagItem(itemComponent, targetBagItem);
-            CreateBagItem(itemComponent, targetSlot, sourceItem.ConfigId, sourceItem.Count);
+            CreateBagItem(itemComponent, targetSlot, resolvedSourceConfigId, sourceItem.Count, sourceGridWidth, sourceGridHeight);
             UpdateContainerState(point, container);
             NotifyContainerUpdateToInRangePlayers(point, container);
             return ErrorCode.ERR_Success;
@@ -657,23 +725,28 @@ namespace ET.Server
             int targetSlot)
         {
             int sourceSlot = sourceBagItem.SlotIndex;
+            int resolvedSourceConfigId = NormalizeBagItemConfigId(sourceBagItem);
             if (!container.TryGetItem(targetSlot, out ContainerItemEntry targetItem))
             {
-                container.SetItem(targetSlot, sourceBagItem.ConfigId, sourceBagItem.Count);
+                container.SetItem(targetSlot, resolvedSourceConfigId, sourceBagItem.Count);
                 RemoveBagItem(itemComponent, sourceBagItem);
                 UpdateContainerState(point, container);
                 NotifyContainerUpdateToInRangePlayers(point, container);
                 return ErrorCode.ERR_Success;
             }
 
-            ItemConfig itemConfig = ItemConfigCategory.Instance.Get(sourceBagItem.ConfigId);
-            if (sourceBagItem.ConfigId == targetItem.ConfigId && itemConfig != null && itemConfig.MaxStack > 1)
+            if (!TryResolveBagItemPlacement(targetItem.ConfigId, out int resolvedTargetConfigId, out ItemConfig targetItemConfig, out int targetGridWidth, out int targetGridHeight))
             {
-                int stackCount = Math.Min(itemConfig.MaxStack - targetItem.Count, sourceBagItem.Count);
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            if (LegacyItemConfigIdHelper.MatchesConfigId(resolvedSourceConfigId, resolvedTargetConfigId) && targetItemConfig.MaxStack > 1)
+            {
+                int stackCount = Math.Min(targetItemConfig.MaxStack - targetItem.Count, sourceBagItem.Count);
                 if (stackCount > 0)
                 {
                     targetItem.Count += stackCount;
-                    container.SetItem(targetSlot, targetItem.ConfigId, targetItem.Count);
+                    container.SetItem(targetSlot, resolvedTargetConfigId, targetItem.Count);
 
                     sourceBagItem.ReduceCount(stackCount);
                     if (sourceBagItem.Count > 0)
@@ -691,12 +764,428 @@ namespace ET.Server
                 }
             }
 
-            container.SetItem(targetSlot, sourceBagItem.ConfigId, sourceBagItem.Count);
+            if (!itemComponent.CanPlaceAtAnchorSlot(sourceSlot, targetGridWidth, targetGridHeight, sourceBagItem.Id))
+            {
+                return ErrorCode.ERR_ECAContainerBagFull;
+            }
+
+            container.SetItem(targetSlot, resolvedSourceConfigId, sourceBagItem.Count);
             RemoveBagItem(itemComponent, sourceBagItem);
-            CreateBagItem(itemComponent, sourceSlot, targetItem.ConfigId, targetItem.Count);
+            CreateBagItem(itemComponent, sourceSlot, resolvedTargetConfigId, targetItem.Count, targetGridWidth, targetGridHeight);
             UpdateContainerState(point, container);
             NotifyContainerUpdateToInRangePlayers(point, container);
             return ErrorCode.ERR_Success;
+        }
+
+        private static int MoveContainerToSecure(
+            Unit player,
+            ECAPointComponent point,
+            ContainerComponent container,
+            RuntimeSecureInventoryComponent secureInventory,
+            int sourceSlot,
+            ContainerItemEntry sourceItem,
+            int targetSlot)
+        {
+            if (!HasSecureInventory(secureInventory))
+            {
+                return ErrorCode.ERR_ECAContainerBagFull;
+            }
+
+            if (!TryResolveBagItemPlacement(sourceItem.ConfigId, out int resolvedSourceConfigId, out ItemConfig sourceItemConfig, out int sourceGridWidth, out int sourceGridHeight))
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            if (!TryGetSecureItem(secureInventory, targetSlot, out int targetIndex, out LoadoutGridItemInfo targetSecureItem))
+            {
+                if (!RuntimeSecureInventoryHelper.CanPlaceAtAnchorSlot(secureInventory, targetSlot, sourceGridWidth, sourceGridHeight))
+                {
+                    return ErrorCode.ERR_ECAContainerBagFull;
+                }
+
+                AddSecureItem(secureInventory, resolvedSourceConfigId, sourceItem.Count, targetSlot, sourceGridWidth, sourceGridHeight);
+                container.ItemEntries.Remove(sourceSlot);
+                RuntimeSecureInventoryHelper.NotifyChanged(player);
+                UpdateContainerState(point, container);
+                NotifyContainerUpdateToInRangePlayers(point, container);
+                return ErrorCode.ERR_Success;
+            }
+
+            if (LegacyItemConfigIdHelper.MatchesConfigId(resolvedSourceConfigId, targetSecureItem.ConfigId) && sourceItemConfig.MaxStack > 1)
+            {
+                int stackCount = Math.Min(sourceItemConfig.MaxStack - targetSecureItem.Count, sourceItem.Count);
+                if (stackCount > 0)
+                {
+                    targetSecureItem.ConfigId = resolvedSourceConfigId;
+                    targetSecureItem.Count += stackCount;
+                    secureInventory.Items[targetIndex] = targetSecureItem;
+
+                    sourceItem.Count -= stackCount;
+                    if (sourceItem.Count > 0)
+                    {
+                        container.SetItem(sourceSlot, resolvedSourceConfigId, sourceItem.Count);
+                    }
+                    else
+                    {
+                        container.ItemEntries.Remove(sourceSlot);
+                    }
+
+                    RuntimeSecureInventoryHelper.NotifyChanged(player);
+                    UpdateContainerState(point, container);
+                    NotifyContainerUpdateToInRangePlayers(point, container);
+                    return ErrorCode.ERR_Success;
+                }
+            }
+
+            if (!RuntimeSecureInventoryHelper.CanPlaceAtAnchorSlot(secureInventory, targetSlot, sourceGridWidth, sourceGridHeight, targetIndex))
+            {
+                return ErrorCode.ERR_ECAContainerBagFull;
+            }
+
+            container.SetItem(sourceSlot, targetSecureItem.ConfigId, targetSecureItem.Count);
+            ReplaceSecureItem(secureInventory, targetIndex, resolvedSourceConfigId, sourceItem.Count, targetSlot, sourceGridWidth, sourceGridHeight);
+            RuntimeSecureInventoryHelper.NotifyChanged(player);
+            UpdateContainerState(point, container);
+            NotifyContainerUpdateToInRangePlayers(point, container);
+            return ErrorCode.ERR_Success;
+        }
+
+        private static int MoveBagToSecure(
+            Unit player,
+            ItemComponent itemComponent,
+            RuntimeSecureInventoryComponent secureInventory,
+            Item sourceBagItem,
+            int targetSlot)
+        {
+            if (!HasSecureInventory(secureInventory))
+            {
+                return ErrorCode.ERR_ECAContainerBagFull;
+            }
+
+            int sourceSlot = sourceBagItem.SlotIndex;
+            int resolvedSourceConfigId = NormalizeBagItemConfigId(sourceBagItem);
+            int sourceGridWidth = LoadoutGridPlacementHelper.NormalizeGridWidth(sourceBagItem.GridWidth);
+            int sourceGridHeight = LoadoutGridPlacementHelper.NormalizeGridHeight(sourceBagItem.GridHeight);
+
+            if (!TryGetSecureItem(secureInventory, targetSlot, out int targetIndex, out LoadoutGridItemInfo targetSecureItem))
+            {
+                if (!RuntimeSecureInventoryHelper.CanPlaceAtAnchorSlot(secureInventory, targetSlot, sourceGridWidth, sourceGridHeight))
+                {
+                    return ErrorCode.ERR_ECAContainerBagFull;
+                }
+
+                AddSecureItem(secureInventory, resolvedSourceConfigId, sourceBagItem.Count, targetSlot, sourceGridWidth, sourceGridHeight);
+                RemoveBagItem(itemComponent, sourceBagItem);
+                RuntimeSecureInventoryHelper.NotifyChanged(player);
+                return ErrorCode.ERR_Success;
+            }
+
+            if (!TryResolveBagItemPlacement(targetSecureItem.ConfigId, out int resolvedTargetSecureConfigId, out ItemConfig targetItemConfig, out int targetGridWidth, out int targetGridHeight))
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            if (LegacyItemConfigIdHelper.MatchesConfigId(resolvedSourceConfigId, resolvedTargetSecureConfigId) && targetItemConfig.MaxStack > 1)
+            {
+                int stackCount = Math.Min(targetItemConfig.MaxStack - targetSecureItem.Count, sourceBagItem.Count);
+                if (stackCount > 0)
+                {
+                    targetSecureItem.ConfigId = resolvedTargetSecureConfigId;
+                    targetSecureItem.Count += stackCount;
+                    secureInventory.Items[targetIndex] = targetSecureItem;
+
+                    sourceBagItem.ReduceCount(stackCount);
+                    if (sourceBagItem.Count > 0)
+                    {
+                        ItemHelper.NotifyItemUpdate(itemComponent, sourceBagItem);
+                    }
+                    else
+                    {
+                        RemoveBagItem(itemComponent, sourceBagItem);
+                    }
+
+                    RuntimeSecureInventoryHelper.NotifyChanged(player);
+                    return ErrorCode.ERR_Success;
+                }
+            }
+
+            if (!itemComponent.CanPlaceAtAnchorSlot(sourceSlot, targetGridWidth, targetGridHeight, sourceBagItem.Id))
+            {
+                return ErrorCode.ERR_ECAContainerBagFull;
+            }
+
+            ReplaceSecureItem(secureInventory, targetIndex, resolvedSourceConfigId, sourceBagItem.Count, targetSlot, sourceGridWidth, sourceGridHeight);
+            RemoveBagItem(itemComponent, sourceBagItem);
+            CreateBagItem(itemComponent, sourceSlot, resolvedTargetSecureConfigId, targetSecureItem.Count, targetGridWidth, targetGridHeight);
+            RuntimeSecureInventoryHelper.NotifyChanged(player);
+            return ErrorCode.ERR_Success;
+        }
+
+        private static int MoveSecureToContainer(
+            Unit player,
+            ECAPointComponent point,
+            ContainerComponent container,
+            RuntimeSecureInventoryComponent secureInventory,
+            int sourceIndex,
+            LoadoutGridItemInfo sourceSecureItem,
+            int targetSlot)
+        {
+            int sourceAnchorSlot = sourceSecureItem.AnchorSlotIndex;
+            if (!container.TryGetItem(targetSlot, out ContainerItemEntry targetItem))
+            {
+                container.SetItem(targetSlot, sourceSecureItem.ConfigId, sourceSecureItem.Count);
+                RemoveSecureItem(secureInventory, sourceIndex);
+                RuntimeSecureInventoryHelper.NotifyChanged(player);
+                UpdateContainerState(point, container);
+                NotifyContainerUpdateToInRangePlayers(point, container);
+                return ErrorCode.ERR_Success;
+            }
+
+            if (!TryResolveBagItemPlacement(targetItem.ConfigId, out int resolvedTargetConfigId, out ItemConfig targetItemConfig, out int targetGridWidth, out int targetGridHeight))
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            if (LegacyItemConfigIdHelper.MatchesConfigId(sourceSecureItem.ConfigId, resolvedTargetConfigId) && targetItemConfig.MaxStack > 1)
+            {
+                int stackCount = Math.Min(targetItemConfig.MaxStack - targetItem.Count, sourceSecureItem.Count);
+                if (stackCount > 0)
+                {
+                    targetItem.Count += stackCount;
+                    container.SetItem(targetSlot, resolvedTargetConfigId, targetItem.Count);
+
+                    sourceSecureItem.Count -= stackCount;
+                    if (sourceSecureItem.Count > 0)
+                    {
+                        sourceSecureItem.ConfigId = resolvedTargetConfigId;
+                        secureInventory.Items[sourceIndex] = sourceSecureItem;
+                    }
+                    else
+                    {
+                        RemoveSecureItem(secureInventory, sourceIndex);
+                    }
+
+                    RuntimeSecureInventoryHelper.NotifyChanged(player);
+                    UpdateContainerState(point, container);
+                    NotifyContainerUpdateToInRangePlayers(point, container);
+                    return ErrorCode.ERR_Success;
+                }
+            }
+
+            if (!RuntimeSecureInventoryHelper.CanPlaceAtAnchorSlot(secureInventory, sourceAnchorSlot, targetGridWidth, targetGridHeight, sourceIndex))
+            {
+                return ErrorCode.ERR_ECAContainerBagFull;
+            }
+
+            container.SetItem(targetSlot, sourceSecureItem.ConfigId, sourceSecureItem.Count);
+            ReplaceSecureItem(secureInventory, sourceIndex, resolvedTargetConfigId, targetItem.Count, sourceAnchorSlot, targetGridWidth, targetGridHeight);
+            RuntimeSecureInventoryHelper.NotifyChanged(player);
+            UpdateContainerState(point, container);
+            NotifyContainerUpdateToInRangePlayers(point, container);
+            return ErrorCode.ERR_Success;
+        }
+
+        private static int MoveSecureToBag(
+            Unit player,
+            ItemComponent itemComponent,
+            RuntimeSecureInventoryComponent secureInventory,
+            int sourceIndex,
+            LoadoutGridItemInfo sourceSecureItem,
+            int targetSlot)
+        {
+            if (!TryResolveBagItemPlacement(sourceSecureItem.ConfigId, out int resolvedSourceConfigId, out ItemConfig sourceItemConfig, out int sourceGridWidth, out int sourceGridHeight))
+            {
+                return ErrorCode.ERR_ItemNotFound;
+            }
+
+            Item targetBagItem = itemComponent.GetItemBySlot(targetSlot);
+            if (targetBagItem == null)
+            {
+                if (!itemComponent.CanPlaceAtAnchorSlot(targetSlot, sourceGridWidth, sourceGridHeight))
+                {
+                    return ErrorCode.ERR_ECAContainerBagFull;
+                }
+
+                CreateBagItem(itemComponent, targetSlot, resolvedSourceConfigId, sourceSecureItem.Count, sourceGridWidth, sourceGridHeight);
+                RemoveSecureItem(secureInventory, sourceIndex);
+                RuntimeSecureInventoryHelper.NotifyChanged(player);
+                return ErrorCode.ERR_Success;
+            }
+
+            if (LegacyItemConfigIdHelper.MatchesConfigId(resolvedSourceConfigId, targetBagItem.ConfigId) && sourceItemConfig.MaxStack > 1)
+            {
+                if (targetBagItem.ConfigId != resolvedSourceConfigId)
+                {
+                    targetBagItem.ConfigId = resolvedSourceConfigId;
+                }
+
+                int stackCount = Math.Min(sourceItemConfig.MaxStack - targetBagItem.Count, sourceSecureItem.Count);
+                if (stackCount > 0)
+                {
+                    targetBagItem.AddCount(stackCount);
+                    ItemHelper.NotifyItemUpdate(itemComponent, targetBagItem);
+
+                    sourceSecureItem.Count -= stackCount;
+                    if (sourceSecureItem.Count > 0)
+                    {
+                        sourceSecureItem.ConfigId = resolvedSourceConfigId;
+                        secureInventory.Items[sourceIndex] = sourceSecureItem;
+                    }
+                    else
+                    {
+                        RemoveSecureItem(secureInventory, sourceIndex);
+                    }
+
+                    RuntimeSecureInventoryHelper.NotifyChanged(player);
+                    return ErrorCode.ERR_Success;
+                }
+            }
+
+            int sourceAnchorSlot = sourceSecureItem.AnchorSlotIndex;
+            int targetGridWidth = LoadoutGridPlacementHelper.NormalizeGridWidth(targetBagItem.GridWidth);
+            int targetGridHeight = LoadoutGridPlacementHelper.NormalizeGridHeight(targetBagItem.GridHeight);
+            if (!itemComponent.CanPlaceAtAnchorSlot(targetSlot, sourceGridWidth, sourceGridHeight, targetBagItem.Id) ||
+                !RuntimeSecureInventoryHelper.CanPlaceAtAnchorSlot(secureInventory, sourceAnchorSlot, targetGridWidth, targetGridHeight, sourceIndex))
+            {
+                return ErrorCode.ERR_ECAContainerBagFull;
+            }
+
+            int resolvedTargetBagConfigId = NormalizeBagItemConfigId(targetBagItem);
+            ReplaceSecureItem(secureInventory, sourceIndex, resolvedTargetBagConfigId, targetBagItem.Count, sourceAnchorSlot, targetGridWidth, targetGridHeight);
+            RemoveBagItem(itemComponent, targetBagItem);
+            CreateBagItem(itemComponent, targetSlot, resolvedSourceConfigId, sourceSecureItem.Count, sourceGridWidth, sourceGridHeight);
+            RuntimeSecureInventoryHelper.NotifyChanged(player);
+            return ErrorCode.ERR_Success;
+        }
+
+        private static int TryAutoStoreContainerItem(
+            Unit player,
+            ECAPointComponent point,
+            int slotIndex,
+            ContainerItemEntry item,
+            ItemComponent itemComponent,
+            RuntimeSecureInventoryComponent secureInventory)
+        {
+            bool preferSecure = RuntimeSecureInventoryHelper.ShouldPreferSecure(item.ConfigId, item.Count);
+            if (preferSecure && HasSecureInventory(secureInventory))
+            {
+                if (RuntimeSecureInventoryHelper.TryAddItem(secureInventory, item.ConfigId, item.Count, out string secureMessage))
+                {
+                    RuntimeSecureInventoryHelper.NotifyChanged(player);
+                    return ErrorCode.ERR_Success;
+                }
+
+                Log.Warning(
+                    $"[ECAContainer] auto take secure fallback: player={player.Id}, point={point?.PointId ?? "null"}, slot={slotIndex}, configId={item.ConfigId}, count={item.Count}, reason={secureMessage}");
+            }
+
+            if (TryAddItemToBag(itemComponent, item.ConfigId, item.Count, player, point, slotIndex))
+            {
+                return ErrorCode.ERR_Success;
+            }
+
+            return ErrorCode.ERR_ECAContainerBagFull;
+        }
+
+        private static bool TryAddItemToBag(
+            ItemComponent itemComponent,
+            int configId,
+            int count,
+            Unit player,
+            ECAPointComponent point,
+            int slotIndex)
+        {
+            if (itemComponent == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                ItemHelper.AddItem(itemComponent, configId, count, ItemChangeReason.MonsterDrop);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log.Warning(
+                    $"[ECAContainer] take item failed by bag state: player={player?.Id ?? 0}, point={point?.PointId ?? "null"}, slot={slotIndex}, configId={configId}, count={count}, error={e.Message}");
+                return false;
+            }
+        }
+
+        private static bool IsValidAreaType(ContainerItemAreaType areaType)
+        {
+            return areaType == ContainerItemAreaType.Container ||
+                   areaType == ContainerItemAreaType.Bag ||
+                   areaType == ContainerItemAreaType.Secure;
+        }
+
+        private static bool HasSecureInventory(RuntimeSecureInventoryComponent secureInventory)
+        {
+            return secureInventory != null && secureInventory.Width > 0 && secureInventory.Height > 0;
+        }
+
+        private static bool TryGetSecureItem(
+            RuntimeSecureInventoryComponent secureInventory,
+            int anchorSlotIndex,
+            out int itemIndex,
+            out LoadoutGridItemInfo item)
+        {
+            if (!HasSecureInventory(secureInventory))
+            {
+                itemIndex = -1;
+                item = default;
+                return false;
+            }
+
+            return RuntimeSecureInventoryHelper.TryGetItem(secureInventory, anchorSlotIndex, out itemIndex, out item);
+        }
+
+        private static void AddSecureItem(
+            RuntimeSecureInventoryComponent secureInventory,
+            int configId,
+            int count,
+            int anchorSlotIndex,
+            int gridWidth,
+            int gridHeight)
+        {
+            secureInventory.Items.Add(new LoadoutGridItemInfo
+            {
+                ConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(configId),
+                Count = count,
+                AnchorSlotIndex = anchorSlotIndex,
+                GridWidth = LoadoutGridPlacementHelper.NormalizeGridWidth(gridWidth),
+                GridHeight = LoadoutGridPlacementHelper.NormalizeGridHeight(gridHeight),
+            });
+        }
+
+        private static void ReplaceSecureItem(
+            RuntimeSecureInventoryComponent secureInventory,
+            int itemIndex,
+            int configId,
+            int count,
+            int anchorSlotIndex,
+            int gridWidth,
+            int gridHeight)
+        {
+            secureInventory.Items[itemIndex] = new LoadoutGridItemInfo
+            {
+                ConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(configId),
+                Count = count,
+                AnchorSlotIndex = anchorSlotIndex,
+                GridWidth = LoadoutGridPlacementHelper.NormalizeGridWidth(gridWidth),
+                GridHeight = LoadoutGridPlacementHelper.NormalizeGridHeight(gridHeight),
+            };
+        }
+
+        private static void RemoveSecureItem(RuntimeSecureInventoryComponent secureInventory, int itemIndex)
+        {
+            if (secureInventory == null || itemIndex < 0 || itemIndex >= secureInventory.Items.Count)
+            {
+                return;
+            }
+
+            secureInventory.Items.RemoveAt(itemIndex);
         }
 
         private static void RemoveBagItem(ItemComponent itemComponent, Item item)
@@ -716,13 +1205,58 @@ namespace ET.Server
             item.Dispose();
         }
 
-        private static void CreateBagItem(ItemComponent itemComponent, int slotIndex, int configId, int count)
+        private static void CreateBagItem(
+            ItemComponent itemComponent,
+            int slotIndex,
+            int configId,
+            int count,
+            int gridWidth,
+            int gridHeight)
         {
             Item item = itemComponent.AddChild<Item>();
-            item.ConfigId = configId;
+            item.ConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(configId);
             item.Count = count;
+            item.GridWidth = LoadoutGridPlacementHelper.NormalizeGridWidth(gridWidth);
+            item.GridHeight = LoadoutGridPlacementHelper.NormalizeGridHeight(gridHeight);
             itemComponent.SetSlotItem(slotIndex, item);
             ItemHelper.NotifyItemUpdate(itemComponent, item);
+        }
+
+        private static int NormalizeBagItemConfigId(Item item)
+        {
+            if (item == null || item.IsDisposed)
+            {
+                return 0;
+            }
+
+            int resolvedConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(item.ConfigId);
+            if (item.ConfigId != resolvedConfigId)
+            {
+                item.ConfigId = resolvedConfigId;
+            }
+
+            return resolvedConfigId;
+        }
+
+        private static bool TryResolveBagItemPlacement(
+            int configId,
+            out int resolvedConfigId,
+            out ItemConfig itemConfig,
+            out int gridWidth,
+            out int gridHeight)
+        {
+            resolvedConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(configId);
+            itemConfig = ItemConfigCategory.Instance.GetOrDefault(resolvedConfigId);
+            if (itemConfig == null)
+            {
+                gridWidth = LoadoutGridPlacementHelper.DEFAULT_GRID_WIDTH;
+                gridHeight = LoadoutGridPlacementHelper.DEFAULT_GRID_HEIGHT;
+                return false;
+            }
+
+            gridWidth = LoadoutGridPlacementHelper.NormalizeGridWidth(itemConfig.GridWidth);
+            gridHeight = LoadoutGridPlacementHelper.NormalizeGridHeight(itemConfig.GridHeight);
+            return true;
         }
 
         private static void UpdateContainerState(ECAPointComponent point, ContainerComponent container)

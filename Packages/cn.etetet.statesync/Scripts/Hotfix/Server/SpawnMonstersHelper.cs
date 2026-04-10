@@ -20,20 +20,22 @@ namespace ET.Server
                 return 0;
             }
 
-            // TODO: 这里需要根据 groupId 从配置中读取怪物配置
-            // 目前使用简单的逻辑：groupId 直接作为 UnitConfigId
-            // 实际项目中应该有一个 MonsterGroupConfig 来配置刷怪组
-
             int monstersSpawned = 0;
-
-            // 尝试将 groupId 解析为 UnitConfigId
-            if (!int.TryParse(groupId, out int unitConfigId))
+            int unitConfigId;
+            bool useRuntimeProfile = MonsterRuntimeProfileHelper.TryResolveUnitConfigId(groupId, out unitConfigId);
+            if (useRuntimeProfile)
+            {
+                Log.Info($"[SpawnMonsters] Resolved runtime profile: groupId={groupId}, unitConfigId={unitConfigId}");
+            }
+            else if (!int.TryParse(groupId, out unitConfigId))
             {
                 Log.Warning($"[SpawnMonsters] Invalid groupId format: {groupId}");
                 return 0;
             }
-
-            Log.Info($"[SpawnMonsters] Parsed unitConfigId: {unitConfigId}");
+            else
+            {
+                Log.Info($"[SpawnMonsters] Parsed legacy unitConfigId: {unitConfigId}");
+            }
 
             // 检查配置是否存在
             if (UnitConfigCategory.Instance.GetOrDefault(unitConfigId) == null)
@@ -60,6 +62,11 @@ namespace ET.Server
 
                 if (monster != null)
                 {
+                    if (useRuntimeProfile && !MonsterRuntimeProfileHelper.ApplyProfile(monster, groupId))
+                    {
+                        Log.Warning($"[SpawnMonsters] Failed to apply runtime profile: unitId={monsterId}, groupId={groupId}");
+                    }
+
                     RogueUnitDisplayLevelHelper.RefreshMonsterDisplayLevel(monster, false);
                     float3 resolvedPosition = monsterPosition;
                     float unitRadius = monster.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
@@ -103,7 +110,7 @@ namespace ET.Server
                     MapUnitEnterHelper.EnsureConfiguredAIBuff(monster, true);
 
                     monstersSpawned++;
-                    Log.Info($"[SpawnMonsters] Monster created: id={monsterId}, configId={unitConfigId}, pos=({monster.Position.x:F2}, {monster.Position.y:F2}, {monster.Position.z:F2}), snapDeltaXZ={snapDeltaXZ:F3}, snapDeltaY={snapDeltaY:F3}");
+                    Log.Info($"[SpawnMonsters] Monster created: id={monsterId}, configId={unitConfigId}, groupId={groupId}, profile={(useRuntimeProfile ? groupId : "legacy")}, pos=({monster.Position.x:F2}, {monster.Position.y:F2}, {monster.Position.z:F2}), snapDeltaXZ={snapDeltaXZ:F3}, snapDeltaY={snapDeltaY:F3}");
                 }
                 else
                 {

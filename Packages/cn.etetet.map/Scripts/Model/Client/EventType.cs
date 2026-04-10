@@ -3,6 +3,8 @@
     public struct SceneChangeStart
     {
         public bool ChangeScene;
+
+        public string TargetSceneName;
     }
     
     public struct SceneChangeFinish

@@ -1145,13 +1145,13 @@ namespace ET
         [MemoryPackOrder(1)]
         public string PointId { get; set; }
         [MemoryPackOrder(2)]
-        public bool SourceIsBag { get; set; }
+        public int SourceAreaType { get; set; }
         [MemoryPackOrder(3)]
         public int SourceSlot { get; set; }
         [MemoryPackOrder(4)]
         public long SourceItemId { get; set; }
         [MemoryPackOrder(5)]
-        public bool TargetIsBag { get; set; }
+        public int TargetAreaType { get; set; }
         [MemoryPackOrder(6)]
         public int TargetSlot { get; set; }
         public override void Dispose()
@@ -1163,10 +1163,10 @@ namespace ET
 
             this.RpcId = default;
             this.PointId = default;
-            this.SourceIsBag = default;
+            this.SourceAreaType = default;
             this.SourceSlot = default;
             this.SourceItemId = default;
-            this.TargetIsBag = default;
+            this.TargetAreaType = default;
             this.TargetSlot = default;
 
             ObjectPool.Recycle(this);

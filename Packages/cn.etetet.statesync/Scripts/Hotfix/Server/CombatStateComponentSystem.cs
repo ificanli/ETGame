@@ -173,6 +173,31 @@ namespace ET.Server
             self.Dispose();
         }
 
+        public static void AdjustDuration(this RunTimeLimitComponent self, long deltaMs)
+        {
+            if (self == null || self.IsDisposed || deltaMs == 0)
+            {
+                return;
+            }
+
+            self.DurationMs += deltaMs;
+            if (self.DurationMs < 1)
+            {
+                self.DurationMs = 1;
+            }
+
+            self.DeadlineTime += deltaMs;
+            long minDeadlineTime = TimeInfo.Instance.ServerNow() + 1;
+            if (self.DeadlineTime < minDeadlineTime)
+            {
+                self.DeadlineTime = minDeadlineTime;
+            }
+
+            long effectiveDuration = self.DeadlineTime - self.StartTime;
+            self.DurationMs = effectiveDuration > 0 ? effectiveDuration : 1;
+            self.RestartTimer();
+        }
+
         private static void RestartTimer(this RunTimeLimitComponent self)
         {
             self.StopTimer();
@@ -215,6 +240,38 @@ namespace ET.Server
             {
                 Log.Error($"[RunTimeLimit] timer error: {e}");
             }
+        }
+    }
+
+    public static class RogueRunTimeLimitHelper
+    {
+        public static long GetEffectiveDurationMs(Unit unit)
+        {
+            long durationMs = RunTimeLimitConst.PlayerTimeoutMs;
+            long extendGameTimeMs = RogueEffectQueryHelper.GetExtendGameTimeMs(unit);
+            if (extendGameTimeMs > 0)
+            {
+                durationMs += extendGameTimeMs;
+            }
+
+            return durationMs;
+        }
+
+        public static void RefreshDurationByExtendDelta(Unit unit, long previousExtendMs, long currentExtendMs)
+        {
+            RunTimeLimitComponent runTimeLimit = unit?.GetComponent<RunTimeLimitComponent>();
+            if (runTimeLimit == null)
+            {
+                return;
+            }
+
+            long deltaMs = currentExtendMs - previousExtendMs;
+            if (deltaMs == 0)
+            {
+                return;
+            }
+
+            runTimeLimit.AdjustDuration(deltaMs);
         }
     }
 }

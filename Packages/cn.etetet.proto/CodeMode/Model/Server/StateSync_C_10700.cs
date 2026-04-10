@@ -816,6 +816,70 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.C2M_DebugSpawnMonster)]
+    [ResponseType(nameof(M2C_DebugSpawnMonster))]
+    public partial class C2M_DebugSpawnMonster : MessageObject, ILocationRequest
+    {
+        public static C2M_DebugSpawnMonster Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_DebugSpawnMonster>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int UnitConfigId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.UnitConfigId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_DebugSpawnMonster)]
+    public partial class M2C_DebugSpawnMonster : MessageObject, ILocationResponse
+    {
+        public static M2C_DebugSpawnMonster Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_DebugSpawnMonster>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        [MemoryPackOrder(3)]
+        public long SpawnedUnitId { get; set; }
+        [MemoryPackOrder(4)]
+        public int SpawnedConfigId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.SpawnedUnitId = default;
+            this.SpawnedConfigId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort RouterSync = 10701;
@@ -842,5 +906,7 @@ namespace ET
         public const ushort M2C_RogueChoiceResult = 10722;
         public const ushort C2M_RogueRerollOption = 10723;
         public const ushort M2C_RogueRerollOptionResult = 10724;
+        public const ushort C2M_DebugSpawnMonster = 10725;
+        public const ushort M2C_DebugSpawnMonster = 10726;
     }
 }

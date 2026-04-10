@@ -317,34 +317,16 @@ namespace ET.Server
             loadout.BackpackConfigId = message.BackpackConfigId;
             loadout.BagWidth = message.BagWidth;
             loadout.BagHeight = message.BagHeight;
-            loadout.CarriedBagItems.Clear();
-
-            if (message.FinalBagItems != null)
-            {
-                for (int i = 0; i < message.FinalBagItems.Count; ++i)
-                {
-                    LoadoutGridItemData item = message.FinalBagItems[i];
-                    if (item == null)
-                    {
-                        continue;
-                    }
-
-                    loadout.CarriedBagItems.Add(new LoadoutGridItemInfo
-                    {
-                        ConfigId = item.ConfigId,
-                        Count = item.Count,
-                        AnchorSlotIndex = item.AnchorSlotIndex,
-                        GridWidth = item.GridWidth,
-                        GridHeight = item.GridHeight,
-                    });
-                }
-            }
+            loadout.SecureWidth = message.SecureWidth;
+            loadout.SecureHeight = message.SecureHeight;
+            CopyGridItemsFromMessage(message.FinalBagItems, loadout.CarriedBagItems);
+            CopyGridItemsFromMessage(message.FinalSecureItems, loadout.CarriedSecureItems);
 
             loadout.IsConfirmed = false;
             loadout.ConfirmedAt = 0;
         }
 
-        public static void ResetToSecureOnly(LoadoutComponent loadout)
+        public static void ResetToSecureOnly(LoadoutComponent loadout, Map2G_LoadoutCarryResult message = null)
         {
             loadout.MainWeaponConfigId = 0;
             loadout.SubWeaponConfigId = 0;
@@ -354,6 +336,12 @@ namespace ET.Server
             loadout.BagHeight = 0;
             loadout.CarriedBagItems.Clear();
             loadout.ConsumableConfigIds.Clear();
+            if (message != null)
+            {
+                loadout.SecureWidth = message.SecureWidth;
+                loadout.SecureHeight = message.SecureHeight;
+                CopyGridItemsFromMessage(message.FinalSecureItems, loadout.CarriedSecureItems);
+            }
             loadout.IsConfirmed = false;
             loadout.ConfirmedAt = 0;
         }
@@ -380,6 +368,20 @@ namespace ET.Server
                 }
             }
 
+            if (message.FinalSecureItems != null)
+            {
+                for (int i = 0; i < message.FinalSecureItems.Count; ++i)
+                {
+                    LoadoutGridItemData item = message.FinalSecureItems[i];
+                    if (item == null)
+                    {
+                        continue;
+                    }
+
+                    AddSummaryItem(summary, item.ConfigId, item.Count);
+                }
+            }
+
             return summary;
         }
 
@@ -397,6 +399,33 @@ namespace ET.Server
             else
             {
                 summary[configId] = count;
+            }
+        }
+
+        private static void CopyGridItemsFromMessage(IList<LoadoutGridItemData> source, List<LoadoutGridItemInfo> target)
+        {
+            target.Clear();
+            if (source == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < source.Count; ++i)
+            {
+                LoadoutGridItemData item = source[i];
+                if (item == null)
+                {
+                    continue;
+                }
+
+                target.Add(new LoadoutGridItemInfo
+                {
+                    ConfigId = item.ConfigId,
+                    Count = item.Count,
+                    AnchorSlotIndex = item.AnchorSlotIndex,
+                    GridWidth = item.GridWidth,
+                    GridHeight = item.GridHeight,
+                });
             }
         }
 

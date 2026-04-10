@@ -1460,7 +1460,7 @@
                         "$id": 138,
                         "$type": 3
                     },
-                    "$rlength": 14,
+                    "$rlength": 15,
                     "$rcontent": [
                         {
                             "$k": "cn.etetet.statesync\\Luban\\Config\\Datas\\Text.xlsx",
@@ -1613,6 +1613,17 @@
                                 "Name": "MonsterCorpseLootConfig.xlsx",
                                 "Alias": null,
                                 "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.statesync\\Luban\\Config\\Datas\\MonsterCorpseLootConfig.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.statesync\\Luban\\Config\\Datas\\MatchRobotConfig.xlsx",
+                            "$v": {
+                                "$id": 153,
+                                "$type": 7,
+                                "Name": "MatchRobotConfig.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.statesync\\Luban\\Config\\Datas\\MatchRobotConfig.xlsx",
                                 "Desc": null
                             }
                         }

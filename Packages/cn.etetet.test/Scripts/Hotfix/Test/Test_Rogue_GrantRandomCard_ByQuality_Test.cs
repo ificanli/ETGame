@@ -52,52 +52,26 @@ namespace ET.Test
                 return 2;
             }
 
-            List<int> legacyOptions = new();
-            foreach (KeyValuePair<int, RogueOptionConfig> kv in configCategory.GetOptions())
+            HashSet<int> selectedOptionIds = new();
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, selectedOptionIds, out int targetOptionId1, out RogueOptionConfig targetOptionConfig1, out _))
             {
-                if (kv.Value == null ||
-                    !kv.Value.TryGetLegacyBuffConfigId(out int buffConfigId) ||
-                    !BuffConfigCategory.Instance.Contain(buffConfigId))
-                {
-                    continue;
-                }
-
-                legacyOptions.Add(kv.Key);
-                if (legacyOptions.Count >= 2)
-                {
-                    break;
-                }
-            }
-
-            if (legacyOptions.Count < 2)
-            {
-                Log.Console($"not enough legacy target options v2, count={legacyOptions.Count}");
+                Log.Console("first keepable target option not found");
                 return 3;
             }
 
-            int targetOptionId1 = legacyOptions[0];
-            int targetOptionId2 = legacyOptions[1];
-            int sourceOptionId = 0;
-            foreach (KeyValuePair<int, RogueOptionConfig> kv in configCategory.GetOptions())
+            selectedOptionIds.Add(targetOptionId1);
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, selectedOptionIds, out int targetOptionId2, out RogueOptionConfig targetOptionConfig2, out _))
             {
-                if (kv.Value == null || kv.Key == targetOptionId1 || kv.Key == targetOptionId2)
-                {
-                    continue;
-                }
-
-                sourceOptionId = kv.Key;
-                break;
-            }
-
-            if (sourceOptionId <= 0)
-            {
-                Log.Console("source option not found for grant random card test");
+                Log.Console("second keepable target option not found");
                 return 4;
             }
 
-            RogueOptionConfig targetOptionConfig1 = configCategory.GetOptions()[targetOptionId1];
-            RogueOptionConfig targetOptionConfig2 = configCategory.GetOptions()[targetOptionId2];
-            RogueOptionConfig sourceOptionConfig = configCategory.GetOptions()[sourceOptionId];
+            selectedOptionIds.Add(targetOptionId2);
+            if (!TestHelper.TryFindExecutableRogueOption(configCategory, selectedOptionIds, out int sourceOptionId, out RogueOptionConfig sourceOptionConfig))
+            {
+                Log.Console("source option not found for grant random card test");
+                return 5;
+            }
 
             int oldQuality1 = targetOptionConfig1.Quality;
             int oldQuality2 = targetOptionConfig2.Quality;
@@ -140,20 +114,20 @@ namespace ET.Test
                 if (!RogueOptionRollHelper.TryRollOneOption(unit, configCategory, grantQuality, excludedOptionIds, out int previewOptionId))
                 {
                     Log.Console($"preview roll failed, quality={grantQuality}");
-                    return 5;
+                    return 6;
                 }
 
                 if (previewOptionId != targetOptionId1 && previewOptionId != targetOptionId2)
                 {
                     Log.Console($"preview roll mismatch, optionId={previewOptionId}");
-                    return 6;
+                    return 7;
                 }
 
                 RogueProgressComponent progress = RogueProgressHelper.EnsureProgress(unit, false);
                 if (progress == null)
                 {
                     Log.Console("rogue progress is null");
-                    return 7;
+                    return 8;
                 }
 
                 progress.ChoicePending = true;
@@ -169,31 +143,31 @@ namespace ET.Test
                 if (unit == null || progress == null)
                 {
                     Log.Console("unit or progress disposed after choose");
-                    return 8;
+                    return 9;
                 }
 
                 if (chooseError != ErrorCode.ERR_Success)
                 {
                     Log.Console($"choose option failed, error={chooseError}");
-                    return 9;
+                    return 10;
                 }
 
                 if (progress.SelectedOptionIds.Count != 3)
                 {
                     Log.Console($"selected option count mismatch, count={progress.SelectedOptionIds.Count}");
-                    return 10;
+                    return 11;
                 }
 
                 if (!progress.SelectedOptionIds.Contains(sourceOptionId))
                 {
                     Log.Console($"source option missing, optionId={sourceOptionId}");
-                    return 11;
+                    return 12;
                 }
 
                 if (!progress.SelectedOptionIds.Contains(targetOptionId1) || !progress.SelectedOptionIds.Contains(targetOptionId2))
                 {
                     Log.Console($"granted options missing, option1={targetOptionId1}, option2={targetOptionId2}");
-                    return 12;
+                    return 13;
                 }
 
                 int target1Count = 0;
@@ -214,20 +188,20 @@ namespace ET.Test
                 if (target1Count != 1 || target2Count != 1)
                 {
                     Log.Console($"granted option duplicate mismatch, option1Count={target1Count}, option2Count={target2Count}");
-                    return 13;
+                    return 14;
                 }
 
                 if (progress.AppliedBuffIds.Count != 2)
                 {
                     Log.Console($"applied buff count mismatch, count={progress.AppliedBuffIds.Count}");
-                    return 14;
+                    return 15;
                 }
 
                 RogueEffectRuntimeComponent runtimeComponent = unit.GetComponent<RogueEffectRuntimeComponent>();
                 if (runtimeComponent == null || runtimeComponent.ChildrenCount() != 2)
                 {
                     Log.Console($"runtime component count mismatch, count={runtimeComponent?.ChildrenCount() ?? 0}");
-                    return 15;
+                    return 16;
                 }
 
                 return ErrorCode.ERR_Success;

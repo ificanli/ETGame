@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ET.Client
 {
     /// <summary>
-    /// 战斗相机调参组件，挂在 Virtual Camera 上，通过 Inspector 调整移动前视和锁定偏移。
+    /// 战斗相机调参组件，挂在 Virtual Camera 上，通过 Inspector 调整移动前视和目标偏移。
     /// </summary>
     [EnableClass]
     [DisallowMultipleComponent]
@@ -16,14 +16,14 @@ namespace ET.Client
         [Tooltip("是否启用移动前视偏移")]
         public bool EnableMoveOffset = true;
 
-        [Header("锁定目标")]
-        [Tooltip("锁定目标时目标偏移占基础 CameraDistance 的比例")]
+        [Header("目标偏移")]
+        [Tooltip("存在当前战斗目标时，目标偏移占基础 CameraDistance 的比例")]
         public float LockOffsetDistanceRatio = 0.5f;
 
-        [Tooltip("是否启用锁定目标偏移")]
+        [Tooltip("是否启用当前战斗目标偏移")]
         public bool EnableLockOffset = true;
 
-        [Tooltip("锁定目标时，移动前视偏移保留比例")]
+        [Tooltip("存在当前战斗目标时，移动前视偏移保留比例")]
         public float LockedMoveOffsetMultiplier = 0.4f;
 
         [Header("平滑")]

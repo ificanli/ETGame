@@ -12,6 +12,14 @@ namespace ET.Client
                 return;
             }
 
+            Scene currentScene = root.GetComponent<CurrentScenesComponent>()?.Scene;
+            if (currentScene == null || currentScene.IsDisposed ||
+                currentScene.Name.GetSceneConfigName() != "Home")
+            {
+                await ETTask.CompletedTask;
+                return;
+            }
+
             await SettlementPanelHelper.TryOpenOrRefresh(root);
         }
     }

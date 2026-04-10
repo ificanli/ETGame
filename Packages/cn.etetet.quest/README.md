@@ -1,57 +1,79 @@
 # ET.Quest
 
-ET框架任务系统模块，提供完整的任务管理、目标追踪和进度监控功能。
+> 当前实现状态说明（2026-03-27）。本文描述当前仓库已落地的任务系统能力，不等同于未来完整任务系统设计。
 
-## 功能特性
+## 当前定位
 
-- **完整的任务流程**：支持任务接取、进行、提交、放弃等完整流程
-- **目标管理**：支持多目标任务，实时进度追踪
-- **前后端同步**：客户端服务端数据实时同步
-- **事件驱动**：基于ET事件系统的任务状态变化通知
-- **模块化设计**：符合ET框架ECS架构规范
-- **可扩展**：支持自定义任务类型和目标处理器
+- **包名**：`cn.etetet.quest`
+- **当前判断**：服务端任务骨架和接取/提交链路已落地；客户端同步与 UI 主链路仍未闭环
 
-## 核心组件
+## 当前数据模型
 
 ### 服务端
-- `QuestComponent` - 服务端任务管理组件
-- `Quest` - 任务实体
-- `QuestObjective` - 任务目标实体
-- `QuestHelper` - 任务操作帮助类
-- `IQuestObjectiveHandler` - 任务目标处理器接口
+
+- `Unit -> QuestComponent -> Quest -> QuestObjective`
+- `QuestComponent` 当前维护：
+  - `FinishedQuests`
+  - `QuestObjectives`（按目标类型聚合）
 
 ### 客户端
-- `ClientQuestComponent` - 客户端任务组件
-- `ClientQuestData` - 客户端任务数据实体
-- `ClientQuestObjectiveData` - 客户端任务目标数据实体
-- `ClientQuestHelper` - 客户端任务操作帮助类
 
-### 共享
-- `QuestStatus` - 任务状态枚举
-- `QuestEvents` - 任务相关事件定义
+- `Scene -> QuestComponent -> Quest -> QuestObjective`
+- 客户端当前并没有 `ClientQuestComponent` / `ClientQuestData` / `ClientQuestObjectiveData` 这套命名
+- 当前客户端实际使用的类名同样是：
+  - `QuestComponent`
+  - `Quest`
+  - `QuestObjective`
 
-## 使用示例
+## 当前已实现链路
+
+### 服务端
+
+- `C2M_AcceptQuestHandler`
+  - 校验 NPC、距离、前置任务和重复接取条件
+  - 通过 `QuestHelper.AddQuest` 创建任务实例
+- `C2M_SubmitQuestHandler`
+  - 校验提交 NPC、距离和任务目标完成状态
+  - 通过 `QuestHelper.SubmitQuest` 完成提交流程
+- `C2M_SyncQuestDataHandler`
+  - 返回当前任务树快照
+- `C2M_QueryAvailableQuestsHandler`
+  - 已有入口，但返回内容仍不完整
+- `QuestHelper.UpdateObjectiveCount`
+  - 目标进度变化时发送 `M2C_UpdateQuestObjective`
+
+### 客户端
+
+- `AfterCreateCurrentScene_AddQuestComponent`
+  - 场景创建时挂载 `QuestComponent`
+- `M2C_SyncQuestDataHandler`
+  - 可根据服务端快照重建客户端任务树
+- `M2C_UpdateQuestHandler`
+  - 可更新任务状态
+- `QuestHelper`
+  - 已提供 `AcceptQuest`
+  - 已提供 `SubmitQuest`
+  - 已提供 `SyncQuestData`
+  - 已提供 `AbandonQuest`
+  - 已提供 `QueryAvailableQuests`
+  - 已提供 `GetQuestDetail`
+
+## 当前未闭环部分
+
+- `M2C_UpdateQuestObjectiveHandler` 仍是 TODO，没有真正写入客户端目标进度
+- 登录后自动同步任务数据的事件链路仍是注释/TODO 状态
+- `C2M_QueryAvailableQuestsHandler` 目前还不能视为完整可接任务查询实现
+- NPC 对话、任务面板、可接任务列表等 UI 没有形成完整客户端闭环
+
+## 当前使用示例
 
 ```csharp
-// 接取任务
-bool success = await ClientQuestHelper.AcceptQuest(scene, questId, npcId);
-
-// 提交任务
-bool success = await ClientQuestHelper.SubmitQuest(scene, questId, npcId);
-
-// 获取任务进度
-ClientQuestData questData = questComponent.GetQuestData(questId);
+bool accepted = await QuestHelper.AcceptQuest(scene, questId);
+bool submitted = await QuestHelper.SubmitQuest(scene, questId);
+AvailableQuestInfo[] available = await QuestHelper.QueryAvailableQuests(scene);
+Quest quest = scene.GetComponent<QuestComponent>()?.GetQuest(questId);
 ```
 
-## 依赖
+## 参考文档
 
-- cn.etetet.core
-- cn.etetet.sourcegenerator
-
-## 版本历史
-
-### 1.0.0
-- 初始版本
-- 支持基础任务流程
-- 前后端数据同步
-- 事件系统集成
+- `Book/10-项目架构/任务系统现状.md`

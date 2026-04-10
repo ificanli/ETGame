@@ -16,14 +16,14 @@ namespace ET.Server
             }
 
             RogueBuffPassiveRuntimeComponent passiveRuntime = killer.GetComponent<RogueBuffPassiveRuntimeComponent>();
-            if (passiveRuntime == null)
+            Unit target = a.Target;
+            if (passiveRuntime != null)
             {
-                await ETTask.CompletedTask;
-                return;
+                ApplyOnKillHeal(killer, passiveRuntime);
+                ApplyOnKillStackAttack(killer, passiveRuntime);
             }
 
-            ApplyOnKillHeal(killer, passiveRuntime);
-            ApplyOnKillStackAttack(killer, passiveRuntime);
+            ApplyOnKillWeaponEnchant(killer, target);
 
             await ETTask.CompletedTask;
         }
@@ -105,6 +105,63 @@ namespace ET.Server
                 stackState.CurrentStacks += 1;
                 passiveRuntime.OnKillStackBySource[sourceId] = stackState;
                 Log.Info($"[RogueOnKill] stack attack, unitId={killer.Id}, source={sourceId}, stacks={stackState.CurrentStacks}/{maxStacks}, bonusPermille={stackState.BonusPermillePerStack}");
+            }
+        }
+
+        private static void ApplyOnKillWeaponEnchant(Unit killer, Unit target)
+        {
+            if (!MonsterRuntimeProfileHelper.IsEliteOrBoss(target))
+            {
+                return;
+            }
+
+            RogueOnKillWeaponEnchantStateComponent stateComponent = killer.GetComponent<RogueOnKillWeaponEnchantStateComponent>();
+            if (stateComponent == null || stateComponent.IsEmpty())
+            {
+                return;
+            }
+
+            RogueWeaponModifierComponent modifierComponent = killer.GetComponent<RogueWeaponModifierComponent>() ??
+                    killer.AddComponent<RogueWeaponModifierComponent>();
+            bool changed = false;
+
+            foreach ((long sourceId, RogueOnKillWeaponEnchantSourceData source) in stateComponent.Sources)
+            {
+                if (source.SlotIndex <= 0 || !MonsterRuntimeProfileHelper.MatchesCombatFilter(target, source.TargetFilter))
+                {
+                    continue;
+                }
+
+                using ListComponent<int> candidateTypes = ListComponent<int>.Create();
+                if (source.PenetrationCount > 0)
+                {
+                    candidateTypes.Add(WeaponModType.Penetration);
+                }
+
+                if (source.DamageBonusPermille > 0)
+                {
+                    candidateTypes.Add(WeaponModType.BulletDamage);
+                }
+
+                if (candidateTypes.Count == 0)
+                {
+                    continue;
+                }
+
+                int modType = candidateTypes[RandomGenerator.RandomNumber(0, candidateTypes.Count)];
+                int modValue = modType == WeaponModType.Penetration ? source.PenetrationCount : source.DamageBonusPermille;
+                if (modValue <= 0)
+                {
+                    continue;
+                }
+
+                modifierComponent.AddOrAccumulateModifier(sourceId, source.SlotIndex, modType, modValue);
+                changed = true;
+            }
+
+            if (changed)
+            {
+                WeaponRuntimeStatsHelper.RefreshUnitWeaponRuntimeStats(killer);
             }
         }
     }

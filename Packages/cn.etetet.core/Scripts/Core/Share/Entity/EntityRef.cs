@@ -114,7 +114,7 @@ namespace ET
             var target = DebugEntity;
             if (target != null && target.ViewGO != null)
             {
-                UnityEditor.Selection.activeGameObject = target.ViewGO;
+                UnityEditorReflectionHelper.SelectGameObject(target.ViewGO);
             }
             else
             {
@@ -243,7 +243,7 @@ namespace ET
             var target = DebugEntity;
             if (target != null && target.ViewGO != null)
             {
-                UnityEditor.Selection.activeGameObject = target.ViewGO;
+                UnityEditorReflectionHelper.SelectGameObject(target.ViewGO);
             }
             else
             {

@@ -39,22 +39,23 @@ namespace ET.Server
             int weaponId = weaponComponent.GetWeaponId(slotIndex);
             if (weaponId <= 0)
             {
-                weaponComponent.SetEffectiveStats(slotIndex, 0f, 0, 0, 0, 0f);
+                weaponComponent.SetEffectiveStats(slotIndex, 0f, 0, 0, 0, 0f, 0);
                 return;
             }
 
             WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(weaponId);
             if (weaponConfig == null)
             {
-                weaponComponent.SetEffectiveStats(slotIndex, 0f, 0, 0, 0, 0f);
+                weaponComponent.SetEffectiveStats(slotIndex, 0f, 0, 0, 0, 0f, 0);
                 return;
             }
 
-            int attackRangeModifier = modifierComponent?.GetModifier(WeaponModType.AttackRange) ?? 0;
-            int attackSpeedModifier = modifierComponent?.GetModifier(WeaponModType.AttackSpeed) ?? 0;
-            int magazineModifier = modifierComponent?.GetModifier(WeaponModType.MagazineCapacity) ?? 0;
-            int reloadSpeedModifier = modifierComponent?.GetModifier(WeaponModType.ReloadSpeed) ?? 0;
-            int damageModifier = modifierComponent?.GetModifier(WeaponModType.BulletDamage) ?? 0;
+            int attackRangeModifier = modifierComponent?.GetModifier(slotIndex, WeaponModType.AttackRange) ?? 0;
+            int attackSpeedModifier = modifierComponent?.GetModifier(slotIndex, WeaponModType.AttackSpeed) ?? 0;
+            int magazineModifier = modifierComponent?.GetModifier(slotIndex, WeaponModType.MagazineCapacity) ?? 0;
+            int reloadSpeedModifier = modifierComponent?.GetModifier(slotIndex, WeaponModType.ReloadSpeed) ?? 0;
+            int damageModifier = modifierComponent?.GetModifier(slotIndex, WeaponModType.BulletDamage) ?? 0;
+            int penetrationCount = modifierComponent?.GetModifier(slotIndex, WeaponModType.Penetration) ?? 0;
 
             float attackRange = math.max(0f, weaponConfig.AttackRange * (1000 + attackRangeModifier) / 1000f);
             int attackIntervalMs = ApplySpeedModifier(weaponConfig.AttackIntervalMs, attackSpeedModifier);
@@ -62,7 +63,7 @@ namespace ET.Server
             int reloadTimeMs = ApplySpeedModifier(weaponConfig.ReloadTimeMs, reloadSpeedModifier);
             float damage = math.max(0f, weaponConfig.Damage * (1000 + damageModifier) / 1000f);
 
-            weaponComponent.SetEffectiveStats(slotIndex, attackRange, attackIntervalMs, magazineSize, reloadTimeMs, damage);
+            weaponComponent.SetEffectiveStats(slotIndex, attackRange, attackIntervalMs, magazineSize, reloadTimeMs, damage, penetrationCount);
         }
 
         private static int ApplySpeedModifier(int baseValue, int speedModifier)

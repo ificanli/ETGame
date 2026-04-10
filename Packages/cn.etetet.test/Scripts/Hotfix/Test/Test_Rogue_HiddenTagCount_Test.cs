@@ -51,39 +51,16 @@ namespace ET.Test
                 return 2;
             }
 
-            if (!configCategory.TryGetTag(51, out RogueTagConfig hiddenTagConfig) || hiddenTagConfig == null || hiddenTagConfig.ShowTagsBuffId.Length == 0)
+            if (!TestHelper.TryFindCommonShowTagWithBuff(configCategory, "1", out int hiddenTagId, out int expectedBuffConfigId))
             {
-                Log.Console("hidden tag config 51 is invalid");
+                Log.Console("hidden tag config is invalid");
                 return 3;
             }
 
-            int expectedBuffConfigId = hiddenTagConfig.ShowTagsBuffId[0];
-            if (expectedBuffConfigId <= 0)
-            {
-                Log.Console($"hidden tag expected buff config invalid, buffConfigId={expectedBuffConfigId}");
-                return 4;
-            }
-
-            int optionId = 0;
-            RogueOptionConfig optionConfig = null;
-            foreach (var kv in configCategory.GetOptions())
-            {
-                if (kv.Value == null ||
-                    !RogueOptionConfigHelper.TryGetPreviewBuffConfigId(configCategory, kv.Value, out int effectBuffConfigId) ||
-                    !BuffConfigCategory.Instance.Contain(effectBuffConfigId))
-                {
-                    continue;
-                }
-
-                optionId = kv.Key;
-                optionConfig = kv.Value;
-                break;
-            }
-
-            if (optionId <= 0 || optionConfig == null)
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, null, out int optionId, out RogueOptionConfig optionConfig, out _))
             {
                 Log.Console("failed to find rogue option for hidden tag test");
-                return 5;
+                return 4;
             }
 
             int[] oldShowTags = optionConfig.ShowTags;
@@ -92,13 +69,13 @@ namespace ET.Test
             try
             {
                 optionConfig.ShowTags = Array.Empty<int>();
-                optionConfig.HideTags = new[] { 51 };
+                optionConfig.HideTags = new[] { hiddenTagId };
 
                 RogueProgressComponent progress = RogueProgressHelper.EnsureProgress(unit, false);
                 if (progress == null)
                 {
                     Log.Console("rogue progress is null");
-                    return 6;
+                    return 5;
                 }
 
                 progress.ChoicePending = true;
@@ -115,19 +92,19 @@ namespace ET.Test
                 if (unit == null || progress == null)
                 {
                     Log.Console("unit or progress disposed after first choose");
-                    return 7;
+                    return 6;
                 }
 
                 if (chooseError != ErrorCode.ERR_Success)
                 {
                     Log.Console($"first choose failed, error={chooseError}");
-                    return 8;
+                    return 7;
                 }
 
-                if (!progress.CommonShowTagCounts.TryGetValue(51, out int firstCount) || firstCount != 1)
+                if (!progress.CommonShowTagCounts.TryGetValue(hiddenTagId, out int firstCount) || firstCount != 1)
                 {
                     Log.Console($"hidden tag count mismatch after first choose, count={firstCount}");
-                    return 9;
+                    return 8;
                 }
 
                 progress.ChoicePending = true;
@@ -144,63 +121,58 @@ namespace ET.Test
                 if (unit == null || progress == null)
                 {
                     Log.Console("unit or progress disposed after second choose");
-                    return 10;
+                    return 9;
                 }
 
                 if (chooseError != ErrorCode.ERR_Success)
                 {
                     Log.Console($"second choose failed, error={chooseError}");
-                    return 11;
+                    return 10;
                 }
 
-                if (!progress.CommonShowTagCounts.TryGetValue(51, out int secondCount) || secondCount != 2)
+                if (!progress.CommonShowTagCounts.TryGetValue(hiddenTagId, out int secondCount) || secondCount != 2)
                 {
                     Log.Console($"hidden tag count mismatch after second choose, count={secondCount}");
-                    return 12;
+                    return 11;
                 }
 
                 RogueEffectRuntimeComponent runtimeComponent = unit.GetComponent<RogueEffectRuntimeComponent>();
                 if (runtimeComponent == null)
                 {
                     Log.Console("rogue effect runtime component is null");
-                    return 13;
+                    return 12;
                 }
 
                 if (runtimeComponent.Children == null || runtimeComponent.Children.Count != 2)
                 {
                     Log.Console($"rogue effect runtime count mismatch, count={runtimeComponent.Children?.Count ?? 0}");
-                    return 14;
+                    return 13;
                 }
 
-                if (!BuffConfigCategory.Instance.Contain(expectedBuffConfigId))
-                {
-                    return ErrorCode.ERR_Success;
-                }
-
-                if (!progress.AppliedShowTagBuffIds.TryGetValue(51, out long buffId) || buffId <= 0)
+                if (!progress.AppliedShowTagBuffIds.TryGetValue(hiddenTagId, out long buffId) || buffId <= 0)
                 {
                     Log.Console($"hidden tag buff id missing, buffId={buffId}");
-                    return 15;
+                    return 14;
                 }
 
                 BuffComponent buffComponent = unit.GetComponent<BuffComponent>();
                 if (buffComponent == null)
                 {
                     Log.Console("buff component is null");
-                    return 16;
+                    return 15;
                 }
 
                 Buff buff = buffComponent.GetChild<Buff>(buffId);
                 if (buff == null)
                 {
                     Log.Console($"hidden tag buff entity missing, buffId={buffId}");
-                    return 17;
+                    return 16;
                 }
 
                 if (buff.ConfigId != expectedBuffConfigId)
                 {
                     Log.Console($"hidden tag buff config mismatch, configId={buff.ConfigId}");
-                    return 18;
+                    return 17;
                 }
 
                 return ErrorCode.ERR_Success;

@@ -1,0 +1,6 @@
+ ▐▛███▜▌   Claude Code v2.1.87
+▝▜█████▛▘  Sonnet 4.6 · API Usage Billing
+  ▘▘ ▝▝    D:\05ET\MatchTest\ETGame
+
+  ↑ Install the PyCharm plugin from the JetBrains Marketplace:
+    https://docs.claude.com/s/claude-code-jetbrains

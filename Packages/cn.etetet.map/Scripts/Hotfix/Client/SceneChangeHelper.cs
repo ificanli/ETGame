@@ -20,7 +20,11 @@
 
             // 新场景容器已经准备完成后，立刻通知开始切场，让 Loading 能尽早显示。
             root = rootRef;
-            EventSystem.Instance.Publish(root, new SceneChangeStart() {ChangeScene = changeScene});          // 可以订阅这个事件中创建Loading界面
+            EventSystem.Instance.Publish(root, new SceneChangeStart()
+            {
+                ChangeScene = changeScene,
+                TargetSceneName = sceneName,
+            });          // 可以订阅这个事件中创建Loading界面
 
             if (changeScene)
             {

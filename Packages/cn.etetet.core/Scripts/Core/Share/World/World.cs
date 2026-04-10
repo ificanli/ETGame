@@ -23,6 +23,7 @@ namespace ET
 
         private World()
         {
+            SynchronizationContextKeeper.Init();
         }
 
         public void Dispose()
@@ -128,22 +129,23 @@ namespace ET
 
     public class SynchronizationContextKeeper
     {
-#if UNITY_EDITOR
         [StaticField]
         private static SynchronizationContext UX;
 
-        [UnityEditor.InitializeOnLoadMethod]
-        private static void Init()
+        public static void Init()
         {
-            UX = SynchronizationContext.Current;
+            if (SynchronizationContext.Current != null)
+            {
+                UX = SynchronizationContext.Current;
+            }
         }
-#endif
 
         public static void BackToUX()
         {
-#if UNITY_EDITOR
-            SynchronizationContext.SetSynchronizationContext(UX);
-#endif
+            if (UX != null)
+            {
+                SynchronizationContext.SetSynchronizationContext(UX);
+            }
         }
     }
 }

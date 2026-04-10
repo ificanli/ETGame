@@ -28,21 +28,26 @@ namespace ET.Client
                     scene.AddComponent<LoadoutComponent>();
                 }
 
-                bool showSettlement = scene.GetComponent<SettlementClientComponent>() is { HasSettlement: true, PendingOpen: true };
+                SettlementClientComponent settlement = scene.GetComponent<SettlementClientComponent>();
+                bool hasSettlement = settlement is { HasSettlement: true };
+                bool showSettlement = settlement is { HasSettlement: true, PendingOpen: true };
                 YIUIRootComponent yiuiRoot = scene.YIUIRoot();
                 if (yiuiRoot == null)
                 {
                     return;
                 }
 
-                EntityRef<YIUIRootComponent> yiuiRootRef = yiuiRoot;
-                await yiuiRoot.OpenPanelAsync<LobbyPanelComponent>();
-
-                scene = sceneRef;
-                yiuiRoot = yiuiRootRef;
-                if (scene == null || scene.IsDisposed)
+                if (!hasSettlement)
                 {
-                    return;
+                    EntityRef<YIUIRootComponent> yiuiRootRef = yiuiRoot;
+                    await yiuiRoot.OpenPanelAsync<LobbyPanelComponent>();
+
+                    scene = sceneRef;
+                    yiuiRoot = yiuiRootRef;
+                    if (scene == null || scene.IsDisposed)
+                    {
+                        return;
+                    }
                 }
 
                 if (showSettlement)

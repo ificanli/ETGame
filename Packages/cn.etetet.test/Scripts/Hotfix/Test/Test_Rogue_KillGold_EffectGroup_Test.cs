@@ -70,9 +70,9 @@ namespace ET.Test
                 return 3;
             }
 
-            if (!configCategory.TryGetOption(1, out RogueOptionConfig optionConfig) || optionConfig == null)
+            if (!TestHelper.TryFindExecutableRogueOption(configCategory, null, out int optionId, out RogueOptionConfig optionConfig))
             {
-                Log.Console("rogue option config 1 is null");
+                Log.Console("failed to find executable rogue option");
                 return 4;
             }
 
@@ -109,11 +109,11 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(optionId);
 
                 EntityRef<Unit> playerRef = player;
                 EntityRef<RogueProgressComponent> progressRef = progress;
-                int chooseError = await RogueProgressHelper.ChooseOption(player, progress.ChoiceSerial, 1, null);
+                int chooseError = await RogueProgressHelper.ChooseOption(player, progress.ChoiceSerial, optionId, null);
                 scene = sceneRef;
                 player = playerRef;
                 monster = monsterRef;

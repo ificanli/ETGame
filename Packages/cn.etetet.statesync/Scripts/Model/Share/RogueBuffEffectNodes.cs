@@ -2,6 +2,15 @@ using System.Collections.Generic;
 
 namespace ET
 {
+    public static class RogueUnitFilterType
+    {
+        public const int None = 0;
+        public const int Monster = 1;
+        public const int Boss = 2;
+        public const int EliteOrBoss = 3;
+        public const int NonBossMonster = 4;
+    }
+
     public class EffectRogueFatalImmunity : EffectNode
     {
     }
@@ -42,6 +51,7 @@ namespace ET
     public class EffectRogueLifeSteal : EffectNode
     {
         public int LifeStealPermille;
+        public int TargetFilter;
     }
 
     public class EffectRogueInstantKillChance : EffectNode
@@ -107,6 +117,10 @@ namespace ET
     {
         public int IdleMs;
         public int BulletCount;
+        public int TrapDamagePermille;
+        public float TrapRadius;
+        public int TrapLifetimeMs;
+        public int TrapTickIntervalMs;
     }
 
     public class EffectRogueLowHpShield : EffectNode
@@ -119,6 +133,9 @@ namespace ET
     {
         public int HealPermille;
         public int IntervalMs;
+        public int DamageBonusPermille;
+        public float AuraRadius;
+        public float PickupRadius;
     }
 
     public class EffectRogueOutOfCombatStealth : EffectNode
@@ -177,6 +194,14 @@ namespace ET
         public int DamageBonusPermille;
         public int ShotCount;
         public int PenetrationCount;
+    }
+
+    public class EffectRogueOnKillWeaponEnchant : EffectNode
+    {
+        public int SlotIndex = 1;
+        public int DamageBonusPermille;
+        public int PenetrationCount;
+        public int TargetFilter = RogueUnitFilterType.EliteOrBoss;
     }
 
     public class EffectRogueReplaceAllCards : EffectNode

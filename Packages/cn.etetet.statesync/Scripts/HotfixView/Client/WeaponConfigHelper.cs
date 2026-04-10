@@ -100,6 +100,116 @@ namespace ET.Client
         }
     }
 
+    [Event(SceneType.Current)]
+    public class AfterUnitCreate_RogueScaleVisual : AEvent<Scene, AfterUnitCreate>
+    {
+        protected override async ETTask Run(Scene scene, AfterUnitCreate args)
+        {
+            Unit unit = args.Unit;
+            if (unit == null || unit.IsDisposed || unit.UnitType == UnitType.Virtual)
+            {
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            if (unit.GetComponent<RogueScaleVisualComponent>() == null)
+            {
+                unit.AddComponent<RogueScaleVisualComponent>();
+            }
+
+            await ETTask.CompletedTask;
+        }
+    }
+
+    [EntitySystemOf(typeof(RogueScaleVisualComponent))]
+    public static partial class RogueScaleVisualComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this RogueScaleVisualComponent self)
+        {
+            self.BaseScale = Vector3.one;
+            self.AppliedScalePermille = int.MinValue;
+            self.IsInitialized = false;
+        }
+
+        [EntitySystem]
+        private static void Destroy(this RogueScaleVisualComponent self)
+        {
+            if (!self.IsInitialized)
+            {
+                return;
+            }
+
+            Unit unit = self.GetParent<Unit>();
+            Transform transform = unit?.GetComponent<GameObjectComponent>()?.Transform;
+            if (transform != null)
+            {
+                transform.localScale = self.BaseScale;
+            }
+        }
+
+        [EntitySystem]
+        private static void Update(this RogueScaleVisualComponent self)
+        {
+            Unit unit = self.GetParent<Unit>();
+            Transform transform = unit?.GetComponent<GameObjectComponent>()?.Transform;
+            if (unit == null || unit.IsDisposed || transform == null)
+            {
+                return;
+            }
+
+            if (!self.IsInitialized)
+            {
+                self.BaseScale = transform.localScale;
+                self.IsInitialized = true;
+            }
+
+            int targetScalePermille = self.GetTotalScalePermille(unit);
+            if (targetScalePermille == self.AppliedScalePermille)
+            {
+                return;
+            }
+
+            float scaleFactor = 1f + targetScalePermille / 1000f;
+            if (scaleFactor < 0.1f)
+            {
+                scaleFactor = 0.1f;
+            }
+
+            transform.localScale = new Vector3(
+                self.BaseScale.x * scaleFactor,
+                self.BaseScale.y * scaleFactor,
+                self.BaseScale.z * scaleFactor);
+            self.AppliedScalePermille = targetScalePermille;
+        }
+
+        private static int GetTotalScalePermille(this RogueScaleVisualComponent self, Unit unit)
+        {
+            BuffComponent buffComponent = unit?.GetComponent<BuffComponent>();
+            if (buffComponent == null)
+            {
+                return 0;
+            }
+
+            using ListComponent<Buff> buffs = ListComponent<Buff>.Create();
+            buffComponent.GetByEffectType<EffectRogueScaleModifier>(buffs);
+
+            int total = 0;
+            foreach (Buff buff in buffs)
+            {
+                EffectRogueScaleModifier effect = buff?.GetConfig().GetEffect<EffectRogueScaleModifier>();
+                if (effect == null || effect.ScalePermille == 0)
+                {
+                    continue;
+                }
+
+                total += effect.ScalePermille;
+            }
+
+            return total;
+        }
+    }
+
     [EntitySystemOf(typeof(WeaponViewComponent))]
     public static partial class WeaponViewComponentSystem
     {

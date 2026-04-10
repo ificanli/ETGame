@@ -13,7 +13,7 @@ namespace ET.Client
             Dictionary<Type, byte[]> output = new Dictionary<Type, byte[]>();
             HashSet<Type> configTypes = CodeTypes.Instance.GetTypes(typeof (ConfigAttribute));
             
-            if (Define.IsEditor)
+            if (Application.isEditor)
             {
                 string ct = "cs";
                 GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
@@ -71,45 +71,52 @@ namespace ET.Client
     {
         public override async ETTask<byte[]> Handle(ConfigLoader.GetOneConfigBytes args)
         {
-            string ct = "cs";
-            GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
-            CodeMode codeMode = globalConfig.CodeMode;
-            switch (codeMode)
-            {
-                case CodeMode.Client:
-                    ct = "c";
-                    break;
-                case CodeMode.Server:
-                    ct = "s";
-                    break;
-                case CodeMode.ClientServer:
-                    ct = "cs";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            List<string> startConfigs = new List<string>()
-            {
-                "StartMachineConfigCategory", 
-                "StartProcessConfigCategory", 
-                "StartSceneConfigCategory", 
-                "StartZoneConfigCategory",
-            };
-
             string configName = args.ConfigName;
-                
-            string configFilePath;
-            if (startConfigs.Contains(configName))
+
+            if (Application.isEditor)
             {
-                configFilePath = $"{LSConstValue.ExcelPackagePath}/Config/Bytes/{ct}/{Options.Instance.StartConfig}/{configName}.bytes";    
-            }
-            else
-            {
-                configFilePath = $"{LSConstValue.ExcelPackagePath}/Config/Bytes/{ct}/{configName}.bytes";
+                string ct = "cs";
+                GlobalConfig globalConfig = Resources.Load<GlobalConfig>("GlobalConfig");
+                CodeMode codeMode = globalConfig.CodeMode;
+                switch (codeMode)
+                {
+                    case CodeMode.Client:
+                        ct = "c";
+                        break;
+                    case CodeMode.Server:
+                        ct = "s";
+                        break;
+                    case CodeMode.ClientServer:
+                        ct = "cs";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                List<string> startConfigs = new List<string>()
+                {
+                    "StartMachineConfigCategory", 
+                    "StartProcessConfigCategory", 
+                    "StartSceneConfigCategory", 
+                    "StartZoneConfigCategory",
+                };
+
+                string configFilePath;
+                if (startConfigs.Contains(configName))
+                {
+                    configFilePath = $"{LSConstValue.ExcelPackagePath}/Config/Bytes/{ct}/{Options.Instance.StartConfig}/{configName}.bytes";    
+                }
+                else
+                {
+                    configFilePath = $"{LSConstValue.ExcelPackagePath}/Config/Bytes/{ct}/{configName}.bytes";
+                }
+
+                await ETTask.CompletedTask;
+                return File.ReadAllBytes(configFilePath);
             }
 
-            await ETTask.CompletedTask;
-            return File.ReadAllBytes(configFilePath);
+            TextAsset textAsset = await ResourcesComponent.Instance.LoadAssetAsync<TextAsset>($"{LSConstValue.ExcelPackagePath}/Config/Bytes/c/{configName}.bytes");
+            return textAsset.bytes;
         }
     }
 }

@@ -10,7 +10,8 @@ namespace ET.Client
     {
         public EntityRef<SearchPanelComponent> PanelRef;
         public long ItemId;
-        public bool IsBag;
+        public int AreaType;
+        public int SlotIndex;
         public int ConfigId;
         public Image IconImage;
         public TMP_Text[] TmpTexts;

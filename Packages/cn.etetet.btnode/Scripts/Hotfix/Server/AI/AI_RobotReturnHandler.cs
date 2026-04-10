@@ -36,7 +36,10 @@ namespace ET.Server
             if (selector != null)
             {
                 selector.CurrentTargetId = 0;
-                selector.ManualTargetId = 0;
+                selector.LastLineOfSightCheckTime = 0;
+                selector.LastLineOfSightTargetId = 0;
+                selector.LastLineOfSightPassed = false;
+                selector.ConsecutiveLineOfSightBlockedCount = 0;
             }
 
             int waitIntervalMs = math.max(100, node.WaitIntervalMs);

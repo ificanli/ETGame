@@ -44,6 +44,9 @@ message M2C_SyncBagData // ILocationResponse
 	repeated ItemData Items = 5; // 物品列表
 	int32 Width = 6; // 背包格子宽
 	int32 Height = 7; // 背包格子高
+	int32 SecureWidth = 8; // 安全格宽
+	int32 SecureHeight = 9; // 安全格高
+	repeated LoadoutGridItemData SecureItems = 10; // 安全格物品列表
 }
 
 // 更新物品通知（服务器推送）

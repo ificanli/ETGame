@@ -51,16 +51,10 @@ namespace ET.Test
                 return 2;
             }
 
-            if (!configCategory.TryGetOption(1, out RogueOptionConfig optionConfig) || optionConfig == null)
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, null, out int optionId, out RogueOptionConfig optionConfig, out int buffConfigId))
             {
-                Log.Console("rogue option config 1 is null");
+                Log.Console("failed to find keepable rogue option");
                 return 3;
-            }
-
-            if (!optionConfig.TryGetLegacyBuffConfigId(out int buffConfigId) || !BuffConfigCategory.Instance.Contain(buffConfigId))
-            {
-                Log.Console($"legacy buff config invalid, buffConfigId={buffConfigId}");
-                return 4;
             }
 
             const int effectGroupId = 7001;
@@ -102,12 +96,12 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(optionId);
 
                 int appliedBuffConfigId = 0;
                 EntityRef<Unit> unitRef = unit;
                 EntityRef<RogueProgressComponent> progressRef = progress;
-                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1, (previewBuffConfigId, _) =>
+                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, optionId, (previewBuffConfigId, _) =>
                 {
                     appliedBuffConfigId = previewBuffConfigId;
                 });
@@ -166,7 +160,7 @@ namespace ET.Test
                     break;
                 }
 
-                if (objective == null || objective.OptionId != 1 || objective.EffectGroupId != effectGroupId || objective.ObjectiveId != objectiveId)
+                if (objective == null || objective.OptionId != optionId || objective.EffectGroupId != effectGroupId || objective.ObjectiveId != objectiveId)
                 {
                     Log.Console($"objective data mismatch, optionId={objective?.OptionId ?? 0}, effectGroupId={objective?.EffectGroupId ?? 0}, objectiveId={objective?.ObjectiveId ?? 0}");
                     return 12;

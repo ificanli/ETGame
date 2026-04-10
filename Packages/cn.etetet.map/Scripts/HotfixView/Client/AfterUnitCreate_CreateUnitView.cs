@@ -52,9 +52,16 @@ namespace ET.Client
                 unit.AddComponent<SpellIndicatorComponent>();
             }
 
-            // 头顶血条需要对所有单位生效，不能排除本地玩家单位。
+            // 头顶血条需要对所有战斗单位生效，不能排除本地玩家单位；
+            // 但 Virtual Unit（如尸体盒、交互点）不应创建血条，否则会在搜索阶段错误显示。
             //await YIUIFactory.InstantiateAsync<HPView3DComponent>(unit, go.transform);
-            await YIUIFactory.InstantiateAsync<HPViewComponent>(scene, unit, scene.YIUIMgr().UICache);
+            int campId = unit.GetComponent<CampComponent>()?.CampId ?? 0;
+            bool shouldShowHpView = unit.UnitType != UnitType.Virtual &&
+                !(unit.UnitType == UnitType.NPC && campId <= 0);
+            if (shouldShowHpView)
+            {
+                await YIUIFactory.InstantiateAsync<HPViewComponent>(scene, unit, scene.YIUIMgr().UICache);
+            }
             
             await ETTask.CompletedTask;
         }

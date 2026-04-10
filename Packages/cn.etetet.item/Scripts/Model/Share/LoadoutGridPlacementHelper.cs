@@ -56,6 +56,103 @@ namespace ET
             return ArePlacementsValid(items, newWidth, newHeight);
         }
 
+        public static bool CanPlaceAtAnchorSlot(
+            IList<GridPlacementItemInfo> items,
+            int containerWidth,
+            int containerHeight,
+            int anchorSlotIndex,
+            int itemGridWidth,
+            int itemGridHeight)
+        {
+            if (containerWidth <= 0 || containerHeight <= 0)
+            {
+                return false;
+            }
+
+            int normalizedGridWidth = NormalizeGridWidth(itemGridWidth);
+            int normalizedGridHeight = NormalizeGridHeight(itemGridHeight);
+            if (normalizedGridWidth > containerWidth || normalizedGridHeight > containerHeight)
+            {
+                return false;
+            }
+
+            int capacity = containerWidth * containerHeight;
+            if (anchorSlotIndex < 0 || anchorSlotIndex >= capacity)
+            {
+                return false;
+            }
+
+            List<GridPlacementItemInfo> placements = new(items?.Count + 1 ?? 1);
+            if (items != null)
+            {
+                for (int i = 0; i < items.Count; ++i)
+                {
+                    placements.Add(items[i]);
+                }
+            }
+
+            placements.Add(new GridPlacementItemInfo
+            {
+                AnchorSlotIndex = anchorSlotIndex,
+                GridWidth = normalizedGridWidth,
+                GridHeight = normalizedGridHeight,
+            });
+
+            return ArePlacementsValid(placements, containerWidth, containerHeight);
+        }
+
+        public static bool TryFindFirstFitAnchorSlot(
+            IList<GridPlacementItemInfo> items,
+            int containerWidth,
+            int containerHeight,
+            int itemGridWidth,
+            int itemGridHeight,
+            out int anchorSlotIndex)
+        {
+            anchorSlotIndex = -1;
+            if (containerWidth <= 0 || containerHeight <= 0)
+            {
+                return false;
+            }
+
+            int normalizedGridWidth = NormalizeGridWidth(itemGridWidth);
+            int normalizedGridHeight = NormalizeGridHeight(itemGridHeight);
+            if (normalizedGridWidth > containerWidth || normalizedGridHeight > containerHeight)
+            {
+                return false;
+            }
+
+            List<GridPlacementItemInfo> placements = new(items?.Count + 1 ?? 1);
+            if (items != null)
+            {
+                for (int i = 0; i < items.Count; ++i)
+                {
+                    placements.Add(items[i]);
+                }
+            }
+
+            int capacity = containerWidth * containerHeight;
+            for (int i = 0; i < capacity; ++i)
+            {
+                placements.Add(new GridPlacementItemInfo
+                {
+                    AnchorSlotIndex = i,
+                    GridWidth = normalizedGridWidth,
+                    GridHeight = normalizedGridHeight,
+                });
+
+                if (ArePlacementsValid(placements, containerWidth, containerHeight))
+                {
+                    anchorSlotIndex = i;
+                    return true;
+                }
+
+                placements.RemoveAt(placements.Count - 1);
+            }
+
+            return false;
+        }
+
         private static bool TryMarkOccupied(bool[] occupied, int containerWidth, int containerHeight, GridPlacementItemInfo item)
         {
             if (containerWidth <= 0 || containerHeight <= 0)

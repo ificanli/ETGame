@@ -28,6 +28,7 @@ namespace ET
             CorpseInteractRange = _buf.ReadFloat();
             CorpseButtonTextId = _buf.ReadInt();
             DefaultMonsterCorpseLootBoxUnitConfigId = _buf.ReadInt();
+            AutoSecureMinValuePerGrid = _buf.ReadInt();
 
             EndInit();
         }
@@ -81,6 +82,10 @@ namespace ET
         /// 默认怪物尸体盒UnitConfigId
         /// </summary>
         public readonly int DefaultMonsterCorpseLootBoxUnitConfigId;
+        /// <summary>
+        /// 自动拾取进安全格的单格最小价值
+        /// </summary>
+        public readonly int AutoSecureMinValuePerGrid;
     
         public const int __ID__ = 597591072;
         public override int GetTypeId() => __ID__;
@@ -104,6 +109,7 @@ namespace ET
             + "CorpseInteractRange:" + CorpseInteractRange + ","
             + "CorpseButtonTextId:" + CorpseButtonTextId + ","
             + "DefaultMonsterCorpseLootBoxUnitConfigId:" + DefaultMonsterCorpseLootBoxUnitConfigId + ","
+            + "AutoSecureMinValuePerGrid:" + AutoSecureMinValuePerGrid + ","
             + "}";
         }
 

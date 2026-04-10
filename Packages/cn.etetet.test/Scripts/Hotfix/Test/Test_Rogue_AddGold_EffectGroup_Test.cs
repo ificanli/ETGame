@@ -50,9 +50,9 @@ namespace ET.Test
                 return 2;
             }
 
-            if (!configCategory.TryGetOption(1, out RogueOptionConfig optionConfig) || optionConfig == null)
+            if (!TestHelper.TryFindExecutableRogueOption(configCategory, null, out int optionId, out RogueOptionConfig optionConfig))
             {
-                Log.Console("rogue option config 1 is null");
+                Log.Console("failed to find executable rogue option");
                 return 3;
             }
 
@@ -89,11 +89,11 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(optionId);
 
                 EntityRef<Unit> unitRef = unit;
                 EntityRef<RogueProgressComponent> progressRef = progress;
-                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1, null);
+                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, optionId, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)
@@ -114,7 +114,7 @@ namespace ET.Test
                     return 7;
                 }
 
-                if (progress.SelectedOptionIds.Count != 1 || progress.SelectedOptionIds[0] != 1)
+                if (progress.SelectedOptionIds.Count != 1 || progress.SelectedOptionIds[0] != optionId)
                 {
                     Log.Console($"selected option mismatch, count={progress.SelectedOptionIds.Count}");
                     return 8;

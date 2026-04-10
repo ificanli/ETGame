@@ -5,15 +5,7 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene root, EventSettlementPopup args)
         {
-            Scene currentScene = root?.GetComponent<CurrentScenesComponent>()?.Scene;
-            if (currentScene == null || currentScene.IsDisposed)
-            {
-                await ETTask.CompletedTask;
-                return;
-            }
-
-            // 回城前不要立刻弹结算，避免在切场过程中闪一下又被 Home 界面顶掉。
-            if (currentScene.Name.GetSceneConfigName() != "Home")
+            if (root == null || root.IsDisposed)
             {
                 await ETTask.CompletedTask;
                 return;

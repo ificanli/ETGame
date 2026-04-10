@@ -90,6 +90,12 @@ namespace ET
         public int BagHeight { get; set; }
         [MemoryPackOrder(9)]
         public List<LoadoutGridItemData> BagItems { get; set; } = new();
+        [MemoryPackOrder(10)]
+        public int SecureWidth { get; set; }
+        [MemoryPackOrder(11)]
+        public int SecureHeight { get; set; }
+        [MemoryPackOrder(12)]
+        public List<LoadoutGridItemData> SecureItems { get; set; } = new();
 
         public override void Dispose()
         {
@@ -108,6 +114,9 @@ namespace ET
             this.BagWidth = default;
             this.BagHeight = default;
             this.BagItems.Clear();
+            this.SecureWidth = default;
+            this.SecureHeight = default;
+            this.SecureItems.Clear();
 
             ObjectPool.Recycle(this);
         }

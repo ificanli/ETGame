@@ -120,14 +120,15 @@ namespace ET.Client
 
         public static async ETTask MoveContainerItem(
             Scene root,
-            bool sourceIsBag,
+            int sourceAreaType,
             int sourceSlot,
             long sourceItemId,
-            bool targetIsBag,
+            int targetAreaType,
             int targetSlot)
         {
             ECAInteractClientComponent runtime = GetOrAddRuntime(root);
-            if (runtime == null || string.IsNullOrWhiteSpace(runtime.OpenContainerPointId))
+            bool needPoint = sourceAreaType == (int)ContainerItemAreaType.Container || targetAreaType == (int)ContainerItemAreaType.Container;
+            if (runtime == null || (needPoint && string.IsNullOrWhiteSpace(runtime.OpenContainerPointId)))
             {
                 return;
             }
@@ -135,15 +136,15 @@ namespace ET.Client
             string pointId = runtime.OpenContainerPointId;
             C2M_ContainerMoveItem request = C2M_ContainerMoveItem.Create();
             request.PointId = pointId;
-            request.SourceIsBag = sourceIsBag;
+            request.SourceAreaType = sourceAreaType;
             request.SourceSlot = sourceSlot;
             request.SourceItemId = sourceItemId;
-            request.TargetIsBag = targetIsBag;
+            request.TargetAreaType = targetAreaType;
             request.TargetSlot = targetSlot;
             M2C_ContainerMoveItem response = await root.GetComponent<ClientSenderComponent>().Call(request) as M2C_ContainerMoveItem;
             if (response != null && response.Error != ErrorCode.ERR_Success)
             {
-                Log.Warning($"[ECAClient] move container item failed: point={pointId}, sourceIsBag={sourceIsBag}, sourceSlot={sourceSlot}, sourceItemId={sourceItemId}, targetIsBag={targetIsBag}, targetSlot={targetSlot}, error={response.Error}, msg={response.Message}");
+                Log.Warning($"[ECAClient] move container item failed: point={pointId}, sourceArea={sourceAreaType}, sourceSlot={sourceSlot}, sourceItemId={sourceItemId}, targetArea={targetAreaType}, targetSlot={targetSlot}, error={response.Error}, msg={response.Message}");
             }
         }
 

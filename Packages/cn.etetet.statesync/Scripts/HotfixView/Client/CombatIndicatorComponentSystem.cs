@@ -13,9 +13,6 @@ namespace ET.Client
         private const string TargetIndicatorPrefabName = "enemyIndicator";
         private const float IndicatorOffsetY = 0.05f;
         private const int ViewReadyRetryCount = 120;
-        private const float DistanceWeight = 0.7f;
-        private const float HpWeight = 0.3f;
-        private const float AttackMeBonus = 0.5f;
 
         [EntitySystem]
         private static void Awake(this CombatIndicatorComponent self)
@@ -220,22 +217,17 @@ namespace ET.Client
 
         private static Unit ResolveCombatTarget(this CombatIndicatorComponent self, Unit owner, float attackRange)
         {
-            Unit target = self.GetManualTarget(owner, attackRange);
+            Unit target = self.GetCurrentCombatTarget(owner, attackRange);
             if (target != null)
             {
                 return target;
             }
 
             target = self.GetSelectorTarget(owner, attackRange);
-            if (target != null)
-            {
-                return target;
-            }
-
-            return self.FindLocalBestTarget(owner, attackRange);
+            return target;
         }
 
-        private static Unit GetManualTarget(this CombatIndicatorComponent self, Unit owner, float attackRange)
+        private static Unit GetCurrentCombatTarget(this CombatIndicatorComponent self, Unit owner, float attackRange)
         {
             TargetComponent targetComponent = owner.GetComponent<TargetComponent>();
             Unit target = targetComponent?.Unit;
@@ -266,46 +258,6 @@ namespace ET.Client
             return self.IsAttackableTarget(owner, target, attackRange) ? target : null;
         }
 
-        private static Unit FindLocalBestTarget(this CombatIndicatorComponent self, Unit owner, float attackRange)
-        {
-            UnitComponent unitComponent = owner.Scene()?.GetComponent<UnitComponent>();
-            if (unitComponent == null)
-            {
-                return null;
-            }
-
-            Unit bestTarget = null;
-            float bestScore = float.MaxValue;
-
-            foreach (Entity entity in unitComponent.Children.Values)
-            {
-                if (entity is not Unit candidate)
-                {
-                    continue;
-                }
-
-                if (!self.IsAttackableTarget(owner, candidate, attackRange))
-                {
-                    continue;
-                }
-
-                float distance = self.GetHorizontalDistance(self.GetWorldPosition(owner), self.GetWorldPosition(candidate));
-                float score = distance * DistanceWeight + self.GetHpPercent(candidate) * attackRange * HpWeight;
-                if (self.IsAttackingOwner(candidate, owner))
-                {
-                    score *= AttackMeBonus;
-                }
-
-                if (score < bestScore)
-                {
-                    bestScore = score;
-                    bestTarget = candidate;
-                }
-            }
-
-            return bestTarget;
-        }
-
         private static bool IsAttackableTarget(this CombatIndicatorComponent self, Unit owner, Unit target, float attackRange)
         {
             if (owner == null || target == null || owner.IsDisposed || target.IsDisposed)
@@ -331,26 +283,6 @@ namespace ET.Client
 
             return self.GetHorizontalDistance(self.GetWorldPosition(owner), self.GetWorldPosition(target)) <= attackRange;
         }
-
-        private static bool IsAttackingOwner(this CombatIndicatorComponent self, Unit candidate, Unit owner)
-        {
-            TargetSelectorComponent targetSelectorComponent = candidate.GetComponent<TargetSelectorComponent>();
-            return targetSelectorComponent != null && targetSelectorComponent.CurrentTargetId == owner.Id;
-        }
-
-        private static float GetHpPercent(this CombatIndicatorComponent self, Unit target)
-        {
-            NumericComponent numeric = target.NumericComponent;
-            if (numeric == null)
-            {
-                return 1f;
-            }
-
-            float hp = numeric.GetAsFloat(NumericType.HP);
-            float maxHp = numeric.GetAsFloat(NumericType.MaxHP);
-            return maxHp > 0f ? hp / maxHp : 0f;
-        }
-
         private static float GetHorizontalDistance(this CombatIndicatorComponent self, Vector3 a, Vector3 b)
         {
             return math.distance(new float2(a.x, a.z), new float2(b.x, b.z));

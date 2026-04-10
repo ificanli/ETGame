@@ -25,6 +25,7 @@ namespace ET.Client
         public int FpsAccumulatedFrames;
         public float SmoothedFps;
         public int LastDisplayedFps = int.MinValue;
+        public long LastDisplayedPing = long.MinValue;
         public Slider RogueLevelSlider;
         public TMP_Text RogueLevelText;
         public int LastRogueLevel = int.MinValue;

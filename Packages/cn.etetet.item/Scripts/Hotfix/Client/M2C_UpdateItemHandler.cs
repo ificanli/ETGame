@@ -1,3 +1,5 @@
+using System;
+
 namespace ET.Client
 {
     /// <summary>
@@ -10,9 +12,16 @@ namespace ET.Client
         {
             ItemComponent itemComponent = scene.GetComponent<ItemComponent>();
 
-            // 更新物品数据
-            itemComponent.UpdateItem(message.ItemId, message.SlotIndex, message.ConfigId, message.Count, message.GridWidth, message.GridHeight);
-            
+            try
+            {
+                // 更新物品数据
+                itemComponent.UpdateItem(message.ItemId, message.SlotIndex, message.ConfigId, message.Count, message.GridWidth, message.GridHeight);
+            }
+            catch (Exception e)
+            {
+                Log.Error($"[M2C_UpdateItem] update item failed: itemId={message.ItemId}, slot={message.SlotIndex}, configId={message.ConfigId}, count={message.Count}, error={e.Message}");
+            }
+
             scene.GetComponent<ObjectWait>().Notify(new Wait_M2C_UpdateItem()
             {
                 M2C_UpdateItem = message,

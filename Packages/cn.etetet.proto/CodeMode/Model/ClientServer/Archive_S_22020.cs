@@ -70,96 +70,6 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(Opcode.ArchiveBattleEventProto)]
-    public partial class ArchiveBattleEventProto : MessageObject
-    {
-        public static ArchiveBattleEventProto Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<ArchiveBattleEventProto>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public long Timestamp { get; set; }
-        [MemoryPackOrder(1)]
-        public int EventType { get; set; }
-        [MemoryPackOrder(2)]
-        public long PlayerId { get; set; }
-        [MemoryPackOrder(3)]
-        public long Value { get; set; }
-        [MemoryPackOrder(4)]
-        public string Text { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.Timestamp = default;
-            this.EventType = default;
-            this.PlayerId = default;
-            this.Value = default;
-            this.Text = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
-    [Message(Opcode.ArchiveBattleRecordSummaryProto)]
-    public partial class ArchiveBattleRecordSummaryProto : MessageObject
-    {
-        public static ArchiveBattleRecordSummaryProto Create(bool isFromPool = false)
-        {
-            return ObjectPool.Fetch<ArchiveBattleRecordSummaryProto>(isFromPool);
-        }
-
-        [MemoryPackOrder(0)]
-        public long RecordId { get; set; }
-        [MemoryPackOrder(1)]
-        public long PlayerId { get; set; }
-        [MemoryPackOrder(2)]
-        public int GameMode { get; set; }
-        [MemoryPackOrder(3)]
-        public string MapName { get; set; }
-        [MemoryPackOrder(4)]
-        public long MapId { get; set; }
-        [MemoryPackOrder(5)]
-        public long StartedAt { get; set; }
-        [MemoryPackOrder(6)]
-        public long FinishedAt { get; set; }
-        [MemoryPackOrder(7)]
-        public int ResultType { get; set; }
-        [MemoryPackOrder(8)]
-        public bool IsSuccess { get; set; }
-        [MemoryPackOrder(9)]
-        public int KillNum { get; set; }
-        [MemoryPackOrder(10)]
-        public long TotalWealth { get; set; }
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.RecordId = default;
-            this.PlayerId = default;
-            this.GameMode = default;
-            this.MapName = default;
-            this.MapId = default;
-            this.StartedAt = default;
-            this.FinishedAt = default;
-            this.ResultType = default;
-            this.IsSuccess = default;
-            this.KillNum = default;
-            this.TotalWealth = default;
-
-            ObjectPool.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
     [Message(Opcode.G2Archive_GetOrCreatePlayerArchiveRequest)]
     [ResponseType(nameof(Archive2G_GetOrCreatePlayerArchiveResponse))]
     public partial class G2Archive_GetOrCreatePlayerArchiveRequest : MessageObject, IRequest
@@ -635,19 +545,17 @@ namespace ET
     {
         public const ushort ArchiveWarehouseItemProto = 22021;
         public const ushort ArchiveItemCountProto = 22022;
-        public const ushort ArchiveBattleEventProto = 22023;
-        public const ushort ArchiveBattleRecordSummaryProto = 22024;
-        public const ushort G2Archive_GetOrCreatePlayerArchiveRequest = 22025;
-        public const ushort Archive2G_GetOrCreatePlayerArchiveResponse = 22026;
-        public const ushort G2Archive_SavePlayerArchiveRequest = 22027;
-        public const ushort Archive2G_SavePlayerArchiveResponse = 22028;
-        public const ushort G2Archive_RecordMatchStartRequest = 22029;
-        public const ushort Archive2G_RecordMatchStartResponse = 22030;
-        public const ushort G2Archive_RecordBattleResultRequest = 22031;
-        public const ushort Archive2G_RecordBattleResultResponse = 22032;
-        public const ushort G2Archive_GetBattleRecordListRequest = 22033;
-        public const ushort Archive2G_GetBattleRecordListResponse = 22034;
-        public const ushort G2Archive_GetBattleRecordDetailRequest = 22035;
-        public const ushort Archive2G_GetBattleRecordDetailResponse = 22036;
+        public const ushort G2Archive_GetOrCreatePlayerArchiveRequest = 22023;
+        public const ushort Archive2G_GetOrCreatePlayerArchiveResponse = 22024;
+        public const ushort G2Archive_SavePlayerArchiveRequest = 22025;
+        public const ushort Archive2G_SavePlayerArchiveResponse = 22026;
+        public const ushort G2Archive_RecordMatchStartRequest = 22027;
+        public const ushort Archive2G_RecordMatchStartResponse = 22028;
+        public const ushort G2Archive_RecordBattleResultRequest = 22029;
+        public const ushort Archive2G_RecordBattleResultResponse = 22030;
+        public const ushort G2Archive_GetBattleRecordListRequest = 22031;
+        public const ushort Archive2G_GetBattleRecordListResponse = 22032;
+        public const ushort G2Archive_GetBattleRecordDetailRequest = 22033;
+        public const ushort Archive2G_GetBattleRecordDetailResponse = 22034;
     }
 }

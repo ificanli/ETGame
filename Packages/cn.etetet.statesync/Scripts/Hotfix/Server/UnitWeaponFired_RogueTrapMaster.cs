@@ -24,15 +24,14 @@ namespace ET.Server
         protected override async ETTask Run(Scene scene, UnitWeaponFired args)
         {
             Unit caster = args.Caster;
-            Unit target = args.Target;
             RogueTrapMasterStateComponent trapMasterState = caster?.GetComponent<RogueTrapMasterStateComponent>();
-            if (caster == null || caster.IsDisposed || caster.UnitType != UnitType.Player || target == null || target.IsDisposed || trapMasterState == null)
+            if (caster == null || caster.IsDisposed || caster.UnitType != UnitType.Player || trapMasterState == null)
             {
                 await ETTask.CompletedTask;
                 return;
             }
 
-            if (!trapMasterState.CanTrigger())
+            if (!trapMasterState.CanAccumulateTrapShots())
             {
                 await ETTask.CompletedTask;
                 return;
@@ -67,30 +66,48 @@ namespace ET.Server
                 return;
             }
 
-            if (scene.GetComponent<BulletTickComponent>() == null)
-            {
-                scene.AddComponent<BulletTickComponent>();
-            }
-
-            int bulletCount = trapMasterState.EffectiveBulletCount;
-            if (bulletCount <= 0)
+            if (!trapMasterState.RegisterShotAndTryTriggerTrap())
             {
                 await ETTask.CompletedTask;
                 return;
             }
 
-            BulletHelper.CreateScatterBullets(
-                scene,
-                caster,
-                target,
-                damage,
-                (FireLockType)weaponConfig.FireLockTypeId,
-                bulletCount,
-                weaponConfig.SpreadAngle,
-                args.WeaponId);
-            trapMasterState.MarkTriggered();
+            RogueTrapHelper.CreateTrap(scene, caster, trapMasterState, args.WeaponId, damage);
 
             await ETTask.CompletedTask;
+        }
+    }
+
+    public static class RogueTrapHelper
+    {
+        public static void CreateTrap(Scene scene, Unit owner, RogueTrapMasterStateComponent trapMasterState, int weaponId, float damage)
+        {
+            if (scene == null ||
+                scene.IsDisposed ||
+                owner == null ||
+                owner.IsDisposed ||
+                trapMasterState == null ||
+                trapMasterState.IsDisposed ||
+                damage <= 0f)
+            {
+                return;
+            }
+
+            long trapDamage = (long)damage * trapMasterState.EffectiveTrapDamagePermille / 1000;
+            if (trapDamage <= 0)
+            {
+                trapDamage = 1;
+            }
+
+            RogueTrapEntity trapEntity = scene.AddChild<RogueTrapEntity>();
+            trapEntity.Initialize(
+                owner,
+                owner.Position,
+                trapDamage,
+                weaponId,
+                trapMasterState.EffectiveTrapRadius,
+                trapMasterState.EffectiveTrapTickIntervalMs,
+                trapMasterState.EffectiveTrapLifetimeMs);
         }
     }
 }

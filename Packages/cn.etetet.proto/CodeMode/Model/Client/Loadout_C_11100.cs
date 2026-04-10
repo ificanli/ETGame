@@ -898,6 +898,37 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.M2C_RuntimeSecureStateChanged)]
+    public partial class M2C_RuntimeSecureStateChanged : MessageObject, IMessage
+    {
+        public static M2C_RuntimeSecureStateChanged Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_RuntimeSecureStateChanged>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int SecureWidth { get; set; }
+        [MemoryPackOrder(1)]
+        public int SecureHeight { get; set; }
+        [MemoryPackOrder(2)]
+        public List<LoadoutGridItemData> Items { get; set; } = new();
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.SecureWidth = default;
+            this.SecureHeight = default;
+            this.Items.Clear();
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     // Map 侧向 Gate 侧 Player 发送的撤离结算通知
     [MemoryPackable]
     [Message(Opcode.Map2G_EvacuationSettlement)]
@@ -958,6 +989,12 @@ namespace ET
 
         [MemoryPackOrder(8)]
         public long TotalWealthDelta { get; set; }
+        [MemoryPackOrder(9)]
+        public int SecureWidth { get; set; }
+        [MemoryPackOrder(10)]
+        public int SecureHeight { get; set; }
+        [MemoryPackOrder(11)]
+        public List<LoadoutGridItemData> FinalSecureItems { get; set; } = new();
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -974,6 +1011,9 @@ namespace ET
             this.BagHeight = default;
             this.FinalBagItems.Clear();
             this.TotalWealthDelta = default;
+            this.SecureWidth = default;
+            this.SecureHeight = default;
+            this.FinalSecureItems.Clear();
 
             ObjectPool.Recycle(this);
         }
@@ -1003,6 +1043,7 @@ namespace ET
         public const ushort G2C_LoadoutStateChanged = 11120;
         public const ushort M2C_EvacuationSettlement = 11121;
         public const ushort M2C_DeathSettlement = 11122;
+        public const ushort M2C_RuntimeSecureStateChanged = 11125;
         public const ushort Map2G_EvacuationSettlement = 11123;
         public const ushort Map2G_LoadoutCarryResult = 11124;
     }

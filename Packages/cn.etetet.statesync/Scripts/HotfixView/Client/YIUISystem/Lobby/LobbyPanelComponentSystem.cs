@@ -60,8 +60,16 @@ namespace ET.Client
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this LobbyPanelComponent self)
         {
+            AudioHelper.PlayBgm(self.Root(), AudioEventId.BgmLobby);
             EntityRef<LobbyPanelComponent> selfRef = self;
             self.ShowPanel(self.u_ComRolePanelRectTransform);
+            await self.CloseMatchWaitingViewAsync(false);
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return false;
+            }
+
             await self.RefreshHeroList();
             self = selfRef;
             if (self == null || self.IsDisposed)
@@ -871,16 +879,49 @@ namespace ET.Client
             // 打开匹配等待弹窗
             await self.UIPanel.OpenViewAsync<MatchViewComponent>();
             self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            // 匹配成功后先关闭等待弹窗，避免后续回 Home 时残留旧界面
+            await self.Root().GetComponent<ObjectWait>().Wait<Wait_MatchSuccess>();
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            await self.CloseMatchWaitingViewAsync(false);
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
 
             // 服务端匹配成功后会自动传送玩家，客户端只需等待场景切换完成
             await self.Root().GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
             self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
 
             // 发布 EnterMapFinish 事件，关闭 Loading 面板
             EventSystem.Instance.Publish(self.Root(), new EnterMapFinish());
 
             // 关闭 Lobby 面板（MatchView 会随面板一起关闭）
             await self.UIPanel.CloseAsync();
+        }
+
+        private static async ETTask CloseMatchWaitingViewAsync(this LobbyPanelComponent self, bool tween = true)
+        {
+            if (self == null || self.IsDisposed || self.UIPanel == null)
+            {
+                return;
+            }
+
+            await self.UIPanel.CloseViewAsync<MatchViewComponent>(tween);
         }
 
         private static async ETTask<bool> ConfirmLoadoutAsync(this LobbyPanelComponent self)

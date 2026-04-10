@@ -184,7 +184,11 @@ namespace ET.Server
             EffectRogueLifeSteal lifeSteal = config.GetEffect<EffectRogueLifeSteal>();
             if (lifeSteal != null && lifeSteal.LifeStealPermille > 0)
             {
-                self.LifeStealPermilleBySource[sourceId] = lifeSteal.LifeStealPermille;
+                self.LifeStealPermilleBySource[sourceId] = new RogueLifeStealSourceData
+                {
+                    LifeStealPermille = lifeSteal.LifeStealPermille,
+                    TargetFilter = lifeSteal.TargetFilter,
+                };
             }
             else
             {
@@ -509,7 +513,7 @@ namespace ET.Server
             return total;
         }
 
-        public static int GetLifeStealPermille(this RogueBuffPassiveRuntimeComponent self)
+        public static int GetLifeStealPermille(this RogueBuffPassiveRuntimeComponent self, Unit target)
         {
             if (self == null || self.IsDisposed)
             {
@@ -517,15 +521,27 @@ namespace ET.Server
             }
 
             int total = 0;
-            foreach (int value in self.LifeStealPermilleBySource.Values)
+            foreach (RogueLifeStealSourceData source in self.LifeStealPermilleBySource.Values)
             {
-                if (value > 0)
+                if (source.LifeStealPermille <= 0)
                 {
-                    total += value;
+                    continue;
                 }
+
+                if (!MonsterRuntimeProfileHelper.MatchesCombatFilter(target, source.TargetFilter))
+                {
+                    continue;
+                }
+
+                total += source.LifeStealPermille;
             }
 
             return total;
+        }
+
+        public static int GetLifeStealPermille(this RogueBuffPassiveRuntimeComponent self)
+        {
+            return self.GetLifeStealPermille(null);
         }
 
         public static int GetOnKillHealPermille(this RogueBuffPassiveRuntimeComponent self)

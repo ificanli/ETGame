@@ -41,6 +41,27 @@ namespace ET.Client
         [EntitySystem]
         private static void Destroy(this HPViewComponent self)
         {
+            self.HideImmediately();
+        }
+
+        public static void HideImmediately(this HPViewComponent self)
+        {
+            // Unit 销毁或移除前先把 2D 血条归位到缓存节点，避免残留在 HUD Canvas 上。
+            if (self?.UIBase?.OwnerRectTransform == null)
+            {
+                return;
+            }
+
+            var mgr = self.YIUIMgr();
+            if (mgr?.UICache == null)
+            {
+                return;
+            }
+
+            if (self.UIBase.OwnerRectTransform.parent != mgr.UICache)
+            {
+                self.UIBase.OwnerRectTransform.SetParent(mgr.UICache);
+            }
         }
 
         [EntitySystem]
@@ -119,10 +140,7 @@ namespace ET.Client
 
         private static void SetUICache(this HPViewComponent self)
         {
-            if (self.UIBase.OwnerRectTransform.parent != self.YIUIMgr().UICache)
-            {
-                self.UIBase.OwnerRectTransform.SetParent(self.YIUIMgr().UICache);
-            }
+            self.HideImmediately();
         }
 
         private static float UpdateHP(this HPViewComponent self)
@@ -217,5 +235,32 @@ namespace ET.Client
         #region YIUIEvent开始
 
         #endregion YIUIEvent结束
+    }
+
+    [Event(SceneType.Current)]
+    public class BeforeUnitRemove_HideHPView : AEvent<Scene, BeforeUnitRemove>
+    {
+        protected override async ETTask Run(Scene scene, BeforeUnitRemove args)
+        {
+            Unit unit = args.Unit;
+            if (unit?.Children == null)
+            {
+                return;
+            }
+
+            foreach (Entity child in unit.Children.Values)
+            {
+                YIUIChild uiChild = child as YIUIChild;
+                if (uiChild == null || uiChild.IsDisposed)
+                {
+                    continue;
+                }
+
+                uiChild.GetComponent<HPViewComponent>()?.HideImmediately();
+                uiChild.GetComponent<HPView3DComponent>()?.HideImmediately();
+            }
+
+            await ETTask.CompletedTask;
+        }
     }
 }

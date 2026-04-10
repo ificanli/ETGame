@@ -191,6 +191,21 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(6)]
         public int Height { get; set; }
+        /// <summary>
+        /// 安全格宽
+        /// </summary>
+        [MemoryPackOrder(7)]
+        public int SecureWidth { get; set; }
+        /// <summary>
+        /// 安全格高
+        /// </summary>
+        [MemoryPackOrder(8)]
+        public int SecureHeight { get; set; }
+        /// <summary>
+        /// 安全格物品列表
+        /// </summary>
+        [MemoryPackOrder(9)]
+        public List<LoadoutGridItemData> SecureItems { get; set; } = new();
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -205,6 +220,9 @@ namespace ET
             this.Items.Clear();
             this.Width = default;
             this.Height = default;
+            this.SecureWidth = default;
+            this.SecureHeight = default;
+            this.SecureItems.Clear();
 
             ObjectPool.Recycle(this);
         }

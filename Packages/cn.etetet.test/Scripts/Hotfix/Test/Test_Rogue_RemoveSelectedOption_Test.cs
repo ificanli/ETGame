@@ -50,9 +50,9 @@ namespace ET.Test
                 return 2;
             }
 
-            if (!configCategory.TryGetOption(1, out RogueOptionConfig optionConfig) || optionConfig == null)
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, null, out int optionId, out RogueOptionConfig optionConfig, out _))
             {
-                Log.Console("rogue option config 1 is null");
+                Log.Console("failed to find keepable rogue option");
                 return 3;
             }
 
@@ -74,11 +74,11 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(optionId);
 
                 EntityRef<Unit> unitRef = unit;
                 EntityRef<RogueProgressComponent> progressRef = progress;
-                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1, null);
+                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, optionId, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)
@@ -96,11 +96,11 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 2;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(optionId);
 
                 unitRef = unit;
                 progressRef = progress;
-                chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1, null);
+                chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, optionId, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)
@@ -116,9 +116,9 @@ namespace ET.Test
                 }
 
                 RogueObjectiveComponent objectiveComponent = unit.AddComponent<RogueObjectiveComponent>();
-                objectiveComponent.AddObjective(1, 7001, 9001);
+                objectiveComponent.AddObjective(optionId, 7001, 9001);
 
-                int removedRuntimeCount = RogueEffectHelper.RemoveSelectedOption(unit, progress, 1);
+                int removedRuntimeCount = RogueEffectHelper.RemoveSelectedOption(unit, progress, optionId);
                 if (removedRuntimeCount != 1)
                 {
                     Log.Console($"removed runtime count mismatch, count={removedRuntimeCount}");

@@ -93,6 +93,22 @@ namespace ET.Client
             CopyWarehouseItems(message.CurrentWarehouseItems, loadout.WarehouseItems);
         }
 
+        public static void ApplyRuntimeSecureState(
+            LoadoutComponent loadout,
+            int secureWidth,
+            int secureHeight,
+            IList<LoadoutGridItemData> secureItems)
+        {
+            if (loadout == null)
+            {
+                return;
+            }
+
+            loadout.SecureWidth = secureWidth;
+            loadout.SecureHeight = secureHeight;
+            CopyGridItems(secureItems, loadout.CarriedSecureItems);
+        }
+
         private static void CopyGridItems(IList<LoadoutGridItemData> source, List<LoadoutGridItemInfo> target)
         {
             target.Clear();

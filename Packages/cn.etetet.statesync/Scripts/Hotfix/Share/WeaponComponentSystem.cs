@@ -17,22 +17,22 @@ namespace ET
             {
                 WeaponConfig config1 = WeaponConfigCategory.Instance.Get(slot1WeaponId);
                 self.Slot1Ammo = config1?.MagazineSize ?? 0;
-                self.SetEffectiveStats(1, config1?.AttackRange ?? 0f, config1?.AttackIntervalMs ?? 0, config1?.MagazineSize ?? 0, config1?.ReloadTimeMs ?? 0, config1?.Damage ?? 0f);
+                self.SetEffectiveStats(1, config1?.AttackRange ?? 0f, config1?.AttackIntervalMs ?? 0, config1?.MagazineSize ?? 0, config1?.ReloadTimeMs ?? 0, config1?.Damage ?? 0f, 0);
             }
             else
             {
-                self.SetEffectiveStats(1, 0f, 0, 0, 0, 0f);
+                self.SetEffectiveStats(1, 0f, 0, 0, 0, 0f, 0);
             }
 
             if (slot2WeaponId > 0)
             {
                 WeaponConfig config2 = WeaponConfigCategory.Instance.Get(slot2WeaponId);
                 self.Slot2Ammo = config2?.MagazineSize ?? 0;
-                self.SetEffectiveStats(2, config2?.AttackRange ?? 0f, config2?.AttackIntervalMs ?? 0, config2?.MagazineSize ?? 0, config2?.ReloadTimeMs ?? 0, config2?.Damage ?? 0f);
+                self.SetEffectiveStats(2, config2?.AttackRange ?? 0f, config2?.AttackIntervalMs ?? 0, config2?.MagazineSize ?? 0, config2?.ReloadTimeMs ?? 0, config2?.Damage ?? 0f, 0);
             }
             else
             {
-                self.SetEffectiveStats(2, 0f, 0, 0, 0, 0f);
+                self.SetEffectiveStats(2, 0f, 0, 0, 0, 0f, 0);
             }
 
             self.Slot1Reloading = false;
@@ -58,8 +58,8 @@ namespace ET
             self.CurrentSlot = 0;
             self.Slot1ReloadFinishTime = 0;
             self.Slot2ReloadFinishTime = 0;
-            self.SetEffectiveStats(1, 0f, 0, 0, 0, 0f);
-            self.SetEffectiveStats(2, 0f, 0, 0, 0, 0f);
+            self.SetEffectiveStats(1, 0f, 0, 0, 0, 0f, 0);
+            self.SetEffectiveStats(2, 0f, 0, 0, 0, 0f, 0);
         }
 
         /// <summary>
@@ -285,7 +285,13 @@ namespace ET
                    slotIndex == 2 ? self.Slot2EffectiveDamage : 0f;
         }
 
-        public static void SetEffectiveStats(this WeaponComponent self, int slotIndex, float attackRange, int attackIntervalMs, int magazineSize, int reloadTimeMs, float damage)
+        public static int GetEffectivePenetrationCount(this WeaponComponent self, int slotIndex)
+        {
+            return slotIndex == 1 ? self.Slot1EffectivePenetrationCount :
+                   slotIndex == 2 ? self.Slot2EffectivePenetrationCount : 0;
+        }
+
+        public static void SetEffectiveStats(this WeaponComponent self, int slotIndex, float attackRange, int attackIntervalMs, int magazineSize, int reloadTimeMs, float damage, int penetrationCount)
         {
             if (slotIndex == 1)
             {
@@ -294,6 +300,7 @@ namespace ET
                 self.Slot1EffectiveMagazineSize = magazineSize;
                 self.Slot1EffectiveReloadTimeMs = reloadTimeMs;
                 self.Slot1EffectiveDamage = damage;
+                self.Slot1EffectivePenetrationCount = penetrationCount > 0 ? penetrationCount : 0;
                 return;
             }
 
@@ -304,6 +311,7 @@ namespace ET
                 self.Slot2EffectiveMagazineSize = magazineSize;
                 self.Slot2EffectiveReloadTimeMs = reloadTimeMs;
                 self.Slot2EffectiveDamage = damage;
+                self.Slot2EffectivePenetrationCount = penetrationCount > 0 ? penetrationCount : 0;
             }
         }
     }

@@ -205,9 +205,22 @@ namespace ET.Server
             {
                 case RogueEffectExecuteType.WeaponModifier:
                 {
-                    RogueWeaponModifierComponent weaponMod = unit.GetComponent<RogueWeaponModifierComponent>();
-                    weaponMod?.RemoveModifier(runtime.RefId, runtime.Value1);
-                    WeaponRuntimeStatsHelper.RefreshUnitWeaponRuntimeStats(unit);
+                    if (runtime.AppliedBuffId <= 0)
+                    {
+                        RogueWeaponModifierComponent weaponMod = unit.GetComponent<RogueWeaponModifierComponent>();
+                        weaponMod?.RemoveSource(runtime.Id);
+                        if (weaponMod != null)
+                        {
+                            if (weaponMod.IsEmpty())
+                            {
+                                unit.RemoveComponent<RogueWeaponModifierComponent>();
+                            }
+                            else
+                            {
+                                WeaponRuntimeStatsHelper.RefreshUnitWeaponRuntimeStats(unit);
+                            }
+                        }
+                    }
                     break;
                 }
                 case RogueEffectExecuteType.ScaleModifier:

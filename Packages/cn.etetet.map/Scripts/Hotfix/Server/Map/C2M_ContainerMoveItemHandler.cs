@@ -5,25 +5,32 @@ namespace ET.Server
     {
         protected override async ETTask Run(Unit unit, C2M_ContainerMoveItem request, M2C_ContainerMoveItem response)
         {
-            if (!ContainerRuntimeHelper.TryGetPoint(unit.Scene(), request.PointId, out ECAPointComponent point))
+            ContainerItemAreaType sourceArea = (ContainerItemAreaType)request.SourceAreaType;
+            ContainerItemAreaType targetArea = (ContainerItemAreaType)request.TargetAreaType;
+            bool requiresContainer = sourceArea == ContainerItemAreaType.Container || targetArea == ContainerItemAreaType.Container;
+            ECAPointComponent point = null;
+            if (requiresContainer)
             {
-                response.Error = ErrorCode.ERR_ECAPointNotFound;
-                return;
-            }
+                if (!ContainerRuntimeHelper.TryGetPoint(unit.Scene(), request.PointId, out point))
+                {
+                    response.Error = ErrorCode.ERR_ECAPointNotFound;
+                    return;
+                }
 
-            if (!ContainerRuntimeHelper.IsPlayerInRange(point, unit))
-            {
-                response.Error = ErrorCode.ERR_ECAInteractOutOfRange;
-                return;
+                if (!ContainerRuntimeHelper.IsPlayerInRange(point, unit))
+                {
+                    response.Error = ErrorCode.ERR_ECAInteractOutOfRange;
+                    return;
+                }
             }
 
             int error = await ContainerRuntimeHelper.MoveItem(
                 unit,
                 point,
-                request.SourceIsBag,
+                request.SourceAreaType,
                 request.SourceSlot,
                 request.SourceItemId,
-                request.TargetIsBag,
+                request.TargetAreaType,
                 request.TargetSlot);
             if (error != ErrorCode.ERR_Success)
             {

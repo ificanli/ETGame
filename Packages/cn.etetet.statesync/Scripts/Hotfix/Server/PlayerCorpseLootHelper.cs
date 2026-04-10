@@ -75,7 +75,7 @@ namespace ET.Server
             container.State = container.HasAnyItem() ? ContainerState.Closed : ContainerState.Empty;
             ecaManager.AddECAPoint(pointId, target.Id);
 
-            Log.Info($"[CorpseLoot] created corpse box: unitId={target.Id}, pointId={pointId}, dropCount={dropItems.Count}, safeSlotStart={ExtractionInventoryConfig.GetSafeSlotStart()}, safeSlotCount={ExtractionInventoryConfig.GetSafeSlotCount()}");
+            Log.Info($"[CorpseLoot] created corpse box: unitId={target.Id}, pointId={pointId}, dropCount={dropItems.Count}, runtimeSecureKept=true");
             return true;
         }
 
@@ -142,11 +142,6 @@ namespace ET.Server
 
             for (int slotIndex = 0; slotIndex < itemComponent.Capacity; ++slotIndex)
             {
-                if (ExtractionInventoryConfig.IsSafeSlot(slotIndex))
-                {
-                    continue;
-                }
-
                 Item item = itemComponent.GetItemBySlot(slotIndex);
                 if (item == null || item.Count <= 0)
                 {

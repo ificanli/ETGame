@@ -279,15 +279,7 @@ namespace ET.Server
                 modifierComponent = unit.AddComponent<RogueWeaponModifierComponent>();
             }
 
-            foreach (RogueWeaponModifierEntry entry in effect.Entries)
-            {
-                if (entry == null || entry.ModType <= 0 || entry.ValuePermille == 0)
-                {
-                    continue;
-                }
-
-                modifierComponent.AddModifier(entry.ModType, entry.ValuePermille);
-            }
+            modifierComponent.SetSource(buff.Id, 0, effect.Entries);
 
             WeaponRuntimeStatsHelper.RefreshUnitWeaponRuntimeStats(unit);
             return 0;
@@ -312,17 +304,8 @@ namespace ET.Server
                 return 0;
             }
 
-            foreach (RogueWeaponModifierEntry entry in effect.Entries)
-            {
-                if (entry == null || entry.ModType <= 0 || entry.ValuePermille == 0)
-                {
-                    continue;
-                }
-
-                modifierComponent.RemoveModifier(entry.ModType, entry.ValuePermille);
-            }
-
-            if (modifierComponent.Modifiers.Count == 0)
+            modifierComponent.RemoveSource(buff.Id);
+            if (modifierComponent.IsEmpty())
             {
                 unit.RemoveComponent<RogueWeaponModifierComponent>();
             }
@@ -506,7 +489,7 @@ namespace ET.Server
             RogueNearMonsterSpeedBuffStateComponent state = buff.GetBuffData().GetComponent<RogueNearMonsterSpeedBuffStateComponent>() ??
                     buff.GetBuffData().AddComponent<RogueNearMonsterSpeedBuffStateComponent>();
 
-            int targetSpeedPct = HasMonsterInRadius(unit, effect.Radius) ? effect.SpeedPct : 0;
+            int targetSpeedPct = RogueNearMonsterSpeedHelper.IsMovingTowardMonster(unit, effect.Radius) ? effect.SpeedPct : 0;
             int deltaPct = targetSpeedPct - state.AppliedSpeedPct;
             if (deltaPct == 0)
             {
@@ -517,33 +500,6 @@ namespace ET.Server
             numeric.Set(NumericType.SpeedFinalPct, finalPct + deltaPct);
             state.AppliedSpeedPct = targetSpeedPct;
             return 0;
-        }
-
-        private static bool HasMonsterInRadius(Unit unit, float radius)
-        {
-            AOIEntity ownerAoi = unit.GetComponent<AOIEntity>();
-            if (ownerAoi == null || ownerAoi.IsDisposed)
-            {
-                return false;
-            }
-
-            float radiusSqr = radius * radius;
-            foreach ((long _, AOIEntity aoiEntity) in ownerAoi.GetSeeUnits())
-            {
-                Unit target = aoiEntity?.Unit;
-                if (target == null || target.IsDisposed || target.UnitType != UnitType.Monster)
-                {
-                    continue;
-                }
-
-                float2 offset = target.Position.xz - unit.Position.xz;
-                if (math.lengthsq(offset) <= radiusSqr)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 
@@ -633,7 +589,7 @@ namespace ET.Server
 
             RogueTrapMasterStateComponent trapMasterState = unit.GetComponent<RogueTrapMasterStateComponent>() ??
                     unit.AddComponent<RogueTrapMasterStateComponent>();
-            trapMasterState.UpsertSource(buff.Id, effect.IdleMs, effect.BulletCount);
+            trapMasterState.UpsertSource(buff.Id, effect);
             return 0;
         }
     }
@@ -673,7 +629,9 @@ namespace ET.Server
 
             RogueBuffPassiveRuntimeComponent passiveRuntime = unit.GetComponent<RogueBuffPassiveRuntimeComponent>() ??
                     unit.AddComponent<RogueBuffPassiveRuntimeComponent>();
+            long previousExtendGameTimeMs = passiveRuntime.GetExtendGameTimeMs();
             passiveRuntime.ApplyFromBuff(buff);
+            RogueRunTimeLimitHelper.RefreshDurationByExtendDelta(unit, previousExtendGameTimeMs, passiveRuntime.GetExtendGameTimeMs());
 
             if (buff.GetConfig().GetEffect<EffectRogueOutOfCombatStealth>() != null)
             {
@@ -796,6 +754,64 @@ namespace ET.Server
         }
     }
 
+    public class BTRogueApplyOnKillWeaponEnchantHandler : ABTHandler<BTRogueApplyOnKillWeaponEnchant>
+    {
+        protected override int Run(BTRogueApplyOnKillWeaponEnchant node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            if (unit == null || unit.IsDisposed || buff == null || buff.IsDisposed)
+            {
+                return 0;
+            }
+
+            EffectRogueOnKillWeaponEnchant effect = buff.GetConfig().GetEffect<EffectRogueOnKillWeaponEnchant>();
+            if (effect == null || effect.SlotIndex <= 0 || (effect.DamageBonusPermille <= 0 && effect.PenetrationCount <= 0))
+            {
+                return 0;
+            }
+
+            RogueOnKillWeaponEnchantStateComponent stateComponent = unit.GetComponent<RogueOnKillWeaponEnchantStateComponent>() ??
+                    unit.AddComponent<RogueOnKillWeaponEnchantStateComponent>();
+            stateComponent.SetSource(buff.Id, effect);
+            return 0;
+        }
+    }
+
+    public class BTRogueRemoveOnKillWeaponEnchantHandler : ABTHandler<BTRogueRemoveOnKillWeaponEnchant>
+    {
+        protected override int Run(BTRogueRemoveOnKillWeaponEnchant node, BTEnv env)
+        {
+            Unit unit = env.GetEntity<Unit>(node.Unit);
+            Buff buff = env.GetEntity<Buff>(node.Buff);
+            RogueOnKillWeaponEnchantStateComponent stateComponent = unit?.GetComponent<RogueOnKillWeaponEnchantStateComponent>();
+            RogueWeaponModifierComponent modifierComponent = unit?.GetComponent<RogueWeaponModifierComponent>();
+            if (unit == null || unit.IsDisposed || buff == null || stateComponent == null)
+            {
+                return 0;
+            }
+
+            stateComponent.RemoveSource(buff.Id);
+            if (stateComponent.IsEmpty())
+            {
+                unit.RemoveComponent<RogueOnKillWeaponEnchantStateComponent>();
+            }
+
+            if (modifierComponent != null)
+            {
+                modifierComponent.RemoveSource(buff.Id);
+                if (modifierComponent.IsEmpty())
+                {
+                    unit.RemoveComponent<RogueWeaponModifierComponent>();
+                }
+
+                WeaponRuntimeStatsHelper.RefreshUnitWeaponRuntimeStats(unit);
+            }
+
+            return 0;
+        }
+    }
+
     public class BTRogueRemovePassiveEffectsHandler : ABTHandler<BTRogueRemovePassiveEffects>
     {
         protected override int Run(BTRogueRemovePassiveEffects node, BTEnv env)
@@ -808,7 +824,9 @@ namespace ET.Server
                 return 0;
             }
 
+            long previousExtendGameTimeMs = passiveRuntime.GetExtendGameTimeMs();
             passiveRuntime.RemoveBySource(buff.Id);
+            RogueRunTimeLimitHelper.RefreshDurationByExtendDelta(unit, previousExtendGameTimeMs, passiveRuntime.GetExtendGameTimeMs());
 
             if (!passiveRuntime.HasOutOfCombatStealth())
             {
@@ -1055,11 +1073,10 @@ namespace ET.Server
                 {
                     RogueSummonedSpiritStateComponent spiritState = unit.GetComponent<RogueSummonedSpiritStateComponent>() ??
                             unit.AddComponent<RogueSummonedSpiritStateComponent>();
-                    spiritState.ReplaceSpirit(unit, buff.Id, spirit.Id);
+                    spiritState.ReplaceSpirit(unit, buff.Id, spirit.Id, effect);
+                    spiritState.RefreshSource(unit, buff.Id);
                 }
             }
-
-            RogueBuffActionInternalHelper.HealByMaxHpPermille(unit, effect.HealPermille);
             return 0;
         }
     }
@@ -1160,7 +1177,9 @@ namespace ET.Server
             }
 
             spirit.UnitType = UnitType.Pet;
-            spirit.Position = owner.Position + new float3(0.75f, 0f, 0.75f);
+            float3 forward = math.mul(owner.Rotation, new float3(0f, 0f, 1f));
+            float2 planarForward = math.lengthsq(forward.xz) > 0.0001f ? math.normalize(forward.xz) : new float2(0f, 1f);
+            spirit.Position = owner.Position + new float3(planarForward.x * 4f, 0f, planarForward.y * 4f);
             spirit.Rotation = owner.Rotation;
 
             PetComponent petComponent = spirit.GetComponent<PetComponent>() ?? spirit.AddComponent<PetComponent>();
@@ -1188,6 +1207,78 @@ namespace ET.Server
             }
 
             return spirit;
+        }
+    }
+
+    public static class RogueNearMonsterSpeedHelper
+    {
+        public static bool IsMovingTowardMonster(Unit unit, float radius)
+        {
+            if (unit == null || unit.IsDisposed || radius <= 0f)
+            {
+                return false;
+            }
+
+            JoystickMoveComponent moveComponent = unit.GetComponent<JoystickMoveComponent>();
+            float3 moveDirection = moveComponent?.Direction ?? float3.zero;
+            if (math.lengthsq(moveDirection.xz) < 0.0001f)
+            {
+                return false;
+            }
+
+            float2 normalizedMoveDirection = math.normalize(moveDirection.xz);
+            float radiusSqr = radius * radius;
+            UnitComponent unitComponent = unit.Scene()?.GetComponent<UnitComponent>();
+            if (unitComponent == null)
+            {
+                return false;
+            }
+
+            foreach (Unit target in unitComponent.Children.Values)
+            {
+                if (target == null || target.IsDisposed || target.UnitType != UnitType.Monster)
+                {
+                    continue;
+                }
+
+                float2 toTarget = target.Position.xz - unit.Position.xz;
+                float distanceSqr = math.lengthsq(toTarget);
+                if (distanceSqr <= 0.0001f || distanceSqr > radiusSqr)
+                {
+                    continue;
+                }
+
+                float2 normalizedToTarget = math.normalize(toTarget);
+                if (math.dot(normalizedMoveDirection, normalizedToTarget) > 0f)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    [Event(SceneType.Map)]
+    public class ChangePosition_RogueHealSpirit : AEvent<Scene, ChangePosition>
+    {
+        protected override async ETTask Run(Scene scene, ChangePosition args)
+        {
+            Unit unit = args.Unit;
+            RogueSummonedSpiritStateComponent spiritState = unit?.GetComponent<RogueSummonedSpiritStateComponent>();
+            if (unit == null || unit.IsDisposed || unit.UnitType != UnitType.Player || spiritState == null)
+            {
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            spiritState.RefreshAll(unit);
+            if (spiritState.IsEmpty())
+            {
+                unit.RemoveComponent<RogueSummonedSpiritStateComponent>();
+            }
+
+            await ETTask.CompletedTask;
         }
     }
 }

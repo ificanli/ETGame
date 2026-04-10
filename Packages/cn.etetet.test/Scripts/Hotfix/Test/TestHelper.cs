@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using ET.Client;
 using ET.Server;
 
@@ -143,6 +145,213 @@ namespace ET.Test
             }
 
             return unit;
+        }
+
+        public static bool TryFindExecutableRogueOption(
+            RogueRuntimeConfigCategory configCategory,
+            ICollection<int> excludedOptionIds,
+            out int optionId,
+            out RogueOptionConfig optionConfig)
+        {
+            optionId = 0;
+            optionConfig = null;
+            if (configCategory == null)
+            {
+                return false;
+            }
+
+            foreach ((int currentOptionId, RogueOptionConfig currentOptionConfig) in configCategory.GetOptions())
+            {
+                if (currentOptionConfig == null)
+                {
+                    continue;
+                }
+
+                if (excludedOptionIds != null && excludedOptionIds.Contains(currentOptionId))
+                {
+                    continue;
+                }
+
+                if (!RogueOptionConfigHelper.TryGetPreviewBuffConfigId(configCategory, currentOptionConfig, out _))
+                {
+                    continue;
+                }
+
+                optionId = currentOptionId;
+                optionConfig = currentOptionConfig;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryFindKeepableRogueOption(
+            RogueRuntimeConfigCategory configCategory,
+            ICollection<int> excludedOptionIds,
+            out int optionId,
+            out RogueOptionConfig optionConfig,
+            out int buffConfigId)
+        {
+            optionId = 0;
+            optionConfig = null;
+            buffConfigId = 0;
+            if (configCategory == null)
+            {
+                return false;
+            }
+
+            BuffConfigCategory buffCategory = BuffConfigCategory.Instance;
+            if (buffCategory == null)
+            {
+                return false;
+            }
+
+            foreach ((int currentOptionId, RogueOptionConfig currentOptionConfig) in configCategory.GetOptions())
+            {
+                if (currentOptionConfig == null)
+                {
+                    continue;
+                }
+
+                if (excludedOptionIds != null && excludedOptionIds.Contains(currentOptionId))
+                {
+                    continue;
+                }
+
+                if (!RogueOptionConfigHelper.TryGetPreviewBuffConfigId(configCategory, currentOptionConfig, out int currentBuffConfigId) ||
+                    currentBuffConfigId <= 0 ||
+                    !buffCategory.Contain(currentBuffConfigId))
+                {
+                    continue;
+                }
+
+                BuffConfig buffConfig = buffCategory.Get(currentBuffConfigId);
+                if (!ShouldKeepRogueBuffForTest(buffConfig))
+                {
+                    continue;
+                }
+
+                optionId = currentOptionId;
+                optionConfig = currentOptionConfig;
+                buffConfigId = currentBuffConfigId;
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryFindCommonShowTagWithBuff(
+            RogueRuntimeConfigCategory configCategory,
+            string showTagName,
+            out int tagId,
+            out int buffConfigId)
+        {
+            tagId = 0;
+            buffConfigId = 0;
+            if (configCategory == null)
+            {
+                return false;
+            }
+
+            BuffConfigCategory buffCategory = BuffConfigCategory.Instance;
+            if (buffCategory == null)
+            {
+                return false;
+            }
+
+            foreach (RogueTagConfig tagConfig in configCategory.GetTags().Values)
+            {
+                if (tagConfig == null ||
+                    tagConfig.TagType != 1 ||
+                    tagConfig.ShowTagsBuffId == null ||
+                    tagConfig.ShowTagsBuffId.Length == 0)
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(showTagName) &&
+                    !string.Equals(tagConfig.ShowTagsName, showTagName, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                int currentBuffConfigId = tagConfig.ShowTagsBuffId[0];
+                if (currentBuffConfigId <= 0 || !buffCategory.Contain(currentBuffConfigId))
+                {
+                    continue;
+                }
+
+                tagId = tagConfig.Id;
+                buffConfigId = currentBuffConfigId;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool ShouldKeepRogueBuffForTest(BuffConfig buffConfig)
+        {
+            if (buffConfig == null)
+            {
+                return false;
+            }
+
+            if (buffConfig.TickTime > 0 || (buffConfig.Duration >= 0 && buffConfig.Duration < int.MaxValue))
+            {
+                return true;
+            }
+
+            foreach (EffectNode effect in buffConfig.Effects)
+            {
+                if (effect == null)
+                {
+                    continue;
+                }
+
+                if (effect is EffectServerBuffAdd addEffect)
+                {
+                    if (ContainsOnlyInstantRogueAddActionsForTest(addEffect))
+                    {
+                        continue;
+                    }
+
+                    return true;
+                }
+
+                if (effect is EffectRogueReplaceAllCards)
+                {
+                    continue;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool ContainsOnlyInstantRogueAddActionsForTest(EffectServerBuffAdd addEffect)
+        {
+            if (addEffect?.Children == null || addEffect.Children.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (BTNode node in addEffect.Children)
+            {
+                if (node is BTRogueAddGold ||
+                    node is BTRogueSpawnMerchant ||
+                    node is BTRogueGrantRandomCard ||
+                    node is BTRogueGrantItem ||
+                    node is BTRogueReplaceAllCards ||
+                    node is BTRogueHealMaxHpPermille)
+                {
+                    continue;
+                }
+
+                return false;
+            }
+
+            return true;
         }
     }
 }

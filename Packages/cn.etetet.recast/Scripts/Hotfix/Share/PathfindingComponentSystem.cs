@@ -48,6 +48,53 @@ namespace ET
 
             return new DtQueryDefaultFilter();
         }
+
+        /// <summary>
+        /// 基于 Recast NavMesh Raycast 判断两点之间是否无遮挡。
+        /// 若寻路组件缺失、起终点无法稳定投影到 NavMesh，则按兼容策略放行，避免非标准场景整体失去索敌能力。
+        /// </summary>
+        public static bool HasLineOfSight(this PathfindingComponent self, float3 from, float3 to, float unitRadius, float maxVerticalDelta, out float hitT)
+        {
+            hitT = float.MaxValue;
+
+            if (self == null || self.IsDisposed || self.navMesh == null)
+            {
+                return true;
+            }
+
+            if (math.abs(from.y - to.y) > math.max(0f, maxVerticalDelta))
+            {
+                hitT = 0f;
+                return false;
+            }
+
+            float safeRadius = self.GetSafeUnitRadius(unitRadius);
+            RcVec3f projectExtents = self.GetMovementProjectExtents(safeRadius);
+            float maxProjectDistance = self.GetFindNearestRejectDistance(safeRadius);
+
+            if (!self.TryProjectNearestPoly(from, projectExtents, out long startRef, out RcVec3f startPt, out float startDistance))
+            {
+                self.LogLineOfSightFallback("start projection failed", from, to, startDistance);
+                return true;
+            }
+
+            if (startDistance > maxProjectDistance)
+            {
+                self.LogLineOfSightFallback("start projection too far", from, to, startDistance);
+                return true;
+            }
+
+            RcVec3f endPt = self.ToNavPos(to, self.navXSign);
+            DtStatus status = self.query.Raycast(startRef, startPt, endPt, self.filter, 0, 0, out DtRaycastHit hit);
+            if (status.Failed() || hit == null)
+            {
+                self.LogLineOfSightFallback($"raycast failed status={status}", from, to, float.MaxValue);
+                return true;
+            }
+
+            hitT = hit.t;
+            return hit.t >= 1.0f || hit.t == float.MaxValue;
+        }
         
         public static void Find(this PathfindingComponent self, float3 start, float3 target, List<float3> result, float unitRadius)
         {
@@ -487,6 +534,18 @@ namespace ET
             }
 
             Log.Info($"[NavMeshDebug] extracted {vertices.Count / 3} triangles from {maxTiles} tiles, navXSign={self.navXSign}");
+        }
+
+        private static void LogLineOfSightFallback(this PathfindingComponent self, string reason, float3 from, float3 to, float distance)
+        {
+            long now = TimeInfo.Instance.ServerNow();
+            if (now - self.lastRaycastLogTime < 500)
+            {
+                return;
+            }
+
+            self.lastRaycastLogTime = now;
+            Log.Info($"[NavLoS] fallback pass. unitId={self.Parent?.Id ?? 0}, scene={self.Scene()?.Name ?? string.Empty}, reason={reason}, from={from}, to={to}, distance={distance:F3}, navXSign={self.navXSign}");
         }
 
         private static void ApplySceneGuardConfig(this PathfindingComponent self, SceneNavmeshComponent sceneNavmeshComponent)

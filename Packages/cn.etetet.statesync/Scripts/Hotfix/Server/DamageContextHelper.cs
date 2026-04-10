@@ -43,6 +43,7 @@ namespace ET.Server
             ctx.TargetUnitId = target.Id;
             ctx.WeaponId = weaponId;
             ctx.IsBullet = isBullet;
+            ctx.IsBoss = MonsterRuntimeProfileHelper.IsBoss(target);
             ctx.IsCritical = isCritical;
             ctx.BaseDamage = baseDamage;
             ctx.FinalDamage = baseDamage;

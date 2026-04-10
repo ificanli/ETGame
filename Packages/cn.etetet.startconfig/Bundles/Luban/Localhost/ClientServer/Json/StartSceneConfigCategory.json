@@ -94,13 +94,5 @@
     "SceneType": "Match",
     "Name": "Match",
     "Port": 0
-  },
-  {
-    "Id": 13,
-    "Process": 1,
-    "Zone": 2,
-    "SceneType": "Archive",
-    "Name": "Archive",
-    "Port": 0
   }
 ]

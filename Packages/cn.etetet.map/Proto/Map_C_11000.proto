@@ -274,10 +274,10 @@ message C2M_ContainerMoveItem // ILocationRequest
 {
 	int32 RpcId = 1;
 	string PointId = 2;
-	bool SourceIsBag = 3;
+	int32 SourceAreaType = 3;
 	int32 SourceSlot = 4;
 	int64 SourceItemId = 5;
-	bool TargetIsBag = 6;
+	int32 TargetAreaType = 6;
 	int32 TargetSlot = 7;
 }
 

@@ -312,6 +312,28 @@ namespace ET
         public string Buff = "Buff";
     }
 
+    public class BTRogueApplyOnKillWeaponEnchant : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+    }
+
+    public class BTRogueRemoveOnKillWeaponEnchant : BTAction
+    {
+        [BTInput(typeof(Unit))]
+        [BoxGroup("输入参数")]
+        public string Unit = "Unit";
+
+        [BTInput(typeof(Buff))]
+        [BoxGroup("输入参数")]
+        public string Buff = "Buff";
+    }
+
     public class BTRogueApplyScaleModifier : BTAction
     {
         [BTInput(typeof(Unit))]

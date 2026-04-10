@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ET.Server;
 
 namespace ET.Test
@@ -50,28 +51,18 @@ namespace ET.Test
                 return 2;
             }
 
-            if (!configCategory.TryGetOption(1, out RogueOptionConfig optionConfig1) || optionConfig1 == null)
+            HashSet<int> excludedOptionIds = new();
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, excludedOptionIds, out int optionId1, out RogueOptionConfig optionConfig1, out int buffConfigId1))
             {
-                Log.Console("rogue option config 1 is null");
+                Log.Console("first keepable rogue option not found");
                 return 3;
             }
 
-            if (!configCategory.TryGetOption(2, out RogueOptionConfig optionConfig2) || optionConfig2 == null)
+            excludedOptionIds.Add(optionId1);
+            if (!TestHelper.TryFindKeepableRogueOption(configCategory, excludedOptionIds, out int optionId2, out RogueOptionConfig optionConfig2, out int buffConfigId2))
             {
-                Log.Console("rogue option config 2 is null");
+                Log.Console("second keepable rogue option not found");
                 return 4;
-            }
-
-            if (!optionConfig1.TryGetLegacyBuffConfigId(out int buffConfigId1) || !BuffConfigCategory.Instance.Contain(buffConfigId1))
-            {
-                Log.Console($"legacy buff config 1 invalid, buffConfigId={buffConfigId1}");
-                return 5;
-            }
-
-            if (!optionConfig2.TryGetLegacyBuffConfigId(out int buffConfigId2) || !BuffConfigCategory.Instance.Contain(buffConfigId2))
-            {
-                Log.Console($"legacy buff config 2 invalid, buffConfigId={buffConfigId2}");
-                return 6;
             }
 
             string oldBtConfig1 = optionConfig1.BTConfig;
@@ -127,11 +118,11 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(optionId1);
 
                 EntityRef<Unit> unitRef = unit;
                 EntityRef<RogueProgressComponent> progressRef = progress;
-                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1, null);
+                int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, optionId1, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)
@@ -149,11 +140,11 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial = 2;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(2);
+                progress.PendingOptionIds.Add(optionId2);
 
                 unitRef = unit;
                 progressRef = progress;
-                chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 2, null);
+                chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, optionId2, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)
@@ -181,7 +172,7 @@ namespace ET.Test
                     return 13;
                 }
 
-                if (progress.SelectedOptionIds.Count != 1 || progress.SelectedOptionIds[0] != 2)
+                if (progress.SelectedOptionIds.Count != 1 || progress.SelectedOptionIds[0] != optionId2)
                 {
                     Log.Console($"selected options mismatch after run-end remove, count={progress.SelectedOptionIds.Count}");
                     return 14;

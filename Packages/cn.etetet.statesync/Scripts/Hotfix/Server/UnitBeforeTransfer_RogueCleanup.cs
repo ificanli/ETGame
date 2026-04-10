@@ -57,8 +57,9 @@ namespace ET.Server
                 unit.RemoveComponent<RunTimeLimitComponent>();
             }
 
-            unit.AddComponent<RunTimeLimitComponent, long, string>(RunTimeLimitConst.PlayerTimeoutMs, mapName);
-            Log.Info($"[RunTimeLimit] start countdown, unitId={unit.Id}, map={mapName}, durationMs={RunTimeLimitConst.PlayerTimeoutMs}");
+            long durationMs = RogueRunTimeLimitHelper.GetEffectiveDurationMs(unit);
+            unit.AddComponent<RunTimeLimitComponent, long, string>(durationMs, mapName);
+            Log.Info($"[RunTimeLimit] start countdown, unitId={unit.Id}, map={mapName}, durationMs={durationMs}");
             await ETTask.CompletedTask;
         }
     }

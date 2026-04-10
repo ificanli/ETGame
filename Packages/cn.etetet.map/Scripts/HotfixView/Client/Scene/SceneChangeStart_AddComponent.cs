@@ -22,7 +22,18 @@ namespace ET.Client
                 // 地图资源相同,则不创建Loading界面,也不需要重新加载地图
                 if (args.ChangeScene)
                 {
-                    await root.YIUIRoot().OpenPanelAsync<LoadingPanelComponent>();
+                    string targetSceneConfigName = string.IsNullOrWhiteSpace(args.TargetSceneName)
+                        ? string.Empty
+                        : args.TargetSceneName.GetSceneConfigName();
+                    bool skipLoadingForSettlement = root.GetComponent<SettlementClientComponent>() is
+                    {
+                        HasSettlement: true
+                    } && targetSceneConfigName == "Home";
+
+                    if (!skipLoadingForSettlement)
+                    {
+                        await root.YIUIRoot().OpenPanelAsync<LoadingPanelComponent>();
+                    }
 
                     currentScenesComponent = currentScenesComponentRef;
                     currentScenesComponent.Progress = 0;

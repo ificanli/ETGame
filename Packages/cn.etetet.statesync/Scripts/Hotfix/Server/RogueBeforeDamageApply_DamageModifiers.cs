@@ -7,7 +7,6 @@ namespace ET.Server
     [Event(SceneType.Map)]
     public class RogueBeforeDamageApply_DamageModifiers : AEvent<Scene, RogueBeforeDamageApply>
     {
-        private const int DamageReductionSourceMonster = 1;
         private const int CriticalDamageBonusPermille = 1000;
 
         protected override async ETTask Run(Scene scene, RogueBeforeDamageApply a)
@@ -169,6 +168,11 @@ namespace ET.Server
                         continue;
                     }
 
+                    if (!MonsterRuntimeProfileHelper.MatchesCombatFilter(target, RogueUnitFilterType.NonBossMonster))
+                    {
+                        continue;
+                    }
+
                     NumericComponent targetNumeric = target.NumericComponent;
                     if (targetNumeric == null)
                     {
@@ -189,7 +193,7 @@ namespace ET.Server
                 }
             }
 
-            int lifeStealPermille = passiveRuntime.GetLifeStealPermille();
+            int lifeStealPermille = passiveRuntime.GetLifeStealPermille(target);
             if (lifeStealPermille > 0)
             {
                 ctx.LifeStealPermille += lifeStealPermille;
@@ -227,7 +231,7 @@ namespace ET.Server
                     continue;
                 }
 
-                if (!MatchesDamageReductionFilter(source.SourceFilter, attacker))
+                if (!MonsterRuntimeProfileHelper.MatchesCombatFilter(attacker, source.SourceFilter))
                 {
                     continue;
                 }
@@ -314,20 +318,6 @@ namespace ET.Server
                     break;
                 }
             }
-        }
-
-        private static bool MatchesDamageReductionFilter(int sourceFilter, Unit attacker)
-        {
-            if (sourceFilter <= 0)
-            {
-                return true;
-            }
-
-            return sourceFilter switch
-            {
-                DamageReductionSourceMonster => attacker != null && !attacker.IsDisposed && attacker.UnitType == UnitType.Monster,
-                _ => true,
-            };
         }
     }
 }

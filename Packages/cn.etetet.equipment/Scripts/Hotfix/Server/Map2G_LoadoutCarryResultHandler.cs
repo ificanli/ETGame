@@ -38,7 +38,7 @@ namespace ET.Server
 
                 if (message.ResultType == (int)LoadoutCarryResultType.Dead)
                 {
-                    LoadoutStateHelper.ResetToSecureOnly(loadout);
+                    LoadoutStateHelper.ResetToSecureOnly(loadout, message);
                     LoadoutOperationHelper.PushStateChanged(player, loadout, storage);
                     ArchiveStorageSyncHelper.RecordBattleResult(
                         player,

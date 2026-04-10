@@ -66,15 +66,15 @@ namespace ET.Test
                 return 3;
             }
 
-            if (!configCategory.TryGetOption(1, out RogueOptionConfig tagOptionConfig) || tagOptionConfig == null)
+            if (!TestHelper.TryFindExecutableRogueOption(configCategory, null, out int tagOptionId, out RogueOptionConfig tagOptionConfig))
             {
-                Log.Console("rogue option config 1 is null");
+                Log.Console("failed to find tag carrier option");
                 return 4;
             }
 
-            if (!configCategory.TryGetOption(2, out RogueOptionConfig goldOptionConfig) || goldOptionConfig == null)
+            if (!TestHelper.TryFindExecutableRogueOption(configCategory, new[] { tagOptionId }, out int goldOptionId, out RogueOptionConfig goldOptionConfig))
             {
-                Log.Console("rogue option config 2 is null");
+                Log.Console("failed to find gold option");
                 return 5;
             }
 
@@ -143,9 +143,9 @@ namespace ET.Test
                     progress.ChoicePending = true;
                     progress.ChoiceSerial += 1;
                     progress.PendingOptionIds.Clear();
-                    progress.PendingOptionIds.Add(1);
+                    progress.PendingOptionIds.Add(tagOptionId);
 
-                    int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1, null);
+                    int chooseError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, tagOptionId, null);
                     unit = unitRef;
                     progress = progressRef;
                     if (unit == null || progress == null)
@@ -170,9 +170,9 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial += 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(2);
+                progress.PendingOptionIds.Add(goldOptionId);
 
-                int firstGoldError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 2, null);
+                int firstGoldError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, goldOptionId, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)
@@ -196,9 +196,9 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial += 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(1);
+                progress.PendingOptionIds.Add(tagOptionId);
 
-                int thirdTagError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 1, null);
+                int thirdTagError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, tagOptionId, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)
@@ -222,9 +222,9 @@ namespace ET.Test
                 progress.ChoicePending = true;
                 progress.ChoiceSerial += 1;
                 progress.PendingOptionIds.Clear();
-                progress.PendingOptionIds.Add(2);
+                progress.PendingOptionIds.Add(goldOptionId);
 
-                int secondGoldError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, 2, null);
+                int secondGoldError = await RogueProgressHelper.ChooseOption(unit, progress.ChoiceSerial, goldOptionId, null);
                 unit = unitRef;
                 progress = progressRef;
                 if (unit == null || progress == null)

@@ -95,25 +95,6 @@ namespace ET.Client
         private static async ETTask OnEventClickInfoInvoke(this UnitInfoComponent self)
         {
             await ETTask.CompletedTask;
-            if (self.Unit == null)
-            {
-                return;
-            }
-
-            var player = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
-            if (player == null)
-            {
-                return;
-            }
-
-            var targetComponent = player.GetComponent<TargetComponent>();
-
-            if (self.Unit == targetComponent.Unit)
-            {
-                return;
-            }
-            
-            UnitClickHelper.Click(self.Root(), self.Unit.Id).Coroutine();
         }
 
         #endregion YIUIEvent结束

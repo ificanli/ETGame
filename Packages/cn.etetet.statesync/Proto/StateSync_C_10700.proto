@@ -206,3 +206,19 @@ message M2C_RogueRerollOptionResult // ILocationResponse
 	int32 OldOptionId = 6;
 	RogueOptionData Option = 7;
 }
+
+// ResponseType M2C_DebugSpawnMonster
+message C2M_DebugSpawnMonster // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 UnitConfigId = 2;
+}
+
+message M2C_DebugSpawnMonster // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 SpawnedUnitId = 4;
+	int32 SpawnedConfigId = 5;
+}

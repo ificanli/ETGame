@@ -20,6 +20,7 @@ namespace ET.Server
     public struct SpawnPointECAConfig
     {
         public const float DefaultInteractRange = 3f;
+        public const string RogueMerchantSpawnParamKey = "rogue_merchant_spawn";
 
         public string ConfigId;
 
@@ -52,6 +53,33 @@ namespace ET.Server
             }
 
             return this.TeamId;
+        }
+
+        public bool TryGetBoolParam(string key, out bool value)
+        {
+            value = false;
+            if (string.IsNullOrWhiteSpace(key) || this.Params == null || this.Params.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (SpawnPointFlowParam param in this.Params)
+            {
+                if (string.IsNullOrWhiteSpace(param.Key) || !string.Equals(param.Key, key, System.StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (int.TryParse(param.Value, out int intValue))
+                {
+                    value = intValue != 0;
+                    return true;
+                }
+
+                return bool.TryParse(param.Value, out value);
+            }
+
+            return false;
         }
 
         private bool TryGetIntParam(string key, out int value)
@@ -110,5 +138,10 @@ namespace ET.Server
         /// Value: 下次要使用的出生点下标
         /// </summary>
         public Dictionary<int, int> TeamNextSpawnIndices = new();
+
+        /// <summary>
+        /// 肉鸽商人候选出生点。
+        /// </summary>
+        public List<SpawnPointECAConfig> RogueMerchantSpawnPoints = new();
     }
 }

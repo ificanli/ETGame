@@ -146,7 +146,7 @@ namespace ET.Client
             foreach (EntityRef<Item> itemRef in self.SlotItems)
             {
                 Item item = itemRef;
-                if (item != null && item.ConfigId == configId)
+                if (item != null && LegacyItemConfigIdHelper.MatchesConfigId(item.ConfigId, configId))
                 {
                     count += item.Count;
                 }
@@ -232,7 +232,20 @@ namespace ET.Client
 
             if (slotIndex >= self.Capacity)
             {
-                throw new Exception($"slot index {slotIndex} exceeds capacity {self.Capacity}");
+                Log.Warning($"[ItemComponent] slot index {slotIndex} exceeds capacity {self.Capacity}, auto-expanding");
+                int newCapacity = slotIndex + 1;
+                int newWidth = newCapacity;
+                int newHeight = 1;
+                if (self.Width > 0 && self.Height > 0)
+                {
+                    newWidth = self.Width;
+                    newHeight = (newCapacity + newWidth - 1) / newWidth;
+                }
+
+                self.Width = newWidth;
+                self.Height = newHeight;
+                self.Capacity = newWidth * newHeight;
+                EnsureSlotContainerSize(self, self.Capacity);
             }
         }
 

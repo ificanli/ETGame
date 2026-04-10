@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace ET.Server
 {
@@ -32,6 +33,12 @@ namespace ET.Server
             {
                 if (kv.Value is Item item)
                 {
+                    int resolvedConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(item.ConfigId);
+                    if (resolvedConfigId != item.ConfigId)
+                    {
+                        item.ConfigId = resolvedConfigId;
+                    }
+
                     self.SlotItems[item.SlotIndex] = item;
                 }
             }
@@ -50,7 +57,7 @@ namespace ET.Server
             foreach (EntityRef<Item> itemRef in self.SlotItems)
             {
                 Item item = itemRef;
-                if (item != null && item.ConfigId == configId)
+                if (item != null && LegacyItemConfigIdHelper.MatchesConfigId(item.ConfigId, configId))
                 {
                     count += item.Count;
                 }
@@ -73,6 +80,61 @@ namespace ET.Server
                 }
             }
             return -1;
+        }
+
+        /// <summary>
+        /// 按当前二维背包布局查找首个可用锚点。
+        /// </summary>
+        public static bool TryFindFirstFitAnchorSlot(this ItemComponent self, int gridWidth, int gridHeight, out int anchorSlotIndex)
+        {
+            int width = self.Width > 0 ? self.Width : self.Capacity;
+            int height = self.Height > 0 ? self.Height : 1;
+            if (width <= 0 || height <= 0)
+            {
+                anchorSlotIndex = -1;
+                return false;
+            }
+
+            List<GridPlacementItemInfo> placements = new();
+            CollectPlacementInfos(self, placements);
+
+            return LoadoutGridPlacementHelper.TryFindFirstFitAnchorSlot(
+                placements,
+                width,
+                height,
+                gridWidth,
+                gridHeight,
+                out anchorSlotIndex);
+        }
+
+        /// <summary>
+        /// 检查指定锚点在当前二维背包布局下是否合法。
+        /// </summary>
+        public static bool CanPlaceAtAnchorSlot(
+            this ItemComponent self,
+            int anchorSlotIndex,
+            int gridWidth,
+            int gridHeight,
+            long ignoreItemId = 0,
+            long ignoreItemId2 = 0)
+        {
+            int width = self.Width > 0 ? self.Width : self.Capacity;
+            int height = self.Height > 0 ? self.Height : 1;
+            if (width <= 0 || height <= 0)
+            {
+                return false;
+            }
+
+            List<GridPlacementItemInfo> placements = new();
+            CollectPlacementInfos(self, placements, ignoreItemId, ignoreItemId2);
+
+            return LoadoutGridPlacementHelper.CanPlaceAtAnchorSlot(
+                placements,
+                width,
+                height,
+                anchorSlotIndex,
+                gridWidth,
+                gridHeight);
         }
 
         /// <summary>
@@ -238,6 +300,33 @@ namespace ET.Server
             for (int i = 0; i < addCount; ++i)
             {
                 self.SlotItems.Add(default);
+            }
+        }
+
+        private static void CollectPlacementInfos(
+            ItemComponent self,
+            List<GridPlacementItemInfo> placements,
+            long ignoreItemId = 0,
+            long ignoreItemId2 = 0)
+        {
+            placements.Clear();
+
+            foreach (EntityRef<Item> itemRef in self.SlotItems)
+            {
+                Item item = itemRef;
+                if (item == null || item.IsDisposed || item.Id == ignoreItemId || item.Id == ignoreItemId2)
+                {
+                    continue;
+                }
+
+                placements.Add(new GridPlacementItemInfo
+                {
+                    ConfigId = item.ConfigId,
+                    Count = item.Count,
+                    AnchorSlotIndex = item.SlotIndex,
+                    GridWidth = item.GridWidth,
+                    GridHeight = item.GridHeight,
+                });
             }
         }
 

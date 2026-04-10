@@ -12,5 +12,7 @@ namespace ET
         public const string NavBlockHalfExtentsY = "nav_block_half_extents_y";
         public const string NavBlockHalfExtentsZ = "nav_block_half_extents_z";
         public const string NavBlockStates = "nav_block_states";
+        public const string RogueAreaId = "rogue_area_id";
+        public const string RogueAreaEnabled = "rogue_area_enabled";
     }
 }
