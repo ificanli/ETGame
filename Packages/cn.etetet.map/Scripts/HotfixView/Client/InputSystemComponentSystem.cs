@@ -8,7 +8,7 @@ namespace ET.Client
     [EntitySystemOf(typeof(InputSystemComponent))]
     public static partial class InputSystemComponentSystem
     {
-        private const int ContinuousMoveSyncIntervalMs = 33;
+        private const int ContinuousMoveSyncIntervalMs = 50; // 20Hz 上报
         private const float ImmediateDirectionChangeDot = 0.9238795f;
 
         [EntitySystem]
@@ -215,12 +215,25 @@ namespace ET.Client
                 return;
             }
 
-            uint inputSequence = ++self.MoveInputSequence;
+            Unit unit = self.GetParent<Unit>();
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
 
-            C2M_JoystickInput msg = C2M_JoystickInput.Create();
+            uint inputSequence = ++self.MoveInputSequence;
+            float speed = unit.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
+
+            // 客户端权威移动：上报当前位置（而非方向）
+            C2M_MoveState msg = C2M_MoveState.Create();
+            msg.PosX = unit.Position.x;
+            msg.PosY = unit.Position.y;
+            msg.PosZ = unit.Position.z;
             msg.DirX = worldDirection.x;
             msg.DirZ = worldDirection.y;
-            msg.InputSequence = inputSequence;
+            msg.Speed = worldDirection.sqrMagnitude > 0.000001f ? speed : 0f;
+            msg.Sequence = inputSequence;
+            msg.ClientTimeMs = TimeInfo.Instance.ClientNow();
             sender.Send(msg);
         }
 

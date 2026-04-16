@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: poi_high_container
+      name: "\u65B0\u5EFA\u9879\u76EE_0"
       rect:
         serializedVersion: 2
         x: 313
@@ -119,7 +119,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: poi_boss_spawn
+      name: "\u65B0\u5EFA\u9879\u76EE_1"
       rect:
         serializedVersion: 2
         x: 577
@@ -141,7 +141,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: poi_mission_task
+      name: "\u65B0\u5EFA\u9879\u76EE_2"
       rect:
         serializedVersion: 2
         x: 904
@@ -163,7 +163,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: poi_tracked
+      name: "\u65B0\u5EFA\u9879\u76EE_3"
       rect:
         serializedVersion: 2
         x: 333
@@ -185,7 +185,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: poi_evacuation
+      name: "\u65B0\u5EFA\u9879\u76EE_4"
       rect:
         serializedVersion: 2
         x: 591
@@ -220,11 +220,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      poi_boss_spawn: 1339317086
-      poi_evacuation: 659477835
-      poi_high_container: -168942532
-      poi_mission_task: 1779321962
-      poi_tracked: -1032342185
+      "\u65B0\u5EFA\u9879\u76EE_0": -168942532
+      "\u65B0\u5EFA\u9879\u76EE_1": 1339317086
+      "\u65B0\u5EFA\u9879\u76EE_2": 1779321962
+      "\u65B0\u5EFA\u9879\u76EE_3": -1032342185
+      "\u65B0\u5EFA\u9879\u76EE_4": 659477835
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1087,6 +1087,135 @@ namespace ET
         }
     }
 
+    // 客户端权威移动：客户端上报位置（20Hz）
+    [MemoryPackable]
+    [Message(Opcode.C2M_MoveState)]
+    public partial class C2M_MoveState : MessageObject, ILocationMessage
+    {
+        public static C2M_MoveState Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_MoveState>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public float PosX { get; set; }
+        [MemoryPackOrder(2)]
+        public float PosY { get; set; }
+        [MemoryPackOrder(3)]
+        public float PosZ { get; set; }
+        [MemoryPackOrder(4)]
+        public float DirX { get; set; }
+        [MemoryPackOrder(5)]
+        public float DirZ { get; set; }
+        [MemoryPackOrder(6)]
+        public float Speed { get; set; }
+        [MemoryPackOrder(7)]
+        public uint Sequence { get; set; }
+        [MemoryPackOrder(8)]
+        public long ClientTimeMs { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PosX = default;
+            this.PosY = default;
+            this.PosZ = default;
+            this.DirX = default;
+            this.DirZ = default;
+            this.Speed = default;
+            this.Sequence = default;
+            this.ClientTimeMs = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 客户端权威移动：服务器转发位置给其他客户端
+    [MemoryPackable]
+    [Message(Opcode.M2C_MoveSync)]
+    public partial class M2C_MoveSync : MessageObject, IMessage
+    {
+        public static M2C_MoveSync Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_MoveSync>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+        [MemoryPackOrder(1)]
+        public float PosX { get; set; }
+        [MemoryPackOrder(2)]
+        public float PosY { get; set; }
+        [MemoryPackOrder(3)]
+        public float PosZ { get; set; }
+        [MemoryPackOrder(4)]
+        public float DirX { get; set; }
+        [MemoryPackOrder(5)]
+        public float DirZ { get; set; }
+        [MemoryPackOrder(6)]
+        public float Speed { get; set; }
+        [MemoryPackOrder(7)]
+        public uint Sequence { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.PosX = default;
+            this.PosY = default;
+            this.PosZ = default;
+            this.DirX = default;
+            this.DirZ = default;
+            this.Speed = default;
+            this.Sequence = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    // 客户端权威移动：服务器发现非法位置，纠正客户端
+    [MemoryPackable]
+    [Message(Opcode.M2C_MoveCorrection)]
+    public partial class M2C_MoveCorrection : MessageObject, IMessage
+    {
+        public static M2C_MoveCorrection Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_MoveCorrection>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public float PosX { get; set; }
+        [MemoryPackOrder(1)]
+        public float PosY { get; set; }
+        [MemoryPackOrder(2)]
+        public float PosZ { get; set; }
+        [MemoryPackOrder(3)]
+        public uint AckSequence { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.PosX = default;
+            this.PosY = default;
+            this.PosZ = default;
+            this.AckSequence = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort RouterSync = 10701;
@@ -1122,5 +1251,8 @@ namespace ET
         public const ushort M2C_PickupGroundItem = 10731;
         public const ushort C2M_QuickExitExtraction = 10732;
         public const ushort M2C_QuickExitExtraction = 10733;
+        public const ushort C2M_MoveState = 10734;
+        public const ushort M2C_MoveSync = 10735;
+        public const ushort M2C_MoveCorrection = 10736;
     }
 }
