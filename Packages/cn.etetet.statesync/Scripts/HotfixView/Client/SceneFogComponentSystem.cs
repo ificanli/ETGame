@@ -170,7 +170,8 @@ namespace ET.Client
 
             runtime.RefreshLocalFog();
 
-            // 贴图只写已探索/未探索两种状态，可见区域由 Shader 实时计算
+            // 场景迷雾直接复用当前可见格与已探索格，避免 Shader 端圆形开图绕过墙体。
+            Color32 visibleColor = self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorVisible, "#00000000");
             Color32 exploredColor = self.ScaleColorAlpha(
                 self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorExplored, "#000020C0"),
                 self.ExploredAlphaScale);
@@ -184,6 +185,12 @@ namespace ET.Client
 
             for (int i = 0; i < totalCount; ++i)
             {
+                if (runtime.CurrentVisibleCells.Contains(i))
+                {
+                    self.FogPixels[i] = visibleColor;
+                    continue;
+                }
+
                 self.FogPixels[i] = runtime.ExploredCells.Contains(i) ? exploredColor : unexploredColor;
             }
 
@@ -379,8 +386,8 @@ namespace ET.Client
                 visionCenterZ = myPosition.z;
             }
 
-            // 实时可见圆：FogVisionRadius > 0 时传玩家位置和半径给 Shader
-            float visionRadius = runtime.FogVisionRadius > 0f ? runtime.FogVisionRadius : 0f;
+            // 直接使用 fog texture 的可见格编码，关闭 Shader 端圆形视野兜底。
+            float visionRadius = 0f;
             Color visibleColor = self.ResolveSceneFogColor(runtime, global::ET.MinimapConstKey.FogColorVisible, "#00000000");
 
             self.OverlayMaterial.SetTexture("_FogTex", self.FogTexture);

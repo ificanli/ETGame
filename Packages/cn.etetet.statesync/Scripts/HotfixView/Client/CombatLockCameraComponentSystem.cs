@@ -77,7 +77,27 @@ namespace ET.Client
 
             Vector3 desiredWorldOffset = self.CurrentMoveOffset + self.CurrentLockOffset;
             self.CurrentWorldOffset = self.MoveTowardsOffset(tuningView, desiredWorldOffset);
-            cinemachineComponent.SetFollowOffset(self.CurrentWorldOffset);
+
+            // 叠加相机抖动偏移
+            Vector3 finalOffset = self.CurrentWorldOffset;
+            if (self.IsShaking)
+            {
+                self.ShakeElapsedMs += Time.deltaTime * 1000f;
+                if (self.ShakeElapsedMs >= self.ShakeDurationMs)
+                {
+                    self.IsShaking = false;
+                }
+                else
+                {
+                    float t = self.ShakeElapsedMs / self.ShakeDurationMs;
+                    float decay = 1f - t;
+                    float offsetX = Random.Range(-1f, 1f) * self.ShakeIntensity * decay;
+                    float offsetY = Random.Range(-1f, 1f) * self.ShakeIntensity * decay;
+                    finalOffset += new Vector3(offsetX, offsetY, 0f);
+                }
+            }
+
+            cinemachineComponent.SetFollowOffset(finalOffset);
         }
 
         private static CombatCameraTuningView GetTuningView(this CombatLockCameraComponent self, CinemachineComponent cinemachineComponent)
@@ -238,6 +258,17 @@ namespace ET.Client
         {
             Transform transform = unit.GetComponent<GameObjectComponent>()?.Transform;
             return transform != null ? transform.position : (Vector3)unit.Position;
+        }
+
+        /// <summary>
+        /// 通用相机抖动接口。供大招释放、Boss 登场、大范围爆炸等场景调用。
+        /// </summary>
+        public static void ApplyShake(this CombatLockCameraComponent self, float intensity, int durationMs)
+        {
+            self.ShakeIntensity = intensity;
+            self.ShakeDurationMs = durationMs;
+            self.ShakeElapsedMs = 0f;
+            self.IsShaking = true;
         }
     }
 }

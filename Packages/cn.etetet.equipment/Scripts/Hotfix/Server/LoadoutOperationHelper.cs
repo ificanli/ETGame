@@ -934,6 +934,13 @@ namespace ET.Server
                 return false;
             }
 
+            if ((shopItem.CanEquipMainWeapon || shopItem.CanEquipSubWeapon) &&
+                WeaponConfigCategory.Instance.GetOrDefault(shopItem.Id) == null)
+            {
+                message = "shop weapon config missing";
+                return false;
+            }
+
             if (shopItem.LoadoutBuyPrice < 0)
             {
                 message = "shop item price invalid";

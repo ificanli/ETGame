@@ -52,10 +52,28 @@ namespace ET.Server
                 unit.AddComponent<AOIEntity>();
             }
 
+            EntityRef<Unit> unitRef = unit;
+            EntityRef<Scene> sceneRef = scene;
             MapUnitEnterHelper.InitializePlayerGameplay(unit);
             if (unit.UnitType == UnitType.Player && mapName == "Home")
             {
-                HomeEnterHelper.OnEnterHome(unit);
+                await HomeEnterHelper.OnEnterHome(unit);
+                unit = unitRef;
+                scene = sceneRef;
+                if (unit == null)
+                {
+                    return;
+                }
+
+                M2C_HomeSnapshot snapshot = HomeSnapshotMessageHelper.CreateSnapshot(unit);
+                MapMessageHelper.NoticeClient(unit, snapshot, NoticeType.Self);
+            }
+
+            unit = unitRef;
+            scene = sceneRef;
+            if (unit == null)
+            {
+                return;
             }
 
             if (request.ChangeScene)

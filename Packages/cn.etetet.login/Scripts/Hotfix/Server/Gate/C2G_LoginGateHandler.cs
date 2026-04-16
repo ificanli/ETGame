@@ -28,6 +28,7 @@ namespace ET.Server
                 player = playerComponent.AddChild<Player, string>(account);
                 EntityRef<Player> playerRef = player;
                 playerComponent.Add(player);
+                player.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
                 PlayerSessionComponent playerSessionComponent = player.AddComponent<PlayerSessionComponent>();
                 playerSessionComponent.AddComponent<MailBoxComponent, int>(MailBoxType.GateSession);
                 
@@ -39,6 +40,10 @@ namespace ET.Server
             else
             {
                 player.RemoveComponent<WaitLogoutComponent>();
+                if (player.GetComponent<MailBoxComponent>() == null)
+                {
+                    player.AddComponent<MailBoxComponent, int>(MailBoxType.UnOrderedMessage);
+                }
                 session.AddComponent<SessionPlayerComponent>().Player = player;
                 player.GetComponent<PlayerSessionComponent>().Session = session;
             }

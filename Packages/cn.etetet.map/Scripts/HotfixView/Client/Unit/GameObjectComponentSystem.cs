@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using Unity.Mathematics;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace ET.Client
         [EntitySystem]
         private static void Destroy(this GameObjectComponent self)
         {
+            self.ClearOutlineVisual();
             self.ClearConcealmentTransparencyCache();
             UnityEngine.Object.Destroy(self.GameObject);
         }
@@ -28,7 +30,27 @@ namespace ET.Client
                 return;
             }
 
-            self.CachedRenderers = self.GameObject.GetComponentsInChildren<Renderer>(true);
+            Renderer[] allRenderers = self.GameObject.GetComponentsInChildren<Renderer>(true);
+            if (allRenderers == null || allRenderers.Length == 0)
+            {
+                self.CachedRenderers = null;
+                self.OriginalMaterials = null;
+                self.TransparentMaterials = null;
+                return;
+            }
+
+            List<Renderer> filteredRenderers = new(allRenderers.Length);
+            foreach (Renderer renderer in allRenderers)
+            {
+                if (renderer == null || renderer.GetComponent<UnitOutlineMarker>() != null)
+                {
+                    continue;
+                }
+
+                filteredRenderers.Add(renderer);
+            }
+
+            self.CachedRenderers = filteredRenderers.ToArray();
             if (self.CachedRenderers == null || self.CachedRenderers.Length == 0)
             {
                 self.OriginalMaterials = null;
@@ -154,6 +176,117 @@ namespace ET.Client
             self.ConcealmentTransparencyAlpha = alpha;
         }
 
+        public static bool ApplyOutlineVisual(this GameObjectComponent self, Color color, float width)
+        {
+            if (self == null || self.GameObject == null)
+            {
+                return false;
+            }
+
+            if (width <= 0f || color.a <= 0.001f)
+            {
+                self.ClearOutlineVisual();
+                return true;
+            }
+
+            Shader shader = Shader.Find("ET/Monster/Outline");
+            if (shader == null)
+            {
+                Log.Warning("[MonsterOutline] shader not found: ET/Monster/Outline");
+                return false;
+            }
+
+            if (self.CachedRenderers == null || self.CachedRenderers.Length == 0 || self.OriginalMaterials == null)
+            {
+                self.CacheRenderers();
+            }
+
+            if (self.CachedRenderers == null || self.CachedRenderers.Length == 0)
+            {
+                return false;
+            }
+
+            if (self.OutlineMaterial == null || self.OutlineMaterial.shader != shader)
+            {
+                if (self.OutlineMaterial != null)
+                {
+                    UnityEngine.Object.Destroy(self.OutlineMaterial);
+                }
+
+                self.OutlineMaterial = new Material(shader)
+                {
+                    name = "RuntimeMonsterOutline"
+                };
+            }
+
+            self.OutlineMaterial.SetColor("_OutlineColor", color);
+            self.OutlineMaterial.SetFloat("_OutlineWidth", width);
+            self.OutlineMaterial.SetFloat("_DepthOffset", 0f);
+            self.OutlineColor = color;
+            self.OutlineWidth = width;
+
+            if (self.OutlineObjects != null && self.OutlineObjects.Length > 0)
+            {
+                return true;
+            }
+
+            List<GameObject> outlineObjects = new(self.CachedRenderers.Length);
+            foreach (Renderer renderer in self.CachedRenderers)
+            {
+                if (renderer == null)
+                {
+                    continue;
+                }
+
+                GameObject outlineObject = renderer switch
+                {
+                    SkinnedMeshRenderer skinnedMeshRenderer => CreateOutlineObject(skinnedMeshRenderer, self.OutlineMaterial),
+                    MeshRenderer meshRenderer => CreateOutlineObject(meshRenderer, self.OutlineMaterial),
+                    _ => null,
+                };
+
+                if (outlineObject == null)
+                {
+                    continue;
+                }
+
+                outlineObjects.Add(outlineObject);
+            }
+
+            self.OutlineObjects = outlineObjects.Count > 0 ? outlineObjects.ToArray() : null;
+            return self.OutlineObjects != null && self.OutlineObjects.Length > 0;
+        }
+
+        public static void ClearOutlineVisual(this GameObjectComponent self)
+        {
+            if (self == null)
+            {
+                return;
+            }
+
+            if (self.OutlineObjects != null)
+            {
+                for (int i = 0; i < self.OutlineObjects.Length; ++i)
+                {
+                    if (self.OutlineObjects[i] != null)
+                    {
+                        UnityEngine.Object.Destroy(self.OutlineObjects[i]);
+                    }
+                }
+
+                self.OutlineObjects = null;
+            }
+
+            if (self.OutlineMaterial != null)
+            {
+                UnityEngine.Object.Destroy(self.OutlineMaterial);
+                self.OutlineMaterial = null;
+            }
+
+            self.OutlineColor = Color.clear;
+            self.OutlineWidth = 0f;
+        }
+
         private static void ConfigureTransparentMaterial(Material material, float alpha)
         {
             if (material == null)
@@ -245,6 +378,80 @@ namespace ET.Client
 
                 self.TransparentMaterials[i] = null;
             }
+        }
+
+        private static GameObject CreateOutlineObject(SkinnedMeshRenderer sourceRenderer, Material outlineMaterial)
+        {
+            if (sourceRenderer == null || sourceRenderer.sharedMesh == null || outlineMaterial == null)
+            {
+                return null;
+            }
+
+            GameObject outlineObject = new($"{sourceRenderer.name}_Outline");
+            outlineObject.transform.SetParent(sourceRenderer.transform, false);
+            outlineObject.AddComponent<UnitOutlineMarker>();
+
+            SkinnedMeshRenderer outlineRenderer = outlineObject.AddComponent<SkinnedMeshRenderer>();
+            outlineRenderer.sharedMesh = sourceRenderer.sharedMesh;
+            outlineRenderer.rootBone = sourceRenderer.rootBone;
+            outlineRenderer.bones = sourceRenderer.bones;
+            outlineRenderer.localBounds = sourceRenderer.localBounds;
+            outlineRenderer.updateWhenOffscreen = sourceRenderer.updateWhenOffscreen;
+            outlineRenderer.quality = sourceRenderer.quality;
+            outlineRenderer.skinnedMotionVectors = false;
+            outlineRenderer.shadowCastingMode = ShadowCastingMode.Off;
+            outlineRenderer.receiveShadows = false;
+            outlineRenderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+            outlineRenderer.allowOcclusionWhenDynamic = false;
+            outlineRenderer.lightProbeUsage = LightProbeUsage.Off;
+            outlineRenderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
+            outlineRenderer.sharedMaterials = CreateOutlineMaterialArray(outlineMaterial, sourceRenderer.sharedMaterials?.Length ?? 0);
+            outlineRenderer.enabled = sourceRenderer.enabled;
+            return outlineObject;
+        }
+
+        private static GameObject CreateOutlineObject(MeshRenderer sourceRenderer, Material outlineMaterial)
+        {
+            if (sourceRenderer == null || outlineMaterial == null)
+            {
+                return null;
+            }
+
+            MeshFilter sourceFilter = sourceRenderer.GetComponent<MeshFilter>();
+            if (sourceFilter == null || sourceFilter.sharedMesh == null)
+            {
+                return null;
+            }
+
+            GameObject outlineObject = new($"{sourceRenderer.name}_Outline");
+            outlineObject.transform.SetParent(sourceRenderer.transform, false);
+            outlineObject.AddComponent<UnitOutlineMarker>();
+
+            MeshFilter outlineFilter = outlineObject.AddComponent<MeshFilter>();
+            outlineFilter.sharedMesh = sourceFilter.sharedMesh;
+
+            MeshRenderer outlineRenderer = outlineObject.AddComponent<MeshRenderer>();
+            outlineRenderer.shadowCastingMode = ShadowCastingMode.Off;
+            outlineRenderer.receiveShadows = false;
+            outlineRenderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+            outlineRenderer.allowOcclusionWhenDynamic = false;
+            outlineRenderer.lightProbeUsage = LightProbeUsage.Off;
+            outlineRenderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
+            outlineRenderer.sharedMaterials = CreateOutlineMaterialArray(outlineMaterial, sourceRenderer.sharedMaterials?.Length ?? 0);
+            outlineRenderer.enabled = sourceRenderer.enabled;
+            return outlineObject;
+        }
+
+        private static Material[] CreateOutlineMaterialArray(Material outlineMaterial, int count)
+        {
+            int materialCount = count > 0 ? count : 1;
+            Material[] materials = new Material[materialCount];
+            for (int i = 0; i < materialCount; ++i)
+            {
+                materials[i] = outlineMaterial;
+            }
+
+            return materials;
         }
     }
 

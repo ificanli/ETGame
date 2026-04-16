@@ -27,6 +27,8 @@ namespace ET.Client
                 weaponViewComponent = unit.AddComponent<WeaponViewComponent>();
             }
 
+            weaponViewComponent.StopRapidFireAnimation();
+
             await WeaponViewComponentSystem.RefreshWeaponAsync(weaponViewComponent, root, args.WeaponId);
         }
     }

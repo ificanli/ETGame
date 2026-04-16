@@ -191,8 +191,10 @@ namespace ET.Server
             TrySnapCurrentPositionToNavmesh(unit, "ApplySpawnPointIfNeeded", out float snapDeltaXZ, out float snapDeltaY);
             RecordSpawnPoint(unit);
             ApplyUnitCampByTeam(spawnPointManager, unit, teamId);
+            ApplyUnitSideBySpawnPoint(unit, spawnPoint);
             CampComponent camp = unit.GetComponent<CampComponent>();
-            Log.Info($"[SpawnAssign] apply spawn point, scene={scene.Name}, unitId={unit.Id}, teamId={teamId}, campId={camp?.CampId ?? 0}, configId={spawnPoint.ConfigId}, oldPos={oldPos}, configuredPos={configuredPos}, newPos={unit.Position}, projectedDeltaXZ={projectedDistance:F3}, snapDeltaXZ={snapDeltaXZ:F3}, snapDeltaY={snapDeltaY:F3}");
+            SideComponent side = unit.GetComponent<SideComponent>();
+            Log.Info($"[SpawnAssign] apply spawn point, scene={scene.Name}, unitId={unit.Id}, teamId={teamId}, sideId={side?.SideId ?? 0}, campId={camp?.CampId ?? 0}, configId={spawnPoint.ConfigId}, oldPos={oldPos}, configuredPos={configuredPos}, newPos={unit.Position}, projectedDeltaXZ={projectedDistance:F3}, snapDeltaXZ={snapDeltaXZ:F3}, snapDeltaY={snapDeltaY:F3}");
         }
 
         public static void SetupMatchRobotIfNeeded(Scene scene, Unit unit)
@@ -233,6 +235,7 @@ namespace ET.Server
             numeric.SetNoEvent(NumericType.AI, robotAIBuffConfigId);
             matchRobot.AIBuffConfigId = robotAIBuffConfigId;
             EnsureConfiguredAIBuff(unit, true);
+            RobotAutoLevelHelper.StartAutoLevel(unit, matchRobot);
             Log.Info($"[MatchRobot] setup complete: unitId={unit.Id}, pos={unit.Position}, camp={unit.GetComponent<CampComponent>()?.CampId ?? 0}, ai={robotAIBuffConfigId}");
         }
 
@@ -344,6 +347,29 @@ namespace ET.Server
             unit.AddComponent<CampComponent, int>(targetCampId);
             Log.Info($"[SpawnAssign] apply camp by team, unitId={unit.Id}, teamId={teamId}, campId={targetCampId}");
             LogCampTrace(unit, "MapUnitEnter.ApplyCampByTeam");
+        }
+
+        private static void ApplyUnitSideBySpawnPoint(Unit unit, SpawnPointECAConfig spawnPoint)
+        {
+            if (unit == null)
+            {
+                return;
+            }
+
+            int targetSideId = spawnPoint.GetSideId();
+            SideComponent currentSide = unit.GetComponent<SideComponent>();
+            if (currentSide != null && currentSide.SideId == targetSideId)
+            {
+                return;
+            }
+
+            if (currentSide != null)
+            {
+                unit.RemoveComponent<SideComponent>();
+            }
+
+            unit.AddComponent<SideComponent, int>(targetSideId);
+            Log.Info($"[SpawnAssign] apply side by spawn point, unitId={unit.Id}, sideId={targetSideId}");
         }
 
         private static int ResolveCampIdByTeamOrder(SpawnPointManagerComponent spawnPointManager, int teamId)
@@ -482,8 +508,25 @@ namespace ET.Server
             TrySnapCurrentPositionToNavmesh(unit, "TryApplyFallbackSpawnPoint", out float snapDeltaXZ, out float snapDeltaY);
             RecordSpawnPoint(unit);
             ApplyFallbackCampByTeamOrder(unit, teamOrder);
+            ApplyFallbackSide(unit);
             Log.Warning($"[SpawnAssign] fallback spawn applied, scene={scene.Name}, unitId={unit.Id}, teamOrder={teamOrder}, oldPos={oldPos}, configuredPos={candidate}, newPos={unit.Position}, anchor={anchor}, projectedDeltaXZ={projectedDistance:F3}, snapDeltaXZ={snapDeltaXZ:F3}, snapDeltaY={snapDeltaY:F3}");
             return true;
+        }
+
+        private static void ApplyFallbackSide(Unit unit)
+        {
+            if (unit == null)
+            {
+                return;
+            }
+
+            SideComponent currentSide = unit.GetComponent<SideComponent>();
+            if (currentSide != null)
+            {
+                unit.RemoveComponent<SideComponent>();
+            }
+
+            unit.AddComponent<SideComponent, int>(0);
         }
 
         private static float3 ResolveFallbackSpawnAnchor(Scene scene, Unit unit)

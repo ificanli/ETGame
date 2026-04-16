@@ -18,6 +18,16 @@ namespace ET
                    int.TryParse(rawValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out value);
         }
 
+        public static int GetIntParamOrDefault(FlowNodeData node, string key, int defaultValue)
+        {
+            return GetIntParamOrDefault(node?.Params, key, defaultValue);
+        }
+
+        public static int GetIntParamOrDefault(List<FlowParam> source, string key, int defaultValue)
+        {
+            return TryGetIntParam(source, key, out int value) ? value : defaultValue;
+        }
+
         public static bool TryGetFloatParam(FlowNodeData node, string key, out float value)
         {
             return TryGetFloatParam(node?.Params, key, out value);

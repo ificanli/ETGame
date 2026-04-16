@@ -25,6 +25,19 @@
                 return;
             }
 
+            if (extraVisibility != null)
+            {
+                if (extraVisibility.IsTargetSuppressed(a.Id, b.Id))
+                {
+                    return;
+                }
+
+                if (extraVisibility.HasExtraVisibility(a.Id, b.Id) && !extraVisibility.IsTargetHidden(a.Id, b.Id))
+                {
+                    return;
+                }
+            }
+
             MapMessageHelper.NoticeUnitAdd(a, b);
             
             await ETTask.CompletedTask;

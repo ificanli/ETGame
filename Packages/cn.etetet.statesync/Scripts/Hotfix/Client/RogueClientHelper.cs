@@ -201,6 +201,10 @@ namespace ET.Client
         {
             RogueClientComponent runtime = GetOrAddRuntime(root);
             runtime?.ResetRuntime();
+            if (root != null && !root.IsDisposed)
+            {
+                EventSystem.Instance.Publish(root, new EventRogueProgressChanged());
+            }
         }
 
         private static bool TryGetSelectedOptionData(RogueClientComponent runtime, int optionId, int buffConfigId, out RogueClientOptionData result)

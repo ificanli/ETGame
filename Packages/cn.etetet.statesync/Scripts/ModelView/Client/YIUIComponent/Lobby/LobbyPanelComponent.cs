@@ -31,6 +31,33 @@ namespace ET.Client
         public string Text;
     }
 
+    public struct LoadoutAreaLayoutRect
+    {
+        public bool Active;
+        public Vector2 OffsetFromBoardTopLeft;
+        public Vector2 Size;
+    }
+
+    public struct LoadoutAreaLayoutInsets
+    {
+        public bool Active;
+        public float Left;
+        public float Top;
+        public float Right;
+        public float Bottom;
+    }
+
+    public struct LoadoutOwnedAreaLayoutCache
+    {
+        public bool Initialized;
+        public RectTransform Background;
+        public RectTransform Title;
+        public RectTransform Hint;
+        public LoadoutAreaLayoutInsets BackgroundInsets;
+        public LoadoutAreaLayoutRect TitleRect;
+        public LoadoutAreaLayoutRect HintRect;
+    }
+
     /// <summary>
     /// 装备槽位类型
     /// </summary>
@@ -69,6 +96,7 @@ namespace ET.Client
         public string CurrentHeroDisplayCameraName = string.Empty;
 
         public string LastLoadoutSnapshot = string.Empty;
+        public bool IsMatchFlowRunning;
         public int SelectedMatchGameMode = GameModeType.OneVsOne;
         public LoadoutItemSourceMode CurrentItemSourceMode = LoadoutItemSourceMode.Warehouse;
         public int SelectedShopConfigId;
@@ -83,6 +111,9 @@ namespace ET.Client
         public int DraggingFixedSlotType;
         public RectTransform DraggingView;
         public Vector3 DragWorldOffset;
+        public int FixedSlotClickVersion;
+        public int OwnedGridItemClickVersion;
+        public int WarehouseItemClickVersion;
         public bool WarehouseScrollForwarding;
         public int WarehousePressPointerId;
         public float WarehousePressStartedAt;
@@ -126,6 +157,16 @@ namespace ET.Client
 
         public RectTransform BagContentWrapper;
         public RectTransform SecureContentWrapper;
+        public RectTransform LoadoutOwnedAreaParentRoot;
+        public VerticalLayoutGroup LoadoutOwnedAreaLayoutGroup;
+        public bool LoadoutOwnedAreaLayoutGroupInitialized;
+        public LayoutElement CurrentBagRootLayoutElement;
+        public LayoutElement SecureRootLayoutElement;
+        public bool LoadoutOwnedAreaLayoutInitialized;
+        public Vector2 LoadoutBagAreaTopLeft;
+        public float LoadoutOwnedAreaVerticalGap;
+        public LoadoutOwnedAreaLayoutCache CurrentBagLayoutCache;
+        public LoadoutOwnedAreaLayoutCache SecureLayoutCache;
         public EntityRef<ItemClickedComponent> ItemClickedCommon;
     }
 }

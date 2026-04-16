@@ -1,0 +1,26 @@
+[
+  {
+    "Level": 1,
+    "UpgradeGoldCost": 0,
+    "UnlockSlotCount": 4,
+    "OtherBuildingMaxLevel": 2,
+    "TaskGroupId": 1001,
+    "PreviewText": "主城等级1：解锁4个建造槽位，其他建筑最高可升到2级。"
+  },
+  {
+    "Level": 2,
+    "UpgradeGoldCost": 200,
+    "UnlockSlotCount": 5,
+    "OtherBuildingMaxLevel": 3,
+    "TaskGroupId": 1002,
+    "PreviewText": "主城等级2：额外解锁1个建造槽位，其他建筑最高可升到3级。"
+  },
+  {
+    "Level": 3,
+    "UpgradeGoldCost": 400,
+    "UnlockSlotCount": 6,
+    "OtherBuildingMaxLevel": 4,
+    "TaskGroupId": 1003,
+    "PreviewText": "主城等级3：再次解锁1个建造槽位，继续提升其他建筑等级上限。"
+  }
+]

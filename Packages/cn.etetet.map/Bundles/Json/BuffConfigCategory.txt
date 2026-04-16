@@ -281,7 +281,12 @@
 												"Buff" : "Buff",
 												"ThinkIntervalMs" : 200,
 												"PreCastSpellId" : 0,
-												"MainSpellId" : 0
+												"MainSpellId" : 0,
+												"PreferredMinDistance" : 0.0,
+												"PreferredMaxDistance" : 0.0,
+												"StopMoveTolerance" : 0.0,
+												"RetreatDistance" : 0.0,
+												"RetreatStepDistance" : 0.0
 											}]
 									}, {
 										"_t" : "ET.BTSequence",
@@ -314,6 +319,440 @@
 						"Buff" : "Buff",
 						"Unit" : null,
 						"Caster" : null,
+						"Override" : true
+					}]
+			}], [330101, {
+				"_id" : 330101,
+				"Desc" : "影刃猫AI",
+				"Duration" : -1,
+				"TickTime" : 400,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTSelector",
+								"_id" : 3,
+								"Children" : [{
+										"_t" : "ET.BTSequence",
+										"_id" : 4,
+										"Children" : [{
+												"_t" : "ET.AI_MonsterReturnCheck",
+												"_id" : 5,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ReturnDistance" : 16.0
+											}, {
+												"_t" : "ET.AI_MonsterReturn",
+												"_id" : 6,
+												"Children" : [],
+												"Buff" : "Buff",
+												"WaitIntervalMs" : 800
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 7,
+										"Children" : [{
+												"_t" : "ET.BTHasThreat",
+												"_id" : 8,
+												"Children" : [],
+												"Unit" : "Unit"
+											}, {
+												"_t" : "ET.AI_BladeCatCombat",
+												"_id" : 9,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ThinkIntervalMs" : 160,
+												"MainSpellId" : 130101
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 10,
+										"Children" : [{
+												"_t" : "ET.BTNot",
+												"_id" : 11,
+												"Children" : [{
+														"_t" : "ET.BTHasThreat",
+														"_id" : 12,
+														"Children" : [],
+														"Unit" : "Unit"
+													}]
+											}, {
+												"_t" : "ET.AI_MonsterXunLuo",
+												"_id" : 13,
+												"Children" : [],
+												"Buff" : "Buff",
+												"PatrolMinRadius" : 1.2000000476837158,
+												"PatrolMaxRadius" : 4.5,
+												"AggroRange" : 8.5,
+												"IdleMinMs" : 500,
+												"IdleMaxMs" : 1200,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}]
+							}],
+						"TreeId" : NumberLong("9147581682705120381"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : true
+					}]
+			}], [330102, {
+				"_id" : 330102,
+				"Desc" : "侦察猴AI",
+				"Duration" : -1,
+				"TickTime" : 400,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTSelector",
+								"_id" : 3,
+								"Children" : [{
+										"_t" : "ET.BTSequence",
+										"_id" : 4,
+										"Children" : [{
+												"_t" : "ET.AI_MonsterReturnCheck",
+												"_id" : 5,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ReturnDistance" : 18.0
+											}, {
+												"_t" : "ET.AI_MonsterReturn",
+												"_id" : 6,
+												"Children" : [],
+												"Buff" : "Buff",
+												"WaitIntervalMs" : 800
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 7,
+										"Children" : [{
+												"_t" : "ET.BTHasThreat",
+												"_id" : 8,
+												"Children" : [],
+												"Unit" : "Unit"
+											}, {
+												"_t" : "ET.AI_ScoutMonkeyCombat",
+												"_id" : 9,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ThinkIntervalMs" : 180,
+												"MainSpellId" : 130111
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 10,
+										"Children" : [{
+												"_t" : "ET.BTNot",
+												"_id" : 11,
+												"Children" : [{
+														"_t" : "ET.BTHasThreat",
+														"_id" : 12,
+														"Children" : [],
+														"Unit" : "Unit"
+													}]
+											}, {
+												"_t" : "ET.AI_MonsterXunLuo",
+												"_id" : 13,
+												"Children" : [],
+												"Buff" : "Buff",
+												"PatrolMinRadius" : 1.5,
+												"PatrolMaxRadius" : 5.5,
+												"AggroRange" : 10.0,
+												"IdleMinMs" : 700,
+												"IdleMaxMs" : 1400,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}]
+							}],
+						"TreeId" : NumberLong("2003372700592820918"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : true
+					}]
+			}], [330103, {
+				"_id" : 330103,
+				"Desc" : "幻影猫头鹰AI",
+				"Duration" : -1,
+				"TickTime" : 400,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTSelector",
+								"_id" : 3,
+								"Children" : [{
+										"_t" : "ET.BTSequence",
+										"_id" : 4,
+										"Children" : [{
+												"_t" : "ET.AI_MonsterReturnCheck",
+												"_id" : 5,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ReturnDistance" : 20.0
+											}, {
+												"_t" : "ET.AI_MonsterReturn",
+												"_id" : 6,
+												"Children" : [],
+												"Buff" : "Buff",
+												"WaitIntervalMs" : 800
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 7,
+										"Children" : [{
+												"_t" : "ET.BTHasThreat",
+												"_id" : 8,
+												"Children" : [],
+												"Unit" : "Unit"
+											}, {
+												"_t" : "ET.AI_PhantomOwlCombat",
+												"_id" : 9,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ThinkIntervalMs" : 140,
+												"MainSpellId" : 130121
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 10,
+										"Children" : [{
+												"_t" : "ET.BTNot",
+												"_id" : 11,
+												"Children" : [{
+														"_t" : "ET.BTHasThreat",
+														"_id" : 12,
+														"Children" : [],
+														"Unit" : "Unit"
+													}]
+											}, {
+												"_t" : "ET.AI_MonsterXunLuo",
+												"_id" : 13,
+												"Children" : [],
+												"Buff" : "Buff",
+												"PatrolMinRadius" : 1.5,
+												"PatrolMaxRadius" : 6.0,
+												"AggroRange" : 11.0,
+												"IdleMinMs" : 650,
+												"IdleMaxMs" : 1300,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}]
+							}],
+						"TreeId" : NumberLong("3409642738768027180"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : true
+					}]
+			}], [330104, {
+				"_id" : 330104,
+				"Desc" : "重装鳄鱼AI",
+				"Duration" : -1,
+				"TickTime" : 400,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTSelector",
+								"_id" : 3,
+								"Children" : [{
+										"_t" : "ET.BTSequence",
+										"_id" : 4,
+										"Children" : [{
+												"_t" : "ET.AI_MonsterReturnCheck",
+												"_id" : 5,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ReturnDistance" : 14.0
+											}, {
+												"_t" : "ET.AI_MonsterReturn",
+												"_id" : 6,
+												"Children" : [],
+												"Buff" : "Buff",
+												"WaitIntervalMs" : 800
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 7,
+										"Children" : [{
+												"_t" : "ET.BTHasThreat",
+												"_id" : 8,
+												"Children" : [],
+												"Unit" : "Unit"
+											}, {
+												"_t" : "ET.AI_HeavyGatorCombat",
+												"_id" : 9,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ThinkIntervalMs" : 260,
+												"MainSpellId" : 130131
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 10,
+										"Children" : [{
+												"_t" : "ET.BTNot",
+												"_id" : 11,
+												"Children" : [{
+														"_t" : "ET.BTHasThreat",
+														"_id" : 12,
+														"Children" : [],
+														"Unit" : "Unit"
+													}]
+											}, {
+												"_t" : "ET.AI_MonsterXunLuo",
+												"_id" : 13,
+												"Children" : [],
+												"Buff" : "Buff",
+												"PatrolMinRadius" : 0.60000002384185791,
+												"PatrolMaxRadius" : 3.5,
+												"AggroRange" : 9.0,
+												"IdleMinMs" : 900,
+												"IdleMaxMs" : 1600,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}]
+							}],
+						"TreeId" : NumberLong("661430792799184913"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
+						"Override" : true
+					}]
+			}], [330105, {
+				"_id" : 330105,
+				"Desc" : "巴鲁AI",
+				"Duration" : -1,
+				"TickTime" : 400,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffTick",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetBuffOwner",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Unit"
+							}, {
+								"_t" : "ET.BTSelector",
+								"_id" : 3,
+								"Children" : [{
+										"_t" : "ET.BTSequence",
+										"_id" : 4,
+										"Children" : [{
+												"_t" : "ET.AI_MonsterReturnCheck",
+												"_id" : 5,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ReturnDistance" : 12.0
+											}, {
+												"_t" : "ET.AI_MonsterReturn",
+												"_id" : 6,
+												"Children" : [],
+												"Buff" : "Buff",
+												"WaitIntervalMs" : 800
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 7,
+										"Children" : [{
+												"_t" : "ET.BTHasThreat",
+												"_id" : 8,
+												"Children" : [],
+												"Unit" : "Unit"
+											}, {
+												"_t" : "ET.AI_BalooCombat",
+												"_id" : 9,
+												"Children" : [],
+												"Buff" : "Buff",
+												"ThinkIntervalMs" : 260,
+												"MainSpellId" : 130141,
+												"AltSpellId" : 130143,
+												"EnrageHpPermille" : 450,
+												"EnrageThinkIntervalMs" : 160,
+												"EnrageSpeedPct" : 135
+											}]
+									}, {
+										"_t" : "ET.BTSequence",
+										"_id" : 10,
+										"Children" : [{
+												"_t" : "ET.BTNot",
+												"_id" : 11,
+												"Children" : [{
+														"_t" : "ET.BTHasThreat",
+														"_id" : 12,
+														"Children" : [],
+														"Unit" : "Unit"
+													}]
+											}, {
+												"_t" : "ET.AI_MonsterXunLuo",
+												"_id" : 13,
+												"Children" : [],
+												"Buff" : "Buff",
+												"PatrolMinRadius" : 0.30000001192092896,
+												"PatrolMaxRadius" : 2.2000000476837158,
+												"AggroRange" : 10.0,
+												"IdleMinMs" : 1000,
+												"IdleMaxMs" : 1800,
+												"ExitCombatBuffConfigId" : 200111
+											}]
+									}]
+							}],
+						"TreeId" : NumberLong("7606730455295113648"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster",
 						"Override" : true
 					}]
 			}], [1001, {
@@ -928,7 +1367,8 @@
 						"_id" : 1,
 						"Children" : [],
 						"TreeId" : NumberLong("381273967515912169"),
-						"LifeStealPermille" : 300
+						"LifeStealPermille" : 300,
+						"TargetFilter" : 0
 					}, {
 						"_t" : "ET.EffectServerBuffAdd",
 						"_id" : 1,
@@ -1371,7 +1811,11 @@
 						"Children" : [],
 						"TreeId" : NumberLong("6542819571396579698"),
 						"IdleMs" : 5000,
-						"BulletCount" : 15
+						"BulletCount" : 15,
+						"TrapDamagePermille" : 0,
+						"TrapRadius" : 0.0,
+						"TrapLifetimeMs" : 0,
+						"TrapTickIntervalMs" : 0
 					}, {
 						"_t" : "ET.EffectServerBuffAdd",
 						"_id" : 1,
@@ -1650,7 +2094,10 @@
 						"Children" : [],
 						"TreeId" : NumberLong("5347638630345758978"),
 						"HealPermille" : 50,
-						"IntervalMs" : 30000
+						"IntervalMs" : 30000,
+						"DamageBonusPermille" : 0,
+						"AuraRadius" : 0.0,
+						"PickupRadius" : 0.0
 					}, {
 						"_t" : "ET.EffectServerBuffAdd",
 						"_id" : 1,
@@ -3574,6 +4021,431 @@
 								"RevealRadius" : 1500.0
 							}],
 						"TreeId" : NumberLong(20031001),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230101, {
+				"_id" : 230101,
+				"Desc" : "影刃猫-突刺前摇",
+				"Duration" : 1500,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 2,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetSpellTargetUnit",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Target"
+							}, {
+								"_t" : "ET.BTTurnToUnit",
+								"_id" : 3,
+								"Children" : [],
+								"Caster" : "Caster",
+								"Target" : "Target",
+								"Buff" : "Buff"
+							}, {
+								"_t" : "ET.BTSetSpellTargetPositionFromUnit",
+								"_id" : 4,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Target"
+							}],
+						"TreeId" : NumberLong(230101001),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTCreateSpell",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Caster",
+								"Buff" : "Buff",
+								"SpellConfigId" : 130102
+							}],
+						"TreeId" : NumberLong(230101002),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectClientBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTAnimatorSetTrigger",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"MotionType" : 4
+							}, {
+								"_t" : "ET.BTCreateBuffEffect",
+								"_id" : 3,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"BindPoint" : 2,
+								"Effect" : {
+									"Name" : "XiaoMaoYuJing"
+								},
+								"Duration" : 1500,
+								"FollowUnit" : true
+							}],
+						"TreeId" : NumberLong(230101003),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230102, {
+				"_id" : 230102,
+				"Desc" : "影刃猫-突刺执行",
+				"Duration" : 400,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 2,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTDashToSpellTargetPosition",
+								"_id" : 2,
+								"Children" : [],
+								"Caster" : "Caster",
+								"Buff" : "Buff",
+								"MaxDistance" : 5.0,
+								"MinStopDistance" : 0.3499999940395355,
+								"DurationMs" : 400,
+								"TurnTimeMs" : 80
+							}],
+						"TreeId" : NumberLong(230102001),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.TargetSelectorCasterCircle",
+								"_id" : 2,
+								"Children" : [],
+								"TreeId" : NumberLong(230102011),
+								"Buff" : "Buff",
+								"Caster" : "Caster",
+								"Owner" : "Owner",
+								"MaxDistance" : 0,
+								"MinDistance" : 0,
+								"Unit" : "Target",
+								"Units" : "Targets",
+								"Radius" : 3,
+								"UnitType" : 1
+							}, {
+								"_t" : "ET.BTForeachUnit",
+								"_id" : 3,
+								"Children" : [{
+										"_t" : "ET.BTDamage",
+										"_id" : 4,
+										"Children" : [],
+										"Caster" : "Caster",
+										"Target" : "Target",
+										"Buff" : "Buff",
+										"Value" : 18
+									}],
+								"Units" : "Targets",
+								"Unit" : "Target"
+							}],
+						"TreeId" : NumberLong(230102002),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectClientBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTCreateBuffEffect",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Unit",
+								"Buff" : "Buff",
+								"BindPoint" : 2,
+								"Effect" : {
+									"Name" : "XiaoMaoGongJi"
+								},
+								"Duration" : 400,
+								"FollowUnit" : true
+							}],
+						"TreeId" : NumberLong(230102003),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230111, {
+				"_id" : 230111,
+				"Desc" : "侦察猴-延迟爆炸",
+				"Duration" : 650,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTDamageSpellTargetCircle",
+								"_id" : 2,
+								"Children" : [],
+								"Caster" : "Caster",
+								"Buff" : "Buff",
+								"UnitType" : 1,
+								"Radius" : 2.2000000476837158,
+								"Value" : 16
+							}],
+						"TreeId" : NumberLong("1028827698532470409"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230121, {
+				"_id" : 230121,
+				"Desc" : "幻影猫头鹰-双段回旋",
+				"Duration" : 320,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTCreateSpell",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Caster",
+								"Buff" : "Buff",
+								"SpellConfigId" : 130122
+							}],
+						"TreeId" : NumberLong("4822591942801848568"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}, {
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTCreateSpell",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Caster",
+								"Buff" : "Buff",
+								"SpellConfigId" : 130123
+							}],
+						"TreeId" : NumberLong("8822837716700162004"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230122, {
+				"_id" : 230122,
+				"Desc" : "幻影猫头鹰-去程命中",
+				"Duration" : 0,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetSpellTargetUnit",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Target"
+							}, {
+								"_t" : "ET.BTDamage",
+								"_id" : 3,
+								"Children" : [],
+								"Caster" : "Caster",
+								"Target" : "Target",
+								"Buff" : "Buff",
+								"Value" : 10
+							}],
+						"TreeId" : NumberLong("5667665937321220024"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230123, {
+				"_id" : 230123,
+				"Desc" : "幻影猫头鹰-回程命中",
+				"Duration" : 0,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetSpellTargetUnit",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Target"
+							}, {
+								"_t" : "ET.BTDamage",
+								"_id" : 3,
+								"Children" : [],
+								"Caster" : "Caster",
+								"Target" : "Target",
+								"Buff" : "Buff",
+								"Value" : 10
+							}],
+						"TreeId" : NumberLong("7649849131600662573"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230131, {
+				"_id" : 230131,
+				"Desc" : "重装鳄鱼-前方扇形喷射",
+				"Duration" : 0,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetSpellTargetUnits",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Units" : "Targets"
+							}, {
+								"_t" : "ET.BTForeachUnit",
+								"_id" : 3,
+								"Children" : [{
+										"_t" : "ET.BTDamage",
+										"_id" : 4,
+										"Children" : [],
+										"Caster" : "Caster",
+										"Target" : "Target",
+										"Buff" : "Buff",
+										"Value" : 20
+									}],
+								"Units" : "Targets",
+								"Unit" : "Target"
+							}],
+						"TreeId" : NumberLong("1810276734353472439"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230141, {
+				"_id" : 230141,
+				"Desc" : "巴鲁-弹簧拳前摇",
+				"Duration" : 480,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTCreateSpell",
+								"_id" : 2,
+								"Children" : [],
+								"Unit" : "Caster",
+								"Buff" : "Buff",
+								"SpellConfigId" : 130142
+							}],
+						"TreeId" : NumberLong("7098862084465572646"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230142, {
+				"_id" : 230142,
+				"Desc" : "巴鲁-弹簧拳命中",
+				"Duration" : 0,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffAdd",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTGetSpellTargetUnit",
+								"_id" : 2,
+								"Children" : [],
+								"Buff" : "Buff",
+								"Unit" : "Target"
+							}, {
+								"_t" : "ET.BTDamage",
+								"_id" : 3,
+								"Children" : [],
+								"Caster" : "Caster",
+								"Target" : "Target",
+								"Buff" : "Buff",
+								"Value" : 26
+							}],
+						"TreeId" : NumberLong("3212926312370575363"),
+						"Buff" : "Buff",
+						"Unit" : "Unit",
+						"Caster" : "Caster"
+					}]
+			}], [230143, {
+				"_id" : 230143,
+				"Desc" : "巴鲁-积木雨轰炸",
+				"Duration" : 900,
+				"TickTime" : 0,
+				"MaxStack" : 1,
+				"Stack" : 1,
+				"OverLayRuleType" : 0,
+				"Flags" : [],
+				"NoticeType" : 0,
+				"Effects" : [{
+						"_t" : "ET.EffectServerBuffRemove",
+						"_id" : 1,
+						"Children" : [{
+								"_t" : "ET.BTDamageSpellTargetCircle",
+								"_id" : 2,
+								"Children" : [],
+								"Caster" : "Caster",
+								"Buff" : "Buff",
+								"UnitType" : 1,
+								"Radius" : 3.0999999046325684,
+								"Value" : 22
+							}],
+						"TreeId" : NumberLong("5118205660167217926"),
 						"Buff" : "Buff",
 						"Unit" : "Unit",
 						"Caster" : "Caster"

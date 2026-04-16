@@ -11,10 +11,13 @@ namespace ET.Client
         public const string BgmEvac   = "Audio/BGM/bgm_evac";
 
         // ── 武器 SFX ──
-        public const string SfxShotgunFire     = "Audio/SFX/weapon_shotgun_fire";
-        public const string SfxRifle1Fire      = "Audio/SFX/weapon_rifle1_fire";
-        public const string SfxRifle2Fire      = "Audio/SFX/weapon_rifle2_fire";
-        public const string SfxRocketFire      = "Audio/SFX/weapon_rocket_fire";
+        public const string SfxShotgunFire         = "Audio/SFX/weapon_shotgun_fire";
+        public const string SfxSmgFire             = "Audio/SFX/weapon_smg_fire";
+        public const string SfxAutoRifleFire       = "Audio/SFX/weapon_autorifle_fire";
+        public const string SfxSniperRifleFire     = "Audio/SFX/weapon_sniperrifle_fire";
+        public const string SfxPistolFire          = "Audio/SFX/weapon_pistol_fire";
+        public const string SfxGrenadeLauncherFire = "Audio/SFX/weapon_grenadelauncher_fire";
+        public const string SfxRayGunFire          = "Audio/SFX/weapon_raygun_fire";
         public const string SfxWeaponReload    = "Audio/SFX/weapon_reload";
         public const string SfxWeaponHit       = "Audio/SFX/weapon_hit";
         public const string SfxWeaponSwitched  = "Audio/SFX/weapon_switched";
@@ -53,11 +56,14 @@ namespace ET.Client
         {
             return weaponTypeId switch
             {
-                (int)WeaponType.Shotgun        => SfxShotgunFire,
-                (int)WeaponType.Rifle1         => SfxRifle1Fire,
-                (int)WeaponType.Rifle2         => SfxRifle2Fire,
-                (int)WeaponType.RocketLauncher => SfxRocketFire,
-                _                              => SfxRifle1Fire,
+                (int)WeaponType.Shotgun           => SfxShotgunFire,
+                (int)WeaponType.SMG               => SfxSmgFire,
+                (int)WeaponType.AutoRifle         => SfxAutoRifleFire,
+                (int)WeaponType.SniperRifle       => SfxSniperRifleFire,
+                (int)WeaponType.Pistol            => SfxPistolFire,
+                (int)WeaponType.GrenadeLauncher   => SfxGrenadeLauncherFire,
+                (int)WeaponType.RayGun            => SfxRayGunFire,
+                _                                 => SfxAutoRifleFire,
             };
         }
     }

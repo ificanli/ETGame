@@ -147,6 +147,53 @@ namespace ET.Test
             return unit;
         }
 
+        public static Unit CreateServerUnit(
+            Scene scene,
+            int unitConfigId,
+            bool addBuffComponent = true,
+            bool addProgress = false,
+            bool addItemComponent = false,
+            int campId = 0)
+        {
+            UnitComponent unitComponent = scene.GetComponent<UnitComponent>() ?? scene.AddComponent<UnitComponent>();
+            UnitConfig unitConfig = UnitConfigCategory.Instance.GetOrDefault(unitConfigId);
+            if (unitConfig == null)
+            {
+                return null;
+            }
+
+            Unit unit = unitComponent.AddChildWithId<Unit, int>(IdGenerater.Instance.GenerateId(), unitConfig.Id);
+            unit.UnitType = unitConfig.UnitType;
+
+            NumericComponent numeric = unit.AddComponent<NumericComponent>();
+            foreach ((int numericType, long numericValue) in unitConfig.KV)
+            {
+                numeric.SetNoEvent(numericType, numericValue);
+            }
+
+            if (addBuffComponent)
+            {
+                unit.AddComponent<BuffComponent>();
+            }
+
+            if (addProgress)
+            {
+                RogueProgressHelper.EnsureProgress(unit, false);
+            }
+
+            if (addItemComponent)
+            {
+                unit.AddComponent<ET.Server.ItemComponent>();
+            }
+
+            if (campId > 0)
+            {
+                unit.AddComponent<CampComponent, int>(campId);
+            }
+
+            return unit;
+        }
+
         public static bool TryFindExecutableRogueOption(
             RogueRuntimeConfigCategory configCategory,
             ICollection<int> excludedOptionIds,

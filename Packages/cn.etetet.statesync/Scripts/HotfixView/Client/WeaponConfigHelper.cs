@@ -220,6 +220,7 @@ namespace ET.Client
             self.MuzzleTransform = null;
             self.WeaponId = 0;
             self.LoadVersion = 0;
+            self.RapidFireStopVersion = 0;
         }
 
         [EntitySystem]
@@ -228,6 +229,7 @@ namespace ET.Client
             self.ClearWeaponObject();
             self.MuzzleTransform = null;
             self.WeaponId = 0;
+            self.RapidFireStopVersion++;
         }
 
         public static async ETTask RefreshWeaponAsync(this WeaponViewComponent self, Scene root, int weaponId)
@@ -354,6 +356,36 @@ namespace ET.Client
             return self.GetFallbackFirePoint(unit, weaponConfig);
         }
 
+        public static void StartRapidFireAnimation(this WeaponViewComponent self, Scene root, int attackIntervalMs)
+        {
+            if (self == null || self.IsDisposed || root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            Unit unit = self.GetParent<Unit>();
+            AnimatorComponent animatorComponent = unit?.GetComponent<AnimatorComponent>();
+            animatorComponent?.SetBool("IsFiring", true);
+
+            ++self.RapidFireStopVersion;
+            int stopVersion = self.RapidFireStopVersion;
+            int stopDelayMs = GetRapidFireStopDelayMs(attackIntervalMs);
+            self.StopRapidFireAnimationAfterDelay(root, stopVersion, stopDelayMs).Coroutine();
+        }
+
+        public static void StopRapidFireAnimation(this WeaponViewComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            ++self.RapidFireStopVersion;
+            Unit unit = self.GetParent<Unit>();
+            AnimatorComponent animatorComponent = unit?.GetComponent<AnimatorComponent>();
+            animatorComponent?.SetBool("IsFiring", false);
+        }
+
         private static void ApplyAnimatorState(this WeaponViewComponent self, bool hasWeapon)
         {
             Unit unit = self.GetParent<Unit>();
@@ -367,6 +399,56 @@ namespace ET.Client
             }
 
             Log.Info($"[WeaponInitTrace][View] unitId={unit?.Id ?? 0}, hasWeapon={hasWeapon}, weaponComponentCurrent={weaponComponent?.CurrentWeaponId ?? 0}, slot1={weaponComponent?.Slot1WeaponId ?? 0}, slot2={weaponComponent?.Slot2WeaponId ?? 0}, viewWeaponId={self.WeaponId}, animatorReady={animatorReady}, hasHasWeaponParam={hasParameter}");
+        }
+
+        private static async ETTask StopRapidFireAnimationAfterDelay(this WeaponViewComponent self, Scene root, int stopVersion, int delayMs)
+        {
+            EntityRef<WeaponViewComponent> selfRef = self;
+            EntityRef<Scene> rootRef = root;
+
+            await root.TimerComponent.WaitAsync(delayMs);
+
+            self = selfRef;
+            root = rootRef;
+            if (self == null || root == null || self.IsDisposed || root.IsDisposed)
+            {
+                return;
+            }
+
+            if (self.RapidFireStopVersion != stopVersion)
+            {
+                return;
+            }
+
+            Unit unit = self.GetParent<Unit>();
+            if (unit == null || unit.IsDisposed)
+            {
+                return;
+            }
+
+            AnimatorComponent animatorComponent = unit.GetComponent<AnimatorComponent>();
+            animatorComponent?.SetBool("IsFiring", false);
+        }
+
+        private static int GetRapidFireStopDelayMs(int attackIntervalMs)
+        {
+            if (attackIntervalMs <= 0)
+            {
+                return 250;
+            }
+
+            int delayMs = attackIntervalMs * 2;
+            if (delayMs < 250)
+            {
+                delayMs = 250;
+            }
+
+            if (delayMs > 600)
+            {
+                delayMs = 600;
+            }
+
+            return delayMs;
         }
 
         private static void ClearWeaponObject(this WeaponViewComponent self)

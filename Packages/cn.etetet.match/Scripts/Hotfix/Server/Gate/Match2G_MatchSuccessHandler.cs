@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace ET.Server
@@ -44,7 +45,9 @@ namespace ET.Server
                     continue;
                 }
 
+                EntityRef<Player> playerRef = player;
                 Session session = player.GetComponent<PlayerSessionComponent>()?.Session;
+                int teamId = ResolveTeamId(request, playerId);
                 if (session != null && !session.IsDisposed)
                 {
                     G2C_MatchSuccess g2cSuccess = G2C_MatchSuccess.Create(true);
@@ -61,10 +64,51 @@ namespace ET.Server
                 MapManager2Map_NotifyPlayerTransferRequest transferRequest = MapManager2Map_NotifyPlayerTransferRequest.Create();
                 transferRequest.MapName = request.MapName;
                 transferRequest.MapId = request.MapId;
-                transferRequest.TeamId = ResolveTeamId(request, playerId);
+                transferRequest.TeamId = teamId;
 
                 locationSender = locationSenderRef;
-                await locationSender.Call(playerId, transferRequest);
+                try
+                {
+                    await locationSender.Call(playerId, transferRequest);
+                }
+                catch (Exception e)
+                {
+                    // Call(ILocationRequest) 失败时会 Remove 掉 messageLocationSender，
+                    // 导致同一个 playerId 的后续请求也会因为 EntityRef 失效而抛异常。
+                    // 这里先清除被毒化的缓存，然后重试一次——
+                    // 此时 GateMap→Home 的 Transfer 很可能已经完成，Location 已更新到 Home。
+                    Log.Warning($"[MatchTransfer] first attempt failed for player={playerId}, retrying... error={e.Message}");
+                    locationSender = locationSenderRef;
+                    locationSender.Remove(playerId);
+                    try
+                    {
+                        MapManager2Map_NotifyPlayerTransferRequest retryRequest = MapManager2Map_NotifyPlayerTransferRequest.Create();
+                        retryRequest.MapName = request.MapName;
+                        retryRequest.MapId = request.MapId;
+                        retryRequest.TeamId = teamId;
+                        await locationSender.Call(playerId, retryRequest);
+                    }
+                    catch (Exception retryEx)
+                    {
+                        Log.Error($"[MatchTransfer] location transfer failed for player={playerId}, map={request.MapName}, mapId={request.MapId}, error={retryEx.Message}");
+
+                        player = playerRef;
+                        if (player == null)
+                        {
+                            continue;
+                        }
+
+                        try
+                        {
+                            Log.Warning($"[MatchTransfer] fallback to temp GateMap transfer: player={playerId}, map={request.MapName}, mapId={request.MapId}, teamId={teamId}");
+                            await GateMapTransferHelper.TransferPlayerToMap(player, request.MapName, request.MapId, teamId);
+                        }
+                        catch (Exception fallbackEx)
+                        {
+                            Log.Error($"[MatchTransfer] fallback transfer failed for player={playerId}, map={request.MapName}, mapId={request.MapId}, error={fallbackEx}");
+                        }
+                    }
+                }
             }
         }
 

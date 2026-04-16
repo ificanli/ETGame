@@ -59,6 +59,7 @@ namespace ET.Server
 
             long durationMs = RogueRunTimeLimitHelper.GetEffectiveDurationMs(unit);
             unit.AddComponent<RunTimeLimitComponent, long, string>(durationMs, mapName);
+            RunTimeLimitMessageHelper.SyncState(unit, unit.GetComponent<RunTimeLimitComponent>());
             Log.Info($"[RunTimeLimit] start countdown, unitId={unit.Id}, map={mapName}, durationMs={durationMs}");
             await ETTask.CompletedTask;
         }

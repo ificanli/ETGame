@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,17 +16,18 @@ namespace ET
     [EnableClass]
     public sealed partial class RogueLevelNumericEntryConfig : Luban.BeanBase
     {
-        public RogueLevelNumericEntryConfig(ByteBuf _buf) 
+        public RogueLevelNumericEntryConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Level = _buf.ReadInt();
-            NumericType = _buf.ReadInt();
-            Value = _buf.ReadLong();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
+            { if(!_buf["NumericType"].IsNumber) { throw new SerializationException(); }  NumericType = _buf["NumericType"]; }
+            { if(!_buf["Value"].IsNumber) { throw new SerializationException(); }  Value = _buf["Value"]; }
+            { if(!_buf["UnitType"].IsNumber) { throw new SerializationException(); }  UnitType = _buf["UnitType"]; }
 
             EndInit();
         }
 
-        public static RogueLevelNumericEntryConfig DeserializeRogueLevelNumericEntryConfig(ByteBuf _buf)
+        public static RogueLevelNumericEntryConfig DeserializeRogueLevelNumericEntryConfig(JSONNode _buf)
         {
             return new ET.RogueLevelNumericEntryConfig(_buf);
         }
@@ -46,7 +48,11 @@ namespace ET
         /// 增加值
         /// </summary>
         public readonly long Value;
-    
+        /// <summary>
+        /// 单位类型(0=全体,1=玩家,2=怪物)
+        /// </summary>
+        public readonly int UnitType;
+
         public const int __ID__ = -1885553296;
         public override int GetTypeId() => __ID__;
 
@@ -62,6 +68,7 @@ namespace ET
             + "Level:" + Level + ","
             + "NumericType:" + NumericType + ","
             + "Value:" + Value + ","
+            + "UnitType:" + UnitType + ","
             + "}";
         }
 

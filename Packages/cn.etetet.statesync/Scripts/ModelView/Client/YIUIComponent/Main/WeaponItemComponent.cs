@@ -12,9 +12,15 @@ namespace ET.Client
     {
         // 槽位索引（1或2），在初始化时设置
         public int SlotIndex;
+        public Image BackgroundImage;
         public Image IconImage;
         public Image SelectImage;
         public string LoadedIconName = string.Empty;
         public Sprite LoadedSprite;
+
+        // 长按检测
+        public float PressStartTime;
+        public bool IsPressing;
+        public const float LongPressThreshold = 1.0f;
     }
 }

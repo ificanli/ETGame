@@ -61,6 +61,8 @@ namespace ET.Client
             self.u_DataOpenDoorText?.SetValue(string.Empty, true);
             self.BindSearchButtonUI();
             self.BindOpenDoorButtonUI();
+            self.BindExitButtonUI();
+            self.ResetQuickExitButtonState(true);
             self.RefreshSearchButtonVisual(0, false);
             self.RefreshOpenDoorButton(false, string.Empty, false);
             self.BindRogueLevelBar();
@@ -69,15 +71,21 @@ namespace ET.Client
             self.RefreshRogueEffectPanel(true);
             self.BindFpsCounter();
             self.ResetFpsCounter();
+            BindRunTimeLimitUi(self, true);
             self.BindMinimap();
             self.BindHitDirectionUI();
             self.RefreshRogueLevelBar(true);
             self.RefreshMinimap(true);
             self.UIWeaponBar?.RefreshCurrentPlayerWeaponBar();
+            self.IsPickupHintPanelOpening = false;
+            self.LastPickupHintVisible = false;
+            self.LastPickupHintPointId = null;
             self.LastEvacuateTipsVisible = false;
             self.LastEvacuationPointId = null;
             self.LastEvacuateRemainSeconds = int.MinValue;
             self.IsEvacuateTipsOpening = false;
+            self.LastRunTimeLimitVisible = false;
+            self.LastRunTimeLimitRemainSeconds = long.MinValue;
         }
 
         [EntitySystem]
@@ -113,14 +121,23 @@ namespace ET.Client
             self.u_EventClickOpenMap = null;
             self.u_DataSearchingButton = null;
             self.u_DataOpenDoorText = null;
+            if (self.ExitButton != null)
+            {
+                self.ExitButton.onClick.RemoveAllListeners();
+            }
+
             self.SearchButton = null;
             self.SearchButtonText = null;
             self.OpenDoorButton = null;
+            self.ExitButton = null;
+            self.IsQuickExitRequesting = false;
             self.FpsCounterText = null;
             self.ReleaseAllRogueEffectButtonSprites();
             self.ReleaseAllMinimapMarkerSprites();
+            self.ReleaseAllMinimapPoiSprites();
             self.ClearRogueEffectButtons();
             self.ClearMinimapMarkers();
+            self.ClearMinimapPois();
             if (self.MinimapMarkerSprite != null)
             {
                 UnityEngine.Object.Destroy(self.MinimapMarkerSprite);
@@ -140,7 +157,12 @@ namespace ET.Client
             self.MinimapArrow = null;
             self.MinimapNameText = null;
             self.MinimapMarkerLayer = null;
+            self.MinimapPoiLayer = null;
+            self.MinimapTrackedPoiLayer = null;
             self.MinimapMarkerSprite = null;
+            self.MinimapTrackedPoiRect = null;
+            self.MinimapTrackedPoiImage = null;
+            self.MinimapTrackedPoiDesiredSpriteName = null;
             self.ClearHitDirectionIndicators();
             if (self.HitDirectionRoot != null)
             {
@@ -162,11 +184,16 @@ namespace ET.Client
             self.RogueEffectText = null;
             self.LastRogueEffectSignature = int.MinValue;
             self.RogueEffectPreviewIndex = -1;
+            self.IsPickupHintPanelOpening = false;
+            self.LastPickupHintVisible = false;
+            self.LastPickupHintPointId = null;
             self.EvacuateTipsViewRef = default;
             self.IsEvacuateTipsOpening = false;
             self.LastEvacuateTipsVisible = false;
             self.LastEvacuationPointId = null;
             self.LastEvacuateRemainSeconds = int.MinValue;
+            self.LastRunTimeLimitVisible = false;
+            self.LastRunTimeLimitRemainSeconds = long.MinValue;
         }
 
         [EntitySystem]
@@ -184,6 +211,8 @@ namespace ET.Client
             self.u_DataOpenDoorText?.SetValue(string.Empty, true);
             self.BindSearchButtonUI();
             self.BindOpenDoorButtonUI();
+            self.BindExitButtonUI();
+            self.ResetQuickExitButtonState(true);
             self.RefreshSearchButtonVisual(0, false);
             self.RefreshOpenDoorButton(false, string.Empty, false);
             self.BindRogueEffectUI();
@@ -191,15 +220,21 @@ namespace ET.Client
             self.RefreshRogueEffectPanel(true);
             self.BindFpsCounter();
             self.ResetFpsCounter();
+            BindRunTimeLimitUi(self, true);
             self.RefreshRogueLevelBar(true);
             self.BindMinimap();
             self.BindHitDirectionUI();
             self.RefreshMinimap(true);
             self.UIWeaponBar?.RefreshCurrentPlayerWeaponBar();
+            self.IsPickupHintPanelOpening = false;
+            self.LastPickupHintVisible = false;
+            self.LastPickupHintPointId = null;
             self.LastEvacuateTipsVisible = false;
             self.LastEvacuationPointId = null;
             self.LastEvacuateRemainSeconds = int.MinValue;
             self.IsEvacuateTipsOpening = false;
+            self.LastRunTimeLimitVisible = false;
+            self.LastRunTimeLimitRemainSeconds = long.MinValue;
 
             Scene root = self.Root();
             RogueClientComponent rogueRuntime = root?.GetComponent<RogueClientComponent>();
@@ -236,6 +271,7 @@ namespace ET.Client
             int buttonTextId = 0;
             bool canInteract = false;
             bool isDoorPoint = false;
+            bool isGroundDropPoint = false;
             string openDoorText = string.Empty;
 
             if (runtime != null && string.IsNullOrWhiteSpace(focusPointId) && runtime.InRangePointIds.Count > 0)
@@ -268,6 +304,7 @@ namespace ET.Client
             {
                 runtime.PointButtonTextIds.TryGetValue(focusPointId, out buttonTextId);
                 runtime.PointCanInteract.TryGetValue(focusPointId, out canInteract);
+                isGroundDropPoint = focusPointId.StartsWith("ground_drop_", StringComparison.Ordinal);
                 isDoorPoint = TryGetFocusPointType(root, focusPointId, out int pointType) &&
                               (pointType == ECAPointType.Door || pointType == ECAPointType.KeyDoor);
                 if (isDoorPoint)
@@ -276,7 +313,8 @@ namespace ET.Client
                 }
             }
 
-            bool showSearchButton = show && !isDoorPoint;
+            bool showPickupHintPanel = show && !isDoorPoint && isGroundDropPoint && canInteract;
+            bool showSearchButton = show && !isDoorPoint && !isGroundDropPoint;
             bool showOpenDoorButton = show && isDoorPoint;
 
             if (self.LastSearchButtonShow != showSearchButton ||
@@ -303,12 +341,13 @@ namespace ET.Client
 
             self.RefreshSearchButtonVisual(buttonTextId, canInteract && showSearchButton);
             self.RefreshOpenDoorButton(showOpenDoorButton, openDoorText, canInteract);
+            self.RefreshPickupHintPanel(showPickupHintPanel, focusPointId);
 
-            self.RefreshRogueLevelBar();
             self.RefreshRogueEffectPanel();
             self.TryCloseRogueEffectDescOnOutsideClick();
             self.RefreshMinimap();
             self.RefreshEvacuateTips(runtime);
+            self.RefreshRunTimeLimit(root?.GetComponent<RunTimeLimitClientComponent>());
         }
 
         #region YIUIEvent开始
@@ -324,6 +363,22 @@ namespace ET.Client
                     runtime.PointCanInteract.TryGetValue(runtime.FocusPointId, out bool canInteract) &&
                     !canInteract)
                 {
+                    await ETTask.CompletedTask;
+                    return;
+                }
+
+                if (RogueMissionTaskPopupComponentSystem.TryOpenFocusPoint(root))
+                {
+                    await ETTask.CompletedTask;
+                    return;
+                }
+
+                // GroundDrop 物品 → 一键拾取（不打开SearchPanel）
+                string focusPointId = runtime?.FocusPointId;
+                if (!string.IsNullOrWhiteSpace(focusPointId) && focusPointId.StartsWith("ground_drop_"))
+                {
+                    Log.Info($"[ECAClient][MainPanel] click search button -> PickupGroundItem: {focusPointId}");
+                    GroundItemPickupClientHelper.RequestPickupGroundItem(root, focusPointId).Coroutine();
                     await ETTask.CompletedTask;
                     return;
                 }
@@ -415,6 +470,68 @@ namespace ET.Client
             Log.Info($"[ECAClient][Bag] sync bag success: size={itemComponent.Width}x{itemComponent.Height}, itemCount={response.Items.Count}");
         }
 
+        private static async ETTask OnClickExitButton(EntityRef<MainPanelComponent> selfRef)
+        {
+            MainPanelComponent self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            if (self.IsQuickExitRequesting)
+            {
+                return;
+            }
+
+            Scene root = self.Root();
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            self.IsQuickExitRequesting = true;
+            self.ResetQuickExitButtonState(false);
+            Log.Info("[ECAClient][MainPanel] send quick exit extraction request");
+
+            try
+            {
+                M2C_QuickExitExtraction response =
+                        await root.GetComponent<ClientSenderComponent>().Call(C2M_QuickExitExtraction.Create()) as M2C_QuickExitExtraction;
+                self = selfRef;
+                if (self == null || self.IsDisposed)
+                {
+                    return;
+                }
+
+                if (response == null)
+                {
+                    Log.Warning("[ECAClient][MainPanel] quick exit extraction failed: null response");
+                    self.ResetQuickExitButtonState(true);
+                    return;
+                }
+
+                if (response.Error != ErrorCode.ERR_Success)
+                {
+                    Log.Warning(
+                        $"[ECAClient][MainPanel] quick exit extraction failed: error={response.Error}, msg={response.Message}");
+                    self.ResetQuickExitButtonState(true);
+                    return;
+                }
+
+                Log.Info("[ECAClient][MainPanel] quick exit extraction request accepted");
+            }
+            catch (Exception e)
+            {
+                self = selfRef;
+                if (self != null && !self.IsDisposed)
+                {
+                    self.ResetQuickExitButtonState(true);
+                }
+
+                Log.Error(e);
+            }
+        }
+
         private static void BindRogueLevelBar(this MainPanelComponent self)
         {
             if (self.RogueLevelSlider != null && self.RogueLevelText != null)
@@ -498,6 +615,50 @@ namespace ET.Client
             }
 
             self.OpenDoorButton = openDoorButtonTransform.GetComponent<Button>();
+        }
+
+        private static void BindExitButtonUI(this MainPanelComponent self)
+        {
+            if (self.ExitButton != null)
+            {
+                return;
+            }
+
+            Transform rootTransform = self.UIBase?.OwnerGameObject?.transform;
+            if (rootTransform == null)
+            {
+                return;
+            }
+
+            Transform exitButtonTransform = rootTransform.Find("ExitButton");
+            if (exitButtonTransform == null)
+            {
+                Log.Warning("[ECAClient][MainPanel] missing ExitButton");
+                return;
+            }
+
+            self.ExitButton = exitButtonTransform.GetComponent<Button>();
+            if (self.ExitButton == null)
+            {
+                Log.Warning("[ECAClient][MainPanel] ExitButton missing Button component");
+                return;
+            }
+
+            EntityRef<MainPanelComponent> selfRef = self;
+            self.ExitButton.onClick.AddListener(() => OnClickExitButton(selfRef).Coroutine());
+        }
+
+        private static void ResetQuickExitButtonState(this MainPanelComponent self, bool resetRequesting)
+        {
+            if (resetRequesting)
+            {
+                self.IsQuickExitRequesting = false;
+            }
+
+            if (self.ExitButton != null)
+            {
+                self.ExitButton.interactable = !self.IsQuickExitRequesting;
+            }
         }
 
         private static void BindRogueEffectUI(this MainPanelComponent self)
@@ -635,7 +796,7 @@ namespace ET.Client
                 return;
             }
 
-            Image buttonImage = button.targetGraphic as Image ?? button.GetComponent<Image>();
+            Image buttonImage = ResolveRogueEffectButtonImage(button);
             self.RogueEffectButtons.Add(button);
             self.RogueEffectButtonImages.Add(buttonImage);
             self.RogueEffectButtonSprites.Add(null);
@@ -648,7 +809,7 @@ namespace ET.Client
         {
             if (buttonImage != null)
             {
-                buttonImage.raycastTarget = true;
+                buttonImage.raycastTarget = button != null && ReferenceEquals(buttonImage, button.targetGraphic);
                 buttonImage.preserveAspect = true;
                 buttonImage.color = Color.white;
             }
@@ -959,6 +1120,47 @@ namespace ET.Client
             self.RogueEffectDynamicButtons.Clear();
         }
 
+        private static Image ResolveRogueEffectButtonImage(Button button)
+        {
+            if (button == null)
+            {
+                return null;
+            }
+
+            Image targetGraphic = button.targetGraphic as Image ?? button.GetComponent<Image>();
+            Transform iconTransform = button.transform.Find("Icon");
+            Image iconImage = iconTransform?.GetComponent<Image>();
+            if (iconImage != null)
+            {
+                return iconImage;
+            }
+
+            foreach (Image image in button.GetComponentsInChildren<Image>(true))
+            {
+                if (image == null || image == targetGraphic || image.transform == button.transform)
+                {
+                    continue;
+                }
+
+                if (string.Equals(image.gameObject.name, "Icon", StringComparison.OrdinalIgnoreCase))
+                {
+                    return image;
+                }
+            }
+
+            foreach (Image image in button.GetComponentsInChildren<Image>(true))
+            {
+                if (image == null || image == targetGraphic || image.transform == button.transform)
+                {
+                    continue;
+                }
+
+                return image;
+            }
+
+            return targetGraphic;
+        }
+
         private static Image GetRogueEffectButtonImage(this MainPanelComponent self, int buttonIndex)
         {
             if (buttonIndex < 0 || buttonIndex >= self.RogueEffectButtons.Count)
@@ -975,7 +1177,7 @@ namespace ET.Client
             if (buttonImage == null)
             {
                 Button button = self.RogueEffectButtons[buttonIndex];
-                buttonImage = button?.targetGraphic as Image ?? button?.GetComponent<Image>();
+                buttonImage = ResolveRogueEffectButtonImage(button);
                 self.RogueEffectButtonImages[buttonIndex] = buttonImage;
             }
 
@@ -1072,6 +1274,131 @@ namespace ET.Client
             }
 
             self.u_DataOpenDoorText?.SetValue(show ? text ?? string.Empty : string.Empty);
+        }
+
+        private static void RefreshPickupHintPanel(this MainPanelComponent self, bool show, string pointId)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            Scene root = self.Root();
+            PickupHintPanelComponent panel = root?.YIUIMgr()?.GetPanel<PickupHintPanelComponent>();
+            bool hasPanel = panel != null && !panel.IsDisposed;
+            string targetPointId = show ? pointId : null;
+            bool needOpen = show &&
+                !self.IsPickupHintPanelOpening &&
+                (!self.LastPickupHintVisible ||
+                 self.LastPickupHintPointId != targetPointId ||
+                 !hasPanel);
+
+            if (needOpen)
+            {
+                self.EnsurePickupHintPanelOpenAsync(targetPointId).Coroutine();
+            }
+            else if (!show && (self.LastPickupHintVisible || self.IsPickupHintPanelOpening || hasPanel))
+            {
+                self.HidePickupHintPanel();
+            }
+
+            if (show && hasPanel && panel.FocusPointId != targetPointId)
+            {
+                panel.SetPickupTarget(targetPointId, 0);
+            }
+
+            self.LastPickupHintVisible = show;
+            self.LastPickupHintPointId = targetPointId;
+        }
+
+        private static async ETTask EnsurePickupHintPanelOpenAsync(this MainPanelComponent self, string pointId)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            if (self.IsPickupHintPanelOpening)
+            {
+                return;
+            }
+
+            Scene root = self.Root();
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(pointId))
+            {
+                return;
+            }
+
+            PickupHintPanelComponent currentPanel = root.YIUIMgr()?.GetPanel<PickupHintPanelComponent>();
+            if (currentPanel != null && !currentPanel.IsDisposed)
+            {
+                currentPanel.SetPickupTarget(pointId, 0);
+                return;
+            }
+
+            YIUIRootComponent yiuiRoot = root.YIUIRoot();
+            if (yiuiRoot == null)
+            {
+                return;
+            }
+
+            self.IsPickupHintPanelOpening = true;
+
+            EntityRef<MainPanelComponent> selfRef = self;
+            EntityRef<Scene> rootRef = root;
+            PickupHintPanelComponent openedPanel;
+            try
+            {
+                openedPanel = await yiuiRoot.OpenPanelAsync<PickupHintPanelComponent>();
+            }
+            catch (Exception e)
+            {
+                self = selfRef;
+                if (self != null && !self.IsDisposed)
+                {
+                    self.IsPickupHintPanelOpening = false;
+                }
+
+                Log.Error($"[MainPanel] open pickup hint panel failed: {e}");
+                return;
+            }
+
+            self = selfRef;
+            root = rootRef;
+            if (self == null || self.IsDisposed || root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            self.IsPickupHintPanelOpening = false;
+            if (openedPanel == null)
+            {
+                return;
+            }
+
+            if (!self.LastPickupHintVisible || string.IsNullOrWhiteSpace(self.LastPickupHintPointId))
+            {
+                root.YIUIMgr()?.ClosePanel<PickupHintPanelComponent>();
+                return;
+            }
+
+            openedPanel.SetPickupTarget(self.LastPickupHintPointId, 0);
+        }
+
+        private static void HidePickupHintPanel(this MainPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            self.IsPickupHintPanelOpening = false;
+            self.Root()?.YIUIMgr()?.ClosePanel<PickupHintPanelComponent>();
         }
 
         private static void RefreshEvacuateTips(this MainPanelComponent self, ECAInteractClientComponent runtime)
@@ -1327,7 +1654,9 @@ namespace ET.Client
                 self.MinimapTexture != null &&
                 self.MinimapFogOverlay != null &&
                 self.MinimapArrow != null &&
-                self.MinimapMarkerLayer != null)
+                self.MinimapMarkerLayer != null &&
+                self.MinimapPoiLayer != null &&
+                self.MinimapTrackedPoiLayer != null)
             {
                 return;
             }
@@ -1395,21 +1724,66 @@ namespace ET.Client
                 self.MinimapMarkerLayer = markerLayerTransform as RectTransform;
             }
 
+            Transform poiLayerTransform = self.MinimapMask.Find("PoiLayer");
+            if (poiLayerTransform == null)
+            {
+                GameObject poiLayerObject = new GameObject("PoiLayer", typeof(RectTransform));
+                RectTransform poiLayer = poiLayerObject.GetComponent<RectTransform>();
+                poiLayer.SetParent(self.MinimapMask, false);
+                poiLayer.anchorMin = Vector2.zero;
+                poiLayer.anchorMax = Vector2.one;
+                poiLayer.offsetMin = Vector2.zero;
+                poiLayer.offsetMax = Vector2.zero;
+                poiLayer.SetSiblingIndex(self.MinimapMarkerLayer != null ? self.MinimapMarkerLayer.GetSiblingIndex() + 1 : self.MinimapMask.childCount - 1);
+                self.MinimapPoiLayer = poiLayer;
+            }
+            else
+            {
+                self.MinimapPoiLayer = poiLayerTransform as RectTransform;
+            }
+
+            Transform trackedPoiLayerTransform = self.MinimapMask.Find("TrackedPoiLayer");
+            if (trackedPoiLayerTransform == null)
+            {
+                GameObject trackedPoiLayerObject = new GameObject("TrackedPoiLayer", typeof(RectTransform));
+                RectTransform trackedPoiLayer = trackedPoiLayerObject.GetComponent<RectTransform>();
+                trackedPoiLayer.SetParent(self.MinimapMask, false);
+                trackedPoiLayer.anchorMin = Vector2.zero;
+                trackedPoiLayer.anchorMax = Vector2.one;
+                trackedPoiLayer.offsetMin = Vector2.zero;
+                trackedPoiLayer.offsetMax = Vector2.zero;
+                trackedPoiLayer.SetSiblingIndex(self.MinimapPoiLayer != null ? self.MinimapPoiLayer.GetSiblingIndex() + 1 : self.MinimapMask.childCount - 1);
+                self.MinimapTrackedPoiLayer = trackedPoiLayer;
+            }
+            else
+            {
+                self.MinimapTrackedPoiLayer = trackedPoiLayerTransform as RectTransform;
+            }
+
             MinimapDisplayHelper.StretchToFillParent(self.MinimapMarkerLayer);
+            MinimapDisplayHelper.StretchToFillParent(self.MinimapPoiLayer);
+            MinimapDisplayHelper.StretchToFillParent(self.MinimapTrackedPoiLayer);
         }
 
         private static void RefreshMinimap(this MainPanelComponent self, bool force = false)
         {
             self.BindMinimap();
-            if (self.MinimapRoot == null || self.MinimapMask == null || self.MinimapMarkerLayer == null)
+            if (self.MinimapRoot == null ||
+                self.MinimapMask == null ||
+                self.MinimapMarkerLayer == null ||
+                self.MinimapPoiLayer == null ||
+                self.MinimapTrackedPoiLayer == null)
             {
                 return;
             }
 
-            MinimapRuntimeComponent runtime = self.Root()?.CurrentScene()?.GetComponent<MinimapRuntimeComponent>();
+            Scene currentScene = self.Root()?.CurrentScene();
+            MinimapRuntimeComponent runtime = currentScene?.GetComponent<MinimapRuntimeComponent>();
+            MapPoiRuntimeComponent poiRuntime = currentScene?.GetComponent<MapPoiRuntimeComponent>();
             if (runtime == null)
             {
                 self.ClearMinimapMarkers();
+                self.ClearMinimapPois();
                 return;
             }
 
@@ -1421,6 +1795,7 @@ namespace ET.Client
             if (!runtime.TryGetMyPosition(out float3 myPosition))
             {
                 self.ClearMinimapMarkers();
+                self.ClearMinimapPois();
                 return;
             }
 
@@ -1429,6 +1804,8 @@ namespace ET.Client
             self.RefreshMinimapTexture(runtime, myPosition);
             self.RefreshMinimapFog(runtime);
             self.RefreshMinimapMarkers(runtime, myPosition, viewCenter);
+            self.RefreshMinimapPois(poiRuntime, runtime, viewCenter);
+            self.RefreshTrackedPoiIndicator(poiRuntime, runtime, viewCenter);
         }
 
         private static void RefreshMinimapArrow(this MainPanelComponent self, MinimapRuntimeComponent runtime, float3 myPosition, float3 viewCenter)
@@ -1605,6 +1982,225 @@ namespace ET.Client
                     self.MinimapMarkerDesiredSpriteNames.Remove(pair.Key);
                 }
             }
+        }
+
+        private static void RefreshMinimapPois(
+            this MainPanelComponent self,
+            MapPoiRuntimeComponent poiRuntime,
+            MinimapRuntimeComponent runtime,
+            float3 viewCenter)
+        {
+            if (self.MinimapMask == null)
+            {
+                return;
+            }
+
+            if (poiRuntime == null || poiRuntime.IsDisposed)
+            {
+                self.ClearMinimapPois();
+                return;
+            }
+
+            poiRuntime.EnsureConfigLoaded();
+
+            HashSet<string> activePoiIds = new HashSet<string>();
+            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.MarkerSize, 10f), 4f);
+            float radius = Mathf.Max(Mathf.Min(self.MinimapMask.rect.width, self.MinimapMask.rect.height) * 0.5f - poiSize, 0f);
+
+            foreach (KeyValuePair<string, MapPoiRuntimeData> pair in poiRuntime.GetPois())
+            {
+                MapPoiRuntimeData poi = pair.Value;
+                if (!poiRuntime.ShouldDisplayOnMinimap(poi))
+                {
+                    self.HideMinimapPoi(poi.PoiId);
+                    continue;
+                }
+
+                if (!MinimapRuntimeMarkerHelper.TryWorldToCompactLocalPosition(runtime, viewCenter, poi.Position, out float2 localPosition))
+                {
+                    self.HideMinimapPoi(poi.PoiId);
+                    continue;
+                }
+
+                RectTransform poiRect = self.GetOrCreateMinimapPoi(poi.PoiId);
+                if (poiRect == null)
+                {
+                    continue;
+                }
+
+                activePoiIds.Add(poi.PoiId);
+                poiRect.gameObject.SetActive(true);
+                poiRect.sizeDelta = new Vector2(poiSize, poiSize);
+                poiRect.anchoredPosition = new Vector2(localPosition.x * radius, localPosition.y * radius);
+
+                if (self.MinimapPoiImages.TryGetValue(poi.PoiId, out Image poiImage) && poiImage != null)
+                {
+                    self.RefreshMinimapPoiVisual(poi, poiImage);
+                }
+            }
+
+            foreach (KeyValuePair<string, RectTransform> pair in self.MinimapPoiRects)
+            {
+                if (!activePoiIds.Contains(pair.Key) && pair.Value != null)
+                {
+                    pair.Value.gameObject.SetActive(false);
+                    self.MinimapPoiDesiredSpriteNames.Remove(pair.Key);
+                }
+            }
+        }
+
+        private static void RefreshTrackedPoiIndicator(
+            this MainPanelComponent self,
+            MapPoiRuntimeComponent poiRuntime,
+            MinimapRuntimeComponent runtime,
+            float3 viewCenter)
+        {
+            if (self.MinimapMask == null)
+            {
+                return;
+            }
+
+            if (poiRuntime == null || poiRuntime.IsDisposed || !poiRuntime.TryGetSelectedPoi(out MapPoiRuntimeData poi) || !poiRuntime.ShouldDisplayOnMinimap(poi))
+            {
+                self.HideTrackedPoiIndicator();
+                return;
+            }
+
+            RectTransform trackedRect = self.EnsureTrackedPoiIndicator();
+            if (trackedRect == null)
+            {
+                return;
+            }
+
+            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.MarkerSize, 10f), 4f);
+            float radius = Mathf.Max(Mathf.Min(self.MinimapMask.rect.width, self.MinimapMask.rect.height) * 0.5f - poiSize, 0f);
+            Vector2 anchoredPosition;
+
+            if (MinimapRuntimeMarkerHelper.TryWorldToCompactLocalPosition(runtime, viewCenter, poi.Position, out float2 localPosition))
+            {
+                anchoredPosition = new Vector2(localPosition.x * radius, localPosition.y * radius);
+            }
+            else
+            {
+                float2 edgeLocalPosition = MinimapRuntimeMarkerHelper.WorldToCompactLocalPosition(runtime, viewCenter, poi.Position);
+                Vector2 direction = new Vector2(edgeLocalPosition.x, edgeLocalPosition.y);
+                if (direction.sqrMagnitude <= 0.0001f)
+                {
+                    self.HideTrackedPoiIndicator();
+                    return;
+                }
+
+                anchoredPosition = direction.normalized * radius;
+            }
+
+            trackedRect.gameObject.SetActive(true);
+            trackedRect.sizeDelta = new Vector2(poiSize, poiSize);
+            trackedRect.anchoredPosition = anchoredPosition;
+            if (self.MinimapTrackedPoiImage != null)
+            {
+                self.RefreshTrackedPoiVisual(poi, self.MinimapTrackedPoiImage);
+            }
+        }
+
+        private static RectTransform GetOrCreateMinimapPoi(this MainPanelComponent self, string poiId)
+        {
+            if (self.MinimapPoiRects.TryGetValue(poiId, out RectTransform poiRect) && poiRect != null)
+            {
+                return poiRect;
+            }
+
+            if (self.MinimapPoiLayer == null)
+            {
+                return null;
+            }
+
+            GameObject poiObject = new GameObject($"Poi_{poiId}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            poiRect = poiObject.GetComponent<RectTransform>();
+            poiRect.SetParent(self.MinimapPoiLayer, false);
+            poiRect.anchorMin = new Vector2(0.5f, 0.5f);
+            poiRect.anchorMax = new Vector2(0.5f, 0.5f);
+            poiRect.pivot = new Vector2(0.5f, 0.5f);
+
+            Image poiImage = poiObject.GetComponent<Image>();
+            poiImage.raycastTarget = false;
+            poiImage.sprite = self.GetMinimapMarkerSprite();
+            poiImage.type = Image.Type.Simple;
+            poiImage.preserveAspect = false;
+
+            self.MinimapPoiRects[poiId] = poiRect;
+            self.MinimapPoiImages[poiId] = poiImage;
+            return poiRect;
+        }
+
+        private static RectTransform EnsureTrackedPoiIndicator(this MainPanelComponent self)
+        {
+            if (self.MinimapTrackedPoiRect != null)
+            {
+                return self.MinimapTrackedPoiRect;
+            }
+
+            if (self.MinimapTrackedPoiLayer == null)
+            {
+                return null;
+            }
+
+            GameObject poiObject = new GameObject("TrackedPoi", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            RectTransform poiRect = poiObject.GetComponent<RectTransform>();
+            poiRect.SetParent(self.MinimapTrackedPoiLayer, false);
+            poiRect.anchorMin = new Vector2(0.5f, 0.5f);
+            poiRect.anchorMax = new Vector2(0.5f, 0.5f);
+            poiRect.pivot = new Vector2(0.5f, 0.5f);
+
+            Image poiImage = poiObject.GetComponent<Image>();
+            poiImage.raycastTarget = false;
+            poiImage.sprite = self.GetMinimapMarkerSprite();
+            poiImage.type = Image.Type.Simple;
+            poiImage.preserveAspect = false;
+
+            self.MinimapTrackedPoiRect = poiRect;
+            self.MinimapTrackedPoiImage = poiImage;
+            return poiRect;
+        }
+
+        private static void HideMinimapPoi(this MainPanelComponent self, string poiId)
+        {
+            if (self.MinimapPoiRects.TryGetValue(poiId, out RectTransform poiRect) && poiRect != null)
+            {
+                poiRect.gameObject.SetActive(false);
+            }
+        }
+
+        private static void HideTrackedPoiIndicator(this MainPanelComponent self)
+        {
+            if (self.MinimapTrackedPoiRect != null)
+            {
+                self.MinimapTrackedPoiRect.gameObject.SetActive(false);
+            }
+
+            self.MinimapTrackedPoiDesiredSpriteName = string.Empty;
+        }
+
+        private static void ClearMinimapPois(this MainPanelComponent self)
+        {
+            foreach (KeyValuePair<string, RectTransform> pair in self.MinimapPoiRects)
+            {
+                if (pair.Value != null)
+                {
+                    UnityEngine.Object.Destroy(pair.Value.gameObject);
+                }
+            }
+
+            self.MinimapPoiRects.Clear();
+            self.MinimapPoiImages.Clear();
+            self.MinimapPoiDesiredSpriteNames.Clear();
+            if (self.MinimapTrackedPoiRect != null)
+            {
+                UnityEngine.Object.Destroy(self.MinimapTrackedPoiRect.gameObject);
+            }
+
+            self.MinimapTrackedPoiRect = null;
+            self.MinimapTrackedPoiImage = null;
+            self.MinimapTrackedPoiDesiredSpriteName = string.Empty;
         }
 
         private static RectTransform GetOrCreateMinimapMarker(this MainPanelComponent self, long unitId)
@@ -1812,6 +2408,188 @@ namespace ET.Client
             self.MinimapMarkerDesiredSpriteNames.Clear();
         }
 
+        private static void RefreshMinimapPoiVisual(this MainPanelComponent self, MapPoiRuntimeData poi, Image poiImage)
+        {
+            if (poiImage == null)
+            {
+                return;
+            }
+
+            string iconName = MinimapPoiIconHelper.ResolveIconName(poi);
+            self.MinimapPoiDesiredSpriteNames[poi.PoiId] = iconName ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(iconName))
+            {
+                if (self.MinimapPoiLoadedSprites.TryGetValue(iconName, out Sprite customSprite) && customSprite != null)
+                {
+                    poiImage.sprite = customSprite;
+                    poiImage.color = Color.white;
+                    poiImage.preserveAspect = true;
+                    return;
+                }
+
+                poiImage.sprite = self.GetMinimapMarkerSprite();
+                poiImage.color = self.ResolveMinimapPoiColor(poi);
+                poiImage.preserveAspect = false;
+                self.RequestMinimapPoiSprite(iconName);
+                return;
+            }
+
+            poiImage.sprite = self.GetMinimapMarkerSprite();
+            poiImage.color = self.ResolveMinimapPoiColor(poi);
+            poiImage.preserveAspect = false;
+        }
+
+        private static void RefreshTrackedPoiVisual(this MainPanelComponent self, MapPoiRuntimeData poi, Image poiImage)
+        {
+            if (poiImage == null)
+            {
+                return;
+            }
+
+            string iconName = MinimapPoiIconHelper.ResolveTrackedIconName(poi);
+            self.MinimapTrackedPoiDesiredSpriteName = iconName ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(iconName))
+            {
+                if (self.MinimapPoiLoadedSprites.TryGetValue(iconName, out Sprite customSprite) && customSprite != null)
+                {
+                    poiImage.sprite = customSprite;
+                    poiImage.color = Color.white;
+                    poiImage.preserveAspect = true;
+                    return;
+                }
+
+                poiImage.sprite = self.GetMinimapMarkerSprite();
+                poiImage.color = self.ResolveMinimapPoiColor(poi);
+                poiImage.preserveAspect = false;
+                self.RequestMinimapPoiSprite(iconName);
+                return;
+            }
+
+            poiImage.sprite = self.GetMinimapMarkerSprite();
+            poiImage.color = self.ResolveMinimapPoiColor(poi);
+            poiImage.preserveAspect = false;
+        }
+
+        private static Color ResolveMinimapPoiColor(this MainPanelComponent self, MapPoiRuntimeData poi)
+        {
+            string key = global::ET.MinimapConstKey.MarkerColorOther;
+            switch (poi.PoiType)
+            {
+                case MapPoiType.Evacuation:
+                    key = global::ET.MinimapConstKey.MarkerColorSelf;
+                    break;
+                case MapPoiType.HighContainer:
+                    key = global::ET.MinimapConstKey.MarkerColorOther;
+                    break;
+                case MapPoiType.BossSpawn:
+                    key = global::ET.MinimapConstKey.MarkerColorMonster;
+                    break;
+                case MapPoiType.MissionTask:
+                    key = global::ET.MinimapConstKey.MarkerColorMissionTask;
+                    break;
+            }
+
+            string colorText = global::ET.MinimapConstConfigHelper.GetString(key, "#FFFFFF");
+            if (ColorUtility.TryParseHtmlString(colorText, out Color color))
+            {
+                return color;
+            }
+
+            return Color.white;
+        }
+
+        private static void RequestMinimapPoiSprite(this MainPanelComponent self, string spriteName)
+        {
+            if (self == null || self.IsDisposed || string.IsNullOrWhiteSpace(spriteName))
+            {
+                return;
+            }
+
+            if (self.MinimapPoiLoadedSprites.ContainsKey(spriteName) || !self.MinimapPoiLoadingSpriteNames.Add(spriteName))
+            {
+                return;
+            }
+
+            self.LoadMinimapPoiSpriteAsync(spriteName).Coroutine();
+        }
+
+        private static async ETTask LoadMinimapPoiSpriteAsync(this MainPanelComponent self, string spriteName)
+        {
+            EntityRef<MainPanelComponent> selfRef = self;
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = spriteName });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            self.MinimapPoiLoadingSpriteNames.Remove(spriteName);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            if (self.MinimapPoiLoadedSprites.TryGetValue(spriteName, out Sprite cachedSprite) && cachedSprite != null)
+            {
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                    YIUISingletonHelper.YIUIMgr,
+                    new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                return;
+            }
+
+            self.MinimapPoiLoadedSprites[spriteName] = sprite;
+            foreach (KeyValuePair<string, Image> pair in self.MinimapPoiImages)
+            {
+                if (!self.MinimapPoiDesiredSpriteNames.TryGetValue(pair.Key, out string desiredSpriteName) ||
+                    desiredSpriteName != spriteName ||
+                    pair.Value == null)
+                {
+                    continue;
+                }
+
+                pair.Value.sprite = sprite;
+                pair.Value.color = Color.white;
+                pair.Value.preserveAspect = true;
+            }
+
+            if (self.MinimapTrackedPoiImage != null && self.MinimapTrackedPoiDesiredSpriteName == spriteName)
+            {
+                self.MinimapTrackedPoiImage.sprite = sprite;
+                self.MinimapTrackedPoiImage.color = Color.white;
+                self.MinimapTrackedPoiImage.preserveAspect = true;
+            }
+        }
+
+        private static void ReleaseAllMinimapPoiSprites(this MainPanelComponent self)
+        {
+            foreach (Sprite sprite in self.MinimapPoiLoadedSprites.Values)
+            {
+                if (sprite == null)
+                {
+                    continue;
+                }
+
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                    YIUISingletonHelper.YIUIMgr,
+                    new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+            }
+
+            self.MinimapPoiLoadedSprites.Clear();
+            self.MinimapPoiLoadingSpriteNames.Clear();
+            self.MinimapPoiDesiredSpriteNames.Clear();
+            self.MinimapTrackedPoiDesiredSpriteName = string.Empty;
+        }
+
         private static string ResolvePlayerMarkerColorKey(this MainPanelComponent self, MinimapRuntimeComponent runtime, MinimapMarkerRuntime marker)
         {
             Unit myUnit = runtime?.GetMyUnit();
@@ -1850,7 +2628,7 @@ namespace ET.Client
             return Color.clear;
         }
 
-        private static void RefreshRogueLevelBar(this MainPanelComponent self, bool force = false)
+        public static void RefreshRogueLevelBar(this MainPanelComponent self, bool force = false)
         {
             self.BindRogueLevelBar();
 

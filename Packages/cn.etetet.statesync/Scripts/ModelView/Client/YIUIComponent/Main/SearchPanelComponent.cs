@@ -48,11 +48,19 @@ namespace ET.Client
         public readonly Dictionary<int, RectTransform> SecureGridCellViews = new();
 
         public RectTransform ContainerGridRoot;
+        public RectTransform BagAreaRoot;
         public RectTransform BagGridRoot;
         public RectTransform SecureBoardRoot;
         public RectTransform SecureItemsLayer;
         public RectTransform SecureItemTemplate;
         public RectTransform SecureGridRoot;
+        public RectTransform OwnedAreaParentRoot;
+        public bool OwnedAreaLayoutInitialized;
+        public Vector2 BagAreaTopLeft;
+        public Vector2 SecureAreaTopLeft;
+        public float OwnedAreaVerticalGap;
+        public LoadoutOwnedAreaLayoutCache BagLayoutCache;
+        public LoadoutOwnedAreaLayoutCache SecureLayoutCache;
         public Dropdown QuickChooseDropdown;
         public RectTransform QuickChooseButtonRoot;
         public TMP_Text QuickChooseButtonLabel;
@@ -62,10 +70,16 @@ namespace ET.Client
         public TMP_Text ContainerTitleText;
         public TMP_Text BagTitleText;
         public Image ModeAccentImage;
+        public Vector2 BagBoardPivot;
         public Vector2 BagBoardAnchorMin;
         public Vector2 BagBoardAnchorMax;
         public Vector2 BagBoardAnchoredPosition;
         public Vector2 BagBoardSizeDelta;
+        public Vector2 SecureRootPivot;
+        public Vector2 SecureRootAnchorMin;
+        public Vector2 SecureRootAnchorMax;
+        public Vector2 SecureRootAnchoredPosition;
+        public Vector2 SecureRootSizeDelta;
         public Vector2 ContainerBoardAnchorMin;
 
         public bool IsDragging;
@@ -74,6 +88,7 @@ namespace ET.Client
         public RectTransform DraggingView;
         public Vector3 DragWorldOffset;
         public int QuickChooseMinQuality;
+        public int ItemClickVersion;
 
         // 搜索动效相关字段
         /// <summary>

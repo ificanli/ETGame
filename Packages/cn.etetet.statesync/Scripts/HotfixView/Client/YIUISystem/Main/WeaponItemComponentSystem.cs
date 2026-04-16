@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using YIUIFramework;
 
 namespace ET.Client
@@ -17,6 +18,7 @@ namespace ET.Client
             self.CacheViews();
             self.SetSelected(false);
             self.u_DataAmmoText?.SetValue(string.Empty, true);
+            self.BindLongPress();
         }
 
         [EntitySystem]
@@ -29,20 +31,102 @@ namespace ET.Client
             }
             self.u_EventClickHandle = null;
             self.u_EventClick = null;
+            self.IsPressing = false;
             self.ReleaseWeaponIconSprite();
+            self.BackgroundImage = null;
             self.IconImage = null;
             self.SelectImage = null;
             self.LoadedIconName = string.Empty;
         }
 
+        #region 长按丢弃
+
+        private static void BindLongPress(this WeaponItemComponent self)
+        {
+            self.CacheViews();
+            if (self.SelectImage == null) return;
+
+            EventTrigger trigger = self.SelectImage.gameObject.GetComponent<EventTrigger>();
+            if (trigger == null)
+            {
+                trigger = self.SelectImage.gameObject.AddComponent<EventTrigger>();
+            }
+
+            EntityRef<WeaponItemComponent> selfRef = self;
+
+            // PointerDown
+            EventTrigger.Entry downEntry = new EventTrigger.Entry();
+            downEntry.eventID = EventTriggerType.PointerDown;
+            downEntry.callback.AddListener((_) =>
+            {
+                WeaponItemComponent comp = selfRef;
+                if (comp != null && !comp.IsDisposed)
+                {
+                    comp.PressStartTime = Time.unscaledTime;
+                    comp.IsPressing = true;
+                }
+            });
+            trigger.triggers.Add(downEntry);
+
+            // PointerUp
+            EventTrigger.Entry upEntry = new EventTrigger.Entry();
+            upEntry.eventID = EventTriggerType.PointerUp;
+            upEntry.callback.AddListener((_) =>
+            {
+                WeaponItemComponent comp = selfRef;
+                if (comp == null || comp.IsDisposed) return;
+
+                float elapsed = Time.unscaledTime - comp.PressStartTime;
+                comp.IsPressing = false;
+
+                if (elapsed >= WeaponItemComponent.LongPressThreshold)
+                {
+                    comp.OnLongPress();
+                }
+            });
+            trigger.triggers.Add(upEntry);
+
+            // PointerExit（手指移出时取消）
+            EventTrigger.Entry exitEntry = new EventTrigger.Entry();
+            exitEntry.eventID = EventTriggerType.PointerExit;
+            exitEntry.callback.AddListener((_) =>
+            {
+                WeaponItemComponent comp = selfRef;
+                if (comp != null && !comp.IsDisposed)
+                {
+                    comp.IsPressing = false;
+                }
+            });
+            trigger.triggers.Add(exitEntry);
+        }
+
+        private static void OnLongPress(this WeaponItemComponent self)
+        {
+            Scene root = self.Root();
+            if (root == null || root.IsDisposed) return;
+            if (self.SlotIndex <= 0) return;
+
+            WeaponDiscardClientHelper.RequestDiscardWeapon(root, self.SlotIndex).Coroutine();
+        }
+
+        #endregion 长按丢弃
+
         #region YIUIEvent开始
 
         /// <summary>
-        /// 武器槽位点击事件
+        /// 武器槽位点击事件（短按切换武器）
         /// </summary>
         [YIUIInvoke(WeaponItemComponent.OnEventClickInvoke)]
         private static async ETTask OnEventClickInvoke(this WeaponItemComponent self)
         {
+            // 长按后不触发点击
+            float elapsed = Time.unscaledTime - self.PressStartTime;
+            if (elapsed >= WeaponItemComponent.LongPressThreshold)
+            {
+                await ETTask.CompletedTask;
+                return;
+            }
+
             Scene root = self.Root();
             if (root == null || root.IsDisposed)
             {
@@ -52,7 +136,6 @@ namespace ET.Client
 
             if (self.SlotIndex <= 0)
             {
-                Log.Warning("[WeaponItem] SlotIndex is invalid, skip switch request");
                 await ETTask.CompletedTask;
                 return;
             }
@@ -88,7 +171,7 @@ namespace ET.Client
         /// </summary>
         private static void CacheViews(this WeaponItemComponent self)
         {
-            if (self.IconImage != null && self.SelectImage != null)
+            if (self.BackgroundImage != null && self.IconImage != null && self.SelectImage != null)
             {
                 return;
             }
@@ -100,12 +183,17 @@ namespace ET.Client
             }
 
             Transform viewRoot = rootTransform.Find("WeaponItem") ?? rootTransform;
-            self.IconImage = viewRoot.Find("WeaponBg")?.GetComponent<Image>();
+            self.BackgroundImage = viewRoot.Find("WeaponBg")?.GetComponent<Image>();
+            self.IconImage = viewRoot.Find("WeaponIcon")?.GetComponent<Image>() ?? self.BackgroundImage;
             self.SelectImage = viewRoot.Find("WeaponSelect")?.GetComponent<Image>();
+            if (self.BackgroundImage != null)
+            {
+                self.BackgroundImage.raycastTarget = false;
+            }
             if (self.IconImage != null)
             {
-                // 点击事件绑定在 WeaponSelect，背景不拦截射线。
                 self.IconImage.raycastTarget = false;
+                self.IconImage.preserveAspect = true;
             }
         }
 
@@ -186,24 +274,30 @@ namespace ET.Client
         private static void RefreshBackgroundColor(this WeaponItemComponent self, int weaponId, bool isCurrent, bool isReloading)
         {
             self.CacheViews();
-            if (self.IconImage == null)
+            Image backgroundImage = self.BackgroundImage ?? self.IconImage;
+            if (backgroundImage == null)
             {
                 return;
             }
 
+            if (self.IconImage != null && self.IconImage != backgroundImage)
+            {
+                self.IconImage.color = Color.white;
+            }
+
             if (weaponId <= 0)
             {
-                self.IconImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
+                backgroundImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
                 return;
             }
 
             if (isReloading)
             {
-                self.IconImage.color = new Color(0.85f, 0.68f, 0.28f, 1f);
+                backgroundImage.color = new Color(0.85f, 0.68f, 0.28f, 1f);
                 return;
             }
 
-            self.IconImage.color = isCurrent
+            backgroundImage.color = isCurrent
                 ? new Color(1f, 1f, 1f, 1f)
                 : new Color(0.72f, 0.72f, 0.72f, 1f);
         }
@@ -297,6 +391,7 @@ namespace ET.Client
             self.LoadedIconName = iconName;
             self.IconImage.sprite = sprite;
             self.IconImage.enabled = true;
+            self.IconImage.color = Color.white;
             self.IconImage.preserveAspect = true;
         }
 
@@ -340,11 +435,14 @@ namespace ET.Client
 
             return weaponConfig.WeaponTypeId switch
             {
-                (int)global::ET.WeaponType.Shotgun => "weapon_shotgun",
-                (int)global::ET.WeaponType.Rifle1 => "weapon_rifle1",
-                (int)global::ET.WeaponType.Rifle2 => "weapon_rifle2",
-                (int)global::ET.WeaponType.RocketLauncher => "weapon_rocket",
-                _ => "weapon_smg",
+                (int)global::ET.WeaponType.Shotgun           => "weapon_shotgun",
+                (int)global::ET.WeaponType.SMG               => "weapon_smg",
+                (int)global::ET.WeaponType.AutoRifle         => "weapon_autorifle",
+                (int)global::ET.WeaponType.SniperRifle       => "weapon_sniperrifle",
+                (int)global::ET.WeaponType.Pistol            => "weapon_pistol",
+                (int)global::ET.WeaponType.GrenadeLauncher   => "weapon_grenadelauncher",
+                (int)global::ET.WeaponType.RayGun            => "weapon_raygun",
+                _                                            => "weapon_autorifle",
             };
         }
     }

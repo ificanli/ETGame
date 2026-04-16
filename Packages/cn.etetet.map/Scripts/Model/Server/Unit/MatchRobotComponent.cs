@@ -1,7 +1,7 @@
 namespace ET.Server
 {
     [ComponentOf(typeof(Unit))]
-    public class MatchRobotComponent : Entity, IAwake, ITransfer
+    public class MatchRobotComponent : Entity, IAwake, IDestroy, ITransfer
     {
         public int MatchRobotConfigId;
         public int HeroConfigId;
@@ -11,5 +11,7 @@ namespace ET.Server
         public int AutoChooseDelayMaxMs;
         public long AutoChooseScheduledSerial;
         public long AutoChooseCompletedSerial;
+        public long AutoLevelTimerId;
+        public long MatchStartTime;
     }
 }

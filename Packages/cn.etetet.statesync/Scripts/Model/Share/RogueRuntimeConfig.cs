@@ -244,6 +244,7 @@ namespace ET
                     {
                         NumericType = numericEntry.NumericType,
                         Value = numericEntry.Value,
+                        UnitType = numericEntry.UnitType,
                     });
                 }
             }
@@ -342,6 +343,9 @@ namespace ET
 
         [BsonElement]
         public long Value = 0;
+
+        [BsonElement]
+        public int UnitType = 0; // 0=全体, 1=玩家(Player), 2=怪物(Monster)
     }
 
     [EnableClass]

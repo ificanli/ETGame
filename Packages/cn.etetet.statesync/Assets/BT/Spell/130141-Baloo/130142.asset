@@ -1,0 +1,134 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c9619ee4f188a34f85cb7d889ed7d1a, type: 3}
+  m_Name: 130142
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: SpellConfig
+      Entry: 7
+      Data: 0|ET.SpellConfig, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 130142
+    - Name: BuffId
+      Entry: 3
+      Data: 230142
+    - Name: Desc
+      Entry: 1
+      Data: "\u5DF4\u9C81-\u5F39\u7C27\u62F3\u547D\u4E2D"
+    - Name: Icon
+      Entry: 7
+      Data: 1|ET.OdinUnityObject, ET.Model
+    - Name: Name
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: CD
+      Entry: 3
+      Data: 0
+    - Name: DamageMultiplier
+      Entry: 3
+      Data: 100
+    - Name: Cost
+      Entry: 6
+      Data: 
+    - Name: TargetSelector
+      Entry: 7
+      Data: 2|ET.TargetSelectorSingle, ET.Model
+    - Name: Id
+      Entry: 3
+      Data: 1
+    - Name: Children
+      Entry: 7
+      Data: 3|System.Collections.Generic.List`1[[ET.BTNode, ET.Model]], mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: Desc
+      Entry: 6
+      Data: 
+    - Name: IsCollapsed
+      Entry: 5
+      Data: false
+    - Name: ChildrenCollapsed
+      Entry: 5
+      Data: false
+    - Name: DescCollapsed
+      Entry: 5
+      Data: true
+    - Name: EditorLayoutVisible
+      Entry: 5
+      Data: false
+    - Name: EditorNodeWidth
+      Entry: 4
+      Data: 300
+    - Name: EditorHorizontalSpacing
+      Entry: 4
+      Data: 50
+    - Name: Position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: TreeId
+      Entry: 3
+      Data: 8246238432966976130
+    - Name: Buff
+      Entry: 1
+      Data: Buff
+    - Name: Caster
+      Entry: 1
+      Data: Caster
+    - Name: Owner
+      Entry: 1
+      Data: Owner
+    - Name: MaxDistance
+      Entry: 3
+      Data: 3400
+    - Name: MinDistance
+      Entry: 3
+      Data: 0
+    - Name: Unit
+      Entry: 1
+      Data: Unit
+    - Name: UnitType
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 

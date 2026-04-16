@@ -35,6 +35,65 @@ message HomeContractInfo
 	int32 Target = 7;
 }
 
+message HomeSlotInfo
+{
+	int32 SlotId = 1;
+	int32 SlotType = 2;
+	string SceneAnchorKey = 3;
+	bool Unlocked = 4;
+	repeated int32 CanBuildTypes = 5;
+	int32 SortOrder = 6;
+	int64 BuildingId = 7;
+	int32 BuildingConfigId = 8;
+}
+
+message HomeMainCitySummary
+{
+	int64 BuildingId = 1;
+	int32 BuildingConfigId = 2;
+	int32 Level = 3;
+	int32 MaxLevel = 4;
+	int32 UnlockedSlotCount = 5;
+	int32 OtherBuildingMaxLevel = 6;
+	int32 TaskGroupId = 7;
+	int32 NextUpgradeGoldCost = 8;
+	bool CanUpgrade = 9;
+	string PreviewText = 10;
+	int32 TaskFinishedCount = 11;
+	int32 TaskTotalCount = 12;
+}
+
+message HomeWarehouseSummary
+{
+	int32 Level = 1;
+	int32 Capacity = 2;
+	int32 OccupiedCellCount = 3;
+	int32 ItemCount = 4;
+}
+
+message HomeMainCityTaskInfo
+{
+	int32 TaskId = 1;
+	int32 TaskGroupId = 2;
+	int32 TaskType = 3;
+	int32 Param1 = 4;
+	int32 Param2 = 5;
+	string Title = 6;
+	string Desc = 7;
+	int32 Progress = 8;
+	int32 Target = 9;
+	bool Completed = 10;
+	int32 SortOrder = 11;
+}
+
+message HomeMuseumDisplayInfo
+{
+	int64 DisplayId = 1;
+	int64 BuildingId = 2;
+	int32 SlotIndex = 3;
+	int32 ItemConfigId = 4;
+}
+
 // ==================== 进入Home快照 ====================
 
 message M2C_HomeSnapshot // IMessage
@@ -47,6 +106,12 @@ message M2C_HomeSnapshot // IMessage
 	repeated HomeProductionOrderInfo ProductionOrders = 6;
 	repeated HomeContractInfo AvailableContracts = 7;
 	repeated HomeContractInfo ActiveContracts = 8;
+	int64 TotalWealth = 9;
+	HomeMainCitySummary MainCitySummary = 10;
+	repeated HomeSlotInfo Slots = 11;
+	HomeWarehouseSummary WarehouseSummary = 12;
+	repeated HomeMainCityTaskInfo MainCityTasks = 13;
+	repeated HomeMuseumDisplayInfo MuseumDisplays = 14;
 }
 
 // ==================== 建造 ====================
@@ -116,6 +181,7 @@ message M2C_HomeCollectResponse // ILocationResponse
 	string Message = 3;
 	repeated int32 ItemConfigIds = 4;
 	repeated int32 ItemCounts = 5;
+	int64 WealthDelta = 6;
 }
 
 // ==================== 生产 ====================
@@ -150,6 +216,41 @@ message M2C_HomeCollectProductionResponse // ILocationResponse
 	string Message = 3;
 	repeated int32 ItemConfigIds = 4;
 	repeated int32 ItemCounts = 5;
+}
+
+// ==================== 收藏馆 ====================
+
+// ResponseType M2C_HomeMuseumPlaceResponse
+message C2M_HomeMuseumPlaceRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 BuildingId = 2;
+	int64 ItemUid = 3;
+}
+
+message M2C_HomeMuseumPlaceResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	HomeMuseumDisplayInfo Display = 4;
+	int32 ItemConfigId = 5;
+}
+
+// ResponseType M2C_HomeMuseumTakeDownResponse
+message C2M_HomeMuseumTakeDownRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int64 DisplayId = 2;
+}
+
+message M2C_HomeMuseumTakeDownResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 DisplayId = 4;
+	int32 ItemConfigId = 5;
 }
 
 // ==================== 悬赏合同 ====================
@@ -190,4 +291,44 @@ message M2C_HomeContractsChanged // IMessage
 	int64 Id = 1;
 	repeated HomeContractInfo AvailableContracts = 2;
 	repeated HomeContractInfo ActiveContracts = 3;
+}
+
+// ==================== Map <-> Gate 家园仓储桥接 ====================
+
+// ResponseType G2Map_HomeStorageSummaryResponse
+message Map2G_HomeStorageSummaryRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+}
+
+message G2Map_HomeStorageSummaryResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 TotalWealth = 4;
+	int32 WarehouseItemCount = 5;
+	int32 WarehouseOccupiedCellCount = 6;
+}
+
+// ResponseType G2Map_HomeStorageOperateResponse
+message Map2G_HomeStorageOperateRequest // ILocationRequest
+{
+	int32 RpcId = 1;
+	int32 OperationType = 2;
+	int64 WealthDelta = 3;
+	int32 ItemConfigId = 4;
+	int32 ItemCount = 5;
+	int64 ItemUid = 6;
+}
+
+message G2Map_HomeStorageOperateResponse // ILocationResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 TotalWealth = 4;
+	int32 WarehouseItemCount = 5;
+	int32 WarehouseOccupiedCellCount = 6;
+	int32 ResultItemConfigId = 7;
 }

@@ -55,6 +55,11 @@ namespace ET.Server
             return this.TeamId;
         }
 
+        public int GetSideId()
+        {
+            return this.TryGetIntParam(ECAPointParamKey.SideId, out int sideId) ? sideId : 0;
+        }
+
         public bool TryGetBoolParam(string key, out bool value)
         {
             value = false;

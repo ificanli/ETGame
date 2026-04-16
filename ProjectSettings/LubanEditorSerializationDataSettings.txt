@@ -175,7 +175,7 @@
         "$id": 18,
         "$type": "5|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[YIUILuban.Editor.LubanConfigEditorData, ET.YIUI.LubanTools.Editor]], mscorlib]], mscorlib",
         "comparer": $iref:2,
-        "$rlength": 12,
+        "$rlength": 13,
         "$rcontent": [
             {
                 "$k": "xlsx",
@@ -1460,7 +1460,7 @@
                         "$id": 138,
                         "$type": 3
                     },
-                    "$rlength": 15,
+                    "$rlength": 17,
                     "$rcontent": [
                         {
                             "$k": "cn.etetet.statesync\\Luban\\Config\\Datas\\Text.xlsx",
@@ -1624,6 +1624,108 @@
                                 "Name": "MatchRobotConfig.xlsx",
                                 "Alias": null,
                                 "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.statesync\\Luban\\Config\\Datas\\MatchRobotConfig.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.statesync\\Luban\\Config\\Datas\\RobotAutoLevel.xlsx",
+                            "$v": {
+                                "$id": 154,
+                                "$type": 7,
+                                "Name": "RobotAutoLevel.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.statesync\\Luban\\Config\\Datas\\RobotAutoLevel.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.statesync\\Luban\\Config\\Datas\\Weapon_temp.xlsx",
+                            "$v": {
+                                "$id": 155,
+                                "$type": 7,
+                                "Name": "Weapon_temp.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.statesync\\Luban\\Config\\Datas\\Weapon_temp.xlsx",
+                                "Desc": null
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "$k": "home",
+                "$v": {
+                    "$id": 156,
+                    "$type": 6,
+                    "comparer": {
+                        "$id": 157,
+                        "$type": 3
+                    },
+                    "$rlength": 6,
+                    "$rcontent": [
+                        {
+                            "$k": "cn.etetet.home\\Luban\\Config\\Datas\\HomeBuilding.xlsx",
+                            "$v": {
+                                "$id": 158,
+                                "$type": 7,
+                                "Name": "HomeBuilding.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.home\\Luban\\Config\\Datas\\HomeBuilding.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.home\\Luban\\Config\\Datas\\HomeBuildingLevel.xlsx",
+                            "$v": {
+                                "$id": 159,
+                                "$type": 7,
+                                "Name": "HomeBuildingLevel.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.home\\Luban\\Config\\Datas\\HomeBuildingLevel.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.home\\Luban\\Config\\Datas\\HomeMainCityLevel.xlsx",
+                            "$v": {
+                                "$id": 160,
+                                "$type": 7,
+                                "Name": "HomeMainCityLevel.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.home\\Luban\\Config\\Datas\\HomeMainCityLevel.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.home\\Luban\\Config\\Datas\\HomeMainCityTask.xlsx",
+                            "$v": {
+                                "$id": 161,
+                                "$type": 7,
+                                "Name": "HomeMainCityTask.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.home\\Luban\\Config\\Datas\\HomeMainCityTask.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.home\\Luban\\Config\\Datas\\HomeSlot.xlsx",
+                            "$v": {
+                                "$id": 162,
+                                "$type": 7,
+                                "Name": "HomeSlot.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.home\\Luban\\Config\\Datas\\HomeSlot.xlsx",
+                                "Desc": null
+                            }
+                        },
+                        {
+                            "$k": "cn.etetet.home\\Luban\\Config\\Datas\\_home_test.xlsx",
+                            "$v": {
+                                "$id": 163,
+                                "$type": 7,
+                                "Name": "_home_test.xlsx",
+                                "Alias": null,
+                                "Path": "D:/05ET/MatchTest/ETGame/Packages/cn.etetet.home\\Luban\\Config\\Datas\\_home_test.xlsx",
                                 "Desc": null
                             }
                         }

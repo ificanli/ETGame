@@ -92,6 +92,28 @@ MonoBehaviour:
     - gold
     - green
     - red
+    - poi_boss_spawn
+    - poi_evacuation
+    - poi_high_container
+    - poi_mission_task
+    - poi_tracked
+    - weapon_50011
+    - weapon_50010
+    - weapon_50009
+    - weapon_50008
+    - weapon_50007
+    - weapon_50006
+    - weapon_50005
+    - weapon_50004
+    - weapon_50003
+    - weapon_50002
+    - weapon_50001
+    - export (40)_10
+    - export (40)_9
+    - export (40)_8
+    - export (40)_7
+    - export (40)_6
+    - export (40)_5
     - export (40)_4
     - export (40)_3
     - export (40)_2

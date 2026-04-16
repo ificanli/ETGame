@@ -132,6 +132,8 @@ namespace ET.Server
         [EntitySystem]
         private static void Destroy(this RunTimeLimitComponent self)
         {
+            Unit unit = self.GetParent<Unit>();
+            RunTimeLimitMessageHelper.ClearState(unit);
             self.StopTimer();
         }
 
@@ -196,6 +198,7 @@ namespace ET.Server
             long effectiveDuration = self.DeadlineTime - self.StartTime;
             self.DurationMs = effectiveDuration > 0 ? effectiveDuration : 1;
             self.RestartTimer();
+            RunTimeLimitMessageHelper.SyncState(self.GetParent<Unit>(), self);
         }
 
         private static void RestartTimer(this RunTimeLimitComponent self)

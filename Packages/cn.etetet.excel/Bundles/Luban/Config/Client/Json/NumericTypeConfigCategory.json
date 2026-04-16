@@ -70,5 +70,11 @@
     "Name": "Phase",
     "MaxNumericType": 0,
     "AffectNumeric": []
+  },
+  {
+    "Id": 1010,
+    "Name": "Attack",
+    "MaxNumericType": 0,
+    "AffectNumeric": []
   }
 ]

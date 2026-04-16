@@ -27,43 +27,60 @@ namespace ET.Client
                 return;
             }
 
-            HashSet<string> usedConfigIds = new(StringComparer.Ordinal);
             HashSet<string> duplicateConfigIds = new(StringComparer.Ordinal);
+            HashSet<string> usedConfigIds = new(StringComparer.Ordinal);
+            List<ECAPointMarker> markersMissingConfigId = new List<ECAPointMarker>();
+            List<ECAPointMarker> markersWithDuplicateConfigId = new List<ECAPointMarker>();
+
             foreach (ECAPointMarker marker in markers)
             {
-                if (marker == null || string.IsNullOrWhiteSpace(marker.ConfigId))
+                if (marker == null)
                 {
                     continue;
                 }
 
-                string configId = marker.ConfigId.Trim();
+                string configId = NormalizeConfigId(marker.ConfigId);
+                if (string.IsNullOrEmpty(configId))
+                {
+                    markersMissingConfigId.Add(marker);
+                    continue;
+                }
+
                 if (!usedConfigIds.Add(configId))
                 {
                     duplicateConfigIds.Add(configId);
+                    markersWithDuplicateConfigId.Add(marker);
                 }
             }
 
-            int assignedCount = 0;
+            int filledCount = 0;
+            int repairedDuplicateCount = 0;
             Undo.IncrementCurrentGroup();
             int undoGroup = Undo.GetCurrentGroup();
 
-            foreach (ECAPointMarker marker in markers)
+            foreach (ECAPointMarker marker in markersMissingConfigId)
             {
-                if (marker == null || !string.IsNullOrWhiteSpace(marker.ConfigId))
-                {
-                    continue;
-                }
-
                 string prefix = BuildConfigIdPrefix(activeScene.name, marker.Type);
                 string newConfigId = CreateUniqueConfigId(prefix, usedConfigIds);
 
                 Undo.RecordObject(marker, "Fill Missing ECA ConfigIds");
                 marker.ConfigId = newConfigId;
                 EditorUtility.SetDirty(marker);
-                assignedCount++;
+                filledCount++;
             }
 
-            if (assignedCount > 0)
+            foreach (ECAPointMarker marker in markersWithDuplicateConfigId)
+            {
+                string prefix = BuildConfigIdPrefix(activeScene.name, marker.Type);
+                string newConfigId = CreateUniqueConfigId(prefix, usedConfigIds);
+
+                Undo.RecordObject(marker, "Fix Duplicate ECA ConfigIds");
+                marker.ConfigId = newConfigId;
+                EditorUtility.SetDirty(marker);
+                repairedDuplicateCount++;
+            }
+
+            if (filledCount > 0 || repairedDuplicateCount > 0)
             {
                 Undo.CollapseUndoOperations(undoGroup);
                 EditorSceneManager.MarkSceneDirty(activeScene);
@@ -72,14 +89,15 @@ namespace ET.Client
             StringBuilder messageBuilder = new StringBuilder();
             messageBuilder.AppendLine($"Scene: {activeScene.name}");
             messageBuilder.AppendLine($"Markers: {markers.Count}");
-            messageBuilder.AppendLine($"Filled: {assignedCount}");
+            messageBuilder.AppendLine($"Filled missing: {filledCount}");
+            messageBuilder.AppendLine($"Repaired duplicates: {repairedDuplicateCount}");
 
             if (duplicateConfigIds.Count > 0)
             {
                 List<string> duplicates = new List<string>(duplicateConfigIds);
                 duplicates.Sort(StringComparer.Ordinal);
                 messageBuilder.AppendLine();
-                messageBuilder.AppendLine("Existing duplicate ConfigIds still need manual fix:");
+                messageBuilder.AppendLine("Detected duplicate ConfigIds (kept first, reassigned later duplicates):");
                 messageBuilder.AppendLine(string.Join("\n", duplicates));
             }
 
@@ -127,6 +145,11 @@ namespace ET.Client
             string sanitizedSceneName = SanitizeToken(sceneName);
             string pointTypeToken = GetPointTypeToken(pointType);
             return $"eca_{sanitizedSceneName}_{pointTypeToken}";
+        }
+
+        private static string NormalizeConfigId(string configId)
+        {
+            return string.IsNullOrWhiteSpace(configId) ? string.Empty : configId.Trim();
         }
 
         private static string GetPointTypeToken(int pointType)

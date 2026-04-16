@@ -67,6 +67,16 @@ namespace ET.Client
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this HPViewComponent self)
         {
+            if (self.Player == null)
+            {
+                Unit player = UnitHelper.GetMyUnitFromCurrentScene(self.Scene());
+                if (player != null)
+                {
+                    self.m_Player = player;
+                }
+            }
+
+            self.RefreshRogueProgress(true);
             await ETTask.CompletedTask;
             return true;
         }
@@ -95,6 +105,7 @@ namespace ET.Client
                 else
                 {
                     self.m_Player = player;
+                    self.RefreshRogueProgress(true);
                 }
             }
 
@@ -104,7 +115,7 @@ namespace ET.Client
                 return;
             }
 
-            self.UpdateDisplayLevelAndExp();
+            self.UpdateDisplayLevel();
 
             if (Vector3.Distance(self.Player.Position, self.OwnerUnit.Position) <= 10)
             {
@@ -154,7 +165,7 @@ namespace ET.Client
             return ratio;
         }
 
-        private static void UpdateDisplayLevelAndExp(this HPViewComponent self)
+        private static void UpdateDisplayLevel(this HPViewComponent self)
         {
             if (self.OwnerUnit == null || self.Player == null)
             {
@@ -162,19 +173,13 @@ namespace ET.Client
             }
 
             bool isMyUnit = self.OwnerUnit.Id == self.Player.Id;
-            int displayLevel = self.OwnerUnit.GetComponent<UnitDisplayLevelComponent>()?.Level ?? 1;
-            float expRatio = 0f;
-
+            self.SetExpBarVisible(isMyUnit);
             if (isMyUnit)
             {
-                RogueClientComponent runtime = RogueClientHelper.GetOrAddRuntime(self.Root());
-                if (runtime != null)
-                {
-                    displayLevel = runtime.Level > 0 ? runtime.Level : displayLevel;
-                    int safeNeedExp = runtime.NeedExp > 0 ? runtime.NeedExp : 1;
-                    expRatio = Mathf.Clamp01(runtime.CurrentExp / (float)safeNeedExp);
-                }
+                return;
             }
+
+            int displayLevel = self.ResolveDisplayLevel();
 
             if (displayLevel <= 0)
             {
@@ -186,14 +191,57 @@ namespace ET.Client
                 self.LastDisplayLevel = displayLevel;
                 self.u_DataTxtLevel?.SetValue(displayLevel.ToString(), true);
             }
+        }
 
-            if (Mathf.Abs(self.LastDisplayExpRatio - expRatio) > 0.0001f)
+        public static void RefreshRogueProgress(this HPViewComponent self, bool force = false)
+        {
+            if (self.OwnerUnit == null || self.Player == null)
+            {
+                return;
+            }
+
+            bool isMyUnit = self.OwnerUnit.Id == self.Player.Id;
+            int displayLevel = self.ResolveDisplayLevel();
+            float expRatio = 0f;
+
+            if (isMyUnit)
+            {
+                RogueClientComponent runtime = RogueClientHelper.GetOrAddRuntime(self.Root());
+                if (runtime != null)
+                {
+                    if (runtime.Level > 0)
+                    {
+                        displayLevel = runtime.Level;
+                    }
+
+                    int safeNeedExp = runtime.NeedExp > 0 ? runtime.NeedExp : 1;
+                    expRatio = Mathf.Clamp01(runtime.CurrentExp / (float)safeNeedExp);
+                }
+            }
+
+            if (displayLevel <= 0)
+            {
+                displayLevel = 1;
+            }
+
+            if (force || self.LastDisplayLevel != displayLevel)
+            {
+                self.LastDisplayLevel = displayLevel;
+                self.u_DataTxtLevel?.SetValue(displayLevel.ToString(), true);
+            }
+
+            if (force || Mathf.Abs(self.LastDisplayExpRatio - expRatio) > 0.0001f)
             {
                 self.LastDisplayExpRatio = expRatio;
                 self.u_DataCurExp?.SetValue(expRatio, true);
             }
 
             self.SetExpBarVisible(isMyUnit);
+        }
+
+        private static int ResolveDisplayLevel(this HPViewComponent self)
+        {
+            return self.OwnerUnit.GetComponent<UnitDisplayLevelComponent>()?.Level ?? 1;
         }
 
         private static void SetExpBarVisible(this HPViewComponent self, bool visible)

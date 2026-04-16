@@ -395,5 +395,245 @@
 					"Unit" : "Unit",
 					"UnitType" : 7
 				}
+			}], [130101, {
+				"_id" : 130101,
+				"BuffId" : 230101,
+				"Desc" : "影刃猫-突刺前摇",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 900,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorSingle",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("101578030925865311"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 6000,
+					"MinDistance" : 0,
+					"Unit" : "Unit",
+					"UnitType" : 1
+				}
+			}], [130102, {
+				"_id" : 130102,
+				"BuffId" : 230102,
+				"Desc" : "影刃猫-突刺执行",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 0,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorCaster",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("6816078942656444383"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 0,
+					"MinDistance" : 0
+				}
+			}], [130111, {
+				"_id" : 130111,
+				"BuffId" : 230111,
+				"Desc" : "侦察猴-延迟爆炸",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 1500,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorPosition",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("2666088962965015811"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 8,
+					"MinDistance" : 0,
+					"Pos" : "Pos",
+					"Radius" : 0,
+					"SpellIndicator" : {
+						"Name" : null
+					}
+				}
+			}], [130121, {
+				"_id" : 130121,
+				"BuffId" : 230121,
+				"Desc" : "幻影猫头鹰-双段回旋",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 1600,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorSingle",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("7709456865747689649"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 6500,
+					"MinDistance" : 2200,
+					"Unit" : "Unit",
+					"UnitType" : 1
+				}
+			}], [130122, {
+				"_id" : 130122,
+				"BuffId" : 230122,
+				"Desc" : "幻影猫头鹰-去程命中",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 0,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorSingle",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("5041629284866146800"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 6500,
+					"MinDistance" : 2000,
+					"Unit" : "Unit",
+					"UnitType" : 1
+				}
+			}], [130123, {
+				"_id" : 130123,
+				"BuffId" : 230123,
+				"Desc" : "幻影猫头鹰-回程命中",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 0,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorSingle",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("7089454010674836515"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 6500,
+					"MinDistance" : 2000,
+					"Unit" : "Unit",
+					"UnitType" : 1
+				}
+			}], [130131, {
+				"_id" : 130131,
+				"BuffId" : 230131,
+				"Desc" : "重装鳄鱼-前方扇形喷射",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 2200,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorSector",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("5919813272213113205"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 4200,
+					"MinDistance" : 0,
+					"Unit" : "Unit",
+					"Units" : "Units",
+					"SpellIndicator" : {
+						"Name" : null
+					},
+					"Radius" : 4200,
+					"Angle" : 90,
+					"UnitType" : 1
+				}
+			}], [130141, {
+				"_id" : 130141,
+				"BuffId" : 230141,
+				"Desc" : "巴鲁-弹簧拳前摇",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 1500,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorSingle",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("3797676119362583249"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 3600,
+					"MinDistance" : 0,
+					"Unit" : "Unit",
+					"UnitType" : 1
+				}
+			}], [130142, {
+				"_id" : 130142,
+				"BuffId" : 230142,
+				"Desc" : "巴鲁-弹簧拳命中",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 0,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorSingle",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("8246238432966976130"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 3400,
+					"MinDistance" : 0,
+					"Unit" : "Unit",
+					"UnitType" : 1
+				}
+			}], [130143, {
+				"_id" : 130143,
+				"BuffId" : 230143,
+				"Desc" : "巴鲁-积木雨轰炸",
+				"Icon" : {
+					"Name" : null
+				},
+				"CD" : 2200,
+				"DamageMultiplier" : 100,
+				"Cost" : null,
+				"TargetSelector" : {
+					"_t" : "ET.TargetSelectorPosition",
+					"_id" : 1,
+					"Children" : [],
+					"TreeId" : NumberLong("7449464096381082546"),
+					"Buff" : "Buff",
+					"Caster" : "Caster",
+					"Owner" : "Owner",
+					"MaxDistance" : 10,
+					"MinDistance" : 0,
+					"Pos" : "Pos",
+					"Radius" : 0,
+					"SpellIndicator" : {
+						"Name" : null
+					}
+				}
 			}]]
 }

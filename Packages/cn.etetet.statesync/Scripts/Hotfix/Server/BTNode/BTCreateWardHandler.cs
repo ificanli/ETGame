@@ -41,6 +41,7 @@ namespace ET.Server
             SyncWardTransform(wardUnit, targetPos);
             SyncWardCamp(wardUnit, caster);
             SyncWardPhase(wardUnit);
+            SyncWardVisionRadius(wardUnit, node.VisionRadius);
 
             WardComponent wardComponent = wardUnit.AddComponent<WardComponent>();
             wardComponent.OwnerUnitId = caster.Id;
@@ -92,6 +93,18 @@ namespace ET.Server
             }
 
             numericComponent.SetNoEvent(NumericType.Phase, 0);
+        }
+
+        private static void SyncWardVisionRadius(Unit wardUnit, float visionRadius)
+        {
+            NumericComponent numericComponent = wardUnit.NumericComponent;
+            if (numericComponent == null)
+            {
+                return;
+            }
+
+            long rawAoi = (long)math.ceil(math.max(0f, visionRadius) * 1000f);
+            numericComponent.SetNoEvent(NumericType.AOI, rawAoi);
         }
     }
 }

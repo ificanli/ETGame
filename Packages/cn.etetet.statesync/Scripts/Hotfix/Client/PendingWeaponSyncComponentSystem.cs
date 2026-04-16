@@ -132,6 +132,11 @@ namespace ET.Client
                 weaponComponent = unit.AddComponent<WeaponComponent, int, int>(0, 0);
             }
 
+            // 检测当前槽位是否刚进入换弹状态
+            int currentSlot = weaponComponent.CurrentSlot;
+            bool wasReloading = currentSlot == 1 ? weaponComponent.Slot1Reloading : weaponComponent.Slot2Reloading;
+            bool nowReloading = currentSlot == 1 ? state.Slot1Reloading : state.Slot2Reloading;
+
             weaponComponent.Slot1Ammo = state.Slot1Ammo;
             weaponComponent.Slot2Ammo = state.Slot2Ammo;
             weaponComponent.Slot1Reloading = state.Slot1Reloading;
@@ -141,13 +146,24 @@ namespace ET.Client
             weaponComponent.Slot1EffectiveAttackRange = state.Slot1AttackRange;
             weaponComponent.Slot2EffectiveAttackRange = state.Slot2AttackRange;
 
+            // 换弹状态变化时，发布事件供 HotfixView 层驱动动画
+            if (wasReloading != nowReloading)
+            {
+                EventSystem.Instance.Publish(root, new EventWeaponReloadStateChanged
+                {
+                    Scene = root,
+                    UnitId = state.UnitId,
+                    IsReloading = nowReloading,
+                });
+            }
+
             EventSystem.Instance.Publish(root, new EventWeaponAmmoChanged
             {
                 Scene = root,
                 UnitId = state.UnitId,
             });
 
-            Log.Info($"[WeaponInitTrace][PendingAmmo] applied unitId={state.UnitId}, slot1Ammo={state.Slot1Ammo}, slot2Ammo={state.Slot2Ammo}");
+            Log.Info($"[WeaponInitTrace][PendingAmmo] applied unitId={state.UnitId}, slot1Ammo={state.Slot1Ammo}, slot2Ammo={state.Slot2Ammo}, reloading={nowReloading}");
         }
     }
 }

@@ -1,0 +1,122 @@
+[
+  {
+    "Id": 2001,
+    "BuildingConfigId": 2,
+    "Level": 1,
+    "UpgradeGoldCost": 0,
+    "CapacityValue1": 20,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": ""
+  },
+  {
+    "Id": 2002,
+    "BuildingConfigId": 2,
+    "Level": 2,
+    "UpgradeGoldCost": 80,
+    "CapacityValue1": 30,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": ""
+  },
+  {
+    "Id": 2003,
+    "BuildingConfigId": 2,
+    "Level": 3,
+    "UpgradeGoldCost": 160,
+    "CapacityValue1": 40,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": ""
+  },
+  {
+    "Id": 3001,
+    "BuildingConfigId": 3,
+    "Level": 1,
+    "UpgradeGoldCost": 0,
+    "CapacityValue1": 2,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": "{\"processIntervalMs\":60000}"
+  },
+  {
+    "Id": 3002,
+    "BuildingConfigId": 3,
+    "Level": 2,
+    "UpgradeGoldCost": 70,
+    "CapacityValue1": 3,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": "{\"processIntervalMs\":45000}"
+  },
+  {
+    "Id": 3003,
+    "BuildingConfigId": 3,
+    "Level": 3,
+    "UpgradeGoldCost": 140,
+    "CapacityValue1": 4,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": "{\"processIntervalMs\":30000}"
+  },
+  {
+    "Id": 4001,
+    "BuildingConfigId": 4,
+    "Level": 1,
+    "UpgradeGoldCost": 0,
+    "CapacityValue1": 0,
+    "CapacityValue2": 0,
+    "OutputValue": 12,
+    "ExtraParams": "{\"collectIntervalMs\":60000}"
+  },
+  {
+    "Id": 4002,
+    "BuildingConfigId": 4,
+    "Level": 2,
+    "UpgradeGoldCost": 60,
+    "CapacityValue1": 0,
+    "CapacityValue2": 0,
+    "OutputValue": 18,
+    "ExtraParams": "{\"collectIntervalMs\":45000}"
+  },
+  {
+    "Id": 4003,
+    "BuildingConfigId": 4,
+    "Level": 3,
+    "UpgradeGoldCost": 120,
+    "CapacityValue1": 0,
+    "CapacityValue2": 0,
+    "OutputValue": 24,
+    "ExtraParams": "{\"collectIntervalMs\":30000}"
+  },
+  {
+    "Id": 5001,
+    "BuildingConfigId": 5,
+    "Level": 1,
+    "UpgradeGoldCost": 0,
+    "CapacityValue1": 20,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": ""
+  },
+  {
+    "Id": 5002,
+    "BuildingConfigId": 5,
+    "Level": 2,
+    "UpgradeGoldCost": 120,
+    "CapacityValue1": 40,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": ""
+  },
+  {
+    "Id": 5003,
+    "BuildingConfigId": 5,
+    "Level": 3,
+    "UpgradeGoldCost": 240,
+    "CapacityValue1": 60,
+    "CapacityValue2": 0,
+    "OutputValue": 0,
+    "ExtraParams": ""
+  }
+]

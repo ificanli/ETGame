@@ -50,6 +50,12 @@ namespace ET
 		public const int WeightFinalAdd = 10084;
 		public const int WeightFinalPct = 10085;
 		public const int AI = 1009;
+		public const int Attack = 1010;
+		public const int AttackBase = 10101;
+		public const int AttackAdd = 10102;
+		public const int AttackPct = 10103;
+		public const int AttackFinalAdd = 10104;
+		public const int AttackFinalPct = 10105;
 		public const int Stun = 1013;
 		public const int StunBase = 10131;
 		public const int StunAdd = 10132;

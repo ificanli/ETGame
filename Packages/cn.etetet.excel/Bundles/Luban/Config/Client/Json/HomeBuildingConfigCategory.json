@@ -1,0 +1,62 @@
+[
+  {
+    "Id": 1,
+    "BuildingType": 1,
+    "Name": "主城",
+    "SceneVisualKey": "main_city",
+    "CanRepeat": false,
+    "MaxCount": 1,
+    "SortOrder": 10,
+    "DefaultUnlock": true,
+    "DefaultSlotType": 1,
+    "BuildGoldCost": 0
+  },
+  {
+    "Id": 2,
+    "BuildingType": 2,
+    "Name": "大红收藏馆",
+    "SceneVisualKey": "museum",
+    "CanRepeat": true,
+    "MaxCount": 2,
+    "SortOrder": 20,
+    "DefaultUnlock": true,
+    "DefaultSlotType": 2,
+    "BuildGoldCost": 60
+  },
+  {
+    "Id": 3,
+    "BuildingType": 3,
+    "Name": "物品回收间",
+    "SceneVisualKey": "recycle_room",
+    "CanRepeat": true,
+    "MaxCount": 2,
+    "SortOrder": 30,
+    "DefaultUnlock": true,
+    "DefaultSlotType": 2,
+    "BuildGoldCost": 50
+  },
+  {
+    "Id": 4,
+    "BuildingType": 4,
+    "Name": "农场",
+    "SceneVisualKey": "farm",
+    "CanRepeat": true,
+    "MaxCount": 2,
+    "SortOrder": 40,
+    "DefaultUnlock": true,
+    "DefaultSlotType": 2,
+    "BuildGoldCost": 40
+  },
+  {
+    "Id": 5,
+    "BuildingType": 5,
+    "Name": "仓库",
+    "SceneVisualKey": "warehouse",
+    "CanRepeat": false,
+    "MaxCount": 1,
+    "SortOrder": 50,
+    "DefaultUnlock": true,
+    "DefaultSlotType": 2,
+    "BuildGoldCost": 80
+  }
+]

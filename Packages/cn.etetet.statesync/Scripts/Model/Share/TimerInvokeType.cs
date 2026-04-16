@@ -11,6 +11,7 @@ namespace ET
         public const int RunTimeLimitExpire = PackageType.StateSync * 1000 + 8;
         public const int WeaponReloadComplete = PackageType.StateSync * 1000 + 9;
         public const int RogueTrapTick = PackageType.StateSync * 1000 + 10;
+        public const int RobotAutoLevelTick = PackageType.StateSync * 1000 + 11;
     }
 
     /// <summary>

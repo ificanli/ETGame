@@ -41,6 +41,7 @@ message UnitInfo
 	PetInfo PetInfo = 8;
 	int32 CampId = 9;
 	int32 DisplayLevel = 10;
+	int32 SideId = 11;
 }
 
 message M2C_CreateUnits // IMessage
@@ -286,4 +287,10 @@ message M2C_ContainerMoveItem // ILocationResponse
 	int32 RpcId = 1;
 	int32 Error = 2;
 	string Message = 3;
+}
+
+message M2C_RunTimeLimitState // IMessage
+{
+	bool IsActive = 1;
+	int64 RemainMs = 2;
 }

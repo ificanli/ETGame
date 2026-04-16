@@ -20,6 +20,8 @@ namespace ET.Client
         public Button SearchButton;
         public TMP_Text SearchButtonText;
         public Button OpenDoorButton;
+        public Button ExitButton;
+        public bool IsQuickExitRequesting;
         public TMP_Text FpsCounterText;
         public float FpsAccumulatedTime;
         public int FpsAccumulatedFrames;
@@ -51,17 +53,32 @@ namespace ET.Client
         public Image MinimapArrow;
         public TMP_Text MinimapNameText;
         public RectTransform MinimapMarkerLayer;
+        public RectTransform MinimapPoiLayer;
+        public RectTransform MinimapTrackedPoiLayer;
         public Sprite MinimapMarkerSprite;
         public Dictionary<long, RectTransform> MinimapMarkerRects = new();
         public Dictionary<long, Image> MinimapMarkerImages = new();
         public Dictionary<long, string> MinimapMarkerDesiredSpriteNames = new();
         public Dictionary<string, Sprite> MinimapMarkerLoadedSprites = new();
         public HashSet<string> MinimapMarkerLoadingSpriteNames = new();
+        public Dictionary<string, RectTransform> MinimapPoiRects = new();
+        public Dictionary<string, Image> MinimapPoiImages = new();
+        public Dictionary<string, string> MinimapPoiDesiredSpriteNames = new();
+        public Dictionary<string, Sprite> MinimapPoiLoadedSprites = new();
+        public HashSet<string> MinimapPoiLoadingSpriteNames = new();
+        public RectTransform MinimapTrackedPoiRect;
+        public Image MinimapTrackedPoiImage;
+        public string MinimapTrackedPoiDesiredSpriteName;
         public EntityRef<EvacuateTipsComponent> EvacuateTipsViewRef;
         public EvacuateTipsComponent EvacuateTipsView => this.EvacuateTipsViewRef;
+        public bool IsPickupHintPanelOpening;
+        public bool LastPickupHintVisible;
+        public string LastPickupHintPointId;
         public bool IsEvacuateTipsOpening;
         public bool LastEvacuateTipsVisible;
         public string LastEvacuationPointId;
         public int LastEvacuateRemainSeconds = int.MinValue;
+        public bool LastRunTimeLimitVisible;
+        public long LastRunTimeLimitRemainSeconds = long.MinValue;
     }
 }

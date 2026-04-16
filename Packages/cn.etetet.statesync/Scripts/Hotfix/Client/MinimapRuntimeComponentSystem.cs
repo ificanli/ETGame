@@ -223,40 +223,31 @@ namespace ET.Client
                 return;
             }
 
-            // 视觉迷雾优先走独立视野半径；未配置时兼容旧 AOI 语义。
-            if (self.FogVisionRadius > 0f)
+            UnitComponent unitComponent = scene.GetComponent<UnitComponent>();
+            if (unitComponent == null)
             {
-                self.AppendFogCells(gridWidth, gridHeight, myUnit.Position, self.FogVisionRadius);
+                return;
             }
-            else
+
+            foreach (Unit unit in unitComponent.Children.Values)
             {
-                UnitComponent unitComponent = scene.GetComponent<UnitComponent>();
-                if (unitComponent == null)
+                if (unit == null || unit.IsDisposed)
                 {
-                    return;
+                    continue;
                 }
 
-                foreach (Unit unit in unitComponent.Children.Values)
+                if (unit.Id != myUnit.Id && !CampHelper.IsFriendly(myUnit, unit))
                 {
-                    if (unit == null || unit.IsDisposed)
-                    {
-                        continue;
-                    }
-
-                    if (!CampHelper.IsFriendly(myUnit, unit))
-                    {
-                        continue;
-                    }
-
-                    NumericComponent numeric = unit.NumericComponent;
-                    if (numeric == null)
-                    {
-                        continue;
-                    }
-
-                    int rawViewDistance = numeric.GetAsInt(NumericType.AOI);
-                    self.AppendFogCellsByAoiSemantic(gridWidth, gridHeight, unit.Position, rawViewDistance);
+                    continue;
                 }
+
+                float radius = self.ResolveFogVisionRadius(unit);
+                if (radius <= 0f)
+                {
+                    continue;
+                }
+
+                self.AppendFogCells(gridWidth, gridHeight, unit, radius);
             }
 
             foreach (int cellIndex in self.CurrentVisibleCells)
@@ -276,51 +267,35 @@ namespace ET.Client
             return (viewDistance - 1) / global::ET.AOIConst.CellSizePermille + 1;
         }
 
-        private static void AppendFogCellsByAoiSemantic(
-            this MinimapRuntimeComponent self,
-            int gridWidth,
-            int gridHeight,
-            float3 centerPosition,
-            int rawViewDistance)
+        private static float ResolveFogVisionRadius(this MinimapRuntimeComponent self, Unit unit)
         {
-            float fogCellSize = self.FogCellSize;
-            if (fogCellSize <= 0f)
+            if (unit == null || unit.IsDisposed)
+            {
+                return 0f;
+            }
+
+            if (unit.UnitType == UnitType.Player && self.FogVisionRadius > 0f)
+            {
+                return self.FogVisionRadius;
+            }
+
+            return VisibilityLineOfSightHelper.ResolveRawAoiWorldRadius(unit);
+        }
+
+        private static void AppendFogCells(this MinimapRuntimeComponent self, int gridWidth, int gridHeight, Unit source, float radius)
+        {
+            if (source == null || source.IsDisposed)
             {
                 return;
             }
 
-            int aoiCellRadius = ResolveAoiCellRadius(rawViewDistance);
-            float aoiCellWorldSize = global::ET.AOIConst.CellSizeWorld;
-            int aoiCellX = (int)(centerPosition.x * 1000f) / global::ET.AOIConst.CellSizePermille;
-            int aoiCellY = (int)(centerPosition.z * 1000f) / global::ET.AOIConst.CellSizePermille;
-
-            float visibleMinX = (aoiCellX - aoiCellRadius) * aoiCellWorldSize;
-            float visibleMaxX = (aoiCellX + aoiCellRadius + 1) * aoiCellWorldSize;
-            float visibleMinZ = (aoiCellY - aoiCellRadius) * aoiCellWorldSize;
-            float visibleMaxZ = (aoiCellY + aoiCellRadius + 1) * aoiCellWorldSize;
-
-            int minFogX = math.max(0, (int)math.floor((visibleMinX - self.WorldMinX) / fogCellSize));
-            int maxFogXExclusive = math.min(gridWidth, (int)math.ceil((visibleMaxX - self.WorldMinX) / fogCellSize));
-            int minFogY = math.max(0, (int)math.floor((visibleMinZ - self.WorldMinZ) / fogCellSize));
-            int maxFogYExclusive = math.min(gridHeight, (int)math.ceil((visibleMaxZ - self.WorldMinZ) / fogCellSize));
-
-            for (int y = minFogY; y < maxFogYExclusive; ++y)
-            {
-                for (int x = minFogX; x < maxFogXExclusive; ++x)
-                {
-                    self.CurrentVisibleCells.Add(y * gridWidth + x);
-                }
-            }
-        }
-
-        private static void AppendFogCells(this MinimapRuntimeComponent self, int gridWidth, int gridHeight, float3 centerPosition, float radius)
-        {
             float cellSize = self.FogCellSize;
             if (cellSize <= 0f)
             {
                 return;
             }
 
+            float3 centerPosition = source.Position;
             int minX = math.max(0, (int)math.floor((centerPosition.x - radius - self.WorldMinX) / cellSize));
             int maxX = math.min(gridWidth - 1, (int)math.floor((centerPosition.x + radius - self.WorldMinX) / cellSize));
             int minY = math.max(0, (int)math.floor((centerPosition.z - radius - self.WorldMinZ) / cellSize));
@@ -336,6 +311,12 @@ namespace ET.Client
                     float deltaX = cellCenterX - centerPosition.x;
                     float deltaZ = cellCenterZ - centerPosition.z;
                     if (deltaX * deltaX + deltaZ * deltaZ > radiusSqr)
+                    {
+                        continue;
+                    }
+
+                    float3 cellCenter = new float3(cellCenterX, centerPosition.y, cellCenterZ);
+                    if (!VisibilityLineOfSightHelper.HasLineOfSight(source, cellCenter))
                     {
                         continue;
                     }

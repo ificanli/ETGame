@@ -1,3 +1,5 @@
+using System;
+
 namespace ET.Client
 {
     [Event(SceneType.Client)]
@@ -85,7 +87,45 @@ namespace ET.Client
                     return;
                 }
 
+                await CloseRootBattleEntryPanelsAsync(scene);
+                scene = sceneRef;
+                if (scene == null || scene.IsDisposed)
+                {
+                    return;
+                }
+
                 scene.YIUIMgr()?.ClosePanel<LoadingPanelComponent>();
+            }
+        }
+
+        private static async ETTask CloseRootBattleEntryPanelsAsync(Scene root)
+        {
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            EntityRef<Scene> rootRef = root;
+            await root.CloseHomePanelAsync(false);
+            root = rootRef;
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            YIUIMgrComponent yiuiMgr = root.YIUIMgr();
+            if (yiuiMgr == null || yiuiMgr.IsDisposed || yiuiMgr.GetPanel<LobbyPanelComponent>() == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await yiuiMgr.ClosePanelAsync<LobbyPanelComponent>(false);
+            }
+            catch (Exception exception)
+            {
+                Log.Warning($"[LobbyUI] scene change finish close lobby panel ignored exception: {exception.Message}");
             }
         }
     }

@@ -16,5 +16,6 @@ namespace ET
         public const int ERR_DebugSpawnMonsterContextInvalid = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 12;
         public const int ERR_DebugSpawnMonsterInvalidConfig = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 13;
         public const int ERR_DebugSpawnMonsterCreateFailed = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 14;
+        public const int ERR_QuickExitExtractionContextInvalid = ErrorCode.ERR_WithoutException + PackageType.StateSync * 1000 + 15;
     }
 }

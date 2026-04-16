@@ -995,6 +995,7 @@ namespace ET
         public int SecureHeight { get; set; }
         [MemoryPackOrder(11)]
         public List<LoadoutGridItemData> FinalSecureItems { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1043,8 +1044,8 @@ namespace ET
         public const ushort G2C_LoadoutStateChanged = 11120;
         public const ushort M2C_EvacuationSettlement = 11121;
         public const ushort M2C_DeathSettlement = 11122;
-        public const ushort M2C_RuntimeSecureStateChanged = 11125;
-        public const ushort Map2G_EvacuationSettlement = 11123;
-        public const ushort Map2G_LoadoutCarryResult = 11124;
+        public const ushort M2C_RuntimeSecureStateChanged = 11123;
+        public const ushort Map2G_EvacuationSettlement = 11124;
+        public const ushort Map2G_LoadoutCarryResult = 11125;
     }
 }

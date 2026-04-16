@@ -116,13 +116,74 @@
   {
     "Id": 20,
     "Key": "Minimap.SceneFog.VisionRadius",
-    "FloatValue": 3,
+    "FloatValue": 8,
     "StringValue": ""
   },
   {
     "Id": 21,
     "Key": "SDCMap.Minimap.SceneFog.VisionRadius",
-    "FloatValue": 3,
+    "FloatValue": 8,
+    "StringValue": ""
+  },
+  {
+    "Id": 22,
+    "Key": "Minimap.PoiIcon.Evacuation",
+    "FloatValue": 0,
+    "StringValue": "poi_evacuation"
+  },
+  {
+    "Id": 23,
+    "Key": "Minimap.PoiIcon.HighContainer",
+    "FloatValue": 0,
+    "StringValue": "poi_high_container"
+  },
+  {
+    "Id": 24,
+    "Key": "Minimap.PoiIcon.BossSpawn",
+    "FloatValue": 0,
+    "StringValue": "poi_boss_spawn"
+  },
+  {
+    "Id": 25,
+    "Key": "Minimap.PoiIcon.Tracked",
+    "FloatValue": 0,
+    "StringValue": "poi_tracked"
+  },
+  {
+    "Id": 26,
+    "Key": "Minimap.PoiTipText.Evacuation",
+    "FloatValue": 38008,
+    "StringValue": ""
+  },
+  {
+    "Id": 27,
+    "Key": "Minimap.PoiTipText.HighContainer",
+    "FloatValue": 38009,
+    "StringValue": ""
+  },
+  {
+    "Id": 28,
+    "Key": "Minimap.PoiTipText.BossSpawn",
+    "FloatValue": 38010,
+    "StringValue": ""
+  },
+  {
+    "Id": 29,
+    "Key": "Minimap.MarkerColor.MissionTask",
+    "FloatValue": 0,
+    "StringValue": "#FF9F1C"
+  },
+  {
+    "Id": 30,
+    "Key": "Minimap.PoiIcon.MissionTask",
+    "FloatValue": 0,
+    "StringValue": "poi_mission_task"
+  },
+  {
+    "Id": 31,
+    "Key": "Minimap.PoiTipText.MissionTask",
+    "FloatValue": 38011,
     "StringValue": ""
   }
 ]
+

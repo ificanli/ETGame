@@ -13,6 +13,8 @@ namespace ET.Client
     [FriendOf(typeof(LoadoutComponent))]
     public static partial class LobbyPanelComponentSystem
     {
+        private const long QuickTransferDoubleClickDelayMs = 300;
+
         [EntitySystem]
         private static void YIUIInitialize(this LobbyPanelComponent self)
         {
@@ -60,8 +62,10 @@ namespace ET.Client
         [EntitySystem]
         private static async ETTask<bool> YIUIOpen(this LobbyPanelComponent self)
         {
+            self.IsMatchFlowRunning = false;
             AudioHelper.PlayBgm(self.Root(), AudioEventId.BgmLobby);
             EntityRef<LobbyPanelComponent> selfRef = self;
+            bool inHome = self.IsInHomeScene();
             self.ShowPanel(self.u_ComRolePanelRectTransform);
             await self.CloseMatchWaitingViewAsync(false);
             self = selfRef;
@@ -78,6 +82,16 @@ namespace ET.Client
             }
 
             self.TryRefreshLoadoutUi(true);
+            if (inHome)
+            {
+                await self.Root().OpenHomePanelAsync();
+                self = selfRef;
+                if (self == null || self.IsDisposed)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -86,7 +100,29 @@ namespace ET.Client
         [YIUIInvoke(LobbyPanelComponent.OnEventEnterMapInvoke)]
         private static async ETTask OnEventEnterMapInvoke(this LobbyPanelComponent self)
         {
-            await self.SendMatchRequest(self.GetSelectedMatchGameMode());
+            if (self.IsMatchFlowRunning)
+            {
+                Log.Info("[LobbyUI] match flow is already running, ignore repeated enter map click");
+                await ETTask.CompletedTask;
+                return;
+            }
+
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            self.IsMatchFlowRunning = true;
+            int gameMode = self.GetSelectedMatchGameMode();
+            bool started = false;
+            try
+            {
+                started = await self.SendMatchRequest(gameMode);
+            }
+            finally
+            {
+                LobbyPanelComponent lobbyPanel = selfRef;
+                if (!started && lobbyPanel != null && !lobbyPanel.IsDisposed)
+                {
+                    lobbyPanel.IsMatchFlowRunning = false;
+                }
+            }
         }
 
         [YIUIInvoke(LobbyPanelComponent.OnEventRoleToggleInvoke)]
@@ -94,6 +130,11 @@ namespace ET.Client
         {
             self.CloseBattleRecordOverlay();
             self.ShowPanel(self.u_ComRolePanelRectTransform);
+            if (self.IsInHomeScene())
+            {
+                await self.Root().CloseHomePanelAsync(false);
+            }
+
             await ETTask.CompletedTask;
         }
 
@@ -104,6 +145,11 @@ namespace ET.Client
             self.ShowPanel(self.u_ComEquipPanelRectTransform);
             self.RefreshLoadoutContentTabUi();
             self.TryRefreshLoadoutUi(true);
+            if (self.IsInHomeScene())
+            {
+                await self.Root().CloseHomePanelAsync(false);
+            }
+
             await ETTask.CompletedTask;
         }
 
@@ -115,6 +161,11 @@ namespace ET.Client
             self.RefreshMatchModeSelection();
             self.InitBattleRecordUi();
             self.CloseBattleRecordOverlay();
+            if (self.IsInHomeScene())
+            {
+                await self.Root().CloseHomePanelAsync(false);
+            }
+
             await ETTask.CompletedTask;
         }
 
@@ -122,6 +173,13 @@ namespace ET.Client
         private static async ETTask OnEventBuildToggleInvoke(this LobbyPanelComponent self)
         {
             self.CloseBattleRecordOverlay();
+            if (self.IsInHomeScene())
+            {
+                self.ShowPanel(self.u_ComRolePanelRectTransform);
+                await self.Root().OpenHomePanelAsync();
+                return;
+            }
+
             self.ShowPanel(self.u_ComBuildPanelRectTransform);
             await ETTask.CompletedTask;
         }
@@ -131,6 +189,11 @@ namespace ET.Client
         {
             self.CloseBattleRecordOverlay();
             self.ShowPanel(self.u_ComExplorePanelRectTransform);
+            if (self.IsInHomeScene())
+            {
+                await self.Root().CloseHomePanelAsync(false);
+            }
+
             await ETTask.CompletedTask;
         }
 
@@ -218,6 +281,18 @@ namespace ET.Client
             self.u_ComMatchPanelRectTransform.gameObject.SetActive(self.u_ComMatchPanelRectTransform == targetPanel);
             self.u_ComBuildPanelRectTransform.gameObject.SetActive(self.u_ComBuildPanelRectTransform == targetPanel);
             self.u_ComExplorePanelRectTransform.gameObject.SetActive(self.u_ComExplorePanelRectTransform == targetPanel);
+            if (self.u_ComBuildPanelRectTransform == targetPanel)
+            {
+                self.RefreshHomeUiNow();
+            }
+        }
+
+        private static bool IsInHomeScene(this LobbyPanelComponent self)
+        {
+            Scene currentScene = self?.Root()?.CurrentScene();
+            return currentScene != null &&
+                !currentScene.IsDisposed &&
+                currentScene.Name.GetSceneConfigName() == "Home";
         }
 
         private static void SwitchLoadoutContentTab(this LobbyPanelComponent self, bool showWarehouse)
@@ -851,15 +926,16 @@ namespace ET.Client
         /// <summary>
         /// 发送匹配请求
         /// </summary>
-        private static async ETTask SendMatchRequest(this LobbyPanelComponent self, int gameMode)
+        private static async ETTask<bool> SendMatchRequest(this LobbyPanelComponent self, int gameMode)
         {
             EntityRef<LobbyPanelComponent> selfRef = self;
+            EntityRef<Scene> rootRef = self.Root();
 
             bool confirmSuccess = await self.ConfirmLoadoutAsync();
             self = selfRef;
-            if (!confirmSuccess)
+            if (self == null || self.IsDisposed || !confirmSuccess)
             {
-                return;
+                return false;
             }
 
             C2G_MatchRequest request = C2G_MatchRequest.Create();
@@ -867,11 +943,15 @@ namespace ET.Client
 
             G2C_MatchRequest response = (G2C_MatchRequest)await self.Root().GetComponent<ClientSenderComponent>().Call(request);
             self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                return false;
+            }
 
             if (response.Error != ErrorCode.ERR_Success)
             {
                 Log.Error($"匹配请求失败: {response.Error}");
-                return;
+                return false;
             }
 
             Log.Info($"匹配请求成功，RequestId: {response.RequestId}, GameMode: {gameMode}，等待匹配...");
@@ -881,47 +961,125 @@ namespace ET.Client
             self = selfRef;
             if (self == null || self.IsDisposed)
             {
-                return;
+                return false;
             }
 
-            // 匹配成功后先关闭等待弹窗，避免后续回 Home 时残留旧界面
-            await self.Root().GetComponent<ObjectWait>().Wait<Wait_MatchSuccess>();
-            self = selfRef;
-            if (self == null || self.IsDisposed)
+            self.WaitMatchEnterMapFlow(rootRef).Coroutine();
+            return true;
+        }
+
+        private static async ETTask WaitMatchEnterMapFlow(this LobbyPanelComponent self, EntityRef<Scene> rootRef)
+        {
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            try
             {
-                return;
-            }
+                // 匹配成功后先关闭等待弹窗，避免后续回 Home 时残留旧界面
+                Scene matchSuccessRoot = rootRef;
+                if (matchSuccessRoot == null || matchSuccessRoot.IsDisposed)
+                {
+                    return;
+                }
 
-            await self.CloseMatchWaitingViewAsync(false);
-            self = selfRef;
-            if (self == null || self.IsDisposed)
+                await matchSuccessRoot.GetComponent<ObjectWait>().Wait<Wait_MatchSuccess>();
+
+                Scene closeWaitingRoot = rootRef;
+                if (closeWaitingRoot == null || closeWaitingRoot.IsDisposed)
+                {
+                    return;
+                }
+
+                await closeWaitingRoot.CloseMatchWaitingViewAsync(false);
+
+                // 服务端匹配成功后会自动传送玩家，客户端只需等待场景切换完成
+                Scene sceneChangeRoot = rootRef;
+                if (sceneChangeRoot == null || sceneChangeRoot.IsDisposed)
+                {
+                    return;
+                }
+
+                await sceneChangeRoot.GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
+
+                Scene finishRoot = rootRef;
+                if (finishRoot == null || finishRoot.IsDisposed)
+                {
+                    return;
+                }
+
+                // 发布 EnterMapFinish 事件，关闭 Loading 面板
+                EventSystem.Instance.Publish(finishRoot, new EnterMapFinish());
+
+                // 关闭 Lobby 面板（MatchView 会随面板一起关闭），改走 root 级别兜底，避免 stale UIPanel 截断进图链路。
+                await finishRoot.CloseLobbyPanelAsync(false);
+            }
+            catch (Exception ex)
             {
-                return;
+                Log.Error($"[LobbyUI] wait match enter map flow failed: {ex}");
             }
-
-            // 服务端匹配成功后会自动传送玩家，客户端只需等待场景切换完成
-            await self.Root().GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
-            self = selfRef;
-            if (self == null || self.IsDisposed)
+            finally
             {
-                return;
+                LobbyPanelComponent lobbyPanel = selfRef;
+                if (lobbyPanel != null && !lobbyPanel.IsDisposed)
+                {
+                    lobbyPanel.IsMatchFlowRunning = false;
+                }
             }
-
-            // 发布 EnterMapFinish 事件，关闭 Loading 面板
-            EventSystem.Instance.Publish(self.Root(), new EnterMapFinish());
-
-            // 关闭 Lobby 面板（MatchView 会随面板一起关闭）
-            await self.UIPanel.CloseAsync();
         }
 
         private static async ETTask CloseMatchWaitingViewAsync(this LobbyPanelComponent self, bool tween = true)
         {
-            if (self == null || self.IsDisposed || self.UIPanel == null)
+            await self?.Root().CloseMatchWaitingViewAsync(tween);
+        }
+
+        private static async ETTask CloseMatchWaitingViewAsync(this Scene root, bool tween = true)
+        {
+            if (root == null || root.IsDisposed)
             {
                 return;
             }
 
-            await self.UIPanel.CloseViewAsync<MatchViewComponent>(tween);
+            YIUIMgrComponent yiuiMgr = root.GetComponent<YIUIMgrComponent>();
+            if (yiuiMgr == null || yiuiMgr.IsDisposed)
+            {
+                return;
+            }
+
+            LobbyPanelComponent lobbyPanel = yiuiMgr.GetPanel<LobbyPanelComponent>();
+            if (lobbyPanel == null || lobbyPanel.IsDisposed || lobbyPanel.UIPanel == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await lobbyPanel.UIPanel.CloseViewAsync<MatchViewComponent>(tween);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"[LobbyUI] close match waiting view ignored exception: {ex.Message}");
+            }
+        }
+
+        private static async ETTask CloseLobbyPanelAsync(this Scene root, bool tween = true)
+        {
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            YIUIMgrComponent yiuiMgr = root.GetComponent<YIUIMgrComponent>();
+            if (yiuiMgr == null || yiuiMgr.IsDisposed)
+            {
+                return;
+            }
+
+            try
+            {
+                await yiuiMgr.ClosePanelAsync<LobbyPanelComponent>(tween);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"[LobbyUI] close lobby panel ignored exception: {ex.Message}");
+            }
         }
 
         private static async ETTask<bool> ConfirmLoadoutAsync(this LobbyPanelComponent self)
@@ -1038,16 +1196,6 @@ namespace ET.Client
             }
 
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() =>
-            {
-                LobbyPanelComponent panel = panelRef;
-                if (panel == null || panel.IsDisposed)
-                {
-                    return;
-                }
-
-                panel.HandleFixedSlotClickAsync(slotType).Coroutine();
-            });
         }
 
         private static async ETTask HandleFixedSlotClickAsync(this LobbyPanelComponent self, EquipSlotType slotType)

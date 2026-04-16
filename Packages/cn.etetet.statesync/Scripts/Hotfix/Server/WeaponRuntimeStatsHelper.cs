@@ -22,8 +22,8 @@ namespace ET.Server
 
             RogueWeaponModifierComponent modifierComponent = unit.GetComponent<RogueWeaponModifierComponent>();
 
-            RefreshSlotStats(weaponComponent, modifierComponent, 1);
-            RefreshSlotStats(weaponComponent, modifierComponent, 2);
+            RefreshSlotStats(unit, weaponComponent, modifierComponent, 1);
+            RefreshSlotStats(unit, weaponComponent, modifierComponent, 2);
             ClampAmmoToMagazine(weaponComponent, 1);
             ClampAmmoToMagazine(weaponComponent, 2);
             RefreshTargetSelectorRange(unit, weaponComponent);
@@ -34,7 +34,7 @@ namespace ET.Server
             }
         }
 
-        private static void RefreshSlotStats(WeaponComponent weaponComponent, RogueWeaponModifierComponent modifierComponent, int slotIndex)
+        private static void RefreshSlotStats(Unit unit, WeaponComponent weaponComponent, RogueWeaponModifierComponent modifierComponent, int slotIndex)
         {
             int weaponId = weaponComponent.GetWeaponId(slotIndex);
             if (weaponId <= 0)
@@ -61,7 +61,11 @@ namespace ET.Server
             int attackIntervalMs = ApplySpeedModifier(weaponConfig.AttackIntervalMs, attackSpeedModifier);
             int magazineSize = math.max(1, (int)math.round(weaponConfig.MagazineSize * (1000 + magazineModifier) / 1000f));
             int reloadTimeMs = ApplySpeedModifier(weaponConfig.ReloadTimeMs, reloadSpeedModifier);
-            float damage = math.max(0f, weaponConfig.Damage * (1000 + damageModifier) / 1000f);
+
+            // 伤害 = 攻击力 × 伤害系数% × 肉鸽修正
+            long attack = unit.NumericComponent?.GetAsLong(NumericType.Attack) ?? 0;
+            float baseDamage = attack * weaponConfig.Damage / 100f;
+            float damage = math.max(0f, baseDamage * (1000 + damageModifier) / 1000f);
 
             weaponComponent.SetEffectiveStats(slotIndex, attackRange, attackIntervalMs, magazineSize, reloadTimeMs, damage, penetrationCount);
         }

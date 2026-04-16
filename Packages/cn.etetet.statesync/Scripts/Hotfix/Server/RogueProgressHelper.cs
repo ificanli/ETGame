@@ -476,9 +476,16 @@ namespace ET.Server
                 return gained;
             }
 
+            int callerUnitType = (int)unit.UnitType;
             foreach (RogueNumericConfig numericConfig in levelConfig.NumericDeltas)
             {
                 if (numericConfig == null || numericConfig.NumericType <= 0 || numericConfig.Value == 0)
+                {
+                    continue;
+                }
+
+                // UnitType 过滤：0=全体生效, 1=仅玩家, 2=仅怪物
+                if (numericConfig.UnitType != 0 && numericConfig.UnitType != callerUnitType)
                 {
                     continue;
                 }

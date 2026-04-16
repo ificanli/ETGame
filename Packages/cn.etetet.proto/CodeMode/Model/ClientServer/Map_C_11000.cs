@@ -149,6 +149,8 @@ namespace ET
         public int CampId { get; set; }
         [MemoryPackOrder(9)]
         public int DisplayLevel { get; set; }
+        [MemoryPackOrder(10)]
+        public int SideId { get; set; }
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -166,6 +168,7 @@ namespace ET
             this.PetInfo = default;
             this.CampId = default;
             this.DisplayLevel = default;
+            this.SideId = default;
 
             ObjectPool.Recycle(this);
         }
@@ -1203,6 +1206,33 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.M2C_RunTimeLimitState)]
+    public partial class M2C_RunTimeLimitState : MessageObject, IMessage
+    {
+        public static M2C_RunTimeLimitState Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_RunTimeLimitState>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public bool IsActive { get; set; }
+        [MemoryPackOrder(1)]
+        public long RemainMs { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.IsActive = default;
+            this.RemainMs = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort C2G_EnterMap = 11001;
@@ -1245,5 +1275,6 @@ namespace ET
         public const ushort C2M_ContainerClose = 11038;
         public const ushort C2M_ContainerMoveItem = 11039;
         public const ushort M2C_ContainerMoveItem = 11040;
+        public const ushort M2C_RunTimeLimitState = 11041;
     }
 }

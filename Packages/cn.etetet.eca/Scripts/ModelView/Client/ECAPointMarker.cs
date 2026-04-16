@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
@@ -9,12 +10,16 @@ namespace ET.Client
     [EnableClass]
     public class ECAPointMarker : SerializedMonoBehaviour
     {
+        private const string PointParamTemplatePrefix = "point_param_template__";
+
         [Header("基础配置")]
         public string ConfigId;
         [ValueDropdown(nameof(GetPointTypeOptions))]
         [OnValueChanged(nameof(OnTypeChanged))]
         public int Type = ECAPointType.EvacuationPoint;
         public List<FlowParam> Params = new();
+        [HideInInspector]
+        public List<string> FlowGraphTemplateKeys = new();
         [HideInInspector]
         [FormerlySerializedAs("Config")]
         public ECAConfigAsset LegacyConfig;
@@ -111,6 +116,9 @@ namespace ET.Client
         private void ApplyTypeParamTemplate()
         {
             this.Params ??= new List<FlowParam>();
+            this.FlowGraphTemplateKeys ??= new List<string>();
+
+            HashSet<string> templateKeys = new(this.GetTemplateParamKeys());
 
             Dictionary<string, string> templateValues = new();
             foreach (FlowParam param in this.Params)
@@ -120,27 +128,54 @@ namespace ET.Client
                     continue;
                 }
 
-                if (this.IsTemplateParamKey(param.Key))
+                if (templateKeys.Contains(param.Key))
                 {
                     templateValues[param.Key] = param.Value;
                 }
             }
 
-            foreach (string templateKey in this.GetTemplateParamKeys())
+            foreach (string templateKey in templateKeys)
             {
                 this.RemoveTemplateParam(templateKey);
             }
 
-            foreach (FlowParam templateParam in this.GetTypeParamTemplate(this.Type))
+            List<FlowParam> flowGraphTemplate = this.GetFlowGraphParamTemplate();
+            this.FlowGraphTemplateKeys.Clear();
+            foreach (FlowParam templateParam in flowGraphTemplate)
             {
-                string value = templateParam.Value;
-                if (templateValues.TryGetValue(templateParam.Key, out string oldValue) && !string.IsNullOrWhiteSpace(oldValue))
+                if (templateParam == null || string.IsNullOrWhiteSpace(templateParam.Key) || this.FlowGraphTemplateKeys.Contains(templateParam.Key))
                 {
-                    value = oldValue;
+                    continue;
                 }
 
-                this.SetOrAddParam(templateParam.Key, value);
+                this.FlowGraphTemplateKeys.Add(templateParam.Key);
             }
+
+            foreach (FlowParam templateParam in this.GetTypeParamTemplate(this.Type))
+            {
+                this.ApplyTemplateParam(templateValues, templateParam);
+            }
+
+            foreach (FlowParam templateParam in flowGraphTemplate)
+            {
+                this.ApplyTemplateParam(templateValues, templateParam);
+            }
+        }
+
+        private void ApplyTemplateParam(Dictionary<string, string> templateValues, FlowParam templateParam)
+        {
+            if (templateParam == null || string.IsNullOrWhiteSpace(templateParam.Key))
+            {
+                return;
+            }
+
+            string value = templateParam.Value;
+            if (templateValues.TryGetValue(templateParam.Key, out string oldValue) && !string.IsNullOrWhiteSpace(oldValue))
+            {
+                value = oldValue;
+            }
+
+            this.SetOrAddParam(templateParam.Key, value);
         }
 
         private List<FlowParam> GetTypeParamTemplate(int pointType)
@@ -196,6 +231,36 @@ namespace ET.Client
                     Key = ECAPointParamKey.LobbyMapName,
                     Value = ECAConfig.DefaultLobbyMapName
                 });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.SideId,
+                    Value = "0"
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiVisible,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiShowMinimap,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiShowWorldmap,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiIcon,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiTipTextId,
+                    Value = string.Empty
+                });
             }
 
             if (pointType == ECAPointType.SpawnPoint)
@@ -204,6 +269,79 @@ namespace ET.Client
                 {
                     Key = ECAPointParamKey.TeamId,
                     Value = "0"
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.SideId,
+                    Value = "0"
+                });
+            }
+
+            if (pointType == ECAPointType.Container)
+            {
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.ContainerProfile,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiVisible,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiShowMinimap,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiShowWorldmap,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiIcon,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiTipTextId,
+                    Value = string.Empty
+                });
+            }
+
+            if (pointType == ECAPointType.MonsterSpawnPoint)
+            {
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.SpawnProfile,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiVisible,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiShowMinimap,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiShowWorldmap,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiIcon,
+                    Value = string.Empty
+                });
+                template.Add(new FlowParam
+                {
+                    Key = ECAPointParamKey.MapPoiTipTextId,
+                    Value = string.Empty
                 });
             }
 
@@ -273,6 +411,83 @@ namespace ET.Client
             return template;
         }
 
+        private List<FlowParam> GetFlowGraphParamTemplate()
+        {
+            List<FlowParam> template = new();
+            List<FlowNodeData> nodes = this.FlowGraph?.Graph?.Nodes;
+            if (nodes == null || nodes.Count == 0)
+            {
+                return template;
+            }
+
+            bool containsStartTask = false;
+            foreach (FlowNodeData node in nodes)
+            {
+                if (node == null ||
+                    !string.Equals(node.NodeType, ECAFlowNodeType.Action, StringComparison.Ordinal) ||
+                    !string.Equals(node.NodeKey, ECAFlowActionKey.StartTask, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                containsStartTask = true;
+                break;
+            }
+
+            if (!containsStartTask)
+            {
+                return template;
+            }
+
+            foreach (FlowNodeData node in nodes)
+            {
+                if (node?.Params == null)
+                {
+                    continue;
+                }
+
+                foreach (FlowParam param in node.Params)
+                {
+                    if (param == null ||
+                        string.IsNullOrWhiteSpace(param.Key) ||
+                        !param.Key.StartsWith(PointParamTemplatePrefix, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    string key = param.Key.Substring(PointParamTemplatePrefix.Length);
+                    if (string.IsNullOrWhiteSpace(key))
+                    {
+                        continue;
+                    }
+
+                    SetOrAddTemplateParam(template, key, param.Value);
+                }
+            }
+
+            return template;
+        }
+
+        private static void SetOrAddTemplateParam(List<FlowParam> template, string key, string value)
+        {
+            foreach (FlowParam param in template)
+            {
+                if (param == null || param.Key != key)
+                {
+                    continue;
+                }
+
+                param.Value = value;
+                return;
+            }
+
+            template.Add(new FlowParam
+            {
+                Key = key,
+                Value = value
+            });
+        }
+
         private static IEnumerable<ValueDropdownItem<int>> GetPointTypeOptions()
         {
             return new List<ValueDropdownItem<int>>
@@ -287,19 +502,6 @@ namespace ET.Client
             };
         }
 
-        private bool IsTemplateParamKey(string key)
-        {
-            foreach (string templateKey in this.GetTemplateParamKeys())
-            {
-                if (templateKey == key)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private IEnumerable<string> GetTemplateParamKeys()
         {
             yield return ECAPointParamKey.InteractRange;
@@ -312,11 +514,32 @@ namespace ET.Client
             yield return ECAPointParamKey.NavBlockHalfExtentsZ;
             yield return ECAPointParamKey.NavBlockStates;
             yield return ECAPointParamKey.TeamId;
+            yield return ECAPointParamKey.SideId;
+            yield return ECAPointParamKey.MapPoiVisible;
+            yield return ECAPointParamKey.MapPoiShowMinimap;
+            yield return ECAPointParamKey.MapPoiShowWorldmap;
+            yield return ECAPointParamKey.MapPoiIcon;
+            yield return ECAPointParamKey.MapPoiTipTextId;
+            yield return ECAPointParamKey.ContainerProfile;
+            yield return ECAPointParamKey.SpawnProfile;
             yield return ECADoorParamKey.RequiredKeyItemId;
             yield return ECADoorParamKey.LockedButtonTextId;
             yield return ECADoorParamKey.ClosedButtonTextId;
             yield return ECADoorParamKey.OpenedButtonTextId;
             yield return ECADoorParamKey.ConsumeKeyCount;
+
+            if (this.FlowGraphTemplateKeys == null)
+            {
+                yield break;
+            }
+
+            foreach (string templateKey in this.FlowGraphTemplateKeys)
+            {
+                if (!string.IsNullOrWhiteSpace(templateKey))
+                {
+                    yield return templateKey;
+                }
+            }
         }
 
         private void MigrateLegacyConfigIfNeeded()

@@ -1211,14 +1211,19 @@ namespace ET.Test
 
         private static Unit CreateProfiledMonster(Scene scene, string groupId, float3 position)
         {
-            Unit monster = TestHelper.CreateServerUnit(scene, UnitType.Monster, campId: 2);
+            if (!MonsterRuntimeProfileHelper.TryResolveUnitConfigId(groupId, out int unitConfigId))
+            {
+                return null;
+            }
+
+            Unit monster = TestHelper.CreateServerUnit(scene, unitConfigId, campId: 2);
             if (monster == null)
             {
                 return null;
             }
 
             monster.Position = position;
-            return MonsterRuntimeProfileHelper.ApplyProfile(monster, groupId) ? monster : null;
+            return monster;
         }
 
         private static ECAPointComponent CreateContainerPoint(Scene scene, string pointId)

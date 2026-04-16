@@ -37,6 +37,8 @@ namespace ET.Client
         public UnityEngine.RectTransform u_ComEffectButton2;
         public UnityEngine.RectTransform u_ComEffectButton3;
         public UnityEngine.RectTransform u_ComEffectButton4;
+        public UnityEngine.RectTransform u_ComRunTimeLimitRoot;
+        public TMPro.TextMeshProUGUI u_ComRunTimeLimitText;
         public YIUIFramework.UIDataValueBool u_DataSearchingButton;
         public YIUIFramework.UIDataValueString u_DataTxtLevel;
         public YIUIFramework.UIDataValueFloat u_DataCurExp;

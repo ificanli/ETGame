@@ -73,6 +73,7 @@ namespace ET.Server
 
             // 根据武器配置创建子弹
             FireLockType lockType = (FireLockType)weaponConfig.FireLockTypeId;
+            float bulletSpeed = weaponConfig.ProjectileSpeed > 0 ? weaponConfig.ProjectileSpeed : 20f;
 
             float damage = weaponComp.GetEffectiveDamage(node.SlotIndex);
             int reloadDamageBonusPermille = 0;
@@ -101,7 +102,8 @@ namespace ET.Server
                     weaponConfig.BulletCount,
                     weaponConfig.SpreadAngle,
                     weaponId,
-                    weaponPenetrationCount + reloadPenetrationCount
+                    weaponPenetrationCount + reloadPenetrationCount,
+                    bulletSpeed
                 );
             }
             else
@@ -114,7 +116,8 @@ namespace ET.Server
                     damage,
                     lockType,
                     weaponId,
-                    weaponPenetrationCount + reloadPenetrationCount
+                    weaponPenetrationCount + reloadPenetrationCount,
+                    bulletSpeed
                 );
             }
 

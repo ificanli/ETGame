@@ -90,6 +90,7 @@ namespace ET
         public int BagHeight { get; set; }
         [MemoryPackOrder(9)]
         public List<LoadoutGridItemData> BagItems { get; set; } = new();
+
         [MemoryPackOrder(10)]
         public int SecureWidth { get; set; }
         [MemoryPackOrder(11)]

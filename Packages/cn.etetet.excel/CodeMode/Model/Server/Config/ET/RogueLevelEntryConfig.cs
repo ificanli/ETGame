@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,17 +16,17 @@ namespace ET
     [EnableClass]
     public sealed partial class RogueLevelEntryConfig : Luban.BeanBase
     {
-        public RogueLevelEntryConfig(ByteBuf _buf) 
+        public RogueLevelEntryConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Level = _buf.ReadInt();
-            NeedExp = _buf.ReadInt();
-            TriggerChoice = _buf.ReadBool();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
+            { if(!_buf["NeedExp"].IsNumber) { throw new SerializationException(); }  NeedExp = _buf["NeedExp"]; }
+            { if(!_buf["TriggerChoice"].IsBoolean) { throw new SerializationException(); }  TriggerChoice = _buf["TriggerChoice"]; }
 
             EndInit();
         }
 
-        public static RogueLevelEntryConfig DeserializeRogueLevelEntryConfig(ByteBuf _buf)
+        public static RogueLevelEntryConfig DeserializeRogueLevelEntryConfig(JSONNode _buf)
         {
             return new ET.RogueLevelEntryConfig(_buf);
         }
@@ -46,7 +47,7 @@ namespace ET
         /// 是否触发选牌
         /// </summary>
         public readonly bool TriggerChoice;
-    
+
         public const int __ID__ = 902872587;
         public override int GetTypeId() => __ID__;
 

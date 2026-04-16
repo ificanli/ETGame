@@ -59,6 +59,7 @@ namespace ET.Client
             AddLoadoutTrigger(trigger, EventTriggerType.BeginDrag, OnLoadoutBeginDragEvent);
             AddLoadoutTrigger(trigger, EventTriggerType.Drag, OnLoadoutDragEvent);
             AddLoadoutTrigger(trigger, EventTriggerType.EndDrag, OnLoadoutEndDragEvent);
+            AddLoadoutTrigger(trigger, EventTriggerType.PointerClick, OnLoadoutClickEvent);
         }
 
         private static void RefreshFixedSlotDragProxy(this LobbyPanelComponent self, EquipSlotItemComponent slotItem, EquipSlotType slotType, int configId)
@@ -506,24 +507,230 @@ namespace ET.Client
             LoadoutGridItemViewProxy proxy,
             PointerEventData eventData)
         {
-            if (self == null || self.IsDisposed || view == null || proxy == null || eventData == null || eventData.dragging || proxy.ConfigId <= 0)
+            if (self == null || self.IsDisposed || view == null || proxy == null || eventData == null || eventData.dragging)
+            {
+                return;
+            }
+
+            if ((LoadoutAreaType)proxy.AreaType == LoadoutAreaType.FixedSlot)
+            {
+                self.HandleFixedSlotPointerClickAsync(proxy, eventData).Coroutine();
+                return;
+            }
+
+            if (proxy.ConfigId <= 0)
             {
                 return;
             }
 
             if (proxy.IsWarehouse)
             {
-                self.OnWarehouseGridItemClicked(proxy.ItemUid, proxy.ConfigId);
-                self.OpenItemClickedAsync(proxy.ConfigId, true, proxy.ItemUid).Coroutine();
+                self.HandleWarehouseGridItemPointerClickAsync(proxy, eventData).Coroutine();
                 return;
             }
 
-            if ((LoadoutAreaType)proxy.AreaType == LoadoutAreaType.FixedSlot)
+            self.HandleOwnedGridItemPointerClickAsync(proxy, eventData).Coroutine();
+        }
+
+        private static async ETTask HandleFixedSlotPointerClickAsync(
+            this LobbyPanelComponent self,
+            LoadoutGridItemViewProxy proxy,
+            PointerEventData eventData)
+        {
+            if (self == null || self.IsDisposed || proxy == null || eventData == null)
             {
                 return;
             }
 
-            self.OpenItemClickedAsync(proxy.ConfigId, false).Coroutine();
+            LoadoutFixedSlotType fixedSlotType = (LoadoutFixedSlotType)proxy.FixedSlotType;
+            if (fixedSlotType == LoadoutFixedSlotType.None)
+            {
+                return;
+            }
+
+            EquipSlotType slotType = ToFixedEquipSlotType(fixedSlotType);
+            int currentConfigId = GetCurrentFixedSlotConfigId(self.Root()?.GetComponent<LoadoutComponent>(), slotType);
+            if (currentConfigId <= 0)
+            {
+                ++self.FixedSlotClickVersion;
+                await self.HandleFixedSlotClickAsync(slotType);
+                return;
+            }
+
+            if (eventData.clickCount >= 2)
+            {
+                ++self.FixedSlotClickVersion;
+                await self.TryQuickTransferFixedSlotAsync(slotType, fixedSlotType);
+                return;
+            }
+
+            int clickVersion = ++self.FixedSlotClickVersion;
+            Scene root = self.Root();
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            await root.TimerComponent.WaitAsync(QuickTransferDoubleClickDelayMs);
+            self = selfRef;
+            if (self == null || self.IsDisposed || self.FixedSlotClickVersion != clickVersion)
+            {
+                return;
+            }
+
+            await self.HandleFixedSlotClickAsync(slotType);
+        }
+
+        private static async ETTask HandleWarehouseGridItemPointerClickAsync(
+            this LobbyPanelComponent self,
+            LoadoutGridItemViewProxy proxy,
+            PointerEventData eventData)
+        {
+            if (self == null || self.IsDisposed || proxy == null || eventData == null || proxy.ItemUid <= 0 || proxy.ConfigId <= 0)
+            {
+                return;
+            }
+
+            if (eventData.clickCount >= 2)
+            {
+                ++self.WarehouseItemClickVersion;
+                self.SetWarehouseGridItemSelection(proxy.ItemUid, proxy.ConfigId, false);
+                await self.TryQuickTransferWarehouseItemAsync(proxy.ConfigId, proxy.ItemUid);
+                return;
+            }
+
+            self.SetWarehouseGridItemSelection(proxy.ItemUid, proxy.ConfigId, true);
+
+            int clickVersion = ++self.WarehouseItemClickVersion;
+            Scene root = self.Root();
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            await root.TimerComponent.WaitAsync(QuickTransferDoubleClickDelayMs);
+            self = selfRef;
+            if (self == null || self.IsDisposed || self.WarehouseItemClickVersion != clickVersion)
+            {
+                return;
+            }
+
+            await self.OpenItemClickedAsync(proxy.ConfigId, true, proxy.ItemUid);
+        }
+
+        private static async ETTask HandleOwnedGridItemPointerClickAsync(
+            this LobbyPanelComponent self,
+            LoadoutGridItemViewProxy proxy,
+            PointerEventData eventData)
+        {
+            if (self == null || self.IsDisposed || proxy == null || eventData == null || proxy.ConfigId <= 0)
+            {
+                return;
+            }
+
+            LoadoutAreaType sourceAreaType = (LoadoutAreaType)proxy.AreaType;
+            if (eventData.clickCount >= 2)
+            {
+                ++self.OwnedGridItemClickVersion;
+                await self.TryQuickTransferOwnedGridAsync(sourceAreaType, proxy.AnchorSlotIndex);
+                return;
+            }
+
+            int clickVersion = ++self.OwnedGridItemClickVersion;
+            Scene root = self.Root();
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            EntityRef<LobbyPanelComponent> selfRef = self;
+            await root.TimerComponent.WaitAsync(QuickTransferDoubleClickDelayMs);
+            self = selfRef;
+            if (self == null || self.IsDisposed || self.OwnedGridItemClickVersion != clickVersion)
+            {
+                return;
+            }
+
+            await self.OpenItemClickedAsync(proxy.ConfigId, false);
+        }
+
+        private static async ETTask TryQuickTransferFixedSlotAsync(
+            this LobbyPanelComponent self,
+            EquipSlotType slotType,
+            LoadoutFixedSlotType fixedSlotType)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            if (!QuickTransferRouteHelper.TryResolveLoadoutQuickTransfer(
+                    false,
+                    LoadoutAreaType.FixedSlot,
+                    fixedSlotType,
+                    out bool targetIsWarehouse,
+                    out _)
+                || !targetIsWarehouse)
+            {
+                return;
+            }
+
+            await self.PutFixedSlotToWarehouseAsync(slotType);
+        }
+
+        private static async ETTask TryQuickTransferWarehouseItemAsync(
+            this LobbyPanelComponent self,
+            int configId,
+            long itemUid)
+        {
+            if (self == null || self.IsDisposed || configId <= 0 || itemUid <= 0)
+            {
+                return;
+            }
+
+            if (!QuickTransferRouteHelper.TryResolveLoadoutQuickTransfer(
+                    true,
+                    LoadoutAreaType.None,
+                    LoadoutFixedSlotType.None,
+                    out bool targetIsWarehouse,
+                    out LoadoutAreaType targetAreaType)
+                || targetIsWarehouse)
+            {
+                return;
+            }
+
+            if (!self.TryFindFirstFitAnchorSlot(targetAreaType, configId, out int targetAnchorSlotIndex))
+            {
+                return;
+            }
+
+            await self.TakeWarehouseItemAsync(configId, targetAreaType, LoadoutFixedSlotType.None, targetAnchorSlotIndex, itemUid);
+        }
+
+        private static async ETTask TryQuickTransferOwnedGridAsync(
+            this LobbyPanelComponent self,
+            LoadoutAreaType sourceAreaType,
+            int anchorSlotIndex)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            if (!QuickTransferRouteHelper.TryResolveLoadoutQuickTransfer(
+                    false,
+                    sourceAreaType,
+                    LoadoutFixedSlotType.None,
+                    out bool targetIsWarehouse,
+                    out _)
+                || !targetIsWarehouse)
+            {
+                return;
+            }
+
+            await self.HandleOwnedGridItemClickAsync(sourceAreaType, anchorSlotIndex);
         }
 
         private static bool TryGetLoadoutDropTarget(

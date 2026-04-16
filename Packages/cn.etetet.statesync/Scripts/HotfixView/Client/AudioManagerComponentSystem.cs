@@ -168,18 +168,35 @@ namespace ET.Client
 
             // 真实资源模式：从 YooAssets 同步加载
             ResourcesLoaderComponent loader = self.Root().GetComponent<ResourcesLoaderComponent>();
-            if (loader != null)
+            try
             {
-                AudioClip clip = loader.LoadAssetSync<AudioClip>(key);
-                if (clip != null)
+                if (loader?.package != null)
                 {
-                    self.ClipCache[key] = clip;
-                    return clip;
+                    if (loader.package.CheckLocationValid(key))
+                    {
+                        AudioClip clip = loader.LoadAssetSync<AudioClip>(key);
+                        if (clip != null)
+                        {
+                            self.ClipCache[key] = clip;
+                            return clip;
+                        }
+                    }
+
+                    Log.Warning($"[Audio] clip missing, fallback placeholder: {key}");
+                    AudioClip fallbackClip = AudioPlaceholderGenerator.Generate(key);
+                    self.ClipCache[key] = fallbackClip;
+                    return fallbackClip;
                 }
             }
+            catch (System.Exception exception)
+            {
+                Log.Warning($"[Audio] clip load failed, fallback placeholder: {key}, exception: {exception.Message}");
+            }
 
-            Log.Warning($"[Audio] clip not found: {key}");
-            return null;
+            Log.Warning($"[Audio] loader unavailable, fallback placeholder: {key}");
+            AudioClip defaultClip = AudioPlaceholderGenerator.Generate(key);
+            self.ClipCache[key] = defaultClip;
+            return defaultClip;
         }
 
         private static AudioSource CreateSource(GameObject parent, string name, bool loop)

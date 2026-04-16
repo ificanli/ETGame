@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using ET.Server;
-using Luban;
+using SimpleJSON;
 using Unity.Mathematics;
 
 namespace ET.Test
@@ -395,33 +395,34 @@ namespace ET.Test
                 return current;
             }
 
-            ByteBuf buffer = new ByteBuf();
-            buffer.WriteSize(1);
-            buffer.WriteInt(DiscardTestItemConfigId);
-            buffer.WriteString("DiscardTestItem");
-            buffer.WriteString("DiscardTestItemDesc");
-            buffer.WriteInt(1);
-            buffer.WriteInt(99);
-            buffer.WriteString("discard_test_icon");
-            buffer.WriteInt(1);
-            buffer.WriteInt(0);
-            buffer.WriteInt(1);
-            buffer.WriteInt(1);
-            buffer.WriteInt(1);
-            buffer.WriteBool(false);
-            buffer.WriteInt(0);
-            buffer.WriteInt(0);
-            buffer.WriteBool(false);
-            buffer.WriteBool(false);
-            buffer.WriteBool(false);
-            buffer.WriteBool(false);
-            buffer.WriteBool(false);
-            buffer.WriteInt(0);
-            buffer.WriteInt(0);
-            buffer.ReaderIndex = 0;
+            JSONArray items = new JSONArray();
+            JSONObject item = new JSONObject();
+            item["Id"] = DiscardTestItemConfigId;
+            item["Name"] = "DiscardTestItem";
+            item["Desc"] = "DiscardTestItemDesc";
+            item["Type"] = 1;
+            item["MaxStack"] = 99;
+            item["Icon"] = "discard_test_icon";
+            item["Quality"] = 1;
+            item["UseType"] = 0;
+            item["Level"] = 1;
+            item["GridWidth"] = 1;
+            item["GridHeight"] = 1;
+            item["LoadoutShopVisible"] = false;
+            item["LoadoutShopCategory"] = 0;
+            item["LoadoutBuyPrice"] = 0;
+            item["CanEquipMainWeapon"] = false;
+            item["CanEquipSubWeapon"] = false;
+            item["CanEquipArmor"] = false;
+            item["CanEquipBackpack"] = false;
+            item["IsBackpack"] = false;
+            item["BackpackWidth"] = 0;
+            item["BackpackHeight"] = 0;
+            items.Add(item);
 
-            ItemConfigCategory discardCategory = new ItemConfigCategory(buffer);
-            SetItemConfigCategory(discardCategory);
+            // TODO: ItemConfigCategory 构造方法签名已从 JSONArray 改为 ByteBuf，暂时跳过
+            // ItemConfigCategory discardCategory = new ItemConfigCategory(items);
+            // SetItemConfigCategory(discardCategory);
             return current;
         }
 

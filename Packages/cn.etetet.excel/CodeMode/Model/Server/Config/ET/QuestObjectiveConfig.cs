@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,19 +16,19 @@ namespace ET
     [EnableClass]
     public sealed partial class QuestObjectiveConfig : Luban.BeanBase
     {
-        public QuestObjectiveConfig(ByteBuf _buf) 
+        public QuestObjectiveConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Name = _buf.ReadString();
-            Desc = _buf.ReadString();
-            Type = (ET.QuestObjectiveType)_buf.ReadInt();
-            NeedCount = _buf.ReadInt();
-            Params = global::ET.QuestObjectiveParams.DeserializeQuestObjectiveParams(_buf);
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["Desc"].IsString) { throw new SerializationException(); }  Desc = _buf["Desc"]; }
+            { if(!_buf["Type"].IsNumber) { throw new SerializationException(); }  Type = (ET.QuestObjectiveType)_buf["Type"].AsInt; }
+            { if(!_buf["NeedCount"].IsNumber) { throw new SerializationException(); }  NeedCount = _buf["NeedCount"]; }
+            { if(!_buf["Params"].IsObject) { throw new SerializationException(); }  Params = global::ET.QuestObjectiveParams.DeserializeQuestObjectiveParams(_buf["Params"]);  }
 
             EndInit();
         }
 
-        public static QuestObjectiveConfig DeserializeQuestObjectiveConfig(ByteBuf _buf)
+        public static QuestObjectiveConfig DeserializeQuestObjectiveConfig(JSONNode _buf)
         {
             return new ET.QuestObjectiveConfig(_buf);
         }
@@ -56,7 +57,7 @@ namespace ET
         /// 任务目标参数
         /// </summary>
         public readonly ET.QuestObjectiveParams Params;
-    
+
         public const int __ID__ = -70847336;
         public override int GetTypeId() => __ID__;
 

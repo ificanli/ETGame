@@ -29,7 +29,9 @@ namespace ET.Client
         {
             self.SetRuntimeDisplayMode(MinimapDisplayMode.Compact);
             self.ReleaseAllWorldMarkerSprites();
+            self.ReleaseAllWorldPoiSprites();
             self.ClearWorldMapMarkers();
+            self.ClearWorldMapPois();
             if (self.MarkerSprite != null)
             {
                 UnityEngine.Object.Destroy(self.MarkerSprite);
@@ -44,6 +46,7 @@ namespace ET.Client
             self.MapFrame = null;
             self.MapMask = null;
             self.MarkerLayer = null;
+            self.PoiLayer = null;
             self.PingLayer = null;
             self.MapTexture = null;
             self.FogOverlay = null;
@@ -94,7 +97,8 @@ namespace ET.Client
                 self.MapTexture != null &&
                 self.FogOverlay != null &&
                 self.PlayerArrow != null &&
-                self.MarkerLayer != null)
+                self.MarkerLayer != null &&
+                self.PoiLayer != null)
             {
                 return;
             }
@@ -111,6 +115,7 @@ namespace ET.Client
             self.MapTexture = rootTransform.Find("MapRoot/MapFrame/MapMask/MapTexture")?.GetComponent<RawImage>();
             self.FogOverlay = rootTransform.Find("MapRoot/MapFrame/MapMask/FogOverlay")?.GetComponent<RawImage>();
             self.MarkerLayer = rootTransform.Find("MapRoot/MapFrame/MapMask/MarkerLayer") as RectTransform;
+            self.PoiLayer = rootTransform.Find("MapRoot/MapFrame/MapMask/PoiLayer") as RectTransform;
             self.PingLayer = rootTransform.Find("MapRoot/MapFrame/MapMask/PingLayer") as RectTransform;
             self.PlayerArrow = rootTransform.Find("MapRoot/MapFrame/PlayerArrow")?.GetComponent<Image>();
             self.TitleText = rootTransform.Find("TopBar/TitleText")?.GetComponent<TMP_Text>();
@@ -124,6 +129,7 @@ namespace ET.Client
             MinimapDisplayHelper.StretchToFillParent(self.MapTexture?.rectTransform);
             MinimapDisplayHelper.StretchToFillParent(self.FogOverlay?.rectTransform);
             MinimapDisplayHelper.StretchToFillParent(self.MarkerLayer);
+            MinimapDisplayHelper.StretchToFillParent(self.PoiLayer);
             MinimapDisplayHelper.StretchToFillParent(self.PingLayer);
 
             if (self.FogOverlay == null)
@@ -161,9 +167,23 @@ namespace ET.Client
                 self.MarkerLayer = markerRect;
             }
 
+            if (self.PoiLayer == null)
+            {
+                GameObject poiObject = new GameObject("PoiLayer", typeof(RectTransform));
+                RectTransform poiRect = poiObject.GetComponent<RectTransform>();
+                poiRect.SetParent(self.MapMask, false);
+                poiRect.anchorMin = Vector2.zero;
+                poiRect.anchorMax = Vector2.one;
+                poiRect.offsetMin = Vector2.zero;
+                poiRect.offsetMax = Vector2.zero;
+                poiRect.SetSiblingIndex(self.MarkerLayer != null ? self.MarkerLayer.GetSiblingIndex() + 1 : self.MapMask.childCount - 1);
+                self.PoiLayer = poiRect;
+            }
+
             MinimapDisplayHelper.StretchToFillParent(self.MapTexture?.rectTransform);
             MinimapDisplayHelper.StretchToFillParent(self.FogOverlay?.rectTransform);
             MinimapDisplayHelper.StretchToFillParent(self.MarkerLayer);
+            MinimapDisplayHelper.StretchToFillParent(self.PoiLayer);
             MinimapDisplayHelper.StretchToFillParent(self.PingLayer);
 
             if (self.PlayerArrow != null && self.PlayerArrow.sprite == null)
@@ -179,15 +199,18 @@ namespace ET.Client
         private static void RefreshWorldMap(this MapWorldPanelComponent self, bool force = false)
         {
             self.BindWorldMap();
-            if (self.MapMask == null || self.MapTexture == null || self.MarkerLayer == null)
+            if (self.MapMask == null || self.MapTexture == null || self.MarkerLayer == null || self.PoiLayer == null)
             {
                 return;
             }
 
-            MinimapRuntimeComponent runtime = self.Root()?.CurrentScene()?.GetComponent<MinimapRuntimeComponent>();
+            Scene currentScene = self.Root()?.CurrentScene();
+            MinimapRuntimeComponent runtime = currentScene?.GetComponent<MinimapRuntimeComponent>();
+            MapPoiRuntimeComponent poiRuntime = currentScene?.GetComponent<MapPoiRuntimeComponent>();
             if (runtime == null)
             {
                 self.ClearWorldMapMarkers();
+                self.ClearWorldMapPois();
                 self.HideWorldFog();
                 return;
             }
@@ -207,6 +230,7 @@ namespace ET.Client
             if (!runtime.TryGetMyPosition(out float3 myPosition))
             {
                 self.ClearWorldMapMarkers();
+                self.ClearWorldMapPois();
                 self.HideWorldFog();
                 return;
             }
@@ -215,6 +239,7 @@ namespace ET.Client
             self.RefreshWorldMapFog(runtime);
             self.RefreshWorldMapArrow(runtime, myPosition);
             self.RefreshWorldMapMarkers(runtime);
+            self.RefreshWorldMapPois(poiRuntime, runtime);
         }
 
         private static void RefreshWorldMapTexture(this MapWorldPanelComponent self, MinimapRuntimeComponent runtime)
@@ -386,12 +411,112 @@ namespace ET.Client
             }
         }
 
+        private static void RefreshWorldMapPois(
+            this MapWorldPanelComponent self,
+            MapPoiRuntimeComponent poiRuntime,
+            MinimapRuntimeComponent runtime)
+        {
+            if (poiRuntime == null || poiRuntime.IsDisposed)
+            {
+                self.ClearWorldMapPois();
+                return;
+            }
+
+            poiRuntime.EnsureConfigLoaded();
+
+            HashSet<string> activePoiIds = new HashSet<string>();
+            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.MarkerSize, 10f), 4f);
+
+            foreach (KeyValuePair<string, MapPoiRuntimeData> pair in poiRuntime.GetPois())
+            {
+                MapPoiRuntimeData poi = pair.Value;
+                if (!poiRuntime.ShouldDisplayOnWorldmap(poi))
+                {
+                    self.HideWorldMapPoi(poi.PoiId);
+                    continue;
+                }
+
+                RectTransform poiRect = self.GetOrCreateWorldPoi(poi.PoiId);
+                if (poiRect == null)
+                {
+                    continue;
+                }
+
+                activePoiIds.Add(poi.PoiId);
+                poiRect.gameObject.SetActive(true);
+                poiRect.sizeDelta = new Vector2(poiSize, poiSize);
+                poiRect.anchoredPosition = self.WorldToExpandedAnchoredPosition(runtime, poi.Position);
+
+                if (self.PoiImages.TryGetValue(poi.PoiId, out Image poiImage) && poiImage != null)
+                {
+                    self.RefreshWorldPoiVisual(poi, poiImage);
+                }
+            }
+
+            foreach (KeyValuePair<string, RectTransform> pair in self.PoiRects)
+            {
+                if (!activePoiIds.Contains(pair.Key) && pair.Value != null)
+                {
+                    pair.Value.gameObject.SetActive(false);
+                    self.PoiDesiredSpriteNames.Remove(pair.Key);
+                }
+            }
+        }
+
         private static Vector2 WorldToExpandedAnchoredPosition(this MapWorldPanelComponent self, MinimapRuntimeComponent runtime, float3 worldPosition)
         {
             float2 normalized = runtime.WorldToNormalizedPosition(worldPosition);
             float width = self.MapMask.rect.width;
             float height = self.MapMask.rect.height;
             return new Vector2((normalized.x - 0.5f) * width, (normalized.y - 0.5f) * height);
+        }
+
+        private static RectTransform GetOrCreateWorldPoi(this MapWorldPanelComponent self, string poiId)
+        {
+            if (self.PoiRects.TryGetValue(poiId, out RectTransform poiRect) && poiRect != null)
+            {
+                return poiRect;
+            }
+
+            if (self.PoiLayer == null)
+            {
+                return null;
+            }
+
+            GameObject poiObject = new GameObject($"WorldPoi_{poiId}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            poiRect = poiObject.GetComponent<RectTransform>();
+            poiRect.SetParent(self.PoiLayer, false);
+            poiRect.anchorMin = new Vector2(0.5f, 0.5f);
+            poiRect.anchorMax = new Vector2(0.5f, 0.5f);
+            poiRect.pivot = new Vector2(0.5f, 0.5f);
+
+            Image poiImage = poiObject.GetComponent<Image>();
+            poiImage.raycastTarget = true;
+            poiImage.sprite = self.GetWorldMarkerSprite();
+            poiImage.type = Image.Type.Simple;
+            poiImage.preserveAspect = false;
+
+            Button poiButton = poiObject.GetComponent<Button>();
+            poiButton.transition = Selectable.Transition.None;
+            poiButton.targetGraphic = poiImage;
+
+            EntityRef<MapWorldPanelComponent> selfRef = self;
+            string capturedPoiId = poiId;
+            poiButton.onClick.AddListener(() =>
+            {
+                MapWorldPanelComponent panel = selfRef;
+                if (panel == null || panel.IsDisposed)
+                {
+                    return;
+                }
+
+                HandlePoiClick(panel, capturedPoiId);
+            });
+
+            self.PoiRects[poiId] = poiRect;
+            self.PoiImages[poiId] = poiImage;
+            self.PoiButtons[poiId] = poiButton;
+            return poiRect;
         }
 
         private static RectTransform GetOrCreateWorldMarker(this MapWorldPanelComponent self, long unitId)
@@ -437,6 +562,30 @@ namespace ET.Client
             self.MarkerRects.Clear();
             self.MarkerImages.Clear();
             self.MarkerDesiredSpriteNames.Clear();
+        }
+
+        private static void HideWorldMapPoi(this MapWorldPanelComponent self, string poiId)
+        {
+            if (self.PoiRects.TryGetValue(poiId, out RectTransform poiRect) && poiRect != null)
+            {
+                poiRect.gameObject.SetActive(false);
+            }
+        }
+
+        private static void ClearWorldMapPois(this MapWorldPanelComponent self)
+        {
+            foreach (KeyValuePair<string, RectTransform> pair in self.PoiRects)
+            {
+                if (pair.Value != null)
+                {
+                    UnityEngine.Object.Destroy(pair.Value.gameObject);
+                }
+            }
+
+            self.PoiRects.Clear();
+            self.PoiImages.Clear();
+            self.PoiButtons.Clear();
+            self.PoiDesiredSpriteNames.Clear();
         }
 
         private static Sprite GetWorldMarkerSprite(this MapWorldPanelComponent self)
@@ -589,6 +738,191 @@ namespace ET.Client
             self.MarkerLoadedSprites.Clear();
             self.MarkerLoadingSpriteNames.Clear();
             self.MarkerDesiredSpriteNames.Clear();
+        }
+
+        private static void RefreshWorldPoiVisual(this MapWorldPanelComponent self, MapPoiRuntimeData poi, Image poiImage)
+        {
+            if (poiImage == null)
+            {
+                return;
+            }
+
+            string iconName = MinimapPoiIconHelper.ResolveIconName(poi);
+            self.PoiDesiredSpriteNames[poi.PoiId] = iconName ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(iconName))
+            {
+                if (self.PoiLoadedSprites.TryGetValue(iconName, out Sprite customSprite) && customSprite != null)
+                {
+                    poiImage.sprite = customSprite;
+                    poiImage.color = Color.white;
+                    poiImage.preserveAspect = true;
+                    return;
+                }
+
+                poiImage.sprite = self.GetWorldMarkerSprite();
+                poiImage.color = self.ResolveWorldPoiColor(poi);
+                poiImage.preserveAspect = false;
+                self.RequestWorldPoiSprite(iconName);
+                return;
+            }
+
+            poiImage.sprite = self.GetWorldMarkerSprite();
+            poiImage.color = self.ResolveWorldPoiColor(poi);
+            poiImage.preserveAspect = false;
+        }
+
+        private static Color ResolveWorldPoiColor(this MapWorldPanelComponent self, MapPoiRuntimeData poi)
+        {
+            string key = global::ET.MinimapConstKey.MarkerColorOther;
+            switch (poi.PoiType)
+            {
+                case MapPoiType.Evacuation:
+                    key = global::ET.MinimapConstKey.MarkerColorSelf;
+                    break;
+                case MapPoiType.HighContainer:
+                    key = global::ET.MinimapConstKey.MarkerColorOther;
+                    break;
+                case MapPoiType.BossSpawn:
+                    key = global::ET.MinimapConstKey.MarkerColorMonster;
+                    break;
+                case MapPoiType.MissionTask:
+                    key = global::ET.MinimapConstKey.MarkerColorMissionTask;
+                    break;
+            }
+
+            string colorText = global::ET.MinimapConstConfigHelper.GetString(key, "#FFFFFF");
+            if (ColorUtility.TryParseHtmlString(colorText, out Color color))
+            {
+                return color;
+            }
+
+            return Color.white;
+        }
+
+        private static void RequestWorldPoiSprite(this MapWorldPanelComponent self, string spriteName)
+        {
+            if (self == null || self.IsDisposed || string.IsNullOrWhiteSpace(spriteName))
+            {
+                return;
+            }
+
+            if (self.PoiLoadedSprites.ContainsKey(spriteName) || !self.PoiLoadingSpriteNames.Add(spriteName))
+            {
+                return;
+            }
+
+            self.LoadWorldPoiSpriteAsync(spriteName).Coroutine();
+        }
+
+        private static async ETTask LoadWorldPoiSpriteAsync(this MapWorldPanelComponent self, string spriteName)
+        {
+            EntityRef<MapWorldPanelComponent> selfRef = self;
+            Sprite sprite = await EventSystem.Instance?.YIUIInvokeEntityAsyncSafety<YIUIInvokeEntity_LoadSprite, ETTask<Sprite>>(
+                YIUISingletonHelper.YIUIMgr,
+                new YIUIInvokeEntity_LoadSprite { ResName = spriteName });
+
+            self = selfRef;
+            if (self == null || self.IsDisposed)
+            {
+                if (sprite != null)
+                {
+                    EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                        YIUISingletonHelper.YIUIMgr,
+                        new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                }
+
+                return;
+            }
+
+            self.PoiLoadingSpriteNames.Remove(spriteName);
+            if (sprite == null)
+            {
+                return;
+            }
+
+            if (self.PoiLoadedSprites.TryGetValue(spriteName, out Sprite cachedSprite) && cachedSprite != null)
+            {
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                    YIUISingletonHelper.YIUIMgr,
+                    new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+                return;
+            }
+
+            self.PoiLoadedSprites[spriteName] = sprite;
+            foreach (KeyValuePair<string, Image> pair in self.PoiImages)
+            {
+                if (!self.PoiDesiredSpriteNames.TryGetValue(pair.Key, out string desiredSpriteName) ||
+                    desiredSpriteName != spriteName ||
+                    pair.Value == null)
+                {
+                    continue;
+                }
+
+                pair.Value.sprite = sprite;
+                pair.Value.color = Color.white;
+                pair.Value.preserveAspect = true;
+            }
+        }
+
+        private static void ReleaseAllWorldPoiSprites(this MapWorldPanelComponent self)
+        {
+            foreach (Sprite sprite in self.PoiLoadedSprites.Values)
+            {
+                if (sprite == null)
+                {
+                    continue;
+                }
+
+                EventSystem.Instance?.YIUIInvokeEntitySyncSafety(
+                    YIUISingletonHelper.YIUIMgr,
+                    new YIUIInvokeEntity_ReleaseSprite { obj = sprite });
+            }
+
+            self.PoiLoadedSprites.Clear();
+            self.PoiLoadingSpriteNames.Clear();
+            self.PoiDesiredSpriteNames.Clear();
+        }
+
+        private static void HandlePoiClick(MapWorldPanelComponent self, string poiId)
+        {
+            if (self == null || self.IsDisposed || string.IsNullOrWhiteSpace(poiId))
+            {
+                return;
+            }
+
+            Scene root = self.Root();
+            Scene currentScene = root?.CurrentScene();
+            MapPoiRuntimeComponent poiRuntime = currentScene?.GetComponent<MapPoiRuntimeComponent>();
+            if (poiRuntime == null || poiRuntime.IsDisposed)
+            {
+                return;
+            }
+
+            poiRuntime.EnsureConfigLoaded();
+            if (!poiRuntime.GetPois().TryGetValue(poiId, out MapPoiRuntimeData poi) || !poiRuntime.ShouldDisplayOnWorldmap(poi))
+            {
+                return;
+            }
+
+            poiRuntime.SelectPoi(poiId);
+            string tipText = self.ResolveText(poi.TipTextId, poi.PoiId);
+            if (string.IsNullOrWhiteSpace(tipText))
+            {
+                return;
+            }
+
+            TipsHelper.OpenSync<TipsTextViewComponent>(root, tipText);
+        }
+
+        private static string ResolveText(this MapWorldPanelComponent self, int textId, string defaultText = "")
+        {
+            if (textId <= 0)
+            {
+                return defaultText;
+            }
+
+            TextConfig config = TextConfigCategory.Instance.GetOrDefault(textId);
+            return string.IsNullOrWhiteSpace(config?.CN) ? defaultText : config.CN;
         }
 
         private static string ResolveWorldPlayerMarkerColorKey(this MapWorldPanelComponent self, MinimapRuntimeComponent runtime, MinimapMarkerRuntime marker)

@@ -18,5 +18,55 @@
     "DropCountMin": 1,
     "DropCountMax": 2,
     "AllowRepeat": false
+  },
+  {
+    "Id": 3,
+    "MapName": "Map1",
+    "MonsterUnitConfigId": 1012,
+    "LootBoxUnitConfigId": 1002,
+    "LootTable": "22001*1|20001*1",
+    "DropCountMin": 1,
+    "DropCountMax": 2,
+    "AllowRepeat": false
+  },
+  {
+    "Id": 4,
+    "MapName": "Map1",
+    "MonsterUnitConfigId": 1013,
+    "LootBoxUnitConfigId": 1002,
+    "LootTable": "22001*1|20002*1",
+    "DropCountMin": 1,
+    "DropCountMax": 2,
+    "AllowRepeat": false
+  },
+  {
+    "Id": 5,
+    "MapName": "Map1",
+    "MonsterUnitConfigId": 1014,
+    "LootBoxUnitConfigId": 1002,
+    "LootTable": "22001*1|20001*1|20002*1",
+    "DropCountMin": 1,
+    "DropCountMax": 2,
+    "AllowRepeat": false
+  },
+  {
+    "Id": 6,
+    "MapName": "Map1",
+    "MonsterUnitConfigId": 1015,
+    "LootBoxUnitConfigId": 1002,
+    "LootTable": "22001*1|20002*1|21001*1",
+    "DropCountMin": 2,
+    "DropCountMax": 2,
+    "AllowRepeat": false
+  },
+  {
+    "Id": 7,
+    "MapName": "Map1",
+    "MonsterUnitConfigId": 1016,
+    "LootBoxUnitConfigId": 1002,
+    "LootTable": "22001*2|20001*1|20002*1|21001*1",
+    "DropCountMin": 2,
+    "DropCountMax": 3,
+    "AllowRepeat": false
   }
 ]

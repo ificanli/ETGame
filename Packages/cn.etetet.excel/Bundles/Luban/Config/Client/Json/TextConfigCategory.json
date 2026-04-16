@@ -1,5 +1,47 @@
 [
   {
+    "Id": 37000,
+    "Name": "SpellCast_DistanceNotEnought",
+    "CN": "技能施放距离不够！",
+    "EN": "技能施放距离不够"
+  },
+  {
+    "Id": 37001,
+    "Name": "SpellCast_NotSelectTarget",
+    "CN": "没有选择目标！",
+    "EN": ""
+  },
+  {
+    "Id": 37002,
+    "Name": "SpellCast_TargetTooFar",
+    "CN": "目标距离太远！",
+    "EN": ""
+  },
+  {
+    "Id": 37003,
+    "Name": "SpellCast_SpellInCD",
+    "CN": "技能在冷却中！",
+    "EN": ""
+  },
+  {
+    "Id": 37004,
+    "Name": "SpellCast_MPNotEnought",
+    "CN": "魔法值不足！",
+    "EN": ""
+  },
+  {
+    "Id": 37005,
+    "Name": "SpellCast_HPNotEnought",
+    "CN": "生命值不足！",
+    "EN": ""
+  },
+  {
+    "Id": 37006,
+    "Name": "SpellCast_TargetNotInFrontOfCaster",
+    "CN": "目标不在前方！",
+    "EN": ""
+  },
+  {
     "Id": 38001,
     "Name": "Quest_NotAvailable",
     "CN": "任务无效",
@@ -42,45 +84,27 @@
     "EN": ""
   },
   {
-    "Id": 37000,
-    "Name": "SpellCast_DistanceNotEnought",
-    "CN": "技能施放距离不够！",
-    "EN": "技能施放距离不够"
-  },
-  {
-    "Id": 37001,
-    "Name": "SpellCast_NotSelectTarget",
-    "CN": "没有选择目标！",
+    "Id": 38008,
+    "Name": "MapPoi_Evacuation_Self",
+    "CN": "我方撤离点",
     "EN": ""
   },
   {
-    "Id": 37002,
-    "Name": "SpellCast_TargetTooFar",
-    "CN": "目标距离太远！",
+    "Id": 38009,
+    "Name": "MapPoi_HighContainer",
+    "CN": "高级容器",
     "EN": ""
   },
   {
-    "Id": 37003,
-    "Name": "SpellCast_SpellInCD",
-    "CN": "技能在冷却中！",
+    "Id": 38010,
+    "Name": "MapPoi_BossSpawn",
+    "CN": "Boss刷新点",
     "EN": ""
   },
   {
-    "Id": 37004,
-    "Name": "SpellCast_MPNotEnought",
-    "CN": "魔法值不足！",
-    "EN": ""
-  },
-  {
-    "Id": 37005,
-    "Name": "SpellCast_HPNotEnought",
-    "CN": "生命值不足！",
-    "EN": ""
-  },
-  {
-    "Id": 37006,
-    "Name": "SpellCast_TargetNotInFrontOfCaster",
-    "CN": "目标不在前方！",
+    "Id": 38011,
+    "Name": "MapPoi_MissionTask",
+    "CN": "任务点",
     "EN": ""
   }
 ]

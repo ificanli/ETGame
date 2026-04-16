@@ -30,24 +30,25 @@ namespace ET.Server
 
         public static int ValidateWeaponSlot(int configId)
         {
-            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
-            if (itemConfig != null)
+            if (configId <= 0)
             {
                 return ErrorCode.ERR_Success;
             }
 
-            EquipmentConfig equipConfig = EquipmentConfigCategory.Instance.GetOrDefault(configId);
-            if (equipConfig == null)
+            ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(configId);
+            if (itemConfig != null)
             {
-                return ErrorCode.ERR_LoadoutItemNotFound;
+                if (!itemConfig.CanEquipMainWeapon && !itemConfig.CanEquipSubWeapon)
+                {
+                    return ErrorCode.ERR_LoadoutSlotMismatch;
+                }
+
+                return WeaponConfigCategory.Instance.GetOrDefault(configId) != null
+                    ? ErrorCode.ERR_Success
+                    : ErrorCode.ERR_LoadoutItemNotFound;
             }
 
-            if (equipConfig.EquipSlot != (int)EquipmentSlotType.MainHand)
-            {
-                return ErrorCode.ERR_LoadoutSlotMismatch;
-            }
-
-            return ErrorCode.ERR_Success;
+            return ErrorCode.ERR_LoadoutItemNotFound;
         }
 
         public static int ValidateEquipSlot(int configId, int expectedSlot)

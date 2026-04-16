@@ -18,6 +18,7 @@ namespace ET.Client
         public RectTransform MapFrame;
         public RectTransform MapMask;
         public RectTransform MarkerLayer;
+        public RectTransform PoiLayer;
         public RectTransform PingLayer;
         public RawImage MapTexture;
         public RawImage FogOverlay;
@@ -31,5 +32,11 @@ namespace ET.Client
         public Dictionary<long, string> MarkerDesiredSpriteNames = new();
         public Dictionary<string, Sprite> MarkerLoadedSprites = new();
         public HashSet<string> MarkerLoadingSpriteNames = new();
+        public Dictionary<string, RectTransform> PoiRects = new();
+        public Dictionary<string, Image> PoiImages = new();
+        public Dictionary<string, Button> PoiButtons = new();
+        public Dictionary<string, string> PoiDesiredSpriteNames = new();
+        public Dictionary<string, Sprite> PoiLoadedSprites = new();
+        public HashSet<string> PoiLoadingSpriteNames = new();
     }
 }

@@ -13,15 +13,31 @@ namespace ET.Server
 
             NumericComponent numericComponent = target.NumericComponent;
             long hp = numericComponent.Get(NumericType.HP);
-            if (hp < value)
-            {
-                value = (int) hp;
-            }
-            long v = hp - value;
 
             // spell mod
             SpellComponent spellComponent = attacker.GetComponent<SpellComponent>();
             int spellConfigId = damageBuff.GetSpellConfigId();
+
+            // 攻击力 × 伤害系数；BTDamage.Value > 0 时使用固定值（向后兼容）
+            int finalValue;
+            if (value > 0)
+            {
+                finalValue = value;
+            }
+            else
+            {
+                long attack = attacker.NumericComponent?.GetAsLong(NumericType.Attack) ?? 0;
+                SpellConfig spellConfig = SpellConfigCategory.Instance.Get(spellConfigId);
+                int damageMultiplier = spellConfig?.DamageMultiplier ?? 0;
+                finalValue = (int)(attack * damageMultiplier / 100);
+            }
+
+            if (hp < finalValue)
+            {
+                finalValue = (int)hp;
+            }
+            long v = hp - finalValue;
+
             int damagePct = spellComponent.GetMod(spellConfigId, SpellModType.SPELLMOD_DAMAGE);
             v = (int)(v * (100 + damagePct) / 100f);
 
@@ -60,7 +76,7 @@ namespace ET.Server
             ThreatComponent threatComponent = target.GetComponent<ThreatComponent>();
             if (threatComponent != null)
             {
-                int threat = value;
+                int threat = finalValue;
                 // 计算仇恨Mod
                 int threatPct = spellComponent.GetMod(spellConfigId, SpellModType.SPELLMOD_THREAT);
                 threat = (int)(threat * (100 + threatPct) / 100f);

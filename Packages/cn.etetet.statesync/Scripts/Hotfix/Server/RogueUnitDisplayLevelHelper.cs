@@ -94,6 +94,89 @@ namespace ET.Server
             return Math.Max(totalLevel / alivePlayerCount, 1);
         }
 
+        /// <summary>
+        /// 怪物等级变化时，按 RogueLevelNumericEntry (UnitType=2) 应用属性增量。
+        /// 支持升级（正向累加）和降级（反向回退）。
+        /// </summary>
+        private static void ApplyMonsterLevelNumerics(Unit unit, int oldLevel, int newLevel)
+        {
+            if (unit == null || unit.IsDisposed || oldLevel == newLevel)
+            {
+                return;
+            }
+
+            NumericComponent numeric = unit.NumericComponent;
+            if (numeric == null)
+            {
+                return;
+            }
+
+            RogueRuntimeConfigCategory configCategory = RogueRuntimeConfigCategory.Instance;
+            if (configCategory == null)
+            {
+                return;
+            }
+
+            int monsterUnitType = (int)UnitType.Monster;
+
+            if (newLevel > oldLevel)
+            {
+                // 升级：累加 oldLevel+1 ~ newLevel 的增量
+                for (int lv = oldLevel + 1; lv <= newLevel; lv++)
+                {
+                    if (!configCategory.TryGetLevel(lv, out RogueLevelConfig levelConfig) || levelConfig.NumericDeltas == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (RogueNumericConfig delta in levelConfig.NumericDeltas)
+                    {
+                        if (delta == null || delta.NumericType <= 0 || delta.Value == 0)
+                        {
+                            continue;
+                        }
+
+                        if (delta.UnitType != 0 && delta.UnitType != monsterUnitType)
+                        {
+                            continue;
+                        }
+
+                        long current = numeric.GetAsLong(delta.NumericType);
+                        numeric.Set(delta.NumericType, current + delta.Value);
+                    }
+                }
+            }
+            else
+            {
+                // 降级：回退 oldLevel ~ newLevel+1 的增量
+                for (int lv = oldLevel; lv > newLevel; lv--)
+                {
+                    if (!configCategory.TryGetLevel(lv, out RogueLevelConfig levelConfig) || levelConfig.NumericDeltas == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (RogueNumericConfig delta in levelConfig.NumericDeltas)
+                    {
+                        if (delta == null || delta.NumericType <= 0 || delta.Value == 0)
+                        {
+                            continue;
+                        }
+
+                        if (delta.UnitType != 0 && delta.UnitType != monsterUnitType)
+                        {
+                            continue;
+                        }
+
+                        long current = numeric.GetAsLong(delta.NumericType);
+                        numeric.Set(delta.NumericType, current - delta.Value);
+                    }
+                }
+            }
+
+            Log.Info($"[RogueMonsterGrowth] applied, unitId={unit.Id}, oldLevel={oldLevel}, newLevel={newLevel}");
+        }
+
         private static void SetUnitDisplayLevel(Unit unit, int displayLevel, bool notifyClients)
         {
             if (unit == null || unit.IsDisposed)
@@ -117,6 +200,12 @@ namespace ET.Server
             if (oldLevel == displayLevel)
             {
                 return;
+            }
+
+            // 怪物等级变化时应用属性成长
+            if (unit.UnitType == UnitType.Monster)
+            {
+                ApplyMonsterLevelNumerics(unit, oldLevel, displayLevel);
             }
 
             if (!notifyClients)

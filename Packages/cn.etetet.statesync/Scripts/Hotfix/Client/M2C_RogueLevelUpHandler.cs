@@ -15,6 +15,7 @@ namespace ET.Client
             runtime.Level = message.NewLevel;
 
             Log.Info($"[RogueClient] level up {message.OldLevel}->{message.NewLevel}, deltaCount={message.GainedNumerics.Count}");
+            EventSystem.Instance.Publish(root, new EventRogueProgressChanged());
             await ETTask.CompletedTask;
         }
     }

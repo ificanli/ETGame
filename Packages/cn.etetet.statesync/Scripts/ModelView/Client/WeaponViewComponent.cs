@@ -25,5 +25,7 @@ namespace ET.Client
         public int WeaponId { get; set; }
 
         public int LoadVersion { get; set; }
+
+        public int RapidFireStopVersion { get; set; }
     }
 }

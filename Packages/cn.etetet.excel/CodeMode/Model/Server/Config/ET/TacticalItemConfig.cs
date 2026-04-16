@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,22 +16,22 @@ namespace ET
     [EnableClass]
     public sealed partial class TacticalItemConfig : Luban.BeanBase
     {
-        public TacticalItemConfig(ByteBuf _buf) 
+        public TacticalItemConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            ItemConfigId = _buf.ReadInt();
-            TacticalType = _buf.ReadInt();
-            CastMode = _buf.ReadInt();
-            BuffConfigId = _buf.ReadInt();
-            Radius = _buf.ReadInt();
-            MaxDistance = _buf.ReadInt();
-            CooldownMs = _buf.ReadInt();
-            IndicatorPath = _buf.ReadString();
+            { if(!_buf["id"].IsNumber) { throw new SerializationException(); }  Id = _buf["id"]; }
+            { if(!_buf["ItemConfigId"].IsNumber) { throw new SerializationException(); }  ItemConfigId = _buf["ItemConfigId"]; }
+            { if(!_buf["TacticalType"].IsNumber) { throw new SerializationException(); }  TacticalType = _buf["TacticalType"]; }
+            { if(!_buf["CastMode"].IsNumber) { throw new SerializationException(); }  CastMode = _buf["CastMode"]; }
+            { if(!_buf["BuffConfigId"].IsNumber) { throw new SerializationException(); }  BuffConfigId = _buf["BuffConfigId"]; }
+            { if(!_buf["Radius"].IsNumber) { throw new SerializationException(); }  Radius = _buf["Radius"]; }
+            { if(!_buf["MaxDistance"].IsNumber) { throw new SerializationException(); }  MaxDistance = _buf["MaxDistance"]; }
+            { if(!_buf["CooldownMs"].IsNumber) { throw new SerializationException(); }  CooldownMs = _buf["CooldownMs"]; }
+            { if(!_buf["IndicatorPath"].IsString) { throw new SerializationException(); }  IndicatorPath = _buf["IndicatorPath"]; }
 
             EndInit();
         }
 
-        public static TacticalItemConfig DeserializeTacticalItemConfig(ByteBuf _buf)
+        public static TacticalItemConfig DeserializeTacticalItemConfig(JSONNode _buf)
         {
             return new ET.TacticalItemConfig(_buf);
         }
@@ -71,7 +72,7 @@ namespace ET
         /// 指示器资源路径
         /// </summary>
         public readonly string IndicatorPath;
-    
+
         public const int __ID__ = -874083401;
         public override int GetTypeId() => __ID__;
 

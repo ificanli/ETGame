@@ -18,6 +18,7 @@ namespace ET.Client
         private const int ContainerFixedCols = 4;
         private const int ContainerFixedRows = 3;
         private const int MinRows = 4;
+        private const long QuickTransferDoubleClickDelayMs = 300;
         private const string MissingBackpackTipText = "<color=red>未装备背包，无法拾取容器物品</color>";
 
         [EntitySystem]
@@ -33,6 +34,15 @@ namespace ET.Client
             CacheGridRoots(self);
             CacheSecureWidgets(self);
             CacheModeWidgets(self);
+            self.BagAreaRoot = null;
+            self.OwnedAreaParentRoot = null;
+            self.OwnedAreaLayoutInitialized = false;
+            self.BagAreaTopLeft = Vector2.zero;
+            self.SecureAreaTopLeft = Vector2.zero;
+            self.OwnedAreaVerticalGap = 0f;
+            self.ItemClickVersion = 0;
+            self.BagLayoutCache = default;
+            self.SecureLayoutCache = default;
             self.QuickChooseMinQuality = ReadQuickChooseMinQuality(self);
             SetTemplateActive(self.u_ComContainerItemTemplate, false);
             SetTemplateActive(self.u_ComBagItemTemplate, false);
@@ -56,11 +66,19 @@ namespace ET.Client
             self.SecureSolver = null;
             self.LastContainerSnapshot = null;
             self.ContainerGridRoot = null;
+            self.BagAreaRoot = null;
             self.BagGridRoot = null;
             self.SecureBoardRoot = null;
             self.SecureItemsLayer = null;
             self.SecureItemTemplate = null;
             self.SecureGridRoot = null;
+            self.OwnedAreaParentRoot = null;
+            self.OwnedAreaLayoutInitialized = false;
+            self.BagAreaTopLeft = Vector2.zero;
+            self.SecureAreaTopLeft = Vector2.zero;
+            self.OwnedAreaVerticalGap = 0f;
+            self.BagLayoutCache = default;
+            self.SecureLayoutCache = default;
             self.QuickChooseDropdown = null;
             self.QuickChooseButtonRoot = null;
             self.QuickChooseButtonLabel = null;
@@ -91,6 +109,7 @@ namespace ET.Client
         private static async ETTask<bool> YIUIOpen(this SearchPanelComponent self)
         {
             AudioHelper.PlayUi(self.Root(), AudioEventId.SfxItemPickup);
+            ResetOwnedAreaLayout(self);
             self.LastContainerSnapshot = null;
             self.QuickChooseMinQuality = ReadQuickChooseMinQuality(self);
             TryRefreshView(self, true);
@@ -158,6 +177,7 @@ namespace ET.Client
             RefreshLoadoutSlots(self, root.GetComponent<LoadoutComponent>());
             RenderBag(self, itemComponent);
             RenderSecure(self, root.GetComponent<LoadoutComponent>());
+            RefreshOwnedAreaBlockLayout(self);
 
             Log.Info(
                 $"[ECAClient][SearchPanel] refresh mode={self.OpenMode}, point={self.CurrentPointId ?? "null"}, container={runtime?.ContainerItems.Count ?? 0}, bag={itemComponent?.GetUsedSlotCount() ?? 0}");
@@ -248,11 +268,11 @@ namespace ET.Client
             SetGameObjectActive(self.SecureItemsLayer, true);
             SetGameObjectActive(self.SecureGridRoot, true);
 
-            if (useBagOnlyLayout)
+            if (self.BagAreaRoot == null && useBagOnlyLayout)
             {
                 ApplyBagOnlyLayout(self);
             }
-            else
+            else if (self.BagAreaRoot == null)
             {
                 RestoreBagBoardLayout(self);
             }
@@ -319,10 +339,20 @@ namespace ET.Client
 
             if (self.u_ComBagBoardRoot != null)
             {
+                self.BagBoardPivot = self.u_ComBagBoardRoot.pivot;
                 self.BagBoardAnchorMin = self.u_ComBagBoardRoot.anchorMin;
                 self.BagBoardAnchorMax = self.u_ComBagBoardRoot.anchorMax;
                 self.BagBoardAnchoredPosition = self.u_ComBagBoardRoot.anchoredPosition;
                 self.BagBoardSizeDelta = self.u_ComBagBoardRoot.sizeDelta;
+            }
+
+            if (self.u_ComSecureBagRootRectTransform != null)
+            {
+                self.SecureRootPivot = self.u_ComSecureBagRootRectTransform.pivot;
+                self.SecureRootAnchorMin = self.u_ComSecureBagRootRectTransform.anchorMin;
+                self.SecureRootAnchorMax = self.u_ComSecureBagRootRectTransform.anchorMax;
+                self.SecureRootAnchoredPosition = self.u_ComSecureBagRootRectTransform.anchoredPosition;
+                self.SecureRootSizeDelta = self.u_ComSecureBagRootRectTransform.sizeDelta;
             }
 
             if (self.u_ComContainerBoardRoot != null)
@@ -523,6 +553,388 @@ namespace ET.Client
             RemoveDeadViews(self.SecureItemViews, alive);
             ResizeBoard(self.SecureBoardRoot, self.SecureItemsLayer, cols, rows, self.CellSize, self.CellSpacing, self.CellPadding);
             RenderGrid(self.SecureGridRoot, self.SecureGridCellViews, cols, rows, self.CellSize, self.CellSpacing, self.CellPadding, false);
+        }
+
+        private static void RefreshOwnedAreaBlockLayout(SearchPanelComponent self)
+        {
+            if (!TryEnsureOwnedAreaLayoutCache(self))
+            {
+                return;
+            }
+
+            bool useBagOnlyLayout = SearchPanelModeHelper.ShouldUseBagOnlyLayout(self.OpenMode);
+            Vector2 bagBoardSize = CalcOwnedAreaBoardSize(self.BagCols, self.BagRows, self.CellSize, self.CellSpacing, self.CellPadding);
+            Vector2 secureBoardSize = CalcOwnedAreaBoardSize(self.SecureCols, self.SecureRows, self.CellSize, self.CellSpacing, self.CellPadding);
+            Vector2 bagRootSize = ApplyOwnedAreaLayout(
+                self.BagAreaRoot,
+                self.u_ComBagBoardRoot,
+                self.BagLayoutCache,
+                bagBoardSize,
+                self.BagAreaTopLeft);
+
+            Vector2 secureTopLeft = useBagOnlyLayout
+                ? new Vector2(
+                    self.BagAreaTopLeft.x,
+                    self.BagAreaTopLeft.y + bagRootSize.y + self.OwnedAreaVerticalGap)
+                : self.SecureAreaTopLeft;
+            ApplyOwnedAreaLayout(
+                self.u_ComSecureBagRootRectTransform,
+                self.SecureBoardRoot,
+                self.SecureLayoutCache,
+                secureBoardSize,
+                secureTopLeft);
+        }
+
+        private static bool TryEnsureOwnedAreaLayoutCache(SearchPanelComponent self)
+        {
+            if (self.OwnedAreaLayoutInitialized)
+            {
+                return true;
+            }
+
+            if (!TryEnsureBagAreaRoot(self))
+            {
+                return false;
+            }
+
+            RectTransform bagRoot = self.BagAreaRoot;
+            RectTransform secureRoot = self.u_ComSecureBagRootRectTransform;
+            RectTransform bagBoardRoot = self.u_ComBagBoardRoot;
+            RectTransform secureBoardRoot = self.SecureBoardRoot;
+            if (bagRoot == null ||
+                secureRoot == null ||
+                bagBoardRoot == null ||
+                secureBoardRoot == null ||
+                bagRoot.parent is not RectTransform parentRoot)
+            {
+                return false;
+            }
+
+            if (!bagRoot.gameObject.activeInHierarchy || !secureRoot.gameObject.activeInHierarchy)
+            {
+                return false;
+            }
+
+            Canvas.ForceUpdateCanvases();
+            Rect bagParentRect = GetTopLeftRect(parentRoot, bagRoot);
+            Rect secureParentRect = GetTopLeftRect(parentRoot, secureRoot);
+            if (bagParentRect.width <= 0f || bagParentRect.height <= 0f || secureParentRect.width <= 0f || secureParentRect.height <= 0f)
+            {
+                return false;
+            }
+
+            self.OwnedAreaParentRoot = parentRoot;
+            self.BagAreaTopLeft = bagParentRect.position;
+            self.SecureAreaTopLeft = secureParentRect.position;
+            self.OwnedAreaVerticalGap = Mathf.Max(0f, secureParentRect.y - bagParentRect.yMax);
+
+            CaptureOwnedAreaLayoutCache(
+                ref self.BagLayoutCache,
+                bagRoot,
+                bagBoardRoot,
+                FindDirectChildRectTransform(bagBoardRoot, "Bg"),
+                null,
+                null);
+            CaptureOwnedAreaLayoutCache(
+                ref self.SecureLayoutCache,
+                secureRoot,
+                secureBoardRoot,
+                FindDirectChildRectTransform(secureRoot, "Bg"),
+                FindDirectChildRectTransform(secureRoot, "SecureBagTitle"),
+                FindDirectChildRectTransform(secureRoot, "SecureHintText"));
+
+            self.OwnedAreaLayoutInitialized = self.BagLayoutCache.Initialized && self.SecureLayoutCache.Initialized;
+            return self.OwnedAreaLayoutInitialized;
+        }
+
+        private static bool TryEnsureBagAreaRoot(SearchPanelComponent self)
+        {
+            if (self.BagAreaRoot != null)
+            {
+                return true;
+            }
+
+            RectTransform bagBoardRoot = self.u_ComBagBoardRoot;
+            if (bagBoardRoot == null || bagBoardRoot.parent is not RectTransform parentRoot)
+            {
+                return false;
+            }
+
+            Canvas.ForceUpdateCanvases();
+            Rect bagParentRect = GetTopLeftRect(parentRoot, bagBoardRoot);
+            if (bagParentRect.width <= 0f || bagParentRect.height <= 0f)
+            {
+                return false;
+            }
+
+            int siblingIndex = bagBoardRoot.GetSiblingIndex();
+            GameObject bagRootGo = new GameObject("BagRoot", typeof(RectTransform));
+            RectTransform bagRoot = bagRootGo.GetComponent<RectTransform>();
+            bagRoot.SetParent(parentRoot, false);
+            bagRoot.SetSiblingIndex(siblingIndex);
+            SetRectByTopLeft(bagRoot, bagParentRect.x, bagParentRect.y, bagParentRect.width, bagParentRect.height);
+
+            bagBoardRoot.SetParent(bagRoot, false);
+            SetRectByTopLeft(bagBoardRoot, 0f, 0f, bagParentRect.width, bagParentRect.height);
+
+            self.BagAreaRoot = bagRoot;
+            self.OwnedAreaParentRoot = parentRoot;
+            self.OwnedAreaLayoutInitialized = false;
+            self.SecureAreaTopLeft = Vector2.zero;
+            self.BagLayoutCache = default;
+            self.SecureLayoutCache = default;
+            return true;
+        }
+
+        private static void ResetOwnedAreaLayout(SearchPanelComponent self)
+        {
+            RectTransform bagBoardRoot = self.u_ComBagBoardRoot;
+            RectTransform bagRoot = self.BagAreaRoot;
+            RectTransform parentRoot = self.OwnedAreaParentRoot;
+            if (bagBoardRoot != null && bagRoot != null && parentRoot != null)
+            {
+                int siblingIndex = bagRoot.GetSiblingIndex();
+                bagBoardRoot.SetParent(parentRoot, false);
+                bagBoardRoot.SetSiblingIndex(siblingIndex);
+                RestoreBagBoardLayout(self);
+                UnityEngine.Object.Destroy(bagRoot.gameObject);
+            }
+
+            RestoreSecureRootLayout(self);
+
+            self.BagAreaRoot = null;
+            self.OwnedAreaParentRoot = null;
+            self.OwnedAreaLayoutInitialized = false;
+            self.BagAreaTopLeft = Vector2.zero;
+            self.SecureAreaTopLeft = Vector2.zero;
+            self.OwnedAreaVerticalGap = 0f;
+            self.BagLayoutCache = default;
+            self.SecureLayoutCache = default;
+        }
+
+        private static void CaptureOwnedAreaLayoutCache(
+            ref LoadoutOwnedAreaLayoutCache cache,
+            RectTransform root,
+            RectTransform boardRoot,
+            RectTransform background,
+            RectTransform title,
+            RectTransform hint)
+        {
+            if (root == null || boardRoot == null)
+            {
+                return;
+            }
+
+            Rect boardRect = GetTopLeftRect(root, boardRoot);
+            cache.Background = background;
+            cache.Title = title;
+            cache.Hint = hint;
+            cache.BackgroundInsets = CaptureBackgroundInsets(root, background, boardRect);
+            cache.TitleRect = CaptureRelativeRect(root, title, boardRect);
+            cache.HintRect = CaptureRelativeRect(root, hint, boardRect);
+            cache.Initialized = true;
+        }
+
+        private static LoadoutAreaLayoutInsets CaptureBackgroundInsets(RectTransform root, RectTransform target, Rect boardRect)
+        {
+            if (root == null || target == null || boardRect.width < 0f || boardRect.height < 0f)
+            {
+                return default;
+            }
+
+            Rect targetRect = GetTopLeftRect(root, target);
+            return new LoadoutAreaLayoutInsets
+            {
+                Active = true,
+                Left = targetRect.x - boardRect.x,
+                Top = targetRect.y - boardRect.y,
+                Right = targetRect.xMax - boardRect.xMax,
+                Bottom = targetRect.yMax - boardRect.yMax,
+            };
+        }
+
+        private static LoadoutAreaLayoutRect CaptureRelativeRect(RectTransform root, RectTransform target, Rect boardRect)
+        {
+            if (root == null || target == null)
+            {
+                return default;
+            }
+
+            Rect targetRect = GetTopLeftRect(root, target);
+            return new LoadoutAreaLayoutRect
+            {
+                Active = true,
+                OffsetFromBoardTopLeft = new Vector2(targetRect.x - boardRect.x, targetRect.y - boardRect.y),
+                Size = targetRect.size,
+            };
+        }
+
+        private static Vector2 ApplyOwnedAreaLayout(
+            RectTransform root,
+            RectTransform boardRoot,
+            LoadoutOwnedAreaLayoutCache cache,
+            Vector2 boardSize,
+            Vector2 topLeft)
+        {
+            if (root == null || boardRoot == null || !cache.Initialized)
+            {
+                return Vector2.zero;
+            }
+
+            Rect boardRect = new Rect(0f, 0f, Mathf.Max(0f, boardSize.x), Mathf.Max(0f, boardSize.y));
+            Rect backgroundRect = ResolveBackgroundRect(boardRect, cache.BackgroundInsets);
+            Rect titleRect = ResolveFixedRect(cache.TitleRect);
+            Rect hintRect = ResolveFixedRect(cache.HintRect);
+
+            float minX = boardRect.xMin;
+            float minY = boardRect.yMin;
+            float maxX = boardRect.xMax;
+            float maxY = boardRect.yMax;
+            IncludeRect(ref minX, ref minY, ref maxX, ref maxY, backgroundRect, cache.BackgroundInsets.Active);
+            IncludeRect(ref minX, ref minY, ref maxX, ref maxY, titleRect, cache.TitleRect.Active);
+            IncludeRect(ref minX, ref minY, ref maxX, ref maxY, hintRect, cache.HintRect.Active);
+
+            float shiftX = minX < 0f ? -minX : 0f;
+            float shiftY = minY < 0f ? -minY : 0f;
+            Rect shiftedBoardRect = ShiftRect(boardRect, shiftX, shiftY);
+            Rect shiftedBackgroundRect = ShiftRect(backgroundRect, shiftX, shiftY);
+            Rect shiftedTitleRect = ShiftRect(titleRect, shiftX, shiftY);
+            Rect shiftedHintRect = ShiftRect(hintRect, shiftX, shiftY);
+
+            float totalWidth = Mathf.Max(0f, maxX - minX);
+            float totalHeight = Mathf.Max(0f, maxY - minY);
+            SetRectByTopLeft(root, topLeft.x, topLeft.y, totalWidth, totalHeight);
+            SetRectByTopLeft(boardRoot, shiftedBoardRect.x, shiftedBoardRect.y, shiftedBoardRect.width, shiftedBoardRect.height);
+
+            if (cache.Background != null)
+            {
+                SetRectByTopLeft(
+                    cache.Background,
+                    shiftedBackgroundRect.x,
+                    shiftedBackgroundRect.y,
+                    shiftedBackgroundRect.width,
+                    shiftedBackgroundRect.height);
+            }
+
+            if (cache.Title != null)
+            {
+                SetRectByTopLeft(
+                    cache.Title,
+                    shiftedTitleRect.x,
+                    shiftedTitleRect.y,
+                    shiftedTitleRect.width,
+                    shiftedTitleRect.height);
+            }
+
+            if (cache.Hint != null)
+            {
+                SetRectByTopLeft(
+                    cache.Hint,
+                    shiftedHintRect.x,
+                    shiftedHintRect.y,
+                    shiftedHintRect.width,
+                    shiftedHintRect.height);
+            }
+
+            return new Vector2(totalWidth, totalHeight);
+        }
+
+        private static Rect ResolveBackgroundRect(Rect boardRect, LoadoutAreaLayoutInsets insets)
+        {
+            if (!insets.Active)
+            {
+                return boardRect;
+            }
+
+            float left = boardRect.x + insets.Left;
+            float top = boardRect.y + insets.Top;
+            float right = boardRect.xMax + insets.Right;
+            float bottom = boardRect.yMax + insets.Bottom;
+            return Rect.MinMaxRect(left, top, right, bottom);
+        }
+
+        private static Rect ResolveFixedRect(LoadoutAreaLayoutRect layout)
+        {
+            if (!layout.Active)
+            {
+                return default;
+            }
+
+            return new Rect(layout.OffsetFromBoardTopLeft, layout.Size);
+        }
+
+        private static Rect ShiftRect(Rect rect, float shiftX, float shiftY)
+        {
+            return new Rect(rect.x + shiftX, rect.y + shiftY, rect.width, rect.height);
+        }
+
+        private static void IncludeRect(ref float minX, ref float minY, ref float maxX, ref float maxY, Rect rect, bool enabled)
+        {
+            if (!enabled)
+            {
+                return;
+            }
+
+            minX = Mathf.Min(minX, rect.xMin);
+            minY = Mathf.Min(minY, rect.yMin);
+            maxX = Mathf.Max(maxX, rect.xMax);
+            maxY = Mathf.Max(maxY, rect.yMax);
+        }
+
+        private static void SetRectByTopLeft(RectTransform rectTransform, float x, float y, float width, float height)
+        {
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            rectTransform.anchorMin = new Vector2(0f, 1f);
+            rectTransform.anchorMax = new Vector2(0f, 1f);
+            rectTransform.pivot = new Vector2(0f, 1f);
+            rectTransform.anchoredPosition = new Vector2(x, -y);
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Max(0f, width));
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Max(0f, height));
+        }
+
+        private static Rect GetTopLeftRect(RectTransform parent, RectTransform target)
+        {
+            if (parent == null || target == null)
+            {
+                return default;
+            }
+
+            Vector3[] worldCorners = new Vector3[4];
+            target.GetWorldCorners(worldCorners);
+
+            float minX = float.MaxValue;
+            float minY = float.MaxValue;
+            float maxX = float.MinValue;
+            float maxY = float.MinValue;
+            for (int i = 0; i < worldCorners.Length; ++i)
+            {
+                Vector3 localCorner = parent.InverseTransformPoint(worldCorners[i]);
+                minX = Mathf.Min(minX, localCorner.x);
+                minY = Mathf.Min(minY, localCorner.y);
+                maxX = Mathf.Max(maxX, localCorner.x);
+                maxY = Mathf.Max(maxY, localCorner.y);
+            }
+
+            Rect parentRect = parent.rect;
+            float x = minX - parentRect.xMin;
+            float y = parentRect.yMax - maxY;
+            return new Rect(x, y, maxX - minX, maxY - minY);
+        }
+
+        private static Vector2 CalcOwnedAreaBoardSize(int cols, int rows, Vector2 cellSize, Vector2 spacing, Vector2 padding)
+        {
+            if (cols <= 0 || rows <= 0)
+            {
+                return Vector2.zero;
+            }
+
+            float width = padding.x * 2f + cols * cellSize.x + Mathf.Max(0, cols - 1) * spacing.x;
+            float height = padding.y * 2f + rows * cellSize.y + Mathf.Max(0, rows - 1) * spacing.y;
+            return new Vector2(width, height);
         }
 
         private static void RefreshLoadoutSlots(SearchPanelComponent self, LoadoutComponent loadout)
@@ -869,12 +1281,12 @@ namespace ET.Client
 
         private static void OnClickEvent(BaseEventData data)
         {
-            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out int areaType, out _, out int configId, out PointerEventData eventData))
+            if (!TryGetDragContext(data, out SearchPanelComponent self, out RectTransform view, out long itemId, out int areaType, out int slotIndex, out int configId, out PointerEventData eventData))
             {
                 return;
             }
 
-            OnItemClick(self, view, itemId, areaType, configId, eventData).Coroutine();
+            OnItemClick(self, view, itemId, areaType, slotIndex, configId, eventData).Coroutine();
         }
 
         private static bool TryGetDragContext(
@@ -1099,6 +1511,7 @@ namespace ET.Client
             RectTransform view,
             long itemId,
             int areaType,
+            int slotIndex,
             int configId,
             PointerEventData eventData)
         {
@@ -1113,7 +1526,68 @@ namespace ET.Client
                 return;
             }
 
+            if (eventData.clickCount >= 2)
+            {
+                ++self.ItemClickVersion;
+                await TryQuickTransferItemAsync(self, itemId, areaType, slotIndex, configId);
+                return;
+            }
+
+            int clickVersion = ++self.ItemClickVersion;
+            Scene root = self.Root();
+            if (root == null || root.IsDisposed)
+            {
+                return;
+            }
+
+            EntityRef<SearchPanelComponent> selfRef = self;
+            await root.TimerComponent.WaitAsync(QuickTransferDoubleClickDelayMs);
+            self = selfRef;
+            if (self == null || self.IsDisposed || self.ItemClickVersion != clickVersion)
+            {
+                return;
+            }
+
             await self.OpenItemClickedAsync(configId, areaType == (int)ContainerItemAreaType.Bag ? itemId : 0);
+        }
+
+        private static async ETTask TryQuickTransferItemAsync(
+            SearchPanelComponent self,
+            long itemId,
+            int sourceAreaType,
+            int sourceSlotIndex,
+            int configId)
+        {
+            if (self == null || self.IsDisposed || configId <= 0)
+            {
+                return;
+            }
+
+            if (!QuickTransferRouteHelper.TryResolveSearchPanelTarget(
+                    self.OpenMode,
+                    (ContainerItemAreaType)sourceAreaType,
+                    out ContainerItemAreaType targetAreaType))
+            {
+                return;
+            }
+
+            if (!TryGetSourceSlot(self, sourceAreaType, sourceSlotIndex, itemId, out int sourceSlot))
+            {
+                return;
+            }
+
+            if (!TryFindFirstFitQuickTransferSlot(self, targetAreaType, configId, out int targetSlot))
+            {
+                return;
+            }
+
+            await MoveContainerItem(
+                self.Root(),
+                sourceAreaType,
+                sourceSlot,
+                sourceAreaType == (int)ContainerItemAreaType.Bag ? itemId : 0,
+                (int)targetAreaType,
+                targetSlot);
         }
 
         private static async ETTask OpenItemClickedAsync(this SearchPanelComponent self, int configId, long itemUid)
@@ -1902,6 +2376,75 @@ namespace ET.Client
             await ECAInteractHelper.MoveContainerItem(root, sourceAreaType, sourceSlot, sourceItemId, targetAreaType, targetSlot);
         }
 
+        private static bool TryFindFirstFitQuickTransferSlot(
+            SearchPanelComponent self,
+            ContainerItemAreaType targetAreaType,
+            int configId,
+            out int targetSlot)
+        {
+            targetSlot = -1;
+            if (self == null || self.IsDisposed || configId <= 0)
+            {
+                return false;
+            }
+
+            GridPlacementSolver solver = GetAreaSolver(self, (int)targetAreaType);
+            if (solver == null)
+            {
+                return false;
+            }
+
+            int itemWidth = GetItemWidth(configId);
+            int itemHeight = GetItemHeight(configId);
+            if (itemWidth <= 0 || itemHeight <= 0)
+            {
+                return false;
+            }
+
+            int capacity = GetQuickTransferAreaCapacity(self, targetAreaType);
+            if (capacity <= 0)
+            {
+                return false;
+            }
+
+            for (int slot = 0; slot < capacity; ++slot)
+            {
+                int x = slot % solver.Cols;
+                int y = slot / solver.Cols;
+                if (y >= solver.Rows)
+                {
+                    break;
+                }
+
+                if (!solver.CanPlace(x, y, itemWidth, itemHeight))
+                {
+                    continue;
+                }
+
+                targetSlot = slot;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static int GetQuickTransferAreaCapacity(SearchPanelComponent self, ContainerItemAreaType areaType)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return 0;
+            }
+
+            return areaType switch
+            {
+                ContainerItemAreaType.Container => self.ContainerCols * self.ContainerRows,
+                ContainerItemAreaType.Bag => self.Root()?.GetComponent<ItemComponent>()?.Capacity ?? 0,
+                ContainerItemAreaType.Secure => (self.Root()?.GetComponent<LoadoutComponent>()?.SecureWidth ?? 0) *
+                                                (self.Root()?.GetComponent<LoadoutComponent>()?.SecureHeight ?? 0),
+                _ => 0,
+            };
+        }
+
         private static bool TryGetDropArea(
             SearchPanelComponent self,
             PointerEventData eventData,
@@ -2328,6 +2871,7 @@ namespace ET.Client
                 return;
             }
 
+            bagBoard.pivot = self.BagBoardPivot;
             bagBoard.anchorMin = new Vector2(self.BagBoardAnchorMin.x, self.ContainerBoardAnchorMin.y);
             bagBoard.anchorMax = self.BagBoardAnchorMax;
             bagBoard.anchoredPosition = self.BagBoardAnchoredPosition;
@@ -2342,10 +2886,26 @@ namespace ET.Client
                 return;
             }
 
+            bagBoard.pivot = self.BagBoardPivot;
             bagBoard.anchorMin = self.BagBoardAnchorMin;
             bagBoard.anchorMax = self.BagBoardAnchorMax;
             bagBoard.anchoredPosition = self.BagBoardAnchoredPosition;
             bagBoard.sizeDelta = self.BagBoardSizeDelta;
+        }
+
+        private static void RestoreSecureRootLayout(SearchPanelComponent self)
+        {
+            RectTransform secureRoot = self.u_ComSecureBagRootRectTransform;
+            if (secureRoot == null)
+            {
+                return;
+            }
+
+            secureRoot.pivot = self.SecureRootPivot;
+            secureRoot.anchorMin = self.SecureRootAnchorMin;
+            secureRoot.anchorMax = self.SecureRootAnchorMax;
+            secureRoot.anchoredPosition = self.SecureRootAnchoredPosition;
+            secureRoot.sizeDelta = self.SecureRootSizeDelta;
         }
 
         private static void ApplyDisplayInfo(SearchPanelComponent self, SearchPanelDisplayInfo displayInfo)

@@ -15,5 +15,7 @@ namespace ET
         public OdinUnityObject Effect;
 
         public int Duration = 5000;
+
+        public bool FollowUnit;
     }
 }

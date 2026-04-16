@@ -34,8 +34,29 @@ namespace ET.Client
             }
 
             AnimatorComponent animatorComponent = caster.GetComponent<AnimatorComponent>();
-            animatorComponent?.SetTrigger("Fire");
+            WeaponViewComponent weaponViewComponent = caster.GetComponent<WeaponViewComponent>();
+            if (weaponConfig.FireAnimationType == 2)
+            {
+                // 连发武器：每次开火都刷新停火超时，没有后续开火消息时自动回落到持枪待机/移动
+                if (weaponViewComponent == null)
+                {
+                    weaponViewComponent = caster.AddComponent<WeaponViewComponent>();
+                }
+
+                weaponViewComponent.StartRapidFireAnimation(root, weaponConfig.AttackIntervalMs);
+            }
+            else
+            {
+                // 单发武器：每次开火触发一次完整射击动画
+                animatorComponent?.SetTrigger("FireSingle");
+            }
             Log.Info($"[WeaponFireTrace][Client] fire message received, caster={message.CasterUnitId}, target={message.TargetUnitId}, weaponId={message.WeaponId}, bulletCount={message.BulletCount}, effect={weaponConfig.ProjectileEffect}");
+
+            // 枪口火焰
+            if (!string.IsNullOrEmpty(weaponConfig.MuzzleFlashEffect))
+            {
+                SpawnMuzzleFlashAsync(root, caster, weaponConfig).Coroutine();
+            }
 
             int bulletCount = message.BulletCount > 0 ? message.BulletCount : 1;
             FireLockType lockType = (FireLockType)message.FireLockTypeId;
@@ -164,6 +185,31 @@ namespace ET.Client
         {
             Transform transform = GetBindTransform(unit, bindPoint);
             return transform != null ? transform.position : Vector3.zero;
+        }
+
+        private static async ETTask SpawnMuzzleFlashAsync(Scene root, Unit caster, global::ET.WeaponConfig weaponConfig)
+        {
+            Scene currentScene = root.CurrentScene();
+            ResourcesLoaderComponent resourcesLoader = currentScene?.GetComponent<ResourcesLoaderComponent>();
+            if (resourcesLoader == null) return;
+
+            WeaponViewComponent weaponView = caster.GetComponent<WeaponViewComponent>();
+            Vector3 muzzlePos = weaponView != null
+                ? WeaponViewComponentSystem.GetFirePoint(weaponView, caster, weaponConfig)
+                : GetBindPosition(caster, weaponConfig.ToBindPoint(weaponConfig.MuzzleBindPointId, BindPoint.Bullet));
+            Quaternion muzzleRot = caster.GetComponent<GameObjectComponent>()?.GameObject?.transform.rotation ?? Quaternion.identity;
+
+            EntityRef<Scene> rootRef = root;
+            EntityRef<Unit> casterRef = caster;
+            GameObject prefab = await resourcesLoader.LoadAssetAsync<GameObject>(weaponConfig.MuzzleFlashEffect);
+
+            root = rootRef;
+            caster = casterRef;
+            if (root == null || caster == null || prefab == null) return;
+
+            GameObject flash = UnityEngine.Object.Instantiate(prefab, muzzlePos, muzzleRot);
+            float durationSec = (weaponConfig.MuzzleFlashDurationMs > 0 ? weaponConfig.MuzzleFlashDurationMs : 100) / 1000f;
+            UnityEngine.Object.Destroy(flash, durationSec);
         }
     }
 }

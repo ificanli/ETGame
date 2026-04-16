@@ -32,6 +32,7 @@ namespace ET.Client
             }
 
             Log.Info($"[RogueClient] exp sync level={message.Level}, exp={message.CurrentExp}/{message.NeedExp}, gold={message.CurrentGold}");
+            EventSystem.Instance.Publish(root, new EventRogueProgressChanged());
             await ETTask.CompletedTask;
         }
     }

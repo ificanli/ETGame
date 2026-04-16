@@ -1,0 +1,122 @@
+[
+  {
+    "Id": 100101,
+    "TaskGroupId": 1001,
+    "TaskType": 1,
+    "Param1": 2,
+    "Param2": 1,
+    "Title": "建造收藏馆",
+    "Desc": "在任意已解锁槽位建造 1 座大红收藏馆。",
+    "SortOrder": 10
+  },
+  {
+    "Id": 100102,
+    "TaskGroupId": 1001,
+    "TaskType": 1,
+    "Param1": 3,
+    "Param2": 1,
+    "Title": "建造回收间",
+    "Desc": "在任意已解锁槽位建造 1 间物品回收间。",
+    "SortOrder": 20
+  },
+  {
+    "Id": 100103,
+    "TaskGroupId": 1001,
+    "TaskType": 1,
+    "Param1": 4,
+    "Param2": 1,
+    "Title": "建造农场",
+    "Desc": "在任意已解锁槽位建造 1 座农场。",
+    "SortOrder": 30
+  },
+  {
+    "Id": 100104,
+    "TaskGroupId": 1001,
+    "TaskType": 1,
+    "Param1": 5,
+    "Param2": 1,
+    "Title": "建造仓库",
+    "Desc": "在任意已解锁槽位建造 1 座仓库。",
+    "SortOrder": 40
+  },
+  {
+    "Id": 100201,
+    "TaskGroupId": 1002,
+    "TaskType": 4,
+    "Param1": 2,
+    "Param2": 0,
+    "Title": "完成回收 2 次",
+    "Desc": "累计完成 2 次回收间产物收取。",
+    "SortOrder": 10
+  },
+  {
+    "Id": 100202,
+    "TaskGroupId": 1002,
+    "TaskType": 5,
+    "Param1": 2,
+    "Param2": 0,
+    "Title": "收取农场 2 次",
+    "Desc": "累计收取农场金币 2 次。",
+    "SortOrder": 20
+  },
+  {
+    "Id": 100203,
+    "TaskGroupId": 1002,
+    "TaskType": 2,
+    "Param1": 5,
+    "Param2": 2,
+    "Title": "仓库升到 2 级",
+    "Desc": "将仓库提升到 2 级，扩大总格子数。",
+    "SortOrder": 30
+  },
+  {
+    "Id": 100204,
+    "TaskGroupId": 1002,
+    "TaskType": 3,
+    "Param1": 2,
+    "Param2": 0,
+    "Title": "摆放 2 个展示单位",
+    "Desc": "在任意大红收藏馆中摆放 2 个展示单位。",
+    "SortOrder": 40
+  },
+  {
+    "Id": 100301,
+    "TaskGroupId": 1003,
+    "TaskType": 4,
+    "Param1": 4,
+    "Param2": 0,
+    "Title": "完成回收 4 次",
+    "Desc": "累计完成 4 次回收间产物收取。",
+    "SortOrder": 10
+  },
+  {
+    "Id": 100302,
+    "TaskGroupId": 1003,
+    "TaskType": 5,
+    "Param1": 4,
+    "Param2": 0,
+    "Title": "收取农场 4 次",
+    "Desc": "累计收取农场金币 4 次。",
+    "SortOrder": 20
+  },
+  {
+    "Id": 100303,
+    "TaskGroupId": 1003,
+    "TaskType": 2,
+    "Param1": 3,
+    "Param2": 3,
+    "Title": "回收间升到 3 级",
+    "Desc": "将任意物品回收间提升到 3 级。",
+    "SortOrder": 30
+  },
+  {
+    "Id": 100304,
+    "TaskGroupId": 1003,
+    "TaskType": 3,
+    "Param1": 3,
+    "Param2": 0,
+    "Title": "摆放 3 个展示单位",
+    "Desc": "在收藏馆中维持 3 个展示单位。",
+    "SortOrder": 40
+  }
+]

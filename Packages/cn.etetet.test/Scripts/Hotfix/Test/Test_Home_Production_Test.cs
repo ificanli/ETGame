@@ -80,12 +80,19 @@ namespace ET.Test
                 return 7;
             }
 
-            // 验证不能同时开始第二个生产（单队列限制）
-            var doubleResult = Server.HomeProductionHelper.StartProduction(serverUnit, workshop.Id, 1);
-            if (doubleResult.ErrorCode != ErrorCode.ERR_HomeProductionQueueFull)
+            // 1级回收间当前应支持 2 个处理位。
+            var secondResult = Server.HomeProductionHelper.StartProduction(serverUnit, workshop.Id, 1);
+            if (secondResult.ErrorCode != ErrorCode.ERR_Success)
             {
-                Log.Console($"expected ERR_HomeProductionQueueFull, got {doubleResult.ErrorCode}");
+                Log.Console($"expected second order success, got {secondResult.ErrorCode}");
                 return 8;
+            }
+
+            var queueFullResult = Server.HomeProductionHelper.StartProduction(serverUnit, workshop.Id, 1);
+            if (queueFullResult.ErrorCode != ErrorCode.ERR_HomeProductionQueueFull)
+            {
+                Log.Console($"expected ERR_HomeProductionQueueFull, got {queueFullResult.ErrorCode}");
+                return 9;
             }
 
             // 手动设置完成时间为过去，模拟生产完成
@@ -97,21 +104,21 @@ namespace ET.Test
             if (collectResult.ErrorCode != ErrorCode.ERR_Success)
             {
                 Log.Console($"collect production failed, error={collectResult.ErrorCode}");
-                return 9;
+                return 10;
             }
 
             // 验证获得产物
             if (collectResult.ItemConfigIds == null || collectResult.ItemConfigIds.Count == 0)
             {
                 Log.Console("collect returned no items");
-                return 10;
+                return 11;
             }
 
             // 验证订单状态已更新为Collected
             if (order.State != HomeProductionState.Collected)
             {
                 Log.Console($"expected Collected state, got {order.State}");
-                return 11;
+                return 12;
             }
 
             return ErrorCode.ERR_Success;

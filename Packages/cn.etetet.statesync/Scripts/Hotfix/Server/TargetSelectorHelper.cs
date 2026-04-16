@@ -14,7 +14,6 @@ namespace ET.Server
         private const float HpWeight = 0.3f;
         // 正在攻击自己的优先级加成（分数乘以此系数，越小越优先）
         private const float AttackMeBonus = 0.5f;
-        private const float LineOfSightMaxVerticalDelta = 4f;
         private const long LineOfSightPassCacheMs = 120;
         private const int LineOfSightBlockedFailureThreshold = 2;
 
@@ -248,9 +247,7 @@ namespace ET.Server
                 return false;
             }
 
-            PathfindingComponent pathfinding = owner.GetComponent<PathfindingComponent>();
-            float unitRadius = owner.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
-            return pathfinding.HasLineOfSight(owner.Position, target.Position, unitRadius, LineOfSightMaxVerticalDelta, out _);
+            return VisibilityLineOfSightHelper.HasLineOfSight(owner, target);
         }
 
         private static bool IsVisibleInAoi(Unit owner, Unit target)

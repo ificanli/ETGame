@@ -133,7 +133,7 @@ namespace ET.Server
             }
 
             ExtraUnitVisibilityComponent extraVisibility = sourceUnit.Scene()?.GetComponent<ExtraUnitVisibilityComponent>();
-            if (extraVisibility != null && extraVisibility.IsTargetConcealed(viewer.Id, sourceUnit.Id))
+            if (extraVisibility != null && extraVisibility.IsTargetHidden(viewer.Id, sourceUnit.Id))
             {
                 return false;
             }

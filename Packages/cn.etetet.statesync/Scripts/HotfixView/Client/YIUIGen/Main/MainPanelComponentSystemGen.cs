@@ -45,6 +45,8 @@ namespace ET.Client
             self.u_ComEffectButton2 = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEffectButton2");
             self.u_ComEffectButton3 = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEffectButton3");
             self.u_ComEffectButton4 = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComEffectButton4");
+            self.u_ComRunTimeLimitRoot = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComRunTimeLimitRoot");
+            self.u_ComRunTimeLimitText = self.UIBase.ComponentTable.FindComponent<TMPro.TextMeshProUGUI>("u_ComRunTimeLimitText");
             self.u_DataSearchingButton = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueBool>("u_DataSearchingButton");
             self.u_DataTxtLevel = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueString>("u_DataTxtLevel");
             self.u_DataCurExp = self.UIBase.DataTable.FindDataValue<YIUIFramework.UIDataValueFloat>("u_DataCurExp");

@@ -206,6 +206,7 @@ namespace ET
         /// </summary>
         [MemoryPackOrder(9)]
         public List<LoadoutGridItemData> SecureItems { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)

@@ -76,7 +76,7 @@ namespace ET.Server
 
             // 向 Gate 侧 Player 发送 Actor 消息，写回 PlayerStorageComponent
             UnitGateInfoComponent gateInfo = player.GetComponent<UnitGateInfoComponent>();
-            if (gateInfo != null && gateInfo.ActorId != default)
+            if (gateInfo != null && gateInfo.PlayerActorId != default)
             {
                 Map2G_LoadoutCarryResult actorMsg = Map2G_LoadoutCarryResult.Create();
                 actorMsg.ResultType = (int)LoadoutCarryResultType.Evacuated;
@@ -130,7 +130,7 @@ namespace ET.Server
                     }
                 }
 
-                player.Root().GetComponent<MessageSender>().Send(gateInfo.ActorId, actorMsg);
+                player.Root().GetComponent<MessageSender>().Send(gateInfo.PlayerActorId, actorMsg);
             }
 
             Log.Info($"[EvacuationSettlement] player {player.Id} settled: {itemDataList.Count} items, wealth={totalWealth}");

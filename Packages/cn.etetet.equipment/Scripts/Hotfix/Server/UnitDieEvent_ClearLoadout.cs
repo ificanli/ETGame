@@ -48,7 +48,7 @@ namespace ET.Server
             MapMessageHelper.NoticeClient(unit, deathMsg, NoticeType.Self);
 
             UnitGateInfoComponent gateInfo = unit.GetComponent<UnitGateInfoComponent>();
-            if (gateInfo != null && gateInfo.ActorId != default)
+            if (gateInfo != null && gateInfo.PlayerActorId != default)
             {
                 Map2G_LoadoutCarryResult carryResult = Map2G_LoadoutCarryResult.Create();
                 carryResult.ResultType = (int)LoadoutCarryResultType.Dead;
@@ -69,7 +69,7 @@ namespace ET.Server
                         carryResult.FinalSecureItems.Add(message);
                     }
                 }
-                unit.Root().GetComponent<MessageSender>().Send(gateInfo.ActorId, carryResult);
+                unit.Root().GetComponent<MessageSender>().Send(gateInfo.PlayerActorId, carryResult);
             }
 
             RuntimeSecureInventoryHelper.Clear(unit);

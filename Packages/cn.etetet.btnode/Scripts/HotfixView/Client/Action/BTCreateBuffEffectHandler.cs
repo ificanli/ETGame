@@ -10,19 +10,19 @@ namespace ET.Client
             
             Buff buff = env.GetEntity<Buff>(node.Buff);
             
-            CreateBuffEffectAsync(unit, buff, node.BindPoint, node.Effect.Name, node.Duration).Coroutine();
+            CreateBuffEffectAsync(unit, buff, node.BindPoint, node.Effect.Name, node.Duration, node.FollowUnit).Coroutine();
             
             return 0;
         }
 
-        private static async ETTask CreateBuffEffectAsync(Unit unit, Buff buff, BindPoint bindPoint, string effectName, int duration)
+        private static async ETTask CreateBuffEffectAsync(Unit unit, Buff buff, BindPoint bindPoint, string effectName, int duration, bool followUnit)
         {
             EntityRef<Buff> buffRef = buff;
             EntityRef<Unit> unitRef = unit;
             GameObject go = await unit.Scene().GetComponent<ResourcesLoaderComponent>().LoadAssetAsync<GameObject>(effectName);
 
             unit = unitRef;
-            GameObject effect = EffectUnitHelper.Create(unit, bindPoint, go, true, duration);
+            GameObject effect = EffectUnitHelper.Create(unit, bindPoint, go, !followUnit, duration);
 
             buff = buffRef;
             buff.AddComponent<BuffGameObjectComponent>().GameObjects.Add(effect);

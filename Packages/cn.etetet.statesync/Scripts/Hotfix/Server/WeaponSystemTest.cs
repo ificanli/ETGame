@@ -36,16 +36,15 @@ namespace ET.Server
         {
             Log.Info("--- 测试1：武器配置加载 ---");
 
-            int[] weaponIds = { 50009, 50010, 50011, 50012 };
-            string[] weaponNames = { "霰弹枪1号", "步枪1号", "步枪2号", "火箭炮1号" };
+            int[] weaponIds = { 50001, 50002, 50003, 50004, 50005, 50006, 50007, 50008, 50009, 50010, 50011 };
 
-            for (int i = 0; i < weaponIds.Length; i++)
+            foreach (int weaponId in weaponIds)
             {
-                WeaponConfig config = WeaponConfigCategory.Instance.Get(weaponIds[i]);
+                WeaponConfig config = WeaponConfigCategory.Instance.Get(weaponId);
                 if (config != null)
                 {
-                    Log.Info($"✓ 武器 {weaponIds[i]} ({weaponNames[i]}) 加载成功");
-                    Log.Info($"  - 伤害: {config.Damage}");
+                    Log.Info($"✓ 武器 {weaponId} (type={config.WeaponTypeId}) 加载成功");
+                    Log.Info($"  - 伤害系数: {config.Damage}%");
                     Log.Info($"  - 射程: {config.AttackRange}m");
                     Log.Info($"  - 弹夹: {config.MagazineSize}");
                     Log.Info($"  - 子弹数: {config.BulletCount}");
@@ -54,7 +53,7 @@ namespace ET.Server
                 }
                 else
                 {
-                    Log.Error($"✗ 武器 {weaponIds[i]} 加载失败！");
+                    Log.Error($"✗ 武器 {weaponId} 加载失败！");
                 }
             }
         }
@@ -63,7 +62,7 @@ namespace ET.Server
         {
             Log.Info("--- 测试2：装备配置验证 ---");
 
-            int[] weaponIds = { 50009, 50010, 50011, 50012 };
+            int[] weaponIds = { 50001, 50002, 50003, 50004, 50005, 50006, 50007, 50008, 50009, 50010, 50011 };
 
             foreach (int weaponId in weaponIds)
             {
@@ -87,7 +86,7 @@ namespace ET.Server
         {
             Log.Info("--- 测试3：物品配置验证 ---");
 
-            int[] weaponIds = { 50009, 50010, 50011, 50012 };
+            int[] weaponIds = { 50001, 50002, 50003, 50004, 50005, 50006, 50007, 50008, 50009, 50010, 50011 };
 
             foreach (int weaponId in weaponIds)
             {

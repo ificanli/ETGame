@@ -8,21 +8,54 @@ namespace ET.Server
         /// <summary>
         /// 玩家进入Home时调用，加载或创建基地数据
         /// </summary>
-        public static void OnEnterHome(Unit unit)
+        public static async ETTask OnEnterHome(Unit unit)
         {
-            // 如果已有PlayerHomeComponent则跳过（不应发生，因为不走ITransfer）
             PlayerHomeComponent homeComp = unit.GetComponent<PlayerHomeComponent>();
-            if (homeComp != null)
+            if (homeComp == null)
             {
-                return;
+                // 创建默认基地数据（首次进入）
+                homeComp = unit.AddComponent<PlayerHomeComponent>();
+                homeComp.HomeVersion = 1;
+                homeComp.LastSettleTime = TimeInfo.Instance.ServerNow();
+
+                Log.Debug($"HomeEnterHelper: created default PlayerHomeComponent for unit {unit.Id}");
             }
 
-            // 创建默认基地数据（首次进入）
-            homeComp = unit.AddComponent<PlayerHomeComponent>();
-            homeComp.HomeVersion = 1;
-            homeComp.LastSettleTime = TimeInfo.Instance.ServerNow();
+            HomeRuntimeHelper.EnsureMainCity(homeComp);
+            HomeRuntimeHelper.RefreshUnlockState(homeComp);
 
-            Log.Debug($"HomeEnterHelper: created default PlayerHomeComponent for unit {unit.Id}");
+            if (unit.GetComponent<HomeProductionComponent>() == null)
+            {
+                unit.AddComponent<HomeProductionComponent>();
+            }
+
+            HomeContractComponent contractComp = unit.GetComponent<HomeContractComponent>();
+            if (contractComp == null)
+            {
+                contractComp = unit.AddComponent<HomeContractComponent>();
+            }
+
+            if (contractComp.AvailableContracts.Count == 0 && contractComp.ActiveContracts.Count == 0)
+            {
+                HomeContractHelper.RefreshContracts(unit);
+            }
+
+            foreach (Entity child in homeComp.Children.Values)
+            {
+                if (child is HomeBuilding building)
+                {
+                    HomeCollectHelper.RefreshState(building);
+                }
+            }
+
+            EntityRef<Unit> unitRef = unit;
+            long unitId = unit.Id;
+            int storageError = await HomeStorageGateHelper.RefreshSummary(unit);
+            unit = unitRef;
+            if (storageError != ErrorCode.ERR_Success)
+            {
+                Log.Warning($"HomeEnterHelper: refresh storage summary failed, unit={unitId}, error={storageError}");
+            }
         }
     }
 }

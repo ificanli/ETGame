@@ -13,6 +13,14 @@
                 return;
             }
 
+            ExtraUnitVisibilityComponent extraVisibility = scene.GetComponent<ExtraUnitVisibilityComponent>();
+            if (extraVisibility != null &&
+                extraVisibility.HasExtraVisibility(a.Id, b.Id) &&
+                !extraVisibility.IsTargetHidden(a.Id, b.Id))
+            {
+                return;
+            }
+
             MapMessageHelper.NoticeUnitRemove(a, b);
             
             await ETTask.CompletedTask;

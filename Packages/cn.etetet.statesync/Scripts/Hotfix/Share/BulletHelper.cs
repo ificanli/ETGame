@@ -10,7 +10,7 @@ namespace ET
         /// <summary>
         /// 创建单发子弹
         /// </summary>
-        public static Unit CreateBullet(Scene scene, Unit owner, Unit target, float damage, FireLockType lockType, int weaponId, int penetrationCount = 0)
+        public static Unit CreateBullet(Scene scene, Unit owner, Unit target, float damage, FireLockType lockType, int weaponId, int penetrationCount = 0, float speed = 0f)
         {
             UnitComponent unitComponent = scene.GetComponent<UnitComponent>();
             if (unitComponent == null)
@@ -34,6 +34,12 @@ namespace ET
             bulletComp.LockType = lockType;
             bulletComp.WeaponId = weaponId;
             bulletComp.RemainingPenetrationCount = penetrationCount > 0 ? penetrationCount : 0;
+
+            // 设置子弹速度（>0 时覆盖默认值）
+            if (speed > 0f)
+            {
+                bulletComp.Speed = speed;
+            }
 
             // 根据锁定类型初始化方向和目标位置
             InitializeBulletDirection(bulletComp, owner, target, lockType);
@@ -62,7 +68,8 @@ namespace ET
             int bulletCount,
             float spreadAngle,
             int weaponId,
-            int penetrationCount = 0)
+            int penetrationCount = 0,
+            float speed = 0f)
         {
             if (bulletCount <= 0) return;
 
@@ -84,7 +91,7 @@ namespace ET
                 }
 
                 // 创建子弹
-                Unit bullet = CreateBullet(scene, owner, target, damage, lockType, weaponId, penetrationCount);
+                Unit bullet = CreateBullet(scene, owner, target, damage, lockType, weaponId, penetrationCount, speed);
                 if (bullet == null) continue;
 
                 // 应用散射角度偏移

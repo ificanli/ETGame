@@ -10,6 +10,7 @@ namespace ET.Server
 		protected override async ETTask Run(Unit unit, G2Map_Logout request, Map2G_Logout response)
 		{
 			EntityRef<Unit> unitRef = unit;
+			EntityRef<Scene> rootRef = unit.Root();
 			ServiceDiscoveryProxy serviceDiscoveryProxy = unit.Root().GetComponent<ServiceDiscoveryProxy>();
 			int zone = unit.Zone();
             EntityRef<Scene> sceneRef = unit.Scene();
@@ -23,6 +24,13 @@ namespace ET.Server
 			managerLogoutRequest.UnitId = unit.Id;
 			managerLogoutRequest.MapId = unit.Scene().Id;
 			await serviceDiscoveryProxy.Call(mapManagerName, managerLogoutRequest);
+
+			Scene root = rootRef;
+			if (root != null && !root.IsDisposed)
+			{
+				await root.GetComponent<LocationProxyComponent>().Remove(LocationType.Unit, unitId);
+			}
+
 			unit = unitRef;
 			ReleaseSpawnPointAssignment(unit);
 			UnitComponent unitComponent = unit.GetParent<UnitComponent>();

@@ -27,5 +27,9 @@ namespace ET.Client
         public Material[][] TransparentMaterials;
         public bool ConcealmentTransparencyApplied;
         public float ConcealmentTransparencyAlpha = 1f;
+        public GameObject[] OutlineObjects;
+        public Material OutlineMaterial;
+        public Color OutlineColor = Color.clear;
+        public float OutlineWidth;
     }
 }

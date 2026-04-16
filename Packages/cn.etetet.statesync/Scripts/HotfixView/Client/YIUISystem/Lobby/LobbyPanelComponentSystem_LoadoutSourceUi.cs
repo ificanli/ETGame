@@ -59,6 +59,13 @@ namespace ET.Client
                     continue;
                 }
 
+                if ((itemConfig.CanEquipMainWeapon || itemConfig.CanEquipSubWeapon) &&
+                    WeaponConfigCategory.Instance.GetOrDefault(itemConfig.Id) == null)
+                {
+                    Log.Warning($"[LoadoutUI] Skip shop weapon without WeaponConfig: itemConfigId={itemConfig.Id}");
+                    continue;
+                }
+
                 result.Add(new LoadoutWarehouseItemViewData
                 {
                     ConfigId = itemConfig.Id,

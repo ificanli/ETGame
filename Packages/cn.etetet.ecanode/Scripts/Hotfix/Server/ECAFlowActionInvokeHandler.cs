@@ -43,29 +43,34 @@ namespace ET.Server
 
         private static void RegisterHandlers()
         {
-            if (ECAFlowActionRegistry.Count() > 0)
+            EnsureHandlerRegistered(ECAFlowActionKey.SetPointActive, HandleSetPointActiveAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.SetPointState, HandleSetPointStateAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.StartSearchTimer, HandleStartSearchTimerAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.ShowInteractButton, HandleShowInteractButtonAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.HideInteractButton, HandleHideInteractButtonAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.RefreshDoorInteractHint, HandleRefreshDoorInteractHintAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.ToggleDoor, HandleToggleDoorAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.ShowSearchUI, HandleShowSearchUiAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.OpenContainerUI, HandleOpenContainerUiAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.GenerateContainerLoot, HandleGenerateContainerLootAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.SpawnItemsToGround, HandleSpawnItemsToGroundAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.SpawnMonsters, HandleSpawnMonstersAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.StartEvacCountdown, HandleStartEvacCountdownAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.AllowEvacPlayers, HandleAllowEvacPlayersAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.TransferToLobby, HandleTransferToLobbyAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.ApplyStealth, HandleApplyStealthAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.RemoveStealth, HandleRemoveStealthAsync);
+            EnsureHandlerRegistered(ECAFlowActionKey.StartDissolve, HandleStartDissolveAsync);
+        }
+
+        private static void EnsureHandlerRegistered(string actionKey, Func<ECAFlowActionInvoke, ETTask> handler)
+        {
+            if (ECAFlowActionRegistry.TryGet(actionKey, out _))
             {
                 return;
             }
 
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.SetPointActive, HandleSetPointActiveAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.SetPointState, HandleSetPointStateAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.StartSearchTimer, HandleStartSearchTimerAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.ShowInteractButton, HandleShowInteractButtonAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.HideInteractButton, HandleHideInteractButtonAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.RefreshDoorInteractHint, HandleRefreshDoorInteractHintAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.ToggleDoor, HandleToggleDoorAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.ShowSearchUI, HandleShowSearchUiAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.OpenContainerUI, HandleOpenContainerUiAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.GenerateContainerLoot, HandleGenerateContainerLootAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.SpawnItemsToGround, HandleSpawnItemsToGroundAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.SpawnMonsters, HandleSpawnMonstersAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.StartEvacCountdown, HandleStartEvacCountdownAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.AllowEvacPlayers, HandleAllowEvacPlayersAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.TransferToLobby, HandleTransferToLobbyAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.ApplyStealth, HandleApplyStealthAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.RemoveStealth, HandleRemoveStealthAsync);
-            ECAFlowActionRegistry.Register(ECAFlowActionKey.StartDissolve, HandleStartDissolveAsync);
+            ECAFlowActionRegistry.Register(actionKey, handler);
         }
 
         private static ETTask HandleSetPointActiveAsync(ECAFlowActionInvoke args)

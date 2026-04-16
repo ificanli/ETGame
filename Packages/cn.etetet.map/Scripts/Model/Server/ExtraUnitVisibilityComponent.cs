@@ -33,5 +33,10 @@ namespace ET.Server
         /// viewerUnitId -> concealed targetUnitIds
         /// </summary>
         public Dictionary<long, HashSet<long>> ViewerToConcealedTargets = new();
+
+        /// <summary>
+        /// viewerUnitId -> line-of-sight suppressed targetUnitIds
+        /// </summary>
+        public Dictionary<long, HashSet<long>> ViewerToSuppressedTargets = new();
     }
 }

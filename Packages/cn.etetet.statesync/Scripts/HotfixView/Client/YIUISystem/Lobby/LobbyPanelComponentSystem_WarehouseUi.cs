@@ -204,9 +204,18 @@ namespace ET.Client
 
         private static void OnWarehouseGridItemClicked(this LobbyPanelComponent self, long itemUid, int configId)
         {
+            self.SetWarehouseGridItemSelection(itemUid, configId, true);
+        }
+
+        private static void SetWarehouseGridItemSelection(
+            this LobbyPanelComponent self,
+            long itemUid,
+            int configId,
+            bool toggleIfSame)
+        {
             self.ClearWarehousePressState();
             self.CurrentItemSourceMode = LoadoutItemSourceMode.Warehouse;
-            if (self.SelectedWarehouseItemUid == itemUid)
+            if (toggleIfSame && self.SelectedWarehouseItemUid == itemUid)
             {
                 self.SelectedWarehouseItemUid = 0;
                 self.SelectedWarehouseConfigId = 0;

@@ -1,0 +1,58 @@
+[
+  {
+    "Id": 1,
+    "SlotType": 1,
+    "SceneAnchorKey": "0,0,0",
+    "UnlockMainCityLevel": 1,
+    "CanBuildTypes": [],
+    "SortOrder": 10
+  },
+  {
+    "Id": 2,
+    "SlotType": 2,
+    "SceneAnchorKey": "-12,0,10",
+    "UnlockMainCityLevel": 1,
+    "CanBuildTypes": [],
+    "SortOrder": 20
+  },
+  {
+    "Id": 3,
+    "SlotType": 2,
+    "SceneAnchorKey": "12,0,10",
+    "UnlockMainCityLevel": 1,
+    "CanBuildTypes": [],
+    "SortOrder": 30
+  },
+  {
+    "Id": 4,
+    "SlotType": 2,
+    "SceneAnchorKey": "-14,0,-8",
+    "UnlockMainCityLevel": 1,
+    "CanBuildTypes": [],
+    "SortOrder": 40
+  },
+  {
+    "Id": 5,
+    "SlotType": 2,
+    "SceneAnchorKey": "0,0,-14",
+    "UnlockMainCityLevel": 1,
+    "CanBuildTypes": [],
+    "SortOrder": 50
+  },
+  {
+    "Id": 6,
+    "SlotType": 2,
+    "SceneAnchorKey": "14,0,-8",
+    "UnlockMainCityLevel": 2,
+    "CanBuildTypes": [],
+    "SortOrder": 60
+  },
+  {
+    "Id": 7,
+    "SlotType": 2,
+    "SceneAnchorKey": "0,0,16",
+    "UnlockMainCityLevel": 3,
+    "CanBuildTypes": [],
+    "SortOrder": 70
+  }
+]

@@ -3,120 +3,280 @@
     "Id": 1,
     "Level": 1,
     "NumericType": 10021,
-    "Value": 20
+    "Value": 9,
+    "UnitType": 1
   },
   {
     "Id": 2,
     "Level": 1,
-    "NumericType": 10001,
-    "Value": 50
+    "NumericType": 10101,
+    "Value": 2,
+    "UnitType": 1
   },
   {
     "Id": 3,
-    "Level": 2,
-    "NumericType": 10021,
-    "Value": 25
+    "Level": 1,
+    "NumericType": 10023,
+    "Value": 15,
+    "UnitType": 2
   },
   {
     "Id": 4,
-    "Level": 2,
-    "NumericType": 10001,
-    "Value": 50
+    "Level": 1,
+    "NumericType": 10103,
+    "Value": 7,
+    "UnitType": 2
   },
   {
     "Id": 5,
-    "Level": 3,
+    "Level": 2,
     "NumericType": 10021,
-    "Value": 30
+    "Value": 9,
+    "UnitType": 1
   },
   {
     "Id": 6,
-    "Level": 3,
-    "NumericType": 10001,
-    "Value": 60
+    "Level": 2,
+    "NumericType": 10101,
+    "Value": 1,
+    "UnitType": 1
   },
   {
     "Id": 7,
-    "Level": 4,
-    "NumericType": 10021,
-    "Value": 35
+    "Level": 2,
+    "NumericType": 10023,
+    "Value": 41,
+    "UnitType": 2
   },
   {
     "Id": 8,
-    "Level": 4,
-    "NumericType": 10001,
-    "Value": 60
+    "Level": 2,
+    "NumericType": 10103,
+    "Value": 18,
+    "UnitType": 2
   },
   {
     "Id": 9,
-    "Level": 5,
+    "Level": 3,
     "NumericType": 10021,
-    "Value": 40
+    "Value": 9,
+    "UnitType": 1
   },
   {
     "Id": 10,
-    "Level": 5,
-    "NumericType": 10001,
-    "Value": 70
+    "Level": 3,
+    "NumericType": 10101,
+    "Value": 2,
+    "UnitType": 1
   },
   {
     "Id": 11,
-    "Level": 6,
-    "NumericType": 10021,
-    "Value": 45
+    "Level": 3,
+    "NumericType": 10023,
+    "Value": 47,
+    "UnitType": 2
   },
   {
     "Id": 12,
-    "Level": 6,
-    "NumericType": 10001,
-    "Value": 70
+    "Level": 3,
+    "NumericType": 10103,
+    "Value": 17,
+    "UnitType": 2
   },
   {
     "Id": 13,
-    "Level": 7,
+    "Level": 4,
     "NumericType": 10021,
-    "Value": 50
+    "Value": 9,
+    "UnitType": 1
   },
   {
     "Id": 14,
-    "Level": 7,
-    "NumericType": 10001,
-    "Value": 80
+    "Level": 4,
+    "NumericType": 10101,
+    "Value": 1,
+    "UnitType": 1
   },
   {
     "Id": 15,
-    "Level": 8,
-    "NumericType": 10021,
-    "Value": 55
+    "Level": 4,
+    "NumericType": 10023,
+    "Value": 37,
+    "UnitType": 2
   },
   {
     "Id": 16,
-    "Level": 8,
-    "NumericType": 10001,
-    "Value": 80
+    "Level": 4,
+    "NumericType": 10103,
+    "Value": 13,
+    "UnitType": 2
   },
   {
     "Id": 17,
-    "Level": 9,
+    "Level": 5,
     "NumericType": 10021,
-    "Value": 60
+    "Value": 9,
+    "UnitType": 1
   },
   {
     "Id": 18,
-    "Level": 9,
-    "NumericType": 10001,
-    "Value": 90
+    "Level": 5,
+    "NumericType": 10101,
+    "Value": 2,
+    "UnitType": 1
   },
   {
     "Id": 19,
-    "Level": 10,
-    "NumericType": 10021,
-    "Value": 70
+    "Level": 5,
+    "NumericType": 10023,
+    "Value": 40,
+    "UnitType": 2
   },
   {
     "Id": 20,
+    "Level": 5,
+    "NumericType": 10103,
+    "Value": 12,
+    "UnitType": 2
+  },
+  {
+    "Id": 21,
+    "Level": 6,
+    "NumericType": 10021,
+    "Value": 9,
+    "UnitType": 1
+  },
+  {
+    "Id": 22,
+    "Level": 6,
+    "NumericType": 10101,
+    "Value": 1,
+    "UnitType": 1
+  },
+  {
+    "Id": 23,
+    "Level": 6,
+    "NumericType": 10023,
+    "Value": 43,
+    "UnitType": 2
+  },
+  {
+    "Id": 24,
+    "Level": 6,
+    "NumericType": 10103,
+    "Value": 13,
+    "UnitType": 2
+  },
+  {
+    "Id": 25,
+    "Level": 7,
+    "NumericType": 10021,
+    "Value": 9,
+    "UnitType": 1
+  },
+  {
+    "Id": 26,
+    "Level": 7,
+    "NumericType": 10101,
+    "Value": 2,
+    "UnitType": 1
+  },
+  {
+    "Id": 27,
+    "Level": 7,
+    "NumericType": 10023,
+    "Value": 46,
+    "UnitType": 2
+  },
+  {
+    "Id": 28,
+    "Level": 7,
+    "NumericType": 10103,
+    "Value": 12,
+    "UnitType": 2
+  },
+  {
+    "Id": 29,
+    "Level": 8,
+    "NumericType": 10021,
+    "Value": 9,
+    "UnitType": 1
+  },
+  {
+    "Id": 30,
+    "Level": 8,
+    "NumericType": 10101,
+    "Value": 1,
+    "UnitType": 1
+  },
+  {
+    "Id": 31,
+    "Level": 8,
+    "NumericType": 10023,
+    "Value": 56,
+    "UnitType": 2
+  },
+  {
+    "Id": 32,
+    "Level": 8,
+    "NumericType": 10103,
+    "Value": 14,
+    "UnitType": 2
+  },
+  {
+    "Id": 33,
+    "Level": 9,
+    "NumericType": 10021,
+    "Value": 9,
+    "UnitType": 1
+  },
+  {
+    "Id": 34,
+    "Level": 9,
+    "NumericType": 10101,
+    "Value": 1,
+    "UnitType": 1
+  },
+  {
+    "Id": 35,
+    "Level": 9,
+    "NumericType": 10023,
+    "Value": 29,
+    "UnitType": 2
+  },
+  {
+    "Id": 36,
+    "Level": 9,
+    "NumericType": 10103,
+    "Value": 7,
+    "UnitType": 2
+  },
+  {
+    "Id": 37,
     "Level": 10,
-    "NumericType": 10001,
-    "Value": 100
+    "NumericType": 10021,
+    "Value": 9,
+    "UnitType": 1
+  },
+  {
+    "Id": 38,
+    "Level": 10,
+    "NumericType": 10101,
+    "Value": 2,
+    "UnitType": 1
+  },
+  {
+    "Id": 39,
+    "Level": 10,
+    "NumericType": 10023,
+    "Value": -4,
+    "UnitType": 2
+  },
+  {
+    "Id": 40,
+    "Level": 10,
+    "NumericType": 10103,
+    "Value": -1,
+    "UnitType": 2
   }
 ]

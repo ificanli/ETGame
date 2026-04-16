@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,18 +16,18 @@ namespace ET
     [EnableClass]
     public sealed partial class HeroDisplayConfig : Luban.BeanBase
     {
-        public HeroDisplayConfig(ByteBuf _buf) 
+        public HeroDisplayConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            ModelResName = _buf.ReadString();
-            CameraName = _buf.ReadString();
-            PropertyDesc = _buf.ReadString();
-            SkillDesc = _buf.ReadString();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["ModelResName"].IsString) { throw new SerializationException(); }  ModelResName = _buf["ModelResName"]; }
+            { if(!_buf["CameraName"].IsString) { throw new SerializationException(); }  CameraName = _buf["CameraName"]; }
+            { if(!_buf["PropertyDesc"].IsString) { throw new SerializationException(); }  PropertyDesc = _buf["PropertyDesc"]; }
+            { if(!_buf["SkillDesc"].IsString) { throw new SerializationException(); }  SkillDesc = _buf["SkillDesc"]; }
 
             EndInit();
         }
 
-        public static HeroDisplayConfig DeserializeHeroDisplayConfig(ByteBuf _buf)
+        public static HeroDisplayConfig DeserializeHeroDisplayConfig(JSONNode _buf)
         {
             return new ET.HeroDisplayConfig(_buf);
         }
@@ -51,7 +52,7 @@ namespace ET
         /// 技能描述
         /// </summary>
         public readonly string SkillDesc;
-    
+
         public const int __ID__ = -2044735189;
         public override int GetTypeId() => __ID__;
 

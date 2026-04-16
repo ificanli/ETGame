@@ -18,6 +18,7 @@ namespace ET.Client
         private static void LateUpdate(this LobbyPanelComponent self)
         {
             self.TryRefreshLoadoutUi(false);
+            self.TryRefreshHomeUi(false);
         }
 
         private static void TryRefreshLoadoutUi(this LobbyPanelComponent self, bool force)
@@ -233,6 +234,7 @@ namespace ET.Client
                     true,
                     LoadoutAreaType.Secure);
                 self.RenderWarehouseArea(null);
+                self.RefreshOwnedAreaBlockLayout(0, 0, 0, 0);
                 return;
             }
 
@@ -261,6 +263,398 @@ namespace ET.Client
                 true,
                 LoadoutAreaType.Secure);
             self.RenderWarehouseArea(loadout);
+            self.RefreshOwnedAreaBlockLayout(loadout.BagWidth, loadout.BagHeight, loadout.SecureWidth, loadout.SecureHeight);
+        }
+
+        private static void RefreshOwnedAreaBlockLayout(
+            this LobbyPanelComponent self,
+            int bagCols,
+            int bagRows,
+            int secureCols,
+            int secureRows)
+        {
+            if (!self.TryEnsureOwnedAreaLayoutCache())
+            {
+                return;
+            }
+
+            Vector2 cellSize = new Vector2(LOADOUT_GRID_FALLBACK_CELL, LOADOUT_GRID_FALLBACK_CELL);
+            Vector2 bagBoardSize = CalcOwnedAreaBoardSize(bagCols, bagRows, cellSize, self.GridSpacing, self.GridPadding);
+            Vector2 secureBoardSize = CalcOwnedAreaBoardSize(secureCols, secureRows, cellSize, self.GridSpacing, self.GridPadding);
+            bool useLayoutGroup = self.LoadoutOwnedAreaLayoutGroupInitialized && self.LoadoutOwnedAreaLayoutGroup != null;
+
+            Vector2 bagRootSize = ApplyOwnedAreaLayout(
+                self.u_ComCurrentBagRoot,
+                self.u_ComCurrentBagBoardRoot,
+                self.CurrentBagLayoutCache,
+                self.CurrentBagRootLayoutElement,
+                bagBoardSize,
+                self.LoadoutBagAreaTopLeft,
+                useLayoutGroup);
+
+            Vector2 secureTopLeft = new Vector2(
+                self.LoadoutBagAreaTopLeft.x,
+                self.LoadoutBagAreaTopLeft.y + bagRootSize.y + self.LoadoutOwnedAreaVerticalGap);
+            ApplyOwnedAreaLayout(
+                self.u_ComSecureBagRoot,
+                self.u_ComSecureBoardRoot,
+                self.SecureLayoutCache,
+                self.SecureRootLayoutElement,
+                secureBoardSize,
+                secureTopLeft,
+                useLayoutGroup);
+
+            if (useLayoutGroup && self.LoadoutOwnedAreaParentRoot != null)
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(self.LoadoutOwnedAreaParentRoot);
+            }
+        }
+
+        private static bool TryEnsureOwnedAreaLayoutCache(this LobbyPanelComponent self)
+        {
+            if (self.LoadoutOwnedAreaLayoutInitialized)
+            {
+                return true;
+            }
+
+            RectTransform bagRoot = self.u_ComCurrentBagRoot;
+            RectTransform secureRoot = self.u_ComSecureBagRoot;
+            RectTransform bagBoardRoot = self.u_ComCurrentBagBoardRoot;
+            RectTransform secureBoardRoot = self.u_ComSecureBoardRoot;
+            if (bagRoot == null ||
+                secureRoot == null ||
+                bagBoardRoot == null ||
+                secureBoardRoot == null ||
+                bagRoot.parent is not RectTransform parentRoot)
+            {
+                return false;
+            }
+
+            if (!bagRoot.gameObject.activeInHierarchy || !secureRoot.gameObject.activeInHierarchy)
+            {
+                return false;
+            }
+
+            Canvas.ForceUpdateCanvases();
+            Rect bagParentRect = GetTopLeftRect(parentRoot, bagRoot);
+            Rect secureParentRect = GetTopLeftRect(parentRoot, secureRoot);
+            if (bagParentRect.width <= 0f || bagParentRect.height <= 0f || secureParentRect.width <= 0f || secureParentRect.height <= 0f)
+            {
+                return false;
+            }
+
+            self.LoadoutOwnedAreaParentRoot = parentRoot;
+            self.LoadoutOwnedAreaLayoutGroup = parentRoot.GetComponent<VerticalLayoutGroup>();
+            self.CurrentBagRootLayoutElement ??= bagRoot.GetComponent<LayoutElement>();
+            self.SecureRootLayoutElement ??= secureRoot.GetComponent<LayoutElement>();
+            self.LoadoutBagAreaTopLeft = bagParentRect.position;
+            self.LoadoutOwnedAreaVerticalGap = Mathf.Max(0f, secureParentRect.y - bagParentRect.yMax);
+
+            if (!self.LoadoutOwnedAreaLayoutGroupInitialized &&
+                self.LoadoutOwnedAreaLayoutGroup != null &&
+                self.CurrentBagRootLayoutElement != null &&
+                self.SecureRootLayoutElement != null)
+            {
+                ConfigureOwnedAreaLayoutGroup(self, bagParentRect, secureParentRect);
+            }
+
+            CaptureOwnedAreaLayoutCache(
+                ref self.CurrentBagLayoutCache,
+                bagRoot,
+                bagBoardRoot,
+                FindDirectChildRectTransform(bagRoot, "Bg"),
+                FindDirectChildRectTransform(bagRoot, "CurrentBagTitle"),
+                null);
+            CaptureOwnedAreaLayoutCache(
+                ref self.SecureLayoutCache,
+                secureRoot,
+                secureBoardRoot,
+                FindDirectChildRectTransform(secureRoot, "Bg"),
+                FindDirectChildRectTransform(secureRoot, "SecureBagTitle"),
+                FindDirectChildRectTransform(secureRoot, "SecureHintText"));
+
+            self.LoadoutOwnedAreaLayoutInitialized = self.CurrentBagLayoutCache.Initialized && self.SecureLayoutCache.Initialized;
+            return self.LoadoutOwnedAreaLayoutInitialized;
+        }
+
+        private static void ConfigureOwnedAreaLayoutGroup(this LobbyPanelComponent self, Rect bagParentRect, Rect secureParentRect)
+        {
+            VerticalLayoutGroup layoutGroup = self.LoadoutOwnedAreaLayoutGroup;
+            if (layoutGroup == null)
+            {
+                return;
+            }
+
+            layoutGroup.childAlignment = TextAnchor.UpperLeft;
+            layoutGroup.childControlWidth = false;
+            layoutGroup.childControlHeight = false;
+            layoutGroup.childForceExpandWidth = false;
+            layoutGroup.childForceExpandHeight = false;
+            layoutGroup.childScaleWidth = false;
+            layoutGroup.childScaleHeight = false;
+
+            RectOffset padding = layoutGroup.padding ?? new RectOffset();
+            padding.left = Mathf.Max(0, Mathf.RoundToInt(bagParentRect.x));
+            padding.top = Mathf.Max(0, Mathf.RoundToInt(bagParentRect.y));
+            padding.right = 0;
+            padding.bottom = 0;
+            layoutGroup.padding = padding;
+            layoutGroup.spacing = Mathf.Max(0f, secureParentRect.y - bagParentRect.yMax);
+            layoutGroup.enabled = true;
+            self.LoadoutOwnedAreaLayoutGroupInitialized = true;
+        }
+
+        private static void CaptureOwnedAreaLayoutCache(
+            ref LoadoutOwnedAreaLayoutCache cache,
+            RectTransform root,
+            RectTransform boardRoot,
+            RectTransform background,
+            RectTransform title,
+            RectTransform hint)
+        {
+            if (root == null || boardRoot == null)
+            {
+                return;
+            }
+
+            Rect boardRect = GetTopLeftRect(root, boardRoot);
+            cache.Background = background;
+            cache.Title = title;
+            cache.Hint = hint;
+            cache.BackgroundInsets = CaptureBackgroundInsets(root, background, boardRect);
+            cache.TitleRect = CaptureRelativeRect(root, title, boardRect);
+            cache.HintRect = CaptureRelativeRect(root, hint, boardRect);
+            cache.Initialized = true;
+        }
+
+        private static LoadoutAreaLayoutInsets CaptureBackgroundInsets(RectTransform root, RectTransform target, Rect boardRect)
+        {
+            if (root == null || target == null || boardRect.width < 0f || boardRect.height < 0f)
+            {
+                return default;
+            }
+
+            Rect targetRect = GetTopLeftRect(root, target);
+            return new LoadoutAreaLayoutInsets
+            {
+                Active = true,
+                Left = targetRect.x - boardRect.x,
+                Top = targetRect.y - boardRect.y,
+                Right = targetRect.xMax - boardRect.xMax,
+                Bottom = targetRect.yMax - boardRect.yMax,
+            };
+        }
+
+        private static LoadoutAreaLayoutRect CaptureRelativeRect(RectTransform root, RectTransform target, Rect boardRect)
+        {
+            if (root == null || target == null)
+            {
+                return default;
+            }
+
+            Rect targetRect = GetTopLeftRect(root, target);
+            return new LoadoutAreaLayoutRect
+            {
+                Active = true,
+                OffsetFromBoardTopLeft = new Vector2(targetRect.x - boardRect.x, targetRect.y - boardRect.y),
+                Size = targetRect.size,
+            };
+        }
+
+        private static Vector2 ApplyOwnedAreaLayout(
+            RectTransform root,
+            RectTransform boardRoot,
+            LoadoutOwnedAreaLayoutCache cache,
+            LayoutElement layoutElement,
+            Vector2 boardSize,
+            Vector2 topLeft,
+            bool useLayoutGroup)
+        {
+            if (root == null || boardRoot == null || !cache.Initialized)
+            {
+                return Vector2.zero;
+            }
+
+            Rect boardRect = new Rect(0f, 0f, Mathf.Max(0f, boardSize.x), Mathf.Max(0f, boardSize.y));
+            Rect backgroundRect = ResolveBackgroundRect(boardRect, cache.BackgroundInsets);
+            Rect titleRect = ResolveFixedRect(cache.TitleRect);
+            Rect hintRect = ResolveFixedRect(cache.HintRect);
+
+            float minX = boardRect.xMin;
+            float minY = boardRect.yMin;
+            float maxX = boardRect.xMax;
+            float maxY = boardRect.yMax;
+            IncludeRect(ref minX, ref minY, ref maxX, ref maxY, backgroundRect, cache.BackgroundInsets.Active);
+            IncludeRect(ref minX, ref minY, ref maxX, ref maxY, titleRect, cache.TitleRect.Active);
+            IncludeRect(ref minX, ref minY, ref maxX, ref maxY, hintRect, cache.HintRect.Active);
+
+            float shiftX = minX < 0f ? -minX : 0f;
+            float shiftY = minY < 0f ? -minY : 0f;
+            Rect shiftedBoardRect = ShiftRect(boardRect, shiftX, shiftY);
+            Rect shiftedBackgroundRect = ShiftRect(backgroundRect, shiftX, shiftY);
+            Rect shiftedTitleRect = ShiftRect(titleRect, shiftX, shiftY);
+            Rect shiftedHintRect = ShiftRect(hintRect, shiftX, shiftY);
+
+            float totalWidth = Mathf.Max(0f, maxX - minX);
+            float totalHeight = Mathf.Max(0f, maxY - minY);
+
+            if (useLayoutGroup)
+            {
+                root.anchorMin = new Vector2(0f, 1f);
+                root.anchorMax = new Vector2(0f, 1f);
+                root.pivot = new Vector2(0f, 1f);
+                root.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, totalWidth);
+                root.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, totalHeight);
+
+                if (layoutElement != null)
+                {
+                    layoutElement.preferredWidth = totalWidth;
+                    layoutElement.preferredHeight = totalHeight;
+                    layoutElement.flexibleWidth = -1f;
+                    layoutElement.flexibleHeight = -1f;
+                }
+            }
+            else
+            {
+                SetRectByTopLeft(root, topLeft.x, topLeft.y, totalWidth, totalHeight);
+            }
+
+            SetRectByTopLeft(boardRoot, shiftedBoardRect.x, shiftedBoardRect.y, shiftedBoardRect.width, shiftedBoardRect.height);
+
+            if (cache.Background != null)
+            {
+                SetRectByTopLeft(
+                    cache.Background,
+                    shiftedBackgroundRect.x,
+                    shiftedBackgroundRect.y,
+                    shiftedBackgroundRect.width,
+                    shiftedBackgroundRect.height);
+            }
+
+            if (cache.Title != null)
+            {
+                SetRectByTopLeft(
+                    cache.Title,
+                    shiftedTitleRect.x,
+                    shiftedTitleRect.y,
+                    shiftedTitleRect.width,
+                    shiftedTitleRect.height);
+            }
+
+            if (cache.Hint != null)
+            {
+                SetRectByTopLeft(
+                    cache.Hint,
+                    shiftedHintRect.x,
+                    shiftedHintRect.y,
+                    shiftedHintRect.width,
+                    shiftedHintRect.height);
+            }
+
+            return new Vector2(totalWidth, totalHeight);
+        }
+
+        private static Rect ResolveBackgroundRect(Rect boardRect, LoadoutAreaLayoutInsets insets)
+        {
+            if (!insets.Active)
+            {
+                return boardRect;
+            }
+
+            float left = boardRect.x + insets.Left;
+            float top = boardRect.y + insets.Top;
+            float right = boardRect.xMax + insets.Right;
+            float bottom = boardRect.yMax + insets.Bottom;
+            return Rect.MinMaxRect(left, top, right, bottom);
+        }
+
+        private static Rect ResolveFixedRect(LoadoutAreaLayoutRect layout)
+        {
+            if (!layout.Active)
+            {
+                return default;
+            }
+
+            return new Rect(layout.OffsetFromBoardTopLeft, layout.Size);
+        }
+
+        private static Rect ShiftRect(Rect rect, float shiftX, float shiftY)
+        {
+            if (rect.width <= 0f && rect.height <= 0f)
+            {
+                return new Rect(rect.x + shiftX, rect.y + shiftY, rect.width, rect.height);
+            }
+
+            return new Rect(rect.x + shiftX, rect.y + shiftY, rect.width, rect.height);
+        }
+
+        private static void IncludeRect(ref float minX, ref float minY, ref float maxX, ref float maxY, Rect rect, bool enabled)
+        {
+            if (!enabled)
+            {
+                return;
+            }
+
+            minX = Mathf.Min(minX, rect.xMin);
+            minY = Mathf.Min(minY, rect.yMin);
+            maxX = Mathf.Max(maxX, rect.xMax);
+            maxY = Mathf.Max(maxY, rect.yMax);
+        }
+
+        private static void SetRectByTopLeft(RectTransform rectTransform, float x, float y, float width, float height)
+        {
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            rectTransform.anchorMin = new Vector2(0f, 1f);
+            rectTransform.anchorMax = new Vector2(0f, 1f);
+            rectTransform.pivot = new Vector2(0f, 1f);
+            rectTransform.anchoredPosition = new Vector2(x, -y);
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, Mathf.Max(0f, width));
+            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, Mathf.Max(0f, height));
+        }
+
+        private static Rect GetTopLeftRect(RectTransform parent, RectTransform target)
+        {
+            if (parent == null || target == null)
+            {
+                return default;
+            }
+
+            Vector3[] worldCorners = new Vector3[4];
+            target.GetWorldCorners(worldCorners);
+
+            float minX = float.MaxValue;
+            float minY = float.MaxValue;
+            float maxX = float.MinValue;
+            float maxY = float.MinValue;
+            for (int i = 0; i < worldCorners.Length; ++i)
+            {
+                Vector3 localCorner = parent.InverseTransformPoint(worldCorners[i]);
+                minX = Mathf.Min(minX, localCorner.x);
+                minY = Mathf.Min(minY, localCorner.y);
+                maxX = Mathf.Max(maxX, localCorner.x);
+                maxY = Mathf.Max(maxY, localCorner.y);
+            }
+
+            Rect parentRect = parent.rect;
+            float x = minX - parentRect.xMin;
+            float y = parentRect.yMax - maxY;
+            return new Rect(x, y, maxX - minX, maxY - minY);
+        }
+
+        private static Vector2 CalcOwnedAreaBoardSize(int cols, int rows, Vector2 cellSize, Vector2 spacing, Vector2 padding)
+        {
+            if (cols <= 0 || rows <= 0)
+            {
+                return Vector2.zero;
+            }
+
+            float width = padding.x * 2f + cols * cellSize.x + Mathf.Max(0, cols - 1) * spacing.x;
+            float height = padding.y * 2f + rows * cellSize.y + Mathf.Max(0, rows - 1) * spacing.y;
+            return new Vector2(width, height);
         }
 
         private static void RenderOwnedGridArea(

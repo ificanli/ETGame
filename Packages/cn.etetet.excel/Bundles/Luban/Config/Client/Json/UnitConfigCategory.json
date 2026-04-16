@@ -75,5 +75,40 @@
     "Name": "Aqi",
     "head_icon": "export (32)_5",
     "class_type": 5
+  },
+  {
+    "Id": 1012,
+    "UnitType": 2,
+    "Name": "XiaoMao",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 9
+  },
+  {
+    "Id": 1013,
+    "UnitType": 2,
+    "Name": "XiaoHou",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 4
+  },
+  {
+    "Id": 1014,
+    "UnitType": 2,
+    "Name": "XiaoYing",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 2
+  },
+  {
+    "Id": 1015,
+    "UnitType": 2,
+    "Name": "XiaoE",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 12
+  },
+  {
+    "Id": 1016,
+    "UnitType": 2,
+    "Name": "BearBoss",
+    "head_icon": "UI-ChatIcon-Battlenet",
+    "class_type": 7
   }
 ]

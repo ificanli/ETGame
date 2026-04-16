@@ -880,6 +880,213 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(Opcode.C2M_DiscardWeapon)]
+    [ResponseType(nameof(M2C_DiscardWeapon))]
+    public partial class C2M_DiscardWeapon : MessageObject, ILocationRequest
+    {
+        public static C2M_DiscardWeapon Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_DiscardWeapon>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int SlotIndex { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.SlotIndex = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_DiscardWeapon)]
+    public partial class M2C_DiscardWeapon : MessageObject, ILocationResponse
+    {
+        public static M2C_DiscardWeapon Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_DiscardWeapon>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_WeaponDiscarded)]
+    public partial class M2C_WeaponDiscarded : MessageObject, IMessage
+    {
+        public static M2C_WeaponDiscarded Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_WeaponDiscarded>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public long UnitId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Slot1WeaponId { get; set; }
+        [MemoryPackOrder(2)]
+        public int Slot2WeaponId { get; set; }
+        [MemoryPackOrder(3)]
+        public int CurrentSlot { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.UnitId = default;
+            this.Slot1WeaponId = default;
+            this.Slot2WeaponId = default;
+            this.CurrentSlot = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.C2M_PickupGroundItem)]
+    [ResponseType(nameof(M2C_PickupGroundItem))]
+    public partial class C2M_PickupGroundItem : MessageObject, ILocationRequest
+    {
+        public static C2M_PickupGroundItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_PickupGroundItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public string PointId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PointId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_PickupGroundItem)]
+    public partial class M2C_PickupGroundItem : MessageObject, ILocationResponse
+    {
+        public static M2C_PickupGroundItem Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_PickupGroundItem>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        [MemoryPackOrder(3)]
+        public int PickupResult { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.PickupResult = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.C2M_QuickExitExtraction)]
+    [ResponseType(nameof(M2C_QuickExitExtraction))]
+    public partial class C2M_QuickExitExtraction : MessageObject, ILocationRequest
+    {
+        public static C2M_QuickExitExtraction Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<C2M_QuickExitExtraction>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(Opcode.M2C_QuickExitExtraction)]
+    public partial class M2C_QuickExitExtraction : MessageObject, ILocationResponse
+    {
+        public static M2C_QuickExitExtraction Create(bool isFromPool = false)
+        {
+            return ObjectPool.Fetch<M2C_QuickExitExtraction>(isFromPool);
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Recycle(this);
+        }
+    }
+
     public static partial class Opcode
     {
         public const ushort RouterSync = 10701;
@@ -908,5 +1115,12 @@ namespace ET
         public const ushort M2C_RogueRerollOptionResult = 10724;
         public const ushort C2M_DebugSpawnMonster = 10725;
         public const ushort M2C_DebugSpawnMonster = 10726;
+        public const ushort C2M_DiscardWeapon = 10727;
+        public const ushort M2C_DiscardWeapon = 10728;
+        public const ushort M2C_WeaponDiscarded = 10729;
+        public const ushort C2M_PickupGroundItem = 10730;
+        public const ushort M2C_PickupGroundItem = 10731;
+        public const ushort C2M_QuickExitExtraction = 10732;
+        public const ushort M2C_QuickExitExtraction = 10733;
     }
 }

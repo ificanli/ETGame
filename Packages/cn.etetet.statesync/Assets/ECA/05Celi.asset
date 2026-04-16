@@ -22,9 +22,7 @@ MonoBehaviour:
       Title: Event 1
       PosX: 0
       PosY: 145
-      Params:
-      - Key: 5
-        Value: 
+      Params: []
     - LegacyId: 0
       NodeId: 2
       NodeType: Condition
@@ -32,9 +30,7 @@ MonoBehaviour:
       Title: Condition 2
       PosX: 366
       PosY: 145
-      Params:
-      - Key: 4
-        Value: 
+      Params: []
     - LegacyId: 0
       NodeId: 6
       NodeType: Action

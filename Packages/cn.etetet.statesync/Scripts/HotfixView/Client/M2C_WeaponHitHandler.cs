@@ -41,12 +41,20 @@ namespace ET.Client
             if (string.IsNullOrEmpty(weaponConfig.HitEffect))
             {
                 Log.Warning($"[WeaponFireTrace][Hit] empty hit effect, weaponId={message.WeaponId}");
-                await ETTask.CompletedTask;
-                return;
+            }
+            else
+            {
+                Log.Info($"[WeaponFireTrace][Hit] hit message received, weaponId={message.WeaponId}, target={message.TargetUnitId}, effect={weaponConfig.HitEffect}");
+                CreateHitEffectAsync(root, target, weaponConfig).Coroutine();
             }
 
-            Log.Info($"[WeaponFireTrace][Hit] hit message received, weaponId={message.WeaponId}, target={message.TargetUnitId}, effect={weaponConfig.HitEffect}");
-            CreateHitEffectAsync(root, target, weaponConfig).Coroutine();
+            // 命中闪白 + 受击缩放（仅对非自己的目标）
+            if (!target.IsMyUnit())
+            {
+                int hitFlashMs = weaponConfig.HitFlashDurationMs > 0 ? weaponConfig.HitFlashDurationMs : 80;
+                HitFeedbackHelper.PlayHitFlash(root, target, hitFlashMs).Coroutine();
+                HitFeedbackHelper.PlayHitScale(root, target).Coroutine();
+            }
 
             await ETTask.CompletedTask;
         }

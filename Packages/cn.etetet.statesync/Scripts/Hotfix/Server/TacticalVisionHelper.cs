@@ -5,7 +5,7 @@ namespace ET.Server
 {
     /// <summary>
     /// 战术视野辅助工具。
-    /// 负责根据眼和侦查效果，刷新地图层的额外观察关系。
+    /// 负责根据眼和侦查效果，刷新地图层的额外观察关系与墙体遮挡抑制关系。
     /// </summary>
     public static class TacticalVisionHelper
     {
@@ -50,8 +50,10 @@ namespace ET.Server
             {
                 activeViewerIds.Add(player.Id);
 
-                HashSet<long> targetIds = BuildTargets(player, players, wards, units, extraVisibility);
-                extraVisibility.ResetViewerTargets(player, targetIds);
+                HashSet<long> extraTargetIds = BuildTargets(player, players, wards, units, extraVisibility);
+                HashSet<long> suppressedTargetIds = BuildSuppressedTargets(player, extraTargetIds);
+                extraVisibility.ResetViewerTargets(player, extraTargetIds);
+                extraVisibility.ResetViewerSuppressedTargets(player, suppressedTargetIds);
             }
 
             extraVisibility.ClearInactiveViewers(activeViewerIds);
@@ -98,6 +100,60 @@ namespace ET.Server
             return targetIds;
         }
 
+        private static HashSet<long> BuildSuppressedTargets(Unit player, HashSet<long> extraTargetIds)
+        {
+            HashSet<long> suppressedTargetIds = new HashSet<long>();
+
+            AOIEntity playerAoi = player.GetComponent<AOIEntity>();
+            if (playerAoi == null || playerAoi.IsDisposed)
+            {
+                return suppressedTargetIds;
+            }
+
+            foreach (AOIEntity targetAoi in playerAoi.GetSeeUnits().Values)
+            {
+                if (targetAoi == null || targetAoi.IsDisposed)
+                {
+                    continue;
+                }
+
+                Unit target = targetAoi.Unit;
+                if (target == null || target.IsDisposed || target.Id == player.Id)
+                {
+                    continue;
+                }
+
+                if (!CampHelper.IsEnemy(player, target))
+                {
+                    continue;
+                }
+
+                if (target.GetComponent<WardComponent>() != null)
+                {
+                    if (!extraTargetIds.Contains(target.Id))
+                    {
+                        suppressedTargetIds.Add(target.Id);
+                    }
+
+                    continue;
+                }
+
+                if (VisibilityLineOfSightHelper.HasLineOfSight(player, target))
+                {
+                    continue;
+                }
+
+                if (extraTargetIds.Contains(target.Id))
+                {
+                    continue;
+                }
+
+                suppressedTargetIds.Add(target.Id);
+            }
+
+            return suppressedTargetIds;
+        }
+
         private static void AppendFriendlyPlayers(Unit player, List<Unit> players, int campId, HashSet<long> targetIds)
         {
             foreach (Unit otherPlayer in players)
@@ -126,7 +182,7 @@ namespace ET.Server
         {
             foreach (Unit sourcePlayer in players)
             {
-                if (sourcePlayer == null || sourcePlayer.IsDisposed)
+                if (sourcePlayer == null || sourcePlayer.IsDisposed || sourcePlayer.Id == player.Id)
                 {
                     continue;
                 }
@@ -157,6 +213,11 @@ namespace ET.Server
                     }
 
                     if (target.GetComponent<WardComponent>() != null)
+                    {
+                        continue;
+                    }
+
+                    if (!VisibilityLineOfSightHelper.HasLineOfSight(sourcePlayer, target))
                     {
                         continue;
                     }
@@ -197,10 +258,17 @@ namespace ET.Server
                     continue;
                 }
 
-                if (math.distance(player.Position, ward.Position) <= detectorRadius)
+                if (math.distance(player.Position, ward.Position) > detectorRadius)
                 {
-                    return true;
+                    continue;
                 }
+
+                if (!VisibilityLineOfSightHelper.HasLineOfSight(player, ward))
+                {
+                    continue;
+                }
+
+                return true;
             }
 
             return false;
@@ -231,6 +299,11 @@ namespace ET.Server
                 }
 
                 if (math.distance(ward.Position, target.Position) > wardComponent.VisionRadius)
+                {
+                    continue;
+                }
+
+                if (!VisibilityLineOfSightHelper.HasLineOfSight(ward, target))
                 {
                     continue;
                 }

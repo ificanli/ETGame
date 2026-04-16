@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 using Luban;
+using SimpleJSON;
 
 
 namespace ET
@@ -15,32 +16,32 @@ namespace ET
     [EnableClass]
     public sealed partial class ItemConfig : Luban.BeanBase
     {
-        public ItemConfig(ByteBuf _buf) 
+        public ItemConfig(JSONNode _buf) 
         {
-            Id = _buf.ReadInt();
-            Name = _buf.ReadString();
-            Type = _buf.ReadInt();
-            MaxStack = _buf.ReadInt();
-            Quality = _buf.ReadInt();
-            UseType = _buf.ReadInt();
-            Level = _buf.ReadInt();
-            GridWidth = _buf.ReadInt();
-            GridHeight = _buf.ReadInt();
-            LoadoutShopVisible = _buf.ReadBool();
-            LoadoutShopCategory = _buf.ReadInt();
-            LoadoutBuyPrice = _buf.ReadInt();
-            CanEquipMainWeapon = _buf.ReadBool();
-            CanEquipSubWeapon = _buf.ReadBool();
-            CanEquipArmor = _buf.ReadBool();
-            CanEquipBackpack = _buf.ReadBool();
-            IsBackpack = _buf.ReadBool();
-            BackpackWidth = _buf.ReadInt();
-            BackpackHeight = _buf.ReadInt();
+            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
+            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
+            { if(!_buf["Type"].IsNumber) { throw new SerializationException(); }  Type = _buf["Type"]; }
+            { if(!_buf["MaxStack"].IsNumber) { throw new SerializationException(); }  MaxStack = _buf["MaxStack"]; }
+            { if(!_buf["Quality"].IsNumber) { throw new SerializationException(); }  Quality = _buf["Quality"]; }
+            { if(!_buf["UseType"].IsNumber) { throw new SerializationException(); }  UseType = _buf["UseType"]; }
+            { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
+            { if(!_buf["GridWidth"].IsNumber) { throw new SerializationException(); }  GridWidth = _buf["GridWidth"]; }
+            { if(!_buf["GridHeight"].IsNumber) { throw new SerializationException(); }  GridHeight = _buf["GridHeight"]; }
+            { if(!_buf["LoadoutShopVisible"].IsBoolean) { throw new SerializationException(); }  LoadoutShopVisible = _buf["LoadoutShopVisible"]; }
+            { if(!_buf["LoadoutShopCategory"].IsNumber) { throw new SerializationException(); }  LoadoutShopCategory = _buf["LoadoutShopCategory"]; }
+            { if(!_buf["LoadoutBuyPrice"].IsNumber) { throw new SerializationException(); }  LoadoutBuyPrice = _buf["LoadoutBuyPrice"]; }
+            { if(!_buf["CanEquipMainWeapon"].IsBoolean) { throw new SerializationException(); }  CanEquipMainWeapon = _buf["CanEquipMainWeapon"]; }
+            { if(!_buf["CanEquipSubWeapon"].IsBoolean) { throw new SerializationException(); }  CanEquipSubWeapon = _buf["CanEquipSubWeapon"]; }
+            { if(!_buf["CanEquipArmor"].IsBoolean) { throw new SerializationException(); }  CanEquipArmor = _buf["CanEquipArmor"]; }
+            { if(!_buf["CanEquipBackpack"].IsBoolean) { throw new SerializationException(); }  CanEquipBackpack = _buf["CanEquipBackpack"]; }
+            { if(!_buf["IsBackpack"].IsBoolean) { throw new SerializationException(); }  IsBackpack = _buf["IsBackpack"]; }
+            { if(!_buf["BackpackWidth"].IsNumber) { throw new SerializationException(); }  BackpackWidth = _buf["BackpackWidth"]; }
+            { if(!_buf["BackpackHeight"].IsNumber) { throw new SerializationException(); }  BackpackHeight = _buf["BackpackHeight"]; }
 
             EndInit();
         }
 
-        public static ItemConfig DeserializeItemConfig(ByteBuf _buf)
+        public static ItemConfig DeserializeItemConfig(JSONNode _buf)
         {
             return new ET.ItemConfig(_buf);
         }
@@ -121,7 +122,7 @@ namespace ET
         /// 背包高
         /// </summary>
         public readonly int BackpackHeight;
-    
+
         public const int __ID__ = 1663635188;
         public override int GetTypeId() => __ID__;
 

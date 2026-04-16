@@ -4,5 +4,6 @@ namespace ET.Server
     public class UnitGateInfoComponent: Entity, IAwake, ITransfer
     {
         public ActorId ActorId;
+        public ActorId PlayerActorId;
     }
 }

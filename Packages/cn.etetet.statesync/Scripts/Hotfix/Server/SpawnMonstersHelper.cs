@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Mathematics;
 
 namespace ET.Server
@@ -10,7 +11,7 @@ namespace ET.Server
         /// <summary>
         /// 在指定刷怪点生成怪物
         /// </summary>
-        public static int SpawnAtPoint(Scene scene, Unit spawnPointUnit, string groupId, int count)
+        public static int SpawnAtPoint(Scene scene, Unit spawnPointUnit, string groupId, int count, List<Unit> spawnedMonsters = null)
         {
             Log.Info($"[SpawnMonsters] SpawnAtPoint called: scene={scene?.Name}, pointId={spawnPointUnit?.Id}, groupId={groupId}, count={count}");
 
@@ -22,19 +23,20 @@ namespace ET.Server
 
             int monstersSpawned = 0;
             int unitConfigId;
-            bool useRuntimeProfile = MonsterRuntimeProfileHelper.TryResolveUnitConfigId(groupId, out unitConfigId);
-            if (useRuntimeProfile)
+            bool resolvedByDeprecatedGroupId = false;
+            if (int.TryParse(groupId, out unitConfigId))
             {
-                Log.Info($"[SpawnMonsters] Resolved runtime profile: groupId={groupId}, unitConfigId={unitConfigId}");
+                Log.Info($"[SpawnMonsters] Parsed unitConfigId: {unitConfigId}");
             }
-            else if (!int.TryParse(groupId, out unitConfigId))
+            else if (MonsterRuntimeProfileHelper.TryResolveUnitConfigId(groupId, out unitConfigId))
             {
-                Log.Warning($"[SpawnMonsters] Invalid groupId format: {groupId}");
-                return 0;
+                resolvedByDeprecatedGroupId = true;
+                Log.Warning($"[SpawnMonsters] Deprecated monster groupId resolved: groupId={groupId}, unitConfigId={unitConfigId}. Please use numeric UnitConfigId.");
             }
             else
             {
-                Log.Info($"[SpawnMonsters] Parsed legacy unitConfigId: {unitConfigId}");
+                Log.Warning($"[SpawnMonsters] Invalid groupId format: {groupId}");
+                return 0;
             }
 
             // 检查配置是否存在
@@ -52,8 +54,8 @@ namespace ET.Server
             for (int i = 0; i < count; i++)
             {
                 // 在刷怪点周围随机偏移位置
-                float offsetX = RandomGenerator.RandFloat01() * 4f - 2f;
-                float offsetZ = RandomGenerator.RandFloat01() * 4f - 2f;
+                float offsetX = RandomGenerator.RandFloat01() * 20f - 10f;
+                float offsetZ = RandomGenerator.RandFloat01() * 20f - 10f;
                 float3 monsterPosition = new float3(spawnPosition.x + offsetX, spawnPosition.y, spawnPosition.z + offsetZ);
 
                 // 创建怪物
@@ -62,11 +64,6 @@ namespace ET.Server
 
                 if (monster != null)
                 {
-                    if (useRuntimeProfile && !MonsterRuntimeProfileHelper.ApplyProfile(monster, groupId))
-                    {
-                        Log.Warning($"[SpawnMonsters] Failed to apply runtime profile: unitId={monsterId}, groupId={groupId}");
-                    }
-
                     RogueUnitDisplayLevelHelper.RefreshMonsterDisplayLevel(monster, false);
                     float3 resolvedPosition = monsterPosition;
                     float unitRadius = monster.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
@@ -110,7 +107,8 @@ namespace ET.Server
                     MapUnitEnterHelper.EnsureConfiguredAIBuff(monster, true);
 
                     monstersSpawned++;
-                    Log.Info($"[SpawnMonsters] Monster created: id={monsterId}, configId={unitConfigId}, groupId={groupId}, profile={(useRuntimeProfile ? groupId : "legacy")}, pos=({monster.Position.x:F2}, {monster.Position.y:F2}, {monster.Position.z:F2}), snapDeltaXZ={snapDeltaXZ:F3}, snapDeltaY={snapDeltaY:F3}");
+                    spawnedMonsters?.Add(monster);
+                    Log.Info($"[SpawnMonsters] Monster created: id={monsterId}, configId={unitConfigId}, groupId={groupId}, source={(resolvedByDeprecatedGroupId ? "deprecated-group" : "unitconfig")}, pos=({monster.Position.x:F2}, {monster.Position.y:F2}, {monster.Position.z:F2}), snapDeltaXZ={snapDeltaXZ:F3}, snapDeltaY={snapDeltaY:F3}");
                 }
                 else
                 {

@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee0d950c1f585843a3942a92f9e3b8d, type: 3}
+  m_Name: RogueMissionTaskFlow
+  m_EditorClassIdentifier: 
+  Graph:
+    Version: 1
+    Nodes:
+    - LegacyId: 0
+      NodeId: 1
+      NodeType: Event
+      NodeKey: OnPlayerEnterRange
+      Title: Event 1
+      PosX: 0
+      PosY: 0
+      Params: []
+    - LegacyId: 0
+      NodeId: 2
+      NodeType: Action
+      NodeKey: ShowInteractButton
+      Title: Action 2
+      PosX: 360
+      PosY: 0
+      Params:
+      - Key: button_text_id
+        Value: 0
+    - LegacyId: 0
+      NodeId: 3
+      NodeType: Event
+      NodeKey: OnPlayerLeaveRange
+      Title: Event 3
+      PosX: 0
+      PosY: 220
+      Params: []
+    - LegacyId: 0
+      NodeId: 4
+      NodeType: Action
+      NodeKey: HideInteractButton
+      Title: Action 4
+      PosX: 360
+      PosY: 220
+      Params: []
+    - LegacyId: 0
+      NodeId: 5
+      NodeType: Event
+      NodeKey: OnPlayerInteract
+      Title: Event 5
+      PosX: 0
+      PosY: 440
+      Params: []
+    - LegacyId: 0
+      NodeId: 6
+      NodeType: Action
+      NodeKey: StartTask
+      Title: Action 6
+      PosX: 360
+      PosY: 440
+      Params:
+      - Key: point_param_template__mission_task_title
+        Value: 清理据点
+      - Key: point_param_template__mission_task_desc
+        Value: 消灭附近出现的 6 只怪物
+      - Key: point_param_template__mission_task_accept_text
+        Value: 接受任务
+      - Key: point_param_template__mission_task_monster_unit_config_id
+        Value: 1012
+      - Key: point_param_template__mission_task_monster_count
+        Value: 6
+      - Key: point_param_template__mission_task_reward_gold
+        Value: 300
+    Connections:
+    - FromNodeId: 1
+      ToNodeId: 2
+      Branch: Out
+    - FromNodeId: 3
+      ToNodeId: 4
+      Branch: Out
+    - FromNodeId: 5
+      ToNodeId: 6
+      Branch: Out
+    RuntimeNodeCount: 0
+    RuntimeConnectionCount: 0
