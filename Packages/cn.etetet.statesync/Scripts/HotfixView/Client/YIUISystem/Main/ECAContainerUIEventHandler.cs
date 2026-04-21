@@ -26,7 +26,6 @@ namespace ET.Client
                 SearchPanelOpenContextComponent openContext = SearchPanelOpenContextHelper.GetOrAdd(scene);
                 openContext?.PrepareContainerOpen(args.PointId);
 
-                // 打开容器面板前同步背包数据，确保客户端 ItemComponent 维度与服务端一致
                 EntityRef<Scene> sceneRef = scene;
                 await SyncBagDataBeforeOpen(scene);
                 scene = sceneRef;
@@ -36,7 +35,6 @@ namespace ET.Client
                 }
             }
 
-            // await 后重新获取 yiuiRoot，遵循 EntityRef 规范
             YIUIRootComponent yiuiRootAfter = scene.YIUIRoot();
             if (yiuiRootAfter == null)
             {

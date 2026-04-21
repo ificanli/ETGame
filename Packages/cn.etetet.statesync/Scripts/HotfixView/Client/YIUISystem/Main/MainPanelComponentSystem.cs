@@ -13,6 +13,17 @@ namespace ET.Client
     {
         private const float FpsRefreshInterval = 0.25f;
         private const float FpsSmoothFactor = 0.35f;
+        private const string PickupHintRootName = "PickupHintRoot";
+        private const string GroundDropPointPrefix = "ground_drop_";
+        private const float PickupHintCardWidth = 328f;
+        private const float PickupHintCardHeight = 72f;
+        private const float PickupHintScreenYOffset = 44f;
+        private const float PickupHintClampPadding = 10f;
+        private const float PickupHintOverlapThresholdX = 220f;
+        private const float PickupHintOverlapThresholdY = 90f;
+        private const float PickupHintOverlapOffsetX = 28f;
+        private const float PickupHintOverlapOffsetY = 52f;
+        private const int PickupHintMaxOverlapLevel = 8;
 
         [EntitySystem]
         private static void YIUIInitialize(this MainPanelComponent self)
@@ -77,9 +88,7 @@ namespace ET.Client
             self.RefreshRogueLevelBar(true);
             self.RefreshMinimap(true);
             self.UIWeaponBar?.RefreshCurrentPlayerWeaponBar();
-            self.IsPickupHintPanelOpening = false;
-            self.LastPickupHintVisible = false;
-            self.LastPickupHintPointId = null;
+            self.ReleaseAllPickupHintCommons();
             self.LastEvacuateTipsVisible = false;
             self.LastEvacuationPointId = null;
             self.LastEvacuateRemainSeconds = int.MinValue;
@@ -184,9 +193,7 @@ namespace ET.Client
             self.RogueEffectText = null;
             self.LastRogueEffectSignature = int.MinValue;
             self.RogueEffectPreviewIndex = -1;
-            self.IsPickupHintPanelOpening = false;
-            self.LastPickupHintVisible = false;
-            self.LastPickupHintPointId = null;
+            self.ReleaseAllPickupHintCommons();
             self.EvacuateTipsViewRef = default;
             self.IsEvacuateTipsOpening = false;
             self.LastEvacuateTipsVisible = false;
@@ -226,9 +233,7 @@ namespace ET.Client
             self.BindHitDirectionUI();
             self.RefreshMinimap(true);
             self.UIWeaponBar?.RefreshCurrentPlayerWeaponBar();
-            self.IsPickupHintPanelOpening = false;
-            self.LastPickupHintVisible = false;
-            self.LastPickupHintPointId = null;
+            self.ReleaseAllPickupHintCommons();
             self.LastEvacuateTipsVisible = false;
             self.LastEvacuationPointId = null;
             self.LastEvacuateRemainSeconds = int.MinValue;
@@ -313,7 +318,6 @@ namespace ET.Client
                 }
             }
 
-            bool showPickupHintPanel = show && !isDoorPoint && isGroundDropPoint && canInteract;
             bool showSearchButton = show && !isDoorPoint && !isGroundDropPoint;
             bool showOpenDoorButton = show && isDoorPoint;
 
@@ -341,7 +345,7 @@ namespace ET.Client
 
             self.RefreshSearchButtonVisual(buttonTextId, canInteract && showSearchButton);
             self.RefreshOpenDoorButton(showOpenDoorButton, openDoorText, canInteract);
-            self.RefreshPickupHintPanel(showPickupHintPanel, focusPointId);
+            self.RefreshPickupHintCommons(runtime);
 
             self.RefreshRogueEffectPanel();
             self.TryCloseRogueEffectDescOnOutsideClick();
@@ -1276,129 +1280,403 @@ namespace ET.Client
             self.u_DataOpenDoorText?.SetValue(show ? text ?? string.Empty : string.Empty);
         }
 
-        private static void RefreshPickupHintPanel(this MainPanelComponent self, bool show, string pointId)
+        private static void RefreshPickupHintCommons(this MainPanelComponent self, ECAInteractClientComponent runtime)
         {
             if (self == null || self.IsDisposed)
             {
                 return;
             }
 
-            Scene root = self.Root();
-            PickupHintPanelComponent panel = root?.YIUIMgr()?.GetPanel<PickupHintPanelComponent>();
-            bool hasPanel = panel != null && !panel.IsDisposed;
-            string targetPointId = show ? pointId : null;
-            bool needOpen = show &&
-                !self.IsPickupHintPanelOpening &&
-                (!self.LastPickupHintVisible ||
-                 self.LastPickupHintPointId != targetPointId ||
-                 !hasPanel);
-
-            if (needOpen)
+            if (runtime == null || !string.IsNullOrWhiteSpace(runtime.OpenContainerPointId) || runtime.InRangePointIds.Count == 0)
             {
-                self.EnsurePickupHintPanelOpenAsync(targetPointId).Coroutine();
-            }
-            else if (!show && (self.LastPickupHintVisible || self.IsPickupHintPanelOpening || hasPanel))
-            {
-                self.HidePickupHintPanel();
-            }
-
-            if (show && hasPanel && panel.FocusPointId != targetPointId)
-            {
-                panel.SetPickupTarget(targetPointId, 0);
-            }
-
-            self.LastPickupHintVisible = show;
-            self.LastPickupHintPointId = targetPointId;
-        }
-
-        private static async ETTask EnsurePickupHintPanelOpenAsync(this MainPanelComponent self, string pointId)
-        {
-            if (self == null || self.IsDisposed)
-            {
+                self.HideAllPickupHintCommons();
                 return;
             }
 
-            if (self.IsPickupHintPanelOpening)
+            RectTransform pickupHintRoot = self.EnsurePickupHintRoot();
+            if (pickupHintRoot == null)
             {
+                self.HideAllPickupHintCommons();
                 return;
             }
 
-            Scene root = self.Root();
-            if (root == null || root.IsDisposed)
-            {
-                return;
-            }
+            using ListComponent<string> sortedPointIds = ListComponent<string>.Create();
+            using HashSetComponent<string> visiblePointIds = HashSetComponent<string>.Create();
+            using ListComponent<Vector2> occupiedPositions = ListComponent<Vector2>.Create();
 
-            if (string.IsNullOrWhiteSpace(pointId))
+            foreach (string pointId in runtime.InRangePointIds)
             {
-                return;
-            }
-
-            PickupHintPanelComponent currentPanel = root.YIUIMgr()?.GetPanel<PickupHintPanelComponent>();
-            if (currentPanel != null && !currentPanel.IsDisposed)
-            {
-                currentPanel.SetPickupTarget(pointId, 0);
-                return;
-            }
-
-            YIUIRootComponent yiuiRoot = root.YIUIRoot();
-            if (yiuiRoot == null)
-            {
-                return;
-            }
-
-            self.IsPickupHintPanelOpening = true;
-
-            EntityRef<MainPanelComponent> selfRef = self;
-            EntityRef<Scene> rootRef = root;
-            PickupHintPanelComponent openedPanel;
-            try
-            {
-                openedPanel = await yiuiRoot.OpenPanelAsync<PickupHintPanelComponent>();
-            }
-            catch (Exception e)
-            {
-                self = selfRef;
-                if (self != null && !self.IsDisposed)
+                if (ShouldShowPickupHint(runtime, pointId))
                 {
-                    self.IsPickupHintPanelOpening = false;
+                    sortedPointIds.Add(pointId);
+                }
+            }
+
+            if (sortedPointIds.Count == 0)
+            {
+                self.HideAllPickupHintCommons();
+                return;
+            }
+
+            string focusPointId = runtime.FocusPointId;
+            sortedPointIds.Sort((left, right) => ComparePickupHintPointIds(left, right, focusPointId));
+
+            foreach (string pointId in sortedPointIds)
+            {
+                if (!self.TryResolveGroundDropLocalPosition(pointId, out Vector2 basePosition))
+                {
+                    continue;
                 }
 
-                Log.Error($"[MainPanel] open pickup hint panel failed: {e}");
-                return;
+                Vector2 resolvedPosition = self.ResolvePickupHintOverlapPosition(basePosition, occupiedPositions);
+                PickupHintPanelComponent view = self.GetOrCreatePickupHintCommon(pointId);
+                if (view == null || view.IsDisposed)
+                {
+                    continue;
+                }
+
+                visiblePointIds.Add(pointId);
+                occupiedPositions.Add(resolvedPosition);
+                view.Show(pointId, 0, resolvedPosition);
             }
 
-            self = selfRef;
-            root = rootRef;
-            if (self == null || self.IsDisposed || root == null || root.IsDisposed)
+            self.HideInactivePickupHintCommons(visiblePointIds);
+
+            if (!string.IsNullOrWhiteSpace(focusPointId) &&
+                self.PickupHintViewRefs.TryGetValue(focusPointId, out EntityRef<PickupHintPanelComponent> focusViewRef))
             {
-                return;
+                PickupHintPanelComponent focusView = focusViewRef;
+                focusView?.UIBase?.OwnerRectTransform?.SetAsLastSibling();
             }
-
-            self.IsPickupHintPanelOpening = false;
-            if (openedPanel == null)
-            {
-                return;
-            }
-
-            if (!self.LastPickupHintVisible || string.IsNullOrWhiteSpace(self.LastPickupHintPointId))
-            {
-                root.YIUIMgr()?.ClosePanel<PickupHintPanelComponent>();
-                return;
-            }
-
-            openedPanel.SetPickupTarget(self.LastPickupHintPointId, 0);
         }
 
-        private static void HidePickupHintPanel(this MainPanelComponent self)
+        private static RectTransform EnsurePickupHintRoot(this MainPanelComponent self)
         {
             if (self == null || self.IsDisposed)
             {
+                return null;
+            }
+
+            RectTransform pickupHintRoot = self.PickupHintRoot;
+            if (pickupHintRoot != null)
+            {
+                pickupHintRoot.SetAsLastSibling();
+                return pickupHintRoot;
+            }
+
+            RectTransform ownerRoot = self.UIBase?.OwnerRectTransform;
+            if (ownerRoot == null)
+            {
+                return null;
+            }
+
+            RectTransform existingRoot = ownerRoot.Find(PickupHintRootName) as RectTransform;
+            if (existingRoot != null)
+            {
+                existingRoot.SetAsLastSibling();
+                self.PickupHintRoot = existingRoot;
+                return existingRoot;
+            }
+
+            GameObject rootObject = new GameObject(PickupHintRootName, typeof(RectTransform));
+            rootObject.layer = ownerRoot.gameObject.layer;
+            pickupHintRoot = rootObject.GetComponent<RectTransform>();
+            pickupHintRoot.SetParent(ownerRoot, false);
+            pickupHintRoot.anchorMin = Vector2.zero;
+            pickupHintRoot.anchorMax = Vector2.one;
+            pickupHintRoot.pivot = new Vector2(0.5f, 0.5f);
+            pickupHintRoot.offsetMin = Vector2.zero;
+            pickupHintRoot.offsetMax = Vector2.zero;
+            pickupHintRoot.anchoredPosition = Vector2.zero;
+            pickupHintRoot.SetAsLastSibling();
+            self.PickupHintRoot = pickupHintRoot;
+            return pickupHintRoot;
+        }
+
+        private static PickupHintPanelComponent GetOrCreatePickupHintCommon(this MainPanelComponent self, string pointId)
+        {
+            if (self == null || self.IsDisposed || string.IsNullOrWhiteSpace(pointId))
+            {
+                return null;
+            }
+
+            if (self.PickupHintViewRefs.TryGetValue(pointId, out EntityRef<PickupHintPanelComponent> viewRef))
+            {
+                PickupHintPanelComponent existingView = viewRef;
+                if (existingView != null && !existingView.IsDisposed)
+                {
+                    return existingView;
+                }
+
+                self.PickupHintViewRefs.Remove(pointId);
+            }
+
+            RectTransform pickupHintRoot = self.EnsurePickupHintRoot();
+            if (pickupHintRoot == null)
+            {
+                return null;
+            }
+
+            PickupHintPanelComponent created =
+                    YIUIFactory.Instantiate<PickupHintPanelComponent>(self.Scene(), self, pickupHintRoot) as PickupHintPanelComponent;
+            if (created == null)
+            {
+                return null;
+            }
+
+            created.Hide();
+            self.PickupHintViewRefs[pointId] = created;
+            return created;
+        }
+
+        private static void HideAllPickupHintCommons(this MainPanelComponent self)
+        {
+            if (self == null || self.IsDisposed || self.PickupHintViewRefs.Count == 0)
+            {
                 return;
             }
 
-            self.IsPickupHintPanelOpening = false;
-            self.Root()?.YIUIMgr()?.ClosePanel<PickupHintPanelComponent>();
+            using ListComponent<string> invalidPointIds = ListComponent<string>.Create();
+            foreach (KeyValuePair<string, EntityRef<PickupHintPanelComponent>> pair in self.PickupHintViewRefs)
+            {
+                PickupHintPanelComponent view = pair.Value;
+                if (view == null || view.IsDisposed)
+                {
+                    invalidPointIds.Add(pair.Key);
+                    continue;
+                }
+
+                view.Hide();
+            }
+
+            RemovePickupHintKeys(self, invalidPointIds);
+        }
+
+        private static void HideInactivePickupHintCommons(this MainPanelComponent self, HashSet<string> visiblePointIds)
+        {
+            if (self == null || self.IsDisposed || self.PickupHintViewRefs.Count == 0)
+            {
+                return;
+            }
+
+            using ListComponent<string> invalidPointIds = ListComponent<string>.Create();
+            foreach (KeyValuePair<string, EntityRef<PickupHintPanelComponent>> pair in self.PickupHintViewRefs)
+            {
+                PickupHintPanelComponent view = pair.Value;
+                if (view == null || view.IsDisposed)
+                {
+                    invalidPointIds.Add(pair.Key);
+                    continue;
+                }
+
+                if (!visiblePointIds.Contains(pair.Key))
+                {
+                    view.Hide();
+                }
+            }
+
+            RemovePickupHintKeys(self, invalidPointIds);
+        }
+
+        private static void ReleaseAllPickupHintCommons(this MainPanelComponent self)
+        {
+            if (self == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<string, EntityRef<PickupHintPanelComponent>> pair in self.PickupHintViewRefs)
+            {
+                PickupHintPanelComponent view = pair.Value;
+                if (view == null || view.IsDisposed)
+                {
+                    continue;
+                }
+
+                view.UIBase?.Dispose();
+            }
+
+            self.PickupHintViewRefs.Clear();
+            if (self.PickupHintRoot != null)
+            {
+                UnityEngine.Object.Destroy(self.PickupHintRoot.gameObject);
+                self.PickupHintRoot = null;
+            }
+        }
+
+        private static bool TryResolveGroundDropLocalPosition(this MainPanelComponent self, string pointId, out Vector2 localPosition)
+        {
+            localPosition = default;
+            if (self == null || self.IsDisposed || string.IsNullOrWhiteSpace(pointId))
+            {
+                return false;
+            }
+
+            if (!TryParseGroundDropPointUnitId(pointId, out long pointUnitId))
+            {
+                return false;
+            }
+
+            Scene root = self.Root();
+            Unit pointUnit = root?.CurrentScene()?.GetComponent<UnitComponent>()?.Get(pointUnitId);
+            if (pointUnit == null || pointUnit.IsDisposed)
+            {
+                return false;
+            }
+
+            Camera worldCamera = Camera.main;
+            RectTransform pickupHintRoot = self.EnsurePickupHintRoot();
+            if (worldCamera == null || pickupHintRoot == null)
+            {
+                return false;
+            }
+
+            Vector3 screenPosition = worldCamera.WorldToScreenPoint(pointUnit.Position);
+            if (screenPosition.z <= 0f)
+            {
+                return false;
+            }
+
+            Vector2 screenPoint = new Vector2(screenPosition.x, screenPosition.y + PickupHintScreenYOffset);
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    pickupHintRoot,
+                    screenPoint,
+                    self.ResolveUICamera(),
+                    out Vector2 anchoredPosition))
+            {
+                return false;
+            }
+
+            localPosition = self.ClampPickupHintPosition(anchoredPosition);
+            return true;
+        }
+
+        private static Vector2 ResolvePickupHintOverlapPosition(
+            this MainPanelComponent self,
+            Vector2 basePosition,
+            List<Vector2> occupiedPositions)
+        {
+            Vector2 clampedBasePosition = self.ClampPickupHintPosition(basePosition);
+            if (!IsPickupHintOverlappingAny(clampedBasePosition, occupiedPositions))
+            {
+                return clampedBasePosition;
+            }
+
+            for (int level = 1; level <= PickupHintMaxOverlapLevel; ++level)
+            {
+                Vector2 rightOffset = new Vector2(PickupHintOverlapOffsetX * level, PickupHintOverlapOffsetY * level);
+                Vector2 rightCandidate = self.ClampPickupHintPosition(basePosition + rightOffset);
+                if (!IsPickupHintOverlappingAny(rightCandidate, occupiedPositions))
+                {
+                    return rightCandidate;
+                }
+
+                Vector2 leftOffset = new Vector2(-PickupHintOverlapOffsetX * level, PickupHintOverlapOffsetY * level);
+                Vector2 leftCandidate = self.ClampPickupHintPosition(basePosition + leftOffset);
+                if (!IsPickupHintOverlappingAny(leftCandidate, occupiedPositions))
+                {
+                    return leftCandidate;
+                }
+            }
+
+            return clampedBasePosition;
+        }
+
+        private static Vector2 ClampPickupHintPosition(this MainPanelComponent self, Vector2 anchoredPosition)
+        {
+            RectTransform pickupHintRoot = self.PickupHintRoot;
+            if (pickupHintRoot == null)
+            {
+                return anchoredPosition;
+            }
+
+            Rect rootRect = pickupHintRoot.rect;
+            if (rootRect.width <= 0f || rootRect.height <= 0f)
+            {
+                return anchoredPosition;
+            }
+
+            float halfWidth = PickupHintCardWidth * 0.5f;
+            float halfHeight = PickupHintCardHeight * 0.5f;
+            float minX = rootRect.xMin + halfWidth + PickupHintClampPadding;
+            float maxX = rootRect.xMax - halfWidth - PickupHintClampPadding;
+            float minY = rootRect.yMin + halfHeight + PickupHintClampPadding;
+            float maxY = rootRect.yMax - halfHeight - PickupHintClampPadding;
+
+            anchoredPosition.x = Mathf.Clamp(anchoredPosition.x, minX, maxX);
+            anchoredPosition.y = Mathf.Clamp(anchoredPosition.y, minY, maxY);
+            return anchoredPosition;
+        }
+
+        private static bool TryParseGroundDropPointUnitId(string pointId, out long pointUnitId)
+        {
+            pointUnitId = 0;
+            if (string.IsNullOrWhiteSpace(pointId) ||
+                !pointId.StartsWith(GroundDropPointPrefix, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            int lastSeparatorIndex = pointId.LastIndexOf('_');
+            if (lastSeparatorIndex < 0 || lastSeparatorIndex >= pointId.Length - 1)
+            {
+                return false;
+            }
+
+            return long.TryParse(pointId.Substring(lastSeparatorIndex + 1), out pointUnitId);
+        }
+
+        private static bool ShouldShowPickupHint(ECAInteractClientComponent runtime, string pointId)
+        {
+            return runtime != null &&
+                !string.IsNullOrWhiteSpace(pointId) &&
+                pointId.StartsWith(GroundDropPointPrefix, StringComparison.Ordinal) &&
+                (!runtime.PointCanInteract.TryGetValue(pointId, out bool canInteract) || canInteract);
+        }
+
+        private static bool IsPickupHintOverlappingAny(Vector2 candidate, List<Vector2> occupiedPositions)
+        {
+            if (occupiedPositions == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < occupiedPositions.Count; ++i)
+            {
+                Vector2 occupiedPosition = occupiedPositions[i];
+                if (Mathf.Abs(candidate.x - occupiedPosition.x) < PickupHintOverlapThresholdX &&
+                    Mathf.Abs(candidate.y - occupiedPosition.y) < PickupHintOverlapThresholdY)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static int ComparePickupHintPointIds(string left, string right, string focusPointId)
+        {
+            bool leftFocused = string.Equals(left, focusPointId, StringComparison.Ordinal);
+            bool rightFocused = string.Equals(right, focusPointId, StringComparison.Ordinal);
+            if (leftFocused != rightFocused)
+            {
+                return leftFocused ? -1 : 1;
+            }
+
+            return string.Compare(left, right, StringComparison.Ordinal);
+        }
+
+        private static void RemovePickupHintKeys(MainPanelComponent self, List<string> invalidPointIds)
+        {
+            if (self == null || invalidPointIds == null || invalidPointIds.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = 0; i < invalidPointIds.Count; ++i)
+            {
+                self.PickupHintViewRefs.Remove(invalidPointIds[i]);
+            }
         }
 
         private static void RefreshEvacuateTips(this MainPanelComponent self, ECAInteractClientComponent runtime)
@@ -2004,7 +2282,8 @@ namespace ET.Client
             poiRuntime.EnsureConfigLoaded();
 
             HashSet<string> activePoiIds = new HashSet<string>();
-            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.MarkerSize, 10f), 4f);
+            float defaultPoiSize = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.PoiSize, 25f);
+            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.CompactPoiSize, defaultPoiSize), 4f);
             float radius = Mathf.Max(Mathf.Min(self.MinimapMask.rect.width, self.MinimapMask.rect.height) * 0.5f - poiSize, 0f);
 
             foreach (KeyValuePair<string, MapPoiRuntimeData> pair in poiRuntime.GetPois())
@@ -2072,7 +2351,8 @@ namespace ET.Client
                 return;
             }
 
-            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.MarkerSize, 10f), 4f);
+            float defaultPoiSize = global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.PoiSize, 25f);
+            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.CompactPoiSize, defaultPoiSize), 4f);
             float radius = Mathf.Max(Mathf.Min(self.MinimapMask.rect.width, self.MinimapMask.rect.height) * 0.5f - poiSize, 0f);
             Vector2 anchoredPosition;
 

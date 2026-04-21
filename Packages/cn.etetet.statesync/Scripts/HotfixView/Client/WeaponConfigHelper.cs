@@ -236,6 +236,8 @@ namespace ET.Client
         {
             Unit unit = self.GetParent<Unit>();
             long unitId = unit?.Id ?? 0;
+            long refreshStartClientNow = TimeInfo.Instance.ClientNow();
+            Log.Info($"[WeaponSwitchTrace][ViewRefreshBegin] clientNow={refreshStartClientNow}, serverNow={TimeInfo.Instance.ServerNow()}, unitId={unitId}, weaponId={weaponId}, hasWeapon={weaponId > 0}");
             Log.Info($"[WeaponInitTrace][Refresh] begin unitId={unitId}, weaponId={weaponId}, hasWeapon={weaponId > 0}");
 
             self.LoadVersion++;
@@ -245,10 +247,12 @@ namespace ET.Client
 
             EntityRef<WeaponViewComponent> selfReadyRef = self;
             EntityRef<Scene> rootReadyRef = root;
+            long waitReadyStartClientNow = TimeInfo.Instance.ClientNow();
             if (!await self.WaitViewReadyAsync(root, loadVersion, weaponId))
             {
                 return;
             }
+            long waitReadyDoneClientNow = TimeInfo.Instance.ClientNow();
 
             self = selfReadyRef;
             root = rootReadyRef;
@@ -268,6 +272,9 @@ namespace ET.Client
 
             if (weaponId <= 0)
             {
+                long noWeaponDoneClientNow = TimeInfo.Instance.ClientNow();
+                Log.Info(
+                    $"[WeaponSwitchTrace][ViewRefreshDone] clientNow={noWeaponDoneClientNow}, serverNow={TimeInfo.Instance.ServerNow()}, unitId={unit.Id}, weaponId={weaponId}, waitReadyCostMs={waitReadyDoneClientNow - waitReadyStartClientNow}, loadCostMs=0, totalCostMs={noWeaponDoneClientNow - refreshStartClientNow}, reason=no_weapon");
                 return;
             }
 
@@ -296,7 +303,10 @@ namespace ET.Client
 
             EntityRef<WeaponViewComponent> selfRef = self;
             EntityRef<Scene> rootRef = root;
+            bool cacheHit = resourcesLoader.handlers.ContainsKey(weaponConfig.WeaponPrefab);
+            long loadPrefabStartClientNow = TimeInfo.Instance.ClientNow();
             GameObject prefab = await resourcesLoader.LoadAssetAsync<GameObject>(weaponConfig.WeaponPrefab);
+            long loadPrefabDoneClientNow = TimeInfo.Instance.ClientNow();
 
             self = selfRef;
             root = rootRef;
@@ -320,6 +330,8 @@ namespace ET.Client
             }
 
             Log.Info($"[WeaponInitTrace][Refresh] bind ok unitId={unit.Id}, weaponId={weaponId}, bindTransform={bindTransform.name}, prefab={prefab.name}");
+            Log.Info(
+                $"[WeaponSwitchTrace][ViewPrefabLoaded] clientNow={loadPrefabDoneClientNow}, serverNow={TimeInfo.Instance.ServerNow()}, unitId={unit.Id}, weaponId={weaponId}, prefab={weaponConfig.WeaponPrefab}, cacheHit={cacheHit}, waitReadyCostMs={waitReadyDoneClientNow - waitReadyStartClientNow}, loadCostMs={loadPrefabDoneClientNow - loadPrefabStartClientNow}");
 
             GameObject weaponObject = UnityEngine.Object.Instantiate(prefab, bindTransform, false);
             weaponObject.transform.localPosition = new Vector3(
@@ -337,6 +349,9 @@ namespace ET.Client
             self.WeaponObject = weaponObject;
             self.MuzzleTransform = self.FindMuzzleTransform(unit, weaponObject.transform, weaponConfig);
             Log.Info($"[WeaponInitTrace][Refresh] instantiated unitId={unit.Id}, weaponId={weaponId}, weaponObject={weaponObject.name}, muzzle={self.MuzzleTransform?.name ?? "null"}");
+            long refreshDoneClientNow = TimeInfo.Instance.ClientNow();
+            Log.Info(
+                $"[WeaponSwitchTrace][ViewRefreshDone] clientNow={refreshDoneClientNow}, serverNow={TimeInfo.Instance.ServerNow()}, unitId={unit.Id}, weaponId={weaponId}, prefab={weaponConfig.WeaponPrefab}, cacheHit={cacheHit}, waitReadyCostMs={waitReadyDoneClientNow - waitReadyStartClientNow}, loadCostMs={loadPrefabDoneClientNow - loadPrefabStartClientNow}, totalCostMs={refreshDoneClientNow - refreshStartClientNow}, weaponObject={weaponObject.name}, muzzle={self.MuzzleTransform?.name ?? "null"}");
         }
 
         public static Vector3 GetFirePoint(this WeaponViewComponent self, Unit unit, global::ET.WeaponConfig weaponConfig)

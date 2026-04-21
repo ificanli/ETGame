@@ -53,8 +53,13 @@ namespace ET.Server
             {
                 WeaponReloadHelper.SyncAmmoState(caster);
             }
+
+            long fireServerNow = TimeInfo.Instance.ServerNow();
+            int ammoAfterFire = weaponComp.GetAmmo(node.SlotIndex);
             Log.Info($"BTWeaponFire: unit {caster.Id} fired slot={node.SlotIndex} weaponId={weaponId} at target={target.Id}");
             Log.Info($"[WeaponFireTrace][Server] fired, caster={caster.Id}, target={target.Id}, slot={node.SlotIndex}, weaponId={weaponId}, bulletCount={weaponConfig.BulletCount}, effect={weaponConfig.ProjectileEffect}");
+            Log.Info(
+                $"[WeaponFireTrace][ServerFire] serverNow={fireServerNow}, caster={caster.Id}, target={target.Id}, slot={node.SlotIndex}, weaponId={weaponId}, ammoAfter={ammoAfterFire}, bulletCount={weaponConfig.BulletCount}, lockType={(FireLockType)weaponConfig.FireLockTypeId}, effect={weaponConfig.ProjectileEffect}");
 
             Scene scene = caster.Scene();
             if (scene.GetComponent<BulletTickComponent>() == null)
@@ -70,6 +75,9 @@ namespace ET.Server
             fireMsg.BulletCount = weaponConfig.BulletCount;
             fireMsg.FireLockTypeId = weaponConfig.FireLockTypeId;
             MapMessageHelper.NoticeClient(caster, fireMsg, NoticeType.Broadcast);
+            long sendDoneServerNow = TimeInfo.Instance.ServerNow();
+            Log.Info(
+                $"[WeaponFireTrace][ServerSend] serverNow={sendDoneServerNow}, caster={caster.Id}, target={target.Id}, slot={node.SlotIndex}, weaponId={weaponId}, bulletCount={weaponConfig.BulletCount}, sendCostMs={sendDoneServerNow - fireServerNow}");
 
             // 根据武器配置创建子弹
             FireLockType lockType = (FireLockType)weaponConfig.FireLockTypeId;

@@ -1,7 +1,7 @@
 # 地图POI显示与追踪设计文档
 
 **创建时间**：2026-04-16
-**最后更新**：2026-04-16（正式 MapIcon 资源已接入）
+**最后更新**：2026-04-17（小地图 POI 尺寸继续独立拆分到 `Minimap.CompactPoiSize=50`，大地图保持 `Minimap.PoiSize=25`）
 **状态**：已完成
 **关联任务**：M0.2-W3 #32
 **涉及包**：cn.etetet.statesync, cn.etetet.map, cn.etetet.eca, cn.etetet.excel
@@ -141,6 +141,13 @@ POI 图标不写死到代码，统一通过 `MinimapConstConfig` 配置 sprite �
 
 同时在 `SDCMap.txt` 的真实 POI 点位上显式写入同名 `map_poi_icon`，减少场景资源和全局默认配置漂移。
 
+本轮继续把图标尺寸与展开地图底图收口：
+
+- 普通单位 marker 继续使用 `Minimap.MarkerSize`，当前进一步下调到 `8`。
+- 大地图 POI 图标继续使用独立 `Minimap.PoiSize`，当前保持 `25`，避免再和普通单位尺寸串用。
+- 小地图 POI 与追踪边缘图标继续拆到 `Minimap.CompactPoiSize`，当前调到 `50`，只放大小地图可见性，不影响展开地图阅读。
+- `MapWorldPanel.prefab` 预绑与小地图同一张 `Minimap Render Texture`，并静态补 `PoiLayer`，避免展开地图在 `MainPanel` 引用未命中时丢失底图或继续依赖运行时创建静态层。
+
 ### 小地图显示与追踪
 
 小地图分两层：
@@ -258,6 +265,7 @@ POI 图标不写死到代码，统一通过 `MinimapConstConfig` 配置 sprite �
 - `Minimap.PoiIcon.HighContainer`
 - `Minimap.PoiIcon.BossSpawn`
 - `Minimap.PoiIcon.Tracked`
+- `Minimap.CompactPoiSize`
 
 ## 实现步骤
 
@@ -302,3 +310,5 @@ POI 图标不写死到代码，统一通过 `MinimapConstConfig` 配置 sprite �
 | 步骤6 | 2026-04-16 | `Packages/cn.etetet.statesync/Luban/Config/Datas/Text.xlsx`, `Packages/cn.etetet.statesync/Luban/Config/Datas/MinimapConstConfig.xlsx`, `Packages/cn.etetet.excel/Bundles/Luban/Config/*/Json/TextConfigCategory.json`, `Packages/cn.etetet.excel/Bundles/Luban/Config/*/Json/et_minimapconstconfigcategory.json` | 先完成 POI 文案与默认 icon key 接线，后续再接正式图标资源 |
 | 步骤7 | 2026-04-16 | `Book/03-地图与视野/地图POI显示与追踪设计文档.md`, `Book/03-地图与视野/地图POI显示与追踪开发日志.md`, `Book/08-版本计划/M0.2-W3周计划.md` | 使用 `dotnet build ET.sln` 完成编译验证，通过 |
 | 步骤8 | 2026-04-16 | `Assets/GameRes/YIUI/Common/Sprites/Atlas1/MapIcon.png.meta`, `Assets/GameRes/YIUI/YIUISettings/YIUIAtlasData.asset`, `Packages/cn.etetet.statesync/Luban/Config/Datas/MinimapConstConfig.xlsx`, `Packages/cn.etetet.excel/Bundles/Luban/Config/*/Json/et_minimapconstconfigcategory.json`, `Packages/cn.etetet.map/Bundles/ECA/SDCMap.txt` | 正式 MapIcon 资源到位后，切换默认 key 到 `poi_*` 语义名，并把 `SDCMap` 真实点位显式写成同名 icon 配置 |
+| 步骤9 | 2026-04-16 | `Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/MapWorldPanelComponentSystem.cs`, `Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/Map/MapWorldPanel.prefab`, `Packages/cn.etetet.statesync/Luban/Config/Datas/MinimapConstConfig.xlsx`, `Packages/cn.etetet.excel/Bundles/Luban/Config/*/Json/et_minimapconstconfigcategory.json` | 用户回归后继续收口显示细节：普通单位 marker 下调到 `8`，大地图 POI 改读独立 `PoiSize=25`，并给 `MapWorldPanel` 预绑底图 RenderTexture 与静态 `PoiLayer` |
+| 步骤10 | 2026-04-17 | `Packages/cn.etetet.statesync/Scripts/Model/Share/MinimapConstKey.cs`, `Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/MainPanelComponentSystem.cs`, `Packages/cn.etetet.statesync/Luban/Config/Datas/MinimapConstConfig.xlsx`, `Packages/cn.etetet.excel/Bundles/Luban/Config/*/Json/et_minimapconstconfigcategory.json`, `Book/03-地图与视野/地图POI显示与追踪设计文档.md`, `Book/03-地图与视野/地图POI显示与追踪开发日志.md` | 用户回归要求“小地图的几个 POI 图标再放大 1 倍”；本轮继续把小地图尺寸拆成独立 `Minimap.CompactPoiSize=50`，大地图维持 `Minimap.PoiSize=25` |

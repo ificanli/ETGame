@@ -79,6 +79,9 @@ namespace ET
         /// <summary>第2槽生效穿透次数</summary>
         public int Slot2EffectivePenetrationCount;
 
+        /// <summary>当前武器驱动的 AOI FinalAdd 运行时偏移（单位：千分之一米）</summary>
+        public long WeaponVisionAoiFinalAdd;
+
         // ---- 只读便捷属性 ----
 
         /// <summary>当前槽的武器ID（0=无武器）</summary>

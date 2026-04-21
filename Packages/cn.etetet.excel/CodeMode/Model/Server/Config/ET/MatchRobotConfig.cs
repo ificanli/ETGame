@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,23 +15,23 @@ namespace ET
     [EnableClass]
     public sealed partial class MatchRobotConfig : Luban.BeanBase
     {
-        public MatchRobotConfig(JSONNode _buf) 
+        public MatchRobotConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["MapName"].IsString) { throw new SerializationException(); }  MapName = _buf["MapName"]; }
-            { if(!_buf["GameMode"].IsNumber) { throw new SerializationException(); }  GameMode = _buf["GameMode"]; }
-            { if(!_buf["AIBuffConfigId"].IsNumber) { throw new SerializationException(); }  AIBuffConfigId = _buf["AIBuffConfigId"]; }
-            { if(!_buf["HeroConfigIds"].IsString) { throw new SerializationException(); }  HeroConfigIds = _buf["HeroConfigIds"]; }
-            { if(!_buf["HeroWeights"].IsString) { throw new SerializationException(); }  HeroWeights = _buf["HeroWeights"]; }
-            { if(!_buf["MainWeaponConfigIds"].IsString) { throw new SerializationException(); }  MainWeaponConfigIds = _buf["MainWeaponConfigIds"]; }
-            { if(!_buf["MainWeaponWeights"].IsString) { throw new SerializationException(); }  MainWeaponWeights = _buf["MainWeaponWeights"]; }
-            { if(!_buf["AutoChooseDelayMinMs"].IsNumber) { throw new SerializationException(); }  AutoChooseDelayMinMs = _buf["AutoChooseDelayMinMs"]; }
-            { if(!_buf["AutoChooseDelayMaxMs"].IsNumber) { throw new SerializationException(); }  AutoChooseDelayMaxMs = _buf["AutoChooseDelayMaxMs"]; }
+            Id = _buf.ReadInt();
+            MapName = _buf.ReadString();
+            GameMode = _buf.ReadInt();
+            AIBuffConfigId = _buf.ReadInt();
+            HeroConfigIds = _buf.ReadString();
+            HeroWeights = _buf.ReadString();
+            MainWeaponConfigIds = _buf.ReadString();
+            MainWeaponWeights = _buf.ReadString();
+            AutoChooseDelayMinMs = _buf.ReadInt();
+            AutoChooseDelayMaxMs = _buf.ReadInt();
 
             EndInit();
         }
 
-        public static MatchRobotConfig DeserializeMatchRobotConfig(JSONNode _buf)
+        public static MatchRobotConfig DeserializeMatchRobotConfig(ByteBuf _buf)
         {
             return new ET.MatchRobotConfig(_buf);
         }
@@ -77,7 +76,7 @@ namespace ET
         /// 自动选项最大延迟毫秒
         /// </summary>
         public readonly int AutoChooseDelayMaxMs;
-
+    
         public const int __ID__ = -493943098;
         public override int GetTypeId() => __ID__;
 

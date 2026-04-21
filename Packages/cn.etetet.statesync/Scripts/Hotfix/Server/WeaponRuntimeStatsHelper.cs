@@ -27,6 +27,7 @@ namespace ET.Server
             ClampAmmoToMagazine(weaponComponent, 1);
             ClampAmmoToMagazine(weaponComponent, 2);
             RefreshTargetSelectorRange(unit, weaponComponent);
+            RefreshWeaponDrivenVision(unit, weaponComponent);
 
             if (syncAmmoState)
             {
@@ -111,6 +112,79 @@ namespace ET.Server
 
             int currentSlot = weaponComponent.CurrentSlot;
             selector.MaxRange = currentSlot > 0 ? weaponComponent.GetEffectiveAttackRange(currentSlot) : 0f;
+        }
+
+        private static void RefreshWeaponDrivenVision(Unit unit, WeaponComponent weaponComponent)
+        {
+            if (unit == null || unit.IsDisposed || weaponComponent == null || unit.UnitType != UnitType.Player)
+            {
+                return;
+            }
+
+            NumericComponent numeric = unit.NumericComponent;
+            if (numeric == null)
+            {
+                return;
+            }
+
+            long applied = weaponComponent.WeaponVisionAoiFinalAdd;
+            long desiredApplied = ResolveDesiredWeaponVisionAoiFinalAdd(unit, numeric, applied);
+            if (desiredApplied == applied)
+            {
+                return;
+            }
+
+            long currentFinalAdd = numeric.GetAsLong(NumericType.AOIFinalAdd);
+            long preservedFinalAdd = currentFinalAdd - applied;
+            weaponComponent.WeaponVisionAoiFinalAdd = desiredApplied;
+            numeric.Set(NumericType.AOIFinalAdd, preservedFinalAdd + desiredApplied);
+        }
+
+        public static void ResetWeaponDrivenVision(Unit unit, WeaponComponent weaponComponent)
+        {
+            if (unit == null || unit.IsDisposed || weaponComponent == null)
+            {
+                return;
+            }
+
+            long applied = weaponComponent.WeaponVisionAoiFinalAdd;
+            if (applied == 0)
+            {
+                return;
+            }
+
+            NumericComponent numeric = unit.NumericComponent;
+            if (numeric != null)
+            {
+                long currentFinalAdd = numeric.GetAsLong(NumericType.AOIFinalAdd);
+                numeric.Set(NumericType.AOIFinalAdd, currentFinalAdd - applied);
+            }
+
+            weaponComponent.WeaponVisionAoiFinalAdd = 0;
+        }
+
+        private static long ResolveDesiredWeaponVisionAoiFinalAdd(Unit unit, NumericComponent numeric, long applied)
+        {
+            if (!WeaponVisionRangeHelper.TryResolveCurrentSniperVisionRange(unit, out float sniperRange))
+            {
+                return 0;
+            }
+
+            long desiredAoi = math.max(0L, (long)math.round(sniperRange * 1000f));
+            long baseValue = numeric.GetAsLong(NumericType.AOIBase);
+            long addValue = numeric.GetAsLong(NumericType.AOIAdd);
+            int pctValue = math.max(-100, numeric.GetAsInt(NumericType.AOIPct));
+            int finalPctValue = math.max(-100, numeric.GetAsInt(NumericType.AOIFinalPct));
+            long currentFinalAdd = numeric.GetAsLong(NumericType.AOIFinalAdd);
+            long preservedFinalAdd = currentFinalAdd - applied;
+            float preFinalValue = (baseValue + addValue) * (100 + pctValue) / 100f + preservedFinalAdd;
+            float finalMultiplier = (100 + finalPctValue) / 100f;
+            if (finalMultiplier <= 0f)
+            {
+                return 0;
+            }
+
+            return (long)math.round(desiredAoi / finalMultiplier - preFinalValue);
         }
     }
 }

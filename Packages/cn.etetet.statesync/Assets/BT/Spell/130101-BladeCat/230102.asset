@@ -504,6 +504,9 @@ MonoBehaviour:
     - Name: FollowUnit
       Entry: 5
       Data: true
+    - Name: LocalEulerAnglesOffsetY
+      Entry: 4
+      Data: 180
     - Name: 
       Entry: 8
       Data: 

@@ -152,6 +152,7 @@ namespace ET.Server
             WeaponComponent weaponComponent = unit.GetComponent<WeaponComponent>();
             if (weaponComponent != null)
             {
+                WeaponRuntimeStatsHelper.ResetWeaponDrivenVision(unit, weaponComponent);
                 WeaponReloadSchedulerHelper.StopTimer(weaponComponent);
                 unit.RemoveComponent<WeaponComponent>();
             }

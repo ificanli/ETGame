@@ -274,9 +274,19 @@ namespace ET.Client
                 return 0f;
             }
 
-            if (unit.UnitType == UnitType.Player && self.FogVisionRadius > 0f)
+            if (unit.UnitType == UnitType.Player)
             {
-                return self.FogVisionRadius;
+                if (WeaponVisionRangeHelper.TryResolveCurrentSniperVisionRange(unit, out float sniperRange))
+                {
+                    return sniperRange;
+                }
+
+                if (self.FogVisionRadius > 0f)
+                {
+                    return self.FogVisionRadius;
+                }
+
+                return VisibilityLineOfSightHelper.ResolveRawAoiWorldRadius(unit, 0f);
             }
 
             return VisibilityLineOfSightHelper.ResolveRawAoiWorldRadius(unit);

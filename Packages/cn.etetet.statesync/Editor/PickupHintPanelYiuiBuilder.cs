@@ -16,6 +16,10 @@ namespace ET.Editor
             "Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/MainPanel.prefab";
         private const string PickupHintPanelPrefabPath =
             "Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/PickupHintPanel.prefab";
+        private static readonly Vector2 RootSize = new(328f, 72f);
+        private static readonly Vector2 PickupButtonSize = new(108f, 44f);
+        private static readonly Vector2 PickupButtonAnchoredPosition = new(-12f, 0f);
+        private static readonly Vector2 AccentWidth = new(6f, 0f);
 
         [MenuItem("ET/YIUI/Build PickupHintPanel Resources")]
         public static void Build()
@@ -46,11 +50,14 @@ namespace ET.Editor
                 SetLayerRecursively(root, LayerMask.NameToLayer("UI"));
 
                 RectTransform rootRect = root.GetComponent<RectTransform>();
-                Stretch(rootRect);
+                rootRect.anchorMin = new Vector2(0.5f, 0.5f);
+                rootRect.anchorMax = new Vector2(0.5f, 0.5f);
+                rootRect.pivot = new Vector2(0.5f, 0.5f);
+                rootRect.anchoredPosition = Vector2.zero;
+                rootRect.sizeDelta = RootSize;
 
                 UIBindCDETable cdeTable = root.GetOrAddComponent<UIBindCDETable>();
-                cdeTable.UICodeType = EUICodeType.Panel;
-                cdeTable.PanelLayer = EPanelLayer.Panel;
+                cdeTable.UICodeType = EUICodeType.Common;
                 cdeTable.PkgName = "Main";
                 cdeTable.ResName = "PickupHintPanel";
                 cdeTable.ComponentTable = root.GetOrAddComponent<UIBindComponentTable>();
@@ -58,14 +65,11 @@ namespace ET.Editor
                 cdeTable.EventTable = root.GetOrAddComponent<UIBindEventTable>();
 
                 RectTransform content = CreateRect("Content", rootRect);
-                content.anchorMin = new Vector2(0.5f, 0f);
-                content.anchorMax = new Vector2(0.5f, 0f);
-                content.pivot = new Vector2(0.5f, 0f);
-                content.sizeDelta = new Vector2(360f, 134f);
-                content.anchoredPosition = new Vector2(0f, 208f);
+                Stretch(content);
 
                 RectTransform background = CreatePanel("Background", content, new Color32(13, 18, 24, 235));
                 Stretch(background);
+                SetGraphicRaycastTarget(background, false);
                 EnsureBinding(cdeTable.ComponentTable, background, "Background");
 
                 Outline backgroundOutline = background.gameObject.AddComponent<Outline>();
@@ -76,33 +80,34 @@ namespace ET.Editor
                 accent.anchorMin = new Vector2(0f, 0f);
                 accent.anchorMax = new Vector2(0f, 1f);
                 accent.pivot = new Vector2(0f, 0.5f);
-                accent.sizeDelta = new Vector2(8f, 0f);
+                accent.sizeDelta = AccentWidth;
                 accent.anchoredPosition = Vector2.zero;
                 SetGraphicRaycastTarget(accent, false);
                 EnsureBinding(cdeTable.ComponentTable, accent, "Accent");
 
-                TextMeshProUGUI itemName = CreateText("ItemName", content, style, 32f, FontStyles.Bold);
+                TextMeshProUGUI itemName = CreateText("ItemName", content, style, 28f, FontStyles.Bold);
                 itemName.text = "拾取";
-                itemName.alignment = TextAlignmentOptions.Left;
+                itemName.alignment = TextAlignmentOptions.MidlineLeft;
                 itemName.textWrappingMode = TextWrappingModes.NoWrap;
                 itemName.overflowMode = TextOverflowModes.Ellipsis;
-                itemName.rectTransform.anchorMin = new Vector2(0f, 1f);
-                itemName.rectTransform.anchorMax = new Vector2(1f, 1f);
-                itemName.rectTransform.pivot = new Vector2(0.5f, 1f);
-                itemName.rectTransform.offsetMin = new Vector2(26f, -56f);
-                itemName.rectTransform.offsetMax = new Vector2(-22f, -14f);
+                itemName.rectTransform.anchorMin = Vector2.zero;
+                itemName.rectTransform.anchorMax = Vector2.one;
+                itemName.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                itemName.rectTransform.offsetMin = new Vector2(24f, 12f);
+                itemName.rectTransform.offsetMax = new Vector2(-124f, -12f);
                 EnsureBinding(cdeTable.ComponentTable, itemName, "ItemName");
 
-                TextMeshProUGUI subTitle = CreateText("SubTitle", content, style, 20f, FontStyles.Normal);
+                TextMeshProUGUI subTitle = CreateText("SubTitle", content, style, 18f, FontStyles.Normal);
                 subTitle.text = "靠近地面掉落物后，可直接在这里完成拾取。";
-                subTitle.alignment = TextAlignmentOptions.TopLeft;
+                subTitle.alignment = TextAlignmentOptions.MidlineLeft;
                 subTitle.textWrappingMode = TextWrappingModes.Normal;
                 subTitle.color = new Color32(181, 191, 205, 255);
-                subTitle.rectTransform.anchorMin = new Vector2(0f, 0f);
-                subTitle.rectTransform.anchorMax = new Vector2(1f, 1f);
-                subTitle.rectTransform.offsetMin = new Vector2(26f, 56f);
-                subTitle.rectTransform.offsetMax = new Vector2(-128f, -62f);
+                subTitle.rectTransform.anchorMin = Vector2.zero;
+                subTitle.rectTransform.anchorMax = Vector2.one;
+                subTitle.rectTransform.offsetMin = new Vector2(24f, 10f);
+                subTitle.rectTransform.offsetMax = new Vector2(-124f, -38f);
                 SetGraphicRaycastTarget(subTitle, false);
+                subTitle.gameObject.SetActive(false);
                 EnsureBinding(cdeTable.ComponentTable, subTitle, "SubTitle");
 
                 Button pickupButton = CreateButton("PickupButton", content, style);
@@ -110,8 +115,8 @@ namespace ET.Editor
                 pickupButtonRect.anchorMin = new Vector2(1f, 0.5f);
                 pickupButtonRect.anchorMax = new Vector2(1f, 0.5f);
                 pickupButtonRect.pivot = new Vector2(1f, 0.5f);
-                pickupButtonRect.sizeDelta = new Vector2(126f, 54f);
-                pickupButtonRect.anchoredPosition = new Vector2(-18f, 0f);
+                pickupButtonRect.sizeDelta = PickupButtonSize;
+                pickupButtonRect.anchoredPosition = PickupButtonAnchoredPosition;
                 SetButtonVisual(pickupButton, new Color32(226, 177, 66, 255), style.ButtonSprite, style.ButtonColors);
                 EnsureBinding(cdeTable.ComponentTable, pickupButton, "PickupButton");
 

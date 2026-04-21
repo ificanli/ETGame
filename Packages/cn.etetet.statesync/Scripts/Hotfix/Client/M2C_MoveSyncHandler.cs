@@ -22,8 +22,6 @@ namespace ET.Client
                 return;
             }
 
-            // 这是其他玩家的位置同步（自己不会收到这个消息）
-            // 序列号去重
             JoystickMoveSyncStateComponent syncState = unit.GetComponent<JoystickMoveSyncStateComponent>();
             if (syncState == null)
             {
@@ -38,7 +36,6 @@ namespace ET.Client
 
             syncState.LastAppliedMoveSequence = message.Sequence;
 
-            // 更新 authority state 用于外推
             JoystickMoveAuthorityStateComponent authorityState = unit.GetComponent<JoystickMoveAuthorityStateComponent>();
             if (authorityState == null)
             {
@@ -49,7 +46,6 @@ namespace ET.Client
             authorityState.LastDirection = new float3(message.DirX, 0f, message.DirZ);
             authorityState.LastSyncTime = TimeInfo.Instance.ClientNow();
 
-            // 从方向推算旋转
             if (message.Speed > 0.01f && (message.DirX != 0f || message.DirZ != 0f))
             {
                 float3 dir = new float3(message.DirX, 0f, message.DirZ);

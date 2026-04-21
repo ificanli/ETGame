@@ -42,6 +42,7 @@ namespace ET
             self.Slot1ReloadFinishTime = 0;
             self.Slot2ReloadFinishTime = 0;
             self.ReloadTimerId = 0;
+            self.WeaponVisionAoiFinalAdd = 0;
         }
 
         [EntitySystem]
@@ -58,6 +59,7 @@ namespace ET
             self.CurrentSlot = 0;
             self.Slot1ReloadFinishTime = 0;
             self.Slot2ReloadFinishTime = 0;
+            self.WeaponVisionAoiFinalAdd = 0;
             self.SetEffectiveStats(1, 0f, 0, 0, 0, 0f, 0);
             self.SetEffectiveStats(2, 0f, 0, 0, 0, 0f, 0);
         }
@@ -255,16 +257,42 @@ namespace ET
                    slotIndex == 2 ? self.Slot2WeaponId : 0;
         }
 
+        public static WeaponConfig GetCurrentWeaponConfig(this WeaponComponent self)
+        {
+            if (self == null)
+            {
+                return null;
+            }
+
+            int weaponId = self.CurrentWeaponId;
+            return weaponId > 0 ? WeaponConfigCategory.Instance.GetOrDefault(weaponId) : null;
+        }
+
+        public static bool IsCurrentWeaponType(this WeaponComponent self, WeaponType weaponType)
+        {
+            return self.GetCurrentWeaponConfig()?.WeaponTypeId == (int)weaponType;
+        }
+
         public static float GetEffectiveAttackRange(this WeaponComponent self, int slotIndex)
         {
             return slotIndex == 1 ? self.Slot1EffectiveAttackRange :
                    slotIndex == 2 ? self.Slot2EffectiveAttackRange : 0f;
         }
 
+        public static float GetCurrentEffectiveAttackRange(this WeaponComponent self)
+        {
+            return self.GetEffectiveAttackRange(self.CurrentSlot);
+        }
+
         public static int GetEffectiveAttackIntervalMs(this WeaponComponent self, int slotIndex)
         {
             return slotIndex == 1 ? self.Slot1EffectiveAttackIntervalMs :
                    slotIndex == 2 ? self.Slot2EffectiveAttackIntervalMs : 0;
+        }
+
+        public static int GetCurrentEffectiveAttackIntervalMs(this WeaponComponent self)
+        {
+            return self.GetEffectiveAttackIntervalMs(self.CurrentSlot);
         }
 
         public static int GetEffectiveMagazineSize(this WeaponComponent self, int slotIndex)

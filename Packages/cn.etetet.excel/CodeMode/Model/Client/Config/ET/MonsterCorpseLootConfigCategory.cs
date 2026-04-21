@@ -11,28 +11,27 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
 
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class MonsterCorpseLootConfigCategory : Singleton<MonsterCorpseLootConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.MonsterCorpseLootConfig> _dataMap;
         private readonly List<ET.MonsterCorpseLootConfig> _dataList;
-
-        public MonsterCorpseLootConfigCategory(JSONNode _buf)
+        
+        public MonsterCorpseLootConfigCategory(ByteBuf _buf)
         {
             _dataMap = new Dictionary<int, ET.MonsterCorpseLootConfig>();
             _dataList = new List<ET.MonsterCorpseLootConfig>();
-
-            foreach(JSONNode _ele in _buf.Children)
+            
+            for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 ET.MonsterCorpseLootConfig _v;
-                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.MonsterCorpseLootConfig.DeserializeMonsterCorpseLootConfig(_ele);  }
+                _v = global::ET.MonsterCorpseLootConfig.DeserializeMonsterCorpseLootConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

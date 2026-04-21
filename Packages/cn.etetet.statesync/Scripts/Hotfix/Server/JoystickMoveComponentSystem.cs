@@ -7,7 +7,6 @@ namespace ET.Server
     {
         private const float MinTickDeltaTime = 0.001f;
         private const float StopDirectionEpsilonSqr = 0.0001f;
-
         [Invoke(HighFrequencyInvokeType.Move16msTick)]
         public class JoystickMoveTickInvoker : AInvokeHandler<HighFrequencyTickCallback>
         {

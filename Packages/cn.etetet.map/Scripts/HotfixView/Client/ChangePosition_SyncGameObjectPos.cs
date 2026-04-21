@@ -34,10 +34,20 @@ namespace ET.Client
                     return;
                 }
 
-                // 本机单位：只更新权威位置，不做 reconcile
+                // 本机单位：客户端权威模式下，收到服务器纠正时重置预测
                 if (interpolation.PredictionEnabled)
                 {
-                    interpolation.ApplyAuthoritativePosition(unit.Position);
+                    // 纠正检测：如果新位置与预测位置差距大，说明是服务器纠正
+                    Vector3 diff = (Vector3)unit.Position - interpolation.LocalPredictedPosition;
+                    if (diff.sqrMagnitude > 0.01f)
+                    {
+                        // 服务器纠正：重置预测位置
+                        interpolation.ResetPrediction(unit.Position);
+                    }
+                    else
+                    {
+                        interpolation.ApplyAuthoritativePosition(unit.Position);
+                    }
                     await ETTask.CompletedTask;
                     return;
                 }

@@ -30,6 +30,7 @@
             {
                 currentScenesComponent = currentScenesComponentRef;
                 await WaitUnitCreateFinish(root, currentScenesComponent.Scene);
+                currentScenesComponent = currentScenesComponentRef;
 
                 // Home 场景不需要加载寻路数据
                 string configName = sceneName.GetSceneConfigName();

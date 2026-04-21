@@ -1,3 +1,5 @@
+using UnityEngine;
+using UnityEngine.UI;
 using YIUIFramework;
 
 namespace ET.Client
@@ -11,6 +13,14 @@ namespace ET.Client
         [EntitySystem]
         private static void YIUIInitialize(this PickupHintPanelComponent self)
         {
+            if (self.u_ComSubTitle != null)
+            {
+                self.u_ComSubTitle.gameObject.SetActive(false);
+            }
+
+            SetRaycastTarget(self.u_ComBackground, false);
+            SetRaycastTarget(self.u_ComAccent, false);
+            self.Hide();
         }
 
         [EntitySystem]
@@ -60,6 +70,41 @@ namespace ET.Client
             self.RefreshDisplay();
         }
 
+        public static void Show(this PickupHintPanelComponent self, string pointId, int itemConfigId, Vector2 anchoredPosition)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            self.SetPickupTarget(pointId, itemConfigId);
+            self.SetAnchoredPosition(anchoredPosition);
+            self.UIBase?.SetActive(true);
+        }
+
+        public static void Hide(this PickupHintPanelComponent self)
+        {
+            if (self == null || self.IsDisposed)
+            {
+                return;
+            }
+
+            self.FocusPointId = null;
+            self.ItemConfigId = 0;
+            self.UIBase?.SetActive(false);
+        }
+
+        public static void SetAnchoredPosition(this PickupHintPanelComponent self, Vector2 anchoredPosition)
+        {
+            RectTransform rectTransform = self?.UIBase?.OwnerRectTransform;
+            if (rectTransform == null)
+            {
+                return;
+            }
+
+            rectTransform.anchoredPosition = anchoredPosition;
+        }
+
         private static void RefreshDisplay(this PickupHintPanelComponent self)
         {
             if (self.ItemConfigId <= 0)
@@ -71,6 +116,15 @@ namespace ET.Client
             ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(self.ItemConfigId);
             string itemName = itemConfig?.Name ?? "物品";
             self.u_DataItemName?.SetValue(itemName, true);
+        }
+
+        private static void SetRaycastTarget(Component component, bool raycastTarget)
+        {
+            Graphic graphic = component != null ? component.GetComponent<Graphic>() : null;
+            if (graphic != null)
+            {
+                graphic.raycastTarget = raycastTarget;
+            }
         }
     }
 }

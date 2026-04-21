@@ -36,11 +36,11 @@ RectTransform:
   - {fileID: 3865550670416388219}
   m_Father: {fileID: 1387038783736411778}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 208}
-  m_SizeDelta: {x: 360, y: 134}
-  m_Pivot: {x: 0.5, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3955781175627760288
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -203,7 +203,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1293937983112101141
 RectTransform:
   m_ObjectHideFlags: 0
@@ -220,8 +220,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -51, y: -3}
-  m_SizeDelta: {x: -154, y: -118}
+  m_AnchoredPosition: {x: -50, y: -14}
+  m_SizeDelta: {x: -148, y: -44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8171380673443963429
 CanvasRenderer:
@@ -279,8 +279,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -356,11 +356,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6542945976482664891}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2, y: -14}
-  m_SizeDelta: {x: -48, y: 42}
-  m_Pivot: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -50, y: 0}
+  m_SizeDelta: {x: -148, y: -24}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2243345351998973069
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -417,8 +417,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 32
-  m_fontSizeBase: 32
+  m_fontSize: 28
+  m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -649,10 +649,10 @@ RectTransform:
   - {fileID: 6542945976482664891}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 328, y: 72}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2182694906476762166
 CanvasRenderer:
@@ -765,7 +765,7 @@ MonoBehaviour:
   EventTable: {fileID: 4468533299267002800}
   PkgName: Main
   ResName: PickupHintPanel
-  UICodeType: 0
+  UICodeType: 2
   WindowOption: 0
   PanelLayer: 3
   PanelOption: 0
@@ -1285,7 +1285,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 8, y: 0}
+  m_SizeDelta: {x: 6, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6877329744054084164
 CanvasRenderer:
@@ -1385,7 +1385,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.050980393, g: 0.07058824, b: 0.09411765, a: 0.92156863}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1453,8 +1453,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -18, y: 0}
-  m_SizeDelta: {x: 126, y: 54}
+  m_AnchoredPosition: {x: -12, y: 0}
+  m_SizeDelta: {x: 108, y: 44}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3500019649831290913
 CanvasRenderer:

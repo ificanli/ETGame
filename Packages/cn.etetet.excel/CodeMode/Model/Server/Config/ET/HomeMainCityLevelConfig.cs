@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,19 +15,19 @@ namespace ET
     [EnableClass]
     public sealed partial class HomeMainCityLevelConfig : Luban.BeanBase
     {
-        public HomeMainCityLevelConfig(JSONNode _buf) 
+        public HomeMainCityLevelConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
-            { if(!_buf["UpgradeGoldCost"].IsNumber) { throw new SerializationException(); }  UpgradeGoldCost = _buf["UpgradeGoldCost"]; }
-            { if(!_buf["UnlockSlotCount"].IsNumber) { throw new SerializationException(); }  UnlockSlotCount = _buf["UnlockSlotCount"]; }
-            { if(!_buf["OtherBuildingMaxLevel"].IsNumber) { throw new SerializationException(); }  OtherBuildingMaxLevel = _buf["OtherBuildingMaxLevel"]; }
-            { if(!_buf["TaskGroupId"].IsNumber) { throw new SerializationException(); }  TaskGroupId = _buf["TaskGroupId"]; }
-            { if(!_buf["PreviewText"].IsString) { throw new SerializationException(); }  PreviewText = _buf["PreviewText"]; }
+            Level = _buf.ReadInt();
+            UpgradeGoldCost = _buf.ReadInt();
+            UnlockSlotCount = _buf.ReadInt();
+            OtherBuildingMaxLevel = _buf.ReadInt();
+            TaskGroupId = _buf.ReadInt();
+            PreviewText = _buf.ReadString();
 
             EndInit();
         }
 
-        public static HomeMainCityLevelConfig DeserializeHomeMainCityLevelConfig(JSONNode _buf)
+        public static HomeMainCityLevelConfig DeserializeHomeMainCityLevelConfig(ByteBuf _buf)
         {
             return new ET.HomeMainCityLevelConfig(_buf);
         }
@@ -39,7 +38,7 @@ namespace ET
         public readonly int OtherBuildingMaxLevel;
         public readonly int TaskGroupId;
         public readonly string PreviewText;
-
+    
         public const int __ID__ = 71143108;
         public override int GetTypeId() => __ID__;
 

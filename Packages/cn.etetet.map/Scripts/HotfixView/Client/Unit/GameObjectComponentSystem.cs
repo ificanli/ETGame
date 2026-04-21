@@ -741,20 +741,23 @@ namespace ET.Client
             AnimatorComponent animator = unit.GetComponent<AnimatorComponent>();
             if (animator != null)
             {
-                float moveSpeed = 0f;
-                float horizontalMoveDistance = math.max(horizontalVisualDelta.magnitude, horizontalTargetDelta.magnitude);
                 JoystickMoveAuthorityStateComponent authorityState = unit.GetComponent<JoystickMoveAuthorityStateComponent>();
+                float capabilityMoveSpeed = unit.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
+                float moveSpeed = 0f;
                 bool authoritativeStopped = authorityState != null && authorityState.LastSpeed <= 0.01f;
                 bool locallyStopped = self.LocalMoveSpeed <= 0.01f;
                 bool forceIdleByAuthority = authoritativeStopped && locallyStopped;
-                if (!forceIdleByAuthority && horizontalMoveDistance * horizontalMoveDistance > HorizontalAnimationDistanceSqr)
+                if (!forceIdleByAuthority)
                 {
-                    float capabilityMoveSpeed = unit.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
-                    float runtimeMoveSpeed = horizontalMoveDistance / math.max(Time.deltaTime, 0.0001f);
-                    moveSpeed = capabilityMoveSpeed > 0.01f ? math.min(runtimeMoveSpeed, capabilityMoveSpeed) : runtimeMoveSpeed;
-                    if (moveSpeed < MinVisualAnimationSpeed && locallyStopped)
+                    float horizontalMoveDistance = math.max(horizontalVisualDelta.magnitude, horizontalTargetDelta.magnitude);
+                    if (horizontalMoveDistance * horizontalMoveDistance > HorizontalAnimationDistanceSqr)
                     {
-                        moveSpeed = 0f;
+                        float runtimeMoveSpeed = horizontalMoveDistance / math.max(Time.deltaTime, 0.0001f);
+                        moveSpeed = capabilityMoveSpeed > 0.01f ? math.min(runtimeMoveSpeed, capabilityMoveSpeed) : runtimeMoveSpeed;
+                        if (moveSpeed < MinVisualAnimationSpeed && locallyStopped)
+                        {
+                            moveSpeed = 0f;
+                        }
                     }
                 }
 

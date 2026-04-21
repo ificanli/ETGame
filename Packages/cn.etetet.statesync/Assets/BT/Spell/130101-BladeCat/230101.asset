@@ -519,6 +519,21 @@ MonoBehaviour:
     - Name: FollowUnit
       Entry: 5
       Data: true
+    - Name: LocalPositionOffsetY
+      Entry: 4
+      Data: 0.08
+    - Name: SyncLineRegionLengthFromSpellTarget
+      Entry: 5
+      Data: true
+    - Name: LineRegionMaxLength
+      Entry: 4
+      Data: 5
+    - Name: LineRegionLengthOffset
+      Entry: 4
+      Data: 0.3499999940395355
+    - Name: AnimateLineRegionFillByDuration
+      Entry: 5
+      Data: true
     - Name: 
       Entry: 8
       Data: 

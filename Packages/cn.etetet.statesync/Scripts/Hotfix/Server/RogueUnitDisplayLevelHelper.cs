@@ -32,6 +32,12 @@ namespace ET.Server
                 return;
             }
 
+            NumericComponent numeric = monster.NumericComponent;
+            if (numeric == null || numeric.GetAsLong(NumericType.HP) <= 0)
+            {
+                return;
+            }
+
             int averageLevel = GetAlivePlayerAverageLevel(monster.Scene());
             SetUnitDisplayLevel(monster, averageLevel, notifyClients);
         }
@@ -52,8 +58,19 @@ namespace ET.Server
                     continue;
                 }
 
+                NumericComponent numeric = unit.NumericComponent;
+                if (numeric == null || numeric.GetAsLong(NumericType.HP) <= 0)
+                {
+                    continue;
+                }
+
                 SetUnitDisplayLevel(unit, averageLevel, notifyClients);
             }
+        }
+
+        public static int ConvertAlivePlayerAverageLevelToMonsterDisplayLevel(int averageLevel)
+        {
+            return Math.Max(averageLevel, 1);
         }
 
         private static int GetAlivePlayerAverageLevel(Scene scene)
@@ -177,6 +194,42 @@ namespace ET.Server
             Log.Info($"[RogueMonsterGrowth] applied, unitId={unit.Id}, oldLevel={oldLevel}, newLevel={newLevel}");
         }
 
+        private static void AdjustMonsterHpAfterLevelChange(Unit unit, int oldLevel, int newLevel)
+        {
+            if (unit == null || unit.IsDisposed || oldLevel == newLevel)
+            {
+                return;
+            }
+
+            NumericComponent numeric = unit.NumericComponent;
+            if (numeric == null)
+            {
+                return;
+            }
+
+            long maxHp = numeric.GetAsLong(NumericType.MaxHP);
+            if (maxHp <= 0)
+            {
+                return;
+            }
+
+            long currentHp = numeric.GetAsLong(NumericType.HP);
+            if (newLevel > oldLevel)
+            {
+                if (currentHp != maxHp)
+                {
+                    numeric.Set(NumericType.HP, maxHp);
+                }
+
+                return;
+            }
+
+            if (currentHp > maxHp)
+            {
+                numeric.Set(NumericType.HP, maxHp);
+            }
+        }
+
         private static void SetUnitDisplayLevel(Unit unit, int displayLevel, bool notifyClients)
         {
             if (unit == null || unit.IsDisposed)
@@ -206,6 +259,7 @@ namespace ET.Server
             if (unit.UnitType == UnitType.Monster)
             {
                 ApplyMonsterLevelNumerics(unit, oldLevel, displayLevel);
+                AdjustMonsterHpAfterLevelChange(unit, oldLevel, displayLevel);
             }
 
             if (!notifyClients)

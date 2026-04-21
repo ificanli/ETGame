@@ -1,7 +1,7 @@
-# PickupHintPanel — YIUI Prefab 创建指南
+# PickupHintPanel — YIUI 创建与运行时设计
 
 **创建时间**：2026-04-16
-**最后更新**：2026-04-16
+**最后更新**：2026-04-20
 **状态**：已完成
 **关联任务**：M0.2-W3 #35
 **涉及包**：cn.etetet.statesync, cn.etetet.map
@@ -9,130 +9,133 @@
 
 ## 1. 需求概述
 
-当玩家靠近 `ground_drop_` 地面掉落点时，现有 `MainPanel` 只会显示通用 `SearchButton`，点击后直接走一键拾取。当前缺口是没有独立的轻量拾取提示面板，导致地面武器/物品交互识别度不够，也无法和普通搜索容器语义分离。
+当前 `PickupHintPanel` 已有 prefab、Builder 和 `MainPanel` 联动，但实现路线仍是“独立 Panel + 单焦点点位”。这条路线有两个问题：
 
-本轮目标是把 `PickupHintPanel` 正式落到 YIUI 资源层，并在 `MainPanel` 中补齐打开、刷新和关闭逻辑。
+- 作为独立 `Panel` 会参与顶层 UI 层级，容易遮住别的交互元素。
+- 多个 `ground_drop_*` 地面掉落点靠得很近时，当前只会保留一个 `FocusPointId`，没有真实的重叠处理。
+
+用户最新确认的目标是：
+
+- `PickupHintPanel` 不再做成独立 `Panel`
+- 需要支持多个近距离地面掉落点同时存在
+- 多提示重叠时采用“错位共存”，而不是只保留一个
 
 ## 2. 本轮边界
 
-- 正式新增 `PickupHintPanel.prefab`
-- 正式补齐 `u_DataItemName` / `u_EventPickup` 绑定
-- 在 `MainPanelComponentSystem.LateUpdate` 中根据 `ground_drop_` 焦点打开或关闭面板
-- 点击 `PickupHintPanel` 按钮后继续复用现有 `GroundItemPickupClientHelper`
+- 保留资源名与组件名 `PickupHintPanel`，避免扩大资源重命名范围
+- 运行时类型从独立 `Panel` 收口为 `MainPanel` 内部可重复实例化的 `Common`
+- `MainPanel` 负责管理多个拾取提示实例
+- 每个提示实例只负责一个 `ground_drop_*` 点位
 - 当前 **不扩 `M2C_ECAInteractHint` 协议**
-- 当前 **不解析真实掉落物名/图标**，面板文案先稳定显示通用“拾取”
+- 当前 **不解析真实掉落物图标**
+- 当前 **物品名默认继续显示通用“拾取”**，接口保留 `ItemConfigId` 以兼容后续协议扩展
 
-## 3. 已就绪的代码文件
+## 3. 技术方案
 
-| 文件 | 路径 | 说明 |
-|------|------|------|
-| `PickupHintPanelComponentGen.cs` | `ModelView/Client/YIUIGen/Main/` | Gen 层：Panel 定义、绑定字段声明 |
-| `PickupHintPanelComponent.cs` | `ModelView/Client/YIUIComponent/Main/` | 自定义数据：`FocusPointId`, `ItemConfigId` |
-| `PickupHintPanelComponentSystemGen.cs` | `HotfixView/Client/YIUIGen/Main/` | Gen System：Awake、YIUIBind |
-| `PickupHintPanelComponentSystem.cs` | `HotfixView/Client/YIUISystem/Main/` | 自定义逻辑：YIUIInitialize、YIUIOpen、拾取按钮点击 |
+### 3.1 资源与生成层
 
-## 4. 资源路径与构建方式
-
-旧文档中的 `Assets/GameRes/YIUI/Packages/Main/` 已过时。当前工程真实资源路径是：
+`PickupHintPanel.prefab` 继续保留在：
 
 - `Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/PickupHintPanel.prefab`
 
-本轮不手改 Gen 文件，统一通过编辑器菜单构建：
+但其 YIUI 类型改为 `Common`：
 
-- `ET/YIUI/Build PickupHintPanel Resources`
+- `PickupHintPanelComponentGen.cs` 从 `Panel` 改为 `Common`
+- `PickupHintPanelComponentSystemGen.cs` 不再绑定 `YIUIWindowComponent / YIUIPanelComponent`
+- prefab 根节点不再拉满全屏，而是改成一张可局部挂载的小卡片
+- `PickupHintPanelYiuiBuilder.cs` 也同步把 `UICodeType` 改成 `EUICodeType.Common`
 
-## 5. Prefab 结构
+### 3.2 MainPanel 运行时管理
 
-```text
-PickupHintPanel (Panel 根节点)
-|
-└── Content (RectTransform, 锚点底部中央, sizeDelta: 360×134)
-    |
-    ├── Background (Image, 半透明深色底)
-    ├── Accent (Image, 左侧高亮条)
-    ├── ItemName (TMP_Text, 左中，默认文案“拾取”)
-    ├── SubTitle (TMP_Text, 静态说明文本)
-    └── PickupButton (Button, 右侧，112×52)
-        └── Text: "拾取"
-```
+`MainPanel` 不再只根据单个 `FocusPointId` 决定是否显示拾取提示，而是每帧收集当前所有满足以下条件的点位：
 
-布局原则：
+- 点位在 `runtime.InRangePointIds` 中
+- `pointId.StartsWith("ground_drop_")`
+- `runtime.PointCanInteract[pointId] == true`
+- 当前没有打开搜索容器 `OpenContainerPointId`
 
-- 面板位于屏幕底部中央，抬高到摇杆上方
-- 不再和普通 `SearchButton` 共用同一视觉语义
-- 面板只负责“当前焦点是地面掉落物”的轻提示，不承担搜索容器职责
-- 静态文本区与按钮区在 prefab 层显式拆开，避免运行时再用代码修布局
+然后为每个点位维护一个 `PickupHintPanelComponent` 实例：
 
-## 6. YIUI 绑定
+- 首次出现时：`YIUIFactory.Instantiate<PickupHintPanelComponent>(...)`
+- 实例创建后默认隐藏，后续通过 `Show/Hide/SetAnchoredPosition` 直接复用
+- 点位失效时：隐藏实例；场景关闭或 `MainPanel` 销毁时统一清理
 
-### 6.1 DataTable
+补充说明：
 
-| 绑定名 | 绑定类型 | 目标节点 | 说明 |
-|--------|---------|---------|------|
-| `u_DataItemName` | `UIDataValueString` | `ItemName` (TMP_Text) | 物品名称文本 |
+- 当前 `ET.HotfixView.csproj` 使用显式 `Compile Include`
+- 因此本轮没有保留额外的 `MainPanelComponentSystem_PickupHints.cs` 文件
+- 多实例拾取提示方法最终合并在 `MainPanelComponentSystem.cs` 中实现
+- 旧的单实例 `OpenPanelAsync/ClosePanel` 入口与对应状态字段已在收口阶段删除，避免和当前 `Common` 方案并存
 
-### 6.2 EventTable
+### 3.3 点位位置解析
 
-| 绑定名 | 绑定类型 | 目标节点 | 说明 |
-|--------|---------|---------|------|
-| `u_EventPickup` | `UITaskEventP0` | `PickupButton` (Button) | 拾取按钮点击事件 |
+`ground_drop_*` 的点位不是静态 ECA 配置点，不能从 `LocalInteractPoints` 直接拿位置。本轮使用运行时点位单位的位置：
 
-### 6.3 绑定组件
+- 服务端命名规则：`ground_drop_{playerId}_{pointUnitId}`
+- 客户端从 `pointId` 解析出 `pointUnitId`
+- 通过 `root.CurrentScene()?.GetComponent<UnitComponent>()?.Get(pointUnitId)` 拿到虚拟 `Unit`
+- 用 `Unit.Position -> Camera.main.WorldToScreenPoint -> RectTransformUtility.ScreenPointToLocalPointInRectangle`
+  计算提示卡片在 `MainPanel` 上的锚点位置
 
-- `ItemName` 节点挂 `UIDataBindTextTMP`，绑定 `u_DataItemName`
-- `PickupButton` 节点挂 `UITaskEventBindClick`，绑定 `u_EventPickup`
+### 3.4 错位共存策略
 
-## 7. 运行时联动方案
+多掉落点很近时，不做互斥隐藏，而是做局部错位：
 
-### 7.1 打开条件
+1. 先把当前 `FocusPointId` 对应点位放在最前，其余点位按 `pointId` 字典序稳定排序
+2. 逐个放置提示卡片
+3. 若新卡片与已放置卡片在阈值范围内重叠，则按 `(+28,+52)`、`(-28,+52)`、逐层递增的方式错位
+4. 最终位置做边界 clamp，避免提示跑出屏幕
 
-在 `MainPanelComponentSystem.LateUpdate` 中：
+本轮目标是先稳定做到“看得见、点得到、不互相完全盖住”，不追求复杂避让算法。
 
-- 当前有 `focusPointId`
-- `focusPointId.StartsWith("ground_drop_")`
-- 当前没有打开容器 `OpenContainerPointId`
-- 当前点位仍可交互
+### 3.5 交互策略
 
-满足时打开或刷新 `PickupHintPanel`。
+每个提示项自己的 `PickupButton` 直接绑定对应 `pointId`：
 
-### 7.2 关闭条件
+- 点击后继续复用 `GroundItemPickupClientHelper.RequestPickupGroundItem`
+- 不再依赖先把该点位设为 `FocusPointId` 再拾取
 
-- 焦点为空
-- 焦点不再是 `ground_drop_`
-- 点位不可交互
-- 当前已经进入普通容器搜索态
+普通 `SearchButton` 仍只服务非 `ground_drop_*` 点位。
 
-### 7.3 当前文案策略
+## 4. 涉及文件
 
-当前 `M2C_ECAInteractHint` 不带 `ItemConfigId`，而 `ground_drop_{playerId}_{unitId}` 的 `pointId` 也无法在客户端直接反解出配置。因此本轮 `PickupHintPanel` 的文案策略是：
+| 文件 | 操作 | 说明 |
+|------|------|------|
+| `Book/08-版本计划/M0.2-W3周计划.md` | 修改 | 任务 35 退回开发中并更新备注 |
+| `Book/08-版本计划/M0.2版本计划.md` | 修改 | 增加本轮方案变更记录 |
+| `Book/02-战斗系统/技术方案/PickupHintPanel-YIUI创建指南.md` | 修改 | 将独立 Panel 方案更新为 Common 多实例方案 |
+| `Book/02-战斗系统/技术方案/PickupHintPanel开发日志.md` | 修改 | 记录本轮方案回退与实现过程 |
+| `Packages/cn.etetet.statesync/Editor/PickupHintPanelYiuiBuilder.cs` | 修改 | Builder 改为生成 Common 小卡片 |
+| `Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/PickupHintPanel.prefab` | 修改 | prefab 根与 CDE 类型改为 Common |
+| `Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIGen/Main/PickupHintPanelComponentGen.cs` | 修改 | Gen 类型从 Panel 改为 Common |
+| `Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUIGen/Main/PickupHintPanelComponentSystemGen.cs` | 修改 | 移除 Panel 专属绑定 |
+| `Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIComponent/Main/PickupHintPanelComponent.cs` | 修改 | 保留 `IYIUIOpen` 兼容旧编译链路，并承载点位/物品名数据 |
+| `Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/PickupHintPanelComponentSystem.cs` | 修改 | 增加显示/位置刷新接口 |
+| `Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIComponent/Main/MainPanelComponent.cs` | 修改 | 新增多实例拾取提示缓存字段 |
+| `Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/MainPanelComponentSystem.cs` | 修改 | 切换 `LateUpdate` 入口到多实例逻辑，并合并创建、刷新、错位与清理实现 |
 
-- 默认显示 `拾取`
-- 保留 `SetPickupTarget(pointId, itemConfigId)` 接口
-- 后续协议一旦补 `ItemConfigId`，无需重做 prefab，只需补消息和客户端赋值
+## 5. 实现步骤
 
-## 8. 构建与验证
+1. 回写计划与设计文档，明确任务 35 当前处于“开发中”
+2. 将 `PickupHintPanel` 的 Builder / prefab / Gen 静态层从 `Panel` 改为 `Common`
+3. 在 `MainPanel` 中实现地面掉落提示实例池、屏幕跟随与错位共存
+4. 执行 `dotnet build ET.sln`
+5. 回写开发日志与实现追踪，任务状态推进到“未回归”
 
-1. 执行 Unity 菜单：`ET/YIUI/Build PickupHintPanel Resources`
-2. 确认生成：
-   - `Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/PickupHintPanel.prefab`
-   - `PickupHintPanelComponentGen.cs`
-   - `PickupHintPanelComponentSystemGen.cs`
-3. 运行：
-   - `dotnet build ET.sln`
+## 6. 验收标准
 
-## 9. 验收标准
-
-- [ ] 靠近地面掉落物时，不再只依赖 `SearchButton`
-- [ ] `PickupHintPanel` 能正常打开和关闭
-- [ ] 点击 `PickupHintPanel` 的拾取按钮可复用现有一键拾取链路
-- [ ] 离开地面掉落点或切入其他交互点时，`PickupHintPanel` 不残留
+- [ ] 靠近多个地面掉落点时，可同时看到多个拾取提示
+- [x] 提示不再作为独立顶层 `Panel` 遮挡其他 UI
+- [ ] 多个近距离提示不会完全重叠，能做到错位共存
+- [x] 点击任意提示项自己的按钮可直接复用现有拾取链路
+- [ ] 点位失效、离开范围或进入容器搜索时，相关提示不会残留
 - [x] `dotnet build ET.sln` 通过
 
-## 10. 实现追踪
+## 7. 实现追踪
 
 | 步骤 | 完成日期 | 涉及文件 | 偏差说明 |
 |------|---------|---------|---------|
-| 计划登记与设计收口 | 2026-04-16 | `Book/08-版本计划/M0.2-W3周计划.md`、`Book/08-版本计划/M0.2版本计划.md`、`Book/02-战斗系统/技术方案/PickupHintPanel-YIUI创建指南.md` | 旧指南资源路径已过时，已按当前工程真实路径修正 |
-| Builder 与 prefab 正式落地 | 2026-04-16 | `Packages/cn.etetet.statesync/Editor/PickupHintPanelYiuiBuilder.cs`、`Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/PickupHintPanel.prefab`、`Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIGen/Main/PickupHintPanelComponentGen.cs`、`Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUIGen/Main/PickupHintPanelComponentSystemGen.cs` | 实际资源为增强可读性新增 `SubTitle` 静态文本，并把 `Content` 调整为 `360x134` |
-| MainPanel 正式联动 | 2026-04-16 | `Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIComponent/Main/MainPanelComponent.cs`、`Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/MainPanelComponentSystem.cs` | `ground_drop_` 焦点不再继续显示旧 `SearchButton`，改为单独打开/刷新 `PickupHintPanel` |
-| 构建验证与文档收口 | 2026-04-16 | `Book/02-战斗系统/技术方案/PickupHintPanel开发日志.md`、`Book/08-版本计划/M0.2-W3周计划.md` | 实际执行顺序增加了 `TriggerCompile/GetCompileResult`，用于确保 Unity 菜单运行的是最新 Builder |
+| 方案回退与文档收口 | 2026-04-20 | `Book/08-版本计划/M0.2-W3周计划.md`、`Book/08-版本计划/M0.2版本计划.md`、`Book/02-战斗系统/技术方案/PickupHintPanel-YIUI创建指南.md` | 用户确认不再使用独立 Panel，统一改为 `MainPanel` 内多实例 Common |
+| 资源与运行时改造 | 2026-04-20 | `Packages/cn.etetet.statesync/Editor/PickupHintPanelYiuiBuilder.cs`、`Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/PickupHintPanel.prefab`、`Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIGen/Main/PickupHintPanelComponentGen.cs`、`Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUIGen/Main/PickupHintPanelComponentSystemGen.cs`、`Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIComponent/Main/PickupHintPanelComponent.cs`、`Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/PickupHintPanelComponentSystem.cs`、`Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIComponent/Main/MainPanelComponent.cs`、`Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/MainPanelComponentSystem.cs` | 已完成；多实例逻辑最终合并进 `MainPanelComponentSystem.cs`，未保留独立 partial 文件 |
+| 遗留代码收口 | 2026-04-20 | `Packages/cn.etetet.statesync/Scripts/ModelView/Client/YIUIComponent/Main/MainPanelComponent.cs`、`Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/MainPanelComponentSystem.cs` | 删除旧单实例 `Panel` 打开/关闭逻辑与状态字段，避免后续误用 |
+| 编译验证 | 2026-04-20 | `ET.sln` | `dotnet build ET.sln` 通过 |

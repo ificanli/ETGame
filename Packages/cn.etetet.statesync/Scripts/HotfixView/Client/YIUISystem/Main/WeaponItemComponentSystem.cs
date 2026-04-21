@@ -140,6 +140,14 @@ namespace ET.Client
                 return;
             }
 
+            Scene currentScene = root.CurrentScene();
+            Unit myUnit = UnitHelper.GetMyUnitFromCurrentScene(currentScene);
+            WeaponComponent weaponComp = myUnit?.GetComponent<WeaponComponent>();
+            long clientNow = TimeInfo.Instance.ClientNow();
+            long serverNow = TimeInfo.Instance.ServerNow();
+            Log.Info(
+                $"[WeaponSwitchTrace][UIClick] clientNow={clientNow}, serverNow={serverNow}, unitId={myUnit?.Id ?? 0}, requestedSlot={self.SlotIndex}, currentSlot={weaponComp?.CurrentSlot ?? 0}, slot1WeaponId={weaponComp?.Slot1WeaponId ?? 0}, slot2WeaponId={weaponComp?.Slot2WeaponId ?? 0}, slot1Ammo={weaponComp?.Slot1Ammo ?? 0}, slot2Ammo={weaponComp?.Slot2Ammo ?? 0}");
+
             // 发送切换武器请求
             WeaponSwitchHelper.SwitchWeapon(root, self.SlotIndex);
 
@@ -221,7 +229,7 @@ namespace ET.Client
             }
 
             Color color = self.SelectImage.color;
-            float targetAlpha = selected ? 1f : 0.001f;
+            float targetAlpha = selected ? 1f : 0f;
             if (!Mathf.Approximately(color.a, targetAlpha))
             {
                 color.a = targetAlpha;
@@ -297,9 +305,7 @@ namespace ET.Client
                 return;
             }
 
-            backgroundImage.color = isCurrent
-                ? new Color(1f, 1f, 1f, 1f)
-                : new Color(0.72f, 0.72f, 0.72f, 1f);
+            backgroundImage.color = Color.white;
         }
 
         /// <summary>
@@ -425,6 +431,12 @@ namespace ET.Client
             if (weaponId <= 0)
             {
                 return string.Empty;
+            }
+
+            ItemConfig itemConfig = LegacyItemConfigCompatHelper.GetDisplayItemConfig(weaponId);
+            if (itemConfig != null && !string.IsNullOrWhiteSpace(itemConfig.Icon))
+            {
+                return itemConfig.Icon;
             }
 
             global::ET.WeaponConfig weaponConfig = global::ET.WeaponConfigCategory.Instance.GetOrDefault(weaponId);

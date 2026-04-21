@@ -1,0 +1,55 @@
+v1.1.2
+Mobile vibration improved
+
+v1.1.1
+Outline update
+Minor bug fixes
+
+v1.1.0
+Particles update
+Bug fixes
+
+v1.0.10
+Added rotation offset for hand rig
+
+v1.0.9
+Simplified way to create a room preset
+Documentation updated
+
+v1.0.8
+World system update: more flexibility and comfort
+Documentation updated
+
+v1.0.7
+Bugfixes
+
+v1.0.6
+Added in-game pause menu
+Added control settings
+Added player death ragdoll
+Fixed music transition volume bug
+
+v1.0.5
+Android and iOS input problem bugfix
+
+v1.0.4
+Added WebGL support
+Added Keyboard\Touch input
+Added Weapons Setup Tool
+Removed unused files
+
+v1.0.3
+Extended Character Setup tool
+Removed unused fields in Scriptable Objects
+Now minigun and shootgun can shoot close to the enemy
+Explosion decay particle fix
+
+v1.0.2
+Notch offset fix
+
+v1.0.1
+Character update particle fix
+Minigun shooting particle fix
+
+v1.0.0
+Release

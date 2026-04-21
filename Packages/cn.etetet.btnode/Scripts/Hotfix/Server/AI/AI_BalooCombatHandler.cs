@@ -80,6 +80,7 @@ namespace ET.Server
                     continue;
                 }
 
+                MonsterCombatCommonHelper.FaceTarget(unit, target);
                 if (MonsterCombatCommonHelper.TryCast(unit, spellId))
                 {
                     nextUseAltSpell = node.AltSpellId > 0 && !nextUseAltSpell;

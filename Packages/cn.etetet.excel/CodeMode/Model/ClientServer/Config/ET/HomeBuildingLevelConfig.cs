@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,21 +15,21 @@ namespace ET
     [EnableClass]
     public sealed partial class HomeBuildingLevelConfig : Luban.BeanBase
     {
-        public HomeBuildingLevelConfig(JSONNode _buf) 
+        public HomeBuildingLevelConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["BuildingConfigId"].IsNumber) { throw new SerializationException(); }  BuildingConfigId = _buf["BuildingConfigId"]; }
-            { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
-            { if(!_buf["UpgradeGoldCost"].IsNumber) { throw new SerializationException(); }  UpgradeGoldCost = _buf["UpgradeGoldCost"]; }
-            { if(!_buf["CapacityValue1"].IsNumber) { throw new SerializationException(); }  CapacityValue1 = _buf["CapacityValue1"]; }
-            { if(!_buf["CapacityValue2"].IsNumber) { throw new SerializationException(); }  CapacityValue2 = _buf["CapacityValue2"]; }
-            { if(!_buf["OutputValue"].IsNumber) { throw new SerializationException(); }  OutputValue = _buf["OutputValue"]; }
-            { if(!_buf["ExtraParams"].IsString) { throw new SerializationException(); }  ExtraParams = _buf["ExtraParams"]; }
+            Id = _buf.ReadInt();
+            BuildingConfigId = _buf.ReadInt();
+            Level = _buf.ReadInt();
+            UpgradeGoldCost = _buf.ReadInt();
+            CapacityValue1 = _buf.ReadInt();
+            CapacityValue2 = _buf.ReadInt();
+            OutputValue = _buf.ReadInt();
+            ExtraParams = _buf.ReadString();
 
             EndInit();
         }
 
-        public static HomeBuildingLevelConfig DeserializeHomeBuildingLevelConfig(JSONNode _buf)
+        public static HomeBuildingLevelConfig DeserializeHomeBuildingLevelConfig(ByteBuf _buf)
         {
             return new ET.HomeBuildingLevelConfig(_buf);
         }
@@ -43,7 +42,7 @@ namespace ET
         public readonly int CapacityValue2;
         public readonly int OutputValue;
         public readonly string ExtraParams;
-
+    
         public const int __ID__ = 971388116;
         public override int GetTypeId() => __ID__;
 

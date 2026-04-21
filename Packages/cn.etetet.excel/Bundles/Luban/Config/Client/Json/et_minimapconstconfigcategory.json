@@ -8,7 +8,7 @@
   {
     "Id": 2,
     "Key": "Minimap.MarkerSize",
-    "FloatValue": 10,
+    "FloatValue": 8,
     "StringValue": ""
   },
   {
@@ -184,6 +184,17 @@
     "Key": "Minimap.PoiTipText.MissionTask",
     "FloatValue": 38011,
     "StringValue": ""
+  },
+  {
+    "Id": 32,
+    "Key": "Minimap.PoiSize",
+    "FloatValue": 150,
+    "StringValue": ""
+  },
+  {
+    "Id": 33,
+    "Key": "Minimap.CompactPoiSize",
+    "FloatValue": 30,
+    "StringValue": ""
   }
 ]
-

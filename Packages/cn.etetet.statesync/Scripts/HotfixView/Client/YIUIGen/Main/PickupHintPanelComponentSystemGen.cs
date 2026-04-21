@@ -9,8 +9,6 @@ namespace ET.Client
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
     [FriendOf(typeof(YIUIChild))]
-    [FriendOf(typeof(YIUIWindowComponent))]
-    [FriendOf(typeof(YIUIPanelComponent))]
     [EntitySystemOf(typeof(PickupHintPanelComponent))]
     public static partial class PickupHintPanelComponentSystem
     {
@@ -28,13 +26,6 @@ namespace ET.Client
         private static void UIBind(this PickupHintPanelComponent self)
         {
             self.u_UIBase = self.GetParent<YIUIChild>();
-            self.u_UIWindow = self.UIBase.GetComponent<YIUIWindowComponent>();
-            self.u_UIPanel = self.UIBase.GetComponent<YIUIPanelComponent>();
-            self.UIWindow.WindowOption = EWindowOption.None;
-            self.UIPanel.Layer = EPanelLayer.Panel;
-            self.UIPanel.PanelOption = EPanelOption.None;
-            self.UIPanel.StackOption = EPanelStackOption.VisibleTween;
-            self.UIPanel.Priority = 0;
 
             self.u_ComBackground = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComBackground");
             self.u_ComAccent = self.UIBase.ComponentTable.FindComponent<UnityEngine.RectTransform>("u_ComAccent");

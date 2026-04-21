@@ -49,6 +49,7 @@ namespace ET.Client
                             CurrentScenesComponent currentScenes = currentScenesComponentRef;
                             currentScenes.Progress = (int)progress * 99f;
                         });
+                    currentScene = currentSceneRef;
                 }
             }
             catch (Exception e)

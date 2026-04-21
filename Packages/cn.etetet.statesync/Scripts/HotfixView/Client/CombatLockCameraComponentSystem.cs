@@ -181,32 +181,20 @@ namespace ET.Client
             moveSpeed = 0f;
 
             UnitViewInterpolationComponent interpolationComponent = owner.GetComponent<UnitViewInterpolationComponent>();
-            if (interpolationComponent != null)
+            if (interpolationComponent == null)
             {
-                Vector3 direction = interpolationComponent.LocalMoveDirection;
-                moveSpeed = interpolationComponent.LocalMoveSpeed;
-                if (direction.sqrMagnitude > 0.000001f && moveSpeed > 0.01f)
-                {
-                    return direction.normalized;
-                }
+                return Vector3.zero;
             }
 
-            JoystickMoveAuthorityStateComponent authorityState = owner.GetComponent<JoystickMoveAuthorityStateComponent>();
-            if (authorityState == null || authorityState.LastSpeed <= 0.01f)
+            Vector3 direction = interpolationComponent.LocalMoveDirection;
+            moveSpeed = interpolationComponent.LocalMoveSpeed;
+            if (direction.sqrMagnitude <= 0.000001f || moveSpeed <= 0.01f)
             {
                 moveSpeed = 0f;
                 return Vector3.zero;
             }
 
-            Vector3 authorityDirection = new Vector3(authorityState.LastDirection.x, 0f, authorityState.LastDirection.z);
-            if (authorityDirection.sqrMagnitude <= 0.000001f)
-            {
-                moveSpeed = 0f;
-                return Vector3.zero;
-            }
-
-            moveSpeed = authorityState.LastSpeed;
-            return authorityDirection.normalized;
+            return direction.normalized;
         }
 
         private static Vector3 CalculateLockOffset(this CombatLockCameraComponent self, CinemachineComponent cinemachineComponent, Unit owner, Unit target,

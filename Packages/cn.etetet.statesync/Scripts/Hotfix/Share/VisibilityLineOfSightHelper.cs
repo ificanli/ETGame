@@ -43,4 +43,34 @@ namespace ET
             return rawAoi > 0L ? rawAoi / 1000f : safeFallbackRadius;
         }
     }
+
+    /// <summary>
+    /// 统一解析当前武器是否驱动特殊视野半径。
+    /// </summary>
+    public static class WeaponVisionRangeHelper
+    {
+        public static bool TryResolveCurrentSniperVisionRange(Unit unit, out float visionRange)
+        {
+            visionRange = 0f;
+            if (unit == null || unit.IsDisposed)
+            {
+                return false;
+            }
+
+            WeaponComponent weaponComponent = unit.GetComponent<WeaponComponent>();
+            if (weaponComponent == null || weaponComponent.CurrentSlot <= 0 || weaponComponent.CurrentWeaponId <= 0)
+            {
+                return false;
+            }
+
+            WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(weaponComponent.CurrentWeaponId);
+            if (weaponConfig == null || weaponConfig.WeaponTypeId != (int)WeaponType.SniperRifle)
+            {
+                return false;
+            }
+
+            visionRange = math.max(0f, weaponComponent.GetEffectiveAttackRange(weaponComponent.CurrentSlot));
+            return visionRange > 0f;
+        }
+    }
 }

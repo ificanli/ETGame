@@ -51,7 +51,11 @@ namespace ET.Client
             }
 
             // 刷新武器栏显示
+            long refreshBeginClientNow = TimeInfo.Instance.ClientNow();
             weaponBar.RefreshWeaponBar(weaponComp);
+            long refreshDoneClientNow = TimeInfo.Instance.ClientNow();
+            Log.Info(
+                $"[WeaponSwitchTrace][UIRefresh] clientNow={refreshDoneClientNow}, serverNow={TimeInfo.Instance.ServerNow()}, unitId={args.UnitId}, slot={args.SlotIndex}, currentSlot={weaponComp.CurrentSlot}, slot1WeaponId={weaponComp.Slot1WeaponId}, slot2WeaponId={weaponComp.Slot2WeaponId}, slot1Ammo={weaponComp.Slot1Ammo}, slot2Ammo={weaponComp.Slot2Ammo}, costMs={refreshDoneClientNow - refreshBeginClientNow}");
 
             Log.Info($"[EventWeaponSwitched] WeaponBar refreshed: slot={args.SlotIndex}");
 

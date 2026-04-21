@@ -38,7 +38,8 @@ namespace ET.Client
                 return;
             }
 
-            string mapName = root.Name.GetSceneConfigName();
+            Scene sourceScene = root.CurrentScene() ?? root;
+            string mapName = sourceScene.Name.GetSceneConfigName();
             if (self.ConcealmentConfigMapName == mapName)
             {
                 return;

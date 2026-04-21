@@ -7,6 +7,7 @@ namespace ET.Test
     {
         public override async ETTask<int> Handle(TestContext context)
         {
+            int testItemConfigId = LegacyItemConfigIdHelper.NormalizeConfigId(10001);
             await using TestFiberScope scope = await TestFiberScope.Create(context.Fiber, nameof(Test_QuickExitExtraction_SettlementFlow_Test));
             Fiber testFiber = scope.TestFiber;
 
@@ -65,8 +66,10 @@ namespace ET.Test
             SettlementClientComponent settlementRuntime = clientScene.GetComponent<SettlementClientComponent>();
             settlementRuntime?.ResetRuntime();
 
-            ETTask<Wait_M2C_EvacuationSettlement> settlementWaitTask = clientScene.GetComponent<ObjectWait>().Wait<Wait_M2C_EvacuationSettlement>();
-            ETTask<Wait_SceneChangeFinish> sceneChangeWaitTask = clientScene.GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>();
+            ETTask<Wait_M2C_EvacuationSettlement> settlementWaitTask =
+                    clientScene.GetComponent<ObjectWait>().Wait<Wait_M2C_EvacuationSettlement>().NewContext(null);
+            ETTask<Wait_SceneChangeFinish> sceneChangeWaitTask =
+                    clientScene.GetComponent<ObjectWait>().Wait<Wait_SceneChangeFinish>().NewContext(null);
 
             sender = clientScene.GetComponent<ClientSenderComponent>();
             M2C_QuickExitExtraction quickExitResponse = await sender.Call(C2M_QuickExitExtraction.Create()) as M2C_QuickExitExtraction;
@@ -88,7 +91,7 @@ namespace ET.Test
             bool foundCarryItem = false;
             foreach (ItemData itemData in settlementWait.M2C_EvacuationSettlement.Items)
             {
-                if (itemData.ConfigId == 10001 && itemData.Count == 3)
+                if (LegacyItemConfigIdHelper.MatchesConfigId(itemData.ConfigId, testItemConfigId) && itemData.Count == 3)
                 {
                     foundCarryItem = true;
                     break;
@@ -97,7 +100,7 @@ namespace ET.Test
 
             if (!foundCarryItem)
             {
-                Log.Console("evacuation settlement missing test item ConfigId=10001 Count=3");
+                Log.Console($"evacuation settlement missing test item ConfigId={testItemConfigId} Count=3");
                 return 8;
             }
 

@@ -425,7 +425,7 @@ namespace ET.Client
             poiRuntime.EnsureConfigLoaded();
 
             HashSet<string> activePoiIds = new HashSet<string>();
-            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.MarkerSize, 10f), 4f);
+            float poiSize = Mathf.Max(global::ET.MinimapConstConfigHelper.GetFloat(global::ET.MinimapConstKey.PoiSize, 25f), 4f);
 
             foreach (KeyValuePair<string, MapPoiRuntimeData> pair in poiRuntime.GetPois())
             {

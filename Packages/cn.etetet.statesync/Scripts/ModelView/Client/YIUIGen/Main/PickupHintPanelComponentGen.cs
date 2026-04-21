@@ -9,19 +9,15 @@ namespace ET.Client
     /// <summary>
     /// 由YIUI工具自动创建 请勿修改
     /// </summary>
-    [YIUI(EUICodeType.Panel, EPanelLayer.Panel)]
+    [YIUI(EUICodeType.Common)]
     [ComponentOf(typeof(YIUIChild))]
-    public partial class PickupHintPanelComponent : Entity, IDestroy, IAwake, IYIUIBind, IYIUIInitialize, IYIUIOpen
+    public partial class PickupHintPanelComponent : Entity, IDestroy, IAwake, IYIUIBind, IYIUIInitialize
     {
         public const string PkgName = "Main";
         public const string ResName = "PickupHintPanel";
 
         public EntityRef<YIUIChild> u_UIBase;
         public YIUIChild UIBase => u_UIBase;
-        public EntityRef<YIUIWindowComponent> u_UIWindow;
-        public YIUIWindowComponent UIWindow => u_UIWindow;
-        public EntityRef<YIUIPanelComponent> u_UIPanel;
-        public YIUIPanelComponent UIPanel => u_UIPanel;
         public UnityEngine.RectTransform u_ComBackground;
         public UnityEngine.RectTransform u_ComAccent;
         public TMPro.TextMeshProUGUI u_ComItemName;

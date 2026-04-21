@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,16 +15,16 @@ namespace ET
     [EnableClass]
     public sealed partial class RogueKillExpEntryConfig : Luban.BeanBase
     {
-        public RogueKillExpEntryConfig(JSONNode _buf) 
+        public RogueKillExpEntryConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["UnitType"].IsNumber) { throw new SerializationException(); }  UnitType = _buf["UnitType"]; }
-            { if(!_buf["Exp"].IsNumber) { throw new SerializationException(); }  Exp = _buf["Exp"]; }
+            Id = _buf.ReadInt();
+            UnitType = _buf.ReadInt();
+            Exp = _buf.ReadInt();
 
             EndInit();
         }
 
-        public static RogueKillExpEntryConfig DeserializeRogueKillExpEntryConfig(JSONNode _buf)
+        public static RogueKillExpEntryConfig DeserializeRogueKillExpEntryConfig(ByteBuf _buf)
         {
             return new ET.RogueKillExpEntryConfig(_buf);
         }
@@ -42,7 +41,7 @@ namespace ET
         /// 击杀经验
         /// </summary>
         public readonly int Exp;
-
+    
         public const int __ID__ = 548251152;
         public override int GetTypeId() => __ID__;
 

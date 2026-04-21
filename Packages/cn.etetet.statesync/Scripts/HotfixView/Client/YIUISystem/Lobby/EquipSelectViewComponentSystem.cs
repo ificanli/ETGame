@@ -177,6 +177,9 @@ namespace ET.Client
     [FriendOf(typeof(EquipSelectViewComponent))]
     public static class EquipSelectViewPreviewHelper
     {
+        private const string SelectImageBindName = "u_ComSelectImage";
+        private const string LegacySelectImageBindName = "SelectImage";
+
         public static void BindPreviewReferences(EquipSelectViewComponent self)
         {
             YIUIChild uiBase = self.UIBase;
@@ -190,9 +193,9 @@ namespace ET.Client
                 self.GunDescData = uiBase.DataTable.FindDataValue<UIDataValueString>("u_DataGunDesc");
             }
 
-            if (self.SelectImage == null && uiBase.ComponentTable?.AllBindDic.ContainsKey("SelectImage") == true)
+            if (self.SelectImage == null)
             {
-                self.SelectImage = uiBase.ComponentTable.FindComponent<Image>("SelectImage");
+                self.SelectImage = ResolvePreviewImage(uiBase);
                 if (self.SelectImage != null)
                 {
                     self.SelectImage.preserveAspect = true;
@@ -292,11 +295,8 @@ namespace ET.Client
                 title = itemConfig?.Name;
             }
 
-            if (self.CurrentSlotType == EquipSlotType.Weapon || self.CurrentSlotType == EquipSlotType.Weapon2)
-            {
-                WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemData.ConfigId);
-                desc = weaponConfig?.Desc;
-            }
+            WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(itemData.ConfigId);
+            desc = weaponConfig?.Desc;
 
             if (string.IsNullOrWhiteSpace(desc) && itemConfig != null)
             {
@@ -308,16 +308,103 @@ namespace ET.Client
                 title = $"Item({itemData.ConfigId})";
             }
 
+            if (weaponConfig != null)
+            {
+                desc = BuildWeaponPreviewDesc(weaponConfig, desc);
+            }
+
             if (string.IsNullOrWhiteSpace(desc))
             {
                 desc = title;
             }
         }
 
+        private static string BuildWeaponPreviewDesc(WeaponConfig weaponConfig, string desc)
+        {
+            string line1 = $"类型：{FormatWeaponTypeText(weaponConfig.WeaponTypeId)} | 伤害：{FormatNumberText(weaponConfig.Damage)} | 射程：{FormatNumberText(weaponConfig.AttackRange)}m";
+            string line2 = $"射速：{FormatFireRateText(weaponConfig.AttackIntervalMs)} | 弹匣：{weaponConfig.MagazineSize} | 换弹：{FormatSecondsText(weaponConfig.ReloadTimeMs)}";
+
+            if (string.IsNullOrWhiteSpace(desc))
+            {
+                return $"{line1}\n{line2}";
+            }
+
+            return $"{line1}\n{line2}\n说明：{desc}";
+        }
+
+        private static string FormatWeaponTypeText(int weaponTypeId)
+        {
+            return weaponTypeId switch
+            {
+                (int)WeaponType.Shotgun         => "散弹枪",
+                (int)WeaponType.Rifle1          => "步枪1",
+                (int)WeaponType.Rifle2          => "步枪2",
+                (int)WeaponType.RocketLauncher  => "火箭炮",
+                (int)WeaponType.SMG             => "冲锋枪",
+                (int)WeaponType.AutoRifle       => "自动步枪",
+                (int)WeaponType.SniperRifle     => "狙击枪",
+                (int)WeaponType.Pistol          => "手枪",
+                (int)WeaponType.GrenadeLauncher => "榴弹炮",
+                (int)WeaponType.RayGun          => "射线枪",
+                _                               => $"类型{weaponTypeId}",
+            };
+        }
+
+        private static string FormatNumberText(float value)
+        {
+            float rounded = Mathf.Round(value);
+            if (Mathf.Abs(value - rounded) < 0.01f)
+            {
+                return rounded.ToString("0");
+            }
+
+            return value.ToString("0.#");
+        }
+
+        private static string FormatFireRateText(int attackIntervalMs)
+        {
+            if (attackIntervalMs <= 0)
+            {
+                return "-";
+            }
+
+            return $"{FormatNumberText(1000f / attackIntervalMs)}/s";
+        }
+
+        private static string FormatSecondsText(int milliseconds)
+        {
+            if (milliseconds <= 0)
+            {
+                return "-";
+            }
+
+            return $"{FormatNumberText(milliseconds / 1000f)}s";
+        }
+
         private static Image CacheSelectedIconImage(EquipSelectViewComponent self)
         {
             BindPreviewReferences(self);
             return self.SelectImage;
+        }
+
+        private static Image ResolvePreviewImage(YIUIChild uiBase)
+        {
+            if (uiBase?.ComponentTable == null)
+            {
+                return null;
+            }
+
+            if (uiBase.ComponentTable.AllBindDic.ContainsKey(SelectImageBindName))
+            {
+                return uiBase.ComponentTable.FindComponent<Image>(SelectImageBindName);
+            }
+
+            if (uiBase.ComponentTable.AllBindDic.ContainsKey(LegacySelectImageBindName))
+            {
+                return uiBase.ComponentTable.FindComponent<Image>(LegacySelectImageBindName);
+            }
+
+            return null;
         }
 
         private static async ETTask ChangeSelectedIcon(EquipSelectViewComponent self, string iconName)

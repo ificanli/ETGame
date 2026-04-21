@@ -53,6 +53,7 @@ namespace ET.Server
                     continue;
                 }
 
+                MonsterCombatCommonHelper.FaceTarget(unit, target);
                 MonsterCombatCommonHelper.TryCast(unit, node.MainSpellId);
             }
         }

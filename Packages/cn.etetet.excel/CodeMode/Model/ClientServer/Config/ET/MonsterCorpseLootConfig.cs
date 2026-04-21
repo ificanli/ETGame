@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,21 +15,21 @@ namespace ET
     [EnableClass]
     public sealed partial class MonsterCorpseLootConfig : Luban.BeanBase
     {
-        public MonsterCorpseLootConfig(JSONNode _buf) 
+        public MonsterCorpseLootConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["MapName"].IsString) { throw new SerializationException(); }  MapName = _buf["MapName"]; }
-            { if(!_buf["MonsterUnitConfigId"].IsNumber) { throw new SerializationException(); }  MonsterUnitConfigId = _buf["MonsterUnitConfigId"]; }
-            { if(!_buf["LootBoxUnitConfigId"].IsNumber) { throw new SerializationException(); }  LootBoxUnitConfigId = _buf["LootBoxUnitConfigId"]; }
-            { if(!_buf["LootTable"].IsString) { throw new SerializationException(); }  LootTable = _buf["LootTable"]; }
-            { if(!_buf["DropCountMin"].IsNumber) { throw new SerializationException(); }  DropCountMin = _buf["DropCountMin"]; }
-            { if(!_buf["DropCountMax"].IsNumber) { throw new SerializationException(); }  DropCountMax = _buf["DropCountMax"]; }
-            { if(!_buf["AllowRepeat"].IsBoolean) { throw new SerializationException(); }  AllowRepeat = _buf["AllowRepeat"]; }
+            Id = _buf.ReadInt();
+            MapName = _buf.ReadString();
+            MonsterUnitConfigId = _buf.ReadInt();
+            LootBoxUnitConfigId = _buf.ReadInt();
+            LootTable = _buf.ReadString();
+            DropCountMin = _buf.ReadInt();
+            DropCountMax = _buf.ReadInt();
+            AllowRepeat = _buf.ReadBool();
 
             EndInit();
         }
 
-        public static MonsterCorpseLootConfig DeserializeMonsterCorpseLootConfig(JSONNode _buf)
+        public static MonsterCorpseLootConfig DeserializeMonsterCorpseLootConfig(ByteBuf _buf)
         {
             return new ET.MonsterCorpseLootConfig(_buf);
         }
@@ -67,7 +66,7 @@ namespace ET
         /// 允许重复
         /// </summary>
         public readonly bool AllowRepeat;
-
+    
         public const int __ID__ = 1509002305;
         public override int GetTypeId() => __ID__;
 

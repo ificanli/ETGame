@@ -30,6 +30,7 @@ namespace ET.Client
                 runtime.ContainerItems.Add(new ContainerClientItemData
                 {
                     SlotIndex = item.SlotIndex,
+                    ItemUid = item.ItemUid,
                     ConfigId = item.ConfigId,
                     Count = item.Count
                 });

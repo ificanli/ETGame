@@ -148,8 +148,9 @@ BTGetBuffOwner
 | 初始上下文提取 | `TryGetInitialContext` | 统一取 `unit/root/threat/unitRadius` |
 | 目标刷新 | `TryRefreshTarget` | 从最高仇恨目标同步到 `TargetComponent` |
 | 施法距离维护 | `TryMaintainCastRange` | 太远前进、太近后撤、距离合适停步 |
+| 施法前转向 | `FaceTarget` | 正式静态怪在尝试施法前统一朝向当前目标，避免 `TargetSelectorSingle` 因目标不在正前方而空转 |
 | 施法前检查 | `HasCastingSpell` | 已在施法时避免重入 |
-| 真正施法 | `TryCast` | `unit.Stop(0)` 后执行 `SpellHelper.Cast` |
+| 真正施法 | `TryCast` | `unit.Stop(0)` 后执行 `SpellHelper.Cast`；失败时写 `MonsterAI` 调试日志 |
 
 ### 4.4 单怪差异
 

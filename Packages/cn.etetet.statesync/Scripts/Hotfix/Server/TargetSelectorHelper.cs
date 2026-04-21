@@ -68,6 +68,58 @@ namespace ET.Server
             return null;
         }
 
+        public static bool TryResolveContinuousWeaponFacingDirection(this Unit owner, WeaponType requiredType, out float3 direction)
+        {
+            direction = float3.zero;
+            if (owner == null || owner.IsDisposed)
+            {
+                return false;
+            }
+
+            WeaponComponent weaponComponent = owner.GetComponent<WeaponComponent>();
+            if (weaponComponent == null || !weaponComponent.IsCurrentWeaponType(requiredType))
+            {
+                return false;
+            }
+
+            float attackRange = weaponComponent.GetCurrentEffectiveAttackRange();
+            if (attackRange <= 0.01f)
+            {
+                return false;
+            }
+
+            Unit target = owner.GetComponent<TargetComponent>()?.Unit;
+            if (!IsValidTarget(owner, target, attackRange))
+            {
+                TargetSelectorComponent selector = owner.GetComponent<TargetSelectorComponent>();
+                target = selector?.GetCurrentTarget();
+                if (!IsValidTarget(owner, target, attackRange))
+                {
+                    long targetId = selector?.CurrentTargetId ?? 0;
+                    if (targetId == 0)
+                    {
+                        return false;
+                    }
+
+                    target = owner.Scene()?.GetComponent<UnitComponent>()?.Get(targetId);
+                    if (!IsValidTarget(owner, target, attackRange))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            float3 toTarget = target.Position - owner.Position;
+            toTarget.y = 0f;
+            if (math.lengthsq(toTarget) <= 0.0001f)
+            {
+                return false;
+            }
+
+            direction = math.normalizesafe(toTarget);
+            return math.lengthsq(direction) > 0.0001f;
+        }
+
         public static Unit FindBestTarget(Unit owner, float maxRange)
         {
             List<Unit> enemies = GetEnemiesInRange(owner, maxRange);

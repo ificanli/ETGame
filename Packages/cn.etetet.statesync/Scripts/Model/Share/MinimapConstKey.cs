@@ -12,6 +12,8 @@ namespace ET
         public const string WorldMaxZ = "WorldMaxZ";
         public const string FogCellSize = "FogCellSize";
         public const string MarkerSize = "Minimap.MarkerSize";
+        public const string PoiSize = "Minimap.PoiSize";
+        public const string CompactPoiSize = "Minimap.CompactPoiSize";
         public const string MarkerColorSelf = "Minimap.MarkerColor.Self";
         public const string MarkerColorPlayer = "Minimap.MarkerColor.Player";
         public const string MarkerColorFriendlyPlayer = "Minimap.MarkerColor.FriendlyPlayer";

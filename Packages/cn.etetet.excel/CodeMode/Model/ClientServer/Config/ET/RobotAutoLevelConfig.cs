@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,16 +15,16 @@ namespace ET
     [EnableClass]
     public sealed partial class RobotAutoLevelConfig : Luban.BeanBase
     {
-        public RobotAutoLevelConfig(JSONNode _buf) 
+        public RobotAutoLevelConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["TimeSec"].IsNumber) { throw new SerializationException(); }  TimeSec = _buf["TimeSec"]; }
-            { if(!_buf["Level"].IsNumber) { throw new SerializationException(); }  Level = _buf["Level"]; }
+            Id = _buf.ReadInt();
+            TimeSec = _buf.ReadInt();
+            Level = _buf.ReadInt();
 
             EndInit();
         }
 
-        public static RobotAutoLevelConfig DeserializeRobotAutoLevelConfig(JSONNode _buf)
+        public static RobotAutoLevelConfig DeserializeRobotAutoLevelConfig(ByteBuf _buf)
         {
             return new ET.RobotAutoLevelConfig(_buf);
         }
@@ -42,7 +41,7 @@ namespace ET
         /// 目标等级
         /// </summary>
         public readonly int Level;
-
+    
         public const int __ID__ = 1535760108;
         public override int GetTypeId() => __ID__;
 

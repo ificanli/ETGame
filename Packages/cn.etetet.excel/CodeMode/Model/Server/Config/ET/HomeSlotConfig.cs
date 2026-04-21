@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,19 +15,19 @@ namespace ET
     [EnableClass]
     public sealed partial class HomeSlotConfig : Luban.BeanBase
     {
-        public HomeSlotConfig(JSONNode _buf) 
+        public HomeSlotConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["SlotType"].IsNumber) { throw new SerializationException(); }  SlotType = _buf["SlotType"]; }
-            { if(!_buf["SceneAnchorKey"].IsString) { throw new SerializationException(); }  SceneAnchorKey = _buf["SceneAnchorKey"]; }
-            { if(!_buf["UnlockMainCityLevel"].IsNumber) { throw new SerializationException(); }  UnlockMainCityLevel = _buf["UnlockMainCityLevel"]; }
-            { var __json0 = _buf["CanBuildTypes"]; if(!__json0.IsArray) { throw new SerializationException(); } int _n0 = __json0.Count; CanBuildTypes = new int[_n0]; int __index0=0; foreach(JSONNode __e0 in __json0.Children) { int __v0;  { if(!__e0.IsNumber) { throw new SerializationException(); }  __v0 = __e0; }  CanBuildTypes[__index0++] = __v0; }   }
-            { if(!_buf["SortOrder"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["SortOrder"]; }
+            Id = _buf.ReadInt();
+            SlotType = _buf.ReadInt();
+            SceneAnchorKey = _buf.ReadString();
+            UnlockMainCityLevel = _buf.ReadInt();
+            {int __n0 = System.Math.Min(_buf.ReadSize(), _buf.Size);CanBuildTypes = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); CanBuildTypes[__index0] = __e0;}}
+            SortOrder = _buf.ReadInt();
 
             EndInit();
         }
 
-        public static HomeSlotConfig DeserializeHomeSlotConfig(JSONNode _buf)
+        public static HomeSlotConfig DeserializeHomeSlotConfig(ByteBuf _buf)
         {
             return new ET.HomeSlotConfig(_buf);
         }
@@ -39,7 +38,7 @@ namespace ET
         public readonly int UnlockMainCityLevel;
         public readonly int[] CanBuildTypes;
         public readonly int SortOrder;
-
+    
         public const int __ID__ = 426340446;
         public override int GetTypeId() => __ID__;
 

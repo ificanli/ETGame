@@ -94,9 +94,9 @@ namespace ET.Client
             
             // 清理搜索动效相关数据
             ClearSearchEffects(self);
-            self.SlotSearchStartTimes.Clear();
-            self.SlotSearchDurations.Clear();
-            self.SearchedSlots.Clear();
+            self.ItemSearchStartTimes.Clear();
+            self.ItemSearchDurations.Clear();
+            self.SearchedItemUids.Clear();
             self.CurrentSearchingPointId = null;
             self.OpenMode = SearchPanelOpenMode.Unknown;
             self.CorpseSubType = SearchPanelCorpseSubType.Unknown;
@@ -239,9 +239,9 @@ namespace ET.Client
             }
 
             ClearSearchEffects(self);
-            self.SlotSearchStartTimes.Clear();
-            self.SlotSearchDurations.Clear();
-            self.SearchedSlots.Clear();
+            self.ItemSearchStartTimes.Clear();
+            self.ItemSearchDurations.Clear();
+            self.SearchedItemUids.Clear();
             self.CurrentSearchingPointId = pointId;
         }
 
@@ -379,14 +379,17 @@ namespace ET.Client
             self.ContainerSolver.Clear();
 
             HashSet<long> alive = new();
+            HashSet<long> aliveItemUids = new();
             long nowMs = TimeInfo.Instance.ClientNow();
             
             for (int i = 0; i < count; ++i)
             {
                 ContainerClientItemData item = runtime.ContainerItems[i];
                 int slot = Math.Max(item.SlotIndex, 0);
-                long viewId = slot + 1L;
+                long itemUid = ResolveContainerItemUid(item);
+                long viewId = itemUid;
                 alive.Add(viewId);
+                aliveItemUids.Add(itemUid);
 
                 GridItemFootprint footprint = new GridItemFootprint
                 {
@@ -413,31 +416,32 @@ namespace ET.Client
                 BindItemInteract(self, view, viewId, (int)ContainerItemAreaType.Container, slot, item.ConfigId, true);
                 
                 // 处理搜索动效
-                bool isSearched = self.SearchedSlots.Contains(slot);
+                bool isSearched = self.SearchedItemUids.Contains(itemUid);
                 if (!isSearched)
                 {
                     // 如果还没有开始搜索，记录搜索开始时间和持续时间
-                    if (!self.SlotSearchStartTimes.ContainsKey(slot))
+                    if (!self.ItemSearchStartTimes.ContainsKey(itemUid))
                     {
-                        self.SlotSearchStartTimes[slot] = nowMs;
+                        self.ItemSearchStartTimes[itemUid] = nowMs;
                         
                         // 根据物品品质获取搜索持续时间
                         ItemConfig itemConfig = ItemConfigCategory.Instance.GetOrDefault(item.ConfigId);
                         int quality = itemConfig?.Quality ?? 1;
                         long durationMs = ExtractionInventoryConfig.GetItemSearchDurationMsByQuality(quality);
-                        self.SlotSearchDurations[slot] = durationMs;
+                        self.ItemSearchDurations[itemUid] = durationMs;
                     }
                     
                     // 创建或更新搜索动效
-                    EnsureSearchEffect(self, view, slot, true);
+                    EnsureSearchEffect(self, view, itemUid, true);
                 }
                 else
                 {
                     // 已搜索完成，隐藏动效
-                    EnsureSearchEffect(self, view, slot, false);
+                    EnsureSearchEffect(self, view, itemUid, false);
                 }
             }
 
+            CleanupContainerSearchState(self, aliveItemUids);
             RemoveDeadViews(self.ContainerItemViews, alive);
             ResizeBoard(self.u_ComContainerBoardRoot, self.u_ComContainerItemsLayer, self.ContainerCols, self.ContainerRows, self.CellSize, self.CellSpacing, self.CellPadding);
             RenderGrid(self.ContainerGridRoot, self.ContainerGridCellViews, self.ContainerCols, self.ContainerRows, self.CellSize, self.CellSpacing, self.CellPadding, false);
@@ -2173,6 +2177,8 @@ namespace ET.Client
                 builder.Append('|');
                 builder.Append(item.SlotIndex);
                 builder.Append(':');
+                builder.Append(item.ItemUid);
+                builder.Append(':');
                 builder.Append(item.ConfigId);
                 builder.Append(':');
                 builder.Append(item.Count);
@@ -2693,46 +2699,46 @@ namespace ET.Client
 
             long nowMs = TimeInfo.Instance.ClientNow();
             
-            // 检查每个正在搜索的槽位
-            List<int> completedSlots = null;
-            foreach (KeyValuePair<int, long> pair in self.SlotSearchStartTimes)
+            // 检查每个正在搜索的物品实例
+            List<long> completedItemUids = null;
+            foreach (KeyValuePair<long, long> pair in self.ItemSearchStartTimes)
             {
-                int slot = pair.Key;
+                long itemUid = pair.Key;
                 long startTime = pair.Value;
                 
                 // 如果已经搜索完成，跳过
-                if (self.SearchedSlots.Contains(slot))
+                if (self.SearchedItemUids.Contains(itemUid))
                 {
                     continue;
                 }
                 
-                // 获取该槽位的搜索持续时间
-                long durationMs = self.SlotSearchDurations.TryGetValue(slot, out long duration)
+                // 获取该物品实例的搜索持续时间
+                long durationMs = self.ItemSearchDurations.TryGetValue(itemUid, out long duration)
                     ? duration
                     : ExtractionInventoryConfig.GetDefaultItemSearchDurationMs();
                 
                 // 检查是否搜索完成
                 if (nowMs - startTime >= durationMs)
                 {
-                    completedSlots ??= new List<int>();
-                    completedSlots.Add(slot);
+                    completedItemUids ??= new List<long>();
+                    completedItemUids.Add(itemUid);
                 }
             }
             
-            // 处理搜索完成的槽位
-            if (completedSlots != null)
+            // 处理搜索完成的物品实例
+            if (completedItemUids != null)
             {
-                foreach (int slot in completedSlots)
+                foreach (long itemUid in completedItemUids)
                 {
-                    self.SearchedSlots.Add(slot);
+                    self.SearchedItemUids.Add(itemUid);
                     
                     // 隐藏搜索动效
-                    if (self.SlotSearchingEffects.TryGetValue(slot, out GameObject effect) && effect != null)
+                    if (self.ItemSearchingEffects.TryGetValue(itemUid, out GameObject effect) && effect != null)
                     {
                         effect.SetActive(false);
                     }
                     
-                    Log.Info($"[ECAClient][SearchPanel] slot {slot} search completed");
+                    Log.Info($"[ECAClient][SearchPanel] itemUid {itemUid} search completed");
                 }
             }
         }
@@ -2740,7 +2746,7 @@ namespace ET.Client
         /// <summary>
         /// 确保搜索动效存在或隐藏
         /// </summary>
-        private static void EnsureSearchEffect(SearchPanelComponent self, RectTransform itemView, int slot, bool show)
+        private static void EnsureSearchEffect(SearchPanelComponent self, RectTransform itemView, long itemUid, bool show)
         {
             if (itemView == null)
             {
@@ -2748,7 +2754,7 @@ namespace ET.Client
             }
 
             // 尝试获取已存在的动效
-            if (!self.SlotSearchingEffects.TryGetValue(slot, out GameObject effect) || effect == null)
+            if (!self.ItemSearchingEffects.TryGetValue(itemUid, out GameObject effect) || effect == null)
             {
                 if (!show)
                 {
@@ -2759,8 +2765,13 @@ namespace ET.Client
                 effect = CreateSearchEffect(itemView);
                 if (effect != null)
                 {
-                    self.SlotSearchingEffects[slot] = effect;
+                    self.ItemSearchingEffects[itemUid] = effect;
                 }
+            }
+            else if (effect.transform.parent != itemView)
+            {
+                effect.transform.SetParent(itemView, false);
+                ResetSearchEffectRoot(effect.transform as RectTransform);
             }
 
             if (effect != null)
@@ -2784,10 +2795,7 @@ namespace ET.Client
             effectGo.transform.SetParent(parent, false);
             
             RectTransform effectRect = effectGo.GetComponent<RectTransform>();
-            effectRect.anchorMin = Vector2.zero;
-            effectRect.anchorMax = Vector2.one;
-            effectRect.offsetMin = Vector2.zero;
-            effectRect.offsetMax = Vector2.zero;
+            ResetSearchEffectRoot(effectRect);
             
             Image effectImage = effectGo.GetComponent<Image>();
             effectImage.color = new Color(0f, 0f, 0f, 0.6f);
@@ -2815,6 +2823,88 @@ namespace ET.Client
             return effectGo;
         }
 
+        private static void ResetSearchEffectRoot(RectTransform effectRect)
+        {
+            if (effectRect == null)
+            {
+                return;
+            }
+
+            effectRect.anchorMin = Vector2.zero;
+            effectRect.anchorMax = Vector2.one;
+            effectRect.offsetMin = Vector2.zero;
+            effectRect.offsetMax = Vector2.zero;
+        }
+
+        private static long ResolveContainerItemUid(ContainerClientItemData item)
+        {
+            if (item.ItemUid > 0)
+            {
+                return item.ItemUid;
+            }
+
+            return item.SlotIndex + 1L;
+        }
+
+        private static void CleanupContainerSearchState(SearchPanelComponent self, HashSet<long> aliveItemUids)
+        {
+            if (self == null)
+            {
+                return;
+            }
+
+            aliveItemUids ??= new HashSet<long>();
+            HashSet<long> staleItemUids = new HashSet<long>();
+
+            foreach (long itemUid in self.SearchedItemUids)
+            {
+                if (!aliveItemUids.Contains(itemUid))
+                {
+                    staleItemUids.Add(itemUid);
+                }
+            }
+
+            foreach (KeyValuePair<long, long> pair in self.ItemSearchStartTimes)
+            {
+                if (!aliveItemUids.Contains(pair.Key))
+                {
+                    staleItemUids.Add(pair.Key);
+                }
+            }
+
+            foreach (KeyValuePair<long, long> pair in self.ItemSearchDurations)
+            {
+                if (!aliveItemUids.Contains(pair.Key))
+                {
+                    staleItemUids.Add(pair.Key);
+                }
+            }
+
+            foreach (KeyValuePair<long, GameObject> pair in self.ItemSearchingEffects)
+            {
+                if (!aliveItemUids.Contains(pair.Key))
+                {
+                    staleItemUids.Add(pair.Key);
+                }
+            }
+
+            foreach (long itemUid in staleItemUids)
+            {
+                self.ItemSearchStartTimes.Remove(itemUid);
+                self.ItemSearchDurations.Remove(itemUid);
+                self.SearchedItemUids.Remove(itemUid);
+                if (self.ItemSearchingEffects.TryGetValue(itemUid, out GameObject effect))
+                {
+                    if (effect != null)
+                    {
+                        UnityEngine.Object.Destroy(effect);
+                    }
+
+                    self.ItemSearchingEffects.Remove(itemUid);
+                }
+            }
+        }
+
         /// <summary>
         /// 清理所有搜索动效
         /// </summary>
@@ -2825,7 +2915,7 @@ namespace ET.Client
                 return;
             }
 
-            foreach (KeyValuePair<int, GameObject> pair in self.SlotSearchingEffects)
+            foreach (KeyValuePair<long, GameObject> pair in self.ItemSearchingEffects)
             {
                 if (pair.Value != null)
                 {
@@ -2833,7 +2923,7 @@ namespace ET.Client
                 }
             }
 
-            self.SlotSearchingEffects.Clear();
+            self.ItemSearchingEffects.Clear();
         }
 
         private static void SetGameObjectActive(Component component, bool active)

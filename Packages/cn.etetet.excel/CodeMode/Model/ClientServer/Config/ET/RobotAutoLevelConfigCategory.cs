@@ -11,7 +11,6 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
@@ -19,23 +18,23 @@ namespace ET
     /// <summary>
     /// 机器人自动升级时间表
     /// </summary>
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class RobotAutoLevelConfigCategory : Singleton<RobotAutoLevelConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.RobotAutoLevelConfig> _dataMap;
         private readonly List<ET.RobotAutoLevelConfig> _dataList;
-
-        public RobotAutoLevelConfigCategory(JSONNode _buf)
+        
+        public RobotAutoLevelConfigCategory(ByteBuf _buf)
         {
             _dataMap = new Dictionary<int, ET.RobotAutoLevelConfig>();
             _dataList = new List<ET.RobotAutoLevelConfig>();
-
-            foreach(JSONNode _ele in _buf.Children)
+            
+            for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 ET.RobotAutoLevelConfig _v;
-                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.RobotAutoLevelConfig.DeserializeRobotAutoLevelConfig(_ele);  }
+                _v = global::ET.RobotAutoLevelConfig.DeserializeRobotAutoLevelConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

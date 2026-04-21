@@ -215,25 +215,12 @@ namespace ET.Client
                 return;
             }
 
-            Unit unit = self.GetParent<Unit>();
-            if (unit == null || unit.IsDisposed)
-            {
-                return;
-            }
-
             uint inputSequence = ++self.MoveInputSequence;
-            float speed = unit.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
 
-            // 客户端权威移动：上报当前位置（而非方向）
-            C2M_MoveState msg = C2M_MoveState.Create();
-            msg.PosX = unit.Position.x;
-            msg.PosY = unit.Position.y;
-            msg.PosZ = unit.Position.z;
+            C2M_JoystickInput msg = C2M_JoystickInput.Create();
             msg.DirX = worldDirection.x;
             msg.DirZ = worldDirection.y;
-            msg.Speed = worldDirection.sqrMagnitude > 0.000001f ? speed : 0f;
-            msg.Sequence = inputSequence;
-            msg.ClientTimeMs = TimeInfo.Instance.ClientNow();
+            msg.InputSequence = inputSequence;
             sender.Send(msg);
         }
 
@@ -264,6 +251,7 @@ namespace ET.Client
                 {
                     unit.Rotation = quaternion.LookRotation(direction, math.up());
                 }
+
                 return;
             }
 
@@ -272,10 +260,10 @@ namespace ET.Client
                 Vector2 worldDirection = self.GetSelectedWorldMoveDirection();
                 float speed = unit.NumericComponent?.GetAsFloat(NumericType.Speed) ?? 0f;
                 bool hasInput = worldDirection.sqrMagnitude > 0.000001f && speed > 0.01f;
+                float3 moveDirection = hasInput ? new float3(worldDirection.x, 0f, worldDirection.y) : float3.zero;
                 if (hasInput)
                 {
-                    float3 dir = new float3(worldDirection.x, 0f, worldDirection.y);
-                    interpolation.SetLocalMoveInput(dir, speed);
+                    interpolation.SetLocalMoveInput(moveDirection, speed);
                 }
                 else
                 {
@@ -338,6 +326,19 @@ namespace ET.Client
                 Unit = self.GetParent<Unit>(),
                 SpellConfigId = spellConfigId,
             });
+        }
+    }
+
+    [EntitySystemOf(typeof(JoystickMoveAuthorityStateComponent))]
+    public static partial class JoystickMoveAuthorityStateComponentSystem
+    {
+        [EntitySystem]
+        private static void Awake(this JoystickMoveAuthorityStateComponent self)
+        {
+            self.LastSpeed = 0f;
+            self.LastDirection = float3.zero;
+            self.LastSyncTime = 0;
+            self.LastProcessedInputSequence = 0;
         }
     }
 }

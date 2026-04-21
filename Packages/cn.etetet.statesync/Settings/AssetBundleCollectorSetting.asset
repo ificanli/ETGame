@@ -162,6 +162,14 @@ MonoBehaviour:
         FilterRuleName: CollectPrefab
         AssetTags: 
         UserData: 
+      - CollectPath: Packages/cn.etetet.statesync/Assets/GameRes/Effect
+        CollectorGUID: e895acb97a98dc14ca6d6d5b306f7b66
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectPrefab
+        AssetTags: 
+        UserData: 
     - GroupName: SpellIndicator
       GroupDesc: 
       AssetTags: 

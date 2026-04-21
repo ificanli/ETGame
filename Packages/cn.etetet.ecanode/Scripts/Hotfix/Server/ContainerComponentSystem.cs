@@ -129,13 +129,30 @@ namespace ET.Server
 
         public static void SetItem(this ContainerComponent self, int slotIndex, int configId, int count)
         {
+            long itemUid = 0;
+            if (self != null && self.ItemEntries.TryGetValue(slotIndex, out ContainerItemEntry existing))
+            {
+                itemUid = existing.ItemUid;
+            }
+
+            self.SetItem(slotIndex, configId, count, itemUid);
+        }
+
+        public static void SetItem(this ContainerComponent self, int slotIndex, int configId, int count, long itemUid)
+        {
             if (self == null || slotIndex < 0 || configId <= 0 || count <= 0)
             {
                 return;
             }
 
+            if (itemUid <= 0)
+            {
+                itemUid = GenerateContainerItemUid();
+            }
+
             self.ItemEntries[slotIndex] = new ContainerItemEntry
             {
+                ItemUid = itemUid,
                 ConfigId = configId,
                 Count = count
             };
@@ -149,7 +166,18 @@ namespace ET.Server
                 return false;
             }
 
-            return self.ItemEntries.TryGetValue(slotIndex, out item);
+            if (!self.ItemEntries.TryGetValue(slotIndex, out item))
+            {
+                return false;
+            }
+
+            if (item.ItemUid <= 0)
+            {
+                item.ItemUid = GenerateContainerItemUid();
+                self.ItemEntries[slotIndex] = item;
+            }
+
+            return true;
         }
 
         public static void RemoveItem(this ContainerComponent self, int slotIndex)
@@ -183,7 +211,11 @@ namespace ET.Server
             keys.Sort();
             foreach (int slotIndex in keys)
             {
-                ContainerItemEntry entry = self.ItemEntries[slotIndex];
+                if (!self.TryGetItem(slotIndex, out ContainerItemEntry entry))
+                {
+                    continue;
+                }
+
                 if (entry.ConfigId <= 0 || entry.Count <= 0)
                 {
                     continue;
@@ -191,10 +223,16 @@ namespace ET.Server
 
                 ContainerItemData item = ContainerItemData.Create();
                 item.SlotIndex = slotIndex;
+                item.ItemUid = entry.ItemUid;
                 item.ConfigId = entry.ConfigId;
                 item.Count = entry.Count;
                 target.Add(item);
             }
+        }
+
+        public static long GenerateContainerItemUid()
+        {
+            return IdGenerater.Instance.GenerateId();
         }
 
         public static void RecordSpawnItems(this ContainerComponent self, string lootTable, int count, float radius, long playerId)

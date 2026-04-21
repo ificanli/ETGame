@@ -10,4 +10,14 @@
             unit.AddComponent<AOIEntity>();
         }
     }
+
+    [NumericWatcher(SceneType.Map, NumericType.AOI)]
+    public class NumericChange_AOIRefresh : INumericWatcher
+    {
+        public void Run(Unit unit, NumbericChange args)
+        {
+            unit.RemoveComponent<AOIEntity>();
+            unit.AddComponent<AOIEntity>();
+        }
+    }
 }

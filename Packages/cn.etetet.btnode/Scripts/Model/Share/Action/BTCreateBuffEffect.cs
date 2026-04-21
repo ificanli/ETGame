@@ -17,5 +17,25 @@ namespace ET
         public int Duration = 5000;
 
         public bool FollowUnit;
+
+        public float LocalPositionOffsetX;
+
+        public float LocalPositionOffsetY;
+
+        public float LocalPositionOffsetZ;
+
+        public float LocalEulerAnglesOffsetX;
+
+        public float LocalEulerAnglesOffsetY;
+
+        public float LocalEulerAnglesOffsetZ;
+
+        public bool SyncLineRegionLengthFromSpellTarget;
+
+        public float LineRegionMaxLength;
+
+        public float LineRegionLengthOffset;
+
+        public bool AnimateLineRegionFillByDuration;
     }
 }

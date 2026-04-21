@@ -11,7 +11,6 @@ using Luban;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Options;
-using SimpleJSON;
 
 namespace ET
 {
@@ -19,23 +18,23 @@ namespace ET
     /// <summary>
     /// 匹配机器人配置表
     /// </summary>
-    [ConfigProcess(ConfigType.Json)]
+    [ConfigProcess(ConfigType.Luban)]
     public partial class MatchRobotConfigCategory : Singleton<MatchRobotConfigCategory>, IConfig
     {
         [BsonElement]
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
         private readonly Dictionary<int, ET.MatchRobotConfig> _dataMap;
         private readonly List<ET.MatchRobotConfig> _dataList;
-
-        public MatchRobotConfigCategory(JSONNode _buf)
+        
+        public MatchRobotConfigCategory(ByteBuf _buf)
         {
             _dataMap = new Dictionary<int, ET.MatchRobotConfig>();
             _dataList = new List<ET.MatchRobotConfig>();
-
-            foreach(JSONNode _ele in _buf.Children)
+            
+            for(int n = _buf.ReadSize() ; n > 0 ; --n)
             {
                 ET.MatchRobotConfig _v;
-                { if(!_ele.IsObject) { throw new SerializationException(); }  _v = global::ET.MatchRobotConfig.DeserializeMatchRobotConfig(_ele);  }
+                _v = global::ET.MatchRobotConfig.DeserializeMatchRobotConfig(_buf);
                 _dataList.Add(_v);
                 _dataMap.Add(_v.Id, _v);
             }

@@ -13,6 +13,8 @@ namespace ET.Server
 
     public static class RobotAutoLevelHelper
     {
+        public const int AutoLevelElapsedTimeScalePermille = 800;
+
         public static void StartAutoLevel(Unit unit, MatchRobotComponent matchRobot)
         {
             if (unit == null || unit.IsDisposed || matchRobot == null)
@@ -66,7 +68,7 @@ namespace ET.Server
             EnsureLevelTo(unit, progress, targetLevel);
         }
 
-        private static int ResolveTargetLevel(int elapsedSec)
+        public static int ResolveTargetLevel(int elapsedSec)
         {
             RobotAutoLevelConfigCategory category = RobotAutoLevelConfigCategory.Instance;
             if (category == null || category.DataList == null || category.DataList.Count == 0)
@@ -74,6 +76,7 @@ namespace ET.Server
                 return 0;
             }
 
+            elapsedSec = GetScaledElapsedSec(elapsedSec);
             List<RobotAutoLevelConfig> dataList = category.DataList;
 
             // 按 TimeSec 升序假设数据已排好序（Id 递增）
@@ -115,6 +118,16 @@ namespace ET.Server
             float t = (float)(elapsedSec - prev.TimeSec) / timeDelta;
             int interpolated = prev.Level + (int)((next.Level - prev.Level) * t);
             return interpolated;
+        }
+
+        public static int GetScaledElapsedSec(int elapsedSec)
+        {
+            if (elapsedSec <= 0)
+            {
+                return 0;
+            }
+
+            return elapsedSec * AutoLevelElapsedTimeScalePermille / 1000;
         }
 
         private static void EnsureLevelTo(Unit unit, RogueProgressComponent progress, int targetLevel)

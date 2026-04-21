@@ -109,50 +109,6 @@
 			"TeamId" : 0,
 			"InteractRange" : 2.0
 		}, {
-			"ConfigId" : "301",
-			"Type" : 4,
-			"Params" : [{
-					"Key" : "interact_range",
-					"Value" : "2"
-				}],
-			"PosX" : 14.449999809265137,
-			"PosY" : 0.0,
-			"PosZ" : 20.739999771118164,
-			"FlowGraph" : {
-				"Version" : 1,
-				"Nodes" : [{
-						"_id" : 7,
-						"NodeType" : "Event",
-						"NodeKey" : "OnMapLoaded",
-						"Title" : "Event 7",
-						"PosX" : 0.0,
-						"PosY" : 0.0,
-						"Params" : []
-					}, {
-						"_id" : 6,
-						"NodeType" : "Action",
-						"NodeKey" : "SpawnMonsters",
-						"Title" : "Action 6",
-						"PosX" : 300.0,
-						"PosY" : 0.0,
-						"Params" : [{
-								"Key" : "group_id",
-								"Value" : "1003"
-							}, {
-								"Key" : "count",
-								"Value" : "1"
-							}]
-					}],
-				"Connections" : [{
-						"FromNodeId" : 7,
-						"ToNodeId" : 6,
-						"Branch" : "Out"
-					}]
-			},
-			"PointType" : 4,
-			"TeamId" : 0,
-			"InteractRange" : 2.0
-		}, {
 			"ConfigId" : "200",
 			"Type" : 2,
 			"Params" : [{
@@ -198,7 +154,7 @@
 						"PosY" : 0.0,
 						"Params" : [{
 								"Key" : "group_id",
-								"Value" : "1003"
+								"Value" : "1013"
 							}, {
 								"Key" : "count",
 								"Value" : "1"

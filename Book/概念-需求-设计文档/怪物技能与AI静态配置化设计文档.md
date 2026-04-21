@@ -1,7 +1,7 @@
 # 怪物技能与AI静态配置化设计文档
 
 **创建时间**：2026-04-10  
-**最后更新**：2026-04-10  
+**最后更新**：2026-04-16  
 **状态**：已完成  
 **关联任务**：M0.2-W3 #16  
 **涉及包**：cn.etetet.statesync, cn.etetet.map, cn.etetet.btnode, cn.etetet.spell
@@ -60,6 +60,7 @@
 | `Packages/cn.etetet.statesync/Scripts/Hotfix/Server/DebugSpawnMonsterHelper.cs` | 修改 | 不再依赖运行时注册 |
 | `Packages/cn.etetet.test/Scripts/Hotfix/Test/TestHelper.cs` | 修改 | 提供按正式 `UnitConfigId` 建怪辅助 |
 | `Packages/cn.etetet.test/Scripts/Hotfix/Test/Test_Rogue_Fixes_P0_Test.cs` | 修改 | 测试收口到正式 `UnitConfigId` |
+| `Packages/cn.etetet.map/Bundles/ECA/PVEMap.txt` | 修改 | 将 PVEMap 临时收口为单怪正式回归入口 |
 | `Book/10-项目架构/怪物AI行为说明.md` | 修改 | 回写静态配置化后的真实入口 |
 | `Book/概念-需求-设计文档/怪物技能动画与特效配置说明.md` | 修改 | 回写技能动画正式配置入口 |
 
@@ -96,6 +97,7 @@
 - `SpellConfig`：技能入口、CD、目标选择、预警指示器
 - `BuffConfig`：服务端时序、伤害、子技能、客户端动画/特效节点
 - `AI Buff`：巡逻 / 战斗 / 返程行为树
+- `MonsterCombatCommonHelper`：静态怪物战斗协程的共用施法辅助；2026-04-16 起，统一在尝试施法前朝向当前目标，避免 `TargetSelectorSingle` 因“目标不在正前方”导致站桩空转
 
 ### 迁移策略
 
@@ -170,3 +172,5 @@
 | 步骤3 | 2026-04-10 | `Packages/cn.etetet.map/Bundles/Json/SpellConfigCategory.txt`、`Packages/cn.etetet.map/Bundles/Json/BuffConfigCategory.txt` | 无偏差 |
 | 步骤4 | 2026-04-10 | `Packages/cn.etetet.statesync/Scripts/Hotfix/Server/MonsterRuntimeProfileHelper.cs`、`Packages/cn.etetet.statesync/Scripts/Hotfix/Server/SpawnMonstersHelper.cs`、`Packages/cn.etetet.statesync/Scripts/Hotfix/Server/DebugSpawnMonsterHelper.cs`、`Packages/cn.etetet.test/Scripts/Hotfix/Test/TestHelper.cs`、`Packages/cn.etetet.test/Scripts/Hotfix/Test/Test_Rogue_Fixes_P0_Test.cs` | 无偏差 |
 | 步骤5 | 2026-04-10 | `Book/10-项目架构/怪物AI行为说明.md`、`Book/概念-需求-设计文档/怪物技能动画与特效配置说明.md` | 额外补跑 `Test_Rogue_Fixes_P0_Test`，比设计更完整 |
+| 补充修复：静态怪施法前统一转向 | 2026-04-16 | `Packages/cn.etetet.btnode/Scripts/Hotfix/Server/AI/MonsterCombatCommonHelper.cs`、`Packages/cn.etetet.btnode/Scripts/Hotfix/Server/AI/AI_BladeCatCombatHandler.cs`、`Packages/cn.etetet.btnode/Scripts/Hotfix/Server/AI/AI_ScoutMonkeyCombatHandler.cs`、`Packages/cn.etetet.btnode/Scripts/Hotfix/Server/AI/AI_PhantomOwlCombatHandler.cs`、`Packages/cn.etetet.btnode/Scripts/Hotfix/Server/AI/AI_HeavyGatorCombatHandler.cs`、`Packages/cn.etetet.btnode/Scripts/Hotfix/Server/AI/AI_BalooCombatHandler.cs` | 场景回归发现静态怪进入射程后可能因未朝向目标而施法失败；补成服务端战斗协程施法前统一转向，并追加失败日志 |
+| 补充回归入口：PVEMap 单怪测试 | 2026-04-17 | `Packages/cn.etetet.map/Bundles/ECA/PVEMap.txt` | 发现 PVEMap 仍刷旧 `1003=Boar` 且有两个刷怪点，不利于正式静态怪回归；现临时切为单只 `XiaoHou(1013)` 入口，便于局内单怪验证 |

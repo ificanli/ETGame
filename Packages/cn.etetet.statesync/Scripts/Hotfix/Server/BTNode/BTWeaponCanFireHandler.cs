@@ -25,6 +25,7 @@ namespace ET.Server
                 WeaponReloadSchedulerHelper.RefreshTimer(caster);
             }
 
+            long checkServerNow = TimeInfo.Instance.ServerNow();
             bool canFire = weaponComp.CanFire(node.SlotIndex);
             int weaponId = node.SlotIndex == 1 ? weaponComp.Slot1WeaponId : weaponComp.Slot2WeaponId;
             WeaponConfig weaponConfig = WeaponConfigCategory.Instance.GetOrDefault(weaponId);
@@ -38,11 +39,15 @@ namespace ET.Server
             {
                 int ammo = weaponComp.GetAmmo(node.SlotIndex);
                 bool reloading = weaponComp.IsReloading(node.SlotIndex);
+                Log.Warning(
+                    $"[WeaponFireTrace][ServerCanFireBlocked] serverNow={checkServerNow}, caster={caster.Id}, slot={node.SlotIndex}, weaponId={weaponId}, ammo={ammo}, reloading={reloading}, moving={isMoving}, canMoveWhileFire={weaponConfig?.CanMoveWhileFire ?? false}, lastFire={(node.SlotIndex == 1 ? weaponComp.Slot1LastFireTime : weaponComp.Slot2LastFireTime)}");
                 Log.Warning($"[WeaponFireTrace][CanFire] blocked, caster={caster.Id}, slot={node.SlotIndex}, weaponId={weaponId}, ammo={ammo}, reloading={reloading}, moving={isMoving}, canMoveWhileFire={weaponConfig?.CanMoveWhileFire ?? false}, lastFire={(node.SlotIndex == 1 ? weaponComp.Slot1LastFireTime : weaponComp.Slot2LastFireTime)}");
                 Log.Warning($"BTWeaponCanFire: unit {caster.Id} slot={node.SlotIndex} ammo={ammo} reloading={reloading}");
             }
             else
             {
+                Log.Info(
+                    $"[WeaponFireTrace][ServerCanFireReady] serverNow={checkServerNow}, caster={caster.Id}, slot={node.SlotIndex}, weaponId={weaponId}, ammo={weaponComp.GetAmmo(node.SlotIndex)}, moving={isMoving}, canMoveWhileFire={weaponConfig?.CanMoveWhileFire ?? false}");
                 Log.Info($"[WeaponFireTrace][CanFire] ready, caster={caster.Id}, slot={node.SlotIndex}, weaponId={weaponId}, ammo={weaponComp.GetAmmo(node.SlotIndex)}, moving={isMoving}, canMoveWhileFire={weaponConfig?.CanMoveWhileFire ?? false}");
             }
             return canFire ? 0 : 1;

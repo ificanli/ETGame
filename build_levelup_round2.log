@@ -1,0 +1,51 @@
+  正在确定要还原的项目…
+  所有项目均是最新的，无法还原。
+  UnityEngine.UI -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\UnityEngine.UI\UnityEngine.UI.dll
+  UnityEngine.TestRunner -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\UnityEngine.TestRunner\UnityEngine.TestRunner.dll
+  UnityEditor.TestRunner -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\UnityEditor.TestRunner\UnityEditor.TestRunner.dll
+  UnityEditor.UI -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\UnityEditor.UI\UnityEditor.UI.dll
+  ET.HybridCLR -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.HybridCLR\ET.HybridCLR.dll
+  ET.MemoryPack.Generator -> D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack.Generator\bin\Debug\netstandard2.0\ET.MemoryPack.Generator.dll
+  ET.SourceGenerator -> D:\05ET\MatchTest\ETGame\Packages\cn.etetet.sourcegenerator\DotNet~\ET.SourceGenerator\obj\Debug\ET.SourceGenerator.dll
+  ET.MemoryPack -> D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\bin\Debug\netstandard2.1\ET.MemoryPack.dll
+  ET.Mathematics -> D:\05ET\MatchTest\ETGame\Bin\ET.Mathematics.dll
+  ET.MemoryPack -> D:\05ET\MatchTest\ETGame\Packages\cn.etetet.memorypack\DotNet~\ET.MemoryPack\bin\Debug\net10.0\ET.MemoryPack.dll
+  ET.CodeMode -> D:\05ET\MatchTest\ETGame\Bin\ET.CodeMode.dll
+  ET.ExcelMcp -> D:\05ET\MatchTest\ETGame\Bin\ET.ExcelMcp.dll
+  ET.Core -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.Core\ET.Core.dll
+  ET.Init -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.Init\ET.Init.dll
+  Unity.TextMeshPro -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.TextMeshPro\Unity.TextMeshPro.dll
+  ET.YooAssets -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.YooAssets\ET.YooAssets.dll
+  ET.YIUIFramework -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.YIUIFramework\ET.YIUIFramework.dll
+  ET.Core -> D:\05ET\MatchTest\ETGame\Bin\ET.Core.dll
+  ET.Loader -> D:\05ET\MatchTest\ETGame\Bin\ET.Loader.dll
+  ET.Loader -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.Loader\ET.Loader.dll
+  ET.Proto2CS -> D:\05ET\MatchTest\ETGame\Bin\ET.Proto2CS.dll
+  Unity.Mathematics -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.Mathematics\Unity.Mathematics.dll
+  ET.ExcelExporter -> D:\05ET\MatchTest\ETGame\Bin\ET.ExcelExporter.dll
+  ET.Model -> D:\05ET\MatchTest\ETGame\Bin\ET.Model.dll
+  ET.App -> D:\05ET\MatchTest\ETGame\Bin\ET.App.dll
+  ET.Hotfix -> D:\05ET\MatchTest\ETGame\Bin\ET.Hotfix.dll
+  ET.Model -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.Model\ET.Model.dll
+  ET.Hotfix -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.Hotfix\ET.Hotfix.dll
+  Unity.Burst -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.Burst\Unity.Burst.dll
+  Unity.InputSystem -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.InputSystem\Unity.InputSystem.dll
+  Unity.Timeline -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.Timeline\Unity.Timeline.dll
+  Unity.Collections -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.Collections\Unity.Collections.dll
+  Unity.RenderPipelines.Core.Runtime -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.RenderPipelines.Core.Runtime\Unity.RenderPipelines.Core.Runtime.dll
+  ET.Aspire -> D:\05ET\MatchTest\ETGame\Bin\ET.Aspire.dll
+  Unity.RenderPipeline.Universal.ShaderLibrary -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.RenderPipeline.Universal.ShaderLibrary\Unity.RenderPipeline.Universal.ShaderLibrary.dll
+  Unity.RenderPipelines.Universal.Config.Runtime -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.RenderPipelines.Universal.Config.Runtime\Unity.RenderPipelines.Universal.Config.Runtime.dll
+  Unity.RenderPipelines.Core.Runtime.Shared -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.RenderPipelines.Core.Runtime.Shared\Unity.RenderPipelines.Core.Runtime.Shared.dll
+  Unity.RenderPipelines.GPUDriven.Runtime -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.RenderPipelines.GPUDriven.Runtime\Unity.RenderPipelines.GPUDriven.Runtime.dll
+  Unity.RenderPipelines.Universal.Runtime -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.RenderPipelines.Universal.Runtime\Unity.RenderPipelines.Universal.Runtime.dll
+  Unity.RenderPipelines.Universal.2D.Runtime -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Unity.RenderPipelines.Universal.2D.Runtime\Unity.RenderPipelines.Universal.2D.Runtime.dll
+  Cinemachine -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\Cinemachine\Cinemachine.dll
+  ET.ModelView -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.ModelView\ET.ModelView.dll
+  ET.HotfixView -> D:\05ET\MatchTest\ETGame\Temp\Bin\Debug\ET.HotfixView\ET.HotfixView.dll
+
+已成功生成。
+    0 个警告
+    0 个错误
+
+已用时间 00:00:45.20

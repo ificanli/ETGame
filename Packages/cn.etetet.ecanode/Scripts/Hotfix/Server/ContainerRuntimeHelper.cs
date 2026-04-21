@@ -46,7 +46,8 @@ namespace ET.Server
                 return false;
             }
 
-            float distance = math.distance(player.Position, pointUnit.Position);
+            // 与 ECA 进圈检测统一使用水平距离，避免高度差导致“提示已进圈但交互仍失败”。
+            float distance = ECAHelper.GetHorizontalDistance(player.Position, pointUnit.Position);
             float interactRange = point.InteractRange + ECAInteractionModifierHelper.GetInteractRangeBonus(player);
             if (interactRange < 0f)
             {
@@ -54,6 +55,35 @@ namespace ET.Server
             }
 
             return distance <= interactRange;
+        }
+
+        public static string BuildInteractRangeDebugInfo(ECAPointComponent point, Unit player)
+        {
+            if (point == null)
+            {
+                return "point=null";
+            }
+
+            if (player == null)
+            {
+                return $"point={point.PointId}, player=null";
+            }
+
+            Unit pointUnit = point.GetParent<Unit>();
+            float3 pointPosition = pointUnit != null && !pointUnit.IsDisposed ? pointUnit.Position : float3.zero;
+            float distance = pointUnit != null && !pointUnit.IsDisposed
+                ? ECAHelper.GetHorizontalDistance(player.Position, pointPosition)
+                : -1f;
+            float rangeBonus = ECAInteractionModifierHelper.GetInteractRangeBonus(player);
+            float interactRange = point.InteractRange + rangeBonus;
+            if (interactRange < 0f)
+            {
+                interactRange = 0f;
+            }
+
+            bool cachedInRange = point.PlayersInRange.Contains(player.Id);
+            return
+                $"point={point.PointId}, pointType={point.PointType}, player={player.Id}, playerPos={player.Position}, pointPos={pointPosition}, horizontalDistance={distance:F3}, interactRange={interactRange:F3}, baseRange={point.InteractRange:F3}, rangeBonus={rangeBonus:F3}, cachedInRange={cachedInRange}, playersInRangeCount={point.PlayersInRange.Count}";
         }
 
         public static void SendInteractHint(ECAPointComponent point, Unit player, bool inRange, int buttonTextId = 0, bool canInteract = true)
@@ -602,7 +632,7 @@ namespace ET.Server
         {
             if (!container.TryGetItem(targetSlot, out ContainerItemEntry targetItem))
             {
-                container.SetItem(targetSlot, sourceItem.ConfigId, sourceItem.Count);
+                container.SetItem(targetSlot, sourceItem.ConfigId, sourceItem.Count, sourceItem.ItemUid);
                 container.ItemEntries.Remove(sourceSlot);
                 UpdateContainerState(point, container);
                 NotifyContainerUpdateToInRangePlayers(point, container);
@@ -612,8 +642,8 @@ namespace ET.Server
             ItemConfig itemConfig = ItemConfigCategory.Instance.Get(sourceItem.ConfigId);
             if (sourceItem.ConfigId != targetItem.ConfigId || itemConfig == null || itemConfig.MaxStack <= 1)
             {
-                container.SetItem(sourceSlot, targetItem.ConfigId, targetItem.Count);
-                container.SetItem(targetSlot, sourceItem.ConfigId, sourceItem.Count);
+                container.SetItem(sourceSlot, targetItem.ConfigId, targetItem.Count, targetItem.ItemUid);
+                container.SetItem(targetSlot, sourceItem.ConfigId, sourceItem.Count, sourceItem.ItemUid);
                 UpdateContainerState(point, container);
                 NotifyContainerUpdateToInRangePlayers(point, container);
                 return itemConfig == null && sourceItem.ConfigId == targetItem.ConfigId ? ErrorCode.ERR_ItemNotFound : ErrorCode.ERR_Success;
@@ -622,8 +652,8 @@ namespace ET.Server
             int stackCount = Math.Min(itemConfig.MaxStack - targetItem.Count, sourceItem.Count);
             if (stackCount <= 0)
             {
-                container.SetItem(sourceSlot, targetItem.ConfigId, targetItem.Count);
-                container.SetItem(targetSlot, sourceItem.ConfigId, sourceItem.Count);
+                container.SetItem(sourceSlot, targetItem.ConfigId, targetItem.Count, targetItem.ItemUid);
+                container.SetItem(targetSlot, sourceItem.ConfigId, sourceItem.Count, sourceItem.ItemUid);
                 UpdateContainerState(point, container);
                 NotifyContainerUpdateToInRangePlayers(point, container);
                 return ErrorCode.ERR_Success;
@@ -631,10 +661,10 @@ namespace ET.Server
 
             targetItem.Count += stackCount;
             sourceItem.Count -= stackCount;
-            container.SetItem(targetSlot, targetItem.ConfigId, targetItem.Count);
+            container.SetItem(targetSlot, targetItem.ConfigId, targetItem.Count, targetItem.ItemUid);
             if (sourceItem.Count > 0)
             {
-                container.SetItem(sourceSlot, sourceItem.ConfigId, sourceItem.Count);
+                container.SetItem(sourceSlot, sourceItem.ConfigId, sourceItem.Count, sourceItem.ItemUid);
             }
             else
             {
@@ -690,7 +720,7 @@ namespace ET.Server
                     sourceItem.Count -= stackCount;
                     if (sourceItem.Count > 0)
                     {
-                        container.SetItem(sourceSlot, sourceItem.ConfigId, sourceItem.Count);
+                        container.SetItem(sourceSlot, sourceItem.ConfigId, sourceItem.Count, sourceItem.ItemUid);
                     }
                     else
                     {
@@ -709,7 +739,7 @@ namespace ET.Server
             }
 
             int resolvedTargetBagConfigId = NormalizeBagItemConfigId(targetBagItem);
-            container.SetItem(sourceSlot, resolvedTargetBagConfigId, targetBagItem.Count);
+            container.SetItem(sourceSlot, resolvedTargetBagConfigId, targetBagItem.Count, targetBagItem.Id);
             RemoveBagItem(itemComponent, targetBagItem);
             CreateBagItem(itemComponent, targetSlot, resolvedSourceConfigId, sourceItem.Count, sourceGridWidth, sourceGridHeight);
             UpdateContainerState(point, container);
@@ -728,7 +758,7 @@ namespace ET.Server
             int resolvedSourceConfigId = NormalizeBagItemConfigId(sourceBagItem);
             if (!container.TryGetItem(targetSlot, out ContainerItemEntry targetItem))
             {
-                container.SetItem(targetSlot, resolvedSourceConfigId, sourceBagItem.Count);
+                container.SetItem(targetSlot, resolvedSourceConfigId, sourceBagItem.Count, sourceBagItem.Id);
                 RemoveBagItem(itemComponent, sourceBagItem);
                 UpdateContainerState(point, container);
                 NotifyContainerUpdateToInRangePlayers(point, container);
@@ -746,7 +776,7 @@ namespace ET.Server
                 if (stackCount > 0)
                 {
                     targetItem.Count += stackCount;
-                    container.SetItem(targetSlot, resolvedTargetConfigId, targetItem.Count);
+                    container.SetItem(targetSlot, resolvedTargetConfigId, targetItem.Count, targetItem.ItemUid);
 
                     sourceBagItem.ReduceCount(stackCount);
                     if (sourceBagItem.Count > 0)
@@ -769,7 +799,7 @@ namespace ET.Server
                 return ErrorCode.ERR_ECAContainerBagFull;
             }
 
-            container.SetItem(targetSlot, resolvedSourceConfigId, sourceBagItem.Count);
+            container.SetItem(targetSlot, resolvedSourceConfigId, sourceBagItem.Count, sourceBagItem.Id);
             RemoveBagItem(itemComponent, sourceBagItem);
             CreateBagItem(itemComponent, sourceSlot, resolvedTargetConfigId, targetItem.Count, targetGridWidth, targetGridHeight);
             UpdateContainerState(point, container);
@@ -823,7 +853,7 @@ namespace ET.Server
                     sourceItem.Count -= stackCount;
                     if (sourceItem.Count > 0)
                     {
-                        container.SetItem(sourceSlot, resolvedSourceConfigId, sourceItem.Count);
+                        container.SetItem(sourceSlot, resolvedSourceConfigId, sourceItem.Count, sourceItem.ItemUid);
                     }
                     else
                     {
@@ -842,7 +872,7 @@ namespace ET.Server
                 return ErrorCode.ERR_ECAContainerBagFull;
             }
 
-            container.SetItem(sourceSlot, targetSecureItem.ConfigId, targetSecureItem.Count);
+            container.SetItem(sourceSlot, targetSecureItem.ConfigId, targetSecureItem.Count, ContainerComponentSystem.GenerateContainerItemUid());
             ReplaceSecureItem(secureInventory, targetIndex, resolvedSourceConfigId, sourceItem.Count, targetSlot, sourceGridWidth, sourceGridHeight);
             RuntimeSecureInventoryHelper.NotifyChanged(player);
             UpdateContainerState(point, container);
@@ -933,7 +963,7 @@ namespace ET.Server
             int sourceAnchorSlot = sourceSecureItem.AnchorSlotIndex;
             if (!container.TryGetItem(targetSlot, out ContainerItemEntry targetItem))
             {
-                container.SetItem(targetSlot, sourceSecureItem.ConfigId, sourceSecureItem.Count);
+                container.SetItem(targetSlot, sourceSecureItem.ConfigId, sourceSecureItem.Count, ContainerComponentSystem.GenerateContainerItemUid());
                 RemoveSecureItem(secureInventory, sourceIndex);
                 RuntimeSecureInventoryHelper.NotifyChanged(player);
                 UpdateContainerState(point, container);
@@ -952,7 +982,7 @@ namespace ET.Server
                 if (stackCount > 0)
                 {
                     targetItem.Count += stackCount;
-                    container.SetItem(targetSlot, resolvedTargetConfigId, targetItem.Count);
+                    container.SetItem(targetSlot, resolvedTargetConfigId, targetItem.Count, targetItem.ItemUid);
 
                     sourceSecureItem.Count -= stackCount;
                     if (sourceSecureItem.Count > 0)
@@ -977,7 +1007,7 @@ namespace ET.Server
                 return ErrorCode.ERR_ECAContainerBagFull;
             }
 
-            container.SetItem(targetSlot, sourceSecureItem.ConfigId, sourceSecureItem.Count);
+            container.SetItem(targetSlot, sourceSecureItem.ConfigId, sourceSecureItem.Count, ContainerComponentSystem.GenerateContainerItemUid());
             ReplaceSecureItem(secureInventory, sourceIndex, resolvedTargetConfigId, targetItem.Count, sourceAnchorSlot, targetGridWidth, targetGridHeight);
             RuntimeSecureInventoryHelper.NotifyChanged(player);
             UpdateContainerState(point, container);

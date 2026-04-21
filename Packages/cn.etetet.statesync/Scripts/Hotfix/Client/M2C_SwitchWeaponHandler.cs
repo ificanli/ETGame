@@ -5,9 +5,12 @@ namespace ET.Client
     {
         protected override async ETTask Run(Scene root, M2C_SwitchWeapon message)
         {
+            long clientNow = TimeInfo.Instance.ClientNow();
             Scene currentScene = root.CurrentScene();
             if (currentScene == null)
             {
+                Log.Warning(
+                    $"[WeaponSwitchTrace][ClientRecv] clientNow={clientNow}, unitId={message.UnitId}, slot={message.SlotIndex}, weaponId={message.WeaponId}, result=current_scene_missing");
                 return;
             }
 
@@ -18,7 +21,10 @@ namespace ET.Client
             }
 
             pending.CacheSwitch(message);
-            if (!pending.TryApply(root, message.UnitId))
+            bool applied = pending.TryApply(root, message.UnitId);
+            Log.Info(
+                $"[WeaponSwitchTrace][ClientRecv] clientNow={clientNow}, serverNow={TimeInfo.Instance.ServerNow()}, unitId={message.UnitId}, slot={message.SlotIndex}, weaponId={message.WeaponId}, applied={applied}");
+            if (!applied)
             {
                 Log.Info($"[WeaponInitTrace][ClientSwitch] pending unitId={message.UnitId}, slot={message.SlotIndex}, weaponId={message.WeaponId}");
             }

@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,17 +15,17 @@ namespace ET
     [EnableClass]
     public sealed partial class MinimapConstConfig : Luban.BeanBase
     {
-        public MinimapConstConfig(JSONNode _buf) 
+        public MinimapConstConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["Key"].IsString) { throw new SerializationException(); }  Key = _buf["Key"]; }
-            { if(!_buf["FloatValue"].IsNumber) { throw new SerializationException(); }  FloatValue = _buf["FloatValue"]; }
-            { if(!_buf["StringValue"].IsString) { throw new SerializationException(); }  StringValue = _buf["StringValue"]; }
+            Id = _buf.ReadInt();
+            Key = _buf.ReadString();
+            FloatValue = _buf.ReadFloat();
+            StringValue = _buf.ReadString();
 
             EndInit();
         }
 
-        public static MinimapConstConfig DeserializeMinimapConstConfig(JSONNode _buf)
+        public static MinimapConstConfig DeserializeMinimapConstConfig(ByteBuf _buf)
         {
             return new ET.MinimapConstConfig(_buf);
         }
@@ -47,7 +46,7 @@ namespace ET
         /// 字符串值
         /// </summary>
         public readonly string StringValue;
-
+    
         public const int __ID__ = -181358241;
         public override int GetTypeId() => __ID__;
 

@@ -216,8 +216,9 @@ message M2C_ECAEvacuationState // IMessage
 message ContainerItemData
 {
 	int32 SlotIndex = 1;
-	int32 ConfigId = 2;
-	int32 Count = 3;
+	int64 ItemUid = 2;
+	int32 ConfigId = 3;
+	int32 Count = 4;
 }
 
 message M2C_ContainerOpen // IMessage

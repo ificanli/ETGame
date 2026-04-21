@@ -372,8 +372,9 @@
 												"_id" : 9,
 												"Children" : [],
 												"Buff" : "Buff",
-												"ThinkIntervalMs" : 160,
-												"MainSpellId" : 130101
+										"ThinkIntervalMs" : 160,
+										"MainSpellId" : 130101,
+										"PostCastRecoverMs" : 3000
 											}]
 									}, {
 										"_t" : "ET.BTSequence",
@@ -4095,10 +4096,15 @@
 								"BindPoint" : 2,
 								"Effect" : {
 									"Name" : "XiaoMaoYuJing"
-								},
-								"Duration" : 1500,
-								"FollowUnit" : true
-							}],
+							},
+							"Duration" : 1500,
+							"FollowUnit" : true,
+							"LocalPositionOffsetY" : 0.07999999821186066,
+							"SyncLineRegionLengthFromSpellTarget" : true,
+							"LineRegionMaxLength" : 5.0,
+							"LineRegionLengthOffset" : 0.3499999940395355,
+							"AnimateLineRegionFillByDuration" : true
+						}],
 						"TreeId" : NumberLong(230101003),
 						"Buff" : "Buff",
 						"Unit" : "Unit",
@@ -4180,10 +4186,11 @@
 								"BindPoint" : 2,
 								"Effect" : {
 									"Name" : "XiaoMaoGongJi"
-								},
-								"Duration" : 400,
-								"FollowUnit" : true
-							}],
+							},
+							"Duration" : 400,
+							"FollowUnit" : true,
+							"LocalEulerAnglesOffsetY" : 180.0
+						}],
 						"TreeId" : NumberLong(230102003),
 						"Buff" : "Buff",
 						"Unit" : "Unit",

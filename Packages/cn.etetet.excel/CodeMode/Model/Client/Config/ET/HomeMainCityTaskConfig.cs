@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,21 +15,21 @@ namespace ET
     [EnableClass]
     public sealed partial class HomeMainCityTaskConfig : Luban.BeanBase
     {
-        public HomeMainCityTaskConfig(JSONNode _buf) 
+        public HomeMainCityTaskConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["TaskGroupId"].IsNumber) { throw new SerializationException(); }  TaskGroupId = _buf["TaskGroupId"]; }
-            { if(!_buf["TaskType"].IsNumber) { throw new SerializationException(); }  TaskType = _buf["TaskType"]; }
-            { if(!_buf["Param1"].IsNumber) { throw new SerializationException(); }  Param1 = _buf["Param1"]; }
-            { if(!_buf["Param2"].IsNumber) { throw new SerializationException(); }  Param2 = _buf["Param2"]; }
-            { if(!_buf["Title"].IsString) { throw new SerializationException(); }  Title = _buf["Title"]; }
-            { if(!_buf["Desc"].IsString) { throw new SerializationException(); }  Desc = _buf["Desc"]; }
-            { if(!_buf["SortOrder"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["SortOrder"]; }
+            Id = _buf.ReadInt();
+            TaskGroupId = _buf.ReadInt();
+            TaskType = _buf.ReadInt();
+            Param1 = _buf.ReadInt();
+            Param2 = _buf.ReadInt();
+            Title = _buf.ReadString();
+            Desc = _buf.ReadString();
+            SortOrder = _buf.ReadInt();
 
             EndInit();
         }
 
-        public static HomeMainCityTaskConfig DeserializeHomeMainCityTaskConfig(JSONNode _buf)
+        public static HomeMainCityTaskConfig DeserializeHomeMainCityTaskConfig(ByteBuf _buf)
         {
             return new ET.HomeMainCityTaskConfig(_buf);
         }
@@ -43,7 +42,7 @@ namespace ET
         public readonly string Title;
         public readonly string Desc;
         public readonly int SortOrder;
-
+    
         public const int __ID__ = -364305783;
         public override int GetTypeId() => __ID__;
 

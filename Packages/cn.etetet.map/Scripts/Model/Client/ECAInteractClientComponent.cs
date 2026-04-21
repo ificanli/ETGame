@@ -34,6 +34,7 @@ namespace ET.Client
     public struct ContainerClientItemData
     {
         public int SlotIndex;
+        public long ItemUid;
         public int ConfigId;
         public int Count;
     }

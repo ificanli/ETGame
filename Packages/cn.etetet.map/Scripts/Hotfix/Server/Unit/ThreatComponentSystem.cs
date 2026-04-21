@@ -16,7 +16,7 @@ namespace ET.Server
             ThreatInfo threatInfo = self.GetChild<ThreatInfo>(unit.Id);
             if (threatInfo == null)
             {
-                threatInfo = self.AddChild<ThreatInfo>();
+                threatInfo = self.AddChildWithId<ThreatInfo>(unit.Id);
                 threatInfo.Unit = unit;
                 threatInfo.Threat = threat;
             }
@@ -57,13 +57,12 @@ namespace ET.Server
         public static ThreatInfo GetMaxThreat(this ThreatComponent self)
         {
             int max = 0;
-            ThreatInfo threatInfo = null;
+            ThreatInfo maxThreatInfo = null;
             foreach (var kv in self.Children)
             {
-                threatInfo = kv.Value as ThreatInfo;
+                ThreatInfo threatInfo = kv.Value as ThreatInfo;
                 if (threatInfo.Unit.Entity == null)
                 {
-                    threatInfo = null;
                     self.RemoveThreat(kv.Key);
                     continue;
                 }
@@ -74,20 +73,20 @@ namespace ET.Server
                 }
 
                 max = threatInfo.Threat;
+                maxThreatInfo = threatInfo;
             }
-            return threatInfo;
+            return maxThreatInfo;
         }
 
         public static ThreatInfo GetMinThreat(this ThreatComponent self)
         {            
-            int min = 0;
-            ThreatInfo threatInfo = null;
+            int min = int.MaxValue;
+            ThreatInfo minThreatInfo = null;
             foreach (var kv in self.Children)
             {
-                threatInfo = kv.Value as ThreatInfo;
+                ThreatInfo threatInfo = kv.Value as ThreatInfo;
                 if (threatInfo.Unit.Entity == null)
                 {
-                    threatInfo = null;
                     self.RemoveThreat(kv.Key);
                     continue;
                 }
@@ -98,8 +97,9 @@ namespace ET.Server
                 }
 
                 min = threatInfo.Threat;
+                minThreatInfo = threatInfo;
             }
-            return threatInfo;
+            return minThreatInfo;
         }
 
         public static ThreatInfo GetRandomThreat(this ThreatComponent self)

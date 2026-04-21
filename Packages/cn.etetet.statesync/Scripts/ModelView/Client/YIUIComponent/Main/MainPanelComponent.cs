@@ -69,11 +69,10 @@ namespace ET.Client
         public RectTransform MinimapTrackedPoiRect;
         public Image MinimapTrackedPoiImage;
         public string MinimapTrackedPoiDesiredSpriteName;
+        public RectTransform PickupHintRoot;
+        public Dictionary<string, EntityRef<PickupHintPanelComponent>> PickupHintViewRefs = new();
         public EntityRef<EvacuateTipsComponent> EvacuateTipsViewRef;
         public EvacuateTipsComponent EvacuateTipsView => this.EvacuateTipsViewRef;
-        public bool IsPickupHintPanelOpening;
-        public bool LastPickupHintVisible;
-        public string LastPickupHintPointId;
         public bool IsEvacuateTipsOpening;
         public bool LastEvacuateTipsVisible;
         public string LastEvacuationPointId;

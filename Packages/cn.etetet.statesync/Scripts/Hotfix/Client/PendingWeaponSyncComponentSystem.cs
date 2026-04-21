@@ -84,14 +84,45 @@ namespace ET.Client
             return applied;
         }
 
+        public static bool PredictSwitch(this PendingWeaponSyncComponent self, Scene root, Unit unit, int slotIndex)
+        {
+            if (root == null || unit == null || unit.IsDisposed)
+            {
+                return false;
+            }
+
+            WeaponComponent weaponComponent = unit.GetComponent<WeaponComponent>();
+            if (weaponComponent == null)
+            {
+                return false;
+            }
+
+            int weaponId = weaponComponent.GetWeaponId(slotIndex);
+            if (weaponId == 0)
+            {
+                return false;
+            }
+
+            PendingWeaponSwitchState state = new PendingWeaponSwitchState
+            {
+                UnitId = unit.Id,
+                SlotIndex = slotIndex,
+                WeaponId = weaponId,
+            };
+
+            ApplySwitch(root, unit, weaponComponent, state, "ClientPredictApply");
+            return true;
+        }
+
         public static void RemovePending(this PendingWeaponSyncComponent self, long unitId)
         {
             self.SwitchStates.Remove(unitId);
             self.AmmoStates.Remove(unitId);
         }
 
-        private static WeaponComponent ApplySwitch(Scene root, Unit unit, WeaponComponent weaponComponent, PendingWeaponSwitchState state)
+        private static WeaponComponent ApplySwitch(Scene root, Unit unit, WeaponComponent weaponComponent, PendingWeaponSwitchState state, string traceStage = "ClientApply")
         {
+            long clientNow = TimeInfo.Instance.ClientNow();
             if (weaponComponent == null)
             {
                 int slot1WeaponId = state.SlotIndex == 1 ? state.WeaponId : 0;
@@ -112,6 +143,8 @@ namespace ET.Client
             }
 
             weaponComponent.SwitchWeapon(state.SlotIndex);
+            Log.Info(
+                $"[WeaponSwitchTrace][{traceStage}] clientNow={clientNow}, serverNow={TimeInfo.Instance.ServerNow()}, unitId={state.UnitId}, slot={state.SlotIndex}, weaponId={state.WeaponId}, currentSlot={weaponComponent.CurrentSlot}, slot1WeaponId={weaponComponent.Slot1WeaponId}, slot2WeaponId={weaponComponent.Slot2WeaponId}, slot1Ammo={weaponComponent.Slot1Ammo}, slot2Ammo={weaponComponent.Slot2Ammo}");
 
             EventSystem.Instance.Publish(root, new EventWeaponSwitched
             {

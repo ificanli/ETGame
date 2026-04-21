@@ -8,7 +8,6 @@
 //------------------------------------------------------------------------------
 
 using Luban;
-using SimpleJSON;
 
 
 namespace ET
@@ -16,23 +15,23 @@ namespace ET
     [EnableClass]
     public sealed partial class HomeBuildingConfig : Luban.BeanBase
     {
-        public HomeBuildingConfig(JSONNode _buf) 
+        public HomeBuildingConfig(ByteBuf _buf) 
         {
-            { if(!_buf["Id"].IsNumber) { throw new SerializationException(); }  Id = _buf["Id"]; }
-            { if(!_buf["BuildingType"].IsNumber) { throw new SerializationException(); }  BuildingType = _buf["BuildingType"]; }
-            { if(!_buf["Name"].IsString) { throw new SerializationException(); }  Name = _buf["Name"]; }
-            { if(!_buf["SceneVisualKey"].IsString) { throw new SerializationException(); }  SceneVisualKey = _buf["SceneVisualKey"]; }
-            { if(!_buf["CanRepeat"].IsBoolean) { throw new SerializationException(); }  CanRepeat = _buf["CanRepeat"]; }
-            { if(!_buf["MaxCount"].IsNumber) { throw new SerializationException(); }  MaxCount = _buf["MaxCount"]; }
-            { if(!_buf["SortOrder"].IsNumber) { throw new SerializationException(); }  SortOrder = _buf["SortOrder"]; }
-            { if(!_buf["DefaultUnlock"].IsBoolean) { throw new SerializationException(); }  DefaultUnlock = _buf["DefaultUnlock"]; }
-            { if(!_buf["DefaultSlotType"].IsNumber) { throw new SerializationException(); }  DefaultSlotType = _buf["DefaultSlotType"]; }
-            { if(!_buf["BuildGoldCost"].IsNumber) { throw new SerializationException(); }  BuildGoldCost = _buf["BuildGoldCost"]; }
+            Id = _buf.ReadInt();
+            BuildingType = _buf.ReadInt();
+            Name = _buf.ReadString();
+            SceneVisualKey = _buf.ReadString();
+            CanRepeat = _buf.ReadBool();
+            MaxCount = _buf.ReadInt();
+            SortOrder = _buf.ReadInt();
+            DefaultUnlock = _buf.ReadBool();
+            DefaultSlotType = _buf.ReadInt();
+            BuildGoldCost = _buf.ReadInt();
 
             EndInit();
         }
 
-        public static HomeBuildingConfig DeserializeHomeBuildingConfig(JSONNode _buf)
+        public static HomeBuildingConfig DeserializeHomeBuildingConfig(ByteBuf _buf)
         {
             return new ET.HomeBuildingConfig(_buf);
         }
@@ -47,7 +46,7 @@ namespace ET
         public readonly bool DefaultUnlock;
         public readonly int DefaultSlotType;
         public readonly int BuildGoldCost;
-
+    
         public const int __ID__ = -226571884;
         public override int GetTypeId() => __ID__;
 

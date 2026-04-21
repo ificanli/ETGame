@@ -92,24 +92,24 @@ namespace ET.Client
 
         // 搜索动效相关字段
         /// <summary>
-        /// 每个槽位的搜索开始时间（毫秒时间戳），Key=SlotIndex
+        /// 每个容器物品实例的搜索开始时间（毫秒时间戳），Key=ItemUid
         /// </summary>
-        public readonly Dictionary<int, long> SlotSearchStartTimes = new();
+        public readonly Dictionary<long, long> ItemSearchStartTimes = new();
 
         /// <summary>
-        /// 已完成搜索的槽位集合，Key=SlotIndex
+        /// 已完成搜索的物品实例集合，Key=ItemUid
         /// </summary>
-        public readonly HashSet<int> SearchedSlots = new();
+        public readonly HashSet<long> SearchedItemUids = new();
 
         /// <summary>
-        /// 每个槽位的搜索动效GameObject引用，Key=SlotIndex
+        /// 每个容器物品实例的搜索动效GameObject引用，Key=ItemUid
         /// </summary>
-        public readonly Dictionary<int, GameObject> SlotSearchingEffects = new();
+        public readonly Dictionary<long, GameObject> ItemSearchingEffects = new();
 
         /// <summary>
-        /// 每个槽位的搜索持续时间（毫秒），Key=SlotIndex，根据物品品质决定
+        /// 每个容器物品实例的搜索持续时间（毫秒），Key=ItemUid，根据物品品质决定
         /// </summary>
-        public readonly Dictionary<int, long> SlotSearchDurations = new();
+        public readonly Dictionary<long, long> ItemSearchDurations = new();
 
         /// <summary>
         /// 当前容器的PointId，用于判断是否切换了容器

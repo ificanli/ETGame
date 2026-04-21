@@ -904,8 +904,10 @@ namespace ET
         [MemoryPackOrder(0)]
         public int SlotIndex { get; set; }
         [MemoryPackOrder(1)]
-        public int ConfigId { get; set; }
+        public long ItemUid { get; set; }
         [MemoryPackOrder(2)]
+        public int ConfigId { get; set; }
+        [MemoryPackOrder(3)]
         public int Count { get; set; }
         public override void Dispose()
         {
@@ -915,6 +917,7 @@ namespace ET
             }
 
             this.SlotIndex = default;
+            this.ItemUid = default;
             this.ConfigId = default;
             this.Count = default;
 

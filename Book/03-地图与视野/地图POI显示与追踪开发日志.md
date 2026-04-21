@@ -42,6 +42,24 @@
 - **原因**：这样既能接入正式美术，又不会和旧占位 sprite 重名，场景点位还能显式声明自己用哪张 icon。
 - **替代方案**：继续沿用旧 `green/gold/red/blue` 配置名。放弃原因是这些旧名已经不是正式资源语义，后续很难维护。
 
+### 2026-04-16 - 普通单位和 POI 尺寸彻底拆分
+- **背景**：用户回归确认 POI 需要至少 `25` 的可视尺寸，但普通单位 marker 再大就会遮挡小地图阅读。
+- **方案**：普通单位继续走 `Minimap.MarkerSize`，当前调到 `8`；POI 在小地图和大地图统一改读独立 `Minimap.PoiSize=25`。
+- **原因**：两类标记的语义和可读性要求不同，继续共用一个尺寸常量会互相拉扯。
+- **替代方案**：只调一个折中尺寸。放弃原因是会同时牺牲“普通单位不挡图”和“POI 可辨识”两边体验。
+
+### 2026-04-17 - 小地图 POI 尺寸继续独立拆分
+- **背景**：用户最新回归口径是“小地图的几个 POI 图标再放大 1 倍”，但当前 `Minimap.PoiSize=25` 仍由大小地图共用。
+- **方案**：保留大地图 `Minimap.PoiSize=25`，新增小地图专用 `Minimap.CompactPoiSize=50`，只让 `MainPanel` 的小地图图标和追踪边缘指引改读新 key。
+- **原因**：这样能精准放大小地图可读性，不会把展开地图上的 POI 一起放大到过满。
+- **替代方案**：直接把 `Minimap.PoiSize` 改到 `50`。放弃原因是会同时影响大地图，超出本次回归修改范围。
+
+### 2026-04-16 - 展开地图底图回到 prefab 预绑
+- **背景**：用户回归发现展开地图会出现“只有图标层、没有底图背景”的表现。
+- **方案**：`MapWorldPanel.prefab` 直接预绑和小地图同一个 `Minimap Render Texture`，同时补静态 `PoiLayer`；运行时只继续负责刷新 uv、迷雾和数据项。
+- **原因**：底图和静态承载层都属于稳定 UI 资源，不应该继续依赖“打开时再从 MainPanel 拿引用”或“缺节点就运行时创建”的兜底链。
+- **替代方案**：只在 `RefreshWorldMapTexture` 里继续做运行时兜底复制。放弃原因是资源层仍然不完整，用户已经明确 UI 类问题优先改 prefab。
+
 ### 2026-04-16 - side 语义下沉到 SpawnPoint 显式配置
 - **背景**：用户确认实际玩法是“6 队里 3 队共用 1 个 side”，因此 `sideId` 必须直接由出生点配置传入。
 - **方案**：给 `SpawnPoint` 开放 `side_id` 参数；玩家出生时把命中出生点的 `side_id` 写入独立 `SideComponent`，POI 再按 `side_id == SideComponent.SideId` 过滤。
@@ -64,6 +82,11 @@
 - **现象**：`YIUIAtlasData.asset` 里原本已有 `green/gold/red/blue`，继续让正式 `MapIcon` 使用这些名字会和 `export (4).png` 里的旧切片撞名。
 - **原因**：POI 首版为了快速验证，直接复用了旧色块 sprite 名，后续正式美术到位时没有先清理旧 atlas 命名空间。
 - **解决**：本轮把正式地图图标整体切到 `poi_*` 命名，并同步更新 `MinimapConstConfig`、运行时 JSON 和 `SDCMap` 的点位配置。
+
+### 2026-04-16 - `MinimapConstConfig.xlsx` 的新增 POI 行列位发生漂移
+- **现象**：`PoiIcon/PoiTipText/PoiSize` 新增行在源表里一度从 `A/C` 列起写，和表头 `B=Id, C=Key, D=FloatValue, E=StringValue` 不一致。
+- **原因**：前一轮追加 POI 配置时，源表和运行时 JSON 没完全按同一列位写入。
+- **解决**：本轮用 `ET.ExcelMcp` 把 `A26:E36` 整段对齐回标准列，同时把 `Minimap.MarkerSize` 更新为 `8`，避免后续正式导表时把 key/value 读歪。
 
 ## 变更清单
 
@@ -104,10 +127,24 @@
 | 2026-04-16 | `Assets/GameRes/YIUI/Common/Sprites/Atlas1/MapIcon.png.meta` | 修改 | 正式地图图标切片命名为 `poi_*` |
 | 2026-04-16 | `Assets/GameRes/YIUI/YIUISettings/YIUIAtlasData.asset` | 修改 | 登记正式地图图标 sprite 名 |
 | 2026-04-16 | `Packages/cn.etetet.map/Bundles/ECA/SDCMap.txt` | 修改 | 给真实撤离点/高级容器/Boss 点位显式写入 `map_poi_icon` |
+| 2026-04-16 | `Packages/cn.etetet.statesync/Luban/Config/Datas/MinimapConstConfig.xlsx` | 修改 | 把 `Minimap.MarkerSize` 下调到 `8`，并对齐 POI 新增行列位 |
+| 2026-04-16 | `Packages/cn.etetet.excel/Bundles/Luban/Config/Client/Json/et_minimapconstconfigcategory.json` | 修改 | 同步普通单位 marker 尺寸为 `8` |
+| 2026-04-16 | `Packages/cn.etetet.excel/Bundles/Luban/Config/ClientServer/Json/et_minimapconstconfigcategory.json` | 修改 | 同步普通单位 marker 尺寸为 `8` |
+| 2026-04-16 | `Packages/cn.etetet.excel/Bundles/Luban/Config/Server/Json/et_minimapconstconfigcategory.json` | 修改 | 同步普通单位 marker 尺寸为 `8` |
+| 2026-04-16 | `Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/MapWorldPanelComponentSystem.cs` | 修改 | 大地图 POI 改读独立 `PoiSize`，不再跟普通单位 marker 共用尺寸 |
+| 2026-04-16 | `Packages/cn.etetet.statesync/Assets/GameRes/YIUI/Main/Prefabs/Map/MapWorldPanel.prefab` | 修改 | 预绑小地图同款 RenderTexture，静态补 `PoiLayer` 与箭头 sprite |
+| 2026-04-17 | `Packages/cn.etetet.statesync/Scripts/Model/Share/MinimapConstKey.cs` | 修改 | 新增小地图专用 `Minimap.CompactPoiSize` 配置 key |
+| 2026-04-17 | `Packages/cn.etetet.statesync/Scripts/HotfixView/Client/YIUISystem/Main/MainPanelComponentSystem.cs` | 修改 | 小地图 POI 与追踪边缘图标改读 `Minimap.CompactPoiSize`，默认回退 `PoiSize` |
+| 2026-04-17 | `Packages/cn.etetet.statesync/Luban/Config/Datas/MinimapConstConfig.xlsx` | 修改 | 源表新增 `Minimap.CompactPoiSize=50`，保持后续导表不丢配置 |
+| 2026-04-17 | `Packages/cn.etetet.excel/Bundles/Luban/Config/Client/Json/et_minimapconstconfigcategory.json` | 修改 | 同步客户端小地图 POI 独立尺寸为 `50` |
+| 2026-04-17 | `Packages/cn.etetet.excel/Bundles/Luban/Config/ClientServer/Json/et_minimapconstconfigcategory.json` | 修改 | 同步 ClientServer 小地图 POI 独立尺寸为 `50` |
+| 2026-04-17 | `Packages/cn.etetet.excel/Bundles/Luban/Config/Server/Json/et_minimapconstconfigcategory.json` | 修改 | 同步服务端小地图 POI 独立尺寸为 `50` |
+| 2026-04-17 | `Book/03-地图与视野/地图POI显示与追踪设计文档.md` | 修改 | 回写“小地图 POI 再放大 1 倍”的尺寸拆分方案 |
+| 2026-04-17 | `Book/03-地图与视野/地图POI显示与追踪开发日志.md` | 修改 | 记录本轮 POI 尺寸回归调整 |
 
 ## 开发总结
 
-- **实际完成**：已完成 POI 运行时、ECA 参数扩展、大地图点击 tips 与唯一追踪、小地图同步显示与边缘追踪指引、`Text/MinimapConst` 配置及三端运行时 json 同步；并补上 `SpawnPoint.side_id -> SideComponent -> UnitInfo.SideId -> 客户端 POI 过滤` 独立链路。本轮又接入正式 `MapIcon` 资源，默认 key 和 `SDCMap` 真实点位 icon 都切到 `poi_*` 语义名。
+- **实际完成**：已完成 POI 运行时、ECA 参数扩展、大地图点击 tips 与唯一追踪、小地图同步显示与边缘追踪指引、`Text/MinimapConst` 配置及三端运行时 json 同步；并补上 `SpawnPoint.side_id -> SideComponent -> UnitInfo.SideId -> 客户端 POI 过滤` 独立链路。本轮又接入正式 `MapIcon` 资源，默认 key 和 `SDCMap` 真实点位 icon 都切到 `poi_*` 语义名；随后继续按用户回归把普通单位 marker 下调到 `8`、大地图 POI 保持 `25`，再把小地图 POI 与追踪边缘图标继续拆到 `Minimap.CompactPoiSize=50`，并把展开地图底图与静态 `PoiLayer` 迁回 `MapWorldPanel.prefab`。
 - **未完成**：未做局内人工验收；Boss 刷新点只完成通用结构预留，尚未由场景配置实际接入。
 - **与设计的偏差**：首版确实先复用了 `green/gold/red/blue`；但正式图标到位后，当前实现已经切回独立 `poi_*` 命名，不再继续依赖旧色块 sprite。
 - **后续待办**：你在场景里补出生点 `side_id` 和撤离点/高级容器/Boss 刷新点参数后，重点回归“大地图点击 tips、小地图边缘追踪、出生侧撤离点过滤”三项。

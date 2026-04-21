@@ -38,5 +38,6 @@ namespace ET.Server
 
         /// <summary>是否启用 NavMesh Raycast 防穿墙。设为 false 可关闭该功能。</summary>
         public bool EnableNavRaycast = true;
+
     }
 }

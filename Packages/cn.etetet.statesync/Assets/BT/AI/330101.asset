@@ -459,6 +459,9 @@ MonoBehaviour:
     - Name: MainSpellId
       Entry: 3
       Data: 130101
+    - Name: PostCastRecoverMs
+      Entry: 3
+      Data: 3000
     - Name: 
       Entry: 8
       Data: 

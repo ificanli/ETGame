@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Unity.Mathematics;
 
 namespace ET.Client
@@ -60,10 +61,7 @@ namespace ET.Client
             self.Pois.Clear();
 
             string path = $"Packages/cn.etetet.map/Bundles/ECA/{mapName}.txt";
-            string json = EventSystem.Instance.Invoke<ECAConcealmentConfigLoader, string>(new ECAConcealmentConfigLoader
-            {
-                Location = path
-            });
+            string json = LoadPoiConfigJson(path);
             if (string.IsNullOrWhiteSpace(json))
             {
                 return;
@@ -86,6 +84,28 @@ namespace ET.Client
             }
 
             self.ValidateSelection();
+        }
+
+        private static string LoadPoiConfigJson(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            try
+            {
+                return EventSystem.Instance.Invoke<ECAConcealmentConfigLoader, string>(new ECAConcealmentConfigLoader
+                {
+                    Location = path
+                });
+            }
+            catch (System.Exception exception)
+            {
+                Log.Warning($"[MapPoiRuntime] invoke loader failed, fallback direct read: path={path}, error={exception.Message}");
+            }
+
+            return File.Exists(path) ? File.ReadAllText(path) : string.Empty;
         }
 
         public static Dictionary<string, MapPoiRuntimeData> GetPois(this MapPoiRuntimeComponent self)

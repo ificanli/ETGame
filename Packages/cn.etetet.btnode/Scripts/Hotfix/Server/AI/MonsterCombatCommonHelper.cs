@@ -40,11 +40,14 @@ namespace ET.Server
             }
 
             TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
-            if (targetComponent != null)
+            if (targetComponent == null)
             {
-                targetComponent.Unit = target;
-                targetComponent.Position = target.Position;
+                Log.Warning($"[MonsterAI] target component missing, unitId={unit.Id}, threatCount={threatComponent.GetCount()}");
+                return false;
             }
+
+            targetComponent.Unit = target;
+            targetComponent.Position = target.Position;
 
             return true;
         }
@@ -96,7 +99,31 @@ namespace ET.Server
 
         public static bool HasCastingSpell(Unit unit)
         {
-            return unit?.GetComponent<SpellComponent>()?.Current != null;
+            SpellComponent spellComponent = unit?.GetComponent<SpellComponent>();
+            if (spellComponent == null)
+            {
+                return false;
+            }
+
+            Buff current = spellComponent.Current;
+            return current != null && !current.IsDisposed;
+        }
+
+        public static void FaceTarget(Unit unit, Unit target)
+        {
+            if (unit == null || unit.IsDisposed || target == null || target.IsDisposed)
+            {
+                return;
+            }
+
+            float3 direction = target.Position - unit.Position;
+            direction.y = 0f;
+            if (math.lengthsq(direction) <= 0.0001f)
+            {
+                return;
+            }
+
+            unit.Rotation = quaternion.LookRotationSafe(math.normalize(direction), math.up());
         }
 
         public static bool TryCast(Unit unit, int spellId)
@@ -106,8 +133,30 @@ namespace ET.Server
                 return false;
             }
 
+            TargetComponent targetComponent = unit.GetComponent<TargetComponent>();
+            Unit target = targetComponent?.Unit;
+            bool hasTarget = target != null && !target.IsDisposed;
+            float unitRadius = unit.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f;
+            float targetRadius = hasTarget ? (target.NumericComponent?.GetAsFloat(NumericType.Radius) ?? 0f) : 0f;
+            float distance = hasTarget ? math.distance(unit.Position, target.Position) : -1f;
+            float edgeDistance = hasTarget ? distance - targetRadius - unitRadius : -1f;
+
             unit.Stop(0);
-            return SpellHelper.Cast(unit, spellId) == 0;
+            int ret = SpellHelper.Cast(unit, spellId);
+            if (ret != 0)
+            {
+                Log.Warning(
+                    $"[MonsterAI] cast failed, unitId={unit.Id}, spellId={spellId}, ret={ret}, reason={DescribeSpellCastRet(ret)}, " +
+                    $"targetId={(hasTarget ? target.Id : 0)}, targetType={(hasTarget ? target.UnitType.ToString() : "None")}, " +
+                    $"targetComponentMissing={(targetComponent == null)}, distance={distance:F3}, edgeDistance={edgeDistance:F3}, " +
+                    $"unitPos={unit.Position}, unitForward={unit.Forward}, threatCount={unit.GetComponent<ThreatComponent>()?.GetCount() ?? 0}");
+                return false;
+            }
+
+            Log.Info(
+                $"[MonsterAI] cast success, unitId={unit.Id}, spellId={spellId}, targetId={(hasTarget ? target.Id : 0)}, " +
+                $"distance={distance:F3}, edgeDistance={edgeDistance:F3}, unitPos={unit.Position}");
+            return true;
         }
 
         public static bool IsLowHp(Unit unit, int hpPermille)
@@ -150,6 +199,22 @@ namespace ET.Server
             return targetSelector is TargetSelectorPosition
                 ? targetSelector.MinDistance
                 : targetSelector.MinDistance / 1000f;
+        }
+
+        private static string DescribeSpellCastRet(int ret)
+        {
+            return ret switch
+            {
+                0 => "OK",
+                TextConstDefine.SpellCast_DistanceNotEnought => "DistanceNotEnough",
+                TextConstDefine.SpellCast_NotSelectTarget => "NotSelectTarget",
+                TextConstDefine.SpellCast_TargetTooFar => "TargetTooFar",
+                TextConstDefine.SpellCast_SpellInCD => "SpellInCD",
+                TextConstDefine.SpellCast_MPNotEnought => "MPNotEnough",
+                TextConstDefine.SpellCast_HPNotEnought => "HPNotEnough",
+                TextConstDefine.SpellCast_TargetNotInFrontOfCaster => "TargetNotInFrontOfCaster",
+                _ => $"Unknown({ret})",
+            };
         }
     }
 }
